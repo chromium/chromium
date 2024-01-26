@@ -28,7 +28,7 @@
 #include "net/base/isolation_info.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -55,16 +55,12 @@ network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
       CHECK(network_context_);
     } else {
       // Create new URL factory in the default network context.
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_factory_remote;
-      CreateNewURLLoaderFactory(
-          service->GetBrowserContext(),
-          service->GetBrowserContext()
-              ->GetDefaultStoragePartition()
-              ->GetNetworkContext(),
-          url_factory_remote.InitWithNewPipeAndPassReceiver(), std::nullopt);
-      url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-              std::move(url_factory_remote)));
+      url_loader_factory_ =
+          CreateNewURLLoaderFactory(service->GetBrowserContext(),
+                                    service->GetBrowserContext()
+                                        ->GetDefaultStoragePartition()
+                                        ->GetNetworkContext(),
+                                    std::nullopt);
     }
   }
   CHECK(url_loader_factory_);
@@ -167,30 +163,16 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
     network_context_->SetClient(std::move(client_remote));
   }
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
-
-  CreateNewURLLoaderFactory(
-      service->GetBrowserContext(), network_context_.get(),
-      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), std::nullopt);
-  url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-          std::move(isolated_factory_remote)));
+  url_loader_factory_ = CreateNewURLLoaderFactory(
+      service->GetBrowserContext(), network_context_.get(), std::nullopt);
 }
 
-void PrefetchNetworkContext::CreateNewURLLoaderFactory(
+scoped_refptr<network::SharedURLLoaderFactory>
+PrefetchNetworkContext::CreateNewURLLoaderFactory(
     BrowserContext* browser_context,
     network::mojom::NetworkContext* network_context,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     std::optional<net::IsolationInfo> isolation_info) {
   CHECK(network_context);
-
-  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = network::mojom::kBrowserProcessId;
-  factory_params->is_trusted = true;
-  factory_params->is_corb_enabled = false;
-  if (isolation_info) {
-    factory_params->isolation_info = *isolation_info;
-  }
 
   // Prerender should not trigger any prefetch. This assumption is needed to
   // call GetPageUkmSourceId.
@@ -203,6 +185,8 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
   // proxy the URLLoaderFactory pipe.
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
+
+  network::URLLoaderFactoryBuilder factory_builder;
   bool bypass_redirect_checks = false;
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       browser_context, referring_render_frame_host,
@@ -212,16 +196,22 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
       /*navigation_id=*/std::nullopt,
       ukm::SourceIdObj::FromInt64(
           referring_render_frame_host->GetPageUkmSourceId()),
-      &pending_receiver, &header_client, &bypass_redirect_checks,
+      factory_builder, &header_client, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       /*navigation_response_task_runner=*/nullptr);
 
+  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = network::mojom::kBrowserProcessId;
+  factory_params->is_trusted = true;
+  factory_params->is_corb_enabled = false;
+  if (isolation_info) {
+    factory_params->isolation_info = *isolation_info;
+  }
   if (header_client.is_valid()) {
     factory_params->header_client = std::move(header_client);
   }
-
-  network_context->CreateURLLoaderFactory(std::move(pending_receiver),
-                                          std::move(factory_params));
+  return std::move(factory_builder)
+      .Finish(network_context, std::move(factory_params));
 }
 
 }  // namespace content

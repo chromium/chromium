@@ -226,6 +226,7 @@ class UrgentMessageScope;
 
 namespace network {
 class ResourceRequestBody;
+class URLLoaderFactoryBuilder;
 }  // namespace network
 
 namespace ukm {
@@ -3503,7 +3504,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // factories before they are sent to a renderer process.
   void WillCreateURLLoaderFactory(
       const url::Origin& request_initiator,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+      network::URLLoaderFactoryBuilder& factory_builder,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client = nullptr,

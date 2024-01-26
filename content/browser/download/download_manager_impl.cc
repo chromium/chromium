@@ -72,7 +72,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/load_flags.h"
@@ -83,6 +82,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -216,48 +216,29 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
                                     RenderFrameHost* rfh) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> proxy_factory_remote;
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      proxy_factory_receiver;
+  network::URLLoaderFactoryBuilder factory_builder;
+
   if (rfh) {
-    bool should_proxy = false;
-
-    // Create an intermediate pipe that can be used to proxy the download's
-    // URLLoaderFactory.
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        maybe_proxy_factory_remote;
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        maybe_proxy_factory_receiver =
-            maybe_proxy_factory_remote.InitWithNewPipeAndPassReceiver();
-
-    // Allow DevTools to potentially inject itself into the proxy pipe.
-    should_proxy = devtools_instrumentation::WillCreateURLLoaderFactory(
+    // Allow DevTools to potentially inject itself into `factory_builder`.
+    devtools_instrumentation::WillCreateURLLoaderFactory(
         static_cast<RenderFrameHostImpl*>(rfh), /*is_navigation=*/true,
-        /*is_download=*/true, &maybe_proxy_factory_receiver,
-        nullptr /* factory_override */);
+        /*is_download=*/true, factory_builder, nullptr /* factory_override */);
 
     // Also allow the Content embedder to inject itself if it wants to.
-    should_proxy |= GetContentClient()->browser()->WillCreateURLLoaderFactory(
+    GetContentClient()->browser()->WillCreateURLLoaderFactory(
         rfh->GetSiteInstance()->GetBrowserContext(), rfh,
         rfh->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDownload, url::Origin(),
         std::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
-        &maybe_proxy_factory_receiver, nullptr /* header_client */,
+        factory_builder, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
         nullptr /* factory_override */,
         nullptr /* navigation_response_task_runner */);
-
-    // If anyone above indicated that they care about proxying, pass the
-    // intermediate pipe along to the NetworkDownloadPendingURLLoaderFactory.
-    if (should_proxy) {
-      proxy_factory_remote = std::move(maybe_proxy_factory_remote);
-      proxy_factory_receiver = std::move(maybe_proxy_factory_receiver);
-    }
   }
 
   return std::make_unique<NetworkDownloadPendingURLLoaderFactory>(
       storage_partition->url_loader_factory_getter(),
-      std::move(proxy_factory_remote), std::move(proxy_factory_receiver));
+      std::move(factory_builder));
 }
 
 void RecordDownloadOpenerType(RenderFrameHost* current,

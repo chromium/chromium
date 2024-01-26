@@ -55,6 +55,7 @@
 #include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -1241,8 +1242,7 @@ bool WillCreateURLLoaderFactory(
     RenderFrameHostImpl* rfh,
     bool is_navigation,
     bool is_download,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-        target_factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
   DCHECK(!is_download || is_navigation);
 
@@ -1254,8 +1254,8 @@ bool WillCreateURLLoaderFactory(
 
   return WillCreateURLLoaderFactoryInternal(
       frame_agent_host, rfh->GetDevToolsFrameToken(), rph->GetID(),
-      rph->GetStoragePartition(), is_navigation, is_download,
-      target_factory_receiver, factory_override);
+      rph->GetStoragePartition(), is_navigation, is_download, &factory_builder,
+      factory_override);
 }
 
 bool WillCreateURLLoaderFactoryInternal(
@@ -1265,8 +1265,7 @@ bool WillCreateURLLoaderFactoryInternal(
     StoragePartition* storage_partition,
     bool is_navigation,
     bool is_download,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-        target_factory_receiver,
+    network::URLLoaderFactoryBuilder* factory_builder,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
   DCHECK(!is_download || is_navigation);
 
@@ -1308,10 +1307,11 @@ bool WillCreateURLLoaderFactoryInternal(
   DCHECK(handler_override->overridden_factory_receiver);
   if (!factory_override) {
     // Not a subresource navigation, so just override the target receiver.
-    mojo::FusePipes(std::move(*target_factory_receiver),
+    auto [receiver, remote] = factory_builder->Append();
+    mojo::FusePipes(std::move(receiver),
                     std::move(devtools_override.overriding_factory));
-    *target_factory_receiver =
-        std::move(devtools_override.overridden_factory_receiver);
+    mojo::FusePipes(std::move(devtools_override.overridden_factory_receiver),
+                    std::move(remote));
   } else if (!*factory_override) {
     // No other overrides, so just returns ours as is.
     *factory_override = network::mojom::URLLoaderFactoryOverride::New(
@@ -1342,14 +1342,13 @@ bool WillCreateURLLoaderFactoryForServiceWorker(
       worker_agent_host, worker_agent_host->devtools_worker_token(),
       rph->GetID(), rph->GetStoragePartition(),
       /*is_navigation=*/false, /*is_download=*/false,
-      /*target_factory_receiver=*/nullptr, factory_override);
+      /*factory_builder=*/nullptr, factory_override);
 }
 
 bool WillCreateURLLoaderFactoryForServiceWorkerMainScript(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-        target_factory_receiver) {
+    network::URLLoaderFactoryBuilder& factory_builder) {
   ServiceWorkerDevToolsAgentHost* worker_agent_host =
       ServiceWorkerDevToolsManager::GetInstance()
           ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
@@ -1360,7 +1359,7 @@ bool WillCreateURLLoaderFactoryForServiceWorkerMainScript(
       worker_agent_host, worker_agent_host->devtools_worker_token(),
       ChildProcessHost::kInvalidUniqueID, context_wrapper->storage_partition(),
       /*is_navigation=*/true,
-      /*is_download=*/false, target_factory_receiver,
+      /*is_download=*/false, &factory_builder,
       /*factory_override=*/nullptr);
 }
 
@@ -1379,7 +1378,7 @@ bool WillCreateURLLoaderFactoryForSharedWorker(
       worker_agent_host, worker_agent_host->devtools_worker_token(),
       rph->GetID(), rph->GetStoragePartition(),
       /*is_navigation=*/false, /*is_download=*/false,
-      /*target_factory_receiver=*/nullptr, factory_override);
+      /*factory_builder=*/nullptr, factory_override);
 }
 
 bool WillCreateURLLoaderFactoryForWorkerMainScript(
@@ -1392,7 +1391,7 @@ bool WillCreateURLLoaderFactoryForWorkerMainScript(
   return WillCreateURLLoaderFactoryInternal(
       host, worker_token, rph->GetID(), rph->GetStoragePartition(),
       /*is_navigation=*/false, /*is_download=*/false,
-      /*target_factory_receiver=*/nullptr, factory_override);
+      /*factory_builder=*/nullptr, factory_override);
 }
 
 void OnPrefetchRequestWillBeSent(

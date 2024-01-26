@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_PROXYING_URL_LOADER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_PROXYING_URL_LOADER_FACTORY_H_
 
+#include <memory>
+#include <set>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -13,10 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-
-#include <memory>
-#include <set>
 
 namespace content {
 class RenderFrameHost;
@@ -37,12 +38,10 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Constructor public for testing purposes. New instances should be created
   // by calling MaybeProxyRequest().
-  ProxyingURLLoaderFactory(
-      std::unique_ptr<HeaderModificationDelegate> delegate,
-      content::WebContents::Getter web_contents_getter,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
-      DisconnectCallback on_disconnect);
+  ProxyingURLLoaderFactory(std::unique_ptr<HeaderModificationDelegate> delegate,
+                           content::WebContents::Getter web_contents_getter,
+                           network::URLLoaderFactoryBuilder& factory_builder,
+                           DisconnectCallback on_disconnect);
 
   ProxyingURLLoaderFactory(const ProxyingURLLoaderFactory&) = delete;
   ProxyingURLLoaderFactory& operator=(const ProxyingURLLoaderFactory&) = delete;
@@ -51,14 +50,12 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Called when a renderer needs a URLLoaderFactory to give this module the
   // opportunity to install a proxy. This is only done when
-  // https://accounts.google.com is loaded in non-incognito mode. Returns true
-  // when |factory_request| has been proxied.
-  static bool MaybeProxyRequest(
+  // https://accounts.google.com is loaded in non-incognito mode.
+  static void MaybeProxyRequest(
       content::RenderFrameHost* render_frame_host,
       bool is_navigation,
       const url::Origin& request_initiator,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-          factory_receiver);
+      network::URLLoaderFactoryBuilder& factory_builder);
 
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(

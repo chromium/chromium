@@ -409,7 +409,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void SetStorageControlBinderForTest(StorageControlBinder binder);
 
   using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
+      network::URLLoaderFactoryBuilder& factory_builder)>;
   static void SetURLLoaderFactoryInterceptorForTesting(
       const URLLoaderFactoryInterceptor& interceptor);
 

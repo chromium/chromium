@@ -52,6 +52,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -896,18 +897,20 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
 
   // See if the default factory needs to be tweaked by the embedder.
   bool bypass_redirect_checks = false;
+  network::URLLoaderFactoryBuilder factory_builder;
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
       factory_type, origin, std::nullopt /* navigation_id */,
-      ukm::kInvalidSourceIdObj, &default_factory_receiver,
-      &factory_params->header_client, &bypass_redirect_checks,
-      nullptr /* disable_secure_dns */, &factory_params->factory_override,
+      ukm::kInvalidSourceIdObj, factory_builder, &factory_params->header_client,
+      &bypass_redirect_checks, nullptr /* disable_secure_dns */,
+      &factory_params->factory_override,
       /*navigation_response_task_runner=*/nullptr);
   devtools_instrumentation::WillCreateURLLoaderFactoryForServiceWorker(
       rph, routing_id, &factory_params->factory_override);
 
-  rph->CreateURLLoaderFactory(std::move(default_factory_receiver),
-                              std::move(factory_params));
+  std::move(factory_builder)
+      .Finish(std::move(default_factory_receiver), rph,
+              std::move(factory_params));
 
   factory_bundle->set_bypass_redirect_checks(bypass_redirect_checks);
 

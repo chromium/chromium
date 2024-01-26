@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_DOWNLOAD_NETWORK_DOWNLOAD_PENDING_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_DOWNLOAD_NETWORK_DOWNLOAD_PENDING_URL_LOADER_FACTORY_H_
 
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
@@ -21,10 +20,7 @@ class NetworkDownloadPendingURLLoaderFactory
  public:
   NetworkDownloadPendingURLLoaderFactory(
       scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          proxy_factory_remote,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-          proxy_factory_receiver);
+      network::URLLoaderFactoryBuilder factory_builder);
 
   NetworkDownloadPendingURLLoaderFactory(
       const NetworkDownloadPendingURLLoaderFactory&) = delete;
@@ -40,9 +36,7 @@ class NetworkDownloadPendingURLLoaderFactory
  private:
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> lazy_factory_;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> proxy_factory_remote_;
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      proxy_factory_receiver_;
+  network::URLLoaderFactoryBuilder factory_builder_;
 };
 
 }  // namespace content

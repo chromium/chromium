@@ -46,6 +46,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -318,20 +319,10 @@ void GrantFileAccessToProcess(int process_id,
 }
 
 // Creates the network URLLoaderFactory for the navigation preload request.
-void CreateNetworkFactoryForNavigationPreload(
-    FrameTreeNode& frame_tree_node,
-    StoragePartitionImpl& partition,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+scoped_refptr<network::SharedURLLoaderFactory>
+CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
+                                         StoragePartitionImpl& partition) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(falken): Can this be a DCHECK now that the caller does not post a
-  // task to this function?
-  if (!frame_tree_node.navigation_request()) {
-    // The navigation was cancelled. Just drop the request. Otherwise, we might
-    // go to network without consulting the embedder first, which would break
-    // guarantees.
-    return;
-  }
-
   // We ignore the value of |bypass_redirect_checks_unused| since a redirect is
   // just relayed to the service worker where preloadResponse is resolved as
   // redirect.
@@ -340,6 +331,7 @@ void CreateNetworkFactoryForNavigationPreload(
   // Consult the embedder.
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
+  network::URLLoaderFactoryBuilder factory_builder;
   // Here we give nullptr for |factory_override|, because CORS is no-op
   // for navigations.
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
@@ -349,14 +341,15 @@ void CreateNetworkFactoryForNavigationPreload(
       frame_tree_node.navigation_request()->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),
-      &receiver, &header_client, &bypass_redirect_checks_unused,
+      factory_builder, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       content::GetUIThreadTaskRunner(
           {content::BrowserTaskType::kNavigationNetworkResponse}));
 
   // Make the network factory.
-  NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
-      std::move(header_client), std::move(receiver), &partition);
+  return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+      NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
+          std::move(header_client), std::move(factory_builder), &partition));
 }
 
 }  // namespace
@@ -870,16 +863,22 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int frame_tree_node_id) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
   // TODO(crbug.com/1424235): Require the caller to pass in a FrameTreeNode
   // directly, or figure out why it's OK for it to be null.
+  // TODO(falken): Can `navigation_request` check be a DCHECK now that the
+  // caller does not post a task to this function?
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   auto* storage_partition = context_wrapper->storage_partition();
-  if (frame_tree_node && storage_partition) {
-    CreateNetworkFactoryForNavigationPreload(
-        *frame_tree_node, *storage_partition,
-        network_factory.InitWithNewPipeAndPassReceiver());
+  if (frame_tree_node && storage_partition &&
+      frame_tree_node->navigation_request()) {
+    return CreateNetworkFactoryForNavigationPreload(*frame_tree_node,
+                                                    *storage_partition);
   }
+
+  // The navigation was cancelled. Just drop the request. Otherwise, we might
+  // go to network without consulting the embedder first, which would break
+  // guarantees.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       std::move(network_factory));
 }

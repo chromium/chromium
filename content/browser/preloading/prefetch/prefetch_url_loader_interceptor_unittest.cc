@@ -119,7 +119,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
   }
 
   MOCK_METHOD(
-      bool,
+      void,
       WillCreateURLLoaderFactory,
       (BrowserContext * browser_context,
        RenderFrameHost* frame,
@@ -128,8 +128,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        const url::Origin& request_initiator,
        std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
-       mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-           factory_receiver,
+       network::URLLoaderFactoryBuilder& factory_builder,
        mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
            header_client,
        bool* bypass_redirect_checks,
@@ -428,9 +427,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
@@ -506,9 +504,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
@@ -589,9 +586,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   // No cookies are copied for prefetches where |use_isolated_network_context|
   // is false (i.e. same origin prefetches).
@@ -814,9 +810,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
@@ -1136,10 +1131,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .Times(2)
-      .WillRepeatedly(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()))
+      .Times(2);
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
@@ -1251,10 +1245,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
           testing::Optional(navigation_request()->GetNavigationId()),
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
-          testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .Times(2)
-      .WillRepeatedly(testing::Return(false));
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()))
+      .Times(2);
 
   blink::mojom::Referrer referrer;
   referrer.url = GURL("https://example.com/referrer");

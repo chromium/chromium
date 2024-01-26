@@ -58,6 +58,10 @@ class HttpResponseHeaders;
 class SiteForCookies;
 }  // namespace net
 
+namespace network {
+class URLLoaderFactoryBuilder;
+}  // namespace network
+
 namespace extensions {
 
 // Support class for the WebRequest API. Lives on the UI thread. Most of the
@@ -201,7 +205,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::ContentBrowserClient::URLLoaderFactoryType type,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+      network::URLLoaderFactoryBuilder& factory_builder,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,

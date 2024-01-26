@@ -49,6 +49,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -522,10 +523,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK(bypass_redirect_checks);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      default_factory_receiver =
-          pending_default_factory.InitWithNewPipeAndPassReceiver();
+  network::URLLoaderFactoryBuilder factory_builder;
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   if (GetWorkerCoepReporter()) {
@@ -558,20 +556,18 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       GetStorageKey().origin(), /*navigation_id=*/std::nullopt,
       ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
-      &default_factory_receiver, &factory_params->header_client,
-      bypass_redirect_checks,
+      factory_builder, &factory_params->header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
       /*navigation_response_task_runner=*/nullptr);
 
   devtools_instrumentation::WillCreateURLLoaderFactory(
       ancestor_render_frame_host, /*is_navigation=*/false,
-      /*is_download=*/false, &default_factory_receiver,
+      /*is_download=*/false, factory_builder,
       &factory_params->factory_override);
 
-  worker_process_host_->CreateURLLoaderFactory(
-      std::move(default_factory_receiver), std::move(factory_params));
-
-  return pending_default_factory;
+  return std::move(factory_builder)
+      .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+          worker_process_host_.get(), std::move(factory_params));
 }
 
 // [spec]

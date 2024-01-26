@@ -31,7 +31,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -295,9 +295,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
   // that extensions can be informed of any prefetches.
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
-      pending_receiver.InitWithNewPipeAndPassRemote();
+  network::URLLoaderFactoryBuilder factory_builder;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* web_request_api =
@@ -308,18 +306,16 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
         profile, /*frame=*/nullptr, /*render_process_id=*/0,
         content::ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
         /*navigation_id=*/std::nullopt, ukm::kInvalidSourceIdObj,
-        &pending_receiver, /*header_client=*/nullptr,
+        factory_builder, /*header_client=*/nullptr,
         /*navigation_response_task_runner=*/nullptr,
         /*request_initiator=*/url::Origin());
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  profile->GetDefaultStoragePartition()
-      ->GetURLLoaderFactoryForBrowserProcess()
-      ->Clone(std::move(pending_receiver));
-  url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-          std::move(pending_remote)));
+  url_loader_factory_ =
+      std::move(factory_builder)
+          .Finish(profile->GetDefaultStoragePartition()
+                      ->GetURLLoaderFactoryForBrowserProcess());
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(

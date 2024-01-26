@@ -5,7 +5,6 @@
 #include "extensions/shell/browser/shell_content_browser_client.h"
 
 #include <stddef.h>
-
 #include <utility>
 
 #include "base/command_line.h"
@@ -329,7 +328,7 @@ void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
                          render_process_id, render_frame_id));
 }
 
-bool ShellContentBrowserClient::WillCreateURLLoaderFactory(
+void ShellContentBrowserClient::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,
     int render_process_id,
@@ -337,7 +336,7 @@ bool ShellContentBrowserClient::WillCreateURLLoaderFactory(
     const url::Origin& request_initiator,
     std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     bool* bypass_redirect_checks,
@@ -349,11 +348,10 @@ bool ShellContentBrowserClient::WillCreateURLLoaderFactory(
           browser_context);
   bool use_proxy = web_request_api->MaybeProxyURLLoaderFactory(
       browser_context, frame, render_process_id, type, std::move(navigation_id),
-      ukm_source_id, factory_receiver, header_client,
+      ukm_source_id, factory_builder, header_client,
       std::move(navigation_response_task_runner));
   if (bypass_redirect_checks)
     *bypass_redirect_checks = use_proxy;
-  return use_proxy;
 }
 
 bool ShellContentBrowserClient::HandleExternalProtocol(
