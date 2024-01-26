@@ -836,21 +836,6 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
   CSSSelector::PseudoType pseudo_type =
       CSSSelector::NameToPseudoType(name, has_arguments, document);
 
-  if (!RuntimeEnabledFeatures::WebKitScrollbarStylingEnabled()) {
-    // Don't convert ::-webkit-scrollbar into webkit custom element pseudos -
-    // they should just be treated as unknown pseudos and not have the ability
-    // to style shadow/custom elements.
-    if (pseudo_type == CSSSelector::kPseudoResizer ||
-        pseudo_type == CSSSelector::kPseudoScrollbar ||
-        pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
-        pseudo_type == CSSSelector::kPseudoScrollbarButton ||
-        pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
-      return CSSSelector::kPseudoUnknown;
-    }
-  }
-
   if (pseudo_type != CSSSelector::PseudoType::kPseudoUnknown) {
     return pseudo_type;
   }

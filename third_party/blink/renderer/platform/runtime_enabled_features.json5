@@ -2977,6 +2977,12 @@
       base_feature: "none",
       public: true,
     },
+    // Adds a web setting to disable CSS ScrollbarColor, ScrollbarWidth, and
+    // legacy ::-webkit-scrollbar* pseudo element styling.
+    {
+      name: "PreferDefaultScrollbarStyles",
+      base_feature: "none",
+    },
     // Prefer not using composited scrolling. Composited scrolling will still
     // be used if there are other reasons forcing compositing. For consistency,
     // any code calling Settings::GetPreferCompositingToLCDTextEnabled() should
@@ -4273,13 +4279,6 @@
     {
       name: "WebIDLBigIntUsesToBigInt",
       status: "stable",
-    },
-    // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
-    // but configurable via WebPreferences.
-    {
-      name: "WebKitScrollbarStyling",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "WebNFC",

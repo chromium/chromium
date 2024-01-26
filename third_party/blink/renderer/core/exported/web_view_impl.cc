@@ -1562,9 +1562,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetHideScrollbars(prefs.hide_scrollbars);
 
-  RuntimeEnabledFeatures::SetWebKitScrollbarStylingEnabled(
-      prefs.enable_webkit_scrollbar_styling);
-
   // Enable gpu-accelerated 2d canvas if requested on the command line.
   RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(
       prefs.accelerated_2d_canvas_enabled);
