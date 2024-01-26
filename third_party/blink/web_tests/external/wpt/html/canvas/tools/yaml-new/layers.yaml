@@ -503,15 +503,12 @@
     await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
   variants:
     convertToBlob:
-      test_type: "promise"
       canvasType: ['OffscreenCanvas', 'Worker']
       operation: |-
         canvas.convertToBlob()
     createImageBitmap:
-      test_type: "promise"
       operation: createImageBitmap(canvas)
     toBlob:
-      test_type: "promise"
       canvasType: ['HTMLCanvas']
       operation: |-
         new Promise(resolve => canvas.toBlob(resolve))
