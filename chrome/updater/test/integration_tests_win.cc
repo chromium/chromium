@@ -1258,7 +1258,7 @@ HRESULT DoUpdate(UpdaterScope scope,
             {L"[Next Version: ",
              GetAppVersionWebString(next_version_web_dispatch), L"]"});
         if (!done) {
-          EXPECT_HRESULT_SUCCEEDED(bundle->install());
+          EXPECT_HRESULT_SUCCEEDED(bundle->download());
         }
         break;
       }
@@ -1287,7 +1287,7 @@ HRESULT DoUpdate(UpdaterScope scope,
       case STATE_EXTRACTING:
       case STATE_APPLYING_DIFFERENTIAL_PATCH:
       case STATE_READY_TO_INSTALL: {
-        state_description = L"Download completed!";
+        state_description = L"Ready to install!";
         ULONG bytes_downloaded = 0;
         state->get_bytesDownloaded(&bytes_downloaded);
         ULONG total_bytes_to_download = 0;

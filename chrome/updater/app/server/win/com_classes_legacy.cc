@@ -484,6 +484,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return S_OK;
   }
 
+  // Legacy compatibility: sets a flag that causes `get_currentState` to return
+  // `STATE_READY_TO_INSTALL` when the update state is `kUpdateAvailable`.
+  void SetReadyToInstall() { set_ready_to_install_ = true; }
+
   // Overrides for IAppWeb.
   IFACEMETHODIMP get_appId(BSTR* app_id) override {
     CHECK(app_id);
@@ -592,7 +596,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_value = STATE_CHECKING_FOR_UPDATE;
           break;
         case UpdateService::UpdateState::State::kUpdateAvailable:
-          state_value = STATE_UPDATE_AVAILABLE;
+          state_value = set_ready_to_install_ ? STATE_READY_TO_INSTALL
+                                              : STATE_UPDATE_AVAILABLE;
           break;
         case UpdateService::UpdateState::State::kDownloading:
           state_value = STATE_DOWNLOADING;
@@ -728,6 +733,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   std::string app_id_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
+  bool set_ready_to_install_ = false;
 
   // Access to `state_update_` and `result_` must be serialized by using the
   // lock.
@@ -816,6 +822,13 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
 
   IFACEMETHODIMP download() override {
     VLOG(1) << "`install()` implements the download: " << __func__;
+
+    base::AutoLock lock{lock_};
+    if (!app_web_) {
+      return E_UNEXPECTED;
+    }
+    app_web_->SetReadyToInstall();
+
     return S_OK;
   }
 
