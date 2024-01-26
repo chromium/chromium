@@ -32,6 +32,7 @@ extern const char kComposeFirstRunSessionCloseReason[];
 extern const char kComposeFirstRunSessionDialogShownCount[];
 extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
+extern const char kInnerTextNodeOffsetFound[];
 extern const char kOpenComposeDialogResult[];
 
 // Enum for calculating the CTR of the Compose context menu item.
@@ -206,6 +207,15 @@ enum class OpenComposeDialogResult {
   kMaxValue = kFailedCreatingComposeDialogView
 };
 
+// Enum to log if the inner text succusfuly found an offset
+// Keep in sync with ComposeInnerTextNodeOffset in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeInnerTextNodeOffset {
+  kNoOffsetFound = 0,
+  kOffsetFound = 1,
+  kMaxValue = kOffsetFound
+};
+
 // Class that automatically reports any UKM metrics for the page-level Compose
 // UKM as defined in go/ukm-collection-chrome-compose.
 class PageUkmTracker {
@@ -278,6 +288,9 @@ void LogComposeDialogInnerTextShortenedBy(int shortened_by);
 // Log the size (in bytes) of the untrimmed inner text from the page when the
 // dialog is opened.
 void LogComposeDialogInnerTextSize(int size);
+
+// Log if the inner text node offset was found successfully.
+void LogComposeDialogInnerTextOffsetFound(bool inner_offset_found);
 
 // Log the time taken for the dialog to be fully shown and interactable.
 void LogComposeDialogOpenLatency(base::TimeDelta duration);

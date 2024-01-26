@@ -40,6 +40,8 @@ const char kComposeFirstRunSessionCloseReason[] =
     "Compose.Session.FRE.Disclaimer.CloseReason";
 const char kComposeFirstRunSessionDialogShownCount[] =
     "Compose.Session.FRE.Disclaimer.DialogShownCount";
+const char kInnerTextNodeOffsetFound[] =
+    "Compose.Dialog.InnerTextNodeOffsetFound";
 const char kOpenComposeDialogResult[] =
     "Compose.ContextMenu.OpenComposeDialogResult";
 
@@ -284,6 +286,13 @@ void LogComposeDialogInnerTextShortenedBy(int shortened_by) {
 
 void LogComposeDialogInnerTextSize(int size) {
   base::UmaHistogramCounts10M(kComposeDialogInnerTextSize, size);
+}
+
+void LogComposeDialogInnerTextOffsetFound(bool inner_offset_found) {
+  UMA_HISTOGRAM_ENUMERATION(kInnerTextNodeOffsetFound,
+                            inner_offset_found
+                                ? ComposeInnerTextNodeOffset::kOffsetFound
+                                : ComposeInnerTextNodeOffset::kNoOffsetFound);
 }
 
 void LogComposeDialogOpenLatency(base::TimeDelta duration) {

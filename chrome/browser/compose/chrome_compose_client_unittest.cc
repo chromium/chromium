@@ -421,7 +421,10 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   histograms().ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
   // Check that a no request duration Error metric was emitted.
   histograms().ExpectTotalCount(compose::kComposeRequestDurationError, 0);
-
+  // Check that the request metadata had a valid node offset.
+  histograms().ExpectUniqueSample(
+      compose::kInnerTextNodeOffsetFound,
+      compose::ComposeInnerTextNodeOffset::kOffsetFound, 1);
   // Simulate insert call from Compose dialog.
   page_handler()->AcceptComposeResult(base::NullCallback());
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
@@ -2570,6 +2573,38 @@ TEST_F(ChromeComposeClientTest, TestInnerText) {
   EXPECT_TRUE(result.SerializeToString(&result_string));
   EXPECT_EQ("inner_text", result.page_metadata().page_inner_text());
   EXPECT_EQ(123u, result.page_metadata().page_inner_text_offset());
+}
+
+TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
+  EXPECT_CALL(model_inner_text(), GetInnerText(_, _, _))
+      .WillOnce(testing::WithArg<2>(
+          testing::Invoke([&](content_extraction::InnerTextCallback callback) {
+            std::unique_ptr<content_extraction::InnerTextResult>
+                expected_inner_text =
+                    std::make_unique<content_extraction::InnerTextResult>(
+                        "inner_text", std::nullopt);
+            std::move(callback).Run(std::move(expected_inner_text));
+          })));
+
+  base::test::TestFuture<optimization_guide::proto::ComposeRequest> test_future;
+  EXPECT_CALL(session(), AddContext(_))
+      .WillOnce(testing::WithArg<0>(testing::Invoke(
+          [&](const google::protobuf::MessageLite& request_metadata) {
+            optimization_guide::proto::ComposeRequest request;
+            request.CheckTypeAndMergeFrom(request_metadata);
+            test_future.SetValue(request);
+          })));
+
+  ShowDialogAndBindMojo();
+  page_handler()->Compose("a user typed this", false);
+  optimization_guide::proto::ComposeRequest result = test_future.Take();
+
+  std::string result_string;
+  EXPECT_TRUE(result.SerializeToString(&result_string));
+  EXPECT_EQ("inner_text", result.page_metadata().page_inner_text());
+  histograms().ExpectUniqueSample(
+      compose::kInnerTextNodeOffsetFound,
+      compose::ComposeInnerTextNodeOffset::kNoOffsetFound, 1);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
