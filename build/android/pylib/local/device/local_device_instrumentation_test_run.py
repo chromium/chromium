@@ -1796,7 +1796,7 @@ def _SetLinkOnResults(results, full_test_name, link_name, link):
     full_test_name: A string containing the full name of the test, e.g.
         org.chromium.chrome.SomeTestClass#someTestMethod.
     link_name: A string containing the name of the link being set.
-    link: A string containing the lkink being set.
+    link: A string containing the link being set.
   """
   found_matching_test = _MatchingTestInResults(results, full_test_name)
   if not found_matching_test and _ShouldReportNoMatchingResult(full_test_name):
