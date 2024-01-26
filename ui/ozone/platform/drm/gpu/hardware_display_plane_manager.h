@@ -154,17 +154,8 @@ class HardwareDisplayPlaneManager {
   void SetGammaAdjustment(uint32_t crtc_id,
                           const display::GammaAdjustment& adjustment);
 
-  // Sets the color transform matrix (a 3x3 matrix represented in vector form)
-  // on the CRTC with ID |crtc_id|.
-  bool SetColorMatrix(uint32_t crtc_id, const std::vector<float>& color_matrix);
-
   // Sets the background color on the CRTC object with ID |crtc_id|.
   void SetBackgroundColor(uint32_t crtc_id, const uint64_t background_color);
-
-  // Sets the degamma/gamma luts on the CRTC object with ID |crtc_id|.
-  virtual bool SetGammaCorrection(uint32_t crtc_id,
-                                  const display::GammaCurve& degamma,
-                                  const display::GammaCurve& gamma);
 
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with
@@ -293,7 +284,7 @@ class HardwareDisplayPlaneManager {
   // Populates scanout formats supported by all planes.
   void PopulateSupportedFormats();
 
-  void UpdateAndCommitCrtcState(CrtcState* state);
+  void UpdateAndCommitCrtcState(uint32_t crtc_id, CrtcState* state);
   virtual bool CommitPendingCrtcState(CrtcState* state) = 0;
 
   // Object containing the connection to the graphics device and wraps the API

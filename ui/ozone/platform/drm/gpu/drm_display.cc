@@ -316,9 +316,7 @@ void DrmDisplay::SetGammaAdjustment(
 }
 
 void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
-  if (!drm_->plane_manager()->SetColorMatrix(crtc_, color_matrix)) {
-    LOG(ERROR) << "Failed to set color matrix for display: crtc_id = " << crtc_;
-  }
+  // TODO(https://crbug.com/1505062): Remove callers of this function.
 }
 
 void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
@@ -327,9 +325,7 @@ void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
 
 void DrmDisplay::SetGammaCorrection(const display::GammaCurve& degamma,
                                     const display::GammaCurve& gamma) {
-  if (!drm_->plane_manager()->SetGammaCorrection(crtc_, degamma, gamma)) {
-    LOG(ERROR) << "Failed to set gamma tables for display: crtc_id = " << crtc_;
-  }
+  // TODO(https://crbug.com/1505062): Remove callers of this function.
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {
