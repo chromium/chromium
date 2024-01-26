@@ -7,7 +7,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests sorting in Comparison view of detailed heap snapshots.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var instanceCount = 24;
   function createHeapSnapshotA() {

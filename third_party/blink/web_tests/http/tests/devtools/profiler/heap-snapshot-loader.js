@@ -13,7 +13,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var source = HeapProfilerTestRunner.createHeapSnapshotMockRaw();
   var sourceStringified = JSON.stringify(source);

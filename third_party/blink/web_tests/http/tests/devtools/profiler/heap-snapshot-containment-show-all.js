@@ -8,7 +8,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests Containment view of detailed heap snapshots. The "Show All" button must show all nodes. Test object distances calculation.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var instanceCount = 25;
   function createHeapSnapshot() {

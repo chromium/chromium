@@ -10,7 +10,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 (async function() {
   TestRunner.addResult(
       `Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
   await TestRunner.loadHTML(`
       <pre></pre>
     `);

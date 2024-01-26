@@ -19,7 +19,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
   TestRunner.addResult('Testing accessibility in the DOM breakpoints pane.');
 
   // Expand the DOM Breakpoints container
-  const domBreakpointContainer = Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.expandableContainers.get('sources.domBreakpoints');
+  const domBreakpointContainer = Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.expandableContainers.get('sources.dom-breakpoints');
   await domBreakpointContainer.expand();
 
   TestRunner.addResult('Setting DOM breakpoints.');

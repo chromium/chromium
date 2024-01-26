@@ -20,7 +20,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     TestRunner.addResult(
         'Tests accessibility in DOM eventlistener pane using axe-core linter.');
 
-    const view = 'elements.eventListeners';
+    const view = 'elements.event-listeners';
     const widget = await UI.ViewManager.ViewManager.instance().view(view).widget();
     await UI.ViewManager.ViewManager.instance().showView(view);
 

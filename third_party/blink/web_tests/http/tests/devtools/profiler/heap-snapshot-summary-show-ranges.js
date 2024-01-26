@@ -7,7 +7,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests showing several node ranges in the Summary view of detailed heap snapshot.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var instanceCount = 50;
   function createHeapSnapshot() {

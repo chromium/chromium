@@ -10,7 +10,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
 (async function () {
   await TestRunner.showPanel('sources');
 
-  await UI.ViewManager.ViewManager.instance().showView('sources.eventListenerBreakpoints');
+  await UI.ViewManager.ViewManager.instance().showView('sources.event-listener-breakpoints');
   const eventListenerWidget = BrowserDebugger.EventListenerBreakpointsSidebarPane.EventListenerBreakpointsSidebarPane.instance();
   TestRunner.addResult('Setting event listener breakpoints.');
   const {checkbox, element} = eventListenerWidget.categories.get('Animation');

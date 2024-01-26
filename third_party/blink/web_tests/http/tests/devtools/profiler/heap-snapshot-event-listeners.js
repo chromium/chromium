@@ -11,7 +11,7 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
 (async function() {
   TestRunner.addResult(
       `Test that event listeners not user reachable from the root are still present in the class list.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
   await TestRunner.evaluateInPagePromise(`
       class EventListenerWrapperTest {
         constructor() {

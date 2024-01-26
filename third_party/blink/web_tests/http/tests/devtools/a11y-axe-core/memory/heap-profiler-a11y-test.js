@@ -9,7 +9,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in heap profiler using the axe-core linter.');
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
   await TestRunner.evaluateInPagePromise(`
       class MyTestClass {
         constructor() {
@@ -38,8 +38,8 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       pageFunction();`);
   HeapProfilerTestRunner.stopSamplingHeapProfiler();
 
-  await UI.ViewManager.ViewManager.instance().showView('heap_profiler');
-  const widget = await UI.ViewManager.ViewManager.instance().view('heap_profiler').widget();
+  await UI.ViewManager.ViewManager.instance().showView('heap-profiler');
+  const widget = await UI.ViewManager.ViewManager.instance().view('heap-profiler').widget();
   await AxeCoreTestRunner.runValidation(widget.element);
   TestRunner.completeTest();
 })();
