@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -25,6 +26,8 @@ extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];
 extern const char kComposeSessionEventCounts[];
+extern const char kComposeSessionDuration[];
+extern const char kComposeSessionOverOneDay[];
 extern const char kComposeSessionUndoCount[];
 extern const char kComposeSessionUpdateInputCount[];
 extern const char kComposeShowStatus[];
@@ -298,6 +301,10 @@ void LogComposeDialogOpenLatency(base::TimeDelta duration);
 
 // Log the character length of the selection when the dialog is opened.
 void LogComposeDialogSelectionLength(int length);
+
+// Log the session duration with |session_suffix| applied to histogram name.
+void LogComposeSessionDuration(base::TimeDelta session_duration,
+                               std::string session_suffix = "");
 
 }  // namespace compose
 
