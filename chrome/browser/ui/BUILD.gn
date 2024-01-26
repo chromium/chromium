@@ -5080,6 +5080,8 @@ static_library("ui") {
       "views/bookmarks/bookmark_bar_view_observer.h",
       "views/bookmarks/bookmark_bubble_view.cc",
       "views/bookmarks/bookmark_bubble_view.h",
+      "views/bookmarks/bookmark_button.cc",
+      "views/bookmarks/bookmark_button.h",
       "views/bookmarks/bookmark_button_util.cc",
       "views/bookmarks/bookmark_button_util.h",
       "views/bookmarks/bookmark_context_menu.cc",
