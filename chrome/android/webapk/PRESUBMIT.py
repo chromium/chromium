@@ -34,6 +34,7 @@ TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS = [
     'libs/common/res_splash/',
     'shell_apk/AndroidManifest.xml',
     'shell_apk/res/',
+    'shell_apk/res_template',
     'shell_apk/src/',
 ]
 

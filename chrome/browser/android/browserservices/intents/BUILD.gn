@@ -31,6 +31,7 @@ android_library("java") {
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 

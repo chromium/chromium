@@ -83,6 +83,7 @@ public class WebApkInfoTest {
         private final Map<String, Integer> mStringIdMap;
         private final Map<Integer, String> mIdValueMap;
         private String mShortcutsXmlContents;
+        private String mPrimaryIconXmlContents;
 
         private class MockXmlResourceParserImpl extends XmlResourceParserImpl {
             String mPackageName;
@@ -149,6 +150,12 @@ public class WebApkInfoTest {
 
         @Override
         public XmlResourceParser getXml(int id) {
+            String xmlContent;
+            if (id == PRIMARY_ICON_ID || id == PRIMARY_MASKABLE_ICON_ID) {
+                xmlContent = mPrimaryIconXmlContents;
+            } else {
+                xmlContent = mShortcutsXmlContents;
+            }
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
@@ -156,8 +163,7 @@ public class WebApkInfoTest {
                 factory.setIgnoringElementContentWhitespace(true);
                 DocumentBuilder documentBuilder = factory.newDocumentBuilder();
                 Document document =
-                        documentBuilder.parse(
-                                new ByteArrayInputStream(mShortcutsXmlContents.getBytes()));
+                        documentBuilder.parse(new ByteArrayInputStream(xmlContent.getBytes()));
 
                 return new MockXmlResourceParserImpl(
                         document, "file", WEBAPK_PACKAGE_NAME, WEBAPK_PACKAGE_NAME, null);
@@ -169,6 +175,10 @@ public class WebApkInfoTest {
 
         void setShortcutsXmlContent(String content) {
             mShortcutsXmlContents = content;
+        }
+
+        void setPrimaryIconXmlContents(String content) {
+            mPrimaryIconXmlContents = content;
         }
 
         public void addStringForTesting(
@@ -895,5 +905,38 @@ public class WebApkInfoTest {
 
     private WebappInfo createWebApkInfo(Intent intent) {
         return WebappInfo.create(WebApkIntentDataProviderFactory.create(intent));
+    }
+
+    /** Test get icon url and hash from xml for SHELL_APK_VERSION 169+. */
+    @Test
+    public void testIconWithUrlAndHash() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
+        bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+        // Set min shell version that contains the url and hash field.
+        bundle.putInt(
+                WebApkMetaDataKeys.SHELL_APK_VERSION,
+                WebappIcon.ICON_WITH_URL_AND_HASH_SHELL_VERSION);
+        WebApkTestHelper.registerWebApkWithMetaData(
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
+
+        FakeResources res = new FakeResources();
+        String iconXml =
+                String.format(
+                        "<bitmap xmlns:android='http://schemas.android.com/apk/res/android'"
+                                + "  android:src='@mipmap/app_icon_xxhdpi'"
+                                + "  iconUrl='%s'"
+                                + "  iconHash='%s'"
+                                + "/>",
+                        ICON_URL, ICON_MURMUR2_HASH);
+
+        res.setPrimaryIconXmlContents(iconXml);
+        WebApkTestHelper.setResource(WEBAPK_PACKAGE_NAME, res);
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        WebappInfo info = createWebApkInfo(intent);
+        Assert.assertEquals(PRIMARY_ICON_ID, info.icon().resourceIdForTesting());
+        Assert.assertEquals(ICON_URL, info.icon().iconUrl());
+        Assert.assertEquals(ICON_MURMUR2_HASH, info.icon().iconHash());
+        Assert.assertEquals(false, info.isIconAdaptive());
     }
 }
