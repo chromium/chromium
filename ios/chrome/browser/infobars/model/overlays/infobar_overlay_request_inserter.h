@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_factory.h"
@@ -37,7 +38,7 @@ struct InsertParams {
   explicit InsertParams(InfoBarIOS* infobar);
   InsertParams() = delete;
 
-  InfoBarIOS* infobar;
+  raw_ptr<InfoBarIOS> infobar;
   InfobarOverlayType overlay_type = InfobarOverlayType::kBanner;
   size_t insertion_index = 0;
   InfobarOverlayInsertionSource source =
@@ -85,7 +86,7 @@ class InfobarOverlayRequestInserter
                                 InfobarOverlayRequestFactory factory);
 
   // The WebState whose queues are being inserted into.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // The infobar modal completion notifier.
   std::unique_ptr<InfobarModalCompletionNotifier> modal_completion_notifier_;
   // The factory used to create OverlayRequests.

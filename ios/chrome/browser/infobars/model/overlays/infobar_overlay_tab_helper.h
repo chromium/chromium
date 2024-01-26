@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -43,15 +44,15 @@ class InfobarOverlayTabHelper
 
    private:
     // The owning tab helper.
-    InfobarOverlayTabHelper* tab_helper_ = nullptr;
-    web::WebState* web_state_ = nullptr;
+    raw_ptr<InfobarOverlayTabHelper> tab_helper_ = nullptr;
+    raw_ptr<web::WebState> web_state_ = nullptr;
     base::ScopedObservation<infobars::InfoBarManager,
                             infobars::InfoBarManager::Observer>
         scoped_observation_{this};
   };
 
   // The inserter used to add infobar OverlayRequests to the WebState's queue.
-  InfobarOverlayRequestInserter* request_inserter_;
+  raw_ptr<InfobarOverlayRequestInserter> request_inserter_;
   // The scheduler used to create OverlayRequests for InfoBars added to the
   // corresponding WebState's InfoBarManagerImpl.
   OverlayRequestScheduler request_scheduler_;

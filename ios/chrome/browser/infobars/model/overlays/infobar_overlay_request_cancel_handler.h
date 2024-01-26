@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_cancel_handler.h"
@@ -47,13 +48,13 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
    private:
-    InfobarOverlayRequestCancelHandler* cancel_handler_ = nullptr;
+    raw_ptr<InfobarOverlayRequestCancelHandler> cancel_handler_ = nullptr;
     base::ScopedObservation<infobars::InfoBarManager,
                             infobars::InfoBarManager::Observer>
         scoped_observation_{this};
   };
 
-  InfoBarIOS* infobar_ = nullptr;
+  raw_ptr<InfoBarIOS> infobar_ = nullptr;
   RemovalObserver removal_observer_;
 };
 

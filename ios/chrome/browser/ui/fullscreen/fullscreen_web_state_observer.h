@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_WEB_STATE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_WEB_STATE_OBSERVER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
 
@@ -34,13 +35,13 @@ class FullscreenWebStateObserver : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // The WebState being observed.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // The FullscreenController passed on construction.
-  FullscreenController* controller_;
+  raw_ptr<FullscreenController> controller_;
   // The model passed on construction.
-  FullscreenModel* model_;
+  raw_ptr<FullscreenModel> model_;
   // The mediator passed on construction.
-  FullscreenMediator* mediator_ = nullptr;
+  raw_ptr<FullscreenMediator> mediator_ = nullptr;
   // Observer for `web_state_`'s scroll view proxy.
   __strong FullscreenWebViewProxyObserver* web_view_proxy_observer_;
   // The URL received in the NavigationContext of the last finished navigation.

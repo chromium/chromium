@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_modal_completion_notifier.h"
 
@@ -43,9 +44,9 @@ class InfobarModalOverlayRequestCancelHandler
         InfobarModalCompletionNotifier* notifier) override;
 
     // The owning cancel handler.
-    InfobarModalOverlayRequestCancelHandler* cancel_handler_ = nullptr;
+    raw_ptr<InfobarModalOverlayRequestCancelHandler> cancel_handler_ = nullptr;
     // The infobar whose modal dismissals should trigger cancellation.
-    InfoBarIOS* infobar_ = nullptr;
+    raw_ptr<InfoBarIOS> infobar_ = nullptr;
     base::ScopedObservation<InfobarModalCompletionNotifier,
                             InfobarModalCompletionNotifier::Observer>
         scoped_observation_{this};

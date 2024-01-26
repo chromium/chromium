@@ -8,6 +8,7 @@
 #import <map>
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_browser_agent_base.h"
@@ -72,7 +73,7 @@ class InfobarOverlayBrowserAgent
                         OverlayRequest* request) override;
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
-    InfobarOverlayBrowserAgent* browser_agent_ = nullptr;
+    raw_ptr<InfobarOverlayBrowserAgent> browser_agent_ = nullptr;
     base::ScopedMultiSourceObservation<OverlayPresenter,
                                        OverlayPresenterObserver>
         scoped_observations_{this};
