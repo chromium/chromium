@@ -45,4 +45,7 @@ BASE_FEATURE(kEnableComposeSavedStateNotification,
              "EnableComposeSavedStateNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kComposeUiParams,
+             "ComposeUiParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace compose::features

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/compose/core/browser/compose_features.h"
 
 namespace compose {
@@ -60,6 +61,11 @@ Config::Config() {
   saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,
       "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
+
+  positioning_strategy = static_cast<DialogFallbackPositioningStrategy>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kComposeUiParams, "positioning_strategy",
+          base::to_underlying(positioning_strategy)));
 }
 
 Config::Config(const Config& other) = default;
