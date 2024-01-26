@@ -579,9 +579,9 @@ This builder measures build performance for iOS developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["ios_simulator", "developer", "reclient", "no_siso"]),
-        "siso_reproxy": gn_args.config(configs = ["ios_simulator", "developer", "reclient"]),
-        "siso_native": gn_args.config(configs = ["ios_simulator", "developer"]),
+        "ninja": gn_args.config(configs = ["ios_developer", "reclient", "no_siso"]),
+        "siso_reproxy": gn_args.config(configs = ["ios_developer", "reclient"]),
+        "siso_native": gn_args.config(configs = ["ios_developer"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,

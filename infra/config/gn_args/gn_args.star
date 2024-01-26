@@ -726,6 +726,11 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "ios_developer",
+    configs = ["ios_simulator", "debug"],
+)
+
+gn_args.config(
     name = "ios_device",
     args = {"target_environment": "device"},
     configs = ["ios"],
