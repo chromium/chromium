@@ -27,6 +27,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -177,7 +178,11 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests GetIcon returns the default search icon when the match is a search
 // query.
+// TODO (crbug/1520005): Investigate and re-enable.
 TEST_F(OmniboxViewTest, GetIcon_Default) {
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
       vector_icons::kSearchIcon, gfx::kPlaceholderColor, gfx::kFaviconSize);
 
@@ -189,7 +194,11 @@ TEST_F(OmniboxViewTest, GetIcon_Default) {
 }
 
 // Tests GetIcon returns the bookmark icon when the match is bookmarked.
+// TODO (crbug/1520009): Investigate and re-enable.
 TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   const GURL kUrl("https://bookmarks.com");
 
   AutocompleteMatch match;

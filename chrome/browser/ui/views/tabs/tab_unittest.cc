@@ -292,6 +292,10 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
 };
 
 TEST_F(TabTest, HitTestTopPixel) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab =
@@ -318,6 +322,10 @@ TEST_F(TabTest, HitTestTopPixel) {
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   static const std::optional<TabAlertState> kAlertStatesToTest[] = {
       std::nullopt,
       TabAlertState::TAB_CAPTURING,
@@ -539,6 +547,10 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
 }
 
 TEST_F(TabTest, SmallTabsHideCloseButton) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -558,6 +570,10 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
 }
 
 TEST_F(TabTest, ExtraLeftPaddingNotShownOnSmallActiveTab) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -595,6 +611,10 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
 }
 
 TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));

@@ -121,7 +121,11 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest,
             ? std::vector<base::test::FeatureRef>{features::kSidePanelPinning,
                                                   features::kChromeRefresh2023}
             : std::vector<base::test::FeatureRef>{},
-        /*disabled_features=*/{});
+        /*disabled_features=*/GetParam()
+            ? std::vector<base::test::FeatureRef>{}
+            : std::vector<base::test::FeatureRef>{
+                  features::kChromeRefresh2023,
+                  features::kChromeRefreshSecondary2023});
   }
   RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
   RecentTabsSubMenuModelTest& operator=(const RecentTabsSubMenuModelTest&) =

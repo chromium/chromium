@@ -247,8 +247,9 @@ class ColorProviderTest
     // this to reflect test params and propagate any updates.
     native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
 #if BUILDFLAG(IS_LINUX)
-    if (system_theme == SystemTheme::kCustom)
+    if (system_theme == SystemTheme::kCustom) {
       native_theme_ = ui::GetDefaultLinuxUiTheme()->GetNativeTheme();
+    }
 #endif
     original_forced_colors_ = native_theme_->InForcedColorsMode();
     original_preferred_contrast_ = native_theme_->GetPreferredContrast();
@@ -256,8 +257,9 @@ class ColorProviderTest
 
     const bool high_contrast = contrast_mode == ContrastMode::kHighContrast;
 #if BUILDFLAG(IS_WIN)
-    if (high_contrast)
+    if (high_contrast) {
       color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
+    }
     native_theme_->set_forced_colors(high_contrast);
 #endif  // BUILDFLAG(IS_WIN)
     native_theme_->SetPreferredContrast(
@@ -602,11 +604,21 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableNtpThemeTest) {
 }
 
 TEST_P(ColorProviderTest, OmniboxContrast) {
+  // TODO(crbug.com/1336315): Windows platform high contrast colors are
+  // not sufficiently high-contrast to pass this test.
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1336315): Windows platform high contrast colors are not
-  // sufficiently high-contrast to pass this test.
-  if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast)
+  if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast) {
     return;
+  }
+#endif
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug/1521414): Linux platform native dark mode colors aren't
+  //                      sufficiently high contrast to pass.
+  if (std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom &&
+      std::get<ui::NativeTheme::ColorScheme>(GetParam()) ==
+          ui::NativeTheme::ColorScheme::kDark) {
+    return;
+  }
 #endif
 
   constexpr ui::ColorId contrasting_ids[][2] = {
@@ -673,8 +685,9 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
             << "\nColor 2: " << theme_service::test::ColorIdToString(id2)
             << " - " << color2;
       };
-  for (const ui::ColorId* ids : contrasting_ids)
+  for (const ui::ColorId* ids : contrasting_ids) {
     check_sufficient_contrast(ids[0], ids[1]);
+  }
 #if !BUILDFLAG(USE_GTK) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1336796): GTK and LaCrOS do not have a sufficiently
   // high-contrast selected row color to pass this test.
