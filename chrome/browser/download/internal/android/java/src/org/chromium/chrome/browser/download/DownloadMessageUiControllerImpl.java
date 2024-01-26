@@ -24,6 +24,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -36,8 +37,6 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -728,8 +727,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                         org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
                                 getContext(), itemToShow.totalSizeBytes);
                 String displayUrl =
-                        UrlFormatter.formatUrlForSecurityDisplay(
-                                itemToShow.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                        DownloadUtils.formatUrlForDisplayInNotification(
+                                itemToShow.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_NOTIFICATION);
                 info.description =
                         getContext()
                                 .getString(

@@ -220,6 +220,7 @@ android_library("javatests") {
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/download/android:java",
     "//chrome/browser/profiles/android:java",

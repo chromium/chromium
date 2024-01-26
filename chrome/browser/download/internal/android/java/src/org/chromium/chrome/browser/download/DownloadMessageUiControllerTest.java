@@ -31,6 +31,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.UUID;
@@ -55,6 +56,10 @@ public class DownloadMessageUiControllerTest {
 
     private static final String DESCRIPTION_DOWNLOADING = "See notification for download status";
     private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) www.example.com";
+
+    private static final GURL LONG_URL_NEEDS_ELIDING =
+            new GURL("https://veryveryveryverylongsubdomain.example.com/");
+    private static final String DESCRIPTION_DOWNLOAD_COMPLETE_ELIDED = "(0.01 KB) example.com";
 
     private static final String TEST_FILE_NAME = "TestFile";
     private static final long TEST_TO_NEXT_STEP_DELAY = 100;
@@ -421,5 +426,18 @@ public class DownloadMessageUiControllerTest {
         item.state = OfflineItemState.IN_PROGRESS;
         mTestController.onItemUpdated(item);
         mTestController.verifyMessageGone();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testLongUrlsAreElided() {
+        OfflineItem item = createOfflineItem(OfflineItemState.PENDING);
+        markItemComplete(item);
+        item.url = LONG_URL_NEEDS_ELIDING;
+        mTestController.onItemUpdated(item);
+
+        mTestController.verify(
+                MESSAGE_SINGLE_DOWNLOAD_COMPLETE, DESCRIPTION_DOWNLOAD_COMPLETE_ELIDED);
     }
 }
