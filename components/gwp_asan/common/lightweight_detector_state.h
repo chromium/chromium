@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "components/gwp_asan/common/allocation_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan::internal {
 
@@ -76,9 +77,9 @@ class LightweightDetectorState {
            kMetadataIdOffset;
   }
 
-  static absl::optional<MetadataId> ExtractMetadataId(PseudoAddress address) {
+  static std::optional<MetadataId> ExtractMetadataId(PseudoAddress address) {
     if ((address & kMetadataIdMarkerMask) != kMetadataIdMarker) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return (address & ~kMetadataIdMarkerMask) >> kMetadataIdShift;

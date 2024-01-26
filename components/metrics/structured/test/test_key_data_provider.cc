@@ -84,7 +84,7 @@ std::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
     return device_key_data_->GetId(project_name);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 KeyData* TestKeyDataProvider::GetKeyData(const std::string& project_name) {

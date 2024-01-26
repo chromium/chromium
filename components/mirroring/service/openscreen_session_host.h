@@ -170,8 +170,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // library and applying them to the given audio and video configs.
   void SetConstraints(
       const Recommendations& recommendations,
-      absl::optional<media::cast::FrameSenderConfig>& audio_config,
-      absl::optional<media::cast::FrameSenderConfig>& video_config);
+      std::optional<media::cast::FrameSenderConfig>& audio_config,
+      std::optional<media::cast::FrameSenderConfig>& video_config);
 
   // Sends a request to create an audio input stream through the Audio Service,
   // configured with the specified audio `params`. The `shared_memory_count`
@@ -273,7 +273,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Stored as part of generating an OFFER.
   // NOTE: currently we only support Opus audio, but may provide a variety of
   // video codec configurations.
-  absl::optional<media::cast::FrameSenderConfig> last_offered_audio_config_;
+  std::optional<media::cast::FrameSenderConfig> last_offered_audio_config_;
   std::vector<media::cast::FrameSenderConfig> last_offered_video_configs_;
 
   // Created after OFFER/ANSWER exchange succeeds.
@@ -334,7 +334,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   base::OneShotTimer remote_playback_start_timer_;
   // Records the time when the streaming session is started and `media_remoter_`
   // is initialized.
-  absl::optional<base::Time> remote_playback_start_time_;
+  std::optional<base::Time> remote_playback_start_time_;
 
   // An optional stats client for fetching quality statistics from an Openscreen
   // casting session.

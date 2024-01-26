@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Bucket;
 using signin::ConsentLevel;
@@ -45,10 +45,10 @@ using testing::ElementsAreArray;
 
 namespace {
 struct ExpectedAccessPoints {
-  absl::optional<AccessPoint> sign_in = absl::nullopt;
-  absl::optional<AccessPoint> sync_opt_in = absl::nullopt;
-  absl::optional<ProfileSignout> sign_out = absl::nullopt;
-  absl::optional<ProfileSignout> turn_off_sync = absl::nullopt;
+  std::optional<AccessPoint> sign_in = std::nullopt;
+  std::optional<AccessPoint> sync_opt_in = std::nullopt;
+  std::optional<ProfileSignout> sign_out = std::nullopt;
+  std::optional<ProfileSignout> turn_off_sync = std::nullopt;
 };
 }  // namespace
 

@@ -5,8 +5,10 @@
 #include "components/omnibox/browser/search_provider.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -53,7 +55,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -428,7 +429,7 @@ void SearchProvider::OnURLLoadComplete(
   // clear if the suggest server will send back sensible results to the
   // request we're constructing here for on-focus inputs.
   if (!input_.IsZeroSuggest() && request_succeeded) {
-    absl::optional<base::Value::List> data =
+    std::optional<base::Value::List> data =
         SearchSuggestionParser::DeserializeJsonData(
             SearchSuggestionParser::ExtractJsonData(source,
                                                     std::move(response_body)));

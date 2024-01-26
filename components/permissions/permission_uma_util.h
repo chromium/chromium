@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_UMA_UTIL_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_UMA_UTIL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
@@ -536,10 +536,10 @@ class PermissionUmaUtil {
       PermissionAction permission_action,
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
-      absl::optional<PermissionPromptDispositionReason> ui_reason,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
-      absl::optional<bool> prediction_decision_held_back,
-      absl::optional<permissions::PermissionIgnoredReason> ignored_reason,
+      std::optional<PermissionPromptDispositionReason> ui_reason,
+      std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<bool> prediction_decision_held_back,
+      std::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
       bool did_click_manage,
       bool did_click_learn_more);
@@ -549,7 +549,7 @@ class PermissionUmaUtil {
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(
-      const absl::optional<base::Version>& version);
+      const std::optional<base::Version>& version);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(
@@ -651,7 +651,7 @@ class PermissionUmaUtil {
       content::BrowserContext* browser_context,
       base::Time current_time);
 
-  static absl::optional<uint32_t> GetDaysSinceUnusedSitePermissionRevocation(
+  static std::optional<uint32_t> GetDaysSinceUnusedSitePermissionRevocation(
       const GURL& origin,
       ContentSettingsType content_settings_type,
       base::Time current_time,
@@ -703,13 +703,13 @@ class PermissionUmaUtil {
       PermissionRequestGestureType gesture_type,
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
-      absl::optional<PermissionPromptDispositionReason> ui_reason,
+      std::optional<PermissionPromptDispositionReason> ui_reason,
       const GURL& requesting_origin,
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
-      absl::optional<bool> prediction_decision_held_back);
+      std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

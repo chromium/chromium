@@ -394,9 +394,9 @@ bool ShouldUseSetPresentDuration() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-absl::optional<int> ShouldDrawPredictedInkPoints() {
+std::optional<int> ShouldDrawPredictedInkPoints() {
   if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string predicted_points = GetFieldTrialParamValueByFeature(
       kDrawPredictedInkPoint, "predicted_points");
@@ -410,7 +410,7 @@ absl::optional<int> ShouldDrawPredictedInkPoints() {
     return viz::PredictionConfig::k2Points3Ms;
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string InkPredictor() {
@@ -442,27 +442,27 @@ bool UseSurfaceLayerForVideo() {
 
 // Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
 // its frame deadline. Returns the percentile of historic draw times to base the
-// deadline on. Or absl::nullopt if the feature is disabled.
-absl::optional<double> IsDynamicSchedulerEnabledForDraw() {
+// deadline on. Or std::nullopt if the feature is disabled.
+std::optional<double> IsDynamicSchedulerEnabledForDraw() {
   if (!base::FeatureList::IsEnabled(kDynamicSchedulerForDraw))
-    return absl::nullopt;
+    return std::nullopt;
   double result = base::GetFieldTrialParamByFeatureAsDouble(
       kDynamicSchedulerForDraw, kDynamicSchedulerPercentile, -1.0);
   if (result < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 
 // Used by Viz to determine if the frame deadlines provided to CC should be
 // dynamically adjusted. Returns the percentile of historic draw times to base
-// the deadline on. Or absl::nullopt if the feature is disabled.
-absl::optional<double> IsDynamicSchedulerEnabledForClients() {
+// the deadline on. Or std::nullopt if the feature is disabled.
+std::optional<double> IsDynamicSchedulerEnabledForClients() {
   if (!base::FeatureList::IsEnabled(kDynamicSchedulerForClients))
-    return absl::nullopt;
+    return std::nullopt;
   double result = base::GetFieldTrialParamByFeatureAsDouble(
       kDynamicSchedulerForClients, kDynamicSchedulerPercentile, -1.0);
   if (result < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 

@@ -6,11 +6,11 @@
 #define COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/live_caption/views/caption_bubble.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
 
 class PrefService;
@@ -63,7 +63,7 @@ class CaptionBubbleController {
 
   // Called when the caption style changes.
   virtual void UpdateCaptionStyle(
-      absl::optional<ui::CaptionStyle> caption_style) = 0;
+      std::optional<ui::CaptionStyle> caption_style) = 0;
 
   virtual bool IsWidgetVisibleForTesting() = 0;
   virtual bool IsGenericErrorMessageVisibleForTesting() = 0;

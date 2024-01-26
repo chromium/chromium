@@ -97,7 +97,7 @@ void MediaSessionItemProducer::Session::MediaSessionActionsChanged(
 }
 
 void MediaSessionItemProducer::Session::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   OnSessionInteractedWith();
 }
 
@@ -205,7 +205,7 @@ MediaSessionItemProducer::MediaSessionItemProducer(
     mojo::Remote<media_session::mojom::MediaControllerManager>
         controller_manager_remote,
     MediaItemManager* item_manager,
-    absl::optional<base::UnguessableToken> source_id)
+    std::optional<base::UnguessableToken> source_id)
     : audio_focus_remote_(std::move(audio_focus_remote)),
       controller_manager_remote_(std::move(controller_manager_remote)),
       item_manager_(item_manager),

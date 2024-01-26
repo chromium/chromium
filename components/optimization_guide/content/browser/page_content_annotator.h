@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATOR_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -33,7 +33,7 @@ class PageContentAnnotator {
 
   // Returns the model info associated with the given AnnotationType, if it is
   // available and loaded.
-  virtual absl::optional<ModelInfo> GetModelInfoForType(
+  virtual std::optional<ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const = 0;
 
   // Requests that the given model for |type| be loaded in the background and

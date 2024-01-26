@@ -166,7 +166,7 @@ TEST_F(SoftwareRendererTest, SolidColorQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                             /*contents_opaque=*/true, /*opacity_f=*/1.0,
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -216,7 +216,7 @@ TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), screen_rect, screen_rect,
-                            gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                             /*contents_opaque=*/true, /*opacity_f=*/1.0,
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -312,7 +312,7 @@ TEST_F(SoftwareRendererTest, TileQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                             /*contents_opaque=*/true, /*opacity_f=*/1.0,
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -376,7 +376,7 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), tile_rect, tile_rect,
-                            gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                            gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                             /*contents_opaque=*/true, /*opacity_f=*/1.0,
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -552,7 +552,7 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
     shared_quad_state->SetAll(
         gfx::Transform(), inner_rect, inner_rect,
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(5, 5, 10, 10), 2)),
-        /*clip=*/absl::nullopt, /*contents_opaque=*/true, /*opacity_f=*/1.0,
+        /*clip=*/std::nullopt, /*contents_opaque=*/true, /*opacity_f=*/1.0,
         SkBlendMode::kSrcOver, /*sorting_context=*/0,
         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     auto* inner_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();

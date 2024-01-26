@@ -21,7 +21,7 @@ mojom::UrlRequestActionPtr CreateRewriteAddHeaders(
 }
 
 mojom::UrlRequestActionPtr CreateRewriteRemoveHeader(
-    absl::optional<base::StringPiece> query_pattern,
+    std::optional<base::StringPiece> query_pattern,
     base::StringPiece header_name) {
   auto remove_header = mojom::UrlRequestRewriteRemoveHeader::New();
   if (query_pattern)
@@ -88,11 +88,11 @@ TEST(UrlRequestRewriteRulesValidationTest, ValidateAddHeaders) {
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.
 TEST(UrlRequestRewriteRulesValidationTest, ValidateRemoveHeader) {
   EXPECT_TRUE(ValidateRulesFromAction(
-      CreateRewriteRemoveHeader(absl::make_optional("Test"), "Header")));
+      CreateRewriteRemoveHeader(std::make_optional("Test"), "Header")));
 
   // Create a RemoveHeader action with no pattern.
   EXPECT_TRUE(ValidateRulesFromAction(
-      CreateRewriteRemoveHeader(absl::nullopt, "Header")));
+      CreateRewriteRemoveHeader(std::nullopt, "Header")));
 
   // Invalid RemoveHeader header name.
   EXPECT_FALSE(

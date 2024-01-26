@@ -31,10 +31,10 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     bool is_price_tracked,
     const int64_t price_micros,
     const std::string& currency_code,
-    const absl::optional<int64_t>& last_subscription_change_time) {
+    const std::optional<int64_t>& last_subscription_change_time) {
   const bookmarks::BookmarkNode* node =
       bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url,
-                             nullptr, absl::nullopt, absl::nullopt, true);
+                             nullptr, std::nullopt, std::nullopt, true);
 
   AddProductInfoToExistingBookmark(
       bookmark_model, node, title, cluster_id, is_price_tracked, price_micros,
@@ -51,7 +51,7 @@ void AddProductInfoToExistingBookmark(
     bool is_price_tracked,
     const int64_t price_micros,
     const std::string& currency_code,
-    const absl::optional<int64_t>& last_subscription_change_time) {
+    const std::optional<int64_t>& last_subscription_change_time) {
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       std::make_unique<power_bookmarks::PowerBookmarkMeta>();
   power_bookmarks::ShoppingSpecifics* specifics =
@@ -76,13 +76,13 @@ void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kShoppingListEnabledPrefName, enabled);
 }
 
-absl::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
+std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data,
     bool has_price_history_data,
     PriceBucket price_bucket) {
   assert(has_price_history_data || has_price_range_data);
 
-  absl::optional<PriceInsightsInfo> info;
+  std::optional<PriceInsightsInfo> info;
   info.emplace();
   if (has_price_range_data) {
     info->typical_low_price_micros.emplace(kTypicalLowPriceMicros);

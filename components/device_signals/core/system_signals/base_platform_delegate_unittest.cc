@@ -29,11 +29,11 @@ class TestPlatformDelegate : public BasePlatformDelegate {
               ResolveFilePath,
               (const base::FilePath&, base::FilePath*),
               (override));
-  MOCK_METHOD(absl::optional<ProductMetadata>,
+  MOCK_METHOD(std::optional<ProductMetadata>,
               GetProductMetadata,
               (const base::FilePath&),
               (override));
-  MOCK_METHOD(absl::optional<SigningCertificatesPublicKeys>,
+  MOCK_METHOD(std::optional<SigningCertificatesPublicKeys>,
               GetSigningCertificatesPublicKeys,
               (const base::FilePath&),
               (override));

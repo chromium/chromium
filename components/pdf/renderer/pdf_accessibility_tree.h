@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_data_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
@@ -201,7 +201,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
       chrome_pdf::AccessibilityPageObjects page_objects) override;
 
   void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
-  absl::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
+  std::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
       int32_t ax_node_id) const;
 
   // Given the AXNode and the character offset within the AXNode, finds the

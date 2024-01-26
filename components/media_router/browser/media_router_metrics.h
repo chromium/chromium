@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_METRICS_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_METRICS_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -12,7 +14,6 @@
 #include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/route_request_result.h"
 #include "media/base/container_names.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -198,18 +199,18 @@ class MediaRouterMetrics {
   // histograms.
   static void RecordCreateRouteResultCode(
       mojom::RouteRequestResultCode result_code,
-      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
+      std::optional<mojom::MediaRouteProviderId> provider_id = std::nullopt);
 
   // Records the outcome of a join route request to a Media Route Provider.
   static void RecordJoinRouteResultCode(
       mojom::RouteRequestResultCode result_code,
-      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
+      std::optional<mojom::MediaRouteProviderId> provider_id = std::nullopt);
 
   // Records the outcome of a call to terminateRoute() on a Media Route
   // Provider.
   static void RecordMediaRouteProviderTerminateRoute(
       mojom::RouteRequestResultCode result_code,
-      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
+      std::optional<mojom::MediaRouteProviderId> provider_id = std::nullopt);
 
   // Records the type of the MediaRouter dialog opened. Android only.
   static void RecordMediaRouterAndroidDialogType(

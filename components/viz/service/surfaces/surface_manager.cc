@@ -49,7 +49,7 @@ SurfaceObserver::HandleInteraction GetHandleInteraction(
 
 SurfaceManager::SurfaceManager(
     SurfaceManagerDelegate* delegate,
-    absl::optional<uint32_t> activation_deadline_in_frames,
+    std::optional<uint32_t> activation_deadline_in_frames,
     size_t max_uncommitted_frames)
     : delegate_(delegate),
       activation_deadline_in_frames_(activation_deadline_in_frames),
@@ -99,7 +99,7 @@ std::string SurfaceManager::SurfaceReferencesToString() {
 #endif
 
 void SurfaceManager::SetActivationDeadlineInFramesForTesting(
-    absl::optional<uint32_t> activation_deadline_in_frames) {
+    std::optional<uint32_t> activation_deadline_in_frames) {
   activation_deadline_in_frames_ = activation_deadline_in_frames;
 }
 

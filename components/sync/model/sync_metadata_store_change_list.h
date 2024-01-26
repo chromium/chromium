@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_MODEL_SYNC_METADATA_STORE_CHANGE_LIST_H_
 #define COMPONENTS_SYNC_MODEL_SYNC_METADATA_STORE_CHANGE_LIST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -12,7 +13,6 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_metadata_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -48,7 +48,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   // error callback passed to the constructor.
   // TODO(crbug.com/1356990): Consider removing this method. Callers can use
   // ModelTypeChangeProcessor::GetError() instead.
-  absl::optional<ModelError> TakeError();
+  std::optional<ModelError> TakeError();
 
   const SyncMetadataStore* GetMetadataStoreForTesting() const;
 
@@ -62,7 +62,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   ModelType type_;
 
   // The first error encountered by this object, if any.
-  absl::optional<ModelError> error_;
+  std::optional<ModelError> error_;
 
   const ErrorCallback error_callback_;
 };

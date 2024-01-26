@@ -254,7 +254,7 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
 
   TakePendingLatencyInfo(&frame.frame.metadata.latency_info);
 
-  absl::optional<FrameData> previous_pending_frame_data =
+  std::optional<FrameData> previous_pending_frame_data =
       std::move(pending_frame_data_);
   pending_frame_data_.reset();
 
@@ -404,7 +404,7 @@ void Surface::ActivatePendingFrame() {
   FrameData frame_data = std::move(*pending_frame_data_);
   pending_frame_data_.reset();
 
-  absl::optional<base::TimeDelta> duration = deadline_->Cancel();
+  std::optional<base::TimeDelta> duration = deadline_->Cancel();
   if (duration.has_value()) {
     TRACE_EVENT_INSTANT2("viz", "SurfaceSynchronizationEvent",
                          TRACE_EVENT_SCOPE_THREAD, "surface_id",
@@ -461,20 +461,20 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
   }
 }
 
-absl::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
+std::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
   if (uncommitted_frames_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return uncommitted_frames_.front().frame_index;
 }
 
-absl::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
+std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
     uint64_t frame_index) {
   for (auto& frame : uncommitted_frames_) {
     if (frame.frame_index > frame_index) {
       return frame.frame_index;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Surface::UpdateReferencedAllocationGroups(
@@ -558,7 +558,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
 
   TakeActiveLatencyInfo(&frame_data.frame.metadata.latency_info);
 
-  absl::optional<FrameData> previous_frame_data = std::move(active_frame_data_);
+  std::optional<FrameData> previous_frame_data = std::move(active_frame_data_);
 
   active_frame_data_ = std::move(frame_data);
 
@@ -621,7 +621,7 @@ FrameDeadline Surface::ResolveFrameDeadline(
     return FrameDeadline::MakeZero();
   }
 
-  const absl::optional<uint32_t>& default_deadline =
+  const std::optional<uint32_t>& default_deadline =
       surface_manager_->activation_deadline_in_frames();
   const FrameDeadline& deadline = current_frame.metadata.deadline;
   uint32_t deadline_in_frames = deadline.deadline_in_frames();
@@ -805,7 +805,7 @@ base::flat_set<base::PlatformThreadId> Surface::GetThreadIds() {
 }
 
 void Surface::UnrefFrameResourcesAndRunCallbacks(
-    absl::optional<FrameData> frame_data) {
+    std::optional<FrameData> frame_data) {
   if (!frame_data || !surface_client_)
     return;
 

@@ -4,6 +4,7 @@
 
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -20,7 +21,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace safe_search_api {
@@ -41,7 +41,7 @@ std::string BuildRequestData(const std::string& api_key, const GURL& url) {
 // Parses a SafeSearch API |response| and stores the result in |is_porn|,
 // returns true on success. Otherwise, returns false and doesn't set |is_porn|.
 bool ParseResponse(const std::string& response, bool* is_porn) {
-  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
+  std::optional<base::Value> optional_value = base::JSONReader::Read(response);
   if (!optional_value || !optional_value.value().is_dict()) {
     DLOG(WARNING) << "ParseResponse failed to parse global dictionary";
     return false;
@@ -63,8 +63,7 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     return false;
   }
   const base::Value::Dict& classification_dict = classification_value.GetDict();
-  absl::optional<bool> is_porn_opt =
-      classification_dict.FindBool("pornography");
+  std::optional<bool> is_porn_opt = classification_dict.FindBool("pornography");
   if (is_porn_opt.has_value())
     *is_porn = is_porn_opt.value();
   return true;

@@ -103,7 +103,7 @@ void LogRelatedSearchesCacheHit(bool cache_hit) {
 // UKM.
 void MaybeRecordVisibilityUKM(
     const HistoryVisit& visit,
-    const absl::optional<history::VisitContentModelAnnotations>&
+    const std::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   if (!visit.navigation_id) {
     return;
@@ -341,26 +341,26 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
   }
 
   std::unique_ptr<
-      std::vector<absl::optional<history::VisitContentModelAnnotations>>>
+      std::vector<std::optional<history::VisitContentModelAnnotations>>>
       merged_annotation_outputs = std::make_unique<
-          std::vector<absl::optional<history::VisitContentModelAnnotations>>>();
+          std::vector<std::optional<history::VisitContentModelAnnotations>>>();
   merged_annotation_outputs->reserve(inputs.size());
 
-  std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
+  std::unique_ptr<std::vector<std::optional<std::vector<float>>>>
       merged_embedding_outputs =
-          std::make_unique<std::vector<absl::optional<std::vector<float>>>>();
+          std::make_unique<std::vector<std::optional<std::vector<float>>>>();
   merged_embedding_outputs->reserve(inputs.size());
 
   for (size_t i = 0; i < inputs.size(); i++) {
-    merged_annotation_outputs->push_back(absl::nullopt);
-    merged_embedding_outputs->push_back(absl::nullopt);
+    merged_annotation_outputs->push_back(std::nullopt);
+    merged_embedding_outputs->push_back(std::nullopt);
   }
 
-  std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+  std::vector<std::optional<history::VisitContentModelAnnotations>>*
       merged_annotation_outputs_ptr = merged_annotation_outputs.get();
 
-  std::vector<absl::optional<std::vector<float>>>*
-      merged_embedding_outputs_ptr = merged_embedding_outputs.get();
+  std::vector<std::optional<std::vector<float>>>* merged_embedding_outputs_ptr =
+      merged_embedding_outputs.get();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       annotation_types_to_execute_.size(),
@@ -381,9 +381,9 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
 
 void PageContentAnnotationsService::OnAnnotationBatchComplete(
     AnnotationType type,
-    std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+    std::vector<std::optional<history::VisitContentModelAnnotations>>*
         merge_to_output,
-    std::vector<absl::optional<std::vector<float>>>* merge_embeddings_to_output,
+    std::vector<std::optional<std::vector<float>>>* merge_embeddings_to_output,
     base::OnceClosure signal_merge_complete_callback,
     const std::vector<BatchAnnotationResult>& batch_result) {
   DCHECK_EQ(merge_to_output->size(), batch_result.size());
@@ -436,9 +436,9 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
 
 void PageContentAnnotationsService::OnBatchVisitsAnnotated(
     std::unique_ptr<
-        std::vector<absl::optional<history::VisitContentModelAnnotations>>>
+        std::vector<std::optional<history::VisitContentModelAnnotations>>>
         merged_annotation_outputs,
-    std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
+    std::unique_ptr<std::vector<std::optional<std::vector<float>>>>
         merged_embedding_outputs) {
   DCHECK_EQ(merged_annotation_outputs->size(),
             current_visit_annotation_batch_.size());
@@ -495,13 +495,13 @@ void PageContentAnnotationsService::BatchAnnotate(
       inputs, annotation_type);
 }
 
-absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
+std::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
     AnnotationType type) const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   DCHECK(annotator_);
   return annotator_->GetModelInfoForType(type);
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
@@ -528,7 +528,7 @@ void PageContentAnnotationsService::ExtractRelatedSearches(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
-    const absl::optional<history::VisitContentModelAnnotations>&
+    const std::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
@@ -766,7 +766,7 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
 #else
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 #endif
 }
 
@@ -795,7 +795,7 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& visit_row,
-    absl::optional<int64_t> local_navigation_id) {
+    std::optional<int64_t> local_navigation_id) {
   DCHECK_EQ(history_service, history_service_);
 
   if (!url_row.url().SchemeIsHTTPOrHTTPS()) {
@@ -971,7 +971,7 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
     const GURL& url,
     const std::string& entity_id,
     int weight,
-    const absl::optional<EntityMetadata>& entity_metadata) {
+    const std::optional<EntityMetadata>& entity_metadata) {
   if (!entity_metadata.has_value())
     return;
 
@@ -1021,7 +1021,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
 
   switch (optimization_type) {
     case proto::OptimizationType::PAGE_ENTITIES: {
-      absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
+      std::optional<proto::PageEntitiesMetadata> page_entities_metadata =
           metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
       if (page_entities_metadata) {
         PersistRemotePageMetadata(history_visit, *page_entities_metadata);
@@ -1029,7 +1029,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
       break;
     }
     case proto::OptimizationType::SALIENT_IMAGE: {
-      absl::optional<proto::SalientImageMetadata> salient_image_metadata =
+      std::optional<proto::SalientImageMetadata> salient_image_metadata =
           metadata.ParsedMetadata<proto::SalientImageMetadata>();
       if (salient_image_metadata) {
         PersistSalientImageMetadata(history_visit, *salient_image_metadata);

@@ -199,8 +199,7 @@ const std::string ToString(const media::VideoCaptureParams& params) {
       static_cast<int>(params.resolution_change_policy));
 }
 
-void RecordRemotePlaybackSessionLoadTime(
-    absl::optional<base::Time> start_time) {
+void RecordRemotePlaybackSessionLoadTime(std::optional<base::Time> start_time) {
   if (!start_time) {
     return;
   }
@@ -379,7 +378,7 @@ void OpenscreenSessionHost::OnNegotiated(
   if (state_ == State::kStopped)
     return;
 
-  absl::optional<FrameSenderConfig> audio_config;
+  std::optional<FrameSenderConfig> audio_config;
   if (last_offered_audio_config_ && senders.audio_sender) {
     base::UmaHistogramEnumeration(
         "CastStreaming.Sender.Audio.NegotiatedCodec",
@@ -389,7 +388,7 @@ void OpenscreenSessionHost::OnNegotiated(
     audio_config = last_offered_audio_config_;
   }
 
-  absl::optional<FrameSenderConfig> video_config;
+  std::optional<FrameSenderConfig> video_config;
   if (senders.video_sender) {
     base::UmaHistogramEnumeration(
         "CastStreaming.Sender.Video.NegotiatedCodec",
@@ -847,8 +846,8 @@ void OpenscreenSessionHost::StopSession() {
 
 void OpenscreenSessionHost::SetConstraints(
     const Recommendations& recommendations,
-    absl::optional<FrameSenderConfig>& audio_config,
-    absl::optional<FrameSenderConfig>& video_config) {
+    std::optional<FrameSenderConfig>& audio_config,
+    std::optional<FrameSenderConfig>& video_config) {
   const auto& audio = recommendations.audio;
   const auto& video = recommendations.video;
 
@@ -1039,7 +1038,7 @@ void OpenscreenSessionHost::Negotiate() {
 }
 
 void OpenscreenSessionHost::NegotiateMirroring() {
-  last_offered_audio_config_ = absl::nullopt;
+  last_offered_audio_config_ = std::nullopt;
   last_offered_video_configs_.clear();
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   std::vector<openscreen::cast::VideoCaptureConfig> video_configs;

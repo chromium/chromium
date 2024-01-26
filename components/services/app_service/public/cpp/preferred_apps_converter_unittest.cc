@@ -64,11 +64,11 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
   }
 
   preferred_apps.Init();
-  EXPECT_EQ(absl::nullopt, preferred_apps.FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(std::nullopt, preferred_apps.FindPreferredAppForUrl(filter_url));
   preferred_apps.Init(apps::ParseValueToPreferredApps(converted_value));
   EXPECT_EQ(kAppId1, preferred_apps.FindPreferredAppForUrl(filter_url));
   GURL url_wrong_host = GURL("https://www.hahaha.com/");
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             preferred_apps.FindPreferredAppForUrl(url_wrong_host));
 }
 
@@ -112,7 +112,7 @@ TEST_F(PreferredAppsConverterTest, ConvertUpgradedSimpleEntryJson) {
       "   } ]"
       "} ],"
       "\"version\": 1}";
-  absl::optional<base::Value> expected_output =
+  std::optional<base::Value> expected_output =
       base::JSONReader::Read(expected_output_string);
   ASSERT_TRUE(expected_output);
   EXPECT_EQ(expected_output.value(), converted_value);
@@ -146,7 +146,7 @@ TEST_F(PreferredAppsConverterTest, ParseSimpleEntryJson) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_string);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_string);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_FALSE(apps::IsUpgradedForSharing(test_value.value()));
@@ -194,7 +194,7 @@ TEST_F(PreferredAppsConverterTest, ParseUpgradedSimpleEntryJson) {
       "   } ]"
       "} ],"
       "\"version\": 1}";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_string);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_string);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(apps::IsUpgradedForSharing(test_value.value()));
@@ -241,7 +241,7 @@ TEST_F(PreferredAppsConverterTest, ParseEmptyPortEntryJson) {
       "   } ]"
       "} ],"
       "\"version\": 1}";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_string);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_string);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
 
@@ -279,7 +279,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidAppId) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());
@@ -337,7 +337,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidIntentFilter) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());
@@ -377,7 +377,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidConditionType) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());
@@ -435,7 +435,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidValues) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());
@@ -490,7 +490,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidMatchType) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());
@@ -548,7 +548,7 @@ TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidValue) {
       "      } ]"
       "   } ]"
       "} ]";
-  absl::optional<base::Value> test_value = base::JSONReader::Read(test_key);
+  std::optional<base::Value> test_value = base::JSONReader::Read(test_key);
   ASSERT_TRUE(test_value);
   auto parsed_entry = apps::ParseValueToPreferredApps(test_value.value());
   EXPECT_TRUE(parsed_entry.empty());

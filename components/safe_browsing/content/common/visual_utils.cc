@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/common/visual_utils.h"
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"

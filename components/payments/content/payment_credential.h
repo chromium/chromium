@@ -83,7 +83,7 @@ class PaymentCredential
 
   State state_ = State::kIdle;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
-  absl::optional<WebDataServiceBase::Handle> data_service_request_handle_;
+  std::optional<WebDataServiceBase::Handle> data_service_request_handle_;
   StorePaymentCredentialCallback storage_callback_;
   bool is_system_prompt_result_recorded_ = false;
 

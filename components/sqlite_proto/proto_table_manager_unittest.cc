@@ -59,7 +59,7 @@ TEST(ProtoTableTest, PutReinitializeAndGet) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     // In these tests, we're using the current thread as the DB sequence.
@@ -77,7 +77,7 @@ TEST(ProtoTableTest, PutReinitializeAndGet) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     data.InitializeOnDBSequence();
@@ -118,7 +118,7 @@ TEST(ProtoTableTest, ReinitializingWithDifferentVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     // In these tests, we're using the current thread as the DB sequence.
@@ -136,7 +136,7 @@ TEST(ProtoTableTest, ReinitializingWithDifferentVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     data.InitializeOnDBSequence();
@@ -171,7 +171,7 @@ TEST(ProtoTableTest, InitializingWithoutWrittenVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     // In these tests, we're using the current thread as the DB sequence.
@@ -192,7 +192,7 @@ TEST(ProtoTableTest, InitializingWithoutWrittenVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     data.InitializeOnDBSequence();
@@ -227,7 +227,7 @@ TEST(ProtoTableTest, LoadingUnexpectedlyLargeVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     // In these tests, we're using the current thread as the DB sequence.
@@ -258,7 +258,7 @@ TEST(ProtoTableTest, LoadingUnexpectedlyLargeVersionClearsTables) {
 
   {
     KeyValueData<TestProto> data(manager, &table,
-                                 /*max_num_entries=*/absl::nullopt,
+                                 /*max_num_entries=*/std::nullopt,
                                  /*flush_delay=*/base::TimeDelta());
 
     data.InitializeOnDBSequence();

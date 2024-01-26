@@ -5,9 +5,11 @@
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +23,6 @@
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/snapshot/cpu_architecture.h"
 #include "third_party/crashpad/crashpad/snapshot/cpu_context.h"
@@ -234,7 +235,7 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
   }
 
   bool seen_candidate_id = false;
-  absl::optional<LightweightDetectorState::MetadataId> metadata_id;
+  std::optional<LightweightDetectorState::MetadataId> metadata_id;
   std::vector<uint64_t> candidate_addresses;
 
 #if defined(ARCH_CPU_X86_64)

@@ -85,7 +85,7 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
       continue;
     }
 
-    absl::optional<mojom::AssociatedWebAppPtr> app =
+    std::optional<mojom::AssociatedWebAppPtr> app =
         ParseAssociatedWebApp(app_item.GetDict());
     if (!app)
       continue;
@@ -96,7 +96,7 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
   return result;
 }
 
-absl::optional<mojom::AssociatedWebAppPtr>
+std::optional<mojom::AssociatedWebAppPtr>
 WebAppOriginAssociationParser::ParseAssociatedWebApp(
     const base::Value::Dict& app_dict) {
   const std::string* web_app_identity_url_value =
@@ -105,19 +105,19 @@ WebAppOriginAssociationParser::ParseAssociatedWebApp(
     if (app_dict.contains(kWebAppIdentity)) {
       AddErrorInfo("Associated app ignored. Required property '" +
                    std::string(kWebAppIdentity) + "' is not a string.");
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kWebAppIdentity) + "' does not exist.");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL web_app_identity(*web_app_identity_url_value);
   if (!web_app_identity.is_valid()) {
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kWebAppIdentity) + "' is not a valid URL.");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();

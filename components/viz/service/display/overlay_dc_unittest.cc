@@ -182,7 +182,7 @@ YUVVideoDrawQuad* CreateFullscreenCandidateYUVVideoQuad(
       shared_quad_state, rect, rect, needs_blending, resource_size_in_pixels,
       gfx::Rect(resource_size_in_pixels), gfx::Size(1, 1), resource_id,
       resource_id, resource_id, resource_id, gfx::ColorSpace::CreateREC601(), 0,
-      1.0, 8, gfx::ProtectedVideoType::kClear, absl::nullopt);
+      1.0, 8, gfx::ProtectedVideoType::kClear, std::nullopt);
 
   return overlay_quad;
 }
@@ -265,11 +265,11 @@ class DCLayerOverlayTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
-  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
-  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+  std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;

@@ -191,7 +191,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
   MOCK_METHOD(void, HideDatalistPopup, (), (override));
   MOCK_METHOD(void,
               OnFocusChanged,
-              (const absl::optional<FieldInfo>&),
+              (const std::optional<FieldInfo>&),
               (override));
   MOCK_METHOD(void, OnFormFieldDidChange, (const FieldInfo&), (override));
   MOCK_METHOD(void,
@@ -344,7 +344,7 @@ TEST_F(AutofillProviderAndroidTest, OnFocusChangeInsideCurrentAutofillForm) {
     EXPECT_CALL(provider_bridge(),
                 OnFocusChanged(Optional(EqualsFieldInfo(/*index=*/1))));
     EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(provider_bridge(), OnFocusChanged(Eq(absl::nullopt)));
+    EXPECT_CALL(provider_bridge(), OnFocusChanged(Eq(std::nullopt)));
     EXPECT_CALL(check, Call(2));
   }
 

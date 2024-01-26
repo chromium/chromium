@@ -6,11 +6,11 @@
 #define COMPONENTS_OS_CRYPT_SYNC_KEY_STORAGE_LINUX_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "components/os_crypt/sync/key_storage_util_linux.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
 
   // Gets the encryption key from the OS password-managing library. If a key is
   // not found, a new key will be generated, stored and returned.
-  absl::optional<std::string> GetKey();
+  std::optional<std::string> GetKey();
 
  protected:
   // Get the backend's favourite task runner, or nullptr for no preference.
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
 
   // The implementation of GetKey() for a specific backend. This will be called
   // on the backend's preferred thread.
-  virtual absl::optional<std::string> GetKeyImpl() = 0;
+  virtual std::optional<std::string> GetKeyImpl() = 0;
 
   // The name of the group, if any, containing the key.
   static const char kFolderName[];
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
   // Perform the blocking calls to the backend to get the Key. Store it in
   // |password| and signal completion on |on_password_received|.
   void BlockOnGetKeyImplThenSignal(base::WaitableEvent* on_password_received,
-                                   absl::optional<std::string>* password);
+                                   std::optional<std::string>* password);
 
   // Perform the blocking calls to the backend to initialise. Store the
   // initialisation result in |success| and signal completion on |on_inited|.

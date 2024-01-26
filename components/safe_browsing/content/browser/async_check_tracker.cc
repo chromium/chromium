@@ -49,7 +49,7 @@ bool AsyncCheckTracker::IsMainPageLoadPending(
 }
 
 // static
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
     const security_interstitials::UnsafeResource& resource) {
   content::WebContents* web_contents =
@@ -60,7 +60,7 @@ AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
     return AsyncCheckTracker::FromWebContents(web_contents)
         ->GetNavigationCommittedTimestamp(resource.navigation_id.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
@@ -70,12 +70,12 @@ AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
       ui_manager_(std::move(ui_manager)) {}
 
 AsyncCheckTracker::~AsyncCheckTracker() {
-  DeletePendingCheckers(/*excluded_navigation_id=*/absl::nullopt);
+  DeletePendingCheckers(/*excluded_navigation_id=*/std::nullopt);
 }
 
 void AsyncCheckTracker::TransferUrlChecker(
     std::unique_ptr<UrlCheckerOnSB> checker) {
-  absl::optional<int64_t> navigation_id = checker->navigation_id();
+  std::optional<int64_t> navigation_id = checker->navigation_id();
   CHECK(navigation_id.has_value());
   int64_t id = navigation_id.value();
   // If there is an old checker with the same navigation_id, we should delete
@@ -118,10 +118,10 @@ bool AsyncCheckTracker::IsNavigationPending(int64_t navigation_id) {
   return !base::Contains(committed_navigation_timestamps_, navigation_id);
 }
 
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 AsyncCheckTracker::GetNavigationCommittedTimestamp(int64_t navigation_id) {
   if (!base::Contains(committed_navigation_timestamps_, navigation_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return committed_navigation_timestamps_[navigation_id];
 }
@@ -210,7 +210,7 @@ void AsyncCheckTracker::MaybeDeleteChecker(int64_t navigation_id) {
 }
 
 void AsyncCheckTracker::DeletePendingCheckers(
-    absl::optional<int64_t> excluded_navigation_id) {
+    std::optional<int64_t> excluded_navigation_id) {
   for (auto it = pending_checkers_.begin(); it != pending_checkers_.end();) {
     if (excluded_navigation_id.has_value() &&
         it->first == excluded_navigation_id.value()) {

@@ -249,7 +249,7 @@ base::Time TestSyncUserSettings::GetExplicitPassphraseTime() const {
   return base::Time();
 }
 
-absl::optional<PassphraseType> TestSyncUserSettings::GetPassphraseType() const {
+std::optional<PassphraseType> TestSyncUserSettings::GetPassphraseType() const {
   return IsUsingExplicitPassphrase() ? PassphraseType::kCustomPassphrase
                                      : PassphraseType::kImplicitPassphrase;
 }

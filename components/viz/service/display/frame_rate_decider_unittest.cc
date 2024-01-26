@@ -32,7 +32,7 @@ class FrameRateDeciderTest : public testing::Test,
 
   void SetUp() override {
     surface_manager_ = std::make_unique<SurfaceManager>(
-        this, /*activation_deadline_in_frames=*/absl::nullopt,
+        this, /*activation_deadline_in_frames=*/std::nullopt,
         /*max_uncommitted_frames=*/0);
     bool hw_support_for_multiple_refresh_rates = true;
     frame_rate_decider_ = std::make_unique<FrameRateDecider>(

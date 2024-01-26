@@ -16,8 +16,8 @@ bool IsTrackingOnly() {
   return ash::features::IsScalableIphTrackingOnlyEnabled();
 }
 
-absl::optional<FeatureConfig> GetBaseConfig() {
-  absl::optional<FeatureConfig> config = FeatureConfig();
+std::optional<FeatureConfig> GetBaseConfig() {
+  std::optional<FeatureConfig> config = FeatureConfig();
   config->valid = true;
   config->availability = Comparator(ANY, 0);
   config->session_rate = Comparator(ANY, 0);
@@ -90,10 +90,10 @@ void AddPreconditionPrintJob(FeatureConfig* config) {
       scalable_iph::kEventNamePrintJobCreated, Comparator(EQUAL, 0)));
 }
 
-absl::optional<FeatureConfig> GetUnlockedBasedConfig(
+std::optional<FeatureConfig> GetUnlockedBasedConfig(
     const base::Feature* feature) {
   if (kIPHScalableIphUnlockedBasedOneFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedOneEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedOneTriggered",
@@ -102,7 +102,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedTwoFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(scalable_iph::kEventNameAppListShown,
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedTwoTriggered",
@@ -115,7 +115,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedThreeFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedThreeEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedThreeTriggered",
@@ -128,7 +128,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedFourFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedFourEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedFourTriggered",
@@ -141,7 +141,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedFiveFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedFiveEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedFiveTriggered",
@@ -154,7 +154,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedSixFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedSixEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedSixTriggered",
@@ -167,7 +167,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedSevenFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedSevenEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedSevenTriggered",
@@ -179,7 +179,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedEightFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedEightEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedEightTriggered",
@@ -191,7 +191,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedNineFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedNineEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedNineTriggered",
@@ -204,7 +204,7 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
   }
 
   if (kIPHScalableIphUnlockedBasedTenFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig("ScalableIphUnlockedBasedTenEventUsed",
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphUnlockedBasedTenTriggered",
@@ -216,23 +216,22 @@ absl::optional<FeatureConfig> GetUnlockedBasedConfig(
     return config;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<FeatureConfig> GetTimerBasedConfig(
-    const base::Feature* feature) {
+std::optional<FeatureConfig> GetTimerBasedConfig(const base::Feature* feature) {
   // TODO(b/308010596): Move other config.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<FeatureConfig> GetHelpAppBasedConfig(
+std::optional<FeatureConfig> GetHelpAppBasedConfig(
     const base::Feature* feature) {
   if (!ash::features::IsScalableIphClientConfigEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (kIPHScalableIphHelpAppBasedOneFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenChrome,
                        Comparator(ANY, 0));
@@ -242,7 +241,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedTwoFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(scalable_iph::kEventNameAppListShown,
                                   Comparator(ANY, 0));
     config->trigger = GetEventConfig("ScalableIphHelpAppBasedTwoTriggerNotUsed",
@@ -251,7 +250,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedThreeFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(
         scalable_iph::kEventNameHelpAppActionTypeOpenPersonalizationApp,
         Comparator(ANY, 0));
@@ -261,7 +260,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedFourFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenPlayStore,
                        Comparator(ANY, 0));
@@ -271,7 +270,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedFiveFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenGoogleDocs,
                        Comparator(ANY, 0));
@@ -281,7 +280,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedSixFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(
         scalable_iph::kEventNameHelpAppActionTypeOpenGooglePhotos,
         Comparator(ANY, 0));
@@ -291,7 +290,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedSevenFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(
         scalable_iph::kEventNameHelpAppActionTypeOpenSettingsPrinter,
         Comparator(ANY, 0));
@@ -301,7 +300,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedEightFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenPhoneHub,
                        Comparator(ANY, 0));
@@ -311,7 +310,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedNineFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenYouTube,
                        Comparator(ANY, 0));
@@ -321,7 +320,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedTenFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used =
         GetEventConfig(scalable_iph::kEventNameHelpAppActionTypeOpenFileManager,
                        Comparator(ANY, 0));
@@ -331,7 +330,7 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
   }
 
   if (kIPHScalableIphHelpAppBasedNudgeFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = GetBaseConfig();
+    std::optional<FeatureConfig> config = GetBaseConfig();
     config->used = GetEventConfig(
         "ScalableIphHelpAppBasedNudgeEventUsedNotUsed", Comparator(ANY, 0));
     config->trigger = EventConfig("ScalableIphHelpAppBasedNudgeTrigger",
@@ -339,29 +338,28 @@ absl::optional<FeatureConfig> GetHelpAppBasedConfig(
     return config;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
-absl::optional<FeatureConfig> GetScalableIphFeatureConfig(
+std::optional<FeatureConfig> GetScalableIphFeatureConfig(
     const base::Feature* feature) {
-  if (absl::optional<FeatureConfig> help_app_based =
+  if (std::optional<FeatureConfig> help_app_based =
           GetHelpAppBasedConfig(feature)) {
     return help_app_based;
   }
 
-  if (absl::optional<FeatureConfig> unlocked_based =
+  if (std::optional<FeatureConfig> unlocked_based =
           GetUnlockedBasedConfig(feature)) {
     return unlocked_based;
   }
 
-  if (absl::optional<FeatureConfig> timer_based =
-          GetTimerBasedConfig(feature)) {
+  if (std::optional<FeatureConfig> timer_based = GetTimerBasedConfig(feature)) {
     return timer_based;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace feature_engagement

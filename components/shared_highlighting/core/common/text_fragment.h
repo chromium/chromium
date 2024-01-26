@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENT_H_
 #define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace shared_highlighting {
 
@@ -29,15 +29,15 @@ class TextFragment {
   // special characters have been escaped. The given string is expected to have
   // the traditional text fragment format:
   // [prefix-,]textStart[,textEnd][,-suffix]
-  // Returns |absl::nullopt| if parsing failed.
-  static absl::optional<TextFragment> FromEscapedString(
+  // Returns |std::nullopt| if parsing failed.
+  static std::optional<TextFragment> FromEscapedString(
       std::string escaped_string);
 
   // Returns a TextFragment instance created from a dictionary |value|
   // containing the right set of values. The values stored in |value| must be
   // already unescaped.
-  // Returns |absl::nullopt| if parsing failed.
-  static absl::optional<TextFragment> FromValue(const base::Value* value);
+  // Returns |std::nullopt| if parsing failed.
+  static std::optional<TextFragment> FromValue(const base::Value* value);
 
   const std::string text_start() const { return text_start_; }
   const std::string text_end() const { return text_end_; }

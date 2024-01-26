@@ -76,10 +76,10 @@ struct MemorySystem::Impl {
   ~Impl();
 
   void Initialize(
-      const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
-      const absl::optional<ProfilingClientParameters>&
+      const std::optional<GwpAsanParameters>& gwp_asan_parameters,
+      const std::optional<ProfilingClientParameters>&
           profiling_client_parameters,
-      const absl::optional<DispatcherParameters>& dispatcher_parameters);
+      const std::optional<DispatcherParameters>& dispatcher_parameters);
 
  private:
   // Initialization functions for the various subsystems.
@@ -185,10 +185,9 @@ MemorySystem::Impl::~Impl() {
 }
 
 void MemorySystem::Impl::Initialize(
-    const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
-    const absl::optional<ProfilingClientParameters>&
-        profiling_client_parameters,
-    const absl::optional<DispatcherParameters>& dispatcher_parameters) {
+    const std::optional<GwpAsanParameters>& gwp_asan_parameters,
+    const std::optional<ProfilingClientParameters>& profiling_client_parameters,
+    const std::optional<DispatcherParameters>& dispatcher_parameters) {
   if (!IsAllocatorShimInitialized()) {
     return;
   }
@@ -349,10 +348,9 @@ MemorySystem::MemorySystem() : impl_(std::make_unique<Impl>()) {}
 MemorySystem::~MemorySystem() = default;
 
 void MemorySystem::Initialize(
-    const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
-    const absl::optional<ProfilingClientParameters>&
-        profiling_client_parameters,
-    const absl::optional<DispatcherParameters>& dispatcher_parameters) {
+    const std::optional<GwpAsanParameters>& gwp_asan_parameters,
+    const std::optional<ProfilingClientParameters>& profiling_client_parameters,
+    const std::optional<DispatcherParameters>& dispatcher_parameters) {
   impl_->Initialize(gwp_asan_parameters, profiling_client_parameters,
                     dispatcher_parameters);
 }

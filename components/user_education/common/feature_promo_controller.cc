@@ -620,7 +620,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kBlockedByUi;
   }
 
-  absl::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo;
+  std::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo;
   if (critical_promo_bubble_ || current_promo_) {
     current_promo = last_promo_info_;
   } else if (bubble_factory_registry_->is_any_bubble_showing()) {

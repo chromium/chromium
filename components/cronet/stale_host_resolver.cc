@@ -5,6 +5,7 @@
 #include "components/cronet/stale_host_resolver.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace cronet {
@@ -53,7 +53,7 @@ class StaleHostResolver::RequestImpl
   const std::vector<net::HostPortPair>* GetHostnameResults() const override;
   const std::set<std::string>* GetDnsAliasResults() const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
-  const absl::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
+  const std::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
   void ChangeRequestPriority(net::RequestPriority priority) override;
 
@@ -234,7 +234,7 @@ net::ResolveErrorInfo StaleHostResolver::RequestImpl::GetResolveErrorInfo()
   return cache_request_->GetResolveErrorInfo();
 }
 
-const absl::optional<net::HostCache::EntryStaleness>&
+const std::optional<net::HostCache::EntryStaleness>&
 StaleHostResolver::RequestImpl::GetStaleInfo() const {
   if (network_request_)
     return network_request_->GetStaleInfo();
@@ -344,7 +344,7 @@ StaleHostResolver::CreateRequest(
     url::SchemeHostPort host,
     net::NetworkAnonymizationKey network_anonymization_key,
     net::NetLogWithSource net_log,
-    absl::optional<ResolveHostParameters> optional_parameters) {
+    std::optional<ResolveHostParameters> optional_parameters) {
   // TODO(crbug.com/1206799): Propagate scheme.
   return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
                        network_anonymization_key, net_log, optional_parameters);
@@ -355,7 +355,7 @@ StaleHostResolver::CreateRequest(
     const net::HostPortPair& host,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::NetLogWithSource& net_log,
-    const absl::optional<ResolveHostParameters>& optional_parameters) {
+    const std::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK(tick_clock_);
   return std::make_unique<RequestImpl>(
       weak_ptr_factory_.GetWeakPtr(), host, network_anonymization_key, net_log,

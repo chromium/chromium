@@ -338,7 +338,7 @@ apps::ConditionValuePtr ConvertDictToConditionValue(
              << "\" key with string value.";
     return nullptr;
   }
-  const absl::optional<int> match_type = dict.FindInt(kMatchTypeKey);
+  const std::optional<int> match_type = dict.FindInt(kMatchTypeKey);
   if (!match_type) {
     DVLOG(0) << "Fail to parse condition value. Cannot find \"" << kMatchTypeKey
              << "\" key with int value.";
@@ -370,7 +370,7 @@ base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
 }
 
 apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
-  const absl::optional<int> condition_type = dict.FindInt(kConditionTypeKey);
+  const std::optional<int> condition_type = dict.FindInt(kConditionTypeKey);
   if (!condition_type) {
     DVLOG(0) << "Fail to parse condition. Cannot find \"" << kConditionTypeKey
              << "\" key with int value.";

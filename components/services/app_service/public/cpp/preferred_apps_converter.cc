@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/app_service/public/cpp/preferred_apps_converter.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -10,8 +13,6 @@
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
-#include "components/services/app_service/public/cpp/preferred_apps_converter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

@@ -73,7 +73,7 @@ ModelTypeStoreBackend::CreateInMemoryForTest() {
   scoped_refptr<ModelTypeStoreBackend> backend =
       new ModelTypeStoreBackend(std::move(env));
 
-  absl::optional<ModelError> error = backend->Init(path, {});
+  std::optional<ModelError> error = backend->Init(path, {});
   DCHECK(!error);
   return backend;
 }
@@ -90,7 +90,7 @@ ModelTypeStoreBackend::CreateUninitialized() {
 // due to the custom deleter used for |db_|.
 ModelTypeStoreBackend::~ModelTypeStoreBackend() = default;
 
-absl::optional<ModelError> ModelTypeStoreBackend::Init(
+std::optional<ModelError> ModelTypeStoreBackend::Init(
     const base::FilePath& path,
     const std::vector<std::pair<std::string, std::string>>&
         prefixes_to_update) {
@@ -117,7 +117,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::Init(
   }
 
   if (current_version != kLatestSchemaVersion) {
-    absl::optional<ModelError> error =
+    std::optional<ModelError> error =
         Migrate(current_version, kLatestSchemaVersion);
     if (error) {
       return error;
@@ -127,13 +127,13 @@ absl::optional<ModelError> ModelTypeStoreBackend::Init(
   // Note: It's the caller's responsibility to ensure that the prefix migration
   // is only triggered once.
   for (const auto& [from, to] : prefixes_to_update) {
-    absl::optional<ModelError> error = UpdateDataPrefix(from, to);
+    std::optional<ModelError> error = UpdateDataPrefix(from, to);
     if (error) {
       return error;
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ModelTypeStoreBackend::IsInitialized() const {
@@ -174,7 +174,7 @@ leveldb::Status ModelTypeStoreBackend::DestroyDatabase(const std::string& path,
   return leveldb::DestroyDB(path, options);
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
+std::optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
     const std::string& prefix,
     const ModelTypeStore::IdList& id_list,
     ModelTypeStore::RecordList* record_list,
@@ -199,10 +199,10 @@ absl::optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
       return ModelError(FROM_HERE, status.ToString());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
+std::optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
     const std::string& prefix,
     ModelTypeStore::RecordList* record_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -220,12 +220,12 @@ absl::optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
   LogDbStatusByCallingSiteIfNeeded("ReadAllRecords", iter->status());
-  return iter->status().ok() ? absl::nullopt
-                             : absl::optional<ModelError>(
+  return iter->status().ok() ? std::nullopt
+                             : std::optional<ModelError>(
                                    {FROM_HERE, iter->status().ToString()});
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::WriteModifications(
+std::optional<ModelError> ModelTypeStoreBackend::WriteModifications(
     std::unique_ptr<leveldb::WriteBatch> write_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -233,12 +233,11 @@ absl::optional<ModelError> ModelTypeStoreBackend::WriteModifications(
       db_->Write(leveldb::WriteOptions(), write_batch.get());
   LogDbStatusByCallingSiteIfNeeded("WriteModifications", status);
   return status.ok()
-             ? absl::nullopt
-             : absl::optional<ModelError>({FROM_HERE, status.ToString()});
+             ? std::nullopt
+             : std::optional<ModelError>({FROM_HERE, status.ToString()});
 }
 
-absl::optional<ModelError>
-ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
+std::optional<ModelError> ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
     const std::string& prefix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -256,11 +255,11 @@ ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);
   LogDbStatusByCallingSiteIfNeeded("DeleteData", status);
   return status.ok()
-             ? absl::nullopt
-             : absl::optional<ModelError>({FROM_HERE, status.ToString()});
+             ? std::nullopt
+             : std::optional<ModelError>({FROM_HERE, status.ToString()});
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::MigrateForTest(
+std::optional<ModelError> ModelTypeStoreBackend::MigrateForTest(
     int64_t current_version,
     int64_t desired_version) {
   return Migrate(current_version, desired_version);
@@ -288,7 +287,7 @@ int64_t ModelTypeStoreBackend::GetStoreVersion() {
   return schema_descriptor.version_number();
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::Migrate(
+std::optional<ModelError> ModelTypeStoreBackend::Migrate(
     int64_t current_version,
     int64_t desired_version) {
   DCHECK(db_);
@@ -298,7 +297,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::Migrate(
     }
   }
   if (current_version == desired_version) {
-    return absl::nullopt;
+    return std::nullopt;
   } else if (current_version > desired_version) {
     return ModelError(FROM_HERE, "Schema version too high");
   } else {
@@ -316,12 +315,12 @@ bool ModelTypeStoreBackend::Migrate0To1() {
   return status.ok();
 }
 
-absl::optional<ModelError> ModelTypeStoreBackend::UpdateDataPrefix(
+std::optional<ModelError> ModelTypeStoreBackend::UpdateDataPrefix(
     const std::string& old_prefix,
     const std::string& new_prefix) {
   ModelTypeStore::RecordList records;
 
-  if (absl::optional<ModelError> error =
+  if (std::optional<ModelError> error =
           ReadAllRecordsWithPrefix(old_prefix, &records)) {
     return error;
   }

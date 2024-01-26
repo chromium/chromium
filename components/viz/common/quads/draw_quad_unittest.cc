@@ -93,7 +93,7 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), absl::nullopt, are_contents_opaque,
+                gfx::MaskFilterInfo(), std::nullopt, are_contents_opaque,
                 opacity, blend_mode, sorting_context_id, layer_id,
                 is_fast_rounded_corner);
   return state;
@@ -559,7 +559,7 @@ TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(SurfaceDrawQuad, visible_rect,
-                  SurfaceRange(absl::nullopt, surface_id), SkColors::kWhite,
+                  SurfaceRange(std::nullopt, surface_id), SkColors::kWhite,
                   /*stretch_content_to_fill_bounds=*/false);
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }
@@ -629,7 +629,7 @@ TEST_F(DrawQuadIteratorTest, YUVVideoDrawQuad) {
                   video_frame_visible_rect, uv_sample_size, y_plane_resource_id,
                   u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
                   video_color_space, 0.0, 1.0, 5,
-                  gfx::ProtectedVideoType::kClear, absl::nullopt);
+                  gfx::ProtectedVideoType::kClear, std::nullopt);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(y_plane_resource_id, quad_new->y_plane_resource_id());
   EXPECT_EQ(u_plane_resource_id, quad_new->u_plane_resource_id());

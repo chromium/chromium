@@ -565,7 +565,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
 
 void MostVisitedSites::OnHomepageTitleDetermined(
     NTPTilesVector tiles,
-    const absl::optional<std::u16string>& title) {
+    const std::optional<std::u16string>& title) {
   if (!title.has_value())
     return;  // If there is no title, the most recent tile was already sent out.
 

@@ -63,7 +63,7 @@ using testing::SaveArg;
 using testing::StrictMock;
 using testing::WithArg;
 
-// Matcher for absl::optional. Can be combined with Not().
+// Matcher for std::optional. Can be combined with Not().
 MATCHER(HasValue, "Has value") {
   return arg.has_value();
 }
@@ -165,7 +165,7 @@ struct MockRobotAuthCodeCallbackObserver {
 };
 
 struct MockResponseCallbackObserver {
-  MOCK_METHOD(void, OnResponseReceived, (absl::optional<base::Value::Dict>));
+  MOCK_METHOD(void, OnResponseReceived, (std::optional<base::Value::Dict>));
 };
 
 class FakeClientDataDelegate : public ClientDataDelegate {
@@ -267,9 +267,9 @@ em::DeviceManagementRequest GetReregistrationRequest() {
 // then populate its corresponding PSM field in DeviceRegisterRequest.
 em::DeviceManagementRequest GetCertBasedRegistrationRequest(
     FakeSigningService* fake_signing_service,
-    absl::optional<PsmExecutionResult> psm_execution_result,
-    absl::optional<int64_t> psm_determination_timestamp,
-    const absl::optional<em::DemoModeDimensions>& demo_mode_dimensions) {
+    std::optional<PsmExecutionResult> psm_execution_result,
+    std::optional<int64_t> psm_determination_timestamp,
+    const std::optional<em::DemoModeDimensions>& demo_mode_dimensions) {
   em::CertificateBasedDeviceRegistrationData data;
   data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
                                 ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -1000,9 +1000,9 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
   const std::string expected_job_request_string =
       GetCertBasedRegistrationRequest(
           fake_signing_service.get(),
-          /*psm_execution_result=*/absl::nullopt,
-          /*psm_determination_timestamp=*/absl::nullopt,
-          /*demo_mode_dimensions=*/absl::nullopt)
+          /*psm_execution_result=*/std::nullopt,
+          /*psm_determination_timestamp=*/std::nullopt,
+          /*demo_mode_dimensions=*/std::nullopt)
           .SerializePartialAsString();
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   CloudPolicyClient::RegistrationParameters device_attestation(
@@ -1045,9 +1045,8 @@ TEST_F(CloudPolicyClientTest, DemoModeRegistration) {
   const std::string expected_job_request_string =
       GetCertBasedRegistrationRequest(
           fake_signing_service.get(),
-          /*psm_execution_result=*/absl::nullopt,
-          /*psm_determination_timestamp=*/absl::nullopt,
-          GetDemoModeDimensions())
+          /*psm_execution_result=*/std::nullopt,
+          /*psm_determination_timestamp=*/std::nullopt, GetDemoModeDimensions())
           .SerializePartialAsString();
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   CloudPolicyClient::RegistrationParameters demo_enrollment_parameters(
@@ -1993,7 +1992,7 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
       GetCertBasedRegistrationRequest(fake_signing_service.get(),
                                       psm_execution_result,
                                       kExpectedPsmDeterminationTimestamp,
-                                      /*demo_mode_dimensions=*/absl::nullopt)
+                                      /*demo_mode_dimensions=*/std::nullopt)
           .SerializePartialAsString();
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   CloudPolicyClient::RegistrationParameters device_attestation(
@@ -2074,7 +2073,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
-  absl::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -2192,7 +2191,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
 
   // The second config should trump the first.
   DeviceManagementService::JobConfiguration* job_config = config.get();
-  absl::optional<base::Value> payload =
+  std::optional<base::Value> payload =
       base::JSONReader::Read(job_config->GetPayload());
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();

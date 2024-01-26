@@ -116,7 +116,7 @@ TEST_F(RpcDispatcherImplTest, SendsMessages) {
   EXPECT_TRUE(dispatcher().SendOutboundMessage(kMessage));
 
   EXPECT_EQ(1u, message_port().posted_messages().size());
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(message_port().posted_messages()[0]);
   ASSERT_TRUE(value);
 

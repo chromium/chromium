@@ -4,6 +4,7 @@
 
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_preferences {
 
@@ -498,7 +498,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
 
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
-    absl::optional<SyncablePrefMetadata> metadata =
+    std::optional<SyncablePrefMetadata> metadata =
         pref_model_associator_client_->GetSyncablePrefsDatabase()
             .GetSyncablePrefMetadata(pref_name);
     CHECK(metadata.has_value());
@@ -736,9 +736,9 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
 
   // Store the old values for sensitive prefs in a map and only inform the
   // observers if the effective values change.
-  // Note: absl::optional is used as the value type since it makes the
+  // Note: std::optional is used as the value type since it makes the
   // comparison with the new values easier.
-  std::map<std::string, absl::optional<base::Value>> old_values;
+  std::map<std::string, std::optional<base::Value>> old_values;
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                         .GetSyncablePrefMetadata(pref_name);
@@ -748,9 +748,9 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
       if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
         old_values.emplace(pref_name, value->Clone());
       } else {
-        // Put in absl::nullopt to mark pref not existing in the store. This
+        // Put in std::nullopt to mark pref not existing in the store. This
         // helps avoid an extra call to GetPrefNamesInAccount() later.
-        old_values.emplace(pref_name, absl::nullopt);
+        old_values.emplace(pref_name, std::nullopt);
       }
     }
   }
@@ -760,7 +760,7 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
   // The history sync state has changed. Check for any change in the effective
   // values of any of the sensitive prefs as a consequence.
   for (const auto& [pref_name, old_value] : old_values) {
-    absl::optional<base::Value> new_value;
+    std::optional<base::Value> new_value;
     if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
       new_value = value->Clone();
     }

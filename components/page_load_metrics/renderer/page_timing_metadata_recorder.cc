@@ -67,8 +67,8 @@ void PageTimingMetadataRecorder::AddProfileMetadata(
 }
 
 void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
-    const absl::optional<base::TimeTicks>& first_input_timestamp,
-    const absl::optional<base::TimeDelta>& first_input_delay) {
+    const std::optional<base::TimeTicks>& first_input_timestamp,
+    const std::optional<base::TimeDelta>& first_input_delay) {
   // Applying metadata to past samples has non-trivial cost so only do so if
   // the relevant values changed.
   const bool should_apply_metadata =
@@ -85,8 +85,8 @@ void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
 }
 
 void PageTimingMetadataRecorder::UpdateFirstContentfulPaintMetadata(
-    const absl::optional<base::TimeTicks>& navigation_start,
-    const absl::optional<base::TimeTicks>& first_contentful_paint) {
+    const std::optional<base::TimeTicks>& navigation_start,
+    const std::optional<base::TimeTicks>& first_contentful_paint) {
   // Applying metadata to past samples has non-trivial cost so only do so if
   // the relevant values changed.
   const bool should_apply_metadata =
@@ -130,9 +130,9 @@ void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
 }
 
 void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
-    const absl::optional<base::TimeTicks>& navigation_start,
-    const absl::optional<base::TimeTicks>& largest_contentful_paint,
-    const absl::optional<blink::DocumentToken>& document_token) {
+    const std::optional<base::TimeTicks>& navigation_start,
+    const std::optional<base::TimeTicks>& largest_contentful_paint,
+    const std::optional<blink::DocumentToken>& document_token) {
   const bool should_apply_global_lcp_metadata =
       navigation_start.has_value() && document_token.has_value() &&
       (timing_.navigation_start != navigation_start ||

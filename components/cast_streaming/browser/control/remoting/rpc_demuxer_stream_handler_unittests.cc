@@ -143,8 +143,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
 
   void OnRpcInitializeCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config) {
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config) {
     static_cast<media::cast::RpcDemuxerStreamCBMessageHandler*>(
         &stream_handler_)
         ->OnRpcInitializeCallback(handle, std::move(audio_config),
@@ -153,8 +153,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
 
   void OnRpcReadUntilCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config,
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) {
     static_cast<media::cast::RpcDemuxerStreamCBMessageHandler*>(
         &stream_handler_)
@@ -250,11 +250,11 @@ TEST_F(RpcDemuxerStreamHandlerTest, InitKnownAudioHandleWithAudioConfig) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
   OnRpcInitializeCallback(audio_local_handle_, test_audio_config_,
-                          absl::nullopt);
+                          std::nullopt);
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, InitKnownAudioHandleWithVideoConfig) {
-  OnRpcInitializeCallback(audio_local_handle_, absl::nullopt,
+  OnRpcInitializeCallback(audio_local_handle_, std::nullopt,
                           test_video_config_);
 }
 
@@ -263,13 +263,13 @@ TEST_F(RpcDemuxerStreamHandlerTest, InitKnownVideoHandleWithAudioConfig) {
       .WillOnce([this](media::VideoDecoderConfig config) {
         EXPECT_TRUE(test_video_config_.Matches(config));
       });
-  OnRpcInitializeCallback(video_local_handle_, absl::nullopt,
+  OnRpcInitializeCallback(video_local_handle_, std::nullopt,
                           test_video_config_);
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, InitKnownVideoHandleWithVideoConfig) {
   OnRpcInitializeCallback(video_local_handle_, test_audio_config_,
-                          absl::nullopt);
+                          std::nullopt);
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownAudioHandleWithAudioConfig) {
@@ -277,12 +277,12 @@ TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownAudioHandleWithAudioConfig) {
       .WillOnce([this](media::AudioDecoderConfig config) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
+  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, std::nullopt,
                          uint32_t{1});
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownAudioHandleWithVideoConfig) {
-  OnRpcReadUntilCallback(audio_local_handle_, absl::nullopt, test_video_config_,
+  OnRpcReadUntilCallback(audio_local_handle_, std::nullopt, test_video_config_,
                          uint32_t{1});
 }
 
@@ -291,12 +291,12 @@ TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownVideoHandleWithAudioConfig) {
       .WillOnce([this](media::VideoDecoderConfig config) {
         EXPECT_TRUE(test_video_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
+  OnRpcReadUntilCallback(video_local_handle_, std::nullopt, test_video_config_,
                          uint32_t{1});
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownVideoHandleWithVideoConfig) {
-  OnRpcReadUntilCallback(video_local_handle_, test_audio_config_, absl::nullopt,
+  OnRpcReadUntilCallback(video_local_handle_, test_audio_config_, std::nullopt,
                          uint32_t{1});
 }
 
@@ -317,7 +317,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
       .WillOnce([this](media::AudioDecoderConfig config) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
+  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, std::nullopt,
                          uint32_t{12});
   testing::Mock::VerifyAndClearExpectations(&client_);
 
@@ -336,7 +336,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
       .WillOnce([this](media::AudioDecoderConfig config) {
         EXPECT_TRUE(test_audio_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
+  OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, std::nullopt,
                          uint32_t{42});
   task_environment_.RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&client_);
@@ -367,7 +367,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 60));
-  OnRpcReadUntilCallback(audio_local_handle_, absl::nullopt, absl::nullopt,
+  OnRpcReadUntilCallback(audio_local_handle_, std::nullopt, std::nullopt,
                          uint32_t{60});
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsAudioReadUntilCallPending());
@@ -379,7 +379,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
       .WillOnce([this](media::VideoDecoderConfig config) {
         EXPECT_TRUE(test_video_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
+  OnRpcReadUntilCallback(video_local_handle_, std::nullopt, test_video_config_,
                          uint32_t{12});
   testing::Mock::VerifyAndClearExpectations(&client_);
 
@@ -398,7 +398,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
       .WillOnce([this](media::VideoDecoderConfig config) {
         EXPECT_TRUE(test_video_config_.Matches(config));
       });
-  OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
+  OnRpcReadUntilCallback(video_local_handle_, std::nullopt, test_video_config_,
                          uint32_t{42});
   task_environment_.RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&client_);
@@ -429,7 +429,7 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(video_remote_handle_, video_local_handle_, 60));
-  OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, absl::nullopt,
+  OnRpcReadUntilCallback(video_local_handle_, std::nullopt, std::nullopt,
                          uint32_t{60});
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsVideoReadUntilCallPending());

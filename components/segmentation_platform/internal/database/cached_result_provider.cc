@@ -43,12 +43,12 @@ CachedResultProvider::CachedResultProvider(
 
 CachedResultProvider::~CachedResultProvider() = default;
 
-absl::optional<proto::PredictionResult>
+std::optional<proto::PredictionResult>
 CachedResultProvider::GetPredictionResultForClient(
     const std::string& segmentation_key) {
   const auto iter = client_result_from_last_session_map_.find(segmentation_key);
   if (iter == client_result_from_last_session_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VLOG(1) << "CachedResultProvider loaded prefs with results from previous "

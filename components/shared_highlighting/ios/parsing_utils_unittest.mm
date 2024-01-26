@@ -23,7 +23,7 @@ TEST_F(ParsingUtilsTest, ParseRect) {
   rect_dict.Set("width", expected_rect.size.width);
   rect_dict.Set("height", expected_rect.size.height);
 
-  absl::optional<CGRect> opt_rect = ParseRect(&rect_dict);
+  std::optional<CGRect> opt_rect = ParseRect(&rect_dict);
   ASSERT_TRUE(opt_rect.has_value());
   EXPECT_TRUE(CGRectEqualToRect(expected_rect, opt_rect.value()));
 
@@ -60,7 +60,7 @@ TEST_F(ParsingUtilsTest, ParseURL) {
   EXPECT_FALSE(ParseURL(&invalid_url_str).has_value());
 
   std::string valid_url_str = "https://www.example.com/";
-  absl::optional<GURL> valid_url = ParseURL(&valid_url_str);
+  std::optional<GURL> valid_url = ParseURL(&valid_url_str);
   EXPECT_TRUE(valid_url.has_value());
   EXPECT_EQ(GURL(valid_url_str).spec(), valid_url.value().spec());
 }

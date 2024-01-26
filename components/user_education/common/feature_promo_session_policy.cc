@@ -78,7 +78,7 @@ void FeaturePromoSessionPolicy::NotifyPromoEnded(
 
 FeaturePromoResult FeaturePromoSessionPolicy::CanShowPromo(
     PromoInfo to_show,
-    absl::optional<PromoInfo> currently_showing) const {
+    std::optional<PromoInfo> currently_showing) const {
   return (!currently_showing || to_show.priority > currently_showing->priority)
              ? FeaturePromoResult::Success()
              : FeaturePromoResult::kBlockedByPromo;
@@ -130,7 +130,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
 
 FeaturePromoResult FeaturePromoSessionPolicyV2::CanShowPromo(
     PromoInfo to_show,
-    absl::optional<PromoInfo> currently_showing) const {
+    std::optional<PromoInfo> currently_showing) const {
   const auto initial_result =
       FeaturePromoSessionPolicy::CanShowPromo(to_show, currently_showing);
   if (!initial_result) {

@@ -16,14 +16,14 @@
 
 namespace viz {
 
-const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
+const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad) {
   if (auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
     return texture_quad->damage_rect;
   } else if (auto* yuv_video_quad = quad->DynamicCast<YUVVideoDrawQuad>()) {
     return yuv_video_quad->damage_rect;
   } else {
-    static absl::optional<gfx::Rect> no_damage;
+    static std::optional<gfx::Rect> no_damage;
     return no_damage;
   }
 }

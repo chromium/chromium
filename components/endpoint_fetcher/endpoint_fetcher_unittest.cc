@@ -129,7 +129,7 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -186,7 +186,7 @@ TEST_F(EndpointFetcherTest, FetchRedirectionResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_FOUND),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -258,7 +258,7 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kMalformedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });

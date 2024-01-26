@@ -841,10 +841,10 @@ size_t MaxVisitAnnotationCacheSize() {
   return std::max(1, batch_size);
 }
 
-absl::optional<int> OverrideNumThreadsForOptTarget(
+std::optional<int> OverrideNumThreadsForOptTarget(
     proto::OptimizationTarget opt_target) {
   if (!base::FeatureList::IsEnabled(kOverrideNumThreadsForModelExecution)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 0 is an invalid value to pass to TFLite, so make that nullopt. -1 is valid,
@@ -853,7 +853,7 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
       kOverrideNumThreadsForModelExecution,
       proto::OptimizationTarget_Name(opt_target), 0);
   if (num_threads == 0 || num_threads < -1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Cap to the number of CPUs on the device.

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "components/payments/core/android_app_description.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -33,15 +33,15 @@ namespace payments {
 class AndroidAppCommunication : public base::SupportsUserData::Data {
  public:
   using GetAppDescriptionsCallback = base::OnceCallback<void(
-      const absl::optional<std::string>& error_message,
+      const std::optional<std::string>& error_message,
       std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions)>;
 
   using IsReadyToPayCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& error_message,
+      base::OnceCallback<void(const std::optional<std::string>& error_message,
                               bool is_ready_to_pay)>;
 
   using InvokePaymentAppCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& error_message,
+      base::OnceCallback<void(const std::optional<std::string>& error_message,
                               bool is_activity_result_ok,
                               const std::string& payment_method_identifier,
                               const std::string& stringified_details)>;
@@ -88,7 +88,7 @@ class AndroidAppCommunication : public base::SupportsUserData::Data {
       const std::string& payment_request_id,
       const base::UnguessableToken& request_token,
       content::WebContents* web_contents,
-      const absl::optional<base::UnguessableToken>& twa_instance_identifier,
+      const std::optional<base::UnguessableToken>& twa_instance_identifier,
       InvokePaymentAppCallback callback) = 0;
 
   // Aborts a payment flow which was previously started with InvokePaymentApp().

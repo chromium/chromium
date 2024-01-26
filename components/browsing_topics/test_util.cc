@@ -119,7 +119,7 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
 
     DCHECK_EQ(topics.size(), 3u);
 
-    absl::optional<ApiAccessResult> failure_reason;
+    std::optional<ApiAccessResult> failure_reason;
 
     const int64_t* failure_reason_metric =
         ukm_recorder.GetEntryMetric(entry, Event::kFailureReasonName);
@@ -244,7 +244,7 @@ void TestAnnotator::UseAnnotations(
 }
 
 void TestAnnotator::UseModelInfo(
-    const absl::optional<optimization_guide::ModelInfo>& model_info) {
+    const std::optional<optimization_guide::ModelInfo>& model_info) {
   model_info_ = model_info;
 }
 
@@ -279,7 +279,7 @@ void TestAnnotator::NotifyWhenModelAvailable(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-absl::optional<optimization_guide::ModelInfo>
+std::optional<optimization_guide::ModelInfo>
 TestAnnotator::GetBrowsingTopicsModelInfo() const {
   return model_info_;
 }

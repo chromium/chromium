@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/page_node_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -111,7 +111,7 @@ TEST_F(PageNodeImplTest, GetTimeSinceLastVisibilityChange) {
 TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   EXPECT_FALSE(mock_graph.page->IsAudible());
-  EXPECT_EQ(absl::nullopt, mock_graph.page->GetTimeSinceLastAudibleChange());
+  EXPECT_EQ(std::nullopt, mock_graph.page->GetTimeSinceLastAudibleChange());
 
   mock_graph.page->SetIsAudible(true);
   EXPECT_TRUE(mock_graph.page->IsAudible());
@@ -243,14 +243,14 @@ TEST_F(PageNodeImplTest, GetFreezingVote) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto* page_node = mock_graph.page.get();
 
-  // This should be initialized to absl::nullopt.
+  // This should be initialized to std::nullopt.
   EXPECT_FALSE(page_node->GetFreezingVote());
 
   page_node->set_freezing_vote(kFreezingVote);
   ASSERT_TRUE(page_node->GetFreezingVote().has_value());
   EXPECT_EQ(kFreezingVote, page_node->GetFreezingVote().value());
 
-  page_node->set_freezing_vote(absl::nullopt);
+  page_node->set_freezing_vote(std::nullopt);
   EXPECT_FALSE(page_node->GetFreezingVote());
 }
 
@@ -287,7 +287,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
   MOCK_METHOD1(OnHadUserEditsChanged, void(const PageNode*));
   MOCK_METHOD2(OnFreezingVoteChanged,
-               void(const PageNode*, absl::optional<freezing::FreezingVote>));
+               void(const PageNode*, std::optional<freezing::FreezingVote>));
   MOCK_METHOD2(OnPageStateChanged, void(const PageNode*, PageNode::PageState));
   MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
 
@@ -381,7 +381,7 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->OnFaviconUpdated();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
-  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(absl::nullopt)))
+  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(std::nullopt)))
       .WillOnce(testing::WithArg<0>(
           Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
   page_node->set_freezing_vote(kFreezingVote);

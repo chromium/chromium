@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct wl_display;
 
@@ -59,7 +59,7 @@ class SerialTracker {
 
   // Get the EventType for a serial number, or nullopt if the serial number was
   // never sent or is too old.
-  absl::optional<EventType> GetEventType(uint32_t serial) const;
+  std::optional<EventType> GetEventType(uint32_t serial) const;
 
   std::string ToString() const;
 
@@ -76,7 +76,7 @@ class SerialTracker {
   uint32_t min_event_ = 1;
   uint32_t max_event_ = 1;
 
-  absl::optional<uint32_t> key_serial_;
+  std::optional<uint32_t> key_serial_;
 };
 
 }  // namespace wayland

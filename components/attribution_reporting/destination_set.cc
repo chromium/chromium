@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/destination_set.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -35,10 +35,10 @@ bool DestinationsValid(const DestinationSet::Destinations& destinations) {
 }  // namespace
 
 // static
-absl::optional<DestinationSet> DestinationSet::Create(
+std::optional<DestinationSet> DestinationSet::Create(
     Destinations destinations) {
   if (!DestinationsValid(destinations)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return DestinationSet(std::move(destinations));
 }

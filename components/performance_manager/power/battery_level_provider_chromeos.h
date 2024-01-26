@@ -28,7 +28,7 @@ class BatteryLevelProviderChromeOS : public base::BatteryLevelProvider {
   // base::BatteryLevelProvider:
   void GetBatteryState(
       base::OnceCallback<
-          void(const absl::optional<base::BatteryLevelProvider::BatteryState>&)>
+          void(const std::optional<base::BatteryLevelProvider::BatteryState>&)>
           callback) override;
 
   raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged>

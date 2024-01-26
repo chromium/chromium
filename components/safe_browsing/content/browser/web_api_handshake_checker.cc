@@ -76,7 +76,7 @@ class WebApiHandshakeChecker::CheckerOnSB {
         url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
         /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
         /*render_frame_token=*/std::nullopt, frame_tree_node_id_,
-        /*navigation_id=*/absl::nullopt,
+        /*navigation_id=*/std::nullopt,
         /*url_real_time_lookup_enabled=*/false,
         /*can_urt_check_subresource_url=*/false,
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,

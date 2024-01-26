@@ -58,7 +58,7 @@ MediaSessionNotificationItem::MediaSessionNotificationItem(
     Delegate* delegate,
     const std::string& request_id,
     const std::string& source_name,
-    const absl::optional<base::UnguessableToken>& source_id,
+    const std::optional<base::UnguessableToken>& source_id,
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info)
     : delegate_(delegate),
@@ -93,7 +93,7 @@ void MediaSessionNotificationItem::MediaSessionInfoChanged(
 }
 
 void MediaSessionNotificationItem::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   session_metadata_ = metadata.value_or(media_session::MediaMetadata());
 
   view_needs_metadata_update_ = true;
@@ -128,7 +128,7 @@ void MediaSessionNotificationItem::MediaSessionActionsChanged(
 }
 
 void MediaSessionNotificationItem::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
   if (!position.has_value())
     return;
@@ -139,7 +139,7 @@ void MediaSessionNotificationItem::MediaSessionPositionChanged(
 }
 
 void MediaSessionNotificationItem::UpdateDeviceName(
-    const absl::optional<std::string>& device_name) {
+    const std::optional<std::string>& device_name) {
   device_name_ = device_name;
   if (view_ && !frozen_) {
     view_->UpdateWithMediaMetadata(GetSessionMetadata());
@@ -253,7 +253,7 @@ media_message_center::SourceType MediaSessionNotificationItem::GetSourceType()
   return media_message_center::SourceType::kLocalMediaSession;
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 MediaSessionNotificationItem::GetSourceId() const {
   return source_id_;
 }

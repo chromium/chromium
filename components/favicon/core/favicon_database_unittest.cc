@@ -866,7 +866,7 @@ TEST_F(FaviconDatabaseTest, FindFirstPageURLForHost) {
                                           {favicon_base::IconType::kFavicon}));
 
   // Expect a match when we search for a TouchIcon.
-  absl::optional<GURL> result = db.FindFirstPageURLForHost(
+  std::optional<GURL> result = db.FindFirstPageURLForHost(
       kPageUrlHttps,
       {favicon_base::IconType::kFavicon, favicon_base::IconType::kTouchIcon});
 

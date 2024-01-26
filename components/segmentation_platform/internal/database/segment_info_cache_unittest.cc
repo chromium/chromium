@@ -133,10 +133,10 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForSegmentsFromCache) {
   EXPECT_EQ(kSegmentId, segments_found.get()->at(0).first);
   EXPECT_EQ(kSegmentId2, segments_found.get()->at(1).first);
 
-  // Updating absl::nullopt for 'kSegmentId2' and calling
+  // Updating std::nullopt for 'kSegmentId2' and calling
   // GetSegmentInfoForSegments with all segment ids.
   segment_info_cache_->UpdateSegmentInfo(kSegmentId2, kServerModelSource,
-                                         absl::nullopt);
+                                         std::nullopt);
   segments_found = segment_info_cache_->GetSegmentInfoForSegments(
       {kSegmentId, kSegmentId2}, kServerModelSource);
   EXPECT_EQ(1u, segments_found.get()->size());
@@ -191,10 +191,10 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsFromCache) {
   EXPECT_EQ(kDefaultModelSource,
             segments_found.get()->at(2).second->model_source());
 
-  // Updating SegmentInfo for 'kSegmentId2' with absl::nullopt and calling
+  // Updating SegmentInfo for 'kSegmentId2' with std::nullopt and calling
   // GetSegmentInfoForBothModels with both segment ids.
   segment_info_cache_->UpdateSegmentInfo(kSegmentId2, kDefaultModelSource,
-                                         absl::nullopt);
+                                         std::nullopt);
   segments_found = segment_info_cache_->GetSegmentInfoForBothModels(
       {kSegmentId, kSegmentId2});
   EXPECT_EQ(2u, segments_found.get()->size());
@@ -283,7 +283,7 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
   EXPECT_EQ(2, segment_info_->model_version());
   // Deleting a non existing entry.
   segment_info_cache_->UpdateSegmentInfo(kSegmentId3, kServerModelSource,
-                                         absl::nullopt);
+                                         std::nullopt);
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsWithEmptyDatabase) {

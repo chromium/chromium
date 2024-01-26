@@ -8,13 +8,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/commit_quota.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class GetUpdateTriggers;
@@ -163,9 +163,9 @@ class DataTypeTracker {
   // Updates the parameters for the commit quota if the data type can receive
   // commits via extension APIs. Empty optional means using the defaults.
   void SetQuotaParamsIfExtensionType(
-      absl::optional<int> max_tokens,
-      absl::optional<base::TimeDelta> refill_interval,
-      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
+      std::optional<int> max_tokens,
+      std::optional<base::TimeDelta> refill_interval,
+      std::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   friend class SyncSchedulerImplTest;

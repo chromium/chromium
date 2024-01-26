@@ -64,7 +64,7 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       const GURL& blocked_url,
       const UnsafeResource& unsafe_resource,
       bool forward_extension_event,
-      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   // This is a no-op in the base class, but should be overridden to send threat
   // details. Called on the UI thread by the ThreatDetails with the report.

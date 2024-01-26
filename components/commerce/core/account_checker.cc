@@ -176,7 +176,7 @@ void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
   if (pref_service_ && is_waiting_for_pref_fetch_completion_ &&
       result.has_value() && result->is_dict()) {
     if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
-      if (absl::optional<bool> price_email_pref =
+      if (std::optional<bool> price_email_pref =
               preferences_map->FindBool(kPriceTrackEmailPref)) {
         // Only set the pref value when necessary since it could affect
         // PrefService::Preference::IsDefaultValue().

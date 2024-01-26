@@ -7,13 +7,13 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -45,7 +45,7 @@ class TestDownloadService : public BackgroundDownloadService {
                               const SchedulingParams& params) override;
   Logger* GetLogger() override;
 
-  const absl::optional<DownloadParams>& GetDownload(
+  const std::optional<DownloadParams>& GetDownload(
       const std::string& guid) const;
 
   // Set failed_download_id and fail_at_start.
@@ -85,7 +85,7 @@ class TestDownloadService : public BackgroundDownloadService {
 
   raw_ptr<Client> client_ = nullptr;
 
-  std::list<absl::optional<DownloadParams>> downloads_;
+  std::list<std::optional<DownloadParams>> downloads_;
 };
 
 }  // namespace test

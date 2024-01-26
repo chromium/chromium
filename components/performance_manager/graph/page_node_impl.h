@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PAGE_NODE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
@@ -20,7 +21,6 @@
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -82,8 +82,7 @@ class PageNodeImpl
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
-  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
-      const override;
+  std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
   bool HasPictureInPicture() const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
@@ -98,8 +97,7 @@ class PageNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   const WebContentsProxy& GetContentsProxy() const override;
-  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
-      const override;
+  const std::optional<freezing::FreezingVote>& GetFreezingVote() const override;
   PageState GetPageState() const override;
   uint64_t EstimateResidentSetSize() const override;
   uint64_t EstimatePrivateFootprintSize() const override;
@@ -145,7 +143,7 @@ class PageNodeImpl
   void ClearEmbedderFrameNodeAndEmbeddingType();
 
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
-  void set_freezing_vote(absl::optional<freezing::FreezingVote> freezing_vote);
+  void set_freezing_vote(std::optional<freezing::FreezingVote> freezing_vote);
   void set_page_state(PageState page_state);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
@@ -264,7 +262,7 @@ class PageNodeImpl
 
   // The last time at which the audible property changed, or nullopt if the node
   // has never been audible.
-  absl::optional<base::TimeTicks> audible_change_time_
+  std::optional<base::TimeTicks> audible_change_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last time at which a main frame navigation was committed.
@@ -381,8 +379,8 @@ class PageNodeImpl
   // Page::GetFreezingVote for a description of the different values this can
   // take.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      absl::optional<freezing::FreezingVote>,
-      absl::optional<freezing::FreezingVote>,
+      std::optional<freezing::FreezingVote>,
+      std::optional<freezing::FreezingVote>,
       &PageNodeObserver::OnFreezingVoteChanged>
       freezing_vote_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The state of this page.

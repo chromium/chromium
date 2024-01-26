@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -55,7 +55,7 @@ class FeaturePromoSpecification {
       // The required count for `event_name`, interpreted by `constraint`.
       uint32_t count = 0;
       // The window in which to evaluate `count` using `constraint`.
-      absl::optional<uint32_t> in_days;
+      std::optional<uint32_t> in_days;
     };
 
     // Sets the number of days in which "used" and other events should be
@@ -66,7 +66,7 @@ class FeaturePromoSpecification {
     void set_initial_delay_days(uint32_t initial_delay_days) {
       this->initial_delay_days_ = initial_delay_days;
     }
-    absl::optional<uint32_t> initial_delay_days() const {
+    std::optional<uint32_t> initial_delay_days() const {
       return initial_delay_days_;
     }
 
@@ -74,7 +74,7 @@ class FeaturePromoSpecification {
     // associated promo stops showing. Default is zero - i.e. if the feature is
     // used at all, the promo won't show.
     void set_used_limit(uint32_t used_limit) { this->used_limit_ = used_limit; }
-    absl::optional<uint32_t> used_limit() const { return used_limit_; }
+    std::optional<uint32_t> used_limit() const { return used_limit_; }
 
     // Adds an additional constraint on when the promo can show. `event_name` is
     // arbitrary and can be shared between promos.
@@ -82,11 +82,10 @@ class FeaturePromoSpecification {
     // Will only allow the promo to show if `event_name` has been seen
     // `constraint` `count` times in `in_days` days. If `in_days` isn't
     // specified, the period is effectively unlimited.
-    void AddAdditionalCondition(
-        const char* event_name,
-        Constraint constraint,
-        uint32_t count,
-        absl::optional<uint32_t> in_days = absl::nullopt);
+    void AddAdditionalCondition(const char* event_name,
+                                Constraint constraint,
+                                uint32_t count,
+                                std::optional<uint32_t> in_days = std::nullopt);
     void AddAdditionalCondition(
         const AdditionalCondition& additional_condition);
     const std::vector<AdditionalCondition>& additional_conditions() const {
@@ -94,8 +93,8 @@ class FeaturePromoSpecification {
     }
 
    private:
-    absl::optional<uint32_t> initial_delay_days_;
-    absl::optional<uint32_t> used_limit_;
+    std::optional<uint32_t> initial_delay_days_;
+    std::optional<uint32_t> used_limit_;
     std::vector<AdditionalCondition> additional_conditions_;
   };
 
@@ -398,7 +397,7 @@ class FeaturePromoSpecification {
   int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
   HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
-  const absl::optional<bool>& focus_on_show_override() const {
+  const std::optional<bool>& focus_on_show_override() const {
     return focus_on_show_override_;
   }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
@@ -504,7 +503,7 @@ class FeaturePromoSpecification {
   // Overrides the default focus-on-show behavior for a bubble, which is to
   // focus bubbles with action buttons, but not bubbles that only have a close
   // button.
-  absl::optional<bool> focus_on_show_override_;
+  std::optional<bool> focus_on_show_override_;
 
   // Optional screen reader announcement that replaces bubble text when the
   // bubble is first announced.

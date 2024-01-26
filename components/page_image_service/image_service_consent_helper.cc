@@ -25,7 +25,7 @@ void RunConsentThrottleCallback(
 }
 
 PageImageServiceConsentStatus ConsentStatusToUmaStatus(
-    absl::optional<bool> consent_status) {
+    std::optional<bool> consent_status) {
   if (!consent_status) {
     return PageImageServiceConsentStatus::kTimedOut;
   }
@@ -76,7 +76,7 @@ void ImageServiceConsentHelper::EnqueueRequest(
     return;
   }
 
-  absl::optional<bool> consent_status = GetConsentStatus();
+  std::optional<bool> consent_status = GetConsentStatus();
   if (consent_status.has_value()) {
     std::move(callback).Run(*consent_status
                                 ? PageImageServiceConsentStatus::kSuccess
@@ -98,7 +98,7 @@ void ImageServiceConsentHelper::OnStateChanged(
   CHECK_EQ(sync_service_, sync_service);
   CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
-  absl::optional<bool> consent_status = GetConsentStatus();
+  std::optional<bool> consent_status = GetConsentStatus();
   if (!consent_status.has_value()) {
     return;
   }
@@ -127,7 +127,7 @@ void ImageServiceConsentHelper::OnSyncShutdown(
   sync_service_ = nullptr;
 }
 
-absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
+std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
   CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   if (!sync_service_) {
@@ -138,7 +138,7 @@ absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
       sync_service_->GetDownloadStatusFor(model_type_);
   switch (download_status) {
     case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
-      return absl::nullopt;
+      return std::nullopt;
     case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
       return true;
     case syncer::SyncService::ModelTypeDownloadStatus::kError:

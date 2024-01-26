@@ -198,7 +198,7 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
       base::BindOnce(
           [](GetProductInfoForUrlCallback callback,
              base::WeakPtr<ShoppingService> service, const GURL& url,
-             const absl::optional<const ProductInfo>& info) {
+             const std::optional<const ProductInfo>& info) {
             if (!service || !info) {
               std::move(callback).Run(
                   shopping_service::mojom::ProductInfo::New());

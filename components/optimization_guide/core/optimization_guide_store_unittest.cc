@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/optimization_guide_store.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using leveldb_proto::test::FakeDB;
@@ -81,9 +81,9 @@ class OptimizationGuideStoreTest : public testing::Test {
   // Initializes the entries contained within the database on startup.
   void SeedInitialData(
       MetadataSchemaState state,
-      absl::optional<size_t> component_hint_count = absl::optional<size_t>(),
-      absl::optional<base::Time> fetched_hints_update =
-          absl::optional<base::Time>()) {
+      std::optional<size_t> component_hint_count = std::optional<size_t>(),
+      std::optional<base::Time> fetched_hints_update =
+          std::optional<base::Time>()) {
     db_store_.clear();
 
     // Add a metadata schema entry if its state isn't kMissing. The version

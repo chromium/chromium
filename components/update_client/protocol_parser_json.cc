@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/protocol_definition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -92,7 +92,7 @@ bool ParseManifest(const base::Value& manifest_node_val,
     p.hash_sha256 = GetValueString(package, "hash_sha256");
     p.hashdiff_sha256 = GetValueString(package, "hashdiff_sha256");
 
-    const absl::optional<double> size = package.FindDouble("size");
+    const std::optional<double> size = package.FindDouble("size");
     if (size) {
       const double val = size.value();
       if (0 <= val && val < protocol_request::kProtocolMaxInt) {
@@ -100,7 +100,7 @@ bool ParseManifest(const base::Value& manifest_node_val,
       }
     }
 
-    const absl::optional<double> sizediff = package.FindDouble("sizediff");
+    const std::optional<double> sizediff = package.FindDouble("sizediff");
     if (sizediff) {
       const double val = sizediff.value();
       if (0 <= val && val < protocol_request::kProtocolMaxInt) {
@@ -364,12 +364,12 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
 
   const base::Value::Dict* daystart_node = response_node->FindDict("daystart");
   if (daystart_node) {
-    const absl::optional<int> elapsed_seconds =
+    const std::optional<int> elapsed_seconds =
         daystart_node->FindInt("elapsed_seconds");
     if (elapsed_seconds) {
       results->daystart_elapsed_seconds = elapsed_seconds.value();
     }
-    const absl::optional<int> elapsed_days =
+    const std::optional<int> elapsed_days =
         daystart_node->FindInt("elapsed_days");
     if (elapsed_days) {
       results->daystart_elapsed_days = elapsed_days.value();

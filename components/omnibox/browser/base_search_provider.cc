@@ -216,7 +216,7 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
     const TemplateURLRef& search_url,
     const TemplateURLRef::SearchTermsArgs& original_search_terms_args,
     const SearchTermsData& search_terms_data) {
-  absl::optional<TemplateURLRef::SearchTermsArgs> action_search_terms_args;
+  std::optional<TemplateURLRef::SearchTermsArgs> action_search_terms_args;
   // If the Action's URL is empty, but the Action supplies additional search
   // parameters, compute new URL based on the base URL (that is specific to
   // the entire suggestion).

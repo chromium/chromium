@@ -49,7 +49,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
       "manufacturer_name", "model_name", "full_hardware_class",
       last_updated_timestamp, base::Minutes(kPulseIntervalMinutes),
       /*send_tab_to_self_receiving_enabled=*/false,
-      /*sharing_info=*/absl::nullopt, /*paask_info=*/absl::nullopt,
+      /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
       fcm_registration_token, interested_data_types);
 }
 

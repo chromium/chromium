@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_BANNERS_APP_BANNER_SETTINGS_HELPER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_BANNERS_APP_BANNER_SETTINGS_HELPER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -124,7 +124,7 @@ class AppBannerSettingsHelper {
 
   // Get the time that |event| was recorded, or a nullopt if it no dict to
   // record yet(such as exceed max num per site) . Exposed for testing.
-  static absl::optional<base::Time> GetSingleBannerEvent(
+  static std::optional<base::Time> GetSingleBannerEvent(
       content::WebContents* web_contents,
       const GURL& origin_url,
       const std::string& package_name_or_start_url,

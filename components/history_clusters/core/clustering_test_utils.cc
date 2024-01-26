@@ -96,7 +96,7 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
 
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
-    absl::optional<GURL> normalized_url,
+    std::optional<GURL> normalized_url,
     float score,
     history::ClusterVisit::InteractionState interaction_state) {
   history::ClusterVisit cluster_visit;

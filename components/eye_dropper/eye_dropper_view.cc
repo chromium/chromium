@@ -78,7 +78,7 @@ class EyeDropperView::ScreenCapturer
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
-  void CaptureScreen(absl::optional<webrtc::DesktopCapturer::SourceId> screen);
+  void CaptureScreen(std::optional<webrtc::DesktopCapturer::SourceId> screen);
   SkBitmap GetBitmap() const;
   SkColor GetColor(int x, int y) const;
   int original_offset_x() const;
@@ -114,11 +114,11 @@ EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
       capturer_->SelectSource(webrtc::kFullDesktopScreenId);
     }
   }
-  CaptureScreen(absl::nullopt);
+  CaptureScreen(std::nullopt);
 }
 
 void EyeDropperView::ScreenCapturer::CaptureScreen(
-    absl::optional<webrtc::DesktopCapturer::SourceId> screen) {
+    std::optional<webrtc::DesktopCapturer::SourceId> screen) {
   if (capturer_) {
     if (screen) {
       capturer_->SelectSource(*screen);
@@ -386,7 +386,7 @@ void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
 #endif
 
 void EyeDropperView::CaptureScreen(
-    absl::optional<webrtc::DesktopCapturer::SourceId> screen) {
+    std::optional<webrtc::DesktopCapturer::SourceId> screen) {
   screen_capturer_->CaptureScreen(screen);
 }
 

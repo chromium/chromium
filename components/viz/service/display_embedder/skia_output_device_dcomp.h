@@ -45,7 +45,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   ~SkiaOutputDeviceDComp() override;
 
   // SkiaOutputDevice implementation:
-  void Present(const absl::optional<gfx::Rect>& update_rect,
+  void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
@@ -61,7 +61,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
-  absl::optional<gl::DCLayerOverlayImage> BeginOverlayAccess(
+  std::optional<gl::DCLayerOverlayImage> BeginOverlayAccess(
       const gpu::Mailbox& mailbox);
 
   void CreateSkSurface();

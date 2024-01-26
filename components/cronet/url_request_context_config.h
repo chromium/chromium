@@ -6,6 +6,7 @@
 #define COMPONENTS_CRONET_URL_REQUEST_CONTEXT_CONFIG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "net/base/network_handle.h"
 #include "net/cert/cert_verifier.h"
 #include "net/nqe/effective_connection_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -155,7 +155,7 @@ struct URLRequestContextConfig {
 
   // If set, forces NQE to return the set value as the effective connection
   // type.
-  absl::optional<net::EffectiveConnectionType>
+  std::optional<net::EffectiveConnectionType>
       nqe_forced_effective_connection_type;
 
   // Preloaded Report-To headers, to preconfigure the Reporting API.
@@ -166,7 +166,7 @@ struct URLRequestContextConfig {
 
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
-  const absl::optional<double> network_thread_priority;
+  const std::optional<double> network_thread_priority;
 
   // Whether the connection status of active bidirectional streams should be
   // monitored.
@@ -210,7 +210,7 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      absl::optional<double> network_thread_priority);
+      std::optional<double> network_thread_priority);
 
  private:
   URLRequestContextConfig(
@@ -244,12 +244,12 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      absl::optional<double> network_thread_priority);
+      std::optional<double> network_thread_priority);
 
   // Parses experimental options from their JSON format to the format used
   // internally.
   // Returns an empty optional if the operation was unsuccessful.
-  static absl::optional<base::Value::Dict> ParseExperimentalOptions(
+  static std::optional<base::Value::Dict> ParseExperimentalOptions(
       std::string unparsed_experimental_options);
 
   // Makes appropriate changes to settings in |this|.
@@ -321,7 +321,7 @@ struct URLRequestContextConfigBuilder {
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
   // Do not specify for other targets.
-  absl::optional<double> network_thread_priority;
+  std::optional<double> network_thread_priority;
 };
 
 }  // namespace cronet

@@ -25,13 +25,13 @@ const char kNotSensitiveCategory[] = "NOT-SENSITIVE";
 PageVisibilityModelHandler::PageVisibilityModelHandler(
     OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    const absl::optional<proto::Any>& model_metadata)
+    const std::optional<proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
                    const std::string&>(
           model_provider,
           background_task_runner,
           std::make_unique<PageVisibilityModelExecutor>(),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
           model_metadata) {
   // Unloading the model is done via custom logic in the PCAService.
@@ -55,10 +55,10 @@ void PageVisibilityModelHandler::PostprocessCategoriesToBatchAnnotationResult(
     base::OnceCallback<void(const BatchAnnotationResult&)> callback,
     AnnotationType annotation_type,
     const std::string& input,
-    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+    const std::optional<std::vector<tflite::task::core::Category>>& output) {
   DCHECK_EQ(annotation_type, AnnotationType::kContentVisibility);
 
-  absl::optional<double> visibility_score;
+  std::optional<double> visibility_score;
   if (output) {
     visibility_score = ExtractContentVisibilityFromModelOutput(*output);
   }
@@ -66,7 +66,7 @@ void PageVisibilityModelHandler::PostprocessCategoriesToBatchAnnotationResult(
       input, visibility_score));
 }
 
-absl::optional<double>
+std::optional<double>
 PageVisibilityModelHandler::ExtractContentVisibilityFromModelOutput(
     const std::vector<tflite::task::core::Category>& model_output) const {
   for (const auto& category : model_output) {
@@ -74,7 +74,7 @@ PageVisibilityModelHandler::ExtractContentVisibilityFromModelOutput(
       return category.score;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace optimization_guide

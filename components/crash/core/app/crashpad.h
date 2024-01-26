@@ -8,13 +8,13 @@
 #include <time.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_mach_port.h"
@@ -177,10 +177,10 @@ void CrashWithoutDumping(const std::string& message);
         // BUILDFLAG(IS_ANDROID)
 
 // Returns the Crashpad database path, only valid in the browser. This will
-// return absl::nullopt if crashpad has not yet been initialized. On Windows,
-// this will also return absl::nullopt if running as part of browser_tests, as
+// return std::nullopt if crashpad has not yet been initialized. On Windows,
+// this will also return std::nullopt if running as part of browser_tests, as
 // there is no crash reporting in that configuration.
-absl::optional<base::FilePath> GetCrashpadDatabasePath();
+std::optional<base::FilePath> GetCrashpadDatabasePath();
 
 // Deletes any reports that were recorded or uploaded within the time range.
 void ClearReportsBetween(const base::Time& begin, const base::Time& end);

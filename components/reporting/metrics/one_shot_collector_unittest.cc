@@ -160,7 +160,7 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
 TEST_F(OneShotCollectorTest, NoMetricData) {
   settings_->SetReportingEnabled(kEnableSettingPath, true);
 
-  sampler_->SetMetricData(absl::nullopt);
+  sampler_->SetMetricData(std::nullopt);
 
   OneShotCollector collector(sampler_.get(), metric_report_queue_.get(),
                              settings_.get(), kEnableSettingPath,

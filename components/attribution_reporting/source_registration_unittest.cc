@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/source_registration.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -27,7 +28,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 namespace {
@@ -85,7 +85,7 @@ TEST(SourceRegistrationTest, Parse) {
                     MaxEventLevelReports(SourceType::kNavigation)),
               Field(&SourceRegistration::priority, 0),
               Field(&SourceRegistration::filter_data, FilterData()),
-              Field(&SourceRegistration::debug_key, absl::nullopt),
+              Field(&SourceRegistration::debug_key, std::nullopt),
               Field(&SourceRegistration::aggregation_keys, AggregationKeys()),
               Field(&SourceRegistration::debug_reporting, false),
               Field(&SourceRegistration::trigger_data_matching,
@@ -281,12 +281,12 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5","destination":"https://d.example"})json",
-          ValueIs(Field(&SourceRegistration::debug_key, absl::nullopt)),
+          ValueIs(Field(&SourceRegistration::debug_key, std::nullopt)),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5,"destination":"https://d.example"})json",
-          ValueIs(Field(&SourceRegistration::debug_key, absl::nullopt)),
+          ValueIs(Field(&SourceRegistration::debug_key, std::nullopt)),
       },
       {
           "filter_data_valid",

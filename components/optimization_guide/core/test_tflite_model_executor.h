@@ -19,7 +19,7 @@ class TestTFLiteModelExecutor
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const std::vector<float>& input) override;
 
-  absl::optional<std::vector<float>> Postprocess(
+  std::optional<std::vector<float>> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };
 

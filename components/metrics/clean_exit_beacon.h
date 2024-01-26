@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_CLEAN_EXIT_BEACON_H_
 #define COMPONENTS_METRICS_CLEAN_EXIT_BEACON_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -178,9 +178,9 @@ class CleanExitBeacon {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   // Returns whether Chrome exited cleanly in the previous session according to
   // the platform-specific beacon (the registry for Windows or NSUserDefaults
-  // for iOS). Returns absl::nullopt if the platform-specific location does not
+  // for iOS). Returns std::nullopt if the platform-specific location does not
   // have beacon info.
-  absl::optional<bool> ExitedCleanly();
+  std::optional<bool> ExitedCleanly();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
@@ -216,7 +216,7 @@ class CleanExitBeacon {
   // CleanExitBeacon::WriteBeaconValue(). When `false`, Chrome is watching for
   // browser crashes. When `true`, Chrome has stopped watching for crashes. When
   // unset, Chrome has neither started nor stopped watching for crashes.
-  absl::optional<bool> has_exited_cleanly_ = absl::nullopt;
+  std::optional<bool> has_exited_cleanly_ = std::nullopt;
 
   // Where the clean exit beacon and the variations crash streak are stored on
   // platforms that support the beacon file.

@@ -4,6 +4,7 @@
 
 #include "components/site_engagement/content/site_engagement_score.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/test/simple_test_clock.h"
@@ -11,7 +12,6 @@
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace site_engagement {
 
@@ -323,9 +323,9 @@ TEST_F(SiteEngagementScoreTest, FirstDailyEngagementBonus) {
   SetParamValue(SiteEngagementScore::FIRST_DAILY_ENGAGEMENT, 0.5);
 
   SiteEngagementScore score1(&test_clock_, GURL(),
-                             /*score_dict=*/absl::nullopt);
+                             /*score_dict=*/std::nullopt);
   SiteEngagementScore score2(&test_clock_, GURL(),
-                             /*score_dict=*/absl::nullopt);
+                             /*score_dict=*/std::nullopt);
   base::Time current_day = GetReferenceTime();
 
   test_clock_.SetNow(current_day);

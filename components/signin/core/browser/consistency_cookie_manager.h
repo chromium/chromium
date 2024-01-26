@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_CONSISTENCY_COOKIE_MANAGER_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_CONSISTENCY_COOKIE_MANAGER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network::mojom {
 class CookieManager;
@@ -121,9 +122,9 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
   // Calculates the cookie value based on the reconcilor state and the count of
-  // live `ScopedAccountUpdate` instances. Returns `absl::nullopt` if the value
+  // live `ScopedAccountUpdate` instances. Returns `std::nullopt` if the value
   // cannot be computed (e.g. if the reconcilor is not started).
-  absl::optional<CookieValue> CalculateCookieValue() const;
+  std::optional<CookieValue> CalculateCookieValue() const;
 
   // Gets the new value using `CalculateCookieValue()` and sets the cookie if it
   // changed. If `force_creation` is false, triggers a cookie query, as it
@@ -143,14 +144,14 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   int scoped_update_count_ = 0;
 
   // Cached value of the cookie, equal to the last value that was either set or
-  // queried. `absl::nullopt` when the cookie is missing. Initialized as
+  // queried. `std::nullopt` when the cookie is missing. Initialized as
   // `CookieValue::kInvalid` so that the first cookie update is always tried,
   // but should never be set to `CookieValue::kInvalid` after that.
-  absl::optional<CookieValue> cookie_value_ = CookieValue::kInvalid;
+  std::optional<CookieValue> cookie_value_ = CookieValue::kInvalid;
 
   // Pending cookie update, applied after querying the cookie value. The pending
   // update is only applied if the cookie already exists.
-  absl::optional<CookieValue> pending_cookie_update_;
+  std::optional<CookieValue> pending_cookie_update_;
 
   // Extra cookie managers where the cookie is also written. These are never
   // read, and if they go out of sync with the main cookie manager, they may

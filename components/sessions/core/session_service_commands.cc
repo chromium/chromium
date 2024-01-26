@@ -645,9 +645,9 @@ void CreateTabsAndWindows(
         const base::Token token(payload.maybe_group.id_high,
                                 payload.maybe_group.id_low);
         session_tab->group =
-            payload.has_group ? absl::make_optional(
+            payload.has_group ? std::make_optional(
                                     tab_groups::TabGroupId::FromRawToken(token))
-                              : absl::nullopt;
+                              : std::nullopt;
         break;
       }
 
@@ -655,7 +655,7 @@ void CreateTabsAndWindows(
         std::unique_ptr<base::Pickle> pickle = command->PayloadAsPickle();
         base::PickleIterator iter(*pickle);
 
-        absl::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
+        std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         if (!group_token.has_value())
           return;
 
@@ -744,14 +744,14 @@ void CreateTabsAndWindows(
 
         SessionTab* tab = GetTab(tab_id, tabs);
         tab->user_agent_override.ua_string_override.swap(user_agent_override);
-        tab->user_agent_override.opaque_ua_metadata_override = absl::nullopt;
+        tab->user_agent_override.opaque_ua_metadata_override = std::nullopt;
         break;
       }
 
       case kCommandSetTabUserAgentOverride2: {
         SessionID tab_id = SessionID::InvalidValue();
         std::string user_agent_override;
-        absl::optional<std::string> opaque_ua_metadata_override;
+        std::optional<std::string> opaque_ua_metadata_override;
         if (!RestoreSetTabUserAgentOverrideCommand2(
                 *command, &tab_id, &user_agent_override,
                 &opaque_ua_metadata_override)) {
@@ -1026,7 +1026,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
 
 std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     SessionID tab_id,
-    absl::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group) {
   TabGroupPayload payload = {0};
   payload.tab_id = tab_id.id();
   if (group.has_value()) {
@@ -1041,7 +1041,7 @@ std::unique_ptr<SessionCommand> CreateTabGroupCommand(
 std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
     const tab_groups::TabGroupVisualData* visual_data,
-    const absl::optional<std::string> saved_guid) {
+    const std::optional<std::string> saved_guid) {
   base::Pickle pickle;
   WriteTokenToPickle(&pickle, group.token());
   pickle.WriteString16(visual_data->title());

@@ -190,8 +190,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // This may be called on any thread.
   ContentSettingsForOneType GetSettingsForOneType(
       ContentSettingsType content_type,
-      absl::optional<content_settings::SessionModel> session_model =
-          absl::nullopt) const;
+      std::optional<content_settings::SessionModel> session_model =
+          std::nullopt) const;
 
   // Returns the correct patterns for the scoping of the particular content
   // type.
@@ -317,11 +317,11 @@ class HostContentSettingsMap : public content_settings::Observer,
   // nullopt or if it matches the rule's value. Returns the TimeDelta between
   // now and the setting's old expiration time if any setting was matched and
   // updated; nullopt otherwise.
-  absl::optional<base::TimeDelta> RenewContentSetting(
+  std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType type,
-      absl::optional<ContentSetting> setting_to_match);
+      std::optional<ContentSetting> setting_to_match);
 
   // Clears all host-specific settings for one content type.
   //
@@ -436,7 +436,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ContentSettingsForOneType* settings,
       bool incognito,
-      absl::optional<content_settings::SessionModel> session_model) const;
+      std::optional<content_settings::SessionModel> session_model) const;
 
   // Call UsedContentSettingsProviders() whenever you access
   // content_settings_providers_ (apart from initialization and

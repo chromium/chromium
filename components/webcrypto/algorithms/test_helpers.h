@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -16,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 
@@ -132,7 +132,7 @@ Status ImportKeyJwkFromDict(const base::ValueView& dict,
                             blink::WebCryptoKey* key);
 
 // Parses a vector of JSON into a dictionary.
-absl::optional<base::Value::Dict> GetJwkDictionary(
+std::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json);
 
 // Verifies the input dictionary contains the expected values. Exact matches are

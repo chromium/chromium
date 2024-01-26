@@ -105,7 +105,7 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {
 
   EXPECT_THAT(AsOptionalContext<ProcessContext>(process_context),
               Optional(mock_graph.process->GetResourceContext()));
-  EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), absl::nullopt);
+  EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), std::nullopt);
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextTypeId) {

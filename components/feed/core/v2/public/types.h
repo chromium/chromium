@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/version.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace feed {
@@ -124,13 +124,13 @@ struct DebugStreamData {
   DebugStreamData(const DebugStreamData&);
   DebugStreamData& operator=(const DebugStreamData&);
 
-  absl::optional<NetworkResponseInfo> fetch_info;
-  absl::optional<NetworkResponseInfo> upload_info;
+  std::optional<NetworkResponseInfo> fetch_info;
+  std::optional<NetworkResponseInfo> upload_info;
   std::string load_stream_status;
 };
 
 std::string SerializeDebugStreamData(const DebugStreamData& data);
-absl::optional<DebugStreamData> DeserializeDebugStreamData(
+std::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded);
 
 // Information about a web page which may be used to determine an associated

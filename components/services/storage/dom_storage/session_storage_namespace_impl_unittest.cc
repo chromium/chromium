@@ -73,7 +73,7 @@ class SessionStorageNamespaceImplTest
     // Create a database that already has a namespace saved.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageNamespaceImplTest",
+        std::nullopt, "SessionStorageNamespaceImplTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
     loop.Run();
@@ -228,7 +228,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
       .Times(1)
       .WillOnce(testing::Invoke([&](auto error) { commit_loop.Quit(); }));
   test::PutSync(leveldb_1.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), absl::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -284,7 +284,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneBeforeBind) {
               OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
       .Times(1);
   test::PutSync(leveldb_2.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), absl::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -349,7 +349,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneAfterBind) {
       .Times(1)
       .WillOnce(testing::Invoke([&](auto error) { commit_loop.Quit(); }));
   test::PutSync(leveldb_n2_o2.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), absl::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data;

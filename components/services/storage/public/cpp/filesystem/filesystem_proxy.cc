@@ -218,21 +218,21 @@ bool FilesystemProxy::DeleteFile(const base::FilePath& path) {
   return success;
 }
 
-absl::optional<base::File::Info> FilesystemProxy::GetFileInfo(
+std::optional<base::File::Info> FilesystemProxy::GetFileInfo(
     const base::FilePath& path) {
   if (!remote_directory_) {
     base::File::Info info;
     if (base::GetFileInfo(MaybeMakeAbsolute(path), &info))
       return info;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::File::Info> info;
+  std::optional<base::File::Info> info;
   remote_directory_->GetFileInfo(MakeRelative(path), &info);
   return info;
 }
 
-absl::optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
+std::optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
     const base::FilePath& path) {
   mojom::PathAccessInfoPtr info;
   if (!remote_directory_)
@@ -241,7 +241,7 @@ absl::optional<FilesystemProxy::PathAccessInfo> FilesystemProxy::GetPathAccess(
     remote_directory_->GetPathAccess(MakeRelative(path), &info);
 
   if (!info)
-    return absl::nullopt;
+    return std::nullopt;
 
   return PathAccessInfo{info->can_read, info->can_write};
 }

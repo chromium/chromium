@@ -58,11 +58,11 @@ bool SharedProtoDatabaseClient::HasPrefix(const PhysicalKey& key,
 }
 
 // static
-absl::optional<LogicalKey> SharedProtoDatabaseClient::StripPrefix(
+std::optional<LogicalKey> SharedProtoDatabaseClient::StripPrefix(
     const PhysicalKey& key,
     const KeyPrefix& prefix) {
   if (!HasPrefix(key, prefix))
-    return absl::nullopt;
+    return std::nullopt;
   return LogicalKey(key.value().substr(prefix.value().length()));
 }
 
@@ -82,7 +82,7 @@ bool SharedProtoDatabaseClient::KeyFilterStripPrefix(
     const PhysicalKey& key) {
   if (key_filter.is_null())
     return true;
-  absl::optional<LogicalKey> stripped = StripPrefix(key, prefix);
+  std::optional<LogicalKey> stripped = StripPrefix(key, prefix);
   if (!stripped)
     return false;
   return key_filter.Run(stripped->value());
@@ -103,7 +103,7 @@ SharedProtoDatabaseClient::KeyIteratorControllerStripPrefix(
     const KeyPrefix& prefix,
     const PhysicalKey& key) {
   DCHECK(!controller.is_null());
-  absl::optional<LogicalKey> stripped = StripPrefix(key, prefix);
+  std::optional<LogicalKey> stripped = StripPrefix(key, prefix);
   if (!stripped)
     return Enums::kSkipAndStop;
   return controller.Run(stripped->value());
@@ -374,7 +374,7 @@ void SharedProtoDatabaseClient::StripPrefixLoadKeysCallback(
     std::unique_ptr<leveldb_proto::KeyVector> keys) {
   auto stripped_keys = std::make_unique<leveldb_proto::KeyVector>();
   for (auto& key : *keys) {
-    absl::optional<LogicalKey> stripped = StripPrefix(PhysicalKey(key), prefix);
+    std::optional<LogicalKey> stripped = StripPrefix(PhysicalKey(key), prefix);
     if (!stripped)
       continue;
     stripped_keys->emplace_back(stripped->value());
@@ -390,7 +390,7 @@ void SharedProtoDatabaseClient::StripPrefixLoadKeysAndEntriesCallback(
     std::unique_ptr<KeyValueMap> keys_entries) {
   auto stripped_keys_map = std::make_unique<KeyValueMap>();
   for (auto& key_entry : *keys_entries) {
-    absl::optional<LogicalKey> stripped_key =
+    std::optional<LogicalKey> stripped_key =
         StripPrefix(PhysicalKey(key_entry.first), prefix);
     if (!stripped_key)
       continue;

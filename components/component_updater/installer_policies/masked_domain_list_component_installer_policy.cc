@@ -37,7 +37,7 @@ constexpr char kExperimentalVersionAttributeName[] =
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
 
-absl::optional<std::string> ReadFile(const base::FilePath& pb_path) {
+std::optional<std::string> ReadFile(const base::FilePath& pb_path) {
   std::string raw_list;
   if (base::ReadStreamToString(
           FileToFILE(base::File(pb_path,

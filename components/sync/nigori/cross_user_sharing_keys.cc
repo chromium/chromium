@@ -27,7 +27,7 @@ sync_pb::CrossUserSharingPrivateKey KeyPairToPrivateKeyProto(
 
 CrossUserSharingPublicPrivateKeyPair CloneKeyPair(
     const CrossUserSharingPublicPrivateKeyPair& key_pair) {
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> clone =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> clone =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           key_pair.GetRawPrivateKey());
   CHECK(clone.has_value());
@@ -92,7 +92,7 @@ bool CrossUserSharingKeys::AddKeyPairFromProto(
     const sync_pb::CrossUserSharingPrivateKey& key) {
   std::vector<uint8_t> private_key(key.x25519_private_key().begin(),
                                    key.x25519_private_key().end());
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   if (!key_pair.has_value()) {

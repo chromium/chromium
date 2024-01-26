@@ -42,7 +42,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // SkiaOutputDevice overrides.
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
-  void Present(const absl::optional<gfx::Rect>& update_rect,
+  void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   bool Reshape(const SkImageInfo& image_info,
@@ -58,9 +58,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   bool IsPrimaryPlaneOverlay() const override;
   void SchedulePrimaryPlane(
-      const absl::optional<
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane)
-      override;
+      const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+          plane) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
   // SkiaOutputDevice override

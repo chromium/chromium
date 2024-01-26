@@ -249,8 +249,8 @@ ReliabilityLoggingBridge& TestSurfaceBase::GetReliabilityLoggingBridge() {
 }
 
 void TestSurfaceBase::Clear() {
-  initial_state = absl::nullopt;
-  update = absl::nullopt;
+  initial_state = std::nullopt;
+  update = std::nullopt;
   described_updates_.clear();
   described_datastore_updates_.clear();
 }
@@ -629,7 +629,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
     base::StringPiece method,
     std::string request_bytes,
     const AccountInfo& account_info,
-    absl::optional<RequestMetadata> request_metadata,
+    std::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
   sent_request_types_.push_back(request_type);
   last_account_info = account_info;
@@ -783,7 +783,7 @@ void TestFeedNetwork::InjectEmptyActionRequestResult() {
   InjectApiRawResponse<UploadActionsDiscoverApi>({});
 }
 
-absl::optional<feedwire::UploadActionsRequest>
+std::optional<feedwire::UploadActionsRequest>
 TestFeedNetwork::GetActionRequestSent() {
   return GetApiRequestSent<UploadActionsDiscoverApi>();
 }
@@ -844,7 +844,7 @@ RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
     base::Time current_time) const {
-  absl::optional<RefreshResponseData> result =
+  std::optional<RefreshResponseData> result =
       TranslateStreamSource(source, account_info, current_time);
   return result ? std::move(result.value())
                 : WireResponseTranslator::TranslateWireResponse(
@@ -856,14 +856,14 @@ RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
     base::Time current_time) const {
-  absl::optional<RefreshResponseData> result =
+  std::optional<RefreshResponseData> result =
       TranslateStreamSource(source, account_info, current_time);
   return result ? std::move(result.value())
                 : WireResponseTranslator::TranslateWireResponse(
                       std::move(response), source, account_info, current_time);
 }
 
-absl::optional<RefreshResponseData>
+std::optional<RefreshResponseData>
 TestWireResponseTranslator::TranslateStreamSource(
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
@@ -887,11 +887,11 @@ TestWireResponseTranslator::TranslateStreamSource(
     }
     return result;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 void TestWireResponseTranslator::InjectResponse(
     std::unique_ptr<StreamModelUpdateRequest> response,
-    absl::optional<std::string> session_id) {
+    std::optional<std::string> session_id) {
   DCHECK(!response->stream_data.signed_in() || !session_id);
   RefreshResponseData data;
   data.model_update_request = std::move(response);

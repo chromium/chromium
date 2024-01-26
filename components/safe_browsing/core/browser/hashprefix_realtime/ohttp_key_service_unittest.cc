@@ -136,7 +136,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
 
-  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service_->get_ohttp_key_for_testing();
   EXPECT_TRUE(ohttp_key.has_value());
   EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(7));
@@ -157,12 +157,12 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
   test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
 
-  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service_->get_ohttp_key_for_testing();
   // The key should not be cached if key fetch fails.
   EXPECT_FALSE(ohttp_key.has_value());
@@ -183,7 +183,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Backoff) {
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Although the success response is set up, the key is empty because the
   // service is in backoff mode.
-  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
@@ -247,7 +247,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Disabled) {
   SetupSuccessResponse();
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
@@ -262,7 +262,7 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_);
 
-  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_TRUE(ohttp_key.has_value());
   EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(10));
@@ -284,7 +284,7 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_EmptyKey) {
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_);
 
-  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_FALSE(ohttp_key.has_value());
 }
@@ -364,7 +364,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
   auto forward_and_check = [this](base::TimeDelta forward,
-                                  absl::optional<std::string> expected_key) {
+                                  std::optional<std::string> expected_key) {
     task_environment_.FastForwardBy(forward);
     task_environment_.RunUntilIdle();
     ASSERT_EQ(expected_key.has_value(),
@@ -380,22 +380,22 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
 
   // Try to fetch a new key three times in a row with the minimum wait time
   // before entering backoff mode.
-  forward_and_check(base::Minutes(0), /*expected_key=*/absl::nullopt);
-  forward_and_check(base::Minutes(1), /*expected_key=*/absl::nullopt);
-  forward_and_check(base::Minutes(1), /*expected_key=*/absl::nullopt);
+  forward_and_check(base::Minutes(0), /*expected_key=*/std::nullopt);
+  forward_and_check(base::Minutes(1), /*expected_key=*/std::nullopt);
+  forward_and_check(base::Minutes(1), /*expected_key=*/std::nullopt);
 
   // Enter the backoff mode, wait for 5 minutes before retrying.
-  forward_and_check(base::Minutes(5), /*expected_key=*/absl::nullopt);
+  forward_and_check(base::Minutes(5), /*expected_key=*/std::nullopt);
   // Try two more times after with the minimum wait time after exiting the
   // backoff mode.
-  forward_and_check(base::Minutes(1), /*expected_key=*/absl::nullopt);
-  forward_and_check(base::Minutes(1), /*expected_key=*/absl::nullopt);
+  forward_and_check(base::Minutes(1), /*expected_key=*/std::nullopt);
+  forward_and_check(base::Minutes(1), /*expected_key=*/std::nullopt);
 
   // Set up a successful response.
   test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey);
   // Enter the backoff mode again with a longer duration.
-  forward_and_check(base::Minutes(9), /*expected_key=*/absl::nullopt);
+  forward_and_check(base::Minutes(9), /*expected_key=*/std::nullopt);
   // The key is succesfully fetched after exiting the backoff mode.
   forward_and_check(base::Minutes(1), /*expected_key=*/kTestOhttpKey);
 
@@ -420,7 +420,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_RescheduledBasedOnBackoffRemainingTime) {
   test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(3);
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(3);
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
@@ -520,7 +520,7 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_Backoff) {
 TEST_F(OhttpKeyServiceTest, Shutdown) {
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Pending callbacks should be run during shutdown.
-  EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   ohttp_key_service_->Shutdown();

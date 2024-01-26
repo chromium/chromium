@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_
 
+#include <optional>
 #include <type_traits>
 
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
@@ -37,7 +37,7 @@ using EnableIfIsVariantAlternative =
 // If `v`, a variant of type V, currently holds an alternative of type T,
 // returns that alternative. Otherwise returns nullopt.
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
-constexpr absl::optional<T> GetAsOptional(const V& v) {
+constexpr std::optional<T> GetAsOptional(const V& v) {
   return base::OptionalFromPtr(absl::get_if<T>(&v));
 }
 
@@ -82,7 +82,7 @@ constexpr base::optional_ref<T> GetFromVariantVector(std::vector<V>& vs) {
       return t;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Look up `T` in `variant<T, ...>`, return `optional_ref<const T>`.
@@ -95,7 +95,7 @@ constexpr base::optional_ref<const T> GetFromVariantVector(
       return t;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Look up `const T` in `variant<T, ...>`, return `optional_ref<const T>`.
@@ -111,7 +111,7 @@ constexpr base::optional_ref<ConstT> GetFromVariantVector(
       return t;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Extended comparators for variants, allowing a variant to be compared with any

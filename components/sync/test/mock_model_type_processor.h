@@ -54,10 +54,10 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
-  void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList response_list,
-                        absl::optional<sync_pb::GarbageCollectionDirective>
-                            gc_directive) override;
+  void OnUpdateReceived(
+      const sync_pb::ModelTypeState& type_state,
+      UpdateResponseDataList response_list,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
@@ -148,7 +148,7 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   void OnUpdateReceivedImpl(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList response_list,
-      absl::optional<sync_pb::GarbageCollectionDirective> gc_directive);
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // Getter and setter for per-item sequence number tracking.
   int64_t GetCurrentSequenceNumber(const ClientTagHash& tag_hash) const;

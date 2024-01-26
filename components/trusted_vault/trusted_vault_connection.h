@@ -6,10 +6,10 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct CoreAccountInfo;
 
@@ -155,7 +155,7 @@ class TrustedVaultConnection {
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      absl::optional<int> authentication_factor_type_hint,
+      std::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) = 0;
 
   // Special version of the above for the case where the caller has no local

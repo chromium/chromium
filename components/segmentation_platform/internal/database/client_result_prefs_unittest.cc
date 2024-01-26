@@ -77,7 +77,7 @@ TEST_F(ClientResultPrefsTest, SaveMultipleClientResults) {
             current_result->SerializeAsString());
 
   // Save empty result. It should delete the current result.
-  result_prefs_->SaveClientResultToPrefs(kClientKey2, absl::nullopt);
+  result_prefs_->SaveClientResultToPrefs(kClientKey2, std::nullopt);
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey2);
   EXPECT_FALSE(current_result);
 

@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -37,7 +38,6 @@
 #include "components/update_client/update_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -61,7 +61,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void TearDown() override;
 
   void UpdateCheckComplete(
-      const absl::optional<ProtocolParser::Results>& results,
+      const std::optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec);
@@ -76,7 +76,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
       const std::string& brand,
       const std::string& install_data_index,
       bool allow_updates_on_metered_connection) const;
-  absl::optional<base::Value::Dict> ParseRequest(int request_number);
+  std::optional<base::Value::Dict> ParseRequest(int request_number);
   base::Value GetFirstAppAsValue(const base::Value::Dict& request);
   base::Value::Dict GetFirstAppAsDict(const base::Value::Dict& request);
 
@@ -89,7 +89,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<URLLoaderPostInterceptor> post_interceptor_;
 
-  absl::optional<ProtocolParser::Results> results_;
+  std::optional<ProtocolParser::Results> results_;
   ErrorCategory error_category_ = ErrorCategory::kNone;
   int error_ = 0;
   int retry_after_sec_ = 0;
@@ -164,7 +164,7 @@ void UpdateCheckerTest::Quit() {
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
-    const absl::optional<ProtocolParser::Results>& results,
+    const std::optional<ProtocolParser::Results>& results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -217,14 +217,14 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   return component;
 }
 
-absl::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
+std::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
     int request_number) {
   const std::string& request =
       post_interceptor_->GetRequestBody(request_number);
-  absl::optional<base::Value> request_val = base::JSONReader::Read(request);
+  std::optional<base::Value> request_val = base::JSONReader::Read(request);
 
   if (!request_val || !request_val->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(request_val.value()).TakeDict();
@@ -280,7 +280,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       << post_interceptor_->GetRequestsAsString();
 
   // Check the request.
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
 
   const auto* request = root->FindDict("request");
@@ -438,7 +438,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
 
   RunThreads();
 
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
 
   const base::Value app_as_val = GetFirstAppAsValue(root.value());
@@ -479,7 +479,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
 
   RunThreads();
 
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
 
   const base::Value app_as_val = GetFirstAppAsValue(root.value());
@@ -572,7 +572,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
   RunThreads();
 
   // The request must contain dlpref="cacheable".
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
   EXPECT_EQ("cacheable",
             CHECK_DEREF(root->FindDict("request")->FindString("dlpref")));
@@ -604,7 +604,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
       << post_interceptor_->GetRequestsAsString();
 
   // Check the request.
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
   const base::Value app_as_val = GetFirstAppAsValue(root.value());
   const base::Value::Dict app = GetFirstAppAsDict(root.value());
@@ -688,11 +688,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
   ASSERT_EQ(2, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  absl::optional<base::Value::Dict> root1 = ParseRequest(0);
+  std::optional<base::Value::Dict> root1 = ParseRequest(0);
   ASSERT_TRUE(root1);
   const base::Value app1 = GetFirstAppAsValue(root1.value());
   EXPECT_EQ(5, app1.GetDict().FindByDottedPath("ping.r")->GetInt());
-  absl::optional<base::Value::Dict> root2 = ParseRequest(1);
+  std::optional<base::Value::Dict> root2 = ParseRequest(1);
   ASSERT_TRUE(root2);
   const base::Value app2 = GetFirstAppAsValue(root2.value());
   EXPECT_EQ(3383, app2.GetDict().FindByDottedPath("ping.rd")->GetInt());
@@ -753,14 +753,14 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
       << post_interceptor_->GetRequestsAsString();
 
   {
-    absl::optional<base::Value::Dict> root = ParseRequest(0);
+    std::optional<base::Value::Dict> root = ParseRequest(0);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
     EXPECT_EQ(10, app.GetDict().FindIntByDottedPath("ping.a").value());
     EXPECT_EQ(-2, app.GetDict().FindIntByDottedPath("ping.r").value());
   }
   {
-    absl::optional<base::Value::Dict> root = ParseRequest(1);
+    std::optional<base::Value::Dict> root = ParseRequest(1);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
     EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.ad")->GetInt());
@@ -769,7 +769,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
         app.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
   }
   {
-    absl::optional<base::Value::Dict> root = ParseRequest(2);
+    std::optional<base::Value::Dict> root = ParseRequest(2);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
     EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.rd")->GetInt());
@@ -1254,7 +1254,7 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
                      base::Unretained(this)));
   RunThreads();
 
-  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  std::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
   const base::Value app_as_val = GetFirstAppAsValue(root.value());
   const base::Value::Dict app = GetFirstAppAsDict(root.value());
@@ -1353,8 +1353,8 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
 }
 
 TEST_P(UpdateCheckerTest, DomainJoined) {
-  for (const auto is_managed : std::initializer_list<absl::optional<bool>>{
-           absl::nullopt, false, true}) {
+  for (const auto is_managed :
+       std::initializer_list<std::optional<bool>>{std::nullopt, false, true}) {
     EXPECT_TRUE(post_interceptor_->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
         GetTestFilePath("updatecheck_reply_noupdate.json")));
@@ -1370,7 +1370,7 @@ TEST_P(UpdateCheckerTest, DomainJoined) {
     RunThreads();
 
     ASSERT_EQ(post_interceptor_->GetCount(), 1);
-    absl::optional<base::Value::Dict> root = ParseRequest(0);
+    std::optional<base::Value::Dict> root = ParseRequest(0);
     ASSERT_TRUE(root);
     post_interceptor_->Reset();
 

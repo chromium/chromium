@@ -124,8 +124,8 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
   return it != kAllowList.end() ? *it : "";
 }
 
-absl::optional<std::string> DoSerialize(base::ValueView value,
-                                        const base::FilePath& path) {
+std::optional<std::string> DoSerialize(base::ValueView value,
+                                       const base::FilePath& path) {
   std::string output;
   if (!base::JSONWriter::Write(value, &output)) {
     // Failed to serialize prefs file. Backup the existing prefs file and
@@ -482,7 +482,7 @@ JsonPrefStore::~JsonPrefStore() {
   CommitPendingWrite();
 }
 
-absl::optional<std::string> JsonPrefStore::SerializeData() {
+std::optional<std::string> JsonPrefStore::SerializeData() {
   PerformPreserializationTasks();
   return DoSerialize(prefs_, path_);
 }

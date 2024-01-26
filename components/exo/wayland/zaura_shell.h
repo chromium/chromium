@@ -177,7 +177,7 @@ class AuraToplevel {
   void SetFullscreenMode(uint32_t mode);
   void SetScaleFactor(float scale_factor);
   void SetPersistable(bool persistable);
-  void SetShape(absl::optional<cc::Region> shape);
+  void SetShape(std::optional<cc::Region> shape);
   void AckRotateFocus(uint32_t serial, uint32_t handled);
   void OnRotatePaneFocus(uint32_t serial,
                          ash::FocusCycler::Direction direction,

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace supervised_user {
@@ -35,7 +35,7 @@ net::NetworkTrafficAnnotationTag CreatePermissionRequestTag();
 struct AccessTokenConfig {
   // Must be set in actual configs. See
   // signin::PrimaryAccountAccessTokenFetcher::Mode docs.
-  absl::optional<signin::PrimaryAccountAccessTokenFetcher::Mode> mode;
+  std::optional<signin::PrimaryAccountAccessTokenFetcher::Mode> mode;
 
   // The OAuth 2.0 permission scope to request the authorization token.
   base::StringPiece oauth2_scope;
@@ -72,12 +72,12 @@ struct FetcherConfig {
   const Method method = Method::kUndefined;
 
   // Basename for histograms. When unset, metrics won't be emitted.
-  absl::optional<std::string_view> histogram_basename;
+  std::optional<std::string_view> histogram_basename;
 
   net::NetworkTrafficAnnotationTag (*const traffic_annotation)() = nullptr;
 
   // Policy for retrying patterns that will be applied to transient errors.
-  absl::optional<net::BackoffEntry::Policy> backoff_policy;
+  std::optional<net::BackoffEntry::Policy> backoff_policy;
 
   AccessTokenConfig access_token_config;
 

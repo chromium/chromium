@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -42,7 +42,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   }
 
   void StartSyncing(const syncer::SyncDataList& initial_sync_data) {
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         settings_service_.MergeDataAndStartSyncing(
             syncer::SUPERVISED_USER_SETTINGS, initial_sync_data,
             CreateSyncProcessor());
@@ -101,7 +101,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     EXPECT_EQ(
         sync_change.sync_data().GetSpecifics().managed_user_setting().name(),
         expected_key);
-    EXPECT_EQ(absl::optional<base::Value>(true),
+    EXPECT_EQ(std::optional<base::Value>(true),
               base::JSONReader::Read(sync_change.sync_data()
                                          .GetSpecifics()
                                          .managed_user_setting()
@@ -114,7 +114,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
       if (sync_data_item.GetSpecifics().managed_user_setting().name().compare(
               expected_key) == 0) {
         EXPECT_EQ(
-            absl::optional<base::Value>(true),
+            std::optional<base::Value>(true),
             base::JSONReader::Read(
                 sync_data_item.GetSpecifics().managed_user_setting().value()));
         return;
@@ -141,9 +141,9 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::Value::Dict split_items_;
-  absl::optional<base::Value> atomic_setting_value_;
+  std::optional<base::Value> atomic_setting_value_;
   SupervisedUserSettingsService settings_service_;
-  absl::optional<base::Value::Dict> settings_;
+  std::optional<base::Value::Dict> settings_;
   base::CallbackListSubscription user_settings_subscription_;
 
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor_;
@@ -162,7 +162,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   syncer::SyncChangeList change_list;
   change_list.push_back(
       syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
@@ -200,7 +200,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
     change_list.push_back(
         syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
   }
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);

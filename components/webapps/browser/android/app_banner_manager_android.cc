@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -35,7 +36,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

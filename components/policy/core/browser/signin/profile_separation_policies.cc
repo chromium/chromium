@@ -10,7 +10,7 @@ ProfileSeparationPolicies::ProfileSeparationPolicies() = default;
 
 ProfileSeparationPolicies::ProfileSeparationPolicies(
     int profile_separation_settings,
-    absl::optional<int> profile_separation_data_migration_settings)
+    std::optional<int> profile_separation_data_migration_settings)
     : profile_separation_settings_(profile_separation_settings),
       profile_separation_data_migration_settings_(
           std::move(profile_separation_data_migration_settings)) {}

@@ -20,13 +20,13 @@ BertModelExecutor::BertModelExecutor(
                        .value_or(-1)) {}
 BertModelExecutor::~BertModelExecutor() = default;
 
-absl::optional<std::vector<tflite::task::core::Category>>
+std::optional<std::vector<tflite::task::core::Category>>
 BertModelExecutor::Execute(ModelExecutionTask* execution_task,
                            ExecutionStatus* out_status,
                            const std::string& input) {
   if (input.empty()) {
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
-    return absl::nullopt;
+    return std::nullopt;
   }
   TRACE_EVENT2("browser", "BertModelExecutor::Execute", "optimization_target",
                GetStringNameForOptimizationTarget(optimization_target_),
@@ -37,11 +37,11 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
           ->ClassifyText(input);
   if (absl::IsCancelled(status_or_result.status())) {
     *out_status = ExecutionStatus::kErrorCancelled;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!status_or_result.ok()) {
     *out_status = ExecutionStatus::kErrorUnknown;
-    return absl::nullopt;
+    return std::nullopt;
   }
   *out_status = ExecutionStatus::kSuccess;
   return *status_or_result;

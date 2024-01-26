@@ -105,8 +105,8 @@ class POLICY_EXPORT URLBlocklistManager {
   // Must be constructed on the UI thread and either of |blocklist_pref_path| or
   // |allowlist_pref_path| should be valid.
   URLBlocklistManager(PrefService* pref_service,
-                      absl::optional<std::string> blocklist_pref_path,
-                      absl::optional<std::string> allowlist_pref_path);
+                      std::optional<std::string> blocklist_pref_path,
+                      std::optional<std::string> allowlist_pref_path);
   URLBlocklistManager(const URLBlocklistManager&) = delete;
   URLBlocklistManager& operator=(const URLBlocklistManager&) = delete;
   virtual ~URLBlocklistManager();

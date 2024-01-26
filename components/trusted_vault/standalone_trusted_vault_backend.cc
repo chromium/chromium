@@ -349,13 +349,13 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     // There are locally available keys, which weren't marked as stale. Keys
     // download attempt is not needed.
     FulfillFetchKeys(account_info.gaia, std::move(callback),
-                     /*status_for_uma=*/absl::nullopt);
+                     /*status_for_uma=*/std::nullopt);
     return;
   }
   if (!connection_) {
     // Keys downloading is disabled.
     FulfillFetchKeys(account_info.gaia, std::move(callback),
-                     /*status_for_uma=*/absl::nullopt);
+                     /*status_for_uma=*/std::nullopt);
     return;
   }
   if (!primary_account_.has_value() ||
@@ -457,7 +457,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
-    const absl::optional<CoreAccountInfo>& primary_account,
+    const std::optional<CoreAccountInfo>& primary_account,
     RefreshTokenErrorState refresh_token_error_state) {
   const RefreshTokenErrorState previous_refresh_token_error_state =
       refresh_token_error_state_;
@@ -521,7 +521,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
   pending_get_is_recoverability_degraded_.reset();
 
-  const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+  const std::optional<TrustedVaultDeviceRegistrationStateForUMA>
       registration_state = MaybeRegisterDevice();
 
   if (registration_state.has_value() &&
@@ -689,7 +689,7 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
   MaybeRegisterDevice();
 }
 
-absl::optional<CoreAccountInfo>
+std::optional<CoreAccountInfo>
 StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
 }
@@ -756,18 +756,18 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
   return AreConnectionRequestsThrottled();
 }
 
-absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+std::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // TODO(crbug.com/1413179): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!primary_account_.has_value()) {
     // Device registration is supported only for |primary_account_|.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // |per_user_vault| must be created before calling this function.
@@ -826,7 +826,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
             *primary_account_, GetAllVaultKeys(*per_user_vault),
             per_user_vault->last_vault_key_version(), key_pair->public_key(),
             AuthenticationFactorType::kPhysicalDevice,
-            /*authentication_factor_type_hint=*/absl::nullopt,
+            /*authentication_factor_type_hint=*/std::nullopt,
             base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                            base::Unretained(this)));
   } else {
@@ -1046,7 +1046,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 }
 
 void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
-    absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
+    std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
   if (!ongoing_fetch_keys_.has_value()) {
     return;
   }
@@ -1054,7 +1054,7 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
   // Invoking callbacks may in theory cause side effects (like changing
   // |ongoing_fetch_keys_|), making a local copy to avoid them.
   auto ongoing_fetch_keys = std::move(*ongoing_fetch_keys_);
-  ongoing_fetch_keys_ = absl::nullopt;
+  ongoing_fetch_keys_ = std::nullopt;
 
   for (auto& callback : ongoing_fetch_keys.callbacks) {
     FulfillFetchKeys(ongoing_fetch_keys.gaia_id, std::move(callback),
@@ -1065,7 +1065,7 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
 void StandaloneTrustedVaultBackend::FulfillFetchKeys(
     const std::string& gaia_id,
     FetchKeysCallback callback,
-    absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
+    std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
   const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(gaia_id);
 

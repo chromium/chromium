@@ -200,7 +200,7 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 // static
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     ReferrerChain* referrer_chain,
-    absl::optional<base::Time> min_allowed_timestamp,
+    std::optional<base::Time> min_allowed_timestamp,
     bool should_remove_subresource_url) {
   for (ReferrerChainEntry& entry : *referrer_chain) {
     // Remove URLs in the entry if the referrer chain is collected
@@ -384,7 +384,7 @@ void RealTimeUrlLookupServiceBase::SendRequest(
                                     !access_token_string.empty());
 
   MaybeLogLastProtegoPingTimeToPrefs(!access_token_string.empty());
-  absl::optional<int> webui_token =
+  std::optional<int> webui_token =
       LogLookupRequest(*request, access_token_string);
 
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
@@ -398,12 +398,12 @@ void RealTimeUrlLookupServiceBase::SendRequest(
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
-    absl::optional<std::string> access_token_string,
+    std::optional<std::string> access_token_string,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     ChromeUserPopulation::UserPopulation user_population,
     bool is_sampled_report,
-    absl::optional<int> webui_token) {
+    std::optional<int> webui_token) {
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        GetTrafficAnnotationTag());
@@ -428,13 +428,13 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
 }
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
-    absl::optional<std::string> access_token_string,
+    std::optional<std::string> access_token_string,
     network::SimpleURLLoader* url_loader,
     ChromeUserPopulation::UserPopulation user_population,
     base::TimeTicks request_start_time,
     bool is_sampled_report,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-    absl::optional<int> webui_token,
+    std::optional<int> webui_token,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(first_request_start_time_);
@@ -553,7 +553,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
                                              : RTLookupRequest::FULL_REPORT);
   request->set_frame_type(is_mainframe ? RTLookupRequest::MAIN_FRAME
                                        : RTLookupRequest::SUB_FRAME);
-  absl::optional<std::string> dm_token_string = GetDMTokenString();
+  std::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());
   }
@@ -598,18 +598,18 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   return request;
 }
 
-absl::optional<int> RealTimeUrlLookupServiceBase::LogLookupRequest(
+std::optional<int> RealTimeUrlLookupServiceBase::LogLookupRequest(
     const RTLookupRequest& request,
     const std::string& oauth_token) {
   if (!webui_delegate_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return webui_delegate_->AddToURTLookupPings(request, oauth_token);
 }
 
 void RealTimeUrlLookupServiceBase::LogLookupResponseForToken(
-    absl::optional<int> token,
+    std::optional<int> token,
     const RTLookupResponse& response) {
   if (!webui_delegate_) {
     return;

@@ -239,10 +239,10 @@ class FeedNetwork {
       base::OnceCallback<void(ApiResult<typename API::Response>)> callback) {
     std::string binary_proto;
     request.SerializeToString(&binary_proto);
-    absl::optional<RequestMetadata> optional_request_metadata;
+    std::optional<RequestMetadata> optional_request_metadata;
     if (API::SendRequestMetadata()) {
       optional_request_metadata =
-          absl::make_optional(std::move(request_metadata));
+          std::make_optional(std::move(request_metadata));
     }
 
     SendDiscoverApiRequest(
@@ -274,7 +274,7 @@ class FeedNetwork {
       base::StringPiece method,
       std::string request_bytes,
       const AccountInfo& account_info,
-      absl::optional<RequestMetadata> request_metadata,
+      std::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) = 0;
 
   template <typename API>

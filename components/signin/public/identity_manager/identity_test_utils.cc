@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/account.h"
@@ -134,8 +134,8 @@ AccountAvailabilityOptions::AccountAvailabilityOptions(base::StringPiece email)
 AccountAvailabilityOptions::AccountAvailabilityOptions(
     base::StringPiece email,
     base::StringPiece gaia_id,
-    absl::optional<ConsentLevel> consent_level,
-    absl::optional<std::string> refresh_token,
+    std::optional<ConsentLevel> consent_level,
+    std::optional<std::string> refresh_token,
     raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
     signin_metrics::AccessPoint access_point)
     : email(email),
@@ -200,7 +200,7 @@ AccountAvailabilityOptionsBuilder::WithRefreshToken(
 
 AccountAvailabilityOptionsBuilder&
 AccountAvailabilityOptionsBuilder::WithoutRefreshToken() {
-  refresh_token_ = absl::nullopt;
+  refresh_token_ = std::nullopt;
   return *this;
 }
 
@@ -238,10 +238,10 @@ void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
   DCHECK(identity_manager->AreRefreshTokensLoaded());
 }
 
-absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
+std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
     IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is

@@ -85,7 +85,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Machine Learning Service for inference.
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer);
 
   // Removes an observer for updates to the model for |optimization_target|.
@@ -164,13 +164,13 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Contains the model registration specific info to be kept for each
   // optimization target.
   struct ModelRegistrationInfo {
-    ModelRegistrationInfo(absl::optional<proto::Any> metadata,
+    ModelRegistrationInfo(std::optional<proto::Any> metadata,
                           OptimizationTargetModelObserver* model_observer);
     ~ModelRegistrationInfo();
 
     // The feature-provided metadata that was registered with the prediction
     // manager.
-    absl::optional<proto::Any> metadata;
+    std::optional<proto::Any> metadata;
 
     // The model observer that was registered to receive model updates from
     // the prediction manager.
@@ -196,7 +196,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // time that updates should be fetched from the remote Optimization Guide
   // Service is updated, even when the response is empty.
   void OnModelsFetched(const std::vector<proto::ModelInfo> models_request_info,
-                       absl::optional<std::unique_ptr<proto::GetModelsResponse>>
+                       std::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response_data);
 
   // Load models for every target in |optimization_targets| that have not yet

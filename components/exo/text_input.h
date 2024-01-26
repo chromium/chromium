@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_TEXT_INPUT_H_
 #define COMPONENTS_EXO_TEXT_INPUT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/i18n/rtl.h"
@@ -12,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "components/exo/seat_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/composition_text.h"
@@ -180,8 +180,8 @@ class TextInput : public ui::TextInputClient,
       base::StringPiece16 text,
       uint32_t offset,
       const gfx::Range& cursor_pos,
-      const absl::optional<ui::GrammarFragment>& grammar_fragment,
-      const absl::optional<ui::AutocorrectInfo>& autocorrect_info);
+      const std::optional<ui::GrammarFragment>& grammar_fragment,
+      const std::optional<ui::AutocorrectInfo>& autocorrect_info);
 
   // Sets the text input type, mode, flags, |should_do_learning|,
   // |can_compose_inline| and |surrounding_text_supported|.
@@ -244,15 +244,15 @@ class TextInput : public ui::TextInputClient,
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
       const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
   bool SupportsAlwaysConfirmComposition() override;
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override {}
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override {}
 
   // ui::VirtualKeyboardControllerObserver:
   void OnKeyboardVisible(const gfx::Rect& keyboard_rect) override;
@@ -330,7 +330,7 @@ class TextInput : public ui::TextInputClient,
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
 
   // Cache of the grammar fragment at cursor position, send from Lacros side.
-  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_;
+  std::optional<ui::GrammarFragment> grammar_fragment_at_cursor_;
 
   // Latest autocorrect information that was sent from the Wayland client.
   // along with the last surrounding text change.
@@ -340,9 +340,9 @@ class TextInput : public ui::TextInputClient,
   // sent the virtual keyboard finalize request.
   bool pending_vk_finalize_ = false;
   // Holds the vk visibility to send to the client.
-  absl::optional<bool> staged_vk_visible_;
+  std::optional<bool> staged_vk_visible_;
   // Holds the vk occluded bounds to send to the client.
-  absl::optional<gfx::Rect> staged_vk_occluded_bounds_;
+  std::optional<gfx::Rect> staged_vk_occluded_bounds_;
 };
 
 }  // namespace exo

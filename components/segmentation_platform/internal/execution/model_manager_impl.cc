@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -19,7 +20,6 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -57,7 +57,7 @@ void ModelManagerImpl::Initialize() {
     if (!default_provider) {
       segment_database_->UpdateSegment(segment_id,
                                        ModelSource::DEFAULT_MODEL_SOURCE,
-                                       absl::nullopt, base::DoNothing());
+                                       std::nullopt, base::DoNothing());
       continue;
     }
     std::unique_ptr<DefaultModelProvider::ModelConfig> model_config =
@@ -91,7 +91,7 @@ void ModelManagerImpl::SetSegmentationModelUpdatedCallbackForTesting(
 void ModelManagerImpl::OnSegmentationModelUpdated(
     proto::ModelSource model_source,
     proto::SegmentId segment_id,
-    absl::optional<proto::SegmentationModelMetadata> metadata,
+    std::optional<proto::SegmentationModelMetadata> metadata,
     int64_t model_version) {
   TRACE_EVENT("segmentation_platform",
               "ModelManagerImpl::OnSegmentationModelUpdated");
@@ -108,7 +108,7 @@ void ModelManagerImpl::OnSegmentationModelUpdated(
     }
 
     segment_database_->UpdateSegment(
-        segment_id, model_source, absl::nullopt,
+        segment_id, model_source, std::nullopt,
         base::BindOnce(&ModelManagerImpl::OnSegmentInfoDeleted,
                        weak_ptr_factory_.GetWeakPtr(), segment_id, model_source,
                        deleted_segment->model_version()));
@@ -149,7 +149,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // If we find an existing SegmentInfo in the database, we can verify that it
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.
-  absl::optional<int64_t> old_model_version;
+  std::optional<int64_t> old_model_version;
   if (old_segment_info) {
     // The retrieved SegmentInfo's ID should match the one we looked up,
     // otherwise the DB has not upheld its contract.
@@ -209,8 +209,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
       &ModelManagerImpl::OnUpdatedSegmentInfoStored,
       weak_ptr_factory_.GetWeakPtr(), new_segment_info, old_model_version);
   segment_database_->UpdateSegment(
-      segment_id, model_source,
-      absl::make_optional(std::move(new_segment_info)),
+      segment_id, model_source, std::make_optional(std::move(new_segment_info)),
       std::move(update_callback));
 }
 
@@ -233,7 +232,7 @@ void ModelManagerImpl::OnSegmentInfoDeleted(SegmentId segment_id,
 
 void ModelManagerImpl::OnUpdatedSegmentInfoStored(
     proto::SegmentInfo segment_info,
-    absl::optional<int64_t> old_model_version,
+    std::optional<int64_t> old_model_version,
     bool success) {
   TRACE_EVENT("segmentation_platform",
               "ModelManagerImpl::OnUpdatedSegmentInfoStored");

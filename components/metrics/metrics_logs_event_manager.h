@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_METRICS_METRICS_LOGS_EVENT_MANAGER_H_
 #define COMPONENTS_METRICS_METRICS_LOGS_EVENT_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -64,7 +65,7 @@ class MetricsLogsEventManager {
     virtual void OnLogEvent(MetricsLogsEventManager::LogEvent event,
                             base::StringPiece log_hash,
                             base::StringPiece message) = 0;
-    virtual void OnLogType(absl::optional<MetricsLog::LogType> log_type) {}
+    virtual void OnLogType(std::optional<MetricsLog::LogType> log_type) {}
 
    protected:
     Observer() = default;
@@ -130,7 +131,7 @@ class MetricsLogsEventManager {
   // different metrics collection services (e.g., UKM).
   // Note: Typically, this should not be called directly. Consider using
   // ScopedNotifyLogType.
-  void NotifyLogType(absl::optional<MetricsLog::LogType> log_type);
+  void NotifyLogType(std::optional<MetricsLog::LogType> log_type);
 
  private:
   base::ObserverList<Observer> observers_;

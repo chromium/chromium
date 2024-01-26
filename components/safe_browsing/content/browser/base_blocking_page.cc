@@ -265,7 +265,7 @@ void BaseBlockingPage::set_proceeded(bool proceeded) {
 security_interstitials::MetricsHelper::ReportDetails
 BaseBlockingPage::GetReportingInfo(
     const UnsafeResourceList& unsafe_resources,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason =
       GetInterstitialReason(unsafe_resources);
 
@@ -286,7 +286,7 @@ BaseBlockingPage::CreateControllerClient(
     PrefService* pref_service,
     std::unique_ptr<security_interstitials::SettingsPageHelper>
         settings_page_helper,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   history::HistoryService* history_service =
       ui_manager->history_service(web_contents);
 

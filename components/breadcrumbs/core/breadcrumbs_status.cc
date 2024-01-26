@@ -5,6 +5,7 @@
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 
 #include <atomic>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/rand_util.h"
@@ -13,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace breadcrumbs {
 
@@ -89,7 +89,7 @@ bool HasRecentBreadcrumbsPrefs(PrefService* prefs) {
 }
 
 bool IsEnabled(PrefService* prefs,
-               absl::optional<version_info::Channel> set_for_channel) {
+               std::optional<version_info::Channel> set_for_channel) {
   switch (breadcrumbs_enabled_mode) {
     case BreadcrumbsEnabledMode::kForceEnabled:
       return true;
@@ -133,7 +133,7 @@ constexpr char kEnabledPref[] = "breadcrumbs.enabled";
 constexpr char kEnabledTimePref[] = "breadcrumbs.enabled_time";
 
 bool IsEnabled(PrefService* prefs) {
-  return IsEnabled(prefs, absl::nullopt);
+  return IsEnabled(prefs, std::nullopt);
 }
 
 bool MaybeEnableBasedOnChannel(PrefService* prefs,

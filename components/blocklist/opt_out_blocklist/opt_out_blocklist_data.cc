@@ -139,10 +139,10 @@ BlocklistReason BlocklistData::IsAllowed(
 
 void BlocklistData::EvictOldestHost() {
   DCHECK_LT(max_hosts_, block_list_item_host_map_.size());
-  absl::optional<base::Time> oldest_opt_out;
+  std::optional<base::Time> oldest_opt_out;
   std::string key_to_delete;
   for (auto& item : block_list_item_host_map_) {
-    absl::optional<base::Time> most_recent_opt_out =
+    std::optional<base::Time> most_recent_opt_out =
         item.second.most_recent_opt_out_time();
     if (!most_recent_opt_out) {
       // If there is no opt out time, this is a good choice to evict.

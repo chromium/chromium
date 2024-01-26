@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
@@ -23,7 +24,6 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "components/viz/client/viz_client_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -125,7 +125,7 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
   int pause_count_ = 0;
 
   // Argument of the last CullUnlockedFrames call while paused.
-  absl::optional<size_t> pending_unlocked_frame_limit_;
+  std::optional<size_t> pending_unlocked_frame_limit_;
 
   base::RepeatingTimer idle_frames_culling_timer_;
   raw_ptr<const base::TickClock> clock_ = base::DefaultTickClock::GetInstance();

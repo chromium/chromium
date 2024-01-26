@@ -132,7 +132,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
         /*transform=*/gfx::Transform(), /*layer_rect=*/layer_rect,
         /*visible_layer_rect=*/layer_rect,
         /*filter_info=*/gfx::MaskFilterInfo(rounded_corners),
-        /*clip=*/absl::nullopt,
+        /*clip=*/std::nullopt,
         /*contents_opaque=*/true,
         /*opacity_f=*/1.f,
         /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
@@ -192,7 +192,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
 SolidColorDrawQuad* AddQuad(const gfx::Rect quad_rect,
                             const gfx::Transform& quad_to_target_transform,
                             AggregatedRenderPass* render_pass,
-                            const absl::optional<gfx::Rect> clip_rect,
+                            const std::optional<gfx::Rect> clip_rect,
                             const gfx::Rect visible_rect) {
   SharedQuadState* quad_state = render_pass->CreateAndAppendSharedQuadState();
 
@@ -215,14 +215,14 @@ SolidColorDrawQuad* AddQuad(const gfx::Rect quad_rect,
 SolidColorDrawQuad* AddQuad(const gfx::Rect quad_rect,
                             const gfx::Transform& quad_to_target_transform,
                             AggregatedRenderPass* render_pass) {
-  return AddQuad(quad_rect, quad_to_target_transform, render_pass,
-                 absl::nullopt, quad_rect);
+  return AddQuad(quad_rect, quad_to_target_transform, render_pass, std::nullopt,
+                 quad_rect);
 }
 
 AggregatedRenderPassDrawQuad* AddRenderPassQuad(
     gfx::Rect quad_rect,
     gfx::Transform transform,
-    absl::optional<gfx::Rect> clip_rect,
+    std::optional<gfx::Rect> clip_rect,
     AggregatedRenderPassId rpid,
     AggregatedRenderPass* render_pass) {
   SharedQuadState* quad_state = render_pass->CreateAndAppendSharedQuadState();
@@ -821,7 +821,7 @@ TEST_F(OverlayCandidateFactoryTest, RenderPassOffscreen) {
   AggregatedRenderPassId rpid(2);
   gfx::Transform transform;
   transform.Translate(gfx::Vector2dF(0, 101));
-  auto* rpdq = AddRenderPassQuad(gfx::Rect(100, 100), transform, absl::nullopt,
+  auto* rpdq = AddRenderPassQuad(gfx::Rect(100, 100), transform, std::nullopt,
                                  rpid, &render_pass);
 
   OverlayCandidate candidate;
@@ -849,7 +849,7 @@ TEST_F(OverlayCandidateFactoryTest, RenderPassOffscreenBeforeFilter) {
 
   gfx::Transform transform;
   transform.Translate(gfx::Vector2dF(0, 101));
-  auto* rpdq = AddRenderPassQuad(gfx::Rect(100, 100), transform, absl::nullopt,
+  auto* rpdq = AddRenderPassQuad(gfx::Rect(100, 100), transform, std::nullopt,
                                  rpid, &render_pass);
 
   OverlayCandidate candidate;

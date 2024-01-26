@@ -204,18 +204,18 @@ class Surface final : public ui::PropertyHandler {
   void SetOverlayPriorityHint(OverlayPriority hint);
 
   // Sets the surface's clip rectangle.
-  void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
+  void SetClipRect(const std::optional<gfx::RectF>& clip_rect);
 
   // Sets the surface's clip rectangle on parent surface coordinates.
   // TODO(crbug.com/1457446): Remove this.
-  void SetClipRectOnParentSurface(const absl::optional<gfx::RectF>& clip_rect);
+  void SetClipRectOnParentSurface(const std::optional<gfx::RectF>& clip_rect);
 
   // Sets the surface's transformation matrix.
   void SetSurfaceTransform(const gfx::Transform& transform);
 
   // Sets the background color that shall be associated with the next buffer
   // commit.
-  void SetBackgroundColor(absl::optional<SkColor4f> background_color);
+  void SetBackgroundColor(std::optional<SkColor4f> background_color);
 
   // Sets that this surface uses trusted damage.
   void SetTrustedDamage(bool trusted_damage);
@@ -327,7 +327,7 @@ class Surface final : public ui::PropertyHandler {
       const gfx::PointF& to_parent_dp,
       bool needs_full_damage,
       FrameSinkResourceManager* resource_manager,
-      absl::optional<float> device_scale_factor,
+      std::optional<float> device_scale_factor,
       viz::CompositorFrame* frame);
 
   // Returns true if surface is in synchronized mode.
@@ -508,7 +508,7 @@ class Surface final : public ui::PropertyHandler {
     bool operator!=(const State& other) const { return !(*this == other); }
 
     cc::Region opaque_region;
-    absl::optional<cc::Region> input_region;
+    std::optional<cc::Region> input_region;
     int input_outset = 0;
     float buffer_scale = 1.0f;
     Transform buffer_transform = Transform::NORMAL;
@@ -522,7 +522,7 @@ class Surface final : public ui::PropertyHandler {
     bool is_tracking_occlusion = false;
     // Represents optional background color that must be associated with the
     // next buffer commit.
-    absl::optional<SkColor4f> background_color;
+    std::optional<SkColor4f> background_color;
     bool contains_video = false;
   };
   class BufferAttachment {
@@ -558,7 +558,7 @@ class Surface final : public ui::PropertyHandler {
   // Some fields are persisted between commits (e.g. which buffer is attached),
   // and some fields are not (e.g. acquire fence). For fields that are
   // persisted, they either need to be copyable, or if they are move only, they
-  // need to be wrapped in absl::optional and only copied on commit if they
+  // need to be wrapped in std::optional and only copied on commit if they
   // have been changed. Not doing this can lead to broken behaviour, such as
   // losing the attached buffer if some unrelated field is updated in a commit.
   // If you add new fields to this struct, please document whether the field
@@ -572,7 +572,7 @@ class Surface final : public ui::PropertyHandler {
 
     // The buffer that will become the content of surface.
     // Persisted between commits.
-    absl::optional<BufferAttachment> buffer;
+    std::optional<BufferAttachment> buffer;
     // The rounded corners bounds for the surface.
     // Persisted between commits.
     gfx::RRectF rounded_corners_bounds;
@@ -609,7 +609,7 @@ class Surface final : public ui::PropertyHandler {
     // The clip rect for this surface, in the local coordinate space. This
     // should only be set for subsurfaces.
     // Persisted between commits.
-    absl::optional<gfx::RectF> clip_rect;
+    std::optional<gfx::RectF> clip_rect;
     // True if `clip_rect` is on parent coordinate space. `clip_rect` should be
     // on local surface coordinates, but the outdated implementation was on
     // parent coordinate space. This flag is to support the fallback
@@ -642,7 +642,7 @@ class Surface final : public ui::PropertyHandler {
   void AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              const gfx::PointF& to_parent_dp,
                              bool needs_full_damage,
-                             absl::optional<float> device_scale_factor,
+                             std::optional<float> device_scale_factor,
                              viz::CompositorFrame* frame);
 
   // Update surface content size base on current buffer size.

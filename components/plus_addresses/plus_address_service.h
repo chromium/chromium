@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 
+#include <optional>
 #include <unordered_set>
 
 #include "base/scoped_observation.h"
@@ -15,7 +16,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class PrefService;
@@ -58,9 +58,9 @@ class PlusAddressService : public KeyedService,
   // Get a plus address, if one exists, for the passed-in origin. Note that all
   // plus address activity is scoped to eTLD+1. This class owns the conversion
   // of `origin` to its eTLD+1 form.
-  absl::optional<std::string> GetPlusAddress(url::Origin origin);
+  std::optional<std::string> GetPlusAddress(url::Origin origin);
   // Same as above, but packages the plus address along with its eTLD+1.
-  absl::optional<PlusProfile> GetPlusProfile(url::Origin origin);
+  std::optional<PlusProfile> GetPlusProfile(url::Origin origin);
   // Save a plus address for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);
@@ -89,7 +89,7 @@ class PlusAddressService : public KeyedService,
 
   // Used for displaying the user's email address in the UI modal.
   // virtual to allow mocking in tests that don't want to do identity setup.
-  virtual absl::optional<std::string> GetPrimaryEmail();
+  virtual std::optional<std::string> GetPrimaryEmail();
 
   // Gets the up-to-date mapping from the remote server from the
   // PlusAddressClient and returns it via `callback`.

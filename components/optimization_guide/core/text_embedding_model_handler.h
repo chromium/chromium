@@ -22,7 +22,7 @@ class TextEmbeddingModelHandler
   TextEmbeddingModelHandler(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const absl::optional<proto::Any>& model_metadata);
+      const std::optional<proto::Any>& model_metadata);
   ~TextEmbeddingModelHandler() override;
 
   TextEmbeddingModelHandler(const TextEmbeddingModelHandler&) = delete;
@@ -41,10 +41,10 @@ class TextEmbeddingModelHandler
       base::OnceCallback<void(const BatchAnnotationResult&)> callback,
       AnnotationType annotation_type,
       const std::string& input,
-      const absl::optional<tflite::task::processor::EmbeddingResult>& output);
+      const std::optional<tflite::task::processor::EmbeddingResult>& output);
 
   // Extracts the vector of floats from the output of the model.
-  absl::optional<std::vector<float>> ExtractTextEmbeddingFromModelOutput(
+  std::optional<std::vector<float>> ExtractTextEmbeddingFromModelOutput(
       const tflite::task::processor::EmbeddingResult& model_output) const;
 
  private:

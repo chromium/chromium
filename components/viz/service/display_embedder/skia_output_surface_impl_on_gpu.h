@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -165,7 +165,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-      absl::optional<gfx::Rect> draw_rectangle);
+      std::optional<gfx::Rect> draw_rectangle);
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
@@ -330,8 +330,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   void DestroyCopyOutputResourcesOnGpuThread(const gpu::Mailbox& mailbox);
 
-  void SwapBuffersInternal(absl::optional<OutputSurfaceFrame> frame);
-  void PostSubmit(absl::optional<OutputSurfaceFrame> frame);
+  void SwapBuffersInternal(std::optional<OutputSurfaceFrame> frame);
+  void PostSubmit(std::optional<OutputSurfaceFrame> frame);
 
   GrDirectContext* gr_context() const { return context_state_->gr_context(); }
 
@@ -413,7 +413,7 @@ class SkiaOutputSurfaceImplOnGpu
   // rendered to the destination.
   void RenderSurface(SkSurface* surface,
                      const SkIRect& source_selection,
-                     absl::optional<SkVector> scaling,
+                     std::optional<SkVector> scaling,
                      bool is_downscale_or_identity_in_both_dimensions,
                      SkSurface* dest_surface);
 
@@ -498,7 +498,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   // This must remain the first member variable to ensure that other member
   // dtors are called first.
-  absl::optional<ReleaseCurrent> release_current_last_;
+  std::optional<ReleaseCurrent> release_current_last_;
 
   const raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   raw_ptr<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu> shared_gpu_deps_;
@@ -589,7 +589,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>>
       overlay_pass_accesses_;
 
-  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
   // Overlays are saved when ScheduleOverlays() is called, then passed to
   // |output_device_| in PostSubmit().

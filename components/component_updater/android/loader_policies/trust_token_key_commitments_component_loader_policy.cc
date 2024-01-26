@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -30,13 +30,13 @@ constexpr char kTrustTokenKeyCommitmentsComponentMetricsSuffix[] =
 
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
-absl::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
+std::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
   // Transfer the ownership of the file from `fd` to `file_stream`.
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   std::string commitments;
   if (!base::ReadStreamToString(file_stream.get(), &commitments)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return commitments;

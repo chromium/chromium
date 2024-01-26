@@ -26,7 +26,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/json/json_reader.h"

@@ -1505,7 +1505,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   // Ensure metrics reporter was informed at the start of the operation.
   EXPECT_EQ(surface.GetSurfaceId(), metrics_reporter_->load_more_surface_id);
   WaitForIdleTaskQueue();
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("2 slices +spinner -> 4 slices", surface.DescribeUpdates());
 
   // Load page 3.
@@ -1513,7 +1513,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
   // The root ID should not change for next-page content.
   EXPECT_EQ(MakeRootEventId(),
@@ -1532,7 +1532,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1554,7 +1554,7 @@ TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
   CallbackReceiver<bool> callback;
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
 
   surface.Detach();
   UnloadModel(StreamType(StreamKind::kForYou));
@@ -1568,7 +1568,7 @@ TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
   ASSERT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1636,10 +1636,10 @@ TEST_F(FeedApiTest, LoadMoreAbortsIfNoNextPageToken) {
   WaitForIdleTaskQueue();
 
   // LoadMore fails, and does not make an additional request.
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(absl::nullopt, metrics_reporter_->load_more_surface_id)
+  EXPECT_EQ(std::nullopt, metrics_reporter_->load_more_surface_id)
       << "metrics reporter was informed about a load more operation which "
          "didn't begin";
 }
@@ -1656,7 +1656,7 @@ TEST_F(FeedApiTest, LoadMoreFail) {
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
   EXPECT_EQ("2 slices +spinner -> 2 slices", surface.DescribeUpdates());
 }
 
@@ -1672,7 +1672,7 @@ TEST_F(FeedApiTest, LoadMoreWithClearAllInResponse) {
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
 
   WaitForIdleTaskQueue();
-  ASSERT_EQ(absl::optional<bool>(true), callback.GetResult());
+  ASSERT_EQ(std::optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
   EXPECT_STRINGS_EQUAL(
@@ -1702,7 +1702,7 @@ TEST_F(FeedApiTest, LoadMoreBeforeLoad) {
   surface.CreateWithoutAttach(stream_.get());
   stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
 
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
 }
 
 TEST_F(FeedApiTest, ReadNetworkResponse) {
@@ -2985,7 +2985,7 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWithoutSurfaceIsAborted) {
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
   // Refresh fails, and surface is not updated.
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
   EXPECT_EQ("", surface.DescribeUpdates());
 }
 
@@ -3003,7 +3003,7 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   CallbackReceiver<bool> callback;
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
@@ -3071,7 +3071,7 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWebFeedSuccess) {
   CallbackReceiver<bool> callback;
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
@@ -3101,7 +3101,7 @@ TEST_F(FeedApiTest, ManualRefreshFailsBecauseNetworkRequestFails) {
   CallbackReceiver<bool> callback;
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
   EXPECT_EQ("cant-refresh", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kProtoTranslationFailed,
             metrics_reporter_->load_stream_status);
@@ -3122,7 +3122,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterUnload) {
   CallbackReceiver<bool> callback;
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
@@ -3141,7 +3141,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterPreviousLoadFailure) {
   CallbackReceiver<bool> callback;
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("no-cards -> [user@foo] 3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
@@ -3161,7 +3161,7 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
   stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
   WaitForIdleTaskQueue();
   // Manual refresh should fail immediately when loading is still in progress.
-  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ(std::optional<bool>(false), callback.GetResult());
   // The initial loading should finish.
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }

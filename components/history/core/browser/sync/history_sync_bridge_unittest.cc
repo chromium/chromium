@@ -219,8 +219,8 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     ADD_FAILURE() << "ReportError: " << error.ToString();
   }
 
-  absl::optional<syncer::ModelError> GetError() const override {
-    return absl::nullopt;
+  std::optional<syncer::ModelError> GetError() const override {
+    return std::nullopt;
   }
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
@@ -367,7 +367,7 @@ class HistorySyncBridgeTest : public testing::Test {
     // Note that because HISTORY is in ApplyUpdatesImmediatelyTypes(), the
     // processor doesn't actually call MergeFullSyncData, but rather
     // ApplyIncrementalSyncChanges.
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             std::move(metadata_changes),
             CreateAddEntityChangeList(specifics_vector));
@@ -401,7 +401,7 @@ class HistorySyncBridgeTest : public testing::Test {
       metadata_changes->UpdateMetadata(storage_key, sync_pb::EntityMetadata());
     }
 
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             std::move(metadata_changes),
             CreateAddEntityChangeList(specifics_vector));

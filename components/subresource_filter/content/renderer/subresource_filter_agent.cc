@@ -182,7 +182,7 @@ void SubresourceFilterAgent::SetAdEvidence(
   render_frame()->GetWebFrame()->SetAdEvidence(ad_evidence);
 }
 
-const absl::optional<blink::FrameAdEvidence>&
+const std::optional<blink::FrameAdEvidence>&
 SubresourceFilterAgent::AdEvidence() {
   return render_frame()->GetWebFrame()->AdEvidence();
 }
@@ -262,7 +262,7 @@ void SubresourceFilterAgent::OnSubresourceFilterAgentRequest(
 
 void SubresourceFilterAgent::ActivateForNextCommittedLoad(
     mojom::ActivationStatePtr activation_state,
-    const absl::optional<blink::FrameAdEvidence>& ad_evidence) {
+    const std::optional<blink::FrameAdEvidence>& ad_evidence) {
   activation_state_for_next_document_ = *activation_state;
   if (IsSubresourceFilterChild()) {
     DCHECK(ad_evidence.has_value());

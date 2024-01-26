@@ -45,7 +45,7 @@ class HistoryServiceObserver {
       HistoryService* history_service,
       const URLRow& url_row,
       const VisitRow& new_visit,
-      absl::optional<int64_t> local_navigation_id) {}
+      std::optional<int64_t> local_navigation_id) {}
 
   // Called when a URL has a metadata-only update. In situations where a URL has
   // a metadata-only update AND new visits, both `OnURLsModified` and

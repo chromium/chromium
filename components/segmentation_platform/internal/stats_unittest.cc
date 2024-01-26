@@ -102,7 +102,7 @@ TEST_F(StatsTest, AdaptiveToolbarSegmentSwitch) {
 
   // None -> Share.
   RecordSegmentSelectionComputed(
-      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, absl::nullopt);
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, std::nullopt);
 
   // Share -> Share.
   RecordSegmentSelectionComputed(
@@ -248,7 +248,7 @@ TEST_F(StatsTest, BooleanSegmentSwitch) {
   RecordSegmentSelectionComputed(
       config,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
-      absl::nullopt);
+      std::nullopt);
 
   tester.ExpectTotalCount(histogram, 2);
 

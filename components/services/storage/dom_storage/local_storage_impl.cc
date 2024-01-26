@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -37,7 +38,6 @@
 #include "components/services/storage/public/cpp/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -97,7 +97,7 @@ DomStorageDatabase::Key CreateMetaDataKey(
   return key;
 }
 
-absl::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
+std::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
     const DomStorageDatabase::Key& key) {
   DCHECK_GT(key.size(), std::size(kMetaPrefix));
   const std::string_view key_string(reinterpret_cast<const char*>(key.data()),
@@ -711,7 +711,7 @@ void LocalStorageImpl::OnGotMetaData(
   std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<blink::StorageKey> storage_keys;
   for (const auto& row : data) {
-    absl::optional<blink::StorageKey> storage_key =
+    std::optional<blink::StorageKey> storage_key =
         ExtractStorageKeyFromMetaDataKey(row.key);
     if (!storage_key) {
       // TODO(mek): Deal with database corruption.

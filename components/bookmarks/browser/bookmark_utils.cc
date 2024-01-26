@@ -519,7 +519,7 @@ const BookmarkNode* GetParentForNewNodes(
 
   if (index) {
     if (selection.size() == 1 && selection[0]->is_url()) {
-      absl::optional<size_t> selection_index =
+      std::optional<size_t> selection_index =
           real_parent->GetIndexOf(selection[0]);
       DCHECK(selection_index.has_value());
       *index = selection_index.value() + 1;

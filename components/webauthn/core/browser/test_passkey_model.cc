@@ -5,6 +5,7 @@
 #include "components/webauthn/core/browser/test_passkey_model.h"
 
 #include <iterator>
+#include <optional>
 
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -12,7 +13,6 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webauthn {
 
@@ -51,7 +51,7 @@ TestPasskeyModel::GetAllPasskeys() const {
   return credentials_;
 }
 
-absl::optional<sync_pb::WebauthnCredentialSpecifics>
+std::optional<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetPasskeyByCredentialId(
     const std::string& rp_id,
     const std::string& credential_id) const {
@@ -66,7 +66,7 @@ TestPasskeyModel::GetPasskeyByCredentialId(
                           return passkey.credential_id() == credential_id;
                         });
   if (result.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   CHECK_EQ(result.size(), 1u);
   return result.front();

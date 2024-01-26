@@ -358,8 +358,7 @@ class TestPrintManagerHost
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
     // Check and make sure the required settings are all there.
-    absl::optional<int> margins_type =
-        job_settings.FindInt(kSettingMarginsType);
+    std::optional<int> margins_type = job_settings.FindInt(kSettingMarginsType);
     if (!margins_type.has_value() ||
         !job_settings.FindBool(kSettingLandscape) ||
         !job_settings.FindBool(kSettingCollate) ||

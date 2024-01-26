@@ -178,7 +178,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingDoesntMissUpdates) {
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
 
   // The item should be frozen.
   EXPECT_TRUE(item().frozen());
@@ -236,7 +236,7 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 
@@ -297,7 +297,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingWaitsForActions) {
 
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaSessionActionsChanged({});
 
   // The item should be frozen and the view should contain the old data.
@@ -367,7 +367,7 @@ TEST_F(MediaSessionNotificationItemTest,
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 

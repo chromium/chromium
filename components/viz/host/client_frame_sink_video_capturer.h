@@ -88,8 +88,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
-  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target);
-  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
+  void ChangeTarget(const std::optional<VideoCaptureTarget>& target);
+  void ChangeTarget(const std::optional<VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version);
   void Stop();
   void RequestRefreshFrame();
@@ -110,7 +110,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
   // Getter for `format_`. Returns the pixel format set by the last call to
   // `SetFormat()`, or nullopt if the format was not yet set.
-  absl::optional<media::VideoPixelFormat> GetFormat() const { return format_; }
+  std::optional<media::VideoPixelFormat> GetFormat() const { return format_; }
 
  private:
   struct ResolutionConstraints {
@@ -152,12 +152,12 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // corresponding method in mojom::FrameSinkVideoCapturer. The arguments are
   // saved so we can resend them if viz crashes and a new FrameSinkVideoCapturer
   // has to be created.
-  absl::optional<media::VideoPixelFormat> format_;
-  absl::optional<base::TimeDelta> min_capture_period_;
-  absl::optional<base::TimeDelta> min_size_change_period_;
-  absl::optional<ResolutionConstraints> resolution_constraints_;
-  absl::optional<bool> auto_throttling_enabled_;
-  absl::optional<VideoCaptureTarget> target_;
+  std::optional<media::VideoPixelFormat> format_;
+  std::optional<base::TimeDelta> min_capture_period_;
+  std::optional<base::TimeDelta> min_size_change_period_;
+  std::optional<ResolutionConstraints> resolution_constraints_;
+  std::optional<bool> auto_throttling_enabled_;
+  std::optional<VideoCaptureTarget> target_;
   uint32_t sub_capture_target_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<raw_ptr<Overlay, VectorExperimental>> overlays_;

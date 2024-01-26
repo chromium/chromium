@@ -590,7 +590,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   std::unique_ptr<openscreen::cast::Answer> answer_;
 
   int next_receiver_ssrc_{35336};
-  absl::optional<openscreen::cast::SenderMessage> last_sent_offer_;
+  std::optional<openscreen::cast::SenderMessage> last_sent_offer_;
 };
 
 TEST_F(OpenscreenSessionHostTest, AudioOnlyMirroring) {

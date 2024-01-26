@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       std::unique_ptr<MediaItemUIFooter> footer_view,
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-      absl::optional<media_message_center::NotificationTheme>
-          notification_theme = absl::nullopt,
-      absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-          absl::nullopt,
-      absl::optional<MediaDisplayPage> media_display_page = absl::nullopt);
+      std::optional<media_message_center::NotificationTheme>
+          notification_theme = std::nullopt,
+      std::optional<media_message_center::MediaColorTheme> media_color_theme =
+          std::nullopt,
+      std::optional<MediaDisplayPage> media_display_page = std::nullopt);
   MediaItemUIView(const MediaItemUIView&) = delete;
   MediaItemUIView& operator=(const MediaItemUIView&) = delete;
   ~MediaItemUIView() override;

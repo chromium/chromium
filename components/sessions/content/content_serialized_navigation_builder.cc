@@ -91,8 +91,8 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   content::Referrer temporary_referrer(
       navigation->referrer_url(),
       content::Referrer::ConvertToPolicy(navigation->referrer_policy()));
-  absl::optional<url::Origin> temporary_initiator_origin;
-  absl::optional<GURL> temporary_initiator_base_url;
+  std::optional<url::Origin> temporary_initiator_origin;
+  std::optional<GURL> temporary_initiator_base_url;
 
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(

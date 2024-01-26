@@ -36,7 +36,7 @@ class CanonicalTopic {
 
   // Functions for converting to and from values for storage in preferences.
   base::Value ToValue() const;
-  static absl::optional<CanonicalTopic> FromValue(const base::Value& value);
+  static std::optional<CanonicalTopic> FromValue(const base::Value& value);
 
   // TODO(https://crbug.com/1445239): The less than operator considers
   // `topic_id_` only, because we no longer use the taxonomy version and may

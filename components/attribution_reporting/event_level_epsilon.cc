@@ -4,12 +4,13 @@
 
 #include "components/attribution_reporting/event_level_epsilon.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -35,7 +36,7 @@ EventLevelEpsilon::Parse(const base::Value::Dict& dict) {
     return EventLevelEpsilon();
   }
 
-  absl::optional<double> d = value->GetIfDouble();
+  std::optional<double> d = value->GetIfDouble();
   if (!d.has_value()) {
     return base::unexpected(
         SourceRegistrationError::kEventLevelEpsilonWrongType);

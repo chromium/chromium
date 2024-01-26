@@ -5,6 +5,7 @@
 #include "components/upload_list/text_log_upload_list.h"
 
 #include <algorithm>
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -129,7 +129,7 @@ void TextLogUploadList::ClearUploadList(const base::Time& begin,
 
   std::ostringstream new_contents_stream;
   for (const std::string& line : log_entries) {
-    absl::optional<base::Value> json = base::JSONReader::Read(line);
+    std::optional<base::Value> json = base::JSONReader::Read(line);
     bool should_copy = false;
 
     if (json.has_value()) {
@@ -225,7 +225,7 @@ std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseJsonLogEntry(
         base::Time::FromSecondsSinceUnixEpoch(capture_time_double);
 
   // Parse state.
-  absl::optional<int> state = dict.FindInt(kJsonLogKeyState);
+  std::optional<int> state = dict.FindInt(kJsonLogKeyState);
   if (state.has_value())
     info->state = static_cast<UploadList::UploadInfo::State>(state.value());
 
@@ -248,7 +248,7 @@ void TextLogUploadList::ParseLogEntries(
     std::vector<std::unique_ptr<UploadList::UploadInfo>>* uploads) {
   for (const std::string& line : base::Reversed(log_entries)) {
     std::unique_ptr<UploadList::UploadInfo> info;
-    absl::optional<base::Value> json = base::JSONReader::Read(line);
+    std::optional<base::Value> json = base::JSONReader::Read(line);
 
     if (json.has_value() && json->is_dict())
       info = TryParseJsonLogEntry(json.value().GetDict());

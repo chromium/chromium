@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_MEMORY_SYSTEM_INITIALIZER_H_
 #define COMPONENTS_MEMORY_SYSTEM_INITIALIZER_H_
 
+#include <optional>
+
 #include "base/strings/string_piece.h"
 #include "components/memory_system/parameters.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory_system {
 
@@ -38,9 +39,9 @@ class Initializer {
   void Initialize(MemorySystem& memory_system) const;
 
  private:
-  absl::optional<GwpAsanParameters> gwp_asan_parameters_;
-  absl::optional<ProfilingClientParameters> profiling_client_parameters_;
-  absl::optional<DispatcherParameters> dispatcher_parameters_;
+  std::optional<GwpAsanParameters> gwp_asan_parameters_;
+  std::optional<ProfilingClientParameters> profiling_client_parameters_;
+  std::optional<DispatcherParameters> dispatcher_parameters_;
 };
 
 }  // namespace memory_system

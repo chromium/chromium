@@ -31,7 +31,7 @@ class ReduceAcceptLanguageService
 
   ~ReduceAcceptLanguageService() override;
 
-  absl::optional<std::string> GetReducedLanguage(
+  std::optional<std::string> GetReducedLanguage(
       const url::Origin& origin) override;
 
   std::vector<std::string> GetUserAcceptLanguages() const override;

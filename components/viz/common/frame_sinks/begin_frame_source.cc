@@ -301,7 +301,7 @@ void BackToBackBeginFrameSource::OnUpdateVSyncParameters(
 }
 
 void BackToBackBeginFrameSource::SetMaxVrrInterval(
-    const absl::optional<base::TimeDelta>& max_vrr_interval) {
+    const std::optional<base::TimeDelta>& max_vrr_interval) {
   DCHECK(!max_vrr_interval.has_value() || max_vrr_interval->is_positive());
   max_vrr_interval_ = max_vrr_interval;
 }
@@ -417,7 +417,7 @@ void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
 }
 
 void DelayBasedBeginFrameSource::SetMaxVrrInterval(
-    const absl::optional<base::TimeDelta>& max_vrr_interval) {
+    const std::optional<base::TimeDelta>& max_vrr_interval) {
   DCHECK(!max_vrr_interval.has_value() || max_vrr_interval->is_positive());
 
   // If VRR is deactivating, record the number of frames produced.

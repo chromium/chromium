@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -40,7 +41,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -245,7 +245,7 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
     return false;
   }
 
-  absl::optional<base::Value::List> response_data =
+  std::optional<base::Value::List> response_data =
       SearchSuggestionParser::DeserializeJsonData(response_json);
   if (!response_data) {
     return false;

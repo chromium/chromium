@@ -25,7 +25,7 @@ constexpr char kTypeUrlRpcLocalizedMessage[] =
 constexpr char kExpectedEndPointDomain[] = "aratea-pa.googleapis.com";
 
 // Maps the RpcErrorInfo.reason to MantaStatusCode.
-absl::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
+std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
     const std::string& reason) {
   static constexpr auto reason_map =
       base::MakeFixedFlatMap<base::StringPiece, MantaStatusCode>({
@@ -38,14 +38,13 @@ absl::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
       });
   const auto* iter = reason_map.find(reason);
 
-  return iter != reason_map.end()
-             ? absl::optional<MantaStatusCode>(iter->second)
-             : absl::nullopt;
+  return iter != reason_map.end() ? std::optional<MantaStatusCode>(iter->second)
+                                  : std::nullopt;
 }
 
 // Maps the RpcStatus.code to MantaStatusCode.
 // The RpcStatus.code is an enum value of google.rpc.Code.
-absl::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
+std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
     const int32_t server_status_code) {
   // TODO(b/288019728): add more items when needed.
   static constexpr auto code_map =
@@ -55,8 +54,8 @@ absl::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
       });
   const auto* iter = code_map.find(server_status_code);
 
-  return iter != code_map.end() ? absl::optional<MantaStatusCode>(iter->second)
-                                : absl::nullopt;
+  return iter != code_map.end() ? std::optional<MantaStatusCode>(iter->second)
+                                : std::nullopt;
 }
 }  // namespace
 
@@ -99,7 +98,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
     // Tries to map RpcStatus.code to a more specific manta status code.
     auto maybe_updated_status_code =
         MapServerStatusCodeToMantaStatusCode(rpc_status.code());
-    if (maybe_updated_status_code != absl::nullopt) {
+    if (maybe_updated_status_code != std::nullopt) {
       manta_status_code = maybe_updated_status_code.value();
     }
 
@@ -113,7 +112,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
         maybe_updated_status_code =
             MapServerFailureReasonToMantaStatusCode(error_info.reason());
         if (error_info.domain() == kExpectedEndPointDomain &&
-            maybe_updated_status_code != absl::nullopt) {
+            maybe_updated_status_code != std::nullopt) {
           manta_status_code = maybe_updated_status_code.value();
         }
       } else if (detail.type_url() == kTypeUrlRpcLocalizedMessage) {

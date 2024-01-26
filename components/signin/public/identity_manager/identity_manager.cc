@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -25,7 +26,6 @@
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
@@ -166,10 +166,10 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   // Profile / KeyedServices - but with the availability of IdentityManager. We
   // don't have such a place in Lacros - which guarantees that the Primary
   // Account will be available on startup - just like Ash.
-  absl::optional<account_manager::Account> initial_account =
+  std::optional<account_manager::Account> initial_account =
       signin_client_->GetInitialPrimaryAccount();
   if (initial_account.has_value()) {
-    const absl::optional<bool>& initial_account_is_child =
+    const std::optional<bool>& initial_account_is_child =
         signin_client_->IsInitialPrimaryAccountChild();
     CHECK(initial_account_is_child.has_value());
     SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
@@ -217,7 +217,7 @@ void IdentityManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-// TODO(862619) change return type to absl::optional<CoreAccountInfo>
+// TODO(862619) change return type to std::optional<CoreAccountInfo>
 CoreAccountInfo IdentityManager::GetPrimaryAccountInfo(
     ConsentLevel consent) const {
   return primary_account_manager_->GetPrimaryAccountInfo(consent);

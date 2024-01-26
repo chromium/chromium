@@ -7,12 +7,12 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -169,7 +169,7 @@ class MetadataWriter {
   void AddOutputConfigForMultiClassClassifier(const char* const* class_labels,
                                               size_t class_labels_length,
                                               int top_k_outputs,
-                                              absl::optional<float> threshold);
+                                              std::optional<float> threshold);
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(

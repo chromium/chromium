@@ -905,9 +905,9 @@ void SyncSchedulerImpl::OnReceivedMigrationRequest(ModelTypeSet types) {
 }
 
 void SyncSchedulerImpl::OnReceivedQuotaParamsForExtensionTypes(
-    absl::optional<int> max_tokens,
-    absl::optional<base::TimeDelta> refill_interval,
-    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+    std::optional<int> max_tokens,
+    std::optional<base::TimeDelta> refill_interval,
+    std::optional<base::TimeDelta> depleted_quota_nudge_delay) {
   nudge_tracker_.SetQuotaParamsForExtensionTypes(max_tokens, refill_interval,
                                                  depleted_quota_nudge_delay);
 }

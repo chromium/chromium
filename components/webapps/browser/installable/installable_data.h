@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@
 namespace webapps {
 
 struct Screenshot {
-  Screenshot(SkBitmap image, absl::optional<std::u16string> label);
+  Screenshot(SkBitmap image, std::optional<std::u16string> label);
   Screenshot(const Screenshot&);
   Screenshot& operator=(const Screenshot&);
 
@@ -32,7 +32,7 @@ struct Screenshot {
   SkBitmap image;
 
   // Label for accessibility.
-  absl::optional<std::u16string> label;
+  std::optional<std::u16string> label;
 };
 
 // This struct contains the results of an InstallableManager::GetData call and

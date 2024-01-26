@@ -205,7 +205,7 @@ void ClearTabDiscardExceptions(PrefService* pref_service,
 
   for (std::pair<const std::string&, const base::Value&> it :
        discard_exceptions_map) {
-    absl::optional<base::Time> time = base::ValueToTime(it.second);
+    std::optional<base::Time> time = base::ValueToTime(it.second);
     if (time && (time.value() < delete_begin || time.value() > delete_end)) {
       saved_exceptions.emplace_back(it.first, it.second.Clone());
     }

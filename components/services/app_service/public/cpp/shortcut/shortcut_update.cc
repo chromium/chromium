@@ -110,7 +110,7 @@ bool ShortcutUpdate::ShortcutSourceChanged() const {
                                       ShortcutSource::kUnknown);
 }
 
-absl::optional<apps::IconKey> ShortcutUpdate::IconKey() const {
+std::optional<apps::IconKey> ShortcutUpdate::IconKey() const {
   return MergeIconKey(
       state_ && state_->icon_key.has_value() ? &state_->icon_key.value()
                                              : nullptr,
@@ -129,8 +129,8 @@ bool ShortcutUpdate::IconKeyChanged() const {
                       &(delta_->icon_key.value())) != state_->icon_key;
 }
 
-absl::optional<bool> ShortcutUpdate::AllowRemoval() const {
-  GET_VALUE_WITH_FALLBACK(allow_removal, absl::nullopt)
+std::optional<bool> ShortcutUpdate::AllowRemoval() const {
+  GET_VALUE_WITH_FALLBACK(allow_removal, std::nullopt)
 }
 
 bool ShortcutUpdate::AllowRemovalChanged() const {

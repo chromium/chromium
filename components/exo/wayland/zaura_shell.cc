@@ -970,7 +970,7 @@ void AuraToplevel::SetPersistable(bool persistable) {
   shell_surface_->SetPersistable(persistable);
 }
 
-void AuraToplevel::SetShape(absl::optional<cc::Region> shape) {
+void AuraToplevel::SetShape(std::optional<cc::Region> shape) {
   shell_surface_->SetShape(std::move(shape));
 }
 
@@ -1666,9 +1666,9 @@ void aura_toplevel_set_shape(wl_client* client,
                              wl_resource* resource,
                              wl_resource* region_resource) {
   GetUserDataAs<AuraToplevel>(resource)->SetShape(
-      region_resource ? absl::optional<cc::Region>(
-                            *GetUserDataAs<SkRegion>(region_resource))
-                      : absl::nullopt);
+      region_resource
+          ? std::optional<cc::Region>(*GetUserDataAs<SkRegion>(region_resource))
+          : std::nullopt);
 }
 
 void aura_toplevel_set_top_inset(wl_client* client,

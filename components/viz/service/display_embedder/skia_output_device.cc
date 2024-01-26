@@ -194,7 +194,7 @@ bool SkiaOutputDevice::IsPrimaryPlaneOverlay() const {
 }
 
 void SkiaOutputDevice::SchedulePrimaryPlane(
-    const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+    const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
   if (plane)
     NOTIMPLEMENTED();
@@ -233,7 +233,7 @@ void SkiaOutputDevice::FinishSwapBuffers(
     gfx::SwapCompletionResult result,
     const gfx::Size& size,
     OutputSurfaceFrame frame,
-    const absl::optional<gfx::Rect>& damage_area,
+    const std::optional<gfx::Rect>& damage_area,
     std::vector<gpu::Mailbox> released_overlays,
     const gpu::Mailbox& primary_plane_mailbox) {
   DCHECK(!pending_swaps_.empty());
@@ -335,7 +335,7 @@ uint64_t SkiaOutputDevice::SwapInfo::SwapId() {
 
 const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
     gfx::SwapCompletionResult result,
-    const absl::optional<gfx::Rect>& damage_rect,
+    const std::optional<gfx::Rect>& damage_rect,
     std::vector<gpu::Mailbox> released_overlays,
     const gpu::Mailbox& primary_plane_mailbox,
     int64_t swap_trace_id) {

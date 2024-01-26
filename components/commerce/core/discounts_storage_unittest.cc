@@ -325,7 +325,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
             ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
 
             ASSERT_EQ(kDiscountIdInDb2, discounts[1].id);
-            ASSERT_EQ(absl::nullopt, discounts[1].terms_and_conditions);
+            ASSERT_EQ(std::nullopt, discounts[1].terms_and_conditions);
             ASSERT_EQ(false, discounts[1].is_merchant_wide);
 
             run_loop->Quit();

@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 #define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_BROWSER_AGENT_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace breadcrumbs {
 
@@ -57,9 +56,9 @@ class BreadcrumbManagerBrowserAgent {
   // Logs the breadcrumb event for changing the active tab from the tab
   // identified by `old_tab_id` to the tab identified by `new_tab_id` at
   // position `index`.
-  void LogActiveTabChanged(absl::optional<int> old_tab_id,
-                           absl::optional<int> new_tab_id,
-                           absl::optional<size_t> index);
+  void LogActiveTabChanged(std::optional<int> old_tab_id,
+                           std::optional<int> new_tab_id,
+                           std::optional<size_t> index);
 
   // Logs a breadcrumb event with message data `event` for the associated
   // browser. NOTE: `event` must not include newline characters, as newlines are

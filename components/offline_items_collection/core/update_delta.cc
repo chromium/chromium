@@ -7,9 +7,9 @@
 namespace offline_items_collection {
 
 // static
-absl::optional<UpdateDelta> UpdateDelta::MergeUpdates(
-    const absl::optional<UpdateDelta>& update1,
-    const absl::optional<UpdateDelta>& update2) {
+std::optional<UpdateDelta> UpdateDelta::MergeUpdates(
+    const std::optional<UpdateDelta>& update1,
+    const std::optional<UpdateDelta>& update2) {
   if (!update1.has_value())
     return update2;
 

@@ -23,7 +23,7 @@ class TextEmbeddingModelExecutor
                                       const std::string&>;
 
   // ModelExecutor:
-  absl::optional<tflite::task::processor::EmbeddingResult> Execute(
+  std::optional<tflite::task::processor::EmbeddingResult> Execute(
       ModelExecutionTask* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;

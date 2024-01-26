@@ -52,7 +52,7 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // |threat_type| will not be populated if the lookup was unsuccessful, but
   // will otherwise always be populated with the result of the lookup.
   void OnLookupResponse(bool is_lookup_successful,
-                        absl::optional<SBThreatType> threat_type);
+                        std::optional<SBThreatType> threat_type);
 
   // Perform the hash-based database check for the url.
   void PerformHashBasedCheck(const GURL& url);
@@ -65,7 +65,7 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   void OnHashDatabaseCompleteCheckResultInternal(
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      absl::optional<ThreatSource> threat_source);
+      std::optional<ThreatSource> threat_source);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

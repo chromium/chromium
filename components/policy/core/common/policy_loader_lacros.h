@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -18,7 +19,6 @@
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -99,7 +99,7 @@ class POLICY_EXPORT PolicyLoaderLacros
   const PolicyPerProfileFilter per_profile_;
 
   // Serialized blob of PolicyFetchResponse object received from the server.
-  absl::optional<std::vector<uint8_t>> policy_fetch_response_;
+  std::optional<std::vector<uint8_t>> policy_fetch_response_;
 
   // The component policy of the device account.
   std::unique_ptr<PolicyBundle> component_policy_;

@@ -120,7 +120,7 @@ int RecordActionInWebsiteSettings(const GURL& url,
   base::Value::Dict* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
-  absl::optional<int> value = permission_dict->FindInt(key);
+  std::optional<int> value = permission_dict->FindInt(key);
   int current_count = value.value_or(0);
   permission_dict->Set(key, base::Value(++current_count));
 
@@ -139,7 +139,7 @@ int GetActionCount(const GURL& url,
   base::Value::Dict* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
-  absl::optional<int> value = permission_dict->FindInt(key);
+  std::optional<int> value = permission_dict->FindInt(key);
   return value.value_or(0);
 }
 
@@ -177,7 +177,7 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
 base::Time GetEmbargoStartTime(base::Value::Dict* permission_dict,
                                const base::Feature& feature,
                                const char* key) {
-  absl::optional<double> found = permission_dict->FindDouble(key);
+  std::optional<double> found = permission_dict->FindDouble(key);
   if (found && base::FeatureList::IsEnabled(feature)) {
     return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(*found));
   }
@@ -189,7 +189,7 @@ bool IsUnderEmbargo(base::Value::Dict* permission_dict,
                     const char* key,
                     base::Time current_time,
                     base::TimeDelta offset) {
-  absl::optional<double> found = permission_dict->FindDouble(key);
+  std::optional<double> found = permission_dict->FindDouble(key);
   if (found && base::FeatureList::IsEnabled(feature) &&
       current_time < base::Time::FromInternalValue(*found) + offset) {
     return true;
@@ -251,7 +251,7 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
 }
 
 // static
-absl::optional<content::PermissionResult>
+std::optional<content::PermissionResult>
 PermissionDecisionAutoBlocker::GetEmbargoResult(
     HostContentSettingsMap* settings_map,
     const GURL& request_origin,
@@ -294,7 +294,7 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
         content::PermissionStatusSource::RECENT_DISPLAY);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -345,7 +345,7 @@ bool PermissionDecisionAutoBlocker::IsEmbargoed(
   return GetEmbargoResult(request_origin, permission).has_value();
 }
 
-absl::optional<content::PermissionResult>
+std::optional<content::PermissionResult>
 PermissionDecisionAutoBlocker::GetEmbargoResult(
     const GURL& request_origin,
     ContentSettingsType permission) {

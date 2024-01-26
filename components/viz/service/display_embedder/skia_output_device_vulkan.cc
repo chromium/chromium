@@ -126,7 +126,7 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
 }
 
 void SkiaOutputDeviceVulkan::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   gfx::Rect rect =

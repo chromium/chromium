@@ -20,20 +20,20 @@ namespace cbor {
 Writer::~Writer() {}
 
 // static
-absl::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
-                                                   const Config& config) {
+std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
+                                                  const Config& config) {
   std::vector<uint8_t> cbor;
   Writer writer(&cbor);
   if (!writer.EncodeCBOR(node, config.max_nesting_level,
                          config.allow_invalid_utf8_for_testing)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return cbor;
 }
 
 // static
-absl::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
-                                                   size_t max_nesting_level) {
+std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
+                                                  size_t max_nesting_level) {
   Config config;
   config.max_nesting_level = base::checked_cast<int>(max_nesting_level);
   return Write(node, config);

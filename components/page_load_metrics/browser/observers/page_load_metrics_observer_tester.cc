@@ -139,7 +139,7 @@ void PageLoadMetricsObserverTester::SimulateTimingUpdate(
   SimulatePageLoadTimingUpdate(
       timing, mojom::FrameMetadata(), /* new_features= */ {},
       mojom::FrameRenderDataUpdate(), mojom::CpuTiming(), mojom::InputTiming(),
-      absl::nullopt, rfh, *CreateSoftNavigationMetrics());
+      std::nullopt, rfh, *CreateSoftNavigationMetrics());
 }
 
 void PageLoadMetricsObserverTester::SimulateCpuTimingUpdate(
@@ -150,12 +150,12 @@ void PageLoadMetricsObserverTester::SimulateCpuTimingUpdate(
 void PageLoadMetricsObserverTester::SimulateCpuTimingUpdate(
     const mojom::CpuTiming& cpu_timing,
     content::RenderFrameHost* rfh) {
-  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(absl::in_place);
+  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(std::in_place);
   page_load_metrics::InitPageLoadTimingForTest(timing.get());
   SimulatePageLoadTimingUpdate(
       *timing, mojom::FrameMetadata(),
       /* new_features= */ {}, mojom::FrameRenderDataUpdate(), cpu_timing,
-      mojom::InputTiming(), absl::nullopt, rfh, *CreateSoftNavigationMetrics());
+      mojom::InputTiming(), std::nullopt, rfh, *CreateSoftNavigationMetrics());
 }
 
 void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
@@ -167,12 +167,12 @@ void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
 void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
     const mojom::InputTiming& input_timing,
     content::RenderFrameHost* rfh) {
-  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(absl::in_place);
+  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(std::in_place);
   page_load_metrics::InitPageLoadTimingForTest(timing.get());
   SimulatePageLoadTimingUpdate(
       *timing, mojom::FrameMetadata(), /* new_features= */ {},
       mojom::FrameRenderDataUpdate(), mojom::CpuTiming(), input_timing,
-      absl::nullopt, rfh, *CreateSoftNavigationMetrics());
+      std::nullopt, rfh, *CreateSoftNavigationMetrics());
 }
 
 void PageLoadMetricsObserverTester::SimulateTimingAndMetadataUpdate(
@@ -180,7 +180,7 @@ void PageLoadMetricsObserverTester::SimulateTimingAndMetadataUpdate(
     const mojom::FrameMetadata& metadata) {
   SimulatePageLoadTimingUpdate(
       timing, metadata, /* new_features= */ {}, mojom::FrameRenderDataUpdate(),
-      mojom::CpuTiming(), mojom::InputTiming(), absl::nullopt,
+      mojom::CpuTiming(), mojom::InputTiming(), std::nullopt,
       web_contents()->GetPrimaryMainFrame(), *CreateSoftNavigationMetrics());
 }
 
@@ -191,7 +191,7 @@ void PageLoadMetricsObserverTester::SimulateMetadataUpdate(
   InitPageLoadTimingForTest(&timing);
   SimulatePageLoadTimingUpdate(
       timing, metadata, /* new_features= */ {}, mojom::FrameRenderDataUpdate(),
-      mojom::CpuTiming(), mojom::InputTiming(), absl::nullopt, rfh,
+      mojom::CpuTiming(), mojom::InputTiming(), std::nullopt, rfh,
       *CreateSoftNavigationMetrics());
 }
 
@@ -200,7 +200,7 @@ void PageLoadMetricsObserverTester::SimulateFeaturesUpdate(
   SimulatePageLoadTimingUpdate(
       mojom::PageLoadTiming(), mojom::FrameMetadata(), new_features,
       mojom::FrameRenderDataUpdate(), mojom::CpuTiming(), mojom::InputTiming(),
-      absl::nullopt, web_contents()->GetPrimaryMainFrame(),
+      std::nullopt, web_contents()->GetPrimaryMainFrame(),
       *CreateSoftNavigationMetrics());
 }
 
@@ -217,7 +217,7 @@ void PageLoadMetricsObserverTester::SimulateRenderDataUpdate(
   SimulatePageLoadTimingUpdate(
       timing, mojom::FrameMetadata(),
       /* new_features= */ {}, render_data, mojom::CpuTiming(),
-      mojom::InputTiming(), absl::nullopt, rfh, *CreateSoftNavigationMetrics());
+      mojom::InputTiming(), std::nullopt, rfh, *CreateSoftNavigationMetrics());
 }
 
 void PageLoadMetricsObserverTester::SimulateSoftNavigation(
@@ -235,7 +235,7 @@ void PageLoadMetricsObserverTester::SimulateSoftNavigationCountUpdate(
   SimulatePageLoadTimingUpdate(
       mojom::PageLoadTiming(), mojom::FrameMetadata(),
       /* new_features= */ {}, mojom::FrameRenderDataUpdate(),
-      mojom::CpuTiming(), mojom::InputTiming(), absl::nullopt,
+      mojom::CpuTiming(), mojom::InputTiming(), std::nullopt,
       web_contents()->GetPrimaryMainFrame(), soft_navigation_metrics);
 }
 
@@ -246,7 +246,7 @@ void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTiming& cpu_timing,
     const mojom::InputTiming& input_timing,
-    const absl::optional<blink::SubresourceLoadMetrics>&
+    const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     content::RenderFrameHost* rfh,
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
@@ -272,16 +272,15 @@ void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
 void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     content::RenderFrameHost* render_frame_host) {
-  auto timing = mojom::PageLoadTimingPtr(absl::in_place);
+  auto timing = mojom::PageLoadTimingPtr(std::in_place);
   InitPageLoadTimingForTest(timing.get());
   metrics_web_contents_observer_->OnTimingUpdated(
       render_frame_host, std::move(timing),
-      mojom::FrameMetadataPtr(absl::in_place),
+      mojom::FrameMetadataPtr(std::in_place),
       std::vector<blink::UseCounterFeature>(), resources,
-      mojom::FrameRenderDataUpdatePtr(absl::in_place),
-      mojom::CpuTimingPtr(absl::in_place),
-      mojom::InputTimingPtr(absl::in_place), absl::nullopt,
-      CreateSoftNavigationMetrics());
+      mojom::FrameRenderDataUpdatePtr(std::in_place),
+      mojom::CpuTimingPtr(std::in_place), mojom::InputTimingPtr(std::in_place),
+      std::nullopt, CreateSoftNavigationMetrics());
 }
 
 void PageLoadMetricsObserverTester::SimulateLoadedResource(

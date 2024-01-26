@@ -147,13 +147,13 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
-  absl::optional<std::string> GetDMTokenString() const override {
-    return absl::nullopt;
+  std::optional<std::string> GetDMTokenString() const override {
+    return std::nullopt;
   }
   bool ShouldIncludeCredentials() const override { return false; }
-  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 
@@ -178,7 +178,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       UnsafeResource::RenderProcessId render_process_id,
       const UnsafeResource::RenderFrameToken& render_frame_token,
       UnsafeResource::FrameTreeNodeId frame_tree_node_id,
-      absl::optional<int64_t> navigation_id,
+      std::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       bool can_check_db,
@@ -308,8 +308,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
                                ? base::WrapUnique(new AsyncCheckTracker(
                                      web_contents_, ui_manager_.get()))
                                : nullptr;
-    absl::optional<int64_t> navigation_id =
-        async_check_enabled ? absl::optional<int64_t>(1u) : absl::nullopt;
+    std::optional<int64_t> navigation_id =
+        async_check_enabled ? std::optional<int64_t>(1u) : std::nullopt;
 
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter_.Get(),

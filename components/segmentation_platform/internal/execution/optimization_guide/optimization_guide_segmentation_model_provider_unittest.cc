@@ -32,7 +32,7 @@ class ModelObserverTracker
  public:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     registered_model_observers_.insert_or_assign(
         target, std::make_pair(model_metadata, observer));
@@ -46,7 +46,7 @@ class ModelObserverTracker
     const auto& model_metadata = registered_model_observers_.at(target).first;
 
     EXPECT_TRUE(model_metadata);
-    absl::optional<proto::SegmentationModelMetadata> metadata =
+    std::optional<proto::SegmentationModelMetadata> metadata =
         optimization_guide::ParsedAnyMetadata<proto::SegmentationModelMetadata>(
             model_metadata.value());
     EXPECT_TRUE(metadata);
@@ -68,7 +68,7 @@ class ModelObserverTracker
  private:
   base::flat_map<
       optimization_guide::proto::OptimizationTarget,
-      std::pair<absl::optional<optimization_guide::proto::Any>,
+      std::pair<std::optional<optimization_guide::proto::Any>,
                 optimization_guide::OptimizationTargetModelObserver*>>
       registered_model_observers_;
 };
@@ -105,7 +105,7 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
     std::string serialized_metadata;
     metadata.SerializeToString(&serialized_metadata);
     optimization_guide::proto::Any any_proto;
-    auto any = absl::make_optional(any_proto);
+    auto any = std::make_optional(any_proto);
     any->set_value(serialized_metadata);
     any->set_type_url(
         "type.googleapis.com/"
@@ -163,7 +163,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest,
   provider->ExecuteModelWithInput(
       input, base::BindOnce(
                  [](base::RunLoop* run_loop,
-                    const absl::optional<ModelProvider::Response>& output) {
+                    const std::optional<ModelProvider::Response>& output) {
                    EXPECT_FALSE(output.has_value());
                    run_loop->Quit();
                  },
@@ -185,7 +185,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
   provider->ExecuteModelWithInput(
       input, base::BindOnce(
                  [](base::RunLoop* run_loop,
-                    const absl::optional<ModelProvider::Response>& output) {
+                    const std::optional<ModelProvider::Response>& output) {
                    // TODO(ssid): Consider using a mock executor to return
                    // results. This failure is caused by not no TFLite model
                    // being loaded in the opt-guide executor.
@@ -200,7 +200,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
 TEST_F(OptimizationGuideSegmentationModelProviderTest, NotifyOnDeletedModel) {
   base::MockCallback<ModelProvider::ModelUpdatedCallback>
       model_updated_callback;
-  absl::optional<proto::SegmentationModelMetadata> updated_model_metadata;
+  std::optional<proto::SegmentationModelMetadata> updated_model_metadata;
   EXPECT_CALL(model_updated_callback, Run(_, _, _))
       .Times(2)
       .WillRepeatedly(SaveArg<1>(&updated_model_metadata));
@@ -230,7 +230,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, NotifyOnDeletedModel) {
   // availability should be reset and segmentation platform should be informed.
   model_observer->OnModelUpdated(
       optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      absl::nullopt);
+      std::nullopt);
 
   EXPECT_FALSE(provider->ModelAvailable());
   EXPECT_FALSE(updated_model_metadata.has_value());

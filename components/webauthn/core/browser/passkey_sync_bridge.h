@@ -37,10 +37,10 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -59,7 +59,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
-  absl::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
       const std::string& rp_id,
       const std::string& credential_id) const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics>
@@ -78,16 +78,16 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       sync_pb::WebauthnCredentialSpecifics passkey) override;
 
  private:
-  void OnCreateStore(const absl::optional<syncer::ModelError>& error,
+  void OnCreateStore(const std::optional<syncer::ModelError>& error,
                      std::unique_ptr<syncer::ModelTypeStore> store);
   void OnStoreReadAllData(
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
   void OnStoreReadAllMetadata(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void OnStoreCommitWriteBatch(const absl::optional<syncer::ModelError>& error);
+  void OnStoreCommitWriteBatch(const std::optional<syncer::ModelError>& error);
   void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
   void AddPasskeyInternal(sync_pb::WebauthnCredentialSpecifics specifics);
   void AddShadowedCredentialIdsToNewPasskey(

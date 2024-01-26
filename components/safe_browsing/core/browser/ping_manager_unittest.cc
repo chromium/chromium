@@ -60,16 +60,16 @@ class PingManagerTest : public testing::Test {
   void TearDown() override;
   void RunReportThreatDetailsTest(
       bool expect_access_token,
-      absl::optional<ChromeUserPopulation> expected_user_population,
-      absl::optional<std::string> expected_page_load_token_value,
+      std::optional<ChromeUserPopulation> expected_user_population,
+      std::optional<std::string> expected_page_load_token_value,
       bool expect_cookies_removed);
   PingManager* ping_manager();
   void SetNewPingManager(
-      absl::optional<base::RepeatingCallback<bool()>>
+      std::optional<base::RepeatingCallback<bool()>>
           get_should_fetch_access_token,
-      absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+      std::optional<base::RepeatingCallback<ChromeUserPopulation()>>
           get_user_population_callback,
-      absl::optional<
+      std::optional<
           base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
           get_page_load_token_callback);
   void SetUpFeatureList(bool should_enable_remove_cookies);
@@ -93,7 +93,7 @@ void PingManagerTest::SetUp() {
     key_param_ = base::StringPrintf(
         "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
   }
-  SetNewPingManager(absl::nullopt, absl::nullopt, absl::nullopt);
+  SetNewPingManager(std::nullopt, std::nullopt, std::nullopt);
 }
 
 void PingManagerTest::TearDown() {
@@ -106,11 +106,11 @@ PingManager* PingManagerTest::ping_manager() {
 }
 
 void PingManagerTest::SetNewPingManager(
-    absl::optional<base::RepeatingCallback<bool()>>
+    std::optional<base::RepeatingCallback<bool()>>
         get_should_fetch_access_token,
-    absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+    std::optional<base::RepeatingCallback<ChromeUserPopulation()>>
         get_user_population_callback,
-    absl::optional<
+    std::optional<
         base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
         get_page_load_token_callback) {
   ping_manager_.reset(new PingManager(
@@ -149,8 +149,8 @@ FakeSafeBrowsingHatsDelegate* PingManagerTest::SetUpHatsDelegate() {
 
 void PingManagerTest::RunReportThreatDetailsTest(
     bool expect_access_token,
-    absl::optional<ChromeUserPopulation> expected_user_population,
-    absl::optional<std::string> expected_page_load_token_value,
+    std::optional<ChromeUserPopulation> expected_user_population,
+    std::optional<std::string> expected_page_load_token_value,
     bool expect_cookies_removed) {
   base::HistogramTester histogram_tester;
   TestSafeBrowsingTokenFetcher* raw_token_fetcher = SetUpTokenFetcher();
@@ -510,12 +510,12 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
   SetNewPingManager(
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
-      /*get_user_population_callback=*/absl::nullopt,
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/true);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
-                             /*expected_user_population=*/absl::nullopt,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expected_user_population=*/std::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/true);
 }
 TEST_F(PingManagerTest,
@@ -523,35 +523,35 @@ TEST_F(PingManagerTest,
   SetNewPingManager(
       /*get_should_fetch_access_token=*/base::BindRepeating(
           []() { return true; }),
-      /*get_user_population_callback=*/absl::nullopt,
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_user_population_callback=*/std::nullopt,
+      /*get_page_load_token_callback=*/std::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/false);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
-                             /*expected_user_population=*/absl::nullopt,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expected_user_population=*/std::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/false);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
   SetNewPingManager(
-      /*get_should_fetch_access_token=*/absl::nullopt,
+      /*get_should_fetch_access_token=*/std::nullopt,
       /*get_user_population_callback=*/base::BindRepeating([]() {
         auto population = ChromeUserPopulation();
         population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
         return population;
       }),
-      /*get_page_load_token_callback=*/absl::nullopt);
+      /*get_page_load_token_callback=*/std::nullopt);
   auto population = ChromeUserPopulation();
   population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
   RunReportThreatDetailsTest(/*expect_access_token=*/false,
                              /*expected_user_population=*/population,
-                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expected_page_load_token_value=*/std::nullopt,
                              /*expect_cookies_removed=*/false);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
   base::HistogramTester histogram_tester;
   SetNewPingManager(
-      /*get_should_fetch_access_token=*/absl::nullopt,
-      /*get_user_population_callback=*/absl::nullopt,
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/std::nullopt,
       /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
         ChromeUserPopulation::PageLoadToken token;
         token.set_token_value("testing_page_load_token");
@@ -559,7 +559,7 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
       }));
   RunReportThreatDetailsTest(
       /*expect_access_token=*/false,
-      /*expected_user_population=*/absl::nullopt,
+      /*expected_user_population=*/std::nullopt,
       /*expected_page_load_token_value=*/"testing_page_load_token",
       /*expect_cookies_removed=*/false);
 }

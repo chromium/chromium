@@ -155,7 +155,7 @@ void SyncDeviceInfoObserver::Process(
 
   auto model_input_it =
       input.additional_args().find("wait_for_device_info_in_seconds");
-  absl::optional<int> wait_from_input;
+  std::optional<int> wait_from_input;
   if (feature_processor_state.input_context()) {
     auto api_input_it =
         feature_processor_state.input_context()->metadata_args.find(

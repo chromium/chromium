@@ -112,7 +112,7 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   }
 
   client_->OnReceiveResponse(std::move(response), std::move(consumer),
-                             absl::nullopt);
+                             std::nullopt);
 
   producer_ = std::make_unique<mojo::DataPipeProducer>(std::move(producer));
 

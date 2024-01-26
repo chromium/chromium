@@ -21,10 +21,10 @@ void AddAndroidWidevineCdm(std::vector<content::CdmInfo>* cdms) {
   // checked the first time it is used.
   cdms->emplace_back(kWidevineKeySystem,
                      content::CdmInfo::Robustness::kSoftwareSecure,
-                     absl::nullopt, kWidevineCdmType);
+                     std::nullopt, kWidevineCdmType);
   cdms->emplace_back(kWidevineKeySystem,
                      content::CdmInfo::Robustness::kHardwareSecure,
-                     absl::nullopt, kWidevineCdmType);
+                     std::nullopt, kWidevineCdmType);
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
@@ -49,10 +49,10 @@ void AddOtherAndroidCdms(std::vector<content::CdmInfo>* cdms) {
     DVLOG(3) << __func__ << " key_system:" << key_system;
     cdms->emplace_back(key_system,
                        content::CdmInfo::Robustness::kSoftwareSecure,
-                       absl::nullopt, kAndroidCdmType);
+                       std::nullopt, kAndroidCdmType);
     cdms->emplace_back(key_system,
                        content::CdmInfo::Robustness::kHardwareSecure,
-                       absl::nullopt, kAndroidCdmType);
+                       std::nullopt, kAndroidCdmType);
   }
 }
 

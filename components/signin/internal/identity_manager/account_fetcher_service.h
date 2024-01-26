@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -21,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
@@ -158,7 +158,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Called by AccountCapabilitiesFetcher.
   void OnAccountCapabilitiesFetchComplete(
       const CoreAccountId& account_id,
-      const absl::optional<AccountCapabilities>& account_capabilities);
+      const std::optional<AccountCapabilities>& account_capabilities);
 
   image_fetcher::ImageFetcherImpl* GetOrCreateImageFetcher();
 

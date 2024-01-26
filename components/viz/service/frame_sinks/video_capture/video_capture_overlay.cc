@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -158,7 +158,7 @@ std::string VideoCaptureOverlay::BlendInformation::ToString() const {
       destination_region_content.ToString().c_str());
 }
 
-absl::optional<VideoCaptureOverlay::BlendInformation>
+std::optional<VideoCaptureOverlay::BlendInformation>
 VideoCaptureOverlay::CalculateBlendInformation(
     const CapturedFrameProperties& properties) const {
   const auto& compositor_frame_rect =
@@ -172,7 +172,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
   // If there's no image set yet, punt.
   if (image_.drawsNothing() || bounds_.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Determine the bounds of the sprite to be blended onto the video frame. The
@@ -192,7 +192,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // If the sprite that we want to render does not fall within the subregion
   // that we are capturing, punt.
   if (!bounds_in_compositor_space.Intersects(compositor_frame_subrect)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The bounds are currently in the coordinate space of the captured compositor
@@ -205,7 +205,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // If the sprite's size will be unreasonably large, punt.
   if (bounds_in_content_space.width() > media::limits::kMaxDimension ||
       bounds_in_content_space.height() > media::limits::kMaxDimension) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Now let's see where the scaled sprite will be placed in the video frame.
@@ -217,7 +217,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
   // If the scaled sprite's size is empty, punt.
   if (blit_rect.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Compute the left-most and top-most pixel to source from the transformed
@@ -239,7 +239,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
   // If the unscaled source region is empty, punt.
   if (source_region.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return BlendInformation{source_region, source_region_scaled,
@@ -248,7 +248,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
     const CapturedFrameProperties& properties) {
-  absl::optional<VideoCaptureOverlay::BlendInformation> blend_information =
+  std::optional<VideoCaptureOverlay::BlendInformation> blend_information =
       CalculateBlendInformation(properties);
   if (!blend_information) {
     return {};

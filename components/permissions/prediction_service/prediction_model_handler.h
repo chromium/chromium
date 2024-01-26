@@ -40,7 +40,7 @@ class PredictionModelHandler : public optimization_guide::ModelHandler<
  private:
   base::RunLoop model_load_run_loop_;
 
-  absl::optional<WebPermissionPredictionsModelMetadata> GetModelMetaData();
+  std::optional<WebPermissionPredictionsModelMetadata> GetModelMetaData();
 };
 
 }  // namespace permissions

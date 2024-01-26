@@ -34,15 +34,15 @@ bool PlatformDelegate::ProductMetadata::operator==(
   return name == other.name && version == other.version;
 }
 
-absl::optional<PlatformDelegate::ProductMetadata>
+std::optional<PlatformDelegate::ProductMetadata>
 PlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<PlatformDelegate::SigningCertificatesPublicKeys>
+std::optional<PlatformDelegate::SigningCertificatesPublicKeys>
 PlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PlatformDelegate::SigningCertificatesPublicKeys::

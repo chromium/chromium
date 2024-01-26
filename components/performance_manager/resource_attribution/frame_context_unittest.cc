@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -18,7 +19,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -38,7 +38,7 @@ TEST_F(ResourceAttrFrameContextTest, FrameContexts) {
   ASSERT_TRUE(rfh);
   const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
-  absl::optional<FrameContext> frame_context =
+  std::optional<FrameContext> frame_context =
       FrameContext::FromRenderFrameHost(rfh);
   ASSERT_TRUE(frame_context.has_value());
   EXPECT_EQ(rfh, frame_context->GetRenderFrameHost());
@@ -68,7 +68,7 @@ TEST_F(ResourceAttrFrameContextTest, FrameContexts) {
   EXPECT_TRUE(rfh2);
   EXPECT_NE(rfh, rfh2);
 
-  absl::optional<FrameContext> frame_context2 =
+  std::optional<FrameContext> frame_context2 =
       FrameContext::FromRenderFrameHost(rfh2);
   EXPECT_TRUE(frame_context2.has_value());
   EXPECT_NE(frame_context2, frame_context);
@@ -81,7 +81,7 @@ TEST_F(ResourceAttrFrameContextTest, FrameContexts) {
   RunInGraph([&] {
     EXPECT_FALSE(frame_node);
     EXPECT_EQ(nullptr, frame_context->GetFrameNode());
-    EXPECT_EQ(absl::nullopt, FrameContext::FromWeakFrameNode(frame_node));
+    EXPECT_EQ(std::nullopt, FrameContext::FromWeakFrameNode(frame_node));
   });
 }
 

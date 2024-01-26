@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -341,8 +341,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
       size_t index,
       const std::u16string& title,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt);
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt);
 
   // Adds a new bookmark for the given `url` at the specified position with the
   // given `meta_info`. Used for bookmarks being added through some direct user
@@ -367,8 +367,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
       const std::u16string& title,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt,
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt,
       bool added_by_user = false);
 
   // Sorts the children of `parent`, notifying observers by way of the

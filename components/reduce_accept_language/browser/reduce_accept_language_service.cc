@@ -62,13 +62,13 @@ void ReduceAcceptLanguageService::Shutdown() {
   pref_accept_language_.Destroy();
 }
 
-absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
+std::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
     const url::Origin& origin) {
   const GURL& url = origin.GetURL();
 
   // Only reduce accept-language in http and https scheme.
   if (!url.SchemeIsHTTPOrHTTPS())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Record the time spent getting the reduced accept language to better
   // understand whether this prefs read can introduce any large latency.
@@ -78,7 +78,7 @@ absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr);
 
   if (accept_language_rule.is_none()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(accept_language_rule.is_dict());
@@ -86,13 +86,13 @@ absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
   const base::Value* language_value =
       accept_language_rule.GetDict().Find(kReduceAcceptLanguageSettingKey);
   if (language_value == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // We should guarantee reduce accept language always be Type::String since
   // we save it as string in the Prefs.
   DCHECK(language_value->is_string());
-  return absl::make_optional(language_value->GetString());
+  return std::make_optional(language_value->GetString());
 }
 
 std::vector<std::string> ReduceAcceptLanguageService::GetUserAcceptLanguages()

@@ -47,7 +47,7 @@ class AsyncCheckTracker
 
   // Returns the timestamp when the navigation associated with `resource` is
   // committed. Returns nullopt if the navigation has not committed.
-  static absl::optional<base::TimeTicks> GetBlockedPageCommittedTimestamp(
+  static std::optional<base::TimeTicks> GetBlockedPageCommittedTimestamp(
       const security_interstitials::UnsafeResource& resource);
 
   AsyncCheckTracker(const AsyncCheckTracker&) = delete;
@@ -68,7 +68,7 @@ class AsyncCheckTracker
 
   // Returns the time when the navigation is committed. Returns nullopt if the
   // navigation has not yet committed.
-  absl::optional<base::TimeTicks> GetNavigationCommittedTimestamp(
+  std::optional<base::TimeTicks> GetNavigationCommittedTimestamp(
       int64_t navigation_id);
 
   // content::WebContentsObserver methods:
@@ -93,7 +93,7 @@ class AsyncCheckTracker
 
   // Deletes all pending checkers in `pending_checkers_` except the checker that
   // is keyed by `excluded_navigation_id`.
-  void DeletePendingCheckers(absl::optional<int64_t> excluded_navigation_id);
+  void DeletePendingCheckers(std::optional<int64_t> excluded_navigation_id);
 
   // Displays an interstitial if there is unsafe resource associated with
   // `redirect_chain` and `navigation_id`.

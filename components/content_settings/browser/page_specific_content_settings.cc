@@ -5,6 +5,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -52,7 +53,6 @@
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

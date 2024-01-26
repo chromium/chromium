@@ -49,7 +49,7 @@ const base::Value* FindFirstRegionWithAnyName(const base::Value::Dict& root) {
 // Looks up a given string id from the string table. Returns -1 if not found.
 int GetIdFromStringTable(const base::Value::List& strings, const char* text) {
   for (const auto& string : strings) {
-    absl::optional<int> string_id = string.GetDict().FindInt("id");
+    std::optional<int> string_id = string.GetDict().FindInt("id");
     const std::string* string_text = string.GetDict().FindString("string");
     if (string_id.has_value() && string_text != nullptr &&
         *string_text == text) {
@@ -64,7 +64,7 @@ int GetIdFromStringTable(const base::Value::List& strings, const char* text) {
 std::string GetStringFromStringTable(const base::Value::List& strings,
                                      int sid) {
   for (const auto& string : strings) {
-    absl::optional<int> string_id = string.GetDict().FindInt("id");
+    std::optional<int> string_id = string.GetDict().FindInt("id");
     if (*string_id == sid) {
       const std::string* string_text = string.GetDict().FindString("string");
       if (!string_text)
@@ -77,8 +77,8 @@ std::string GetStringFromStringTable(const base::Value::List& strings,
 
 int GetNodeWithNameID(const base::Value::List& nodes, int sid) {
   for (const auto& node : nodes) {
-    absl::optional<int> node_id = node.GetDict().FindInt("id");
-    absl::optional<int> node_name_sid = node.GetDict().FindInt("name_sid");
+    std::optional<int> node_id = node.GetDict().FindInt("id");
+    std::optional<int> node_name_sid = node.GetDict().FindInt("name_sid");
     if (node_id.has_value() && node_name_sid.has_value() &&
         *node_name_sid == sid) {
       return *node_id;
@@ -101,12 +101,11 @@ bool IsBacktraceInList(const base::Value::List& backtraces,
                        int id,
                        int parent) {
   for (const auto& backtrace : backtraces) {
-    absl::optional<int> backtrace_id = backtrace.GetDict().FindInt("id");
+    std::optional<int> backtrace_id = backtrace.GetDict().FindInt("id");
     if (!backtrace_id.has_value())
       continue;
 
-    absl::optional<int> backtrace_parent =
-        backtrace.GetDict().FindInt("parent");
+    std::optional<int> backtrace_parent = backtrace.GetDict().FindInt("parent");
     int backtrace_parent_int = kNoParent;
     if (backtrace_parent.has_value())
       backtrace_parent_int = *backtrace_parent;
@@ -150,7 +149,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  absl::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   const base::Value::Dict* dict = root->GetIfDict();
@@ -300,7 +299,7 @@ TEST(ProfilingJsonExporterTest, MAYBE_MemoryMaps) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  absl::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   const base::Value::Dict* dict = root->GetIfDict();
@@ -349,7 +348,7 @@ TEST(ProfilingJsonExporterTest, Context) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  absl::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   // Retrieve the allocations.
@@ -378,9 +377,9 @@ TEST(ProfilingJsonExporterTest, Context) {
   // Reconstruct the map from type id to string.
   std::map<int, std::string> type_to_string;
   for (const auto& type : *types_map) {
-    const absl::optional<int> id = type.GetDict().FindInt("id");
+    const std::optional<int> id = type.GetDict().FindInt("id");
     ASSERT_TRUE(id.has_value());
-    const absl::optional<int> name_sid = type.GetDict().FindInt("name_sid");
+    const std::optional<int> name_sid = type.GetDict().FindInt("name_sid");
     ASSERT_TRUE(name_sid.has_value());
 
     type_to_string[*id] = GetStringFromStringTable(*strings, *name_sid);

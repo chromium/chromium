@@ -34,7 +34,7 @@ class CpuProbeLinux::BlockingTaskRunnerHelper final {
   BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
   BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
-  absl::optional<PressureSample> Update();
+  std::optional<PressureSample> Update();
 
  private:
   // Called when a core is seen the first time in /proc/stat.
@@ -61,12 +61,12 @@ CpuProbeLinux::BlockingTaskRunnerHelper::~BlockingTaskRunnerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-absl::optional<PressureSample>
+std::optional<PressureSample>
 CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!stat_parser_.Update()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::vector<CoreTimes>& per_core_times = stat_parser_.core_times();
@@ -99,7 +99,7 @@ CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
     return PressureSample{.cpu_utilization =
                               utilization_sum / utilization_cores};
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 

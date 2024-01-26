@@ -76,10 +76,10 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
@@ -106,7 +106,7 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   // Helper function called by both `MergeFullSyncData` with
   // is_initial_merge=true and `ApplyIncrementalSyncChanges` with
   // is_initial_merge=false.
-  absl::optional<syncer::ModelError> ApplyChanges(
+  std::optional<syncer::ModelError> ApplyChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList& entity_changes,
       bool is_initial_merge);

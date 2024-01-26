@@ -48,7 +48,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     amount->currency = "USD";
     total->amount = std::move(amount);
     details->total = std::move(total);
-    details->id = absl::optional<std::string>("123456");
+    details->id = std::optional<std::string>("123456");
     details->modifiers = std::vector<mojom::PaymentDetailsModifierPtr>();
 
     mojom::PaymentDetailsModifierPtr modifier_1 =

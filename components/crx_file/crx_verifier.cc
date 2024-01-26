@@ -9,6 +9,7 @@
 #include <cstring>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "crypto/secure_util.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crx_file {
 
@@ -173,7 +173,7 @@ VerifierResult VerifyCrx3(
 
   std::vector<uint8_t> publisher_key(std::begin(kPublisherKeyHash),
                                      std::end(kPublisherKeyHash));
-  absl::optional<std::vector<uint8_t>> publisher_test_key;
+  std::optional<std::vector<uint8_t>> publisher_test_key;
   if (accept_publisher_test_key) {
     publisher_test_key.emplace(std::begin(kPublisherTestKeyHash),
                                std::end(kPublisherTestKeyHash));

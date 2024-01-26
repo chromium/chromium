@@ -4,6 +4,7 @@
 
 #include "components/cronet/native/url_request.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/cronet/native/upload_data_sink.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_states.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

@@ -70,7 +70,7 @@ void ApplyReplaceUrl(network::ResourceRequest* request,
 void ApplyRemoveHeader(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteRemoveHeaderPtr& remove_header) {
-  absl::optional<std::string> query_pattern = remove_header->query_pattern;
+  std::optional<std::string> query_pattern = remove_header->query_pattern;
   if (query_pattern &&
       request->url.query().find(query_pattern.value()) == std::string::npos) {
     // Per the FIDL API, the header should be removed if there is no query

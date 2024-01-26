@@ -302,7 +302,7 @@ size_t DiscardableSharedMemoryHeap::GetFreelistSize() const {
   return num_free_blocks_ * block_size_;
 }
 
-absl::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
+std::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
   size_t resident_size = 0;
   // Each member of |free_spans_| is a LinkedList of Spans. We need to iterate
   // over each of these.
@@ -314,11 +314,11 @@ absl::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
       // |shared_memory|) has Span::start_ initialized to a value equivalent
       // to reinterpret_cast<shared_memory->memory()) / block_size_.
       void* mem = reinterpret_cast<void*>(free_span->start() * block_size_);
-      absl::optional<size_t> resident_in_span =
+      std::optional<size_t> resident_in_span =
           base::trace_event::ProcessMemoryDump::CountResidentBytes(
               mem, free_span->length() * base::GetPageSize());
       if (!resident_in_span)
-        return absl::nullopt;
+        return std::nullopt;
       resident_size += resident_in_span.value();
     }
   }

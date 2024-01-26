@@ -82,7 +82,7 @@ shopping_service::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
 }
 
 shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
-    const absl::optional<PriceInsightsInfo>& info,
+    const std::optional<PriceInsightsInfo>& info,
     const std::string& locale) {
   auto insights_info = shopping_service::mojom::PriceInsightsInfo::New();
 
@@ -415,7 +415,7 @@ void ShoppingServiceHandler::GetPriceTrackingStatusForCurrentUrl(
       base::BindOnce(
           [](base::WeakPtr<ShoppingServiceHandler> handler,
              GetPriceTrackingStatusForCurrentUrlCallback callback,
-             const GURL& url, const absl::optional<const ProductInfo>& info) {
+             const GURL& url, const std::optional<const ProductInfo>& info) {
             if (!info.has_value() || !info->product_cluster_id.has_value() ||
                 !handler || !CanTrackPrice(info)) {
               std::move(callback).Run(false);
@@ -467,13 +467,13 @@ void ShoppingServiceHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
         base::BindOnce(
             [](base::WeakPtr<ShoppingServiceHandler> handler,
                base::OnceCallback<void(uint64_t)> unsubscribe, const GURL& url,
-               const absl::optional<const ProductInfo>& info) {
+               const std::optional<const ProductInfo>& info) {
               if (!handler) {
                 return;
               }
 
               if (!info.has_value() || !info->product_cluster_id.has_value()) {
-                absl::optional<uint64_t> cluster_id =
+                std::optional<uint64_t> cluster_id =
                     GetProductClusterIdFromBookmark(url,
                                                     handler->bookmark_model_);
 
@@ -505,7 +505,7 @@ void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
 void ShoppingServiceHandler::OnFetchProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback,
     const GURL& url,
-    const absl::optional<const ProductInfo>& info) {
+    const std::optional<const ProductInfo>& info) {
   std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
 }
 
@@ -527,7 +527,7 @@ void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
 void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback,
     const GURL& url,
-    const absl::optional<PriceInsightsInfo>& info) {
+    const std::optional<PriceInsightsInfo>& info) {
   std::move(callback).Run(PriceInsightsInfoToMojoObject(info, locale_));
 }
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
@@ -376,7 +376,7 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   std::string key_;
   std::string cached_key_;
   std::string cached_key_signature_;
-  absl::optional<std::string> verification_key_;
+  std::optional<std::string> verification_key_;
   std::string owning_domain_;
   bool allow_key_rotation_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

@@ -116,7 +116,7 @@ bool IsEnabled(PrefService* pref_service) {
   // |stored_permanent_country| as nullopt.
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
              /*is_off_the_record=*/false, pref_service,
-             /*stored_permanent_country=*/absl::nullopt) ==
+             /*stored_permanent_country=*/std::nullopt) ==
          safe_browsing::hash_realtime_utils::HashRealTimeSelection::
              kHashRealTimeService;
 }
@@ -176,7 +176,7 @@ void OhttpKeyService::SetEnabled(bool enable) {
   enabled_ = enable;
   if (!enabled_) {
     url_loader_.reset();
-    pending_callbacks_.Notify(absl::nullopt);
+    pending_callbacks_.Notify(std::nullopt);
     async_fetch_timer_.Stop();
     return;
   }
@@ -188,7 +188,7 @@ void OhttpKeyService::SetEnabled(bool enable) {
 
 void OhttpKeyService::GetOhttpKey(Callback callback) {
   if (!enabled_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -224,7 +224,7 @@ void OhttpKeyService::NotifyLookupResponse(
   if (response_code == kKeyRelatedHttpErrorCode) {
     // The failure is caused by unrecognized key. This is a hard failure, so
     // clear the key immediately.
-    ohttp_key_ = absl::nullopt;
+    ohttp_key_ = std::nullopt;
     server_triggered_fetch_scheduled_ = true;
     // Introduce an artificial delay so the server cannot correlate the key
     // fetch request with the original lookup request.
@@ -261,7 +261,7 @@ void OhttpKeyService::StartFetch(Callback callback,
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.OhttpKeyService.BackoffState",
                             in_backoff);
   if (in_backoff) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -310,8 +310,8 @@ void OhttpKeyService::OnURLLoaderComplete(
     backoff_operator_->ReportError();
   }
   pending_callbacks_.Notify(is_key_fetch_successful
-                                ? absl::optional<std::string>(*response_body)
-                                : absl::nullopt);
+                                ? std::optional<std::string>(*response_body)
+                                : std::nullopt);
 }
 
 void OhttpKeyService::MaybeStartOrRescheduleAsyncFetch() {
@@ -331,7 +331,7 @@ void OhttpKeyService::MaybeStartOrRescheduleAsyncFetch() {
 }
 
 void OhttpKeyService::OnAsyncFetchCompleted(
-    absl::optional<std::string> ohttp_key) {
+    std::optional<std::string> ohttp_key) {
   if (!enabled_) {
     return;
   }
@@ -391,7 +391,7 @@ void OhttpKeyService::StoreKeyToPref() {
 
 void OhttpKeyService::Shutdown() {
   url_loader_.reset();
-  pending_callbacks_.Notify(absl::nullopt);
+  pending_callbacks_.Notify(std::nullopt);
   pref_change_registrar_.RemoveAll();
   async_fetch_timer_.Stop();
 }
@@ -401,7 +401,7 @@ void OhttpKeyService::set_ohttp_key_for_testing(
   ohttp_key_ = ohttp_key;
 }
 
-absl::optional<OhttpKeyService::OhttpKeyAndExpiration>
+std::optional<OhttpKeyService::OhttpKeyAndExpiration>
 OhttpKeyService::get_ohttp_key_for_testing() {
   return ohttp_key_;
 }

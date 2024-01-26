@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_PERMISSIONS_REQUEST_TYPE_H_
 #define COMPONENTS_PERMISSIONS_REQUEST_TYPE_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -80,13 +81,13 @@ typedef const gfx::VectorIcon& IconId;
 
 bool IsRequestablePermissionType(ContentSettingsType content_settings_type);
 
-absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
+std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     ContentSettingsType content_settings_type);
 
 RequestType ContentSettingsTypeToRequestType(
     ContentSettingsType content_settings_type);
 
-absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
+std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     RequestType request_type);
 
 // Returns whether confirmation chips can be displayed

@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/player/player_compositor_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -43,7 +43,7 @@ namespace {
 
 std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
     const PaintPreviewFrameProto& proto) {
-  absl::optional<base::UnguessableToken> embedding_token =
+  std::optional<base::UnguessableToken> embedding_token =
       base::UnguessableToken::Deserialize(proto.embedding_token_high(),
                                           proto.embedding_token_low());
   // TODO(https://crbug.com/1406995): Investigate whether a deserialization
@@ -74,16 +74,16 @@ BuildHitTesters(std::unique_ptr<PaintPreviewProto> proto) {
       std::move(hit_testers));
 }
 
-absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
+std::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
     paint_preview::PaintPreviewProto&& proto) {
   TRACE_EVENT0("paint_preview", "PaintPreviewProto ToReadOnlySharedMemory");
   auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
   if (!region.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto mapping = region.Map();
   if (!mapping.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   proto.SerializeToArray(mapping.memory(), mapping.size());
   return base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
@@ -227,7 +227,7 @@ void PlayerCompositorDelegate::InitializeInternal(
 }
 
 int32_t PlayerCompositorDelegate::RequestBitmap(
-    const absl::optional<base::UnguessableToken>& frame_guid,
+    const std::optional<base::UnguessableToken>& frame_guid,
     const gfx::Rect& clip_rect,
     float scale_factor,
     base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
@@ -371,7 +371,7 @@ void PlayerCompositorDelegate::OnCompositorClientCreated(
                                   TRACE_ID_LOCAL(this));
   if (!capture_result_) {
     paint_preview_service_->GetFileMixin()->GetCapturedPaintPreviewProto(
-        key, absl::nullopt,
+        key, std::nullopt,
         base::BindOnce(&PlayerCompositorDelegate::OnProtoAvailable,
                        weak_factory_.GetWeakPtr(), expected_url));
   } else {

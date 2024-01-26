@@ -6,12 +6,12 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -138,7 +138,7 @@ class BoostingVoteAggregator : public VoteObserver {
     }
     void RemoveIncomingVote() {
       DCHECK(incoming_vote_.has_value());
-      incoming_vote_ = absl::nullopt;
+      incoming_vote_ = std::nullopt;
     }
     // Updates the incoming vote.
     void UpdateIncomingVote(const Vote& incoming_vote) {
@@ -153,7 +153,7 @@ class BoostingVoteAggregator : public VoteObserver {
     }
     void CancelOutgoingVote() {
       DCHECK(outgoing_vote_.has_value());
-      outgoing_vote_ = absl::nullopt;
+      outgoing_vote_ = std::nullopt;
     }
     // Updates the outgoing vote. Returns true if it changed.
     bool UpdateOutgoingVote(const Vote& outgoing_vote) {
@@ -193,10 +193,10 @@ class BoostingVoteAggregator : public VoteObserver {
     size_t edge_count_ = 0;
 
     // The input vote we've received, if any.
-    absl::optional<Vote> incoming_vote_;
+    std::optional<Vote> incoming_vote_;
 
     // The output vote we're emitted, if any.
-    absl::optional<Vote> outgoing_vote_;
+    std::optional<Vote> outgoing_vote_;
   };
 
   // NOTE: It is important that NodeDataMap preserve pointers to NodeData

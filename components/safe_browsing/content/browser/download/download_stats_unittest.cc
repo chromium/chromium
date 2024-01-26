@@ -4,13 +4,14 @@
 
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -123,7 +124,7 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadFileTypeAttributes) {
     RecordDownloadFileTypeAttributes(DownloadFileType::ALLOW_ON_USER_GESTURE,
                                      /*has_user_gesture=*/false,
                                      /*visited_referrer_before=*/false,
-                                     /*latest_bypass_time=*/absl::nullopt);
+                                     /*latest_bypass_time=*/std::nullopt);
     histogram_tester.ExpectUniqueSample(
         "SBClientDownload.UserGestureFileType.Attributes",
         /*sample=*/UserGestureFileTypeAttributes::TOTAL_TYPE_CHECKED,

@@ -5,6 +5,7 @@
 #include "components/heap_profiling/multi_process/test_driver.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
@@ -30,7 +31,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/tracing_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
 
@@ -121,7 +121,7 @@ int NumProcessesWithName(const base::Value::Dict& dump_json,
     }
 
     if (pids) {
-      absl::optional<int> found_pid = event_dict->FindInt("pid");
+      std::optional<int> found_pid = event_dict->FindInt("pid");
       if (!found_pid) {
         LOG(ERROR) << "Process missing pid.";
         return 0;
@@ -156,7 +156,7 @@ const base::Value::Dict* FindArgDump(base::ProcessId pid,
       continue;
     }
 
-    absl::optional<int> found_pid = event_dict->FindInt("pid");
+    std::optional<int> found_pid = event_dict->FindInt("pid");
     if (!found_pid) {
       continue;
     }
@@ -201,8 +201,8 @@ bool ParseTypes(const base::Value::Dict* heaps_v2, NodeMap* output) {
       continue;
     }
 
-    const absl::optional<int> id = type_dict->FindInt("id");
-    const absl::optional<int> name_sid = type_dict->FindInt("name_sid");
+    const std::optional<int> id = type_dict->FindInt("id");
+    const std::optional<int> name_sid = type_dict->FindInt("name_sid");
     if (!id || !name_sid) {
       LOG(ERROR) << "Node missing id or name_sid field";
       return false;
@@ -226,7 +226,7 @@ bool ParseTypes(const base::Value::Dict* heaps_v2, NodeMap* output) {
       continue;
     }
 
-    const absl::optional<int> id = string_dict->FindInt("id");
+    const std::optional<int> id = string_dict->FindInt("id");
     const std::string* string = string_dict->FindString("string");
     if (!id || !string) {
       LOG(ERROR) << "String struct missing id or string field";
@@ -472,7 +472,7 @@ bool TestDriver::RunTest(const Options& options) {
     wait_for_ui_thread_.Wait();
   }
 
-  absl::optional<base::Value> dump_json =
+  std::optional<base::Value> dump_json =
       base::JSONReader::Read(serialized_trace_);
   if (!dump_json || !dump_json->is_dict()) {
     LOG(ERROR) << "Failed to deserialize trace.";

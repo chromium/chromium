@@ -6,8 +6,10 @@
 #define COMPONENTS_EXO_SHELL_SURFACE_BASE_H_
 
 #include <stdint.h>
+
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/display/window_tree_host_manager.h"
@@ -19,7 +21,6 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_observer.h"
@@ -168,7 +169,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
   // applied via `UpdateShadow()`. Set and update resize shadow bounds with
   // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
-  void SetBoundsForShadows(const absl::optional<gfx::Rect>& bounds);
+  void SetBoundsForShadows(const std::optional<gfx::Rect>& bounds);
 
   // Make the shell surface menu type.
   void SetMenu();
@@ -212,11 +213,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
     bool translucent = false;
     bool overlaps_frame = true;
-    absl::optional<bool> can_resize;
+    std::optional<bool> can_resize;
     // TODO(oshima): It's unlikely for overlay not to request focus.
     // Remove this.
     bool focusable = true;
-    absl::optional<gfx::RoundedCornersF> corners_radii;
+    std::optional<gfx::RoundedCornersF> corners_radii;
     std::unique_ptr<views::View> contents_view;
   };
 
@@ -242,7 +243,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Sets the shape of the toplevel window, applied on commit. If shape is null
   // this will unset the window shape.
-  void SetShape(absl::optional<cc::Region> shape);
+  void SetShape(std::optional<cc::Region> shape);
 
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
@@ -369,10 +370,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     in_extended_drag_ = in_extended_drag;
   }
 
-  const absl::optional<cc::Region>& shape_dp() const { return shape_dp_; }
+  const std::optional<cc::Region>& shape_dp() const { return shape_dp_; }
 
   // Window corners radii in dps.
-  const absl::optional<gfx::RoundedCornersF>& window_corners_radii() const {
+  const std::optional<gfx::RoundedCornersF>& window_corners_radii() const {
     return window_corners_radii_dp_;
   }
 
@@ -472,22 +473,22 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   int container_;
   gfx::Rect geometry_;
   gfx::Rect pending_geometry_;
-  absl::optional<gfx::Rect> initial_bounds_;
-  absl::optional<cc::Region> shape_dp_;
-  absl::optional<cc::Region> pending_shape_dp_;
+  std::optional<gfx::Rect> initial_bounds_;
+  std::optional<cc::Region> shape_dp_;
+  std::optional<cc::Region> pending_shape_dp_;
 
   // Radii of window corners in dps. Currently only specified by clients that do
   // server-side rounded windows.
-  absl::optional<gfx::RoundedCornersF> window_corners_radii_dp_;
-  absl::optional<gfx::RoundedCornersF> pending_window_corners_radii_dp_;
+  std::optional<gfx::RoundedCornersF> window_corners_radii_dp_;
+  std::optional<gfx::RoundedCornersF> pending_window_corners_radii_dp_;
 
   // Radii of shadow corners in dps.
-  absl::optional<gfx::RoundedCornersF> shadow_corners_radii_dp_;
-  absl::optional<gfx::RoundedCornersF> pending_shadow_corners_radii_dp_;
+  std::optional<gfx::RoundedCornersF> shadow_corners_radii_dp_;
+  std::optional<gfx::RoundedCornersF> pending_shadow_corners_radii_dp_;
 
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;
-  absl::optional<gfx::Rect> shadow_bounds_;
+  std::optional<gfx::Rect> shadow_bounds_;
   bool shadow_bounds_changed_ = false;
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
@@ -539,7 +540,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Return the bounds of the widget/origin of surface taking visible
   // bounds and current resize direction into account.
-  virtual absl::optional<gfx::Rect> GetWidgetBounds() const = 0;
+  virtual std::optional<gfx::Rect> GetWidgetBounds() const = 0;
   virtual gfx::Point GetSurfaceOrigin() const = 0;
 
   // Commit is deferred if this returns false.
@@ -564,8 +565,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   SkColor active_frame_color_ = SK_ColorBLACK;
   SkColor inactive_frame_color_ = SK_ColorBLACK;
   bool pending_show_widget_ = false;
-  absl::optional<std::string> application_id_;
-  absl::optional<std::string> startup_id_;
+  std::optional<std::string> application_id_;
+  std::optional<std::string> startup_id_;
   bool immersive_implied_by_fullscreen_ = true;
   base::RepeatingClosure close_callback_;
   base::RepeatingClosure pre_close_callback_;
@@ -577,15 +578,15 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::SizeF pending_aspect_ratio_;
   bool pending_pip_ = false;
   bool in_extended_drag_ = false;
-  absl::optional<std::string> initial_workspace_;
-  absl::optional<ui::ZOrderLevel> initial_z_order_;
+  std::optional<std::string> initial_workspace_;
+  std::optional<ui::ZOrderLevel> initial_z_order_;
 
   // Restore members. These pass window restore related ids from exo clients,
   // e.g. Lacros, so that the window can be created with the correct restore
   // info looked up using the ids.
-  absl::optional<int32_t> restore_session_id_;
-  absl::optional<int32_t> restore_window_id_;
-  absl::optional<std::string> restore_window_id_source_;
+  std::optional<int32_t> restore_session_id_;
+  std::optional<int32_t> restore_window_id_;
+  std::optional<std::string> restore_window_id_source_;
 
   // Member determines if the owning process is persistable.
   bool persistable_ = true;
@@ -594,7 +595,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   std::unique_ptr<views::Widget> overlay_widget_;
   bool skip_ime_processing_ = false;
   bool overlay_overlaps_frame_ = true;
-  absl::optional<bool> overlay_can_resize_;
+  std::optional<bool> overlay_can_resize_;
 
   // We independently store whether a widget should be activated on creation.
   // The source of truth is on widget, but there are two problems:

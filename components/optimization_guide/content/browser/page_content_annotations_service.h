@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class OptimizationGuideLogger;
@@ -73,8 +73,8 @@ struct HistoryVisit {
   base::Time nav_entry_timestamp;
   GURL url;
   int64_t navigation_id = 0;
-  absl::optional<history::VisitID> visit_id;
-  absl::optional<std::string> text_to_annotate;
+  std::optional<history::VisitID> visit_id;
+  std::optional<std::string> text_to_annotate;
 
   struct Comp {
     bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
@@ -163,7 +163,7 @@ class PageContentAnnotationsService : public KeyedService,
 
   // Returns the model info for the given annotation type, if the model file is
   // available.
-  absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
+  std::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
   // EntityMetadataProvider:
   void GetMetadataForEntityId(
@@ -177,7 +177,7 @@ class PageContentAnnotationsService : public KeyedService,
       history::HistoryService* history_service,
       const history::URLRow& url_row,
       const history::VisitRow& visit_row,
-      absl::optional<int64_t> local_navigation_id) override;
+      std::optional<int64_t> local_navigation_id) override;
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
@@ -228,7 +228,7 @@ class PageContentAnnotationsService : public KeyedService,
   // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
-      const absl::optional<history::VisitContentModelAnnotations>&
+      const std::optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
   // Maybe calls |AnnotateVisitBatch| to start a new batch of content
@@ -246,9 +246,9 @@ class PageContentAnnotationsService : public KeyedService,
   // |OnBatchVisitsAnnotated| to run.
   void OnAnnotationBatchComplete(
       AnnotationType type,
-      std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+      std::vector<std::optional<history::VisitContentModelAnnotations>>*
           merge_to_output,
-      std::vector<absl::optional<std::vector<float>>>*
+      std::vector<std::optional<std::vector<float>>>*
           merge_embeddings_to_output,
       base::OnceClosure signal_merge_complete_callback,
       const std::vector<BatchAnnotationResult>& batch_result);
@@ -257,9 +257,9 @@ class PageContentAnnotationsService : public KeyedService,
   // for all of |current_visit_annotation_batch_| has been completed.
   void OnBatchVisitsAnnotated(
       std::unique_ptr<
-          std::vector<absl::optional<history::VisitContentModelAnnotations>>>
+          std::vector<std::optional<history::VisitContentModelAnnotations>>>
           merged_annotation_outputs,
-      std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
+      std::unique_ptr<std::vector<std::optional<std::vector<float>>>>
           merged_embedding_outputs);
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
@@ -320,7 +320,7 @@ class PageContentAnnotationsService : public KeyedService,
       const GURL& url,
       const std::string& entity_id,
       int weight,
-      const absl::optional<EntityMetadata>& entity_metadata);
+      const std::optional<EntityMetadata>& entity_metadata);
 
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.

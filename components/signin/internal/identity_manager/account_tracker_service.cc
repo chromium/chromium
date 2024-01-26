@@ -138,7 +138,7 @@ void SetAccountCapabilityState(base::Value::Dict& value,
                         static_cast<int>(state));
 }
 
-signin::Tribool ParseTribool(absl::optional<int> int_value) {
+signin::Tribool ParseTribool(std::optional<int> int_value) {
   if (!int_value.has_value())
     return signin::Tribool::kUnknown;
   switch (int_value.value()) {
@@ -156,7 +156,7 @@ signin::Tribool ParseTribool(absl::optional<int> int_value) {
 
 signin::Tribool FindAccountCapabilityState(const base::Value::Dict& dict,
                                            base::StringPiece name) {
-  absl::optional<int> capability =
+  std::optional<int> capability =
       dict.FindIntByDottedPath(GetCapabilityPrefPath(name));
   return ParseTribool(capability);
 }
@@ -333,7 +333,7 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   DCHECK(base::Contains(accounts_, account_id));
   AccountInfo& account_info = accounts_[account_id];
 
-  absl::optional<AccountInfo> maybe_account_info =
+  std::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
     DCHECK(!maybe_account_info->gaia.empty());
@@ -668,7 +668,7 @@ void AccountTrackerService::LoadFromPrefs() {
     GetString(*dict, kLastDownloadedImageURLWithSizeKey,
               account_info.last_downloaded_image_url_with_size);
 
-    if (absl::optional<bool> is_child_status =
+    if (std::optional<bool> is_child_status =
             dict->FindBool(kDeprecatedChildStatusKey)) {
       account_info.is_child_account = is_child_status.value()
                                           ? signin::Tribool::kTrue
@@ -684,14 +684,14 @@ void AccountTrackerService::LoadFromPrefs() {
           ParseTribool(dict->FindInt(kAccountChildAttributeKey));
     }
 
-    absl::optional<bool> is_under_advanced_protection =
+    std::optional<bool> is_under_advanced_protection =
         dict->FindBool(kAdvancedProtectionAccountStatusKey);
     if (is_under_advanced_protection.has_value()) {
       account_info.is_under_advanced_protection =
           is_under_advanced_protection.value();
     }
 
-    if (absl::optional<int> can_offer_extended_chrome_sync_promos =
+    if (std::optional<int> can_offer_extended_chrome_sync_promos =
             dict->FindIntByDottedPath(
                 kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
       // Migrate to Capability names based pref paths.
@@ -891,7 +891,7 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
 
 void AccountTrackerService::SeedAccountsInfo(
     const std::vector<CoreAccountInfo>& core_account_infos,
-    const absl::optional<CoreAccountId>& primary_account_id,
+    const std::optional<CoreAccountId>& primary_account_id,
     bool should_remove_stale_accounts) {
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
            << " number of accounts " << core_account_infos.size();

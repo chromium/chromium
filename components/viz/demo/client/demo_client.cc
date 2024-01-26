@@ -103,7 +103,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
                        /*layer_rect=*/child_bounds,
                        /*visible_layer_rect=*/child_bounds,
                        /*filter_info=*/gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt,
+                       /*clip=*/std::nullopt,
                        /*contents_opaque=*/false, /*opacity_f=*/1.f,
                        /*blend=*/SkBlendMode::kSrcOver,
                        /*sorting_context=*/0,
@@ -129,7 +129,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
                      /*quad_layer_rect=*/output_rect,
                      /*visible_layer_rect=*/output_rect,
                      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-                     /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
+                     /*clip_rect=*/std::nullopt, /*are_contents_opaque=*/false,
                      /*opacity=*/1.f,
                      /*blend_mode=*/SkBlendMode::kSrcOver,
                      /*sorting_context=*/0,
@@ -181,7 +181,7 @@ void DemoClient::OnBeginFrame(const viz::BeginFrameArgs& args,
   // deadline for the client before it needs to submit the compositor-frame.
   base::AutoLock lock(lock_);
   GetPtr()->SubmitCompositorFrame(local_surface_id_, CreateFrame(args),
-                                  absl::optional<viz::HitTestRegionList>(),
+                                  std::optional<viz::HitTestRegionList>(),
                                   /*trace_time=*/0);
 }
 void DemoClient::OnBeginFramePausedChanged(bool paused) {}

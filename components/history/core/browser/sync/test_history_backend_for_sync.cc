@@ -202,8 +202,8 @@ VisitID TestHistoryBackendForSync::AddSyncedVisit(
     const std::u16string& title,
     bool hidden,
     const VisitRow& visit,
-    const absl::optional<VisitContextAnnotations>& context_annotations,
-    const absl::optional<VisitContentAnnotations>& content_annotations) {
+    const std::optional<VisitContextAnnotations>& context_annotations,
+    const std::optional<VisitContentAnnotations>& content_annotations) {
   const URLRow& url_row = FindOrAddURL(url, title, hidden);
 
   VisitRow visit_to_add = visit;
@@ -225,8 +225,8 @@ VisitID TestHistoryBackendForSync::UpdateSyncedVisit(
     const std::u16string& title,
     bool hidden,
     const VisitRow& visit,
-    const absl::optional<VisitContextAnnotations>& context_annotations,
-    const absl::optional<VisitContentAnnotations>& content_annotations) {
+    const std::optional<VisitContextAnnotations>& context_annotations,
+    const std::optional<VisitContentAnnotations>& content_annotations) {
   for (URLRow& existing_url : urls_) {
     if (existing_url.url() == url) {
       existing_url.set_title(title);

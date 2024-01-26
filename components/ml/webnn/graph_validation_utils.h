@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_
 #define COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
@@ -147,9 +147,9 @@ struct BatchNormalizationAttributes {
       delete;
 
   // The 1-D tensor of the scaling values.
-  absl::optional<Operand> scale;
+  std::optional<Operand> scale;
   // The 1-D tensor of the bias values.
-  absl::optional<Operand> bias;
+  std::optional<Operand> bias;
   // The number which specifies the index to the feature count dimension of the
   // input shape for which the mean and variance values are.
   uint32_t axis = 1;
@@ -182,7 +182,7 @@ struct Conv2dAttributesBase {
   InputOperandLayout input_layout = InputOperandLayout::kNchw;
   // The additional 1-D tensor with the shape of [output_channels] whose values
   // are to be added to the convolution result.
-  absl::optional<Operand> bias_operand;
+  std::optional<Operand> bias_operand;
 };
 
 // Contains the attributes of conv2d operator.
@@ -215,7 +215,7 @@ struct ConvTranspose2dAttributes : Conv2dAttributesBase {
   // The padding values applied to each spatial dimension of the output tensor.
   Size2d<uint32_t> output_padding;
   // The sizes of the last two dimensions of the output tensor.
-  absl::optional<Size2d<uint32_t>> output_sizes;
+  std::optional<Size2d<uint32_t>> output_sizes;
   // The layout format of the convTranspose2d filter.
   ConvTranspose2dFilterOperandLayout filter_layout =
       ConvTranspose2dFilterOperandLayout::kIohw;
@@ -224,7 +224,7 @@ struct ConvTranspose2dAttributes : Conv2dAttributesBase {
 // Contains the attributes of pool2d operator.
 struct Pool2dAttributes {
   // The dimensions of the sliding window.
-  absl::optional<Size2d<uint32_t>> window_dimensions;
+  std::optional<Size2d<uint32_t>> window_dimensions;
   // The additional rows and columns added to the beginning and ending of each
   // spatial dimension of input.
   Padding2d padding;
@@ -240,7 +240,7 @@ struct Pool2dAttributes {
   // The rounding function used to compute the output shape.
   RoundingType rounding_type = RoundingType::kFloor;
   // The element height and width of the output tensor.
-  absl::optional<Size2d<uint32_t>> output_sizes;
+  std::optional<Size2d<uint32_t>> output_sizes;
 };
 
 // Contains the attributes of gemm operator.
@@ -255,7 +255,7 @@ struct GemmAttributes {
   GemmAttributes& operator=(const GemmAttributes&) = delete;
 
   // The optional third tensor in expression alpha * A * B + beta * C.
-  absl::optional<Operand> c_operand;
+  std::optional<Operand> c_operand;
   // A float scalar multiplier for the `A * B`.
   float alpha = 1.0;
   // A float scalar multiplier for the third tensor.
@@ -281,9 +281,9 @@ struct InstanceNormalizationAttributes {
       const InstanceNormalizationAttributes&) = delete;
 
   // The scale operand.
-  absl::optional<Operand> scale;
+  std::optional<Operand> scale;
   // The bias operand.
-  absl::optional<Operand> bias;
+  std::optional<Operand> bias;
   // The layout format of the input.
   InputOperandLayout layout = InputOperandLayout::kNchw;
 };
@@ -301,9 +301,9 @@ struct LayerNormalizationAttributes {
       delete;
 
   // The scale operand.
-  absl::optional<Operand> scale;
+  std::optional<Operand> scale;
   // The bias operand.
-  absl::optional<Operand> bias;
+  std::optional<Operand> bias;
 };
 
 struct SliceAttributes {
@@ -491,7 +491,7 @@ base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
 // If bidirectional is true, its behavior follows the numpy-broadcasting-rule:
 // https://numpy.org/doc/stable/user/basics.broadcasting.html#general-broadcasting-rules.
 // Otherwise, it unidirectionally broadcasts the lhs to the rhs.
-absl::optional<std::vector<uint32_t>> BroadcastShapes(
+std::optional<std::vector<uint32_t>> BroadcastShapes(
     base::span<const uint32_t> dims_lhs,
     base::span<const uint32_t> dims_rhs,
     bool bidirectional = true);
@@ -508,18 +508,18 @@ struct PaddingSizes {
 //
 // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
 // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
-                                                    const uint32_t input_size,
-                                                    const uint32_t filter_size,
-                                                    const uint32_t stride,
-                                                    const uint32_t dilation);
+std::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
+                                                   const uint32_t input_size,
+                                                   const uint32_t filter_size,
+                                                   const uint32_t stride,
+                                                   const uint32_t dilation);
 
 // Calculate the effective padding for convTranspose2d based on WebNN auto
 // padding rules.
 //
 // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
 // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
+std::optional<PaddingSizes> CalculateConvTranspose2dPadding(
     AutoPad auto_pad,
     const uint32_t input_size,
     const uint32_t filter_size,

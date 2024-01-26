@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -42,7 +43,6 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -113,8 +113,8 @@ struct SitesAndQueriesRequest
     return sites.has_value() && queries.has_value();
   }
 
-  absl::optional<MostVisitedURLList> sites;
-  absl::optional<KeywordSearchTermVisitList> queries;
+  std::optional<MostVisitedURLList> sites;
+  std::optional<KeywordSearchTermVisitList> queries;
   base::TimeTicks begin_time{base::TimeTicks::Now()};
 
  private:

@@ -50,8 +50,8 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       kLocalDeviceFormFactor, "device_id", "manufacturer_name", "model_name",
       "full_hardware_class", last_updated,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      /*send_tab_to_self_receiving_enabled=*/false, absl::nullopt,
-      /*paask_info=*/absl::nullopt,
+      /*send_tab_to_self_receiving_enabled=*/false, std::nullopt,
+      /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

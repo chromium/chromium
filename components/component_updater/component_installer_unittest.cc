@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -46,7 +47,6 @@
 #include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Configurator = update_client::Configurator;
 using CrxUpdateItem = update_client::CrxUpdateItem;
@@ -296,7 +296,7 @@ void ComponentInstallerTest::Schedule(
 
 }  // namespace
 
-absl::optional<base::FilePath> CreateComponentDirectory(
+std::optional<base::FilePath> CreateComponentDirectory(
     const base::FilePath& base_dir,
     const std::string& name,
     const std::string& version,
@@ -305,7 +305,7 @@ absl::optional<base::FilePath> CreateComponentDirectory(
       base_dir.AppendASCII(name).AppendASCII(version);
 
   if (!base::CreateDirectory(component_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static constexpr std::string_view kManifestData = R"({
@@ -317,8 +317,8 @@ absl::optional<base::FilePath> CreateComponentDirectory(
              component_dir.AppendASCII("manifest.json"),
              base::StringPrintf(kManifestData.data(), name.c_str(),
                                 version.c_str(), min_env_version.c_str()))
-             ? absl::make_optional(component_dir)
-             : absl::nullopt;
+             ? std::make_optional(component_dir)
+             : std::nullopt;
 }
 
 // Tests that the component metadata is propagated from the component installer
@@ -538,7 +538,7 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
 
   base_dir = base_dir.AppendASCII("test_component");
 
-  absl::optional<base::Version> selected_component;
+  std::optional<base::Version> selected_component;
 
   auto registration_info =
       base::MakeRefCounted<ComponentInstaller::RegistrationInfo>();

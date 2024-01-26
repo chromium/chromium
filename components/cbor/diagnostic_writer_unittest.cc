@@ -66,7 +66,7 @@ TEST(CBORDiagnosticWriterTest, InvalidUTF8) {
   static const uint8_t kInvalidUTF8[] = {0x62, 0xe2, 0x80};
   cbor::Reader::Config config;
   config.allow_invalid_utf8 = true;
-  absl::optional<cbor::Value> maybe_value =
+  std::optional<cbor::Value> maybe_value =
       cbor::Reader::Read(kInvalidUTF8, config);
 
   ASSERT_TRUE(maybe_value);

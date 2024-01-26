@@ -37,7 +37,7 @@ TransferableResourceTracker::ImportResources(
   // valid.
   CHECK(saved_frame->IsValid());
 
-  absl::optional<SurfaceSavedFrame::FrameResult> frame_copy =
+  std::optional<SurfaceSavedFrame::FrameResult> frame_copy =
       saved_frame->TakeResult();
   const auto& directive = saved_frame->directive();
 

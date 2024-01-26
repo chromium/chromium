@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
@@ -163,7 +163,7 @@ SourceRegistration::Parse(std::string_view json, SourceType source_type) {
   base::expected<SourceRegistration, SourceRegistrationError> source =
       base::unexpected(SourceRegistrationError::kInvalidJson);
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
 
   if (value) {

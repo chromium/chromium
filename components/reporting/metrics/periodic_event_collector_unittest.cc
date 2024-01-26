@@ -5,6 +5,7 @@
 #include "components/reporting/metrics/periodic_event_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using reporting::test::FakeReportingSettings;
 using reporting::test::FakeSampler;
@@ -41,25 +41,25 @@ class FakeEventDetector : public PeriodicEventCollector::EventDetector {
 
   ~FakeEventDetector() override = default;
 
-  absl::optional<MetricEventType> DetectEvent(
-      absl::optional<MetricData> previous_metric_data,
+  std::optional<MetricEventType> DetectEvent(
+      std::optional<MetricData> previous_metric_data,
       const MetricData& current_metric_data) override {
     previous_metric_data_ = previous_metric_data;
     return event_type_;
   }
 
-  void SetEventType(absl::optional<MetricEventType> event_type) {
+  void SetEventType(std::optional<MetricEventType> event_type) {
     event_type_ = event_type;
   }
 
-  absl::optional<MetricData> GetPreviousMetricData() const {
+  std::optional<MetricData> GetPreviousMetricData() const {
     return previous_metric_data_;
   }
 
  private:
-  absl::optional<MetricData> previous_metric_data_;
+  std::optional<MetricData> previous_metric_data_;
 
-  absl::optional<MetricEventType> event_type_;
+  std::optional<MetricEventType> event_type_;
 };
 
 class PeriodicEventCollectorTest : public ::testing::Test {
@@ -180,7 +180,7 @@ TEST_F(PeriodicEventCollectorTest, Default) {
 
   {
     event_observed_called = false;
-    event_detector_ptr_->SetEventType(absl::nullopt);
+    event_detector_ptr_->SetEventType(std::nullopt);
     sampler_data.Clear();
     sampler_data.mutable_telemetry_data()->mutable_app_telemetry();
     sampler_->SetMetricData(sampler_data);

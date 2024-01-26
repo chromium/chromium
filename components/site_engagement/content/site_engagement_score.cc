@@ -357,7 +357,7 @@ bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {
 SiteEngagementScore::SiteEngagementScore(
     base::Clock* clock,
     const GURL& origin,
-    absl::optional<base::Value::Dict> score_dict)
+    std::optional<base::Value::Dict> score_dict)
     : clock_(clock),
       raw_score_(0),
       points_added_today_(0),
@@ -373,13 +373,13 @@ SiteEngagementScore::SiteEngagementScore(
   points_added_today_ =
       score_dict_->FindDouble(kPointsAddedTodayKey).value_or(0);
 
-  absl::optional<double> maybe_last_engagement_time =
+  std::optional<double> maybe_last_engagement_time =
       score_dict_->FindDouble(kLastEngagementTimeKey);
   if (maybe_last_engagement_time.has_value())
     last_engagement_time_ =
         base::Time::FromInternalValue(maybe_last_engagement_time.value());
 
-  absl::optional<double> maybe_last_shortcut_launch_time =
+  std::optional<double> maybe_last_shortcut_launch_time =
       score_dict_->FindDouble(kLastShortcutLaunchTimeKey);
   if (maybe_last_shortcut_launch_time.has_value())
     last_shortcut_launch_time_ =

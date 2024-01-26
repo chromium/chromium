@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_DELEGATE_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_DELEGATE_IMPL_H_
 
+#include <optional>
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DIRECT_RENDERER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -113,7 +113,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 #if BUILDFLAG(IS_APPLE)
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
-    absl::optional<int64_t> choreographer_vsync_id;
+    std::optional<int64_t> choreographer_vsync_id;
     int64_t swap_trace_id = -1;
   };
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
@@ -147,7 +147,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // When we have a buffer queue, the output surface could be treated as an
     // overlay plane, and the struct to store that information is in
     // |output_surface_plane|.
-    absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+    std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
         output_surface_plane;
   };
 
@@ -268,7 +268,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       AggregatedRenderPassId render_pass_id) const;
   const cc::FilterOperations* BackdropFiltersForPass(
       AggregatedRenderPassId render_pass_id) const;
-  const absl::optional<gfx::RRectF> BackdropFilterBoundsForPass(
+  const std::optional<gfx::RRectF> BackdropFilterBoundsForPass(
       AggregatedRenderPassId render_pass_id) const;
 
   // Private interface implemented by subclasses for use by DirectRenderer.
@@ -368,7 +368,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       render_pass_filters_;
   base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
       render_pass_backdrop_filters_;
-  base::flat_map<AggregatedRenderPassId, absl::optional<gfx::RRectF>>
+  base::flat_map<AggregatedRenderPassId, std::optional<gfx::RRectF>>
       render_pass_backdrop_filter_bounds_;
   base::flat_map<AggregatedRenderPassId, gfx::Rect>
       backdrop_filter_output_rects_;
@@ -442,11 +442,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Cached values given to Reshape(). The `reshape_params_` is optional
   // to prevent use of uninitialized values. The size in these parameters
   // may be larger than the `device_viewport_size_` that users see.
-  absl::optional<OutputSurface::ReshapeParams> reshape_params_;
+  std::optional<OutputSurface::ReshapeParams> reshape_params_;
 
   // If present additionally restricts drawing to the OutputSurface. WebView
   // gets this rect from the HWUI.
-  absl::optional<gfx::Rect> output_surface_clip_rect_;
+  std::optional<gfx::Rect> output_surface_clip_rect_;
   gfx::Size device_viewport_size_;
   gfx::OverlayTransform reshape_display_transform_ =
       gfx::OVERLAY_TRANSFORM_INVALID;

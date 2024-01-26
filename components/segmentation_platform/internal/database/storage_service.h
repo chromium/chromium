@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_STORAGE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -19,7 +20,6 @@
 #include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -196,9 +196,9 @@ class StorageService {
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
 
   // Database initialization statuses.
-  absl::optional<bool> segment_info_database_initialized_;
-  absl::optional<bool> signal_database_initialized_;
-  absl::optional<bool> signal_storage_config_initialized_;
+  std::optional<bool> segment_info_database_initialized_;
+  std::optional<bool> signal_database_initialized_;
+  std::optional<bool> signal_storage_config_initialized_;
   SuccessCallback init_callback_;
 
   base::WeakPtrFactory<StorageService> weak_ptr_factory_{this};

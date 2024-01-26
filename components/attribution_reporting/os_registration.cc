@@ -4,12 +4,12 @@
 
 #include "components/attribution_reporting/os_registration.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {

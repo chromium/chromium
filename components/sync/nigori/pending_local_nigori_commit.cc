@@ -42,7 +42,7 @@ void InitNewOrFixCorruptedKeyPair(
       CrossUserSharingPublicKey::CreateByImport(
           cross_user_sharing_key_pair.GetRawPublicKey());
   state->cross_user_sharing_key_pair_version = version;
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           cross_user_sharing_key_pair.GetRawPrivateKey());
   CHECK(key_pair.has_value());
@@ -183,7 +183,7 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
   }
 
  private:
-  absl::optional<CrossUserSharingPublicPrivateKeyPair>
+  std::optional<CrossUserSharingPublicPrivateKeyPair>
       cross_user_sharing_public_private_key_pair_;
 };
 

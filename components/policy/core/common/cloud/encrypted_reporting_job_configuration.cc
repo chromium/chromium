@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -201,7 +201,7 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
     std::move(callback_).Run(/*job=*/nullptr,
                              DeviceManagementStatus::DM_STATUS_REQUEST_FAILED,
                              /*response_code=*/418,
-                             /*response_body=*/absl::nullopt);
+                             /*response_body=*/std::nullopt);
   }
 }
 
@@ -259,7 +259,7 @@ void EncryptedReportingJobConfiguration::CancelNotAllowedJob() {
   std::move(callback_).Run(
       /*job=*/nullptr, DeviceManagementStatus::DM_STATUS_REQUEST_FAILED,
       /*response_code=*/DeviceManagementService::kTooManyRequests,
-      /*response_body=*/absl::nullopt);
+      /*response_body=*/std::nullopt);
 }
 
 void EncryptedReportingJobConfiguration::AccountForAllowedJob() {

@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -102,12 +102,12 @@ void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
 }  // namespace
 
 // static
-absl::optional<AggregatableTriggerData> AggregatableTriggerData::Create(
+std::optional<AggregatableTriggerData> AggregatableTriggerData::Create(
     absl::uint128 key_piece,
     Keys source_keys,
     FilterPair filters) {
   if (!AreSourceKeysValid(source_keys))
-    return absl::nullopt;
+    return std::nullopt;
 
   return AggregatableTriggerData(key_piece, std::move(source_keys),
                                  std::move(filters));

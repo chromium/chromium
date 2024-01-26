@@ -218,9 +218,9 @@ RealTimeUrlLookupService::GetTrafficAnnotationTag() const {
         })");
 }
 
-absl::optional<std::string> RealTimeUrlLookupService::GetDMTokenString() const {
+std::optional<std::string> RealTimeUrlLookupService::GetDMTokenString() const {
   // DM token should only be set for enterprise requests.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string RealTimeUrlLookupService::GetMetricSuffix() const {
@@ -231,7 +231,7 @@ bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {
   return true;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains() const {
   return url_lookup_enabled_timestamp_;
 }

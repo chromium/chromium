@@ -58,7 +58,7 @@ class PermissionRecoverySuccessRateTracker
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
 
   bool page_reload_ = false;
 

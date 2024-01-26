@@ -124,7 +124,7 @@ class LevelDBSiteDataStoreTest : public ::testing::Test {
     bool success = false;
     auto init_callback = base::BindOnce(
         [](SiteDataProto* receiving_proto, bool* success,
-           absl::optional<SiteDataProto> proto_opt) {
+           std::optional<SiteDataProto> proto_opt) {
           *success = proto_opt.has_value();
           if (proto_opt)
             receiving_proto->CopyFrom(proto_opt.value());
@@ -211,8 +211,8 @@ TEST_F(LevelDBSiteDataStoreTest, GetDatabaseSize) {
   std::vector<url::Origin> site_origins = AddDummyEntriesToDB(200);
 
   auto size_callback =
-      base::BindLambdaForTesting([&](absl::optional<int64_t> num_rows,
-                                     absl::optional<int64_t> on_disk_size_kb) {
+      base::BindLambdaForTesting([&](std::optional<int64_t> num_rows,
+                                     std::optional<int64_t> on_disk_size_kb) {
         EXPECT_TRUE(num_rows);
         // The DB contains an extra row for metadata.
         int64_t expected_rows = site_origins.size() + 1;

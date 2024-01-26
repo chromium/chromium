@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class PresentationScreenAvailabilityListener;
@@ -230,7 +230,7 @@ class PresentationServiceDelegateImpl
   base::ObserverList<content::PresentationObserver> presentation_observers_;
 
   // Default presentation request for the owning WebContents.
-  absl::optional<content::PresentationRequest> default_presentation_request_;
+  std::optional<content::PresentationRequest> default_presentation_request_;
 
   // Callback to invoke when the default presentation has started.
   content::DefaultPresentationConnectionCallback

@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -24,7 +24,7 @@ std::string GetStringNameForOptimizationTarget(
 // Returns the file path represented by the given string, handling platform
 // differences in the conversion. nullopt is only returned iff the passed string
 // is empty.
-absl::optional<base::FilePath> StringToFilePath(const std::string& str_path);
+std::optional<base::FilePath> StringToFilePath(const std::string& str_path);
 
 // Returns a string representation of the given |file_path|, handling platform
 // differences in the conversion.
@@ -43,8 +43,8 @@ std::string ModelOverrideSeparator();
 
 // Returns the file path string and metadata for the model provided via
 // command-line for |optimization_target|, if applicable.
-absl::optional<
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
+std::optional<
+    std::pair<std::string, std::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target);
 

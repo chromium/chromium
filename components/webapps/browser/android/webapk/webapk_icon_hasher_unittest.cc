@@ -72,7 +72,7 @@ class WebApkIconHasherRunner {
         url_loader_factory, web_contents->GetWeakPtr(),
         url::Origin::Create(*icon_urls.begin()), icons,
         base::BindLambdaForTesting(
-            [&](absl::optional<std::map<std::string, WebApkIconHasher::Icon>>
+            [&](std::optional<std::map<std::string, WebApkIconHasher::Icon>>
                     hashes) {
               ASSERT_TRUE(hashes);
               result = std::move(*hashes);

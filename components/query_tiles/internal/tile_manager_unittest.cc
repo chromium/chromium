@@ -152,7 +152,7 @@ class TileManagerTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetSingleTile(const std::string& id, absl::optional<Tile> expected) {
+  void GetSingleTile(const std::string& id, std::optional<Tile> expected) {
     base::RunLoop loop;
     manager()->GetTile(
         id, true,
@@ -162,8 +162,8 @@ class TileManagerTest : public testing::Test {
   }
 
   void OnGetTile(base::RepeatingClosure closure,
-                 absl::optional<Tile> expected,
-                 absl::optional<Tile> actual) {
+                 std::optional<Tile> expected,
+                 std::optional<Tile> actual) {
     ASSERT_EQ(expected.has_value(), actual.has_value());
     if (expected.has_value())
       EXPECT_TRUE(test::AreTilesIdentical(expected.value(), actual.value()));
@@ -315,7 +315,7 @@ TEST_F(TileManagerTest, GetTileById) {
   test::ResetTestGroup(&group, current_time());
   InitWithData(TileGroupStatus::kSuccess, {group});
   GetSingleTile("guid-1-1", *group.tiles[0]);
-  GetSingleTile("id_not_exist", absl::nullopt);
+  GetSingleTile("id_not_exist", std::nullopt);
 }
 
 // Verify that GetTiles will return empty result if no matching AcceptLanguages
@@ -420,7 +420,7 @@ TEST_F(TileManagerTest, GetSingleTileWithTrendingSubTiles) {
 
   parent_tile->sub_tiles = test::GetTestTrendingTileList();
 
-  absl::optional<Tile> parent_tile2 = absl::make_optional(*parent_tile.get());
+  std::optional<Tile> parent_tile2 = std::make_optional(*parent_tile.get());
   parent_tile2->sub_tiles.pop_back();
 
   std::vector<std::unique_ptr<Tile>> tiles_to_save;
@@ -531,8 +531,8 @@ TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
   expected.emplace_back(*parent_tile.get());
   Tile trending_3 = *(expected[0].sub_tiles[2]).get();
 
-  absl::optional<Tile> get_single_tile_expected =
-      absl::make_optional(*parent_tile.get());
+  std::optional<Tile> get_single_tile_expected =
+      std::make_optional(*parent_tile.get());
   get_single_tile_expected->sub_tiles.pop_back();
 
   std::vector<std::unique_ptr<Tile>> tiles_to_save;

@@ -34,20 +34,20 @@ namespace translate {
 namespace {
 
 // Extracts a TranslateErrors value from `value` for the given `key`. Returns
-// absl::nullopt if the value is missing or not convertible to TranslateErrors.
-absl::optional<TranslateErrors> FindTranslateErrorsKey(
+// std::nullopt if the value is missing or not convertible to TranslateErrors.
+std::optional<TranslateErrors> FindTranslateErrorsKey(
     const base::Value::Dict& value,
     base::StringPiece key) {
   // Does `value` contains a double value for `key`?
-  const absl::optional<double> found_value = value.FindDouble(key);
+  const std::optional<double> found_value = value.FindDouble(key);
   if (!found_value.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Does the double value convert to an integral value? This is to reject
   // values like `1.3` that do not represent an enumerator.
   const double double_value = found_value.value();
   if (double_value != std::trunc(double_value))
-    return absl::nullopt;
+    return std::nullopt;
 
   // Is the value in range? It is safe to convert the enumerator values to
   // `double` as IEEE754 floating point can safely represent all integral
@@ -55,7 +55,7 @@ absl::optional<TranslateErrors> FindTranslateErrorsKey(
   constexpr double kMinValue = static_cast<double>(TranslateErrors::NONE);
   constexpr double kMaxValue = static_cast<double>(TranslateErrors::TYPE_LAST);
   if (double_value < kMinValue || kMaxValue < double_value)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Since `double_value` has no fractional part, is in range for the
   // enumeration and the enumeration has no holes between enumerators,
@@ -145,13 +145,13 @@ void TranslateController::OnJavascriptCommandReceived(
 }
 
 void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
-  absl::optional<TranslateErrors> error_type =
+  std::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
     return;
 
-  absl::optional<double> load_time;
-  absl::optional<double> ready_time;
+  std::optional<double> load_time;
+  std::optional<double> ready_time;
   if (*error_type == TranslateErrors::NONE) {
     load_time = payload.FindDouble("loadTime");
     ready_time = payload.FindDouble("readyTime");
@@ -167,13 +167,13 @@ void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
 
 void TranslateController::OnTranslateComplete(
     const base::Value::Dict& payload) {
-  absl::optional<TranslateErrors> error_type =
+  std::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
     return;
 
   const std::string* source_language = nullptr;
-  absl::optional<double> translation_time;
+  std::optional<double> translation_time;
   if (*error_type == TranslateErrors::NONE) {
     source_language = payload.FindString("pageSourceLanguage");
     translation_time = payload.FindDouble("translationTime");
@@ -221,7 +221,7 @@ void TranslateController::OnTranslateSendRequest(
   if (!method || !url || !body) {
     return;
   }
-  absl::optional<double> request_id = payload.FindDouble("requestID");
+  std::optional<double> request_id = payload.FindDouble("requestID");
   if (!request_id.has_value()) {
     return;
   }

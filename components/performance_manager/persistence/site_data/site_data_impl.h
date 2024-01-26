@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_IMPL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_IMPL_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/performance_manager/persistence/site_data/site_data_store.h"
 #include "components/performance_manager/persistence/site_data/tab_visibility.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -236,7 +236,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // Callback that needs to be called by the data store once it has finished
   // trying to read the protobuf.
-  void OnInitCallback(absl::optional<SiteDataProto> site_characteristic_proto);
+  void OnInitCallback(std::optional<SiteDataProto> site_characteristic_proto);
 
   // Decrement the |loaded_tabs_in_background_count_| counter and update the
   // local feature observation durations if necessary.

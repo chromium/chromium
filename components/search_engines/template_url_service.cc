@@ -1053,11 +1053,11 @@ GURL TemplateURLService::GenerateSearchURLForDefaultSearchProvider(
                           : GURL();
 }
 
-absl::optional<TemplateURLService::SearchMetadata>
+std::optional<TemplateURLService::SearchMetadata>
 TemplateURLService::ExtractSearchMetadata(const GURL& url) const {
   const TemplateURL* template_url = GetTemplateURLForHost(url.host());
   if (!template_url) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL normalized_url;
@@ -1070,7 +1070,7 @@ TemplateURLService::ExtractSearchMetadata(const GURL& url) const {
                           /*normalize_search_terms=*/true, &normalized_url,
                           &normalized_search_terms);
   if (!is_valid_search_url) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return SearchMetadata{template_url, normalized_url, normalized_search_terms};
@@ -1417,7 +1417,7 @@ syncer::SyncDataList TemplateURLService::GetAllSyncData(
   return current_data;
 }
 
-absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
+std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
@@ -1436,7 +1436,7 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       &dsp_change_origin_, DSP_CHANGE_SYNC_UNINTENTIONAL);
 
   syncer::SyncChangeList new_changes;
-  absl::optional<syncer::ModelError> error;
+  std::optional<syncer::ModelError> error;
   for (auto iter = change_list.begin(); iter != change_list.end(); ++iter) {
     DCHECK_EQ(syncer::SEARCH_ENGINES, iter->sync_data().GetDataType());
 
@@ -1522,7 +1522,7 @@ base::WeakPtr<syncer::SyncableService> TemplateURLService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
+std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
@@ -1628,7 +1628,7 @@ absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   PruneSyncChanges(&sync_data_map, &new_changes);
 
   LogDuplicatesHistogram(GetTemplateURLs());
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
     // The ACTION_DELETEs from this set are processed. Empty it so we don't try

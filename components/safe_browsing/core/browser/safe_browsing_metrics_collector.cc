@@ -256,8 +256,8 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
   AddSafeBrowsingEventToPref(event);
 }
 
-absl::optional<base::Time>
-SafeBrowsingMetricsCollector::GetLatestEventTimestamp(EventType event_type) {
+std::optional<base::Time> SafeBrowsingMetricsCollector::GetLatestEventTimestamp(
+    EventType event_type) {
   return GetLatestEventTimestamp(base::BindRepeating(
       [](const EventType& target_event_type, const EventType& event_type) {
         return target_event_type == event_type;
@@ -265,22 +265,21 @@ SafeBrowsingMetricsCollector::GetLatestEventTimestamp(EventType event_type) {
       event_type));
 }
 
-absl::optional<base::Time>
-SafeBrowsingMetricsCollector::GetLatestEventTimestamp(
+std::optional<base::Time> SafeBrowsingMetricsCollector::GetLatestEventTimestamp(
     EventTypeFilter event_type_filter) {
   // Events are not logged when Safe Browsing is disabled.
   SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
   if (sb_state == SafeBrowsingState::NO_SAFE_BROWSING) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<Event> event =
+  const std::optional<Event> event =
       GetLatestEventFromEventTypeFilter(GetUserState(), event_type_filter);
-  return event ? absl::optional<base::Time>(event.value().timestamp)
-               : absl::nullopt;
+  return event ? std::optional<base::Time>(event.value().timestamp)
+               : std::nullopt;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 SafeBrowsingMetricsCollector::GetLatestSecuritySensitiveEventTimestamp() {
   return GetLatestEventTimestamp(base::BindRepeating(
       &SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType));
@@ -330,7 +329,7 @@ SafeBrowsingMetricsCollector::GetSafeBrowsingEventDictionary(
   return state_dict.FindDict(UserStateToPrefKey(user_state));
 }
 
-absl::optional<SafeBrowsingMetricsCollector::Event>
+std::optional<SafeBrowsingMetricsCollector::Event>
 SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
     UserState user_state,
     EventType event_type) {
@@ -338,7 +337,7 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
       GetSafeBrowsingEventDictionary(user_state);
 
   if (!event_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::List* timestamps =
@@ -349,10 +348,10 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
     return Event(event_type, time);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<SafeBrowsingMetricsCollector::Event>
+std::optional<SafeBrowsingMetricsCollector::Event>
 SafeBrowsingMetricsCollector::GetLatestEventFromEventTypeFilter(
     UserState user_state,
     EventTypeFilter event_type_filter) {
@@ -363,7 +362,7 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventTypeFilter(
     if (!event_type_filter.Run(event_type)) {
       continue;
     }
-    const absl::optional<Event> latest_event =
+    const std::optional<Event> latest_event =
         GetLatestEventFromEventType(user_state, event_type);
     if (latest_event) {
       bypass_events.emplace_back(latest_event.value());
@@ -375,8 +374,8 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventTypeFilter(
       [](const Event& a, const Event& b) { return a.timestamp < b.timestamp; });
 
   return (latest_event != bypass_events.end())
-             ? absl::optional<Event>(*latest_event)
-             : absl::nullopt;
+             ? std::optional<Event>(*latest_event)
+             : std::nullopt;
 }
 
 void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
@@ -403,7 +402,7 @@ void SafeBrowsingMetricsCollector::
     return;
   }
 
-  absl::optional<SafeBrowsingMetricsCollector::Event> latest_bypass_event =
+  std::optional<SafeBrowsingMetricsCollector::Event> latest_bypass_event =
       GetLatestEventFromEventTypeFilter(
           UserState::kEnhancedProtection,
           base::BindRepeating(
@@ -414,7 +413,7 @@ void SafeBrowsingMetricsCollector::
         latest_bypass_event->type);
   }
 
-  absl::optional<SafeBrowsingMetricsCollector::Event>
+  std::optional<SafeBrowsingMetricsCollector::Event>
       latest_security_sensitive_event = GetLatestEventFromEventTypeFilter(
           UserState::kEnhancedProtection,
           base::BindRepeating(
@@ -425,9 +424,8 @@ void SafeBrowsingMetricsCollector::
         latest_security_sensitive_event->type);
   }
 
-  const absl::optional<Event> latest_enabled_event =
-      GetLatestEventFromEventType(UserState::kEnhancedProtection,
-                                  EventType::USER_STATE_ENABLED);
+  const std::optional<Event> latest_enabled_event = GetLatestEventFromEventType(
+      UserState::kEnhancedProtection, EventType::USER_STATE_ENABLED);
   if (latest_enabled_event) {
     const auto days_since_enabled =
         (base::Time::Now() - latest_enabled_event.value().timestamp).InDays();
@@ -532,9 +530,8 @@ std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
 }
 
 std::string SafeBrowsingMetricsCollector::GetTimesDisabledSuffix() {
-  const absl::optional<Event> latest_enabled_event =
-      GetLatestEventFromEventType(UserState::kEnhancedProtection,
-                                  EventType::USER_STATE_ENABLED);
+  const std::optional<Event> latest_enabled_event = GetLatestEventFromEventType(
+      UserState::kEnhancedProtection, EventType::USER_STATE_ENABLED);
 
   if (!latest_enabled_event) {
     // This code path could be possible if ESB was enabled via policy but

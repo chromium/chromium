@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "components/update_client/protocol_serializer.h"
 #include "components/update_client/request_sender.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -107,7 +107,7 @@ void PingSender::SendPing(const Component& component,
       metadata.GetCohortName(component.id()),
       component.crx_component()->channel,
       component.crx_component()->disabled_reasons,
-      absl::nullopt /* update check */, {} /* data */, absl::nullopt /* ping */,
+      std::nullopt /* update check */, {} /* data */, std::nullopt /* ping */,
       component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(

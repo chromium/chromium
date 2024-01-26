@@ -25,7 +25,7 @@ class PageContentAnnotationJobTest : public testing::Test {
 TEST_F(PageContentAnnotationJobTest, IteratesInput) {
   PageContentAnnotationJob job(base::NullCallback(), {"1", "2", "3"},
                                AnnotationType::kContentVisibility);
-  absl::optional<std::string> input;
+  std::optional<std::string> input;
 
   input = job.GetNextInput();
   ASSERT_TRUE(input);
@@ -54,7 +54,7 @@ TEST_F(PageContentAnnotationJobTest, Callback) {
   }
 
   BatchAnnotationResult expected =
-      BatchAnnotationResult::CreateContentVisibilityResult("1", absl::nullopt);
+      BatchAnnotationResult::CreateContentVisibilityResult("1", std::nullopt);
 
   job.PostNewResult(expected, 0);
   job.OnComplete();

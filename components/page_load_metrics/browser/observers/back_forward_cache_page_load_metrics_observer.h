@@ -164,8 +164,8 @@ class BackForwardCachePageLoadMetricsObserver
 
   // The layout shift score. These are updated whenever the page is restored
   // from the back-forward cache.
-  absl::optional<double> restored_main_frame_layout_shift_score_;
-  absl::optional<double> restored_layout_shift_score_;
+  std::optional<double> restored_main_frame_layout_shift_score_;
+  std::optional<double> restored_layout_shift_score_;
 
   // IDs for the navigations when the page is restored from the back-forward
   // cache.

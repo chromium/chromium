@@ -5,6 +5,7 @@
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "components/sync/test/sync_user_settings_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

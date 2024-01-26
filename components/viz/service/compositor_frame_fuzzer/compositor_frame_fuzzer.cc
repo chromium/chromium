@@ -27,9 +27,9 @@ struct Env {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     auto png_dir_path =
         command_line->HasSwitch("dump-to-png")
-            ? absl::optional<base::FilePath>(
+            ? std::optional<base::FilePath>(
                   command_line->GetSwitchValuePath("dump-to-png"))
-            : absl::nullopt;
+            : std::nullopt;
 
     // Re-initialize logging in order to pick up any command-line parameters
     // (such as --v=1 to enable verbose logging).

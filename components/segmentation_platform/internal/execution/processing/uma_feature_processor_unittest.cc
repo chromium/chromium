@@ -136,13 +136,13 @@ class UmaFeatureProcessorTest : public testing::Test {
                                   base::DoNothing());
     signal_database_->WriteSample(proto::SignalType::USER_ACTION,
                                   base::HashMetricName("UserActionTwice"),
-                                  absl::nullopt, base::DoNothing());
+                                  std::nullopt, base::DoNothing());
     signal_database_->WriteSample(proto::SignalType::USER_ACTION,
                                   base::HashMetricName("UserActionTwice"),
-                                  absl::nullopt, base::DoNothing());
+                                  std::nullopt, base::DoNothing());
     signal_database_->WriteSample(proto::SignalType::USER_ACTION,
                                   base::HashMetricName("UserActionOnce"),
-                                  absl::nullopt, base::DoNothing());
+                                  std::nullopt, base::DoNothing());
     signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
                                   base::HashMetricName("ValueHistogram"), 34,
                                   base::DoNothing());

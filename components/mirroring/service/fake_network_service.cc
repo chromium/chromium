@@ -59,7 +59,7 @@ void MockUdpSocket::Send(
 void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
   if (num_ask_for_receive_) {
     listener_->OnReceived(
-        net::OK, absl::nullopt,
+        net::OK, std::nullopt,
         base::span<const uint8_t>(
             reinterpret_cast<const uint8_t*>(packet.data()), packet.size()));
     ASSERT_LT(0, num_ask_for_receive_);

@@ -1121,7 +1121,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const bookmarks::BookmarkNode* node = bookmark_model()->AddFolder(
       /*parent=*/bookmark_model()->bookmark_bar_node(),
       /*index=*/0, u"title", /*meta_info=*/nullptr,
-      /*creation_time=*/absl::nullopt, kBookmarkGuid);
+      /*creation_time=*/std::nullopt, kBookmarkGuid);
 
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
@@ -1190,7 +1190,7 @@ TEST_F(
   const bookmarks::BookmarkNode* node = bookmark_model()->AddFolder(
       /*parent=*/bookmark_model()->bookmark_bar_node(),
       /*index=*/0, u"title", /*meta_info=*/nullptr,
-      /*creation_time=*/absl::nullopt, kBookmarkGuid);
+      /*creation_time=*/std::nullopt, kBookmarkGuid);
   // Track a sync entity (similar to what happens after a local creation).
   const SyncedBookmarkTrackerEntity* entity =
       tracker()->Add(node, /*sync_id=*/kSyncId, /*server_version=*/0,

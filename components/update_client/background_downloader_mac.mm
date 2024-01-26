@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -44,7 +45,6 @@
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -163,7 +163,7 @@ GURL GURLWithNSURL(NSURL* url) {
 }
 
 - (void)endTask:(NSURLSessionTask*)task
-    withLocation:(absl::optional<base::FilePath>)location
+    withLocation:(std::optional<base::FilePath>)location
        withError:(int)error {
   _callback_runner->PostTask(
       FROM_HERE, base::BindOnce(_download_complete_callback,
@@ -183,7 +183,7 @@ GURL GURLWithNSURL(NSURL* url) {
     LOG(ERROR) << "Failed to create download cache directory at: "
                << _download_cache;
     [self endTask:downloadTask
-        withLocation:absl::nullopt
+        withLocation:std::nullopt
            withError:static_cast<int>(update_client::CrxDownloaderError::
                                           MAC_BG_CANNOT_CREATE_DOWNLOAD_CACHE)];
     return;
@@ -198,7 +198,7 @@ GURL GURLWithNSURL(NSURL* url) {
         << "Failed to move the downloaded file from the temporary location: "
         << temp_path << " to: " << cache_path;
     [self endTask:downloadTask
-        withLocation:absl::nullopt
+        withLocation:std::nullopt
            withError:static_cast<int>(update_client::CrxDownloaderError::
                                           MAC_BG_MOVE_TO_CACHE_FAIL)];
     return;
@@ -228,7 +228,7 @@ GURL GURLWithNSURL(NSURL* url) {
                     task:(nonnull NSURLSessionTask*)task
     didCompleteWithError:(nullable NSError*)error {
   if (error) {
-    [self endTask:task withLocation:absl::nullopt withError:error.code];
+    [self endTask:task withLocation:std::nullopt withError:error.code];
   }
 }
 

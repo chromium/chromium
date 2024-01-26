@@ -5,13 +5,13 @@
 #include "components/feature_engagement/internal/availability_model_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -61,8 +61,8 @@ class AvailabilityModelImplTest : public testing::Test {
   std::unique_ptr<AvailabilityModelImpl> availability_model_;
 
   AvailabilityModel::OnInitializedCallback initialized_callback_;
-  absl::optional<bool> success_;
-  absl::optional<uint32_t> current_day_;
+  std::optional<bool> success_;
+  std::optional<uint32_t> current_day_;
 };
 
 }  // namespace
@@ -100,7 +100,7 @@ TEST_F(AvailabilityModelImplTest, SuccessfullyLoadThreeFeatures) {
   EXPECT_EQ(100u, availability_model_->GetAvailability(kTestFeatureFoo));
   EXPECT_EQ(200u, availability_model_->GetAvailability(kTestFeatureBar));
   EXPECT_EQ(300u, availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 
@@ -115,13 +115,13 @@ TEST_F(AvailabilityModelImplTest, FailToLoadThreeFeatures) {
   EXPECT_FALSE(availability_model_->IsReady());
 
   // Load failed, so all results should be ignored.
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             availability_model_->GetAvailability(kTestFeatureFoo));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             availability_model_->GetAvailability(kTestFeatureBar));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 

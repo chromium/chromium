@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -282,11 +282,11 @@ TriggerSpecs TriggerSpecs::Default(SourceType source_type,
 }
 
 // static
-absl::optional<TriggerSpecs> TriggerSpecs::Create(
+std::optional<TriggerSpecs> TriggerSpecs::Create(
     TriggerDataIndices trigger_data_indices,
     std::vector<TriggerSpec> specs) {
   if (!AreSpecsValid(trigger_data_indices, specs)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return TriggerSpecs(std::move(trigger_data_indices), std::move(specs));
 }

@@ -23,7 +23,7 @@ ActivationStateComputingNavigationThrottle::CreateForRoot(
     content::NavigationHandle* navigation_handle) {
   DCHECK(IsInSubresourceFilterRoot(navigation_handle));
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, absl::optional<mojom::ActivationState>(), nullptr));
+      navigation_handle, std::optional<mojom::ActivationState>(), nullptr));
 }
 
 // static
@@ -43,7 +43,7 @@ ActivationStateComputingNavigationThrottle::CreateForChild(
 ActivationStateComputingNavigationThrottle::
     ActivationStateComputingNavigationThrottle(
         content::NavigationHandle* navigation_handle,
-        const absl::optional<mojom::ActivationState> parent_activation_state,
+        const std::optional<mojom::ActivationState> parent_activation_state,
         VerifiedRuleset::Handle* ruleset_handle)
     : content::NavigationThrottle(navigation_handle),
       parent_activation_state_(parent_activation_state),

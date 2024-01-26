@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -21,7 +22,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
@@ -34,13 +34,13 @@ constexpr char kDeduplicationKey[] = "deduplication_key";
 constexpr char kPriority[] = "priority";
 
 template <typename T>
-base::expected<absl::optional<T>, absl::monostate> ParseIntegerFromString(
+base::expected<std::optional<T>, absl::monostate> ParseIntegerFromString(
     const base::Value::Dict& dict,
     std::string_view key,
     bool (*parse)(std::string_view, T*)) {
   const base::Value* value = dict.Find(key);
   if (!value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   T parsed_val;
@@ -82,13 +82,13 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   return out.str();
 }
 
-base::expected<absl::optional<uint64_t>, absl::monostate> ParseUint64(
+base::expected<std::optional<uint64_t>, absl::monostate> ParseUint64(
     const base::Value::Dict& dict,
     std::string_view key) {
   return ParseIntegerFromString<uint64_t>(dict, key, &base::StringToUint64);
 }
 
-base::expected<absl::optional<int64_t>, absl::monostate> ParseInt64(
+base::expected<std::optional<int64_t>, absl::monostate> ParseInt64(
     const base::Value::Dict& dict,
     std::string_view key) {
   return ParseIntegerFromString<int64_t>(dict, key, &base::StringToInt64);
@@ -99,11 +99,11 @@ base::expected<int64_t, absl::monostate> ParsePriority(
   return ParseInt64(dict, kPriority).transform(&ValueOrZero<int64_t>);
 }
 
-absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
-  return ParseUint64(dict, kDebugKey).value_or(absl::nullopt);
+std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
+  return ParseUint64(dict, kDebugKey).value_or(std::nullopt);
 }
 
-base::expected<absl::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
     const base::Value::Dict& dict) {
   return ParseUint64(dict, kDeduplicationKey);
 }
@@ -121,7 +121,7 @@ ParseLegacyDuration(const base::Value& value,
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
 
-  if (absl::optional<int> int_value = value.GetIfInt()) {
+  if (std::optional<int> int_value = value.GetIfInt()) {
     if (*int_value < 0) {
       return base::unexpected(error);
     }
@@ -156,7 +156,7 @@ void SerializePriority(base::Value::Dict& dict, int64_t priority) {
 }
 
 void SerializeDebugKey(base::Value::Dict& dict,
-                       absl::optional<uint64_t> debug_key) {
+                       std::optional<uint64_t> debug_key) {
   if (debug_key) {
     SerializeUint64(dict, kDebugKey, *debug_key);
   }
@@ -167,7 +167,7 @@ void SerializeDebugReporting(base::Value::Dict& dict, bool debug_reporting) {
 }
 
 void SerializeDeduplicationKey(base::Value::Dict& dict,
-                               absl::optional<uint64_t> dedup_key) {
+                               std::optional<uint64_t> dedup_key) {
   if (dedup_key) {
     SerializeUint64(dict, kDeduplicationKey, *dedup_key);
   }
@@ -198,7 +198,7 @@ base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
   //
   // TODO(apaseltiner): Consider test coverage for all `uint32_t` values, or
   // some kind of fuzzer.
-  absl::optional<double> double_value = value.GetIfDouble();
+  std::optional<double> double_value = value.GetIfDouble();
   if (double int_part;
       !double_value.has_value() || std::modf(*double_value, &int_part) != 0) {
     return base::unexpected(wrong_type_error);

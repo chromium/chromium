@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class OptimizationGuideLogger;
@@ -34,7 +34,7 @@ namespace optimization_guide {
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
 using HintsFetchedCallback = base::OnceCallback<void(
-    absl::optional<std::unique_ptr<proto::GetHintsResponse>>)>;
+    std::optional<std::unique_ptr<proto::GetHintsResponse>>)>;
 
 // A class to handle requests for optimization hints from a remote Optimization
 // Guide Service.

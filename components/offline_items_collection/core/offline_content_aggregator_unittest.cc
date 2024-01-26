@@ -107,14 +107,14 @@ class OfflineContentAggregatorTest : public testing::Test {
  protected:
   MOCK_METHOD1(OnGetAllItemsDone,
                void(const OfflineContentProvider::OfflineItemList&));
-  MOCK_METHOD1(OnGetItemByIdDone, void(const absl::optional<OfflineItem>&));
+  MOCK_METHOD1(OnGetItemByIdDone, void(const std::optional<OfflineItem>&));
 
   void GetAllItemsAndVerify(
       OfflineContentProvider* provider,
       const OfflineContentProvider::OfflineItemList& expected);
   void GetSingleItemAndVerify(OfflineContentProvider* provider,
                               const ContentId& id,
-                              const absl::optional<OfflineItem>& expected);
+                              const std::optional<OfflineItem>& expected);
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
@@ -135,7 +135,7 @@ void OfflineContentAggregatorTest::GetAllItemsAndVerify(
 void OfflineContentAggregatorTest::GetSingleItemAndVerify(
     OfflineContentProvider* provider,
     const ContentId& id,
-    const absl::optional<OfflineItem>& expected) {
+    const std::optional<OfflineItem>& expected) {
   EXPECT_CALL(*this, OnGetItemByIdDone(expected)).Times(1);
   provider->GetItemById(
       id, base::BindOnce(&OfflineContentAggregatorTest::OnGetItemByIdDone,
@@ -175,7 +175,7 @@ TEST_F(OfflineContentAggregatorTest, QueryingItemFromRemovedProvider) {
     GetSingleItemAndVerify(&aggregator_, id, item);
   }
 
-  GetSingleItemAndVerify(&aggregator_, id, absl::nullopt);
+  GetSingleItemAndVerify(&aggregator_, id, std::nullopt);
 }
 
 TEST_F(OfflineContentAggregatorTest, GetItemByIdPropagatesToRightProvider) {
@@ -193,8 +193,8 @@ TEST_F(OfflineContentAggregatorTest, GetItemByIdPropagatesToRightProvider) {
   provider2.SetItems({item2});
   GetSingleItemAndVerify(&aggregator_, id1, item1);
   GetSingleItemAndVerify(&aggregator_, id2, item2);
-  GetSingleItemAndVerify(&aggregator_, id3, absl::nullopt);
-  GetSingleItemAndVerify(&aggregator_, id4, absl::nullopt);
+  GetSingleItemAndVerify(&aggregator_, id3, std::nullopt);
+  GetSingleItemAndVerify(&aggregator_, id4, std::nullopt);
 }
 
 TEST_F(OfflineContentAggregatorTest, ActionPropagatesToRightProvider) {
@@ -327,12 +327,12 @@ TEST_F(OfflineContentAggregatorTest, OnItemUpdatedPropagatedToObservers) {
   OfflineItem item1(ContentId("1", "A"));
   OfflineItem item2(ContentId("2", "B"));
 
-  EXPECT_CALL(observer1, OnItemUpdated(item1, Eq(absl::nullopt))).Times(1);
-  EXPECT_CALL(observer1, OnItemUpdated(item2, Eq(absl::nullopt))).Times(1);
-  EXPECT_CALL(observer2, OnItemUpdated(item1, Eq(absl::nullopt))).Times(1);
-  EXPECT_CALL(observer2, OnItemUpdated(item2, Eq(absl::nullopt))).Times(1);
-  provider1.NotifyOnItemUpdated(item1, absl::nullopt);
-  provider2.NotifyOnItemUpdated(item2, absl::nullopt);
+  EXPECT_CALL(observer1, OnItemUpdated(item1, Eq(std::nullopt))).Times(1);
+  EXPECT_CALL(observer1, OnItemUpdated(item2, Eq(std::nullopt))).Times(1);
+  EXPECT_CALL(observer2, OnItemUpdated(item1, Eq(std::nullopt))).Times(1);
+  EXPECT_CALL(observer2, OnItemUpdated(item2, Eq(std::nullopt))).Times(1);
+  provider1.NotifyOnItemUpdated(item1, std::nullopt);
+  provider2.NotifyOnItemUpdated(item2, std::nullopt);
 }
 
 TEST_F(OfflineContentAggregatorTest, ProviderRemovedDuringCallbackFlush) {
@@ -375,7 +375,7 @@ TEST_F(OfflineContentAggregatorTest, SameProviderWithMultipleNamespaces) {
 
   aggregator_.UnregisterProvider("1");
   EXPECT_TRUE(provider.HasObserver(&aggregator_));
-  GetSingleItemAndVerify(&aggregator_, id1, absl::nullopt);
+  GetSingleItemAndVerify(&aggregator_, id1, std::nullopt);
   GetSingleItemAndVerify(&aggregator_, id2, item2);
 
   aggregator_.UnregisterProvider("2");
@@ -439,7 +439,7 @@ TEST_F(OfflineContentAggregatorTest,
   combined_items.push_back(item2);
   combined_items.insert(combined_items.end(), items2.begin(), items2.end());
   GetAllItemsAndVerify(&aggregator_, combined_items);
-  provider1.NotifyOnItemUpdated(item1, absl::nullopt);
+  provider1.NotifyOnItemUpdated(item1, std::nullopt);
   provider2.RunCallback(items2);
 }
 

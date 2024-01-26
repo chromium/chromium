@@ -6,11 +6,11 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_IDENTIFIERS_PROFILE_ID_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -41,7 +41,7 @@ class ProfileIdService : public KeyedService {
   ~ProfileIdService() override;
 
   // Creates and returns the profile identifier for the current profile.
-  absl::optional<std::string> GetProfileId();
+  std::optional<std::string> GetProfileId();
 
  private:
   std::unique_ptr<ProfileIdDelegate> delegate_;

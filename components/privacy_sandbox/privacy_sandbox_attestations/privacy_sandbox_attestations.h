@@ -6,9 +6,8 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_ATTESTATIONS_PRIVACY_SANDBOX_ATTESTATIONS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
-
-#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
@@ -22,8 +21,8 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class PrivacySandboxAttestationsObserver;
@@ -139,7 +138,7 @@ class PrivacySandboxAttestations {
   // calling this to make sure the attestations map is set to the testing
   // instance.
   void SetAttestationsForTesting(
-      absl::optional<PrivacySandboxAttestationsMap> attestations_map);
+      std::optional<PrivacySandboxAttestationsMap> attestations_map);
 
   base::Version GetVersionForTesting() const;
 
@@ -223,7 +222,7 @@ class PrivacySandboxAttestations {
   // i.e. whether particular sites have opted in to using particular Privacy
   // Sandbox APIs. If this is a `nullopt`, this implies the attestations list
   // has not been loaded yet.
-  absl::optional<PrivacySandboxAttestationsMap> attestations_map_
+  std::optional<PrivacySandboxAttestationsMap> attestations_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Overridden sites by DevTools are considered attested.

@@ -5,6 +5,7 @@
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"
 
 #include <limits>
+#include <optional>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/numerics/checked_math.h"
 #include "components/gwp_asan/client/lightweight_detector/random_eviction_quarantine.h"
 #include "components/gwp_asan/client/sampling_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan::internal::lud {
 
@@ -26,7 +26,7 @@ SamplingState<LIGHTWEIGHTDETECTOR> sampling_state;
 
 bool MaybeQuarantine(const AllocatorDispatch* self,
                      void* address,
-                     absl::optional<size_t> maybe_size,
+                     std::optional<size_t> maybe_size,
                      void* context,
                      FreeFunctionKind kind) {
   if (LIKELY(!sampling_state.Sample())) {
@@ -84,7 +84,7 @@ void* ReallocFn(const AllocatorDispatch* self,
 }
 
 void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  if (MaybeQuarantine(self, address, absl::nullopt, context,
+  if (MaybeQuarantine(self, address, std::nullopt, context,
                       FreeFunctionKind::kFree)) {
     return;
   }
@@ -140,7 +140,7 @@ void FreeDefiniteSizeFn(const AllocatorDispatch* self,
 void TryFreeDefaultFn(const AllocatorDispatch* self,
                       void* address,
                       void* context) {
-  if (MaybeQuarantine(self, address, absl::nullopt, context,
+  if (MaybeQuarantine(self, address, std::nullopt, context,
                       FreeFunctionKind::kTryFreeDefault)) {
     return;
   }
@@ -168,7 +168,7 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
 static void AlignedFreeFn(const AllocatorDispatch* self,
                           void* address,
                           void* context) {
-  if (MaybeQuarantine(self, address, absl::nullopt, context,
+  if (MaybeQuarantine(self, address, std::nullopt, context,
                       FreeFunctionKind::kAlignedFree)) {
     return;
   }

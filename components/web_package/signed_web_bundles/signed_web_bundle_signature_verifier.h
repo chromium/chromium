@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_VERIFIER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -48,10 +48,10 @@ class SignedWebBundleSignatureVerifier {
   virtual ~SignedWebBundleSignatureVerifier();
 
   using SignatureVerificationCallback =
-      base::OnceCallback<void(absl::optional<Error>)>;
+      base::OnceCallback<void(std::optional<Error>)>;
 
   // Verifies the signatures of the Signed Web Bundle `file` with the integrity
-  // block `integrity_block`. Executes the `callback` with `absl::nullopt` on
+  // block `integrity_block`. Executes the `callback` with `std::nullopt` on
   // success, or an instance of `Error` on error. Only one signature is
   // currently supported.
   //

@@ -187,7 +187,7 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
                                  BookmarkNode* mobile_folder_node,
                                  const base::Value::Dict& value,
                                  std::string* sync_metadata_str) {
-  absl::optional<int> version = value.FindInt(kVersionKey);
+  std::optional<int> version = value.FindInt(kVersionKey);
   if (!version || *version != kCurrentVersion)
     return false;  // Unknown version.
 

@@ -114,7 +114,7 @@ class ThreatDetails {
       int num_visits,
       std::unique_ptr<security_interstitials::InterstitialInteractionMap>
           interstitial_interactions,
-      absl::optional<int64_t> warning_shown_ts = absl::nullopt);
+      std::optional<int64_t> warning_shown_ts = std::nullopt);
 
   void OnCacheCollectionReady();
 
@@ -282,7 +282,7 @@ class ThreatDetails {
       interstitial_interactions_;
 
   // Timestamp of when the warning was shown to the user.
-  absl::optional<int64_t> warning_shown_ts_;
+  std::optional<int64_t> warning_shown_ts_;
 
   // Whether this report should be trimmed down to only ad tags, not the entire
   // page contents. Used for sampling ads.

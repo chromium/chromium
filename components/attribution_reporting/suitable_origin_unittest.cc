@@ -4,9 +4,10 @@
 
 #include "components/attribution_reporting/suitable_origin.h"
 
+#include <optional>
+
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,7 +50,7 @@ TEST(SuitableOriginTest, Create) {
               SuitableOrigin::IsSuitable(test_case.origin))
         << test_case.origin;
 
-    absl::optional<SuitableOrigin> actual =
+    std::optional<SuitableOrigin> actual =
         SuitableOrigin::Create(test_case.origin);
 
     EXPECT_EQ(test_case.expected_suitable, actual.has_value())
@@ -65,17 +66,17 @@ TEST(SuitableOriginTest, Create) {
 TEST(SuitableOriginTest, Deserialize_Serialize) {
   const struct {
     std::string_view str;
-    absl::optional<url::Origin> expected;
+    std::optional<url::Origin> expected;
     const char* expected_serialization;
   } kTestCases[] = {
       {
           "",
-          absl::nullopt,
+          std::nullopt,
           nullptr,
       },
       {
           "http://a.test",
-          absl::nullopt,
+          std::nullopt,
           nullptr,
       },
       {
@@ -95,18 +96,18 @@ TEST(SuitableOriginTest, Deserialize_Serialize) {
       },
       {
           "ws://a.test",
-          absl::nullopt,
+          std::nullopt,
           nullptr,
       },
       {
           "wss://a.test",
-          absl::nullopt,
+          std::nullopt,
           nullptr,
       },
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<SuitableOrigin> actual =
+    std::optional<SuitableOrigin> actual =
         SuitableOrigin::Deserialize(test_case.str);
 
     EXPECT_EQ(test_case.expected.has_value(), actual.has_value())

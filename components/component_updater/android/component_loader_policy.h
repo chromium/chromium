@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -138,7 +138,7 @@ class AndroidComponentLoaderPolicy {
   std::string GetComponentId() const;
 
   void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
-                        absl::optional<base::Value::Dict> manifest);
+                        std::optional<base::Value::Dict> manifest);
 
   void ComponentLoadFailedInternal(ComponentLoadResult error);
 

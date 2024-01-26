@@ -404,7 +404,7 @@ CreateWindowEntryFromCommand(const SessionCommand* command,
 // used as a convenient destination for parsing the various fields in a
 // CreateGroupCommand.
 struct GroupCommandFields {
-  absl::optional<base::Token> tab_group_token;
+  std::optional<base::Token> tab_group_token;
   int session_id = 0;
   int num_tabs = 0;
   int browser_id = 0;
@@ -1049,10 +1049,10 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
   Tab* current_tab = nullptr;
   // If non-null we're processing the tabs of this window. The int represents
   // the number of tabs left to process within the window.
-  absl::optional<std::pair<Window*, int>> current_window;
+  std::optional<std::pair<Window*, int>> current_window;
   // If non-null we're processing the tabs of this group. The int represents
   // the number of tabs left to process within the group.
-  absl::optional<std::pair<Group*, int>> current_group;
+  std::optional<std::pair<Group*, int>> current_group;
   for (const auto& i : commands) {
     const SessionCommand& command = *i;
     switch (command.id()) {
@@ -1064,8 +1064,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         }
 
         current_tab = nullptr;
-        current_window = absl::nullopt;
-        current_group = absl::nullopt;
+        current_window = std::nullopt;
+        current_group = std::nullopt;
 
         RestoredEntryPayload payload;
         if (!command.GetPayload(&payload, sizeof(payload)))
@@ -1098,7 +1098,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         RemoveEntryByID(window_id, &entries);
         window->original_id = window_id;
         current_window =
-            absl::make_optional(std::make_pair(window.get(), num_tabs));
+            std::make_optional(std::make_pair(window.get(), num_tabs));
         entries.push_back(std::move(window));
         break;
       }
@@ -1125,7 +1125,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         RemoveEntryByID(group_id, &entries);
         group->original_id = group_id;
         current_group =
-            absl::make_optional(std::make_pair(group.get(), num_tabs));
+            std::make_optional(std::make_pair(group.get(), num_tabs));
         entries.push_back(std::move(group));
         break;
       }
@@ -1152,7 +1152,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           current_window->first->tabs.push_back(std::make_unique<Tab>());
           current_tab = current_window->first->tabs.back().get();
           if (--current_window->second == 0) {
-            current_window = absl::nullopt;
+            current_window = std::nullopt;
           }
         } else if (current_group.has_value()) {
           if (!current_group->first) {
@@ -1163,7 +1163,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           current_group->first->tabs.push_back(std::make_unique<Tab>());
           current_tab = current_group->first->tabs.back().get();
           if (--current_group->second == 0) {
-            current_group = absl::nullopt;
+            current_group = std::nullopt;
           }
         } else {
           RemoveEntryByID(SessionID::FromSerializedValue(payload.id), &entries);
@@ -1213,7 +1213,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         }
         std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
         base::PickleIterator iter(*pickle);
-        absl::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
+        std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         std::u16string title;
         uint32_t color_int;
         if (!iter.ReadString16(&title)) {
@@ -1276,7 +1276,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         current_tab->user_agent_override.ua_string_override.swap(
             user_agent_override);
         current_tab->user_agent_override.opaque_ua_metadata_override =
-            absl::nullopt;
+            std::nullopt;
         break;
       }
 
@@ -1287,7 +1287,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         }
         SessionID tab_id = SessionID::InvalidValue();
         std::string user_agent_override;
-        absl::optional<std::string> opaque_ua_metadata_override;
+        std::optional<std::string> opaque_ua_metadata_override;
         if (!RestoreSetTabUserAgentOverrideCommand2(
                 command, &tab_id, &user_agent_override,
                 &opaque_ua_metadata_override)) {
@@ -1500,7 +1500,7 @@ void TabRestoreServiceImpl::RemoveObserver(
   helper_.RemoveObserver(observer);
 }
 
-absl::optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
+std::optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
     LiveTab* live_tab,
     int index) {
   return helper_.CreateHistoricalTab(live_tab, index);

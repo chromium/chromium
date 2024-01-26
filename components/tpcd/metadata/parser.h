@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TPCD_METADATA_PARSER_H_
 #define COMPONENTS_TPCD_METADATA_PARSER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/tpcd/metadata/metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::metadata {
 
@@ -61,8 +61,8 @@ class Parser {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-  absl::optional<MetadataEntries> metadata_
-      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
+  std::optional<MetadataEntries> metadata_
+      GUARDED_BY_CONTEXT(sequence_checker_) = std::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

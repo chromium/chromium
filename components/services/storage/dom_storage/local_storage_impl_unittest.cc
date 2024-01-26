@@ -59,7 +59,7 @@ class TestLevelDBObserver : public blink::mojom::StorageAreaObserver {
   struct Observation {
     enum { kChange, kChangeFailed, kDelete, kDeleteAll } type;
     std::string key;
-    absl::optional<std::string> old_value;
+    std::optional<std::string> old_value;
     std::string new_value;
     std::string source;
   };
@@ -75,12 +75,12 @@ class TestLevelDBObserver : public blink::mojom::StorageAreaObserver {
  private:
   void KeyChanged(const std::vector<uint8_t>& key,
                   const std::vector<uint8_t>& new_value,
-                  const absl::optional<std::vector<uint8_t>>& old_value,
+                  const std::optional<std::vector<uint8_t>>& old_value,
                   const std::string& source) override {
     observations_.push_back(
         {Observation::kChange, Uint8VectorToStdString(key),
-         old_value ? absl::make_optional(Uint8VectorToStdString(*old_value))
-                   : absl::nullopt,
+         old_value ? std::make_optional(Uint8VectorToStdString(*old_value))
+                   : std::nullopt,
          Uint8VectorToStdString(new_value), source});
   }
   void KeyChangeFailed(const std::vector<uint8_t>& key,
@@ -89,12 +89,12 @@ class TestLevelDBObserver : public blink::mojom::StorageAreaObserver {
                              Uint8VectorToStdString(key), "", "", source});
   }
   void KeyDeleted(const std::vector<uint8_t>& key,
-                  const absl::optional<std::vector<uint8_t>>& old_value,
+                  const std::optional<std::vector<uint8_t>>& old_value,
                   const std::string& source) override {
     observations_.push_back(
         {Observation::kDelete, Uint8VectorToStdString(key),
-         old_value ? absl::make_optional(Uint8VectorToStdString(*old_value))
-                   : absl::nullopt,
+         old_value ? std::make_optional(Uint8VectorToStdString(*old_value))
+                   : std::nullopt,
          "", source});
   }
   void AllDeleted(bool was_nonempty, const std::string& source) override {
@@ -215,7 +215,7 @@ class LocalStorageImplTest : public testing::Test {
     return result;
   }
 
-  absl::optional<std::vector<uint8_t>> DoTestGet(
+  std::optional<std::vector<uint8_t>> DoTestGet(
       const std::vector<uint8_t>& key) {
     const blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -227,8 +227,7 @@ class LocalStorageImplTest : public testing::Test {
                                dummy_area.BindNewPipeAndPassReceiver());
     std::vector<uint8_t> result;
     bool success = test::GetSync(area.get(), key, &result);
-    return success ? absl::optional<std::vector<uint8_t>>(result)
-                   : absl::nullopt;
+    return success ? std::optional<std::vector<uint8_t>>(result) : std::nullopt;
   }
 
   // Pumps both the main-thread sequence and the background database sequence
@@ -243,7 +242,7 @@ class LocalStorageImplTest : public testing::Test {
     context()->BindStorageArea(
         blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
         area.BindNewPipeAndPassReceiver());
-    area->Put(key, value, absl::nullopt, "source",
+    area->Put(key, value, std::nullopt, "source",
               test::MakeSuccessCallback(run_loop.QuitClosure(), &success));
     run_loop.Run();
     EXPECT_TRUE(success);
@@ -310,7 +309,7 @@ TEST_F(LocalStorageImplTest, Basic) {
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   RunUntilIdle();
@@ -332,11 +331,11 @@ TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key1, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   RunUntilIdle();
@@ -356,7 +355,7 @@ TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
   context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
   context()->BindStorageArea(storage_key,
                              dummy_area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
 
   area.reset();
   dummy_area.reset();
@@ -374,7 +373,7 @@ TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
   context()->PurgeMemory();
 
   // And make sure caches were actually cleared.
-  EXPECT_EQ(absl::nullopt, DoTestGet(key));
+  EXPECT_EQ(std::nullopt, DoTestGet(key));
 }
 
 TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
@@ -386,7 +385,7 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
 
   area.reset();
   RunUntilIdle();
@@ -407,7 +406,7 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   RunUntilIdle();
 
   // And make sure caches were actually cleared.
-  EXPECT_EQ(absl::nullopt, DoTestGet(key));
+  EXPECT_EQ(std::nullopt, DoTestGet(key));
 }
 
 TEST_F(LocalStorageImplTest, ValidVersion) {
@@ -426,11 +425,11 @@ TEST_F(LocalStorageImplTest, InvalidVersion) {
   // Force the a reload of the database, which should fail due to invalid
   // version data.
   ResetStorage(storage_path());
-  EXPECT_EQ(absl::nullopt, DoTestGet(StdStringToUint8Vector("key")));
+  EXPECT_EQ(std::nullopt, DoTestGet(StdStringToUint8Vector("key")));
 }
 
 TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
-  EXPECT_EQ(absl::nullopt, DoTestGet(StdStringToUint8Vector("key")));
+  EXPECT_EQ(std::nullopt, DoTestGet(StdStringToUint8Vector("key")));
 
   RunUntilIdle();
   EXPECT_TRUE(GetDatabaseContents().empty());
@@ -455,12 +454,12 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
-  area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key1, value, std::nullopt, "source", base::DoNothing());
+  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
@@ -492,10 +491,10 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->Delete(key, value, "source", base::DoNothing());
@@ -529,10 +528,10 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
@@ -580,11 +579,11 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
@@ -619,11 +618,11 @@ TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
@@ -667,11 +666,11 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
@@ -681,7 +680,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   TestLevelDBObserver observer;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
-  area->Put(StdStringToUint8Vector("key2"), value, absl::nullopt, "source",
+  area->Put(StdStringToUint8Vector("key2"), value, std::nullopt, "source",
             base::DoNothing());
   RunUntilIdle();
 
@@ -727,17 +726,17 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
-  area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
-  area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key1, value, std::nullopt, "source", base::DoNothing());
+  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
   area.reset();
 
   context()->BindStorageArea(storage_key1_third_party,
                              area.BindNewPipeAndPassReceiver());
-  area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
+  area->Put(key1, value, std::nullopt, "source", base::DoNothing());
 
   // Make sure all data gets committed to the DB.
   RunUntilIdle();
@@ -904,8 +903,8 @@ TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
 }
 
 TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
-  absl::optional<base::RunLoop> open_loop;
-  absl::optional<base::RunLoop> destruction_loop;
+  std::optional<base::RunLoop> open_loop;
+  std::optional<base::RunLoop> destruction_loop;
   size_t num_database_open_requests = 0;
   context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
     ++num_database_open_requests;
@@ -969,7 +968,7 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   // Start a put operation on the third connection before starting to commit
   // a lot of data on the first StorageKey. This put operation should result in
   // a pending commit that will get cancelled when the database is destroyed.
-  area3->Put(key, value, absl::nullopt, "source",
+  area3->Put(key, value, std::nullopt, "source",
              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
@@ -977,7 +976,7 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   while (area1.is_connected()) {
     // Every write needs to be different to make sure there actually is a
     value[0]++;
-    area1->Put(key, value, absl::nullopt, "source",
+    area1->Put(key, value, std::nullopt, "source",
                base::BindLambdaForTesting([&](bool success) {
                  EXPECT_TRUE(success);
                  values_written++;
@@ -1008,7 +1007,7 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   bool success = true;
   TestLevelDBObserver observer3;
   area1->AddObserver(observer3.Bind());
-  area1->Delete(key, absl::nullopt, "source",
+  area1->Delete(key, std::nullopt, "source",
                 base::BindLambdaForTesting([&](bool success_in) {
                   success = success_in;
                   delete_loop.Quit();
@@ -1041,7 +1040,7 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
 
 TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Ensure that the opened database always fails on write.
-  absl::optional<base::RunLoop> open_loop;
+  std::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
   size_t num_databases_destroyed = 0;
   context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
@@ -1078,7 +1077,7 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   open_loop.emplace();
 
   // Repeatedly write data to the database, to trigger enough commit errors.
-  absl::optional<std::vector<uint8_t>> old_value;
+  std::optional<std::vector<uint8_t>> old_value;
   while (area.is_connected()) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
@@ -1114,7 +1113,7 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
-  old_value = absl::nullopt;
+  old_value = std::nullopt;
   for (int i = 0; i < 64; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.

@@ -559,11 +559,11 @@ const cc::FilterOperations* DirectRenderer::BackdropFiltersForPass(
   return it == render_pass_backdrop_filters_.end() ? nullptr : it->second;
 }
 
-const absl::optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
+const std::optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
     AggregatedRenderPassId render_pass_id) const {
   auto it = render_pass_backdrop_filter_bounds_.find(render_pass_id);
   return it == render_pass_backdrop_filter_bounds_.end()
-             ? absl::optional<gfx::RRectF>()
+             ? std::optional<gfx::RRectF>()
              : it->second;
 }
 

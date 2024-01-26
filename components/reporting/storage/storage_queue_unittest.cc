@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cstdint>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -40,7 +41,6 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AnyOf;
@@ -175,13 +175,12 @@ class StorageQueueTest
       mock_upload_->EncounterSeqId(uploader_id, sequencing_id);
     }
 
-    void DoUploadRecord(
-        int64_t uploader_id,
-        int64_t sequencing_id,
-        int64_t generation_id,
-        const Record& record,
-        const absl::optional<const Record>& possible_record_copy,
-        base::OnceCallback<void(bool)> processed_cb) {
+    void DoUploadRecord(int64_t uploader_id,
+                        int64_t sequencing_id,
+                        int64_t generation_id,
+                        const Record& record,
+                        const std::optional<const Record>& possible_record_copy,
+                        base::OnceCallback<void(bool)> processed_cb) {
       DoEncounterSeqId(uploader_id, sequencing_id, generation_id);
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("Record: ")
@@ -273,7 +272,7 @@ class StorageQueueTest
     // no-value if there was a gap record instead of a real one.
     using LastRecordDigestMap = base::flat_map<
         std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-        absl::optional<std::string /*digest*/>>;
+        std::optional<std::string /*digest*/>>;
 
     // Helper class for setting up mock uploader expectations of a successful
     // completion.
@@ -436,7 +435,7 @@ class StorageQueueTest
         EXPECT_FALSE(encrypted_record.has_compression_information());
       }
 
-      absl::optional<Record> possible_record_copy;
+      std::optional<Record> possible_record_copy;
       if (encrypted_record.has_record_copy()) {
         possible_record_copy = encrypted_record.record_copy();
       }
@@ -473,7 +472,7 @@ class StorageQueueTest
       last_record_digest_map_->emplace(
           std::make_pair(sequence_information.sequencing_id(),
                          sequence_information.generation_id()),
-          absl::nullopt);
+          std::nullopt);
 
       sequence_bound_upload_.AsyncCall(&SequenceBoundUpload::DoUploadGap)
           .WithArgs(uploader_id_, sequence_information.sequencing_id(),
@@ -518,7 +517,7 @@ class StorageQueueTest
    private:
     void VerifyRecord(SequenceInformation sequence_information,
                       WrappedRecord wrapped_record,
-                      absl::optional<const Record> possible_record_copy,
+                      std::optional<const Record> possible_record_copy,
                       base::OnceCallback<void(bool)> processed_cb) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
       // Verify generation match.
@@ -604,13 +603,13 @@ class StorageQueueTest
     // match the expected uploader.
     const int64_t uploader_id_;
 
-    absl::optional<int64_t> generation_id_;
+    std::optional<int64_t> generation_id_;
 
     // These dangling raw_ptr occurred in:
     // components_unittests:
     // VaryingFileSize/StorageQueueTest.WriteAndRepeatedlyImmediateUpload/4
     // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425477/test-results?q=ExactID%3Aninja%3A%2F%2Fcomponents%3Acomponents_unittests%2FStorageQueueTest.WriteAndRepeatedlyImmediateUpload%2FVaryingFileSize.4+VHash%3A54d84870d628118f
-    const raw_ptr<absl::optional<int64_t>, FlakyDanglingUntriaged>
+    const raw_ptr<std::optional<int64_t>, FlakyDanglingUntriaged>
         last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap, FlakyDanglingUntriaged>
         last_record_digest_map_;
@@ -831,7 +830,7 @@ class StorageQueueTest
   StorageOptions options_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<StorageQueue> storage_queue_;
-  absl::optional<int64_t> last_upload_generation_id_;
+  std::optional<int64_t> last_upload_generation_id_;
 
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all TestUploaders created by test fixture.

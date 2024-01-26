@@ -6,6 +6,7 @@
 #define COMPONENTS_JS_INJECTION_BROWSER_JS_COMMUNICATION_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -64,8 +64,8 @@ class JsCommunicationHost : public content::WebContentsObserver {
     AddScriptResult& operator=(const AddScriptResult&);
     ~AddScriptResult();
 
-    absl::optional<std::string> error_message;
-    absl::optional<int> script_id;
+    std::optional<std::string> error_message;
+    std::optional<int> script_id;
   };
 
   // Native side AddDocumentStartJavaScript, returns an error message if the

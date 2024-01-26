@@ -45,8 +45,8 @@ PermissionPromptDisposition MockPermissionPrompt::GetPromptDisposition() const {
 #endif
 }
 
-absl::optional<gfx::Rect> MockPermissionPrompt::GetViewBoundsInScreen() const {
-  return absl::make_optional<gfx::Rect>(100, 100, 100, 100);
+std::optional<gfx::Rect> MockPermissionPrompt::GetViewBoundsInScreen() const {
+  return std::make_optional<gfx::Rect>(100, 100, 100, 100);
 }
 
 bool MockPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {

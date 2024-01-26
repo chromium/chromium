@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 

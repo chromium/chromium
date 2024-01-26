@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -17,7 +18,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -49,7 +49,7 @@ class KidsManagementClassifyUrlMock {
  private:
   // The classification response for every request. Needs to be set (see
   // `set_display_classification`) before first use.
-  absl::optional<
+  std::optional<
       kids_chrome_management::ClassifyUrlResponse::DisplayClassification>
       display_classification_;
 };

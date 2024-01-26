@@ -220,7 +220,7 @@ void SupervisedUserSettingsService::SaveItem(
                                                  ? SyncChange::ACTION_UPDATE
                                                  : SyncChange::ACTION_ADD;
     change_list.push_back(SyncChange(FROM_HERE, change_type, data));
-    absl::optional<ModelError> error =
+    std::optional<ModelError> error =
         sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
     DCHECK(!error.has_value()) << error.value().ToString();
   } else {
@@ -290,7 +290,7 @@ void SupervisedUserSettingsService::WaitUntilReadyToSync(
   }
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SupervisedUserSettingsService::MergeDataAndStartSyncing(
     ModelType type,
     const SyncDataList& initial_sync_data,
@@ -321,7 +321,7 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     DCHECK_EQ(SUPERVISED_USER_SETTINGS, sync_data.GetDataType());
     const ::sync_pb::ManagedUserSettingSpecifics& supervised_user_setting =
         sync_data.GetSpecifics().managed_user_setting();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         JSONReader::Read(supervised_user_setting.value());
     // Wrongly formatted input will cause null values.
     // SetKey below requires non-null values.
@@ -369,7 +369,7 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     return sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SupervisedUserSettingsService::StopSyncing(ModelType type) {
@@ -396,7 +396,7 @@ SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
   return data;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SupervisedUserSettingsService::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {
@@ -415,7 +415,7 @@ SupervisedUserSettingsService::ProcessSyncChanges(
     switch (change_type) {
       case SyncChange::ACTION_ADD:
       case SyncChange::ACTION_UPDATE: {
-        absl::optional<base::Value> value =
+        std::optional<base::Value> value =
             JSONReader::Read(supervised_user_setting.value());
         if (old_value) {
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_ADD)
@@ -457,7 +457,7 @@ SupervisedUserSettingsService::ProcessSyncChanges(
                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   InformSubscribers();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<syncer::SyncableService>

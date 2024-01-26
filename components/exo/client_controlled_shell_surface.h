@@ -257,7 +257,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   gfx::Rect GetVisibleBounds() const override;
   gfx::Rect GetShadowBounds() const override;
   void InitializeWindowState(ash::WindowState* window_state) override;
-  absl::optional<gfx::Rect> GetWidgetBounds() const override;
+  std::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   bool OnPreWidgetCommit() override;
   void OnPostWidgetCommit() override;

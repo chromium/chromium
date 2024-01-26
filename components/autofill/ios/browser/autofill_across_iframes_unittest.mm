@@ -226,7 +226,7 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
 
   // Get the frame tokens from the registrar. Wrap this in a block because the
   // registrar receives these from each frame in a separate JS message.
-  __block absl::optional<LocalFrameToken> local_token1, local_token2;
+  __block std::optional<LocalFrameToken> local_token1, local_token2;
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool {
         local_token1 = registrar->LookupChildFrame(

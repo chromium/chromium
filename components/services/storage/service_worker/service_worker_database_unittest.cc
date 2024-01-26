@@ -66,7 +66,7 @@ ResourceRecordPtr CreateResource(int64_t resource_id,
   EXPECT_TRUE(url.is_valid());
   return mojom::ServiceWorkerResourceRecord::New(
       resource_id, url, size_bytes,
-      /*sha256_checksum=*/absl::nullopt);
+      /*sha256_checksum=*/std::nullopt);
 }
 
 ServiceWorkerDatabase* CreateDatabase(const base::FilePath& path) {
@@ -3711,7 +3711,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
             blink::ServiceWorkerRouterRunningStatusCondition::
                 RunningStatusEnum::kRunning;
       }
-      rule.condition = {url_pattern, request, running_status, absl::nullopt};
+      rule.condition = {url_pattern, request, running_status, std::nullopt};
     }
 
     blink::ServiceWorkerRouterSource source;
@@ -3923,7 +3923,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesLegacyPathname) {
     }
 
     const auto& registered_url_pattern =
-        std::get<absl::optional<blink::SafeUrlPattern>&>(
+        std::get<std::optional<blink::SafeUrlPattern>&>(
             registration->router_rules->rules[0].condition.get());
     EXPECT_EQ(url_pattern, registered_url_pattern);
   }

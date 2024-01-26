@@ -64,16 +64,16 @@ size_t FileManager::GetSizeOfArtifacts(const DirectoryKey& key) const {
   }
 }
 
-absl::optional<base::File::Info> FileManager::GetInfo(
+std::optional<base::File::Info> FileManager::GetInfo(
     const DirectoryKey& key) const {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   base::FilePath path;
   StorageType storage_type = GetPathForKey(key, &path);
   if (storage_type == FileManager::StorageType::kNone)
-    return absl::nullopt;
+    return std::nullopt;
   base::File::Info info;
   if (!base::GetFileInfo(path, &info))
-    return absl::nullopt;
+    return std::nullopt;
   return info;
 }
 
@@ -102,7 +102,7 @@ bool FileManager::CaptureExists(const DirectoryKey& key) const {
   }
 }
 
-absl::optional<base::FilePath> FileManager::CreateOrGetDirectory(
+std::optional<base::FilePath> FileManager::CreateOrGetDirectory(
     const DirectoryKey& key,
     bool clear) const {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -120,7 +120,7 @@ absl::optional<base::FilePath> FileManager::CreateOrGetDirectory(
       }
       DVLOG(1) << "ERROR: failed to create directory: " << path
                << " with error code " << error;
-      return absl::nullopt;
+      return std::nullopt;
     }
     case kDirectory:
       return path;
@@ -130,17 +130,17 @@ absl::optional<base::FilePath> FileManager::CreateOrGetDirectory(
       if (!base::CreateDirectoryAndGetError(dst_path, &error)) {
         DVLOG(1) << "ERROR: failed to create directory: " << path
                  << " with error code " << error;
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (!zip::Unzip(path, dst_path)) {
         DVLOG(1) << "ERROR: failed to unzip: " << path << " to " << dst_path;
-        return absl::nullopt;
+        return std::nullopt;
       }
       base::DeletePathRecursively(path);
       return dst_path;
     }
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

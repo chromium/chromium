@@ -84,7 +84,7 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
     base::PassKey<V8DetailedMemoryRequestAnySeq>,
     const base::TimeDelta& min_time_between_requests,
     MeasurementMode mode,
-    absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
+    std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
     base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request)
     : V8DetailedMemoryRequest(min_time_between_requests, mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -196,7 +196,7 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
 }
 
 void V8DetailedMemoryRequest::StartMeasurementFromOffSequence(
-    absl::optional<base::WeakPtr<ProcessNode>> process_to_measure,
+    std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
     Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!process_to_measure) {

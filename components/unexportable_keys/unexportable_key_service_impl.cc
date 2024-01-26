@@ -4,6 +4,8 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -14,7 +16,6 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace unexportable_keys {

@@ -7,12 +7,12 @@
 
 #include <jni.h>
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/jni_zero/scoped_java_ref.h"
 
 namespace gfx {
@@ -76,7 +76,7 @@ class AutofillProviderAndroidBridge {
   virtual void HideDatalistPopup() = 0;
 
   // Informs the Java side that a focus change has happened to `field`.
-  virtual void OnFocusChanged(const absl::optional<FieldInfo>& field) = 0;
+  virtual void OnFocusChanged(const std::optional<FieldInfo>& field) = 0;
 
   // Informs the Java side that the `field` has changed.
   virtual void OnFormFieldDidChange(const FieldInfo& field) = 0;

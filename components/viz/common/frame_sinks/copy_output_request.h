@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -171,11 +171,11 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   scoped_refptr<base::SequencedTaskRunner> result_task_runner_;
   gfx::Vector2d scale_from_;
   gfx::Vector2d scale_to_;
-  absl::optional<base::UnguessableToken> source_;
-  absl::optional<gfx::Rect> area_;
-  absl::optional<gfx::Rect> result_selection_;
+  std::optional<base::UnguessableToken> source_;
+  std::optional<gfx::Rect> area_;
+  std::optional<gfx::Rect> result_selection_;
 
-  absl::optional<BlitRequest> blit_request_;
+  std::optional<BlitRequest> blit_request_;
 };
 
 }  // namespace viz

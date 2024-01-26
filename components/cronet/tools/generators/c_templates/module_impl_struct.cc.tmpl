@@ -98,7 +98,7 @@ void {{struct_name}}_{{packed_field.field.name}}_clear({{struct_name}}Ptr self) 
 {{packed_field.field.kind|c_wrapper_type}} {{struct_name}}_{{packed_field.field.name}}_get(const {{struct_name}}Ptr self) {
   DCHECK(self);
 {%-   if kind|is_struct_kind %}
-  if (self->{{packed_field.field.name}} == absl::nullopt)
+  if (self->{{packed_field.field.name}} == std::nullopt)
     return nullptr;
   return &self->{{packed_field.field.name}}.value();
 {%-   elif kind|is_string_kind %}

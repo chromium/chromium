@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -17,7 +18,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -29,7 +29,7 @@ using ResourceAttrPageContextNoPMTest = content::RenderViewHostTestHarness;
 
 TEST_F(ResourceAttrPageContextTest, PageContexts) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  absl::optional<PageContext> page_context =
+  std::optional<PageContext> page_context =
       PageContext::FromWebContents(web_contents.get());
   ASSERT_TRUE(page_context.has_value());
   EXPECT_EQ(web_contents.get(), page_context->GetWebContents());
@@ -54,14 +54,14 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
       content::NavigationSimulator::NavigateAndCommitFromBrowser(
           web_contents.get(), GURL("https://a.com/"));
   ASSERT_TRUE(rfh);
-  absl::optional<PageContext> page_context_after_nav =
+  std::optional<PageContext> page_context_after_nav =
       PageContext::FromWebContents(
           content::WebContents::FromRenderFrameHost(rfh));
   EXPECT_EQ(page_context, page_context_after_nav);
 
   // Make sure a second page gets a different context.
   std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
-  absl::optional<PageContext> page_context2 =
+  std::optional<PageContext> page_context2 =
       PageContext::FromWebContents(web_contents2.get());
   EXPECT_TRUE(page_context2.has_value());
   EXPECT_NE(page_context2, page_context);
@@ -72,7 +72,7 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
   RunInGraph([&] {
     EXPECT_FALSE(page_node);
     EXPECT_EQ(nullptr, page_context->GetPageNode());
-    EXPECT_EQ(absl::nullopt, PageContext::FromWeakPageNode(page_node));
+    EXPECT_EQ(std::nullopt, PageContext::FromWeakPageNode(page_node));
   });
 
   // The unique id of a PageContext isn't exposed so can't be tested directly.
@@ -83,7 +83,7 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
 
   // Make sure PageContext id's aren't reused.
   std::unique_ptr<content::WebContents> web_contents3 = CreateTestWebContents();
-  absl::optional<PageContext> page_context3 =
+  std::optional<PageContext> page_context3 =
       PageContext::FromWebContents(web_contents3.get());
   EXPECT_NE(page_context, page_context3);
   EXPECT_NE(page_context2, page_context3);

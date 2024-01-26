@@ -5,6 +5,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -43,7 +44,6 @@
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace viz {
@@ -128,7 +128,7 @@ struct TestFrameSink {
       FrameSinkManagerImpl& manager,
       const FrameSinkId& id,
       const FrameSinkId& parent_id,
-      const absl::optional<FrameSinkBundleId>& bundle_id = absl::nullopt)
+      const std::optional<FrameSinkBundleId>& bundle_id = std::nullopt)
       : manager_(manager), id_(id) {
     manager_->RegisterFrameSinkId(id, /*report_activation=*/true);
     if (parent_id.is_valid()) {
@@ -217,7 +217,7 @@ class TestBundleClient : public mojom::FrameSinkBundleClient {
     }
   }
 
-  absl::optional<base::RunLoop> wait_loop_;
+  std::optional<base::RunLoop> wait_loop_;
   raw_ptr<std::vector<mojom::BundledReturnedResourcesPtr>> acks_;
   raw_ptr<std::vector<mojom::BeginFrameInfoPtr>> begin_frames_;
   raw_ptr<std::vector<mojom::BundledReturnedResourcesPtr>> reclaimed_resources_;
@@ -255,7 +255,7 @@ class FrameSinkBundleImplTest : public testing::Test {
     }
 
     auto data = mojom::BundledCompositorFrame::New(surface_id, std::move(frame),
-                                                   absl::nullopt, 0);
+                                                   std::nullopt, 0);
     return mojom::BundledFrameSubmission::New(
         frame_sink_id.sink_id(),
         mojom::BundledFrameSubmissionData::NewFrame(std::move(data)));

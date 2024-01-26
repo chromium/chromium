@@ -100,7 +100,7 @@ class TestInProcessContextProvider
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
-  absl::optional<base::Lock> context_lock_;
+  std::optional<base::Lock> context_lock_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 };

@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 
+#include <optional>
+
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,7 +15,6 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace history_clusters {
@@ -91,21 +92,21 @@ mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
 }
 
 // Creates a `mojom::SearchQueryPtr` from the given search query, if possible.
-absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
+std::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
     const TemplateURLService* template_url_service,
     const std::string& search_query) {
   const TemplateURL* default_search_provider =
       template_url_service ? template_url_service->GetDefaultSearchProvider()
                            : nullptr;
   if (!default_search_provider) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string url = default_search_provider->url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(search_query)),
       template_url_service->search_terms_data());
   if (url.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto search_query_mojom = mojom::SearchQuery::New();

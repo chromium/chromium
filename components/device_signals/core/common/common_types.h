@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_COMMON_TYPES_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_COMMON_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
 
@@ -31,19 +31,19 @@ struct ExecutableMetadata {
 
   // Byte strings containing the SHA-256 hash of the DER-encoded SPKI structures
   // of the certificates used to sign the executable.
-  absl::optional<std::vector<std::string>> public_keys_hashes = absl::nullopt;
+  std::optional<std::vector<std::string>> public_keys_hashes = std::nullopt;
 
   // Product name of this executable.
-  absl::optional<std::string> product_name = absl::nullopt;
+  std::optional<std::string> product_name = std::nullopt;
 
   // Version of this executable.
-  absl::optional<std::string> version = absl::nullopt;
+  std::optional<std::string> version = std::nullopt;
 
   // Is true if the OS has verified the signing certificate.
   bool is_os_verified = false;
 
   // The subject name of the signing certificate.
-  absl::optional<std::string> subject_name = absl::nullopt;
+  std::optional<std::string> subject_name = std::nullopt;
 
   bool operator==(const ExecutableMetadata& other) const;
 };
@@ -65,12 +65,12 @@ struct FileSystemItem {
   // Byte string containing the SHA256 hash of a file’s bytes. Ignored when
   // `path` points to a directory. Collected only when `compute_sha256` is set
   // to true in the corresponding GetFileSystemInfoOptions parameter.
-  absl::optional<std::string> sha256_hash = absl::nullopt;
+  std::optional<std::string> sha256_hash = std::nullopt;
 
   // Set of properties only relevant for executable files. Will only be
   // collected if computeIsExecutable is set to true in the given signals
   // collection parameters and if `path` points to an executable file.
-  absl::optional<ExecutableMetadata> executable_metadata = absl::nullopt;
+  std::optional<ExecutableMetadata> executable_metadata = std::nullopt;
 
   bool operator==(const FileSystemItem& other) const;
 };
@@ -96,9 +96,9 @@ struct CrowdStrikeSignals {
   std::string customer_id{};
   std::string agent_id{};
 
-  // Returns a Value with the non-empty values. Returns absl::nullopt if neither
+  // Returns a Value with the non-empty values. Returns std::nullopt if neither
   // values are set.
-  absl::optional<base::Value> ToValue() const;
+  std::optional<base::Value> ToValue() const;
 
   bool operator==(const CrowdStrikeSignals& other) const;
 };

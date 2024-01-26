@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
-#include "base/memory/raw_ptr.h"
-#include "components/page_load_metrics/browser/layout_shift_normalization.h"
 
+#include <optional>
 #include <ostream>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -39,7 +39,7 @@ namespace {
 
 // Helper to allow use of Optional<> values in LOG() messages.
 std::ostream& operator<<(std::ostream& os,
-                         const absl::optional<base::TimeDelta>& opt) {
+                         const std::optional<base::TimeDelta>& opt) {
   if (opt)
     os << opt.value();
   else
@@ -49,8 +49,8 @@ std::ostream& operator<<(std::ostream& os,
 
 // If second is non-zero, first must also be non-zero and less than or equal to
 // second.
-bool EventsInOrder(const absl::optional<base::TimeDelta>& first,
-                   const absl::optional<base::TimeDelta>& second) {
+bool EventsInOrder(const std::optional<base::TimeDelta>& first,
+                   const std::optional<base::TimeDelta>& second) {
   if (!second) {
     return true;
   }
@@ -264,9 +264,9 @@ class PageLoadTimingMerger {
   // |navigation_start_offset| contains the delta in navigation start time
   // between the main frame and the frame for |optional_candidate_new_value|.
   bool MaybeUpdateTimeDelta(
-      absl::optional<base::TimeDelta>* inout_existing_value,
+      std::optional<base::TimeDelta>* inout_existing_value,
       base::TimeDelta navigation_start_offset,
-      const absl::optional<base::TimeDelta>& optional_candidate_new_value) {
+      const std::optional<base::TimeDelta>& optional_candidate_new_value) {
     // If we don't get a new value, there's nothing to do
     if (!optional_candidate_new_value)
       return false;
@@ -429,7 +429,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
-    const absl::optional<blink::SubresourceLoadMetrics>&
+    const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
     internal::PageLoadTrackerPageType page_type) {

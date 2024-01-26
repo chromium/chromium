@@ -120,7 +120,7 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != expected_input_size) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

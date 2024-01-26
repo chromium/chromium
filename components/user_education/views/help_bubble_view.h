@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -45,7 +45,7 @@ struct HelpBubbleAnchorParams {
 
   // This is an optional override of the anchor rect in screen coordinates.
   // If unspecified, the bubble is anchored as normal to `view`.
-  absl::optional<gfx::Rect> rect;
+  std::optional<gfx::Rect> rect;
 
   // Whether or not a visible arrow should be shown.
   bool show_arrow = true;
@@ -108,7 +108,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   const raw_ptr<const HelpBubbleDelegate> delegate_;
 
   // If set, overrides the anchor bounds within the anchor view.
-  absl::optional<gfx::Rect> local_anchor_bounds_;
+  std::optional<gfx::Rect> local_anchor_bounds_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::vector<raw_ptr<views::Label, VectorExperimental>> labels_;

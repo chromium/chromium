@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_IMPL_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_IMPL_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +16,6 @@
 #include "components/unexportable_keys/background_task.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/background_task_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace unexportable_keys::internal {
 
@@ -72,11 +73,11 @@ class BackgroundTaskImpl : public BackgroundTask {
     return creation_timer_.Elapsed();
   }
 
-  absl::optional<base::TimeDelta> GetElapsedTimeSinceRun() const override {
+  std::optional<base::TimeDelta> GetElapsedTimeSinceRun() const override {
     if (run_timer_.has_value()) {
       return run_timer_->Elapsed();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  private:
@@ -86,7 +87,7 @@ class BackgroundTaskImpl : public BackgroundTask {
   const BackgroundTaskPriority priority_;
   const BackgroundTaskType type_;
   const base::ElapsedTimer creation_timer_;
-  absl::optional<base::ElapsedTimer> run_timer_;
+  std::optional<base::ElapsedTimer> run_timer_;
 };
 
 }  // namespace unexportable_keys::internal

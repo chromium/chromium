@@ -551,7 +551,7 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchFailure(
     AccountKey account_key) {
   IssueAccessToken(account_key);
   fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
-      AccountKeyToAccountId(account_key), absl::nullopt);
+      AccountKeyToAccountId(account_key), std::nullopt);
 }
 
 TEST_F(AccountTrackerServiceTest, Basic) {}
@@ -1145,7 +1145,7 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
   // The deprecated key has been removed.
   EXPECT_FALSE(dict->FindBool(kDeprecatedChildKey));
   // The new key has been written.
-  absl::optional<int> new_key = dict->FindInt(kNewChildKey);
+  std::optional<int> new_key = dict->FindInt(kNewChildKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }
@@ -1923,7 +1923,7 @@ TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
   // The deprecated key has been removed.
   EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
   // The new key has been written.
-  absl::optional<int> new_key = dict->FindIntByDottedPath(kNewCapabilityKey);
+  std::optional<int> new_key = dict->FindIntByDottedPath(kNewCapabilityKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }

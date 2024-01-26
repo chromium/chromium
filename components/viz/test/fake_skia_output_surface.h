@@ -133,7 +133,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Size& size,
       SharedImageFormat format,
       bool concurrent_reads,
-      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
       bool raw_draw_if_possible) override;
 

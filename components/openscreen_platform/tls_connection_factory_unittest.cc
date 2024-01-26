@@ -62,7 +62,7 @@ class MockTlsConnectionFactoryClient
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -76,7 +76,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
   int times_called() { return times_called_; }
 
   void ExecuteCreateCallback(int32_t net_result) {
-    std::move(callback_).Run(net_result, absl::nullopt, absl::nullopt,
+    std::move(callback_).Run(net_result, std::nullopt, std::nullopt,
                              mojo::ScopedDataPipeConsumerHandle{},
                              mojo::ScopedDataPipeProducerHandle{});
   }

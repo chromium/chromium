@@ -4,6 +4,8 @@
 
 #include "components/plus_addresses/plus_address_client.h"
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -33,7 +35,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
 namespace {
@@ -150,7 +151,7 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   // Validate the request payload.
   ASSERT_NE(last_request.request_body, nullptr);
   ASSERT_EQ(last_request.request_body->elements()->size(), 1u);
-  absl::optional<base::Value> body =
+  std::optional<base::Value> body =
       base::JSONReader::Read(last_request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
@@ -184,7 +185,7 @@ TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   // Validate the request payload.
   ASSERT_NE(last_request.request_body, nullptr);
   ASSERT_EQ(last_request.request_body->elements()->size(), 1u);
-  absl::optional<base::Value> body =
+  std::optional<base::Value> body =
       base::JSONReader::Read(last_request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
@@ -620,7 +621,7 @@ TEST_F(PlusAddressAuthToken, RequestedBeforeSignin) {
   PlusAddressClient client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
-  base::test::TestFuture<absl::optional<std::string>> callback;
+  base::test::TestFuture<std::optional<std::string>> callback;
   client.GetAuthToken(callback.GetCallback());
 
   // The callback is run only after signin.
@@ -640,7 +641,7 @@ TEST_F(PlusAddressAuthToken, RequestedUserNeverSignsIn) {
   PlusAddressClient client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
-  base::test::TestFuture<absl::optional<std::string>> callback;
+  base::test::TestFuture<std::optional<std::string>> callback;
   client.GetAuthToken(callback.GetCallback());
   EXPECT_FALSE(callback.IsReady());
   histogram_tester.ExpectTotalCount(kPlusAddressOauthErrorHistogram, 0);
@@ -650,7 +651,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   PlusAddressClient client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
   // Make an initial OAuth token request.
-  base::test::TestFuture<absl::optional<std::string>> first_callback;
+  base::test::TestFuture<std::optional<std::string>> first_callback;
   client.GetAuthToken(first_callback.GetCallback());
 
   // Sign in, get a token, and fast-forward to after it is expired.
@@ -666,7 +667,7 @@ TEST_F(PlusAddressAuthToken, RequestedAfterExpiration) {
   AdvanceTimeTo(now);
 
   // Issue another request for an OAuth token.
-  base::test::TestFuture<absl::optional<std::string>> second_callback;
+  base::test::TestFuture<std::optional<std::string>> second_callback;
   client.GetAuthToken(second_callback.GetCallback());
 
   // Callback is only run once the new OAuth token request has completed.
@@ -692,7 +693,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
   PlusAddressClient client(identity_manager(),
                            /* url_loader_factory= */ nullptr);
 
-  base::test::TestFuture<absl::optional<std::string>> callback;
+  base::test::TestFuture<std::optional<std::string>> callback;
   client.GetAuthToken(callback.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       primary.account_id, test_token_, base::Time::Max());
@@ -706,9 +707,9 @@ TEST_F(PlusAddressAuthToken, RequestWorks_ManyCallers) {
                            /* url_loader_factory= */ nullptr);
 
   // Issue several requests for an OAuth token.
-  base::test::TestFuture<absl::optional<std::string>> first;
-  base::test::TestFuture<absl::optional<std::string>> second;
-  base::test::TestFuture<absl::optional<std::string>> third;
+  base::test::TestFuture<std::optional<std::string>> first;
+  base::test::TestFuture<std::optional<std::string>> second;
+  base::test::TestFuture<std::optional<std::string>> third;
   client.GetAuthToken(first.GetCallback());
   client.GetAuthToken(second.GetCallback());
   client.GetAuthToken(third.GetCallback());
@@ -729,9 +730,9 @@ TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
                            /* url_loader_factory= */ nullptr);
 
   // Issue several requests for an OAuth token.
-  base::test::TestFuture<absl::optional<std::string>> first;
-  base::test::TestFuture<absl::optional<std::string>> second;
-  base::test::TestFuture<absl::optional<std::string>> third;
+  base::test::TestFuture<std::optional<std::string>> first;
+  base::test::TestFuture<std::optional<std::string>> second;
+  base::test::TestFuture<std::optional<std::string>> third;
   client.GetAuthToken(first.GetCallback());
   client.GetAuthToken(second.GetCallback());
   client.GetAuthToken(third.GetCallback());

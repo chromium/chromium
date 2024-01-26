@@ -18,13 +18,13 @@
 
 namespace device_signals {
 
-absl::optional<std::string> HashFile(const base::FilePath& file_path) {
+std::optional<std::string> HashFile(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto secure_hash =
@@ -35,7 +35,7 @@ absl::optional<std::string> HashFile(const base::FilePath& file_path) {
   do {
     bytes_read = file.ReadAtCurrentPos(buffer.data(), buffer.size());
     if (bytes_read == -1) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     secure_hash->Update(buffer.data(), bytes_read);
   } while (bytes_read > 0);

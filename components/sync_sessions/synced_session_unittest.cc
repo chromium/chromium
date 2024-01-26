@@ -226,7 +226,7 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   tab.session_storage_persistent_id = "fake";
 
   const sync_pb::SessionTab sync_data =
-      SessionTabToSyncData(tab, /*browser_type=*/absl::nullopt);
+      SessionTabToSyncData(tab, /*browser_type=*/std::nullopt);
   EXPECT_EQ(5, sync_data.tab_id());
   EXPECT_EQ(10, sync_data.window_id());
   EXPECT_EQ(13, sync_data.tab_visual_index());

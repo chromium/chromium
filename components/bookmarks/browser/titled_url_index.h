@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/feature_list.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 
@@ -93,7 +93,7 @@ class TitledUrlIndex {
 
   // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
   // containing |node| and the matches.
-  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+  std::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       const query_parser::QueryNodeVector& query_nodes,
       const std::vector<std::u16string>& query_terms);

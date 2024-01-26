@@ -235,7 +235,7 @@ class PrintRenderFrameHelper
   void OnDestruct() override;
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
   void DidFinishLoadForPrinting() override;

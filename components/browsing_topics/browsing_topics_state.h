@@ -79,7 +79,7 @@ class BrowsingTopicsState
 
   // Append `epoch_topics` to `epochs_`. This is invoked at the end of each
   // epoch calculation. If an old EpochTopics is removed as a result, return it.
-  absl::optional<EpochTopics> AddEpoch(EpochTopics epoch_topics);
+  std::optional<EpochTopics> AddEpoch(EpochTopics epoch_topics);
 
   // Set `next_scheduled_calculation_time_` to one epoch later from
   // base::Time::Now(). This is invoked at the end of each epoch calculation.

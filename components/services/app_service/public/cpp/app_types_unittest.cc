@@ -66,7 +66,7 @@ bool IsEqual(AppPtr app1, AppPtr app2) {
 }
 
 template <typename T>
-void VerifyOptionalValue(absl::optional<T> App::*field) {
+void VerifyOptionalValue(std::optional<T> App::*field) {
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     app1.get()->*field = TestValue<T>().first;

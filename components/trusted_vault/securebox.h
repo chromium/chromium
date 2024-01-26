@@ -7,10 +7,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace crypto {
@@ -33,7 +33,7 @@ std::vector<uint8_t> SecureBoxSymmetricEncrypt(
 // Decrypts |encrypted_payload| according to SecureBox v2 spec (see
 // above). Returns nullopt if payload was encrypted with different parameters or
 // |encrypted_payload| isn't a valid SecureBox encrypted data.
-absl::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
+std::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload);
@@ -105,7 +105,7 @@ class SecureBoxPrivateKey {
   // SecureBoxPublicKey::Encrypt()). Returns nullopt if payload was encrypted
   // with different parameters or |encrypted_payload| isn't a valid SecureBox
   // encrypted data.
-  absl::optional<std::vector<uint8_t>> Decrypt(
+  std::optional<std::vector<uint8_t>> Decrypt(
       base::span<const uint8_t> shared_secret,
       base::span<const uint8_t> header,
       base::span<const uint8_t> encrypted_payload) const;

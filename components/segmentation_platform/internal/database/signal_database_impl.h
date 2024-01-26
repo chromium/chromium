@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -47,7 +47,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   void Initialize(SuccessCallback callback) override;
   void WriteSample(proto::SignalType signal_type,
                    uint64_t name_hash,
-                   absl::optional<int32_t> value,
+                   std::optional<int32_t> value,
                    SuccessCallback callback) override;
   void GetSamples(proto::SignalType signal_type,
                   uint64_t name_hash,

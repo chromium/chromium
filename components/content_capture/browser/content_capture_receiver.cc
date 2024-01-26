@@ -261,7 +261,7 @@ const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
 
   frame_content_capture_data_.id = id_;
   frame_content_capture_data_.url = url;
-  const absl::optional<gfx::Size>& size = rfh_->GetFrameSize();
+  const std::optional<gfx::Size>& size = rfh_->GetFrameSize();
   if (size.has_value())
     frame_content_capture_data_.bounds = gfx::Rect(size.value());
   RetrieveFaviconURL();

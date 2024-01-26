@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/timer/timer.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/table_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sqlite_proto {
 
@@ -50,7 +50,7 @@ struct FakeCompare {
 // NOTE: If the data store is larger than the maximum cache size, it
 // will be pruned on construction to satisfy the size invariant specified
 // by |max_num_entries|. If this is undesirable, set a sufficiently high
-// |max_num_entries| (or pass |max_num_entries| = absl::nullopt for
+// |max_num_entries| (or pass |max_num_entries| = std::nullopt for
 // unbounded size).
 //
 // InitializeOnDBSequence() must be called on the DB sequence of the
@@ -71,7 +71,7 @@ class KeyValueData {
   // pass writes and deletes through immediately.
   KeyValueData(scoped_refptr<TableManager> manager,
                KeyValueTable<T>* backend,
-               absl::optional<size_t> max_num_entries,
+               std::optional<size_t> max_num_entries,
                base::TimeDelta flush_delay);
 
   KeyValueData(const KeyValueData&) = delete;
@@ -122,7 +122,7 @@ class KeyValueData {
   std::unordered_map<std::string, DeferredOperation> deferred_updates_;
   base::RepeatingTimer flush_timer_;
   const base::TimeDelta flush_delay_;
-  const absl::optional<size_t> max_num_entries_;
+  const std::optional<size_t> max_num_entries_;
   EntryCompare entry_compare_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -131,7 +131,7 @@ class KeyValueData {
 template <typename T, typename Compare>
 KeyValueData<T, Compare>::KeyValueData(scoped_refptr<TableManager> manager,
                                        KeyValueTable<T>* backend,
-                                       absl::optional<size_t> max_num_entries,
+                                       std::optional<size_t> max_num_entries,
                                        base::TimeDelta flush_delay)
     : manager_(manager),
       backend_table_(backend->AsWeakPtr()),

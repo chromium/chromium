@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_H_
 
+#include <optional>
 #include <unordered_map>
 
 #include "base/containers/circular_deque.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
@@ -119,7 +119,7 @@ struct NavigationEventList {
   // event, it will return the first main frame event that matches the other
   // criteria. And if there is still no matching event, the function will return
   // an empty optional.
-  absl::optional<size_t> FindNavigationEvent(
+  std::optional<size_t> FindNavigationEvent(
       const base::Time& last_event_timestamp,
       const GURL& target_url,
       const GURL& target_main_frame_url,
@@ -141,7 +141,7 @@ struct NavigationEventList {
 
   void RecordNavigationEvent(
       std::unique_ptr<NavigationEvent> nav_event,
-      absl::optional<CopyPasteEntry> last_copy_paste_entry = absl::nullopt);
+      std::optional<CopyPasteEntry> last_copy_paste_entry = std::nullopt);
 
   void RecordPendingNavigationEvent(
       content::NavigationHandle* navigation_handle,
@@ -447,7 +447,7 @@ class SafeBrowsingNavigationObserverManager
 
   base::OneShotTimer cleanup_timer_;
 
-  absl::optional<CopyPasteEntry> last_copy_paste_entry_;
+  std::optional<CopyPasteEntry> last_copy_paste_entry_;
 
   // A map of destination URLs to Push notification initiated navigation events.
   base::flat_map<GURL, std::unique_ptr<NavigationEvent>>

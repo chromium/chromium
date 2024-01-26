@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_CACHE_IMAGE_STORE_TYPES_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_CACHE_IMAGE_STORE_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -44,13 +44,13 @@ using ImageStoreOperationCallback = base::OnceCallback<void(bool)>;
 // CachedImageMetadataProto will be returned if image metadata is loaded
 // successfully.
 using ImageMetadataCallback =
-    base::OnceCallback<void(absl::optional<CachedImageMetadataProto>)>;
+    base::OnceCallback<void(std::optional<CachedImageMetadataProto>)>;
 
 // Returns a vector of keys.
 using KeysCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
 // The expiration interval for CacheStrategy::HOLD_UNTIL_EXPIRED.
-using ExpirationInterval = absl::optional<base::TimeDelta>;
+using ExpirationInterval = std::optional<base::TimeDelta>;
 
 }  // namespace image_fetcher
 

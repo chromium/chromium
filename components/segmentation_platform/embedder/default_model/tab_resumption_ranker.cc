@@ -206,7 +206,7 @@ void TabResumptionRanker::ExecuteModelWithInput(
   if (inputs.size() !=
       processing::TabSessionSource::kNumInputs + kSqlFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

@@ -1123,7 +1123,7 @@ TEST(SyncedBookmarkTrackerTest,
   EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
   EXPECT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
-      Eq(absl::nullopt));
+      Eq(std::nullopt));
 
   const sync_pb::BookmarkModelMetadata bookmark_model_metadata =
       tracker->BuildBookmarkModelMetadata();
@@ -1178,7 +1178,7 @@ TEST(SyncedBookmarkTrackerTest,
   EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
   EXPECT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
-      Eq(absl::nullopt));
+      Eq(std::nullopt));
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -1193,10 +1193,10 @@ TEST(SyncedBookmarkTrackerTest,
 
   ASSERT_THAT(tracker, NotNull());
   EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
   EXPECT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
-      Eq(absl::nullopt));
+      Eq(std::nullopt));
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -1235,7 +1235,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldRecordIgnoredUpdateDueToMissingParent) {
   ASSERT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
   ASSERT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
-      Eq(absl::nullopt));
+      Eq(std::nullopt));
 
   tracker->RecordIgnoredServerUpdateDueToMissingParent(kServerVersion);
 
@@ -1268,14 +1268,14 @@ TEST(SyncedBookmarkTrackerTest,
 
   ASSERT_THAT(tracker, NotNull());
   ASSERT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
   ASSERT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
-      Eq(absl::nullopt));
+      Eq(std::nullopt));
 
   tracker->RecordIgnoredServerUpdateDueToMissingParent(kServerVersion);
   EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
   EXPECT_THAT(
       tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
       Eq(kServerVersion));

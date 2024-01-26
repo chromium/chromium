@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 #define COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -54,14 +54,14 @@ class PdfStreamDelegate {
   // Maps the navigation to the original URL. This method should associate a
   // `StreamInfo` with the `blink::Document` for `navigation_handle`'s parent
   // `RenderFrameHost`, for later retrieval by `GetStreamInfo()`.
-  virtual absl::optional<GURL> MapToOriginalUrl(
+  virtual std::optional<GURL> MapToOriginalUrl(
       content::NavigationHandle& navigation_handle);
 
   // Gets the stream information associated with the given `RenderFrameHost`.
   // The frame must be a PDF extension frame or Print Preview's frame.
   // Returns null if there is no associated stream or if `embedder_frame` is
   // `nullptr`.
-  virtual absl::optional<StreamInfo> GetStreamInfo(
+  virtual std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame);
 };
 

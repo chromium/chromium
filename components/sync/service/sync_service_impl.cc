@@ -918,7 +918,7 @@ void SyncServiceImpl::NotifyShutdown() {
 }
 
 void SyncServiceImpl::ClearUnrecoverableError() {
-  unrecoverable_error_reason_ = absl::nullopt;
+  unrecoverable_error_reason_ = std::nullopt;
   unrecoverable_error_message_.clear();
   unrecoverable_error_location_ = base::Location();
 }
@@ -1282,7 +1282,7 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
   sync_prefs_.SetCachedPassphraseType(passphrase_type);
 }
 
-absl::optional<PassphraseType> SyncServiceImpl::GetPassphraseType() const {
+std::optional<PassphraseType> SyncServiceImpl::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_prefs_.GetCachedPassphraseType();
 }

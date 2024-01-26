@@ -45,7 +45,7 @@ ShoppingPDPState ComputeStateForOptGuideResult(
     return ShoppingPDPState::kNotPDP;
   }
 
-  absl::optional<PriceTrackingData> parsed_any =
+  std::optional<PriceTrackingData> parsed_any =
       optimization_guide::ParsedAnyMetadata<PriceTrackingData>(
           metadata.any_metadata().value());
 

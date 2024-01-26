@@ -134,7 +134,7 @@ void UpdateSpecificsFromKeyDerivationParams(
   }
 }
 
-absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
+std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());

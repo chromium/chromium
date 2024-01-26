@@ -98,11 +98,11 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
   std::vector<cbor::Value> signature_stack;
   for (const KeyPair& key_pair : key_pairs) {
     // Create an integrity block with all previous signature stack entries.
-    absl::optional<std::vector<uint8_t>> integrity_block = cbor::Writer::Write(
+    std::optional<std::vector<uint8_t>> integrity_block = cbor::Writer::Write(
         CreateIntegrityBlock(signature_stack, errors_for_testing));
 
     // Create the attributes map for the current signature stack entry.
-    absl::optional<std::vector<uint8_t>> attributes =
+    std::optional<std::vector<uint8_t>> attributes =
         cbor::Writer::Write(CreateSignatureStackEntryAttributes(
             std::vector(key_pair.public_key.bytes().begin(),
                         key_pair.public_key.bytes().end())));
@@ -134,7 +134,7 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
     ErrorsForTesting errors_for_testing) {
-  absl::optional<std::vector<uint8_t>> integrity_block =
+  std::optional<std::vector<uint8_t>> integrity_block =
       cbor::Writer::Write(CreateIntegrityBlockForBundle(
           unsigned_bundle, key_pairs, errors_for_testing));
 

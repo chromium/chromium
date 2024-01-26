@@ -160,29 +160,27 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     last_related_searches_extraction_results_.emplace(related_searches);
   }
 
-  absl::optional<HistoryVisit> last_annotation_request() const {
+  std::optional<HistoryVisit> last_annotation_request() const {
     return last_annotation_request_;
   }
 
-  void ClearLastAnnotationRequest() {
-    last_annotation_request_ = absl::nullopt;
-  }
+  void ClearLastAnnotationRequest() { last_annotation_request_ = std::nullopt; }
 
-  absl::optional<std::pair<HistoryVisit, content::WebContents*>>
+  std::optional<std::pair<HistoryVisit, content::WebContents*>>
   last_related_searches_extraction_request() const {
     return last_related_searches_extraction_request_;
   }
 
-  absl::optional<std::vector<std::string>>
+  std::optional<std::vector<std::string>>
   last_related_searches_extraction_results() const {
     return last_related_searches_extraction_results_;
   }
 
  private:
-  absl::optional<HistoryVisit> last_annotation_request_;
-  absl::optional<std::pair<HistoryVisit, content::WebContents*>>
+  std::optional<HistoryVisit> last_annotation_request_;
+  std::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
-  absl::optional<std::vector<std::string>>
+  std::optional<std::vector<std::string>>
       last_related_searches_extraction_results_;
 };
 
@@ -279,7 +277,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.foo.com/search?q=a"));
 
-  absl::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
+  std::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
       service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
 
@@ -452,7 +450,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.foo.com/search?q=a"));
 
-  absl::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
+  std::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
       service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
 

@@ -6,11 +6,11 @@
 #define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_METADATA_H_
 
 #include <map>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
 #include "base/profiler/metadata_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
@@ -69,7 +69,7 @@ class CallStackProfileMetadata {
 
   // Definitions for a map-based representation of sample metadata.
   struct MetadataKey {
-    MetadataKey(uint64_t name_hash, absl::optional<int64_t> key);
+    MetadataKey(uint64_t name_hash, std::optional<int64_t> key);
 
     MetadataKey(const MetadataKey& other);
     MetadataKey& operator=(const MetadataKey& other);
@@ -77,7 +77,7 @@ class CallStackProfileMetadata {
     // The name_hash and optional user-specified key uniquely identifies a
     // metadata value. See base::MetadataRecorder for details.
     uint64_t name_hash;
-    absl::optional<int64_t> key;
+    std::optional<int64_t> key;
   };
   using MetadataMap = std::map<MetadataKey, int64_t, MetadataKeyCompare>;
 

@@ -30,8 +30,8 @@ LabelClusterFinalizer::~LabelClusterFinalizer() = default;
 
 void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   float max_label_score = -1;
-  absl::optional<std::u16string> current_highest_scoring_label;
-  absl::optional<std::u16string> current_highest_scoring_label_unquoted;
+  std::optional<std::u16string> current_highest_scoring_label;
+  std::optional<std::u16string> current_highest_scoring_label_unquoted;
   LabelSource label_source = LabelSource::kUnknown;
 
   // First try finding search terms to use as the cluster label.
@@ -76,7 +76,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
     // score.
     int max_count = -1;
     max_label_score = -1;
-    absl::optional<std::string> highest_scoring_entity;
+    std::optional<std::string> highest_scoring_entity;
     for (const auto& entity_and_count : entity_to_count) {
       auto entity_metadata_it =
           entity_metadata_map_->find(entity_and_count.first);

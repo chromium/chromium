@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_TEST_UTILS_H_
 #define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_TEST_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 

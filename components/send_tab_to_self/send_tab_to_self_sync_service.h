@@ -6,6 +6,7 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_SYNC_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -53,7 +53,7 @@ class SendTabToSelfSyncService : public KeyedService,
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
   // See EntryPointDisplayReason definition. Virtual for testing.
-  virtual absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+  virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
       const GURL& url_to_share);
 
   // Never returns null.

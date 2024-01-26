@@ -333,12 +333,12 @@ void WebUIInfoSingleton::ClearURTLookupPings() {
   std::map<int, RTLookupResponse>().swap(urt_lookup_responses_);
 }
 
-absl::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
+std::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
     V5::SearchHashesRequest* inner_request,
     std::string relay_url_spec,
     std::string ohttp_key) {
   if (!HasListener()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   HPRTLookupRequest request = {.inner_request = *inner_request,
                                .relay_url_spec = relay_url_spec,

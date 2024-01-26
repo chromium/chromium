@@ -155,7 +155,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Overridden from ShellSurfaceBase:
   void InitializeWindowState(ash::WindowState* window_state) override;
-  absl::optional<gfx::Rect> GetWidgetBounds() const override;
+  std::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   void SetUseImmersiveForFullscreen(bool value) override;
   void OnDidProcessDisplayChanges(

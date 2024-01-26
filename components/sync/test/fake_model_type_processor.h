@@ -26,10 +26,10 @@ class FakeModelTypeProcessor : public ModelTypeProcessor {
       const sync_pb::ModelTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
-  void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates,
-                        absl::optional<sync_pb::GarbageCollectionDirective>
-                            gc_directive) override;
+  void OnUpdateReceived(
+      const sync_pb::ModelTypeState& type_state,
+      UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;

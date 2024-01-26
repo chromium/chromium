@@ -57,7 +57,7 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   MockDelegate() { SetCurrentTabUrl(GURL("http://example.com")); }
   ~MockDelegate() override = default;
 
-  MOCK_METHOD(absl::optional<GURL>, GetCurrentTabUrl, (), (override));
+  MOCK_METHOD(std::optional<GURL>, GetCurrentTabUrl, (), (override));
   MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
   MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
   MOCK_METHOD(void, ShowFeedback, (), (override));
@@ -69,7 +69,7 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
-        .WillByDefault(testing::Return(absl::make_optional<GURL>(url)));
+        .WillByDefault(testing::Return(std::make_optional<GURL>(url)));
   }
 };
 
@@ -401,11 +401,11 @@ TEST_F(ShoppingServiceHandlerTest,
 
   shopping_service_->SetIsPriceInsightsEligible(true);
 
-  absl::optional<commerce::ProductInfo> info;
+  std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = "example_title";
   info->product_cluster_title = "example_cluster_title";
-  info->product_cluster_id = absl::optional<uint64_t>(123u);
+  info->product_cluster_id = std::optional<uint64_t>(123u);
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
@@ -425,7 +425,7 @@ TEST_F(ShoppingServiceHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureIneligible) {
   base::RunLoop run_loop;
 
-  absl::optional<commerce::ProductInfo> info;
+  std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = "example_title";
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
@@ -446,7 +446,7 @@ TEST_F(ShoppingServiceHandlerTest,
 TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   base::RunLoop run_loop;
 
-  absl::optional<commerce::PriceInsightsInfo> info;
+  std::optional<commerce::PriceInsightsInfo> info;
   info.emplace();
   info->product_cluster_id = 123u;
   info->currency_code = "usd";
@@ -554,7 +554,7 @@ TEST_F(ShoppingServiceHandlerTest,
   base::RunLoop run_loop;
 
   shopping_service_->SetSubscribeCallbackValue(false);
-  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
   ;
 
   EXPECT_CALL(*shopping_service_, IsSubscribed(testing::_, testing::_))

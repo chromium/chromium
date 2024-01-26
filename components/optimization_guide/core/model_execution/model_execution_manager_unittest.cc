@@ -68,7 +68,7 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     CHECK_EQ(optimization_target, proto::OPTIMIZATION_TARGET_TEXT_SAFETY);
     was_registered_ = true;

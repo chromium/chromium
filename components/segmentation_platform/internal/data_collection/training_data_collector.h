@@ -86,7 +86,7 @@ class TrainingDataCollector {
       proto::SegmentId id,
       scoped_refptr<InputContext> input_context,
       DecisionType type,
-      absl::optional<ModelProvider::Request> inputs,
+      std::optional<ModelProvider::Request> inputs,
       bool decision_result_update_trigger = false) = 0;
 
   // Called by Segmentation Platform when manually triggering data collection on

@@ -46,7 +46,7 @@ void ShutDown(std::unique_ptr<T> object) {
 }  // namespace
 
 PartitionImpl::PartitionImpl(StorageServiceImpl* service,
-                             const absl::optional<base::FilePath>& path)
+                             const std::optional<base::FilePath>& path)
     : service_(service), path_(path) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &PartitionImpl::OnDisconnect, base::Unretained(this)));

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_EVENT_REPORT_WINDOWS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_EVENT_REPORT_WINDOWS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -33,13 +33,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
     kMaxValue = kNotStarted,
   };
 
-  static absl::optional<EventReportWindows> Create(
+  static std::optional<EventReportWindows> Create(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times);
 
   // Uses default windows based on the source type, but truncated at
   // `report_window`.
-  static absl::optional<EventReportWindows> FromDefaults(
+  static std::optional<EventReportWindows> FromDefaults(
       base::TimeDelta report_window,
       mojom::SourceType);
 

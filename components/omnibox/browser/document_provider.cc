@@ -591,7 +591,7 @@ void DocumentProvider::OnURLLoadComplete(
 }
 
 bool DocumentProvider::UpdateResults(const std::string& json_data) {
-  absl::optional<base::Value> response =
+  std::optional<base::Value> response =
       base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!response)
     return false;

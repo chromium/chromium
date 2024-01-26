@@ -78,7 +78,7 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
   }
 
   auto metrics_type =
-      ([storage_type]() -> absl::optional<page_load_metrics::StorageType> {
+      ([storage_type]() -> std::optional<page_load_metrics::StorageType> {
         switch (storage_type) {
           case StorageType::LOCAL_STORAGE:
             return page_load_metrics::StorageType::kLocalStorage;
@@ -92,7 +92,7 @@ void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
             return page_load_metrics::StorageType::kCacheStorage;
           case StorageType::DATABASE:
           case StorageType::WEB_LOCKS:
-            return absl::nullopt;
+            return std::nullopt;
         }
       })();
 

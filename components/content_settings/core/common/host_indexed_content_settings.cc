@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -18,7 +19,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content_settings {
 namespace {

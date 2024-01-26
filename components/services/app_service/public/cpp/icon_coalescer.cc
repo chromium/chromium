@@ -44,9 +44,9 @@ IconCoalescer::IconCoalescer(IconLoader* wrapped_loader)
 
 IconCoalescer::~IconCoalescer() = default;
 
-absl::optional<IconKey> IconCoalescer::GetIconKey(const std::string& id) {
+std::optional<IconKey> IconCoalescer::GetIconKey(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(id) : absl::nullopt;
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(id) : std::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(

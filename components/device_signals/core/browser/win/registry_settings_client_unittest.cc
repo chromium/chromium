@@ -102,7 +102,7 @@ GetSettingsOptions CreateOption(const std::string& name, bool get_value) {
 // Function for creating SettingsItem.
 SettingsItem CreateSettingItem(const std::string& name,
                                PresenceValue value,
-                               absl::optional<std::string> setting_json_value) {
+                               std::optional<std::string> setting_json_value) {
   SettingsItem item;
   item.path = base::SysWideToUTF8(kTestKeyPath);
   item.key = name;
@@ -177,18 +177,18 @@ TEST_F(RegistrySettingsClientTest, GetSettings_AllCase) {
   options.push_back(CreateOption("Test Key DOUBLE", true));
 
   std::vector<SettingsItem> settings_items;
-  settings_items.push_back(CreateSettingItem(
-      "Test Key DWORD", PresenceValue::kFound, absl::nullopt));
+  settings_items.push_back(
+      CreateSettingItem("Test Key DWORD", PresenceValue::kFound, std::nullopt));
   settings_items.push_back(
       CreateSettingItem("Test Key DWORD", PresenceValue::kFound, "5"));
-  settings_items.push_back(CreateSettingItem(
-      "Test Key QWORD", PresenceValue::kFound, absl::nullopt));
+  settings_items.push_back(
+      CreateSettingItem("Test Key QWORD", PresenceValue::kFound, std::nullopt));
   settings_items.push_back(
       CreateSettingItem("Test Key QWORD", PresenceValue::kFound, "15"));
   settings_items.push_back(CreateSettingItem(
       "Test Key LARGE QWORD", PresenceValue::kFound, "12147483647"));
   settings_items.push_back(CreateSettingItem(
-      "Test Key REG_SZ", PresenceValue::kFound, absl::nullopt));
+      "Test Key REG_SZ", PresenceValue::kFound, std::nullopt));
   settings_items.push_back(CreateSettingItem(
       "Test Key REG_SZ", PresenceValue::kFound, "\"Place Holder STRING\""));
   // settings client will read boolean registries as DWORD (and returns 0 or 1).
@@ -198,7 +198,7 @@ TEST_F(RegistrySettingsClientTest, GetSettings_AllCase) {
       CreateSettingItem("Test Key NONE", PresenceValue::kFound, "\"\""));
   // when key does not exist, client returns kNotFound and no setting value.
   settings_items.push_back(CreateSettingItem(
-      "Test Key NON EXIST", PresenceValue::kNotFound, absl::nullopt));
+      "Test Key NON EXIST", PresenceValue::kNotFound, std::nullopt));
   // settings client will read unsupported type registries as REG_SZ (and
   // returns string value).
   settings_items.push_back(
@@ -217,9 +217,9 @@ TEST_F(RegistrySettingsClientTest, GetSettings_InvalidHive) {
   option.path = item.path = base::SysWideToUTF8(kTestKeyPath);
   option.key = item.key = "Test Inv Hive";
   option.get_value = true;
-  option.hive = item.hive = absl::nullopt;
+  option.hive = item.hive = std::nullopt;
   item.presence = PresenceValue::kNotFound;
-  item.setting_json_value = absl::nullopt;
+  item.setting_json_value = std::nullopt;
 
   client_.GetSettings({option}, future_.GetCallback());
 
@@ -235,7 +235,7 @@ TEST_F(RegistrySettingsClientTest, GetSettings_InvalidPath) {
   option.get_value = true;
   option.hive = item.hive = RegistryHive::kHkeyLocalMachine;
   item.presence = PresenceValue::kNotFound;
-  item.setting_json_value = absl::nullopt;
+  item.setting_json_value = std::nullopt;
 
   client_.GetSettings({option}, future_.GetCallback());
 
@@ -288,7 +288,7 @@ TEST_F(RegistrySettingsClientTest, GetSettings_InvalidType) {
 
   std::vector<SettingsItem> settings_items;
   settings_items.push_back(CreateSettingItem(
-      "Test Key Invalid Type", PresenceValue::kFound, absl::nullopt));
+      "Test Key Invalid Type", PresenceValue::kFound, std::nullopt));
 
   client_.GetSettings(options, future_.GetCallback());
 

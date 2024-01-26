@@ -54,7 +54,7 @@ void OnAllMurmur2Hashes(
     WebApkIconHasher::Murmur2HashMultipleCallback callback) {
   for (const auto& icon_pair : *icons) {
     if (icon_pair.second.hash.empty()) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
   }

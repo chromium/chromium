@@ -93,7 +93,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   void OnHashDatabaseCompleteCheckResultInternal(
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      absl::optional<ThreatSource> threat_source);
+      std::optional<ThreatSource> threat_source);
 
   void MaybePerformSuspiciousSiteDetection(
       RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type);

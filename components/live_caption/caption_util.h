@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_
 #define COMPONENTS_LIVE_CAPTION_CAPTION_UTIL_H_
 
+#include <optional>
+
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/caption_style.h"
 
 class PrefService;
@@ -19,7 +20,7 @@ extern const char kCaptionSettingsUrl[];
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_MAC)
 
-absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
+std::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics);
 

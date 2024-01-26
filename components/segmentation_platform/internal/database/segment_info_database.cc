@@ -69,7 +69,7 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                          proto::ModelSource model_source,
                                          SegmentInfoCallback callback) {
-  absl::optional<SegmentInfo> result;
+  std::optional<SegmentInfo> result;
   const auto* cached = GetCachedSegmentInfo(segment_id, model_source);
   if (cached) {
     result = *cached;
@@ -88,7 +88,7 @@ void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
                                           TrainingRequestId request_id,
                                           bool delete_from_db,
                                           TrainingDataCallback callback) {
-  absl::optional<proto::TrainingData> result;
+  std::optional<proto::TrainingData> result;
   const auto* cached = cache_->GetSegmentInfo(segment_id, model_source);
 
   // Ignore results if the metadata no longer exists.
@@ -126,7 +126,7 @@ void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
 void SegmentInfoDatabase::UpdateSegment(
     SegmentId segment_id,
     ModelSource model_source,
-    absl::optional<proto::SegmentInfo> segment_info,
+    std::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   model_source = GetModelSource(model_source);
   cache_->UpdateSegmentInfo(segment_id, model_source, segment_info);
@@ -192,7 +192,7 @@ void SegmentInfoDatabase::UpdateMultipleSegments(
 void SegmentInfoDatabase::SaveSegmentResult(
     SegmentId segment_id,
     ModelSource model_source,
-    absl::optional<proto::PredictionResult> result,
+    std::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   const auto* cached = cache_->GetSegmentInfo(segment_id, model_source);
 

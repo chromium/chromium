@@ -105,7 +105,7 @@ void FrequentFeatureUserModel::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != kUMAFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

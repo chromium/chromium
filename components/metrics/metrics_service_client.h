@@ -214,21 +214,21 @@ class MetricsServiceClient {
   // when a user metric consent state should not be applied (ie no logged in
   // user or managed policy).
   //
-  // Will return absl::nullopt if there is no current user or current user
+  // Will return std::nullopt if there is no current user or current user
   // metrics consent should not be applied to determine metrics reporting state.
   //
   // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return absl::nullopt.
-  virtual absl::optional<bool> GetCurrentUserMetricsConsent() const;
+  // supported, this function should return std::nullopt.
+  virtual std::optional<bool> GetCurrentUserMetricsConsent() const;
 
   // Returns the current user id.
   //
-  // Will return absl::nullopt if there is no current user, metrics reporting is
+  // Will return std::nullopt if there is no current user, metrics reporting is
   // disabled, or current user should not have a user id.
   //
   // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return absl::nullopt.
-  virtual absl::optional<std::string> GetCurrentUserId() const;
+  // supported, this function should return std::nullopt.
+  virtual std::optional<std::string> GetCurrentUserId() const;
 
  private:
   base::RepeatingClosure update_running_services_;

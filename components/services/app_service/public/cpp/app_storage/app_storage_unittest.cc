@@ -248,7 +248,7 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(supported_locales, {"aa"})
   MODIFY_FIELD(selected_locale, "aa")
 
-  void ModifyIconKey(absl::optional<IconKey> icon_key) {
+  void ModifyIconKey(std::optional<IconKey> icon_key) {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
     app->icon_key = std::move(icon_key);
     std::vector<AppPtr> apps;

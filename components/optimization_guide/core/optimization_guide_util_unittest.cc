@@ -37,7 +37,7 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataMismatchedTypeTest) {
   subresource->set_preconnect_only(true);
   metadata.SerializeToString(any_metadata.mutable_value());
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       ParsedAnyMetadata<proto::LoadingPredictorMetadata>(any_metadata);
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -48,7 +48,7 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataNotSerializableTest) {
       "type.googleapis.com/com.foo.LoadingPredictorMetadata");
   any_metadata.set_value("12345678garbage");
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       ParsedAnyMetadata<proto::LoadingPredictorMetadata>(any_metadata);
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -64,7 +64,7 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataTest) {
   subresource->set_preconnect_only(true);
   metadata.SerializeToString(any_metadata.mutable_value());
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       ParsedAnyMetadata<proto::LoadingPredictorMetadata>(any_metadata);
   EXPECT_TRUE(parsed_metadata.has_value());
   ASSERT_EQ(parsed_metadata->subresources_size(), 1);
@@ -85,7 +85,7 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataTestWithNoPackageName) {
   subresource->set_preconnect_only(true);
   metadata.SerializeToString(any_metadata.mutable_value());
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       ParsedAnyMetadata<proto::LoadingPredictorMetadata>(any_metadata);
   EXPECT_TRUE(parsed_metadata.has_value());
   ASSERT_EQ(parsed_metadata->subresources_size(), 1);

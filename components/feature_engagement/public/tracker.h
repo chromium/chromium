@@ -6,6 +6,7 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -19,7 +20,6 @@
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -245,7 +245,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // the Dismissed(..) method.
   virtual void DismissedWithSnooze(
       const base::Feature& feature,
-      absl::optional<SnoozeAction> snooze_action) = 0;
+      std::optional<SnoozeAction> snooze_action) = 0;
 
   // Acquiring a display lock means that no in-product help can be displayed
   // while it is held. To release the lock, delete the handle.
@@ -267,7 +267,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   virtual void SetPriorityNotification(const base::Feature& feature) = 0;
 
   // Called to get if there is a pending priority notification to be shown next.
-  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+  virtual std::optional<std::string> GetPendingPriorityNotification() = 0;
 
   // Called by the client to register a handler for priority notifications. This
   // will essentially contain the code to spin up an IPH.

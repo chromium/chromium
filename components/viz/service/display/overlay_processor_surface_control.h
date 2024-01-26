@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_SURFACE_CONTROL_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_SURFACE_CONTROL_H_
 
+#include <optional>
+
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -17,7 +18,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
   OverlayProcessorSurfaceControl();
   ~OverlayProcessorSurfaceControl() override;
 
-  static absl::optional<gfx::ColorSpace> GetOverrideColorSpace();
+  static std::optional<gfx::ColorSpace> GetOverrideColorSpace();
 
   bool IsOverlaySupported() const override;
 
@@ -27,7 +28,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   void SetViewportSize(const gfx::Size& size) override;
   void AdjustOutputSurfaceOverlay(
-      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
   void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates) override;

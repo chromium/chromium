@@ -210,7 +210,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
       const base::Value::Dict* account_settings =
           pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)
               .FindDict(gaia_id_hash.ToBase64());
-      absl::optional<bool> pref_value;
+      std::optional<bool> pref_value;
       if (account_settings) {
         pref_value = account_settings->FindBool(pref_name);
       }
@@ -521,7 +521,7 @@ bool SyncPrefs::IsSyncClientDisabledByPolicy() const {
   return pref_service_->GetBoolean(prefs::internal::kSyncManaged);
 }
 
-absl::optional<PassphraseType> SyncPrefs::GetCachedPassphraseType() const {
+std::optional<PassphraseType> SyncPrefs::GetCachedPassphraseType() const {
   return ProtoPassphraseInt32ToEnum(
       pref_service_->GetInteger(prefs::internal::kSyncCachedPassphraseType));
 }
@@ -946,7 +946,7 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
   // users, this toggle mapped to the legacy AUTOFILL_PROFILE type (which
   // supported custom passphrase), but for migrated users it maps to
   // CONTACT_INFO (which does not).
-  absl::optional<PassphraseType> passphrase_type = ProtoPassphraseInt32ToEnum(
+  std::optional<PassphraseType> passphrase_type = ProtoPassphraseInt32ToEnum(
       pref_service->GetInteger(prefs::internal::kSyncCachedPassphraseType));
   if (passphrase_type.has_value() && IsExplicitPassphrase(*passphrase_type)) {
     account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),

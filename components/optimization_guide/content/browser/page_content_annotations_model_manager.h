@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
@@ -14,7 +16,6 @@
 #include "components/optimization_guide/core/page_visibility_model_handler.h"
 #include "components/optimization_guide/core/text_embedding_model_handler.h"
 #include "net/base/priority_queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -24,7 +25,7 @@ class PageEntitiesModelHandler;
 // Callback to inform the caller that the metadata for an entity ID has been
 // retrieved.
 using EntityMetadataRetrievedCallback =
-    base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
+    base::OnceCallback<void(const std::optional<EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
@@ -46,7 +47,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
-  absl::optional<ModelInfo> GetModelInfoForType(
+  std::optional<ModelInfo> GetModelInfoForType(
       AnnotationType type) const override;
   void RequestAndNotifyWhenModelAvailable(
       AnnotationType type,

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -16,7 +17,6 @@
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "url/gurl.h"
 
@@ -115,8 +115,8 @@ class AutocompleteResult {
   void SortAndCull(const AutocompleteInput& input,
                    TemplateURLService* template_url_service,
                    OmniboxTriggeredFeatureService* triggered_feature_service,
-                   absl::optional<AutocompleteMatch> default_match_to_preserve =
-                       absl::nullopt);
+                   std::optional<AutocompleteMatch> default_match_to_preserve =
+                       std::nullopt);
 
   // Removes duplicates, puts the list in sorted order. Sets the default match
   // to the best match and updates the alternate nav URL.
@@ -137,7 +137,7 @@ class AutocompleteResult {
   //   re-merged into 1 function once this is no longer needed.
   void Sort(const AutocompleteInput& input,
             TemplateURLService* template_url_service,
-            absl::optional<AutocompleteMatch> default_match_to_preserve);
+            std::optional<AutocompleteMatch> default_match_to_preserve);
 
   // Ensures that matches belonging to suggestion groups, i.e., those with a
   // suggestion_group_id value and a corresponding suggestion group info, are

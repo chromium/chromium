@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/trigger_registration.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -42,13 +42,13 @@ constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
 
-base::expected<absl::optional<SuitableOrigin>, TriggerRegistrationError>
+base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
 ParseAggregationCoordinator(const base::Value* value) {
   // The default value is used for backward compatibility prior to this
   // attribute being added, but ideally this would invalidate the registration
   // if other aggregatable fields were present.
   if (!value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* str = value->GetIfString();
@@ -57,7 +57,7 @@ ParseAggregationCoordinator(const base::Value* value) {
         TriggerRegistrationError::kAggregationCoordinatorWrongType);
   }
 
-  absl::optional<url::Origin> aggregation_coordinator =
+  std::optional<url::Origin> aggregation_coordinator =
       aggregation_service::ParseAggregationCoordinator(*str);
   if (!aggregation_coordinator.has_value()) {
     return base::unexpected(
@@ -165,7 +165,7 @@ TriggerRegistration::Parse(std::string_view json) {
   base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
       base::unexpected(TriggerRegistrationError::kInvalidJson);
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
 
   if (value) {

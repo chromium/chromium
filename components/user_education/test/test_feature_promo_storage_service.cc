@@ -11,11 +11,11 @@ namespace user_education::test {
 TestFeaturePromoStorageService::TestFeaturePromoStorageService() = default;
 TestFeaturePromoStorageService::~TestFeaturePromoStorageService() = default;
 
-absl::optional<FeaturePromoData> TestFeaturePromoStorageService::ReadPromoData(
+std::optional<FeaturePromoData> TestFeaturePromoStorageService::ReadPromoData(
     const base::Feature& iph_feature) const {
   const auto it = promo_data_.find(&iph_feature);
-  return it == promo_data_.end() ? absl::nullopt
-                                 : absl::make_optional(it->second);
+  return it == promo_data_.end() ? std::nullopt
+                                 : std::make_optional(it->second);
 }
 
 void TestFeaturePromoStorageService::SavePromoData(

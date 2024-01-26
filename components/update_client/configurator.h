@@ -6,6 +6,7 @@
 #define COMPONENTS_UPDATE_CLIENT_CONFIGURATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -139,7 +139,7 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // Returns true if Chrome is installed on a system managed by cloud or
   // group policies, false if the system is not managed, or nullopt if the
   // platform does not support client management at all.
-  virtual absl::optional<bool> IsMachineExternallyManaged() const = 0;
+  virtual std::optional<bool> IsMachineExternallyManaged() const = 0;
 
   // Returns a callable to get the state of the platform updater, if the
   // embedder includes an updater. Returns a null callback otherwise.
@@ -147,7 +147,7 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   // Returns the filepath where installed crx's should be cached for
   // puffin patches.
-  virtual absl::optional<base::FilePath> GetCrxCachePath() const = 0;
+  virtual std::optional<base::FilePath> GetCrxCachePath() const = 0;
 
   virtual bool IsConnectionMetered() const = 0;
 

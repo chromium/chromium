@@ -13,7 +13,7 @@ TestOptimizationGuideModelProvider::~TestOptimizationGuideModelProvider() =
 
 void TestOptimizationGuideModelProvider::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata,
+    const std::optional<proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {}
 
 void TestOptimizationGuideModelProvider::

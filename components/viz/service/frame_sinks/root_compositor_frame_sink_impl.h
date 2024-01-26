@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_ROOT_COMPOSITOR_FRAME_SINK_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -26,7 +27,6 @@
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/ca_layer_params.h"
 
@@ -100,7 +100,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<mojom::BeginFrameObserver> observer) override;
   void SetMaxVrrInterval(
-      absl::optional<base::TimeDelta> max_vrr_interval) override;
+      std::optional<base::TimeDelta> max_vrr_interval) override;
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
@@ -110,7 +110,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      absl::optional<HitTestRegionList> hit_test_region_list,
+      std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -119,7 +119,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void SubmitCompositorFrameSync(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      absl::optional<HitTestRegionList> hit_test_region_list,
+      std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
   void InitializeCompositorFrameSinkType(

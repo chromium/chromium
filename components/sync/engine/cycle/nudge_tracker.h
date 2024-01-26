@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
@@ -16,7 +17,6 @@
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -164,9 +164,9 @@ class NudgeTracker {
   // receive commits via extension APIs. Empty optional means using the
   // defaults.
   void SetQuotaParamsForExtensionTypes(
-      absl::optional<int> max_tokens,
-      absl::optional<base::TimeDelta> refill_interval,
-      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
+      std::optional<int> max_tokens,
+      std::optional<base::TimeDelta> refill_interval,
+      std::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;

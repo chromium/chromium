@@ -5,11 +5,11 @@
 #include "components/segmentation_platform/internal/database/segment_info_cache.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -56,7 +56,7 @@ SegmentInfoCache::GetSegmentInfoForBothModels(
 void SegmentInfoCache::UpdateSegmentInfo(
     SegmentId segment_id,
     ModelSource model_source,
-    absl::optional<SegmentInfo> segment_info) {
+    std::optional<SegmentInfo> segment_info) {
   if (segment_info.has_value()) {
     segment_info->set_model_source(model_source);
     segment_info_cache_[std::make_pair(segment_id, model_source)] =

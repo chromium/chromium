@@ -125,7 +125,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   const raw_ptr<SurfaceManager> surface_manager_;
   const raw_ptr<SurfaceAggregator> aggregator_;
 
-  absl::optional<uint64_t> begin_frame_source_id_;
+  std::optional<uint64_t> begin_frame_source_id_;
   bool root_frame_missing_ = true;
 
   bool expecting_root_surface_damage_because_of_resize_ = false;

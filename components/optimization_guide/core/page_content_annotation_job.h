@@ -6,13 +6,13 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATION_JOB_H_
 
 #include <deque>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -36,7 +36,7 @@ class PageContentAnnotationJob {
   // Returns the next input to be annotated, effectively "draining" the
   // |inputs_| queue. Guaranteed to be non-null for the next
   // |CountOfRemainingNonNullInputs| number of calls.
-  absl::optional<std::string> GetNextInput();
+  std::optional<std::string> GetNextInput();
 
   // The count of remaining inputs. |GetNextInput| can be called this many times
   // without return nullopt.
@@ -74,7 +74,7 @@ class PageContentAnnotationJob {
   const base::TimeTicks job_creation_time_;
 
   // Set when |GetNextInput| is called for the first time.
-  absl::optional<base::TimeTicks> job_execution_start_time_;
+  std::optional<base::TimeTicks> job_execution_start_time_;
 };
 
 }  // namespace optimization_guide

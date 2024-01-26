@@ -135,7 +135,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Must only be invoked with a valid SegmentInfo.
   void OnSegmentationModelUpdated(proto::SegmentInfo segment_info,
-                                  absl::optional<int64_t> old_model_version);
+                                  std::optional<int64_t> old_model_version);
 
   // Callback sent to child classes to notify when model results need to be
   // refreshed. For example, when history is cleared.
@@ -166,7 +166,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   std::unique_ptr<StorageService> storage_service_;
   // Storage initialization status.
-  absl::optional<bool> storage_init_status_;
+  std::optional<bool> storage_init_status_;
 
   // Signal processing.
   SignalHandler signal_handler_;

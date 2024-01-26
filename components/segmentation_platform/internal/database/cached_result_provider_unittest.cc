@@ -81,7 +81,7 @@ class CachedResultProviderTest : public testing::Test {
 TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPrefs) {
   cached_result_provider_ =
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
-  absl::optional<proto::PredictionResult> retrieved_prediction_result =
+  std::optional<proto::PredictionResult> retrieved_prediction_result =
       cached_result_provider_->GetPredictionResultForClient(kClientKey);
   EXPECT_FALSE(retrieved_prediction_result);
 }
@@ -100,7 +100,7 @@ TEST_F(CachedResultProviderTest,
 
   cached_result_provider_ =
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
-  absl::optional<proto::PredictionResult> retrieved_prediction_result =
+  std::optional<proto::PredictionResult> retrieved_prediction_result =
       cached_result_provider_->GetPredictionResultForClient(kClientKey);
   EXPECT_TRUE(retrieved_prediction_result.has_value());
   EXPECT_EQ(saved_prediction_result.result_size(),
@@ -114,7 +114,7 @@ TEST_F(CachedResultProviderTest,
 TEST_F(CachedResultProviderTest, GetPredictionResultForClient_WithNoResult) {
   cached_result_provider_ =
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
-  absl::optional<proto::PredictionResult> retrieved_prediction_result =
+  std::optional<proto::PredictionResult> retrieved_prediction_result =
       cached_result_provider_->GetPredictionResultForClient(kClientKey);
   EXPECT_FALSE(retrieved_prediction_result.has_value());
 }

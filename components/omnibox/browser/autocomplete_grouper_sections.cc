@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
@@ -13,7 +14,6 @@
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 namespace {
@@ -27,9 +27,9 @@ Section::Section(size_t limit,
 #if DCHECK_IS_ON()
   // Make sure all the `Group`s in the `Section` have the same `SideType` and
   // and all the `GroupId`s in the `Group`s have the same `RenderType`.
-  absl::optional<omnibox::GroupConfig_SideType> last_side_type;
+  std::optional<omnibox::GroupConfig_SideType> last_side_type;
   for (const auto& group : groups_) {
-    absl::optional<omnibox::GroupConfig_RenderType> last_render_type;
+    std::optional<omnibox::GroupConfig_RenderType> last_render_type;
     for (const auto& [group_id, _] : group.group_id_limits_and_counts()) {
       // Ignore the `GroupId` if it is not present in the group configs.
       if (!base::Contains(group_configs, group_id)) {

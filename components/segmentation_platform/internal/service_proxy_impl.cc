@@ -35,9 +35,8 @@ std::string SegmentMetadataToString(const proto::SegmentInfo& segment_info) {
          " }";
 }
 
-std::string PredictionResultToString(
-    const proto::SegmentInfo& segment_info,
-    const absl::optional<float>& segment_rank) {
+std::string PredictionResultToString(const proto::SegmentInfo& segment_info,
+                                     const std::optional<float>& segment_rank) {
   if (!segment_info.has_prediction_result()) {
     if (!segment_rank)
       return std::string();
@@ -189,12 +188,12 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
 
   std::vector<ServiceProxy::ClientInfo> result;
   for (const auto& config : *configs_) {
-    absl::optional<SegmentId> selected;
-    absl::optional<float> selected_segment_rank;
+    std::optional<SegmentId> selected;
+    std::optional<float> selected_segment_rank;
     if (segment_selectors_ &&
         segment_selectors_->find(config->segmentation_key) !=
             segment_selectors_->end()) {
-      absl::optional<SegmentSelectionResult> selection =
+      std::optional<SegmentSelectionResult> selection =
           segment_selectors_->at(config->segmentation_key)
               ->GetCachedSegmentResult();
       if (selection && selection->segment) {
@@ -211,8 +210,8 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       // TODO(ssid): Currently only selected segment rank is available in prefs,
       // so add rank only to the one segment. We should expand to include ranks
       // from all segments once we have ranking API support.
-      absl::optional<float> current_segment_rank =
-          segment_id.first == selected ? selected_segment_rank : absl::nullopt;
+      std::optional<float> current_segment_rank =
+          segment_id.first == selected ? selected_segment_rank : std::nullopt;
       const auto* info = segment_info_map[segment_id.first];
       bool can_execute_segment =
           force_refresh_results_ ||

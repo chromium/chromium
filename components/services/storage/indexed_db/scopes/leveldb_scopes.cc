@@ -5,6 +5,7 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_tasks.h"
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"

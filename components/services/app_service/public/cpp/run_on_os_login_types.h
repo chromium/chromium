@@ -59,7 +59,7 @@ base::Value::Dict ConvertRunOnOsLoginToDict(
 
 // Converts base::Value::Dict to RunOnOsLoginPtr.
 COMPONENT_EXPORT(APP_TYPES)
-absl::optional<RunOnOsLogin> ConvertDictToRunOnOsLogin(
+std::optional<RunOnOsLogin> ConvertDictToRunOnOsLogin(
     const base::Value::Dict* dict);
 
 }  // namespace apps

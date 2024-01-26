@@ -38,7 +38,7 @@ namespace {
 // Returns whether the style is default or not. If the user has changed any of
 // the captions settings from the default value, that is an interesting metric
 // to observe.
-bool IsDefaultStyle(absl::optional<ui::CaptionStyle> style) {
+bool IsDefaultStyle(std::optional<ui::CaptionStyle> style) {
   return (style.has_value() && style->text_size.empty() &&
           style->font_family.empty() && style->text_color.empty() &&
           style->background_color.empty() && style->text_shadow.empty());
@@ -53,9 +53,9 @@ std::string AddCSSImportant(std::string css_string) {
 }
 
 // Constructs the CaptionStyle struct from the caption-related preferences.
-absl::optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs) {
+std::optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs) {
   if (!prefs) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ui::CaptionStyle style;
@@ -95,11 +95,11 @@ absl::optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs) {
 
 namespace captions {
 
-absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
+std::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics) {
   // Apply native CaptionStyle parameters.
-  absl::optional<ui::CaptionStyle> style;
+  std::optional<ui::CaptionStyle> style;
 
   // Apply native CaptionStyle parameters.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

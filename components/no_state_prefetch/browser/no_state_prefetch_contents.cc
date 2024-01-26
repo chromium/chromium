@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <functional>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -39,7 +40,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -61,7 +61,7 @@ class NoStatePrefetchContentsFactoryImpl
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin) override {
     return new NoStatePrefetchContents(
         std::move(delegate), no_state_prefetch_manager, browser_context, url,
@@ -161,7 +161,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin)
     : no_state_prefetch_manager_(no_state_prefetch_manager),
       delegate_(std::move(delegate)),
@@ -586,9 +586,9 @@ RenderFrameHost* NoStatePrefetchContents::GetPrimaryMainFrame() {
              : nullptr;
 }
 
-absl::optional<base::Value::Dict> NoStatePrefetchContents::GetAsDict() const {
+std::optional<base::Value::Dict> NoStatePrefetchContents::GetAsDict() const {
   if (!no_state_prefetch_contents_)
-    return absl::nullopt;
+    return std::nullopt;
   base::Value::Dict dict;
   dict.Set("url", prefetch_url_.spec());
   base::TimeTicks current_time = base::TimeTicks::Now();

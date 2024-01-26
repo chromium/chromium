@@ -225,7 +225,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return supports_incremental_updates_;
   }
 
-  absl::optional<ModelError> MergeFullSyncData(
+  std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override {
     merge_call_count_++;
@@ -237,7 +237,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return FakeModelTypeSyncBridge::MergeFullSyncData(
         std::move(metadata_change_list), std::move(entity_data));
   }
-  absl::optional<ModelError> ApplyIncrementalSyncChanges(
+  std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override {
     apply_call_count_++;
@@ -512,7 +512,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     EXPECT_TRUE(expect_error_);
     histogram_tester_->ExpectBucketCount("Sync.ModelTypeErrorSite.PREFERENCE",
                                          *expect_error_, /*count=*/1);
-    expect_error_ = absl::nullopt;
+    expect_error_ = std::nullopt;
     error_reported_ = true;
     // Do not expect for a start callback anymore.
     if (run_loop_) {
@@ -548,7 +548,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   std::unique_ptr<MockModelTypeWorker> worker_;
 
   // Whether to expect an error from the processor (and from which site).
-  absl::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
+  std::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   bool error_reported_ = false;
 };

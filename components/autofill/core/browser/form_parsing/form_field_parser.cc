@@ -74,11 +74,11 @@ RegexMatchesCache::Key RegexMatchesCache::BuildKey(
              std::hash<std::u16string_view>{}(pattern));
 }
 
-absl::optional<bool> RegexMatchesCache::Get(RegexMatchesCache::Key key) {
+std::optional<bool> RegexMatchesCache::Get(RegexMatchesCache::Key key) {
   if (auto it = cache_.Get(key); it != cache_.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
@@ -112,7 +112,7 @@ bool FormFieldParser::MatchesRegexWithCache(
   RegexMatchesCache::Key key;
   if (!groups && context.matches_cache) {
     key = RegexMatchesCache::BuildKey(input, pattern);
-    absl::optional<bool> cache_entry = context.matches_cache->Get(key);
+    std::optional<bool> cache_entry = context.matches_cache->Get(key);
     if (cache_entry.has_value()) {
       return cache_entry.value();
     }

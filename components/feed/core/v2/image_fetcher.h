@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 #define COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/public/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -52,7 +53,7 @@ class ImageFetcher {
                        const GURL& url,
                        std::unique_ptr<std::string> response_data);
 
-  absl::optional<PendingRequest> RemovePending(ImageFetchId id);
+  std::optional<PendingRequest> RemovePending(ImageFetchId id);
 
   uint64_t GetTrackId(ImageFetchId id) const;
 

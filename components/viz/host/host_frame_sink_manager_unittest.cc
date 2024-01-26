@@ -74,7 +74,7 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
                     const std::string& debug_label));
   MOCK_METHOD4(CreateCompositorFrameSink,
                void(const FrameSinkId&,
-                    const absl::optional<FrameSinkBundleId>&,
+                    const std::optional<FrameSinkBundleId>&,
                     mojo::PendingReceiver<mojom::CompositorFrameSink>,
                     mojo::PendingRemote<mojom::CompositorFrameSinkClient>));
   void CreateRootCompositorFrameSink(

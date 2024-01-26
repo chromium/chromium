@@ -447,7 +447,7 @@ void Surface::SetInputRegion(const cc::Region& region) {
 void Surface::ResetInputRegion() {
   TRACE_EVENT0("exo", "Surface::ResetInputRegion");
 
-  pending_state_.basic_state.input_region = absl::nullopt;
+  pending_state_.basic_state.input_region = std::nullopt;
 }
 
 void Surface::SetInputOutset(int outset) {
@@ -632,7 +632,7 @@ void Surface::SetOverlayPriorityHint(OverlayPriority hint) {
   pending_state_.overlay_priority_hint = hint;
 }
 
-void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
+void Surface::SetClipRect(const std::optional<gfx::RectF>& clip_rect) {
   TRACE_EVENT1("exo", "Surface::SetClipRect", "clip_rect",
                (clip_rect ? clip_rect->ToString() : "nullopt"));
 
@@ -646,7 +646,7 @@ void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
 }
 
 void Surface::SetClipRectOnParentSurface(
-    const absl::optional<gfx::RectF>& clip_rect) {
+    const std::optional<gfx::RectF>& clip_rect) {
   TRACE_EVENT1("exo", "Surface::SetClipRectOnParentSurface", "clip_rect",
                (clip_rect ? clip_rect->ToString() : "nullopt"));
 
@@ -668,7 +668,7 @@ void Surface::SetSurfaceTransform(const gfx::Transform& transform) {
   }
 }
 
-void Surface::SetBackgroundColor(absl::optional<SkColor4f> background_color) {
+void Surface::SetBackgroundColor(std::optional<SkColor4f> background_color) {
   TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
   pending_state_.basic_state.background_color = background_color;
 }
@@ -1217,7 +1217,7 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     const gfx::PointF& to_parent_dp,
     bool needs_full_damage,
     FrameSinkResourceManager* resource_manager,
-    absl::optional<float> device_scale_factor,
+    std::optional<float> device_scale_factor,
     viz::CompositorFrame* frame) {
   // The top most sub-surface is at the front of the RenderPass's quad_list,
   // so we need composite sub-surface in reversed order.
@@ -1470,7 +1470,7 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
     const gfx::Transform quad_to_target_transform,
     const gfx::Rect& quad_rect,
     const gfx::MaskFilterInfo& msk,
-    const absl::optional<gfx::Rect>& quad_clip_rect,
+    const std::optional<gfx::Rect>& quad_clip_rect,
     const bool are_contents_opaque) {
   viz::SharedQuadState* quad_state =
       !render_pass->shared_quad_state_list.empty()
@@ -1519,7 +1519,7 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
 void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                                     const gfx::PointF& to_parent_dp,
                                     bool needs_full_damage,
-                                    absl::optional<float> device_scale_factor,
+                                    std::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
@@ -1558,7 +1558,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
   }
 
-  absl::optional<gfx::Rect> quad_clip_rect;
+  std::optional<gfx::Rect> quad_clip_rect;
   if (state_.clip_rect) {
     // `state_.clip_rect` should be on local surface coordinates but the
     // deprecated implementation still uses parent surface coordinates. If so,
@@ -1917,7 +1917,7 @@ void Surface::SetClientAccessibilityId(int id) {
   if (id >= 0) {
     exo::SetShellClientAccessibilityId(window_.get(), id);
   } else {
-    exo::SetShellClientAccessibilityId(window_.get(), absl::nullopt);
+    exo::SetShellClientAccessibilityId(window_.get(), std::nullopt);
   }
 }
 

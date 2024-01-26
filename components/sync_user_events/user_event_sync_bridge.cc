@@ -84,7 +84,7 @@ UserEventSyncBridge::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
+std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
@@ -94,7 +94,7 @@ absl::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -208,7 +208,7 @@ void UserEventSyncBridge::RecordUserEventImpl(
 }
 
 void UserEventSyncBridge::OnStoreCreated(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -221,7 +221,7 @@ void UserEventSyncBridge::OnStoreCreated(
 }
 
 void UserEventSyncBridge::OnReadAllMetadata(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "syncer::UserEventSyncBridge::OnReadAllMetadata");
   if (error) {
@@ -231,14 +231,14 @@ void UserEventSyncBridge::OnReadAllMetadata(
   }
 }
 
-void UserEventSyncBridge::OnCommit(const absl::optional<ModelError>& error) {
+void UserEventSyncBridge::OnCommit(const std::optional<ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }
 }
 
 void UserEventSyncBridge::OnReadData(DataCallback callback,
-                                     const absl::optional<ModelError>& error,
+                                     const std::optional<ModelError>& error,
                                      std::unique_ptr<RecordList> data_records,
                                      std::unique_ptr<IdList> missing_id_list) {
   OnReadAllData(std::move(callback), error, std::move(data_records));
@@ -246,7 +246,7 @@ void UserEventSyncBridge::OnReadData(DataCallback callback,
 
 void UserEventSyncBridge::OnReadAllData(
     DataCallback callback,
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<RecordList> data_records) {
   if (error) {
     change_processor()->ReportError(*error);

@@ -166,7 +166,7 @@ class SignalSampleViewTest : public testing::Test {
 
 TEST_F(SignalSampleViewTest, SignalSampleViewEmpty) {
   std::vector<SignalDatabase::DbEntry> samples;
-  SignalSampleView view1(samples, absl::nullopt);
+  SignalSampleView view1(samples, std::nullopt);
 
   EXPECT_EQ(view1.size(), 0u);
   EXPECT_TRUE(view1.empty());
@@ -200,7 +200,7 @@ TEST_F(SignalSampleViewTest, SignalSampleViewQueryMissingAction) {
 
 TEST_F(SignalSampleViewTest, SignalSampleViewWithoutQuery) {
   auto samples = GetDatabaseSamples();
-  SignalSampleView view(samples, absl::nullopt);
+  SignalSampleView view(samples, std::nullopt);
 
   EXPECT_EQ(view.size(), samples.size());
   EXPECT_FALSE(view.empty());

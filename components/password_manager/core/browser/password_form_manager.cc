@@ -231,7 +231,7 @@ bool ShouldUploadCrowdsourcingVotes(const FormOrDigest& form_or_digest) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool ShouldShowKeychainErrorBubble(
-    absl::optional<PasswordStoreBackendError> backend_error) {
+    std::optional<PasswordStoreBackendError> backend_error) {
   if (!backend_error.has_value()) {
     return false;
   }

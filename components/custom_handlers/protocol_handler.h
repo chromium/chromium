@@ -6,12 +6,12 @@
 #define COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
@@ -102,7 +102,7 @@ class ProtocolHandler {
 
   const std::string& protocol() const { return protocol_; }
   const GURL& url() const { return url_; }
-  const absl::optional<std::string>& web_app_id() const { return web_app_id_; }
+  const std::optional<std::string>& web_app_id() const { return web_app_id_; }
   const base::Time& last_modified() const { return last_modified_; }
 
   bool IsEmpty() const { return protocol_.empty(); }
@@ -120,7 +120,7 @@ class ProtocolHandler {
 
   std::string protocol_;
   GURL url_;
-  absl::optional<std::string> web_app_id_;
+  std::optional<std::string> web_app_id_;
   base::Time last_modified_;
   blink::ProtocolHandlerSecurityLevel security_level_;
 };

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_FEATURES_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_FEATURES_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -446,7 +446,7 @@ size_t MaxVisitAnnotationCacheSize();
 // Returns the number of threads to use for model inference on the given
 // optimization target.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<int> OverrideNumThreadsForOptTarget(
+std::optional<int> OverrideNumThreadsForOptTarget(
     proto::OptimizationTarget opt_target);
 
 // Whether XNNPACK should be used with TFLite, on platforms where it is

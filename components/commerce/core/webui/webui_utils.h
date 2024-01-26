@@ -19,7 +19,7 @@ struct ProductInfo;
 // service's ProductInfo.
 shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
-    const absl::optional<const ProductInfo>& info,
+    const std::optional<const ProductInfo>& info,
     const std::string& locale);
 
 }  // namespace commerce

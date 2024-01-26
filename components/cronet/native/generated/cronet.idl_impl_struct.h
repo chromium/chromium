@@ -7,13 +7,12 @@
 #ifndef COMPONENTS_CRONET_NATIVE_GENERATED_CRONET_IDL_IMPL_STRUCT_H_
 #define COMPONENTS_CRONET_NATIVE_GENERATED_CRONET_IDL_IMPL_STRUCT_H_
 
-#include "components/cronet/native/generated/cronet.idl_c.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/cronet/native/generated/cronet.idl_c.h"
 
 // Struct Cronet_Error.
 struct Cronet_Error {
@@ -191,19 +190,19 @@ struct Cronet_Metrics {
 
   ~Cronet_Metrics();
 
-  absl::optional<Cronet_DateTime> request_start;
-  absl::optional<Cronet_DateTime> dns_start;
-  absl::optional<Cronet_DateTime> dns_end;
-  absl::optional<Cronet_DateTime> connect_start;
-  absl::optional<Cronet_DateTime> connect_end;
-  absl::optional<Cronet_DateTime> ssl_start;
-  absl::optional<Cronet_DateTime> ssl_end;
-  absl::optional<Cronet_DateTime> sending_start;
-  absl::optional<Cronet_DateTime> sending_end;
-  absl::optional<Cronet_DateTime> push_start;
-  absl::optional<Cronet_DateTime> push_end;
-  absl::optional<Cronet_DateTime> response_start;
-  absl::optional<Cronet_DateTime> request_end;
+  std::optional<Cronet_DateTime> request_start;
+  std::optional<Cronet_DateTime> dns_start;
+  std::optional<Cronet_DateTime> dns_end;
+  std::optional<Cronet_DateTime> connect_start;
+  std::optional<Cronet_DateTime> connect_end;
+  std::optional<Cronet_DateTime> ssl_start;
+  std::optional<Cronet_DateTime> ssl_end;
+  std::optional<Cronet_DateTime> sending_start;
+  std::optional<Cronet_DateTime> sending_end;
+  std::optional<Cronet_DateTime> push_start;
+  std::optional<Cronet_DateTime> push_end;
+  std::optional<Cronet_DateTime> response_start;
+  std::optional<Cronet_DateTime> request_end;
   bool socket_reused = false;
   int64_t sent_byte_count = -1;
   int64_t received_byte_count = -1;
@@ -222,7 +221,7 @@ struct Cronet_RequestFinishedInfo {
 
   ~Cronet_RequestFinishedInfo();
 
-  absl::optional<Cronet_Metrics> metrics;
+  std::optional<Cronet_Metrics> metrics;
   std::vector<Cronet_RawDataPtr> annotations;
   Cronet_RequestFinishedInfo_FINISHED_REASON finished_reason =
       Cronet_RequestFinishedInfo_FINISHED_REASON_SUCCEEDED;

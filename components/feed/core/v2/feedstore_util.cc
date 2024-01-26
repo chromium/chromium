@@ -154,7 +154,7 @@ void SetContentLifetime(
 }
 
 void MaybeUpdateSessionId(Metadata& metadata,
-                          absl::optional<std::string> token) {
+                          std::optional<std::string> token) {
   if (token && metadata.session_id().token() != *token) {
     base::Time expiry_time =
         token->empty()
@@ -164,7 +164,7 @@ void MaybeUpdateSessionId(Metadata& metadata,
   }
 }
 
-absl::optional<Metadata> MaybeUpdateConsistencyToken(
+std::optional<Metadata> MaybeUpdateConsistencyToken(
     const feedstore::Metadata& metadata,
     const feedwire::ConsistencyToken& token) {
   if (token.has_token() && metadata.consistency_token() != token.token()) {
@@ -172,7 +172,7 @@ absl::optional<Metadata> MaybeUpdateConsistencyToken(
     metadata_copy.set_consistency_token(token.token());
     return metadata_copy;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 LocalActionId GetNextActionId(Metadata& metadata) {
@@ -252,11 +252,11 @@ feedstore::DocView CreateDocView(uint64_t docid, base::Time timestamp) {
   return doc_view;
 }
 
-absl::optional<Metadata> SetStreamViewContentHashes(
+std::optional<Metadata> SetStreamViewContentHashes(
     const Metadata& metadata,
     const StreamType& stream_type,
     const feed::ContentHashSet& content_hashes) {
-  absl::optional<Metadata> result;
+  std::optional<Metadata> result;
   if (!(GetViewContentIds(metadata, stream_type) == content_hashes)) {
     result = metadata;
     SetStreamViewContentHashes(*result, stream_type, content_hashes);

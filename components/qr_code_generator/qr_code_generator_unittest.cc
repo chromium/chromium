@@ -45,8 +45,8 @@ TEST_P(QRCodeGeneratorTest, Generate) {
   constexpr size_t kMaxInputLen = 210;
   uint8_t input[kMaxInputLen];
   QRCodeGenerator qr;
-  absl::optional<int> smallest_size;
-  absl::optional<int> largest_size;
+  std::optional<int> smallest_size;
+  std::optional<int> largest_size;
 
   for (const bool use_alphanum : {false, true}) {
     SCOPED_TRACE(use_alphanum);
@@ -56,9 +56,9 @@ TEST_P(QRCodeGeneratorTest, Generate) {
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      absl::optional<QRCodeGenerator::GeneratedCode> qr_code =
+      std::optional<QRCodeGenerator::GeneratedCode> qr_code =
           qr.Generate(base::span<const uint8_t>(input, input_len));
-      ASSERT_NE(qr_code, absl::nullopt);
+      ASSERT_NE(qr_code, std::nullopt);
       auto& qr_data = qr_code->data;
 
       if (!smallest_size || qr_code->qr_size < *smallest_size) {
@@ -99,7 +99,7 @@ TEST_P(QRCodeGeneratorTest, ManySizes) {
       break;
     }
 
-    absl::optional<QRCodeGenerator::GeneratedCode> code =
+    std::optional<QRCodeGenerator::GeneratedCode> code =
         qr.Generate(base::as_byte_span(input));
     ASSERT_TRUE(code);
     max_input_length_for_qr_size[code->qr_size] = input.size();
@@ -128,7 +128,7 @@ int GenerateAndGetQrCodeSize(size_t input_size) {
   QRCodeGenerator qr;
   std::string input(input_size, '!');
 
-  absl::optional<QRCodeGenerator::GeneratedCode> code =
+  std::optional<QRCodeGenerator::GeneratedCode> code =
       qr.Generate(base::as_byte_span(input));
   return code.has_value() ? code->qr_size : -1;
 }

@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SavedTabGroupModelObserver;
 class SavedTabGroup;
@@ -39,10 +39,10 @@ class SavedTabGroupModel {
   bool is_loaded() { return is_loaded_; }
 
   // Returns the index of the SavedTabGroup if it exists in the vector. Else
-  // absl::nullopt.
-  absl::optional<int> GetIndexOf(
+  // std::nullopt.
+  std::optional<int> GetIndexOf(
       const tab_groups::TabGroupId local_group_id) const;
-  absl::optional<int> GetIndexOf(const base::Uuid& id) const;
+  std::optional<int> GetIndexOf(const base::Uuid& id) const;
 
   // Get a pointer to the SavedTabGroup from an ID. Returns nullptr if not in
   // vector.
@@ -102,7 +102,7 @@ class SavedTabGroupModel {
   // does not notify observers, as this is not a change we want to sync.
   void UpdateLocalTabId(const base::Uuid& group_id,
                         SavedTabGroupTab tab,
-                        absl::optional<base::Token> local_id);
+                        std::optional<base::Token> local_id);
 
   // Removes saved tab `tab_id` in the specified group denoted by
   // `group_id` if it exists. We delete the group instead if the last tab is

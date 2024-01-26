@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -28,7 +29,6 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -95,7 +95,7 @@ class ComponentCloudPolicyStoreTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     cache_ = std::make_unique<ResourceCache>(
         temp_dir_.GetPath(), base::MakeRefCounted<base::TestSimpleTaskRunner>(),
-        /* max_cache_size */ absl::nullopt);
+        /* max_cache_size */ std::nullopt);
     store_ = CreateStore();
     store_->SetCredentials(
         PolicyBuilder::kFakeUsername, PolicyBuilder::kFakeGaiaId,

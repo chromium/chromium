@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/core/common/schema.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -74,7 +75,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   TestParsing(env, data_string);
 
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(data_string);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(data_string);
   if (parsed_json) {
     TestValidation(env, *parsed_json);
     TestMasking(env, *parsed_json);

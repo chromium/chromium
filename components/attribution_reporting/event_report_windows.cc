@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/source_type.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -65,26 +65,26 @@ base::Time ReportTimeFromDeadline(base::Time source_time,
 }  // namespace
 
 // static
-absl::optional<EventReportWindows> EventReportWindows::FromDefaults(
+std::optional<EventReportWindows> EventReportWindows::FromDefaults(
     base::TimeDelta report_window,
     SourceType source_type) {
   if (!IsReportWindowValid(report_window)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return EventReportWindows(report_window, source_type);
 }
 
 // static
-absl::optional<EventReportWindows> EventReportWindows::Create(
+std::optional<EventReportWindows> EventReportWindows::Create(
     base::TimeDelta start_time,
     std::vector<base::TimeDelta> end_times) {
   if (!IsStrictlyIncreasing(end_times)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::flat_set<base::TimeDelta> end_times_set(base::sorted_unique,
                                                 std::move(end_times));
   if (!IsValid(start_time, end_times_set)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return EventReportWindows(start_time, std::move(end_times_set));
 }
@@ -232,7 +232,7 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
 
   base::TimeDelta start_time = base::Seconds(0);
   if (const base::Value* start_time_value = dict->Find(kStartTime)) {
-    absl::optional<int> int_value = start_time_value->GetIfInt();
+    std::optional<int> int_value = start_time_value->GetIfInt();
     if (!int_value.has_value()) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsStartTimeWrongType);
@@ -270,7 +270,7 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
 
   base::TimeDelta start_duration = start_time;
   for (const auto& item : *end_times_list) {
-    const absl::optional<int> item_int = item.GetIfInt();
+    const std::optional<int> item_int = item.GetIfInt();
     if (!item_int.has_value()) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueWrongType);

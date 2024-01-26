@@ -55,7 +55,7 @@ class MockTrainingDataCollector : public TrainingDataCollector {
                TrainingRequestId(proto::SegmentId id,
                                  scoped_refptr<InputContext> input_context,
                                  DecisionType type,
-                                 absl::optional<ModelProvider::Request> inputs,
+                                 std::optional<ModelProvider::Request> inputs,
                                  bool decision_result_update_trigger));
   MOCK_METHOD4(CollectTrainingData,
                void(SegmentId segment_id,

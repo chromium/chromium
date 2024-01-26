@@ -14,7 +14,7 @@ ClientResultPrefs::ClientResultPrefs(PrefService* pref_service)
 
 void ClientResultPrefs::SaveClientResultToPrefs(
     const std::string& client_key,
-    absl::optional<proto::ClientResult> client_result) {
+    std::optional<proto::ClientResult> client_result) {
   InitializeIfNeeded();
 
   if (client_result.has_value()) {

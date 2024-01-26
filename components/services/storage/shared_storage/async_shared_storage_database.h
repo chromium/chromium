@@ -86,7 +86,7 @@ class AsyncSharedStorageDatabase {
 
   // Retrieves the `value` for `context_origin` and `key`. `callback` is called
   // with a struct bundling a string `value` in its data field if one is found,
-  // `absl::nullopt` otherwise, and a OperationResult to indicate whether the
+  // `std::nullopt` otherwise, and a OperationResult to indicate whether the
   // transaction was free of database errors.
   //
   // `key` must be of length at most

@@ -85,7 +85,7 @@ PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
                       : PermissionRequestGestureType::NO_GESTURE;
 }
 
-absl::optional<blink::mojom::PermissionsPolicyFeature>
+std::optional<blink::mojom::PermissionsPolicyFeature>
 PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
   PermissionType permission_type;
   bool success =
@@ -93,7 +93,7 @@ PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
   DCHECK(success);
   return success
              ? blink::PermissionTypeToPermissionsPolicyFeature(permission_type)
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 bool PermissionUtil::GetPermissionType(ContentSettingsType type,
@@ -425,7 +425,7 @@ bool PermissionUtil::IsPermissionBlockedInPartition(
 GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
                                         const GURL& requesting_origin,
                                         const GURL& embedding_origin) {
-  absl::optional<GURL> override_origin =
+  std::optional<GURL> override_origin =
       PermissionsClient::Get()->OverrideCanonicalOrigin(requesting_origin,
                                                         embedding_origin);
   if (override_origin)

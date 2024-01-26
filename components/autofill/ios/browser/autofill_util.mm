@@ -85,7 +85,7 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
 }
 
 std::unique_ptr<base::Value> ParseJson(NSString* json_string) {
-  absl::optional<base::Value> json_value =
+  std::optional<base::Value> json_value =
       base::JSONReader::Read(base::SysNSStringToUTF8(json_string));
   if (!json_value) {
     return nullptr;
@@ -316,7 +316,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
           field.FindString("autocomplete_attribute")) {
     field_data->autocomplete_attribute = *autocomplete_attribute;
   }
-  if (absl::optional<int> max_length = field.FindInt("max_length")) {
+  if (std::optional<int> max_length = field.FindInt("max_length")) {
     field_data->max_length = *max_length;
   }
   field_data->parsed_autocomplete =
@@ -347,7 +347,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   // RoleAttribute::kOther is the default value. The only other value as of this
   // writing is RoleAttribute::kPresentation.
-  absl::optional<int> role = field.FindInt("role");
+  std::optional<int> role = field.FindInt("role");
   if (role &&
       *role == static_cast<int>(FormFieldData::RoleAttribute::kPresentation)) {
     field_data->role = FormFieldData::RoleAttribute::kPresentation;

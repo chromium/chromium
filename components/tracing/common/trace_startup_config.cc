@@ -280,7 +280,7 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 
 bool TraceStartupConfig::ParseTraceConfigFileContent(
     const std::string& content) {
-  absl::optional<base::Value> value(base::JSONReader::Read(content));
+  std::optional<base::Value> value(base::JSONReader::Read(content));
   if (!value || !value->is_dict())
     return false;
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_CONTENT_PROVIDER_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_CONTENT_PROVIDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/offline_items_collection/core/open_params.h"
 #include "components/offline_items_collection/core/rename_result.h"
 #include "components/offline_items_collection/core/update_delta.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_items_collection {
@@ -36,7 +36,7 @@ class OfflineContentProvider {
                               std::unique_ptr<OfflineItemShareInfo>)>;
   using MultipleItemCallback = base::OnceCallback<void(const OfflineItemList&)>;
   using SingleItemCallback =
-      base::OnceCallback<void(const absl::optional<OfflineItem>&)>;
+      base::OnceCallback<void(const std::optional<OfflineItem>&)>;
   using RenameCallback = base::OnceCallback<void(RenameResult)>;
   using DownloadRenameCallback = base::OnceCallback<RenameCallback>;
 
@@ -94,7 +94,7 @@ class OfflineContentProvider {
     // determine whether this call should be ignored.
     virtual void OnItemUpdated(
         const OfflineItem& item,
-        const absl::optional<UpdateDelta>& update_delta) = 0;
+        const std::optional<UpdateDelta>& update_delta) = 0;
 
     // Called right before this object gets destroyed, to lets observers
     // perform cleanup.
@@ -174,7 +174,7 @@ class OfflineContentProvider {
   void NotifyItemsAdded(const OfflineItemList& items);
   void NotifyItemRemoved(const ContentId& id);
   void NotifyItemUpdated(const OfflineItem& item,
-                         const absl::optional<UpdateDelta>& update_delta);
+                         const std::optional<UpdateDelta>& update_delta);
 
  private:
   base::ObserverList<Observer> observers_;

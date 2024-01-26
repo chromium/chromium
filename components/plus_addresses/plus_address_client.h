@@ -6,6 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
 
 #include <list>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,7 +45,7 @@ constexpr char kServerCreatePlusAddressEndpoint[] = "v1/profiles/create";
 class PlusAddressClient {
  public:
   using TokenReadyCallback =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(std::optional<std::string>)>;
   PlusAddressClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -74,20 +74,20 @@ class PlusAddressClient {
   void GetAuthToken(TokenReadyCallback on_fetched);
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-  absl::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
+  std::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
 
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   void ReservePlusAddressInternal(const url::Origin& origin,
                                   PlusAddressRequestCallback on_completed,
-                                  absl::optional<std::string> auth_token);
+                                  std::optional<std::string> auth_token);
   void ConfirmPlusAddressInternal(const url::Origin& origin,
                                   const std::string& plus_address,
                                   PlusAddressRequestCallback on_completed,
-                                  absl::optional<std::string> auth_token);
+                                  std::optional<std::string> auth_token);
   void GetAllPlusAddressesInternal(PlusAddressMapCallback callback,
-                                   absl::optional<std::string> auth_token);
+                                   std::optional<std::string> auth_token);
 
   // This is shared by the Reserve and Confirm PlusAddress methods since
   // they both use `loaders_for_creation_` and have the same return type.
@@ -120,7 +120,7 @@ class PlusAddressClient {
   // the PlusAddressService synced with the remote server.
   std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
 
-  absl::optional<GURL> server_url_;
+  std::optional<GURL> server_url_;
   signin::ScopeSet scopes_;
   // Stores callbacks that raced to get an auth token to run them once ready.
   base::queue<TokenReadyCallback> pending_callbacks_;

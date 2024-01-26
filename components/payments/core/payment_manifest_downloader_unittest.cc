@@ -5,6 +5,7 @@
 #include "components/payments/core/payment_manifest_downloader.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace payments {
 namespace {
@@ -31,7 +31,7 @@ using testing::_;
 
 static constexpr char kNoContent[] = "";
 static constexpr char kNoError[] = "";
-static constexpr absl::nullopt_t kNoLinkHeader = absl::nullopt;
+static constexpr std::nullopt_t kNoLinkHeader = std::nullopt;
 static constexpr char kEmptyLinkHeader[] = "";
 static constexpr char kNoResponseBody[] = "";
 
@@ -64,7 +64,7 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
 
   void ServerResponse(int response_code,
                       Headers send_headers,
-                      absl::optional<std::string> link_header,
+                      std::optional<std::string> link_header,
                       const std::string& response_body,
                       int net_error) {
     scoped_refptr<net::HttpResponseHeaders> headers;
@@ -89,7 +89,7 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
   void ServerResponse(int response_code,
                       const std::string& response_body,
                       int net_error) {
-    ServerResponse(response_code, Headers::kSend, /*link_header=*/absl::nullopt,
+    ServerResponse(response_code, Headers::kSend, /*link_header=*/std::nullopt,
                    response_body, net_error);
   }
 
@@ -624,7 +624,7 @@ class PaymentMethodManifestDownloaderLinkHeaderNotRequiredTest
   //    request.
   void ServerHeaderAndFallbackResponse(int response_code,
                                        Headers send_headers,
-                                       absl::optional<std::string> link_header,
+                                       std::optional<std::string> link_header,
                                        const std::string& response_body,
                                        int net_error) {
     ServerResponse(response_code, send_headers, link_header, kNoResponseBody,

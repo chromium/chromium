@@ -38,7 +38,7 @@ ParseInitializeClientHintsStroage() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kInitializeClientHintsStorage);
 
-  absl::optional<base::Value> maybe_value =
+  std::optional<base::Value> maybe_value =
       base::JSONReader::Read(raw_client_hint_json);
 
   if (!maybe_value || !maybe_value->is_dict()) {
@@ -64,7 +64,7 @@ ParseInitializeClientHintsStroage() {
       continue;
     }
 
-    absl::optional<std::vector<network::mojom::WebClientHintsType>>
+    std::optional<std::vector<network::mojom::WebClientHintsType>>
         maybe_parsed_accept_ch =
             network::ParseClientHintsHeader(entry.second.GetString());
 

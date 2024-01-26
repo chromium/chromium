@@ -275,7 +275,7 @@ using TestCaseItemValue = absl::variant<
     base::TimeDelta,
     privacy_sandbox::TopicsConsentUpdateSource,
     std::vector<int>,
-    absl::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
+    std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;

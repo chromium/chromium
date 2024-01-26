@@ -54,33 +54,33 @@ void RecordOverrideListFileLoadResult(OverrideListFileLoadResult result) {
                                 result);
 }
 
-absl::optional<std::unordered_map<std::string, std::vector<int32_t>>>
+std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
 LoadOverrideListFromFile(const base::FilePath& path) {
   if (!path.IsAbsolute() ||
       path.BaseName() != base::FilePath(kOverrideListBasePath)) {
     NOTREACHED();
     // This is enforced by calling code, so no UMA in this case.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string file_contents;
   if (!base::ReadFileToString(path, &file_contents)) {
     RecordOverrideListFileLoadResult(
         OverrideListFileLoadResult::kCouldNotReadFile);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!compression::GzipUncompress(file_contents, &file_contents)) {
     RecordOverrideListFileLoadResult(
         OverrideListFileLoadResult::kCouldNotUncompressFile);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   optimization_guide::proto::PageTopicsOverrideList override_list_pb;
   if (!override_list_pb.ParseFromString(file_contents)) {
     RecordOverrideListFileLoadResult(
         OverrideListFileLoadResult::kCouldNotUnmarshalProtobuf);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unordered_map<std::string, std::vector<int32_t>> override_list;
@@ -150,7 +150,7 @@ bool IsModelTaxonomyVersionSupported(int model_taxonomy_version) {
 AnnotatorImpl::AnnotatorImpl(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata)
+    const std::optional<optimization_guide::proto::Any>& model_metadata)
     : BertModelHandler(
           model_provider,
           background_task_runner,
@@ -170,12 +170,12 @@ void AnnotatorImpl::NotifyWhenModelAvailable(base::OnceClosure callback) {
   model_available_callbacks_.AddUnsafe(std::move(callback));
 }
 
-absl::optional<optimization_guide::ModelInfo>
+std::optional<optimization_guide::ModelInfo>
 AnnotatorImpl::GetBrowsingTopicsModelInfo() const {
 #if DCHECK_IS_ON()
   if (GetModelInfo()) {
     DCHECK(GetModelInfo()->GetModelMetadata());
-    absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
+    std::optional<optimization_guide::proto::PageTopicsModelMetadata>
         model_metadata = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::PageTopicsModelMetadata>(
             *GetModelInfo()->GetModelMetadata());
@@ -203,7 +203,7 @@ void AnnotatorImpl::BatchAnnotate(BatchAnnotationCallback callback,
 void AnnotatorImpl::OnOverrideListLoadAttemptDone(
     BatchAnnotationCallback callback,
     const std::vector<std::string>& inputs,
-    absl::optional<std::unordered_map<std::string, std::vector<int32_t>>>
+    std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
         override_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(override_list_file_path_);
@@ -323,7 +323,7 @@ void AnnotatorImpl::AnnotateSingleInput(
 void AnnotatorImpl::PostprocessCategoriesToBatchAnnotationResult(
     base::OnceClosure single_input_done_signal,
     Annotation* annotation,
-    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+    const std::optional<std::vector<tflite::task::core::Category>>& output) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (output) {
     annotation->topics = ExtractCategoriesFromModelOutput(*output).value_or(
@@ -334,27 +334,27 @@ void AnnotatorImpl::PostprocessCategoriesToBatchAnnotationResult(
   // |annotation| may have been destroyed, do not use it past here.
 }
 
-absl::optional<std::vector<int32_t>>
+std::optional<std::vector<int32_t>>
 AnnotatorImpl::ExtractCategoriesFromModelOutput(
     const std::vector<tflite::task::core::Category>& model_output) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
+  std::optional<optimization_guide::proto::PageTopicsModelMetadata>
       model_metadata = ParsedSupportedFeaturesForLoadedModel<
           optimization_guide::proto::PageTopicsModelMetadata>();
   if (!model_metadata) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> visibility_category_name =
+  std::optional<std::string> visibility_category_name =
       model_metadata->output_postprocessing_params().has_visibility_params() &&
               model_metadata->output_postprocessing_params()
                   .visibility_params()
                   .has_category_name()
-          ? absl::make_optional(model_metadata->output_postprocessing_params()
-                                    .visibility_params()
-                                    .category_name())
-          : absl::nullopt;
+          ? std::make_optional(model_metadata->output_postprocessing_params()
+                                   .visibility_params()
+                                   .category_name())
+          : std::nullopt;
 
   std::vector<std::pair<int32_t, float>> category_candidates;
 
@@ -374,7 +374,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
   // Postprocess categories.
   if (!model_metadata->output_postprocessing_params().has_category_params()) {
     // No parameters for postprocessing, so just return.
-    return absl::nullopt;
+    return std::nullopt;
   }
   const optimization_guide::proto::PageTopicsCategoryPostprocessingParams
       category_params =
@@ -388,7 +388,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
   size_t max_categories = static_cast<size_t>(category_params.max_categories());
   float total_weight = 0.0;
   float sum_positive_scores = 0.0;
-  absl::optional<std::pair<size_t, float>> none_idx_and_weight;
+  std::optional<std::pair<size_t, float>> none_idx_and_weight;
   std::vector<std::pair<int32_t, float>> categories;
   categories.reserve(max_categories);
   for (size_t i = 0; i < category_candidates.size() && i < max_categories;
@@ -415,13 +415,13 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
 
   // Prune out none weights.
   if (total_weight == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (none_idx_and_weight) {
     if ((none_idx_and_weight->second / total_weight) >
         category_params.min_none_weight()) {
       // None weight is too strong.
-      return absl::nullopt;
+      return std::nullopt;
     }
     // None weight doesn't matter, so prune it out. Note that it may have
     // already been removed above if its weight was below the category min.
@@ -454,7 +454,7 @@ void AnnotatorImpl::UnloadModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   optimization_guide::BertModelHandler::UnloadModel();
-  override_list_ = absl::nullopt;
+  override_list_ = std::nullopt;
 }
 
 void AnnotatorImpl::OnModelUpdated(
@@ -474,7 +474,7 @@ void AnnotatorImpl::OnModelUpdated(
     return;
   }
 
-  absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
+  std::optional<optimization_guide::proto::PageTopicsModelMetadata>
       model_metadata = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PageTopicsModelMetadata>(
           *model_info->GetModelMetadata());
@@ -487,7 +487,7 @@ void AnnotatorImpl::OnModelUpdated(
     // cannot be accidentally called on the wrong taxonomy version.
     optimization_guide::BertModelHandler::OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
-        absl::nullopt);
+        std::nullopt);
     return;
   }
   version_ = model_metadata->version();
@@ -495,7 +495,7 @@ void AnnotatorImpl::OnModelUpdated(
   // New model, new override list.
   override_list_file_path_ =
       model_info->GetAdditionalFileWithBaseName(kOverrideListBasePath);
-  override_list_ = absl::nullopt;
+  override_list_ = std::nullopt;
 
   // Run any callbacks that were waiting for an updated model.
   //

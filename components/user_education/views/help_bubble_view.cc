@@ -139,7 +139,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
           is_default_button_
               ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
               : delegate_->GetHelpBubbleForegroundColorId());
-      ink_drop->SetHighlightOpacity(absl::nullopt);
+      ink_drop->SetHighlightOpacity(std::nullopt);
     } else {
       // Prominent style gives a button hover highlight.
       SetStyle(ui::ButtonStyle::kProminent);

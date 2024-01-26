@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_DESTINATION_SET_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_DESTINATION_SET_H_
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -27,7 +28,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) DestinationSet {
  public:
   using Destinations = base::flat_set<net::SchemefulSite>;
 
-  static absl::optional<DestinationSet> Create(Destinations);
+  static std::optional<DestinationSet> Create(Destinations);
 
   static base::expected<DestinationSet, mojom::SourceRegistrationError>
   FromJSON(const base::Value*);

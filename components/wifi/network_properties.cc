@@ -4,13 +4,13 @@
 
 #include "components/wifi/network_properties.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wifi {
 
@@ -99,7 +99,7 @@ bool NetworkProperties::UpdateFromValue(const base::Value::Dict& value) {
     if (password_ptr)
       password = *password_ptr;
 
-    absl::optional<bool> auto_connect_opt =
+    std::optional<bool> auto_connect_opt =
         wifi->FindBool(onc::wifi::kAutoConnect);
     if (auto_connect_opt)
       auto_connect = *auto_connect_opt;

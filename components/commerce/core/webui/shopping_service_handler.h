@@ -49,7 +49,7 @@ class ShoppingServiceHandler :
 
     virtual ~Delegate() = default;
 
-    virtual absl::optional<GURL> GetCurrentTabUrl() = 0;
+    virtual std::optional<GURL> GetCurrentTabUrl() = 0;
 
     virtual void ShowInsightsSidePanelUI() = 0;
 
@@ -136,12 +136,12 @@ class ShoppingServiceHandler :
   void OnFetchProductInfoForCurrentUrl(
       GetProductInfoForCurrentUrlCallback callback,
       const GURL& url,
-      const absl::optional<const ProductInfo>& info);
+      const std::optional<const ProductInfo>& info);
 
   void OnFetchPriceInsightsInfoForCurrentUrl(
       GetPriceInsightsInfoForCurrentUrlCallback callback,
       const GURL& url,
-      const absl::optional<PriceInsightsInfo>& info);
+      const std::optional<PriceInsightsInfo>& info);
   void OnGetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback,
       bool tracked);

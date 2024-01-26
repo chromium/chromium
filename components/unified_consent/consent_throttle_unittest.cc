@@ -32,7 +32,7 @@ class TestUrlKeyedDataCollectionConsentHelper
 class ConsentThrottleTest : public testing::Test {
  protected:
   bool GetResultSynchronously(ConsentThrottle* throttle) {
-    absl::optional<bool> out_result;
+    std::optional<bool> out_result;
     throttle->EnqueueRequest(
         base::BindLambdaForTesting([&](bool result) { out_result = result; }));
     EXPECT_TRUE(out_result.has_value())

@@ -77,7 +77,7 @@ void WebMemoryImplTest::MeasureAndVerify(
                   ? *entry->attribution[0]->url
                   : *entry->attribution[0]->src;
           actual[attribution_tag] =
-              entry->memory ? Bytes{entry->memory->bytes} : absl::nullopt;
+              entry->memory ? Bytes{entry->memory->bytes} : std::nullopt;
         }
         EXPECT_EQ(expected, actual);
         measurement_done = true;

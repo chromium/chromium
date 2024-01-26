@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
@@ -83,7 +83,7 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
     EXPECT_TRUE(found_worker);
   });
 
-  absl::optional<WorkerContext> worker_context =
+  std::optional<WorkerContext> worker_context =
       WorkerContext::FromWorkerToken(worker_token);
   ASSERT_TRUE(worker_context.has_value());
   EXPECT_EQ(worker_token, worker_context->GetWorkerToken());
@@ -104,7 +104,7 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   });
 
   // Make sure a second worker gets a different context.
-  absl::optional<WorkerContext> worker_context2 =
+  std::optional<WorkerContext> worker_context2 =
       WorkerContext::FromWorkerToken(worker_token2);
   EXPECT_TRUE(worker_context2.has_value());
   EXPECT_NE(worker_context2, worker_context);
@@ -118,7 +118,7 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
     EXPECT_TRUE(graph->GetAllWorkerNodes().empty());
     EXPECT_FALSE(worker_node);
     EXPECT_EQ(nullptr, worker_context->GetWorkerNode());
-    EXPECT_EQ(absl::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));
+    EXPECT_EQ(std::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));
   });
 }
 

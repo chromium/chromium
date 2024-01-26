@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/parcel/parcels_storage.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -12,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/commerce/core/parcel/parcels_utils.h"
 #include "components/session_proto_db/session_proto_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace commerce {
 
@@ -76,7 +76,7 @@ void ParcelsStorage::DeleteParcelStatus(const std::string& tracking_id,
                                         StorageUpdateCallback callback) {
   DCHECK(is_initialized_);
 
-  absl::optional<ParcelIdentifier> parcel_identifier;
+  std::optional<ParcelIdentifier> parcel_identifier;
   for (auto& kv : parcels_cache_) {
     auto& identifier = kv.second.parcel_status().parcel_identifier();
     if (identifier.tracking_id() == tracking_id) {

@@ -66,8 +66,8 @@ void FakeSyncScheduler::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {}
 void FakeSyncScheduler::OnReceivedMigrationRequest(ModelTypeSet types) {}
 
 void FakeSyncScheduler::OnReceivedQuotaParamsForExtensionTypes(
-    absl::optional<int> max_tokens,
-    absl::optional<base::TimeDelta> refill_interval,
-    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {}
+    std::optional<int> max_tokens,
+    std::optional<base::TimeDelta> refill_interval,
+    std::optional<base::TimeDelta> depleted_quota_nudge_delay) {}
 
 }  // namespace syncer

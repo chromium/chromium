@@ -155,7 +155,7 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   GURL tab_referrer_url_;
 
   // URLLoader status when intercepting the navigation request.
-  absl::optional<network::URLLoaderCompletionStatus> url_loader_status_;
+  std::optional<network::URLLoaderCompletionStatus> url_loader_status_;
 
   // TaskRunner to post callbacks to the |delegate_|
   scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;

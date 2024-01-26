@@ -4,6 +4,7 @@
 
 #include "components/metrics/demographics/user_demographics.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -12,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -119,26 +119,26 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-absl::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
+std::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
   return demographics.FindInt(kSyncDemographicsBirthYearPath);
 }
 
 // Gets the synced user's gender from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-absl::optional<UserDemographicsProto_Gender> GetUserGender(
+std::optional<UserDemographicsProto_Gender> GetUserGender(
     const base::Value::Dict& demographics) {
-  const absl::optional<int> gender_int =
+  const std::optional<int> gender_int =
       demographics.FindInt(kSyncDemographicsGenderPath);
 
   // Verify that the gender is unset.
   if (!gender_int)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Verify that the gender number is a valid UserDemographicsProto_Gender
   // encoding.
   if (!UserDemographicsProto_Gender_IsValid(*gender_int))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto gender = UserDemographicsProto_Gender(*gender_int);
 
@@ -146,7 +146,7 @@ absl::optional<UserDemographicsProto_Gender> GetUserGender(
   // anonymity.
   if (gender != UserDemographicsProto::GENDER_FEMALE &&
       gender != UserDemographicsProto::GENDER_MALE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gender;
@@ -238,14 +238,14 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   const base::Value::Dict& demographics = GetDemographicsDict(profile_prefs);
 
   // Get the user's birth year.
-  absl::optional<int> birth_year = GetUserBirthYear(demographics);
+  std::optional<int> birth_year = GetUserBirthYear(demographics);
   if (!birth_year.has_value()) {
     return UserDemographicsResult::ForStatus(
         UserDemographicsStatus::kIneligibleDemographicsData);
   }
 
   // Get the user's gender.
-  absl::optional<UserDemographicsProto_Gender> gender =
+  std::optional<UserDemographicsProto_Gender> gender =
       GetUserGender(demographics);
   if (!gender.has_value()) {
     return UserDemographicsResult::ForStatus(

@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace {
@@ -102,7 +102,7 @@ void SignalDatabaseImpl::Initialize(SuccessCallback callback) {
 
 void SignalDatabaseImpl::WriteSample(proto::SignalType signal_type,
                                      uint64_t name_hash,
-                                     absl::optional<int32_t> value,
+                                     std::optional<int32_t> value,
                                      SuccessCallback callback) {
   DCHECK(initialized_);
   base::Time timestamp = clock_->Now();

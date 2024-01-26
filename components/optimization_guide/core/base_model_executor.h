@@ -35,7 +35,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
  public:
   // TFLiteModelExecutor:
   void InitializeAndMoveToExecutionThread(
-      absl::optional<base::TimeDelta> model_inference_timeout,
+      std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
@@ -48,9 +48,9 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
   }
 
  protected:
-  absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
-                                     ExecutionStatus* out_status,
-                                     InputType input) override {
+  std::optional<OutputType> Execute(ModelExecutionTask* execution_task,
+                                    ExecutionStatus* out_status,
+                                    InputType input) override {
     return static_cast<GenericModelExecutionTask<OutputType, InputType>*>(
                execution_task)
         ->Execute(out_status, input);
@@ -88,7 +88,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
   // InferenceDelegate:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   InputType input) override = 0;
-  absl::optional<OutputType> Postprocess(
+  std::optional<OutputType> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override = 0;
 
  private:

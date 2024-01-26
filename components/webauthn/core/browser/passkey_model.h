@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -88,7 +88,7 @@ class PasskeyModel : public KeyedService {
   // Returns the passkey matching the given Relying Party and credential ID, if
   // any. Shadowed entities, which aren't suitable for generating assertions,
   // are ignored.
-  virtual absl::optional<sync_pb::WebauthnCredentialSpecifics>
+  virtual std::optional<sync_pb::WebauthnCredentialSpecifics>
   GetPasskeyByCredentialId(const std::string& rp_id,
                            const std::string& credential_id) const = 0;
 

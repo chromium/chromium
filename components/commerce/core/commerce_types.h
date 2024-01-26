@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/commerce/core/proto/parcel.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -45,9 +45,9 @@ struct DiscountInfo {
   DiscountType type = DiscountType::kUnspecified;
   std::string language_code;
   std::string description_detail;
-  absl::optional<std::string> terms_and_conditions;
+  std::optional<std::string> terms_and_conditions;
   std::string value_in_text;
-  absl::optional<std::string> discount_code;
+  std::optional<std::string> discount_code;
   uint64_t id = 0;
   bool is_merchant_wide = false;
   double expiry_time_sec = 0;
@@ -90,13 +90,13 @@ struct PriceInsightsInfo {
   PriceInsightsInfo& operator=(const PriceInsightsInfo&);
   ~PriceInsightsInfo();
 
-  absl::optional<uint64_t> product_cluster_id;
+  std::optional<uint64_t> product_cluster_id;
   std::string currency_code;
-  absl::optional<int64_t> typical_low_price_micros;
-  absl::optional<int64_t> typical_high_price_micros;
-  absl::optional<std::string> catalog_attributes;
+  std::optional<int64_t> typical_low_price_micros;
+  std::optional<int64_t> typical_high_price_micros;
+  std::optional<std::string> catalog_attributes;
   std::vector<std::tuple<std::string, int64_t>> catalog_history_prices;
-  absl::optional<GURL> jackpot_url;
+  std::optional<GURL> jackpot_url;
   PriceBucket price_bucket = PriceBucket::kUnknown;
   bool has_multiple_catalogs = false;
 };
@@ -112,11 +112,11 @@ struct ProductInfo {
   std::string title;
   std::string product_cluster_title;
   GURL image_url;
-  absl::optional<uint64_t> product_cluster_id;
-  absl::optional<uint64_t> offer_id;
+  std::optional<uint64_t> product_cluster_id;
+  std::optional<uint64_t> offer_id;
   std::string currency_code;
   int64_t amount_micros{0};
-  absl::optional<int64_t> previous_amount_micros;
+  std::optional<int64_t> previous_amount_micros;
   std::string country_code;
 
  private:
@@ -149,15 +149,15 @@ struct ParcelTrackingStatus {
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
 using MerchantInfoCallback =
-    base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
+    base::OnceCallback<void(const GURL&, std::optional<MerchantInfo>)>;
 using PriceInsightsInfoCallback =
     base::OnceCallback<void(const GURL&,
-                            const absl::optional<PriceInsightsInfo>&)>;
+                            const std::optional<PriceInsightsInfo>&)>;
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&,
-                            const absl::optional<const ProductInfo>&)>;
+                            const std::optional<const ProductInfo>&)>;
 using IsShoppingPageCallback =
-    base::OnceCallback<void(const GURL&, absl::optional<bool>)>;
+    base::OnceCallback<void(const GURL&, std::optional<bool>)>;
 using GetParcelStatusCallback = base::OnceCallback<
     void(bool /*success*/, std::unique_ptr<std::vector<ParcelTrackingStatus>>)>;
 using StopParcelTrackingCallback = base::OnceCallback<void(bool /*success*/)>;

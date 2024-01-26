@@ -97,7 +97,7 @@ void VersionedTestInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback progress_callback,
     Callback callback) {
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       update_client::ReadManifest(unpack_path);
   if (!manifest) {
     return;

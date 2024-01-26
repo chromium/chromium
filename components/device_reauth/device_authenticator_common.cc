@@ -38,7 +38,7 @@ void DeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
 }
 
 bool DeviceAuthenticatorCommon::NeedsToAuthenticate() const {
-  absl::optional<base::TimeTicks> last_good_auth_timestamp;
+  std::optional<base::TimeTicks> last_good_auth_timestamp;
   if (device_authenticator_proxy_) {
     last_good_auth_timestamp =
         device_authenticator_proxy_->GetLastGoodAuthTimestamp();

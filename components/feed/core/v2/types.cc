@@ -52,7 +52,7 @@ bool UnpickleNetworkResponseInfo(base::PickleIterator& iterator,
 }
 
 void PickleOptionalNetworkResponseInfo(
-    const absl::optional<NetworkResponseInfo>& value,
+    const std::optional<NetworkResponseInfo>& value,
     base::Pickle& pickle) {
   if (value.has_value()) {
     pickle.WriteBool(true);
@@ -64,7 +64,7 @@ void PickleOptionalNetworkResponseInfo(
 
 bool UnpickleOptionalNetworkResponseInfo(
     base::PickleIterator& iterator,
-    absl::optional<NetworkResponseInfo>& value) {
+    std::optional<NetworkResponseInfo>& value) {
   bool has_network_response_info = false;
   if (!iterator.ReadBool(&has_network_response_info))
     return false;
@@ -155,15 +155,15 @@ std::string SerializeDebugStreamData(const DebugStreamData& data) {
       base::span<const uint8_t>(pickle_data_ptr, pickle.size()));
 }
 
-absl::optional<DebugStreamData> DeserializeDebugStreamData(
+std::optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded) {
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
-    return absl::nullopt;
+    return std::nullopt;
   base::Pickle pickle(binary_data.data(), binary_data.size());
   DebugStreamData result;
   if (!UnpickleDebugStreamData(base::PickleIterator(pickle), result))
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 
@@ -190,12 +190,12 @@ base::Value::Dict PersistentMetricsDataToDict(
 PersistentMetricsData PersistentMetricsDataFromDict(
     const base::Value::Dict& dict) {
   PersistentMetricsData result;
-  absl::optional<base::Time> day_start =
+  std::optional<base::Time> day_start =
       base::ValueToTime(dict.Find("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
-  absl::optional<base::TimeDelta> time_spent_in_feed =
+  std::optional<base::TimeDelta> time_spent_in_feed =
       base::ValueToTimeDelta(dict.Find("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;

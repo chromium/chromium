@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_TEST_METRICS_WEB_CONTENTS_OBSERVER_EMBEDDER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_TEST_METRICS_WEB_CONTENTS_OBSERVER_EMBEDDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/test/weak_mock_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -65,7 +65,7 @@ class TestMetricsWebContentsObserverEmbedder
     return observed_features_;
   }
 
-  const absl::optional<bool>& is_first_navigation_in_web_contents() const {
+  const std::optional<bool>& is_first_navigation_in_web_contents() const {
     return is_first_navigation_in_web_contents_;
   }
 
@@ -92,7 +92,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;
   std::vector<GURL> completed_filtered_urls_;
   std::vector<blink::UseCounterFeature> observed_features_;
-  absl::optional<bool> is_first_navigation_in_web_contents_;
+  std::optional<bool> is_first_navigation_in_web_contents_;
   bool is_ntp_ = false;
   int count_on_enter_back_forward_cache_ = 0;
 };

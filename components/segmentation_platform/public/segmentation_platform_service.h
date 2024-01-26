@@ -43,7 +43,7 @@ struct TrainingLabels {
   ~TrainingLabels();
 
   // Name and sample of the output metric to be collected as training data.
-  absl::optional<std::pair<std::string, base::HistogramBase::Sample>>
+  std::optional<std::pair<std::string, base::HistogramBase::Sample>>
       output_metric;
 
   TrainingLabels(const TrainingLabels& other);

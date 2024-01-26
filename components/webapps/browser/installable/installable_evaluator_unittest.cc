@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/browser/installable/installable_manager.h"
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -98,12 +98,12 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     return page_data_->web_page_metadata_->metadata.get();
   }
 
-  absl::optional<InstallableStatusCode> GetCheckInstallabilityErrorCode(
+  std::optional<InstallableStatusCode> GetCheckInstallabilityErrorCode(
       InstallableCriteria criteria) {
     InstallableEvaluator evaluator(web_contents(), *page_data_, criteria);
     auto errors = evaluator.CheckInstallability();
     if (!errors.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return errors->empty() ? NO_ERROR_DETECTED : errors.value()[0];
   }
@@ -113,7 +113,7 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(InstallableEvaluatorUnitTest, DoNotCheck) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetCheckInstallabilityErrorCode(InstallableCriteria::kDoNotCheck));
 }
 
@@ -209,18 +209,18 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
 TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckNameOrShortName) {
   SetManifest(GetValidManifest());
 
-  manifest()->name = absl::nullopt;
+  manifest()->name = std::nullopt;
   manifest()->short_name = u"bar";
   TestCheckInstallability(NO_ERROR_DETECTED, NO_ERROR_DETECTED,
                           NO_ERROR_DETECTED);
 
   manifest()->name = u"foo";
-  manifest()->short_name = absl::nullopt;
+  manifest()->short_name = std::nullopt;
   TestCheckInstallability(NO_ERROR_DETECTED, NO_ERROR_DETECTED,
                           NO_ERROR_DETECTED);
 
-  manifest()->name = absl::nullopt;
-  manifest()->short_name = absl::nullopt;
+  manifest()->name = std::nullopt;
+  manifest()->short_name = std::nullopt;
   TestCheckInstallability(MANIFEST_MISSING_NAME_OR_SHORT_NAME,
                           MANIFEST_MISSING_NAME_OR_SHORT_NAME,
                           MANIFEST_MISSING_NAME_OR_SHORT_NAME);

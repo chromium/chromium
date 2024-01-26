@@ -5,6 +5,7 @@
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "components/sync_bookmarks/test_bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -94,14 +94,14 @@ class UrlBuilder {
   void Build(BookmarkModelView* model,
              const bookmarks::BookmarkNode* parent) const {
     model->AddURL(parent, parent->children().size(), base::UTF8ToUTF16(title_),
-                  url_, /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt,
+                  url_, /*meta_info=*/nullptr, /*creation_time=*/std::nullopt,
                   uuid_);
   }
 
  private:
   const std::string title_;
   const GURL url_;
-  absl::optional<base::Uuid> uuid_;
+  std::optional<base::Uuid> uuid_;
 };
 
 // Test class to build bookmark folders and compactly in tests.
@@ -146,14 +146,14 @@ class FolderBuilder {
              const bookmarks::BookmarkNode* parent) const {
     const bookmarks::BookmarkNode* folder = model->AddFolder(
         parent, parent->children().size(), base::UTF8ToUTF16(title_),
-        /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt, uuid_);
+        /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, uuid_);
     AddChildrenTo(model, folder, children_);
   }
 
  private:
   const std::string title_;
   std::vector<FolderOrUrl> children_;
-  absl::optional<base::Uuid> uuid_;
+  std::optional<base::Uuid> uuid_;
 };
 
 std::unique_ptr<TestBookmarkModelView> BuildModel(

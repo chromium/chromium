@@ -4,6 +4,7 @@
 
 #include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

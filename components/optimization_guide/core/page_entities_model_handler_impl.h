@@ -66,7 +66,7 @@ class EntityAnnotatorHolder {
   // the entities back to their metadata. Should be invoked on
   // |background_task_runner_|.
   using PageEntitiesMetadataModelExecutedCallback = base::OnceCallback<void(
-      const absl::optional<std::vector<ScoredEntityMetadata>>&)>;
+      const std::optional<std::vector<ScoredEntityMetadata>>&)>;
   void AnnotateEntitiesMetadataModelOnBackgroundThread(
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback);
@@ -118,7 +118,7 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback) override;
   void AddOnModelUpdatedCallback(base::OnceClosure callback) override;
-  absl::optional<ModelInfo> GetModelInfo() const override;
+  std::optional<ModelInfo> GetModelInfo() const override;
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
@@ -137,7 +137,7 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
   std::unique_ptr<EntityAnnotatorHolder> entity_annotator_holder_;
 
   // The most recent model info given to |OnModelUpdated|.
-  absl::optional<ModelInfo> model_info_;
+  std::optional<ModelInfo> model_info_;
 
   // Populated with callbacks if |AddOnModelUpdatedCallback| is called before a
   // model file is available, then is notified when |OnModelUpdated| is called.

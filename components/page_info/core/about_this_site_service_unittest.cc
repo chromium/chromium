@@ -199,11 +199,11 @@ TEST_P(AboutThisSiteServiceTest, InvalidResponse) {
 // Tests that no response is handled.
 TEST_P(AboutThisSiteServiceTest, NoResponse) {
   base::HistogramTester t;
-  absl::optional<proto::AboutThisSiteMetadata> expected;
+  std::optional<proto::AboutThisSiteMetadata> expected;
   if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{OptimizationGuideDecision::kFalse,
-                                              absl::nullopt}));
+                                              std::nullopt}));
   } else {
     EXPECT_CALL(*client(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnNoResult));
@@ -225,7 +225,7 @@ TEST_P(AboutThisSiteServiceTest, Unknown) {
   if (GetParam()) {
     EXPECT_CALL(*tab_helper(), GetAboutThisSiteMetadata())
         .WillOnce(Return(DecisionWithMetadata{
-            OptimizationGuideDecision::kUnknown, absl::nullopt}));
+            OptimizationGuideDecision::kUnknown, std::nullopt}));
   } else {
     EXPECT_CALL(*client(), CanApplyOptimization(_, _))
         .WillOnce(Invoke(&ReturnUnknown));

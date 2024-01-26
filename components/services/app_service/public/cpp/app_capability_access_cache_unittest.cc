@@ -20,8 +20,8 @@ class AppCapabilityAccessCacheTest
 
   static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const char* app_id,
-      absl::optional<bool> camera,
-      absl::optional<bool> microphone) {
+      std::optional<bool> camera,
+      std::optional<bool> microphone) {
     apps::CapabilityAccessPtr access =
         std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = camera;

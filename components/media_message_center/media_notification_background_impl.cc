@@ -79,20 +79,20 @@ bool IsForegroundColorSwatchAllowed(const SkColor& background,
   return diff > 10 && diff < 350;
 }
 
-absl::optional<SkColor> GetNotificationBackgroundColor(const SkBitmap* source) {
+std::optional<SkColor> GetNotificationBackgroundColor(const SkBitmap* source) {
   if (!source || source->empty() || source->isNull())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<color_utils::Swatch> swatches =
       color_utils::CalculateColorSwatches(
           *source, 16, gfx::Rect(source->width() / 2, source->height()),
-          absl::nullopt);
+          std::nullopt);
 
   if (swatches.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<color_utils::Swatch> most_popular;
-  absl::optional<color_utils::Swatch> non_white_black;
+  std::optional<color_utils::Swatch> most_popular;
+  std::optional<color_utils::Swatch> non_white_black;
 
   // Find the most popular color with the most weight and the color which
   // is the color with the most weight that is not white or black.
@@ -150,11 +150,11 @@ color_utils::Swatch SelectMutedSwatch(const color_utils::Swatch& muted,
              : more_muted;
 }
 
-absl::optional<SkColor> GetNotificationForegroundColor(
-    const absl::optional<SkColor>& background_color,
+std::optional<SkColor> GetNotificationForegroundColor(
+    const std::optional<SkColor>& background_color,
     const SkBitmap* source) {
   if (!background_color || !source || source->empty() || source->isNull())
-    return absl::nullopt;
+    return std::nullopt;
 
   const bool is_light =
       color_utils::GetRelativeLuminance(*background_color) > 0.5;
@@ -209,7 +209,7 @@ absl::optional<SkColor> GetNotificationForegroundColor(
   // the most popular color and then either white/black. Any swatch has to be
   // above a minimum population threshold to be determined significant enough in
   // the artwork to be used.
-  absl::optional<color_utils::Swatch> swatch;
+  std::optional<color_utils::Swatch> swatch;
   if (more_vibrant.population > population_min &&
       vibrant.population > population_min) {
     swatch = SelectVibrantSwatch(more_vibrant, vibrant);
@@ -400,7 +400,7 @@ SkColor MediaNotificationBackgroundImpl::GetForegroundColor(
           views::TypographyProvider::Get().GetColorId(
               views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
   return color_utils::BlendForMinContrast(
-             foreground, GetBackgroundColor(owner), absl::nullopt,
+             foreground, GetBackgroundColor(owner), std::nullopt,
              kMediaNotificationMinimumContrastRatio)
       .color;
 }

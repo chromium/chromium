@@ -30,7 +30,7 @@ void InMemoryTextEmbeddingManager::AddEmbeddingForVisit(
     const GURL& url,
     const std::string& page_title,
     const base::Time& visit_time,
-    const absl::optional<std::vector<float>>& embedding) {
+    const std::optional<std::vector<float>>& embedding) {
   if (!embedding.has_value()) {
     return;
   }

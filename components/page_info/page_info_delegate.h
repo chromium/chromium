@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_
 #define COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
@@ -16,7 +17,6 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 enum class PermissionType;
@@ -66,11 +66,11 @@ class PageInfoDelegate {
   virtual content::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
       const url::Origin& origin,
-      const absl::optional<url::Origin>& requesting_origin) = 0;
+      const std::optional<url::Origin>& requesting_origin) = 0;
 #if !BUILDFLAG(IS_ANDROID)
-  // Returns absl::nullopt if `site_url` is not recognised as a member of any
+  // Returns std::nullopt if `site_url` is not recognised as a member of any
   // FPS or if FPS functionality is not allowed .
-  virtual absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) = 0;
+  virtual std::optional<std::u16string> GetFpsOwner(const GURL& site_url) = 0;
   virtual bool IsFpsManaged() = 0;
 
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/test/gmock_expected_support.h"
@@ -16,7 +17,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
@@ -52,12 +52,12 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<absl::optional<uint64_t>, absl::monostate> expected;
+    base::expected<std::optional<uint64_t>, absl::monostate> expected;
   } kTestCases[] = {
       {
           "missing_key",
           R"json({})json",
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "not_string",
@@ -102,12 +102,12 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<absl::optional<int64_t>, absl::monostate> expected;
+    base::expected<std::optional<int64_t>, absl::monostate> expected;
   } kTestCases[] = {
       {
           "missing_key",
           R"json({})json",
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "not_string",

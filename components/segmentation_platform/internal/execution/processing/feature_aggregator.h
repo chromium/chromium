@@ -23,9 +23,9 @@ class FeatureAggregator {
 
   // Calculate the aggregated result for the given feature metadata and samples.
   // Assumes that the all the provided samples are valid within the required
-  // time frame. Returns absl::nullopt if the aggregation cannot be applied on
+  // time frame. Returns std::nullopt if the aggregation cannot be applied on
   // the provided samples.
-  virtual absl::optional<std::vector<float>> Process(
+  virtual std::optional<std::vector<float>> Process(
       proto::SignalType signal_type,
       uint64_t name_hash,
       proto::Aggregation aggregation,

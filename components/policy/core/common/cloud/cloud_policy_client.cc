@@ -255,8 +255,8 @@ CloudPolicyClient::CloudPolicyClient(
     std::string_view machine_model,
     std::string_view brand_code,
     std::string_view attested_device_id,
-    absl::optional<MacAddress> ethernet_mac_address,
-    absl::optional<MacAddress> dock_mac_address,
+    std::optional<MacAddress> ethernet_mac_address,
+    std::optional<MacAddress> dock_mac_address,
     std::string_view manufacture_date,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -1218,7 +1218,7 @@ void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
     dm_token_ = result.response.register_response().device_management_token();
     reregistration_dm_token_.clear();
     if (result.response.register_response().has_configuration_seed()) {
-      absl::optional<base::Value> configuration_seed = base::JSONReader::Read(
+      std::optional<base::Value> configuration_seed = base::JSONReader::Read(
           result.response.register_response().configuration_seed(),
           base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
       if (configuration_seed && configuration_seed->is_dict()) {
@@ -1445,7 +1445,7 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int reponse_code,
-    absl::optional<base::Value::Dict> response) {
+    std::optional<base::Value::Dict> response) {
   last_dm_status_ = status;
   if (status != DM_STATUS_SUCCESS) {
     NotifyClientError();

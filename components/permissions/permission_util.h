@@ -72,7 +72,7 @@ class PermissionUtil {
 
   // Returns the corresponding permissions policy feature to the given content
   // settings type, or nullopt if there is none.
-  static absl::optional<blink::mojom::PermissionsPolicyFeature>
+  static std::optional<blink::mojom::PermissionsPolicyFeature>
   GetPermissionsPolicyFeature(ContentSettingsType type);
 
   // Checks whether the given ContentSettingsType is a permission. Use this

@@ -6,13 +6,13 @@
 #define COMPONENTS_EXO_TEST_SHELL_SURFACE_BUILDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/app_types.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -96,16 +96,16 @@ class ShellSurfaceBuilder {
   int GetContainer();
 
   gfx::Size root_buffer_size_;
-  absl::optional<gfx::BufferFormat> root_buffer_format_ =
+  std::optional<gfx::BufferFormat> root_buffer_format_ =
       gfx::BufferFormat::RGBA_8888;
   gfx::Point origin_;
-  absl::optional<gfx::Size> max_size_;
-  absl::optional<gfx::Size> min_size_;
-  absl::optional<gfx::Rect> geometry_;
-  absl::optional<cc::Region> input_region_;
-  absl::optional<SurfaceFrameType> type_;
-  absl::optional<SkColor> active_frame_color_;
-  absl::optional<SkColor> inactive_frame_color_;
+  std::optional<gfx::Size> max_size_;
+  std::optional<gfx::Size> min_size_;
+  std::optional<gfx::Rect> geometry_;
+  std::optional<cc::Region> input_region_;
+  std::optional<SurfaceFrameType> type_;
+  std::optional<SkColor> active_frame_color_;
+  std::optional<SkColor> inactive_frame_color_;
   raw_ptr<SecurityDelegate> security_delegate_ = nullptr;
   ash::AppType app_type_ = ash::AppType::NON_APP;
   std::string application_id_;
@@ -118,18 +118,18 @@ class ShellSurfaceBuilder {
   bool centered_ = false;
   bool built_ = false;
   int64_t display_id_ = display::kInvalidDisplayId;
-  absl::optional<gfx::Rect> bounds_;
+  std::optional<gfx::Rect> bounds_;
 
   // ShellSurface-specific parameters.
   raw_ptr<ShellSurface> parent_shell_surface_ = nullptr;
   bool popup_ = false;
   bool menu_ = false;
   bool grab_ = false;
-  absl::optional<bool> client_submits_surfaces_in_pixel_coordinates_;
+  std::optional<bool> client_submits_surfaces_in_pixel_coordinates_;
   ShellSurface::ConfigureCallback configure_callback_;
 
   // ClientControlledShellSurface-specific parameters.
-  absl::optional<chromeos::WindowStateType> window_state_;
+  std::optional<chromeos::WindowStateType> window_state_;
   bool default_scale_cancellation_ = false;
   std::unique_ptr<ClientControlledShellSurface::Delegate> delegate_;
   bool supports_floated_state_ = true;

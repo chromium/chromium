@@ -24,7 +24,7 @@ NoopSiteDataStore::~NoopSiteDataStore() = default;
 void NoopSiteDataStore::ReadSiteDataFromStore(
     const url::Origin& origin,
     ReadSiteDataFromStoreCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void NoopSiteDataStore::WriteSiteDataIntoStore(
@@ -37,7 +37,7 @@ void NoopSiteDataStore::RemoveSiteDataFromStore(
 void NoopSiteDataStore::ClearStore() {}
 
 void NoopSiteDataStore::GetStoreSize(GetStoreSizeCallback callback) {
-  std::move(callback).Run(absl::nullopt, absl::nullopt);
+  std::move(callback).Run(std::nullopt, std::nullopt);
 }
 
 void NoopSiteDataStore::SetInitializationCallbackForTesting(

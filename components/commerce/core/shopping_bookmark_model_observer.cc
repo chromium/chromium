@@ -5,6 +5,7 @@
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace commerce {
 
@@ -226,7 +226,7 @@ void ShoppingBookmarkModelObserver::HandleNodeDeletion(
 void ShoppingBookmarkModelObserver::BookmarkMetaInfoChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  absl::optional<int64_t> last_subscription_change_time =
+  std::optional<int64_t> last_subscription_change_time =
       GetBookmarkLastSubscriptionChangeTime(model, node);
   if (last_subscription_change_time.has_value() && subscriptions_manager_) {
     subscriptions_manager_->CheckTimestampOnBookmarkChange(

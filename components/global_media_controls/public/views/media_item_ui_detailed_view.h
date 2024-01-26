@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class BoxLayoutView;

@@ -246,11 +246,11 @@ bool SpellingServiceClient::ParseResponse(
   //    }
   //  }
 
-    absl::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(data, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!value) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(data, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value) {
     return false;
-    }
+  }
 
   // Check for errors from spelling service.
     const base::Value* error = value->Find(kErrorPath);
@@ -277,8 +277,8 @@ bool SpellingServiceClient::ParseResponse(
       return false;
     }
 
-    absl::optional<int> start = misspelling_dict->FindInt("charStart");
-    absl::optional<int> length = misspelling_dict->FindInt("charLength");
+    std::optional<int> start = misspelling_dict->FindInt("charStart");
+    std::optional<int> length = misspelling_dict->FindInt("charLength");
     const base::Value::List* suggestions =
         misspelling_dict->FindList("suggestions");
     if (!start || !length || !suggestions) {

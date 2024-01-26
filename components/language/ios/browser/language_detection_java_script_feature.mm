@@ -64,7 +64,7 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
 
   base::Value::Dict& body_dict = script_message.body()->GetDict();
 
-  absl::optional<bool> has_notranslate = body_dict.FindBool("hasNoTranslate");
+  std::optional<bool> has_notranslate = body_dict.FindBool("hasNoTranslate");
   const std::string* html_lang = body_dict.FindString("htmlLang");
   const std::string* http_content_language =
       body_dict.FindString("httpContentLanguage");
@@ -100,7 +100,7 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 LanguageDetectionJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kLanguageDetectionTextCapturedMessageHandlerName;
 }

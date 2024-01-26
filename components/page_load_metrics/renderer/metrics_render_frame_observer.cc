@@ -63,7 +63,7 @@ class MojoPageTimingSender : public PageTimingSender {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::SubresourceLoadMetrics>&
+      const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override {
     DCHECK(page_load_metrics_);
@@ -322,7 +322,7 @@ void MetricsRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {
 
 void MetricsRenderFrameObserver::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   // Send current metrics, as we might create a new RenderFrame later due to
   // this navigation (that might end up in a different process entirely, and
   // won't notify us until the current RenderFrameHost in the browser changed).
@@ -738,7 +738,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     for (const auto& restore_timing : restore_timings) {
       double navigation_start = restore_timing.navigation_start;
       double first_paint = restore_timing.first_paint;
-      absl::optional<base::TimeDelta> first_input_delay =
+      std::optional<base::TimeDelta> first_input_delay =
           restore_timing.first_input_delay;
 
       auto back_forward_cache_timing = mojom::BackForwardCacheTiming::New();

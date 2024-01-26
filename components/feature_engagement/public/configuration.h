@@ -6,13 +6,13 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_CONFIGURATION_H_
 
 #include <map>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -102,7 +102,7 @@ struct SessionRateImpact {
 
   // In the case of the Type |EXPLICIT|, this is the list of affected
   // base::Feature names.
-  absl::optional<std::vector<std::string>> affected_features;
+  std::optional<std::vector<std::string>> affected_features;
 };
 
 bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs);
@@ -129,7 +129,7 @@ struct BlockedBy {
 
   // In the case of the Type |EXPLICIT|, this is the list of affected
   // base::Feature names.
-  absl::optional<std::vector<std::string>> affected_features;
+  std::optional<std::vector<std::string>> affected_features;
 };
 
 bool operator==(const BlockedBy& lhs, const BlockedBy& rhs);

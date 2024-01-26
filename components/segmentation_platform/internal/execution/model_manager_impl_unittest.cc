@@ -73,14 +73,14 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               UpdateSegment,
               (SegmentId segment_id,
                ModelSource model_source,
-               absl::optional<proto::SegmentInfo> segment_info,
+               std::optional<proto::SegmentInfo> segment_info,
                SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
               SaveSegmentResult,
               (SegmentId segment_id,
                ModelSource model_source,
-               absl::optional<proto::PredictionResult> result,
+               std::optional<proto::PredictionResult> result,
                SuccessCallback callback),
               (override));
 };
@@ -170,7 +170,7 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   proto::SegmentationModelMetadata metadata;
   metadata.set_bucket_duration(42u);
   metadata.set_time_unit(proto::TimeUnit::DAY);
-  EXPECT_CALL(callback, Run(_, absl::optional<int64_t>()))
+  EXPECT_CALL(callback, Run(_, std::optional<int64_t>()))
       .WillOnce(SaveArg<0>(&segment_info));
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
@@ -183,7 +183,7 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
 
   // Also verify that the database has been updated.
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback;
-  absl::optional<proto::SegmentInfo> segment_info_from_db;
+  std::optional<proto::SegmentInfo> segment_info_from_db;
   EXPECT_CALL(db_callback, Run(_)).WillOnce(SaveArg<0>(&segment_info_from_db));
 
   // Fetch SegmentInfo from the database.
@@ -226,7 +226,7 @@ TEST_F(
       ->set_model_version(kOldModelVersion);
 
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_1;
-  absl::optional<proto::SegmentInfo> segment_info_from_db_1;
+  std::optional<proto::SegmentInfo> segment_info_from_db_1;
   EXPECT_CALL(db_callback_1, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_1));
   segment_database_->GetSegmentInfo(
@@ -276,7 +276,7 @@ TEST_F(
 
   // Invoke the callback and store the resulting invocation of the outer
   // callback for verification.
-  EXPECT_CALL(callback, Run(_, absl::optional<int64_t>(kOldModelVersion)))
+  EXPECT_CALL(callback, Run(_, std::optional<int64_t>(kOldModelVersion)))
       .WillOnce(SaveArg<0>(&segment_info));
   model_provider_data_.model_providers_callbacks[segment_id].Run(
       segment_id, metadata, kModelVersion);
@@ -297,7 +297,7 @@ TEST_F(
 
   // Also verify that the database has been updated.
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_2;
-  absl::optional<proto::SegmentInfo> segment_info_from_db_2;
+  std::optional<proto::SegmentInfo> segment_info_from_db_2;
   EXPECT_CALL(db_callback_2, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_2));
   segment_database_->GetSegmentInfo(
@@ -329,7 +329,7 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDeletedServerModel) {
       model_updated_callback;
   proto::SegmentInfo updated_segment_info;
   EXPECT_CALL(model_updated_callback,
-              Run(_, absl::optional<int64_t>(kOldModelVersion)))
+              Run(_, std::optional<int64_t>(kOldModelVersion)))
       .WillOnce(SaveArg<0>(&updated_segment_info));
 
   // Fill in old data for a server model in the SegmentInfo database.
@@ -349,11 +349,11 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDeletedServerModel) {
   // If the server stops serving a model then we'll receive a callback with null
   // metadata.
   model_provider_data_.model_providers_callbacks[segment_id].Run(
-      segment_id, /* metadata = */ absl::nullopt,
+      segment_id, /* metadata = */ std::nullopt,
       /* model_version = */ kModelVersion);
 
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback;
-  absl::optional<proto::SegmentInfo> segment_info_from_db;
+  std::optional<proto::SegmentInfo> segment_info_from_db;
   EXPECT_CALL(db_callback, Run(_)).WillOnce(SaveArg<0>(&segment_info_from_db));
 
   // Try to get data from segment DB, it should have been deleted.
@@ -382,7 +382,7 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
       segment_id, 2, clock_.Now(), proto::ModelSource::DEFAULT_MODEL_SOURCE);
 
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_1;
-  absl::optional<proto::SegmentInfo> segment_info_from_db_1;
+  std::optional<proto::SegmentInfo> segment_info_from_db_1;
   EXPECT_CALL(db_callback_1, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_1));
   segment_database_->GetSegmentInfo(
@@ -418,7 +418,7 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
 
   // Also verify that the database has been updated.
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_2;
-  absl::optional<proto::SegmentInfo> segment_info_from_db_2;
+  std::optional<proto::SegmentInfo> segment_info_from_db_2;
   EXPECT_CALL(db_callback_2, Run(_))
       .WillOnce(SaveArg<0>(&segment_info_from_db_2));
   segment_database_->GetSegmentInfo(segment_id,

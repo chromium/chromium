@@ -171,7 +171,7 @@ TEST_F(PlaybackCommandForwardingRendererTest, RendererClientCallbacksCalled) {
 
   EXPECT_CALL(*mojo_renderer_client_, InitializeCallback(true));
   remote_->Initialize(
-      std::move(remote_client_), absl::nullopt, nullptr,
+      std::move(remote_client_), std::nullopt, nullptr,
       base::BindOnce(&MockMojoRendererClient::InitializeCallback,
                      base::Unretained(mojo_renderer_client_.get())));
   task_environment_.RunUntilIdle();
@@ -258,7 +258,7 @@ TEST_F(PlaybackCommandForwardingRendererTest, RendererClientCallbacksCalled) {
   testing::Mock::VerifyAndClearExpectations(mojo_renderer_client_.get());
   testing::Mock::VerifyAndClearExpectations(&mock_renderer_client_);
 
-  const absl::optional<int> frame_rate = 123;
+  const std::optional<int> frame_rate = 123;
   EXPECT_CALL(mock_renderer_client_, OnVideoFrameRateChange(frame_rate));
   renderer_client()->OnVideoFrameRateChange(frame_rate);
   task_environment_.RunUntilIdle();

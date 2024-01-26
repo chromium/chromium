@@ -30,7 +30,7 @@ class TimingLoggingPageLoadMetricsObserver final
       std::vector<GURL>* observed_committed_urls,
       std::vector<GURL>* observed_aborted_urls,
       std::vector<blink::UseCounterFeature>* observed_features,
-      absl::optional<bool>* is_first_navigation_in_web_contents,
+      std::optional<bool>* is_first_navigation_in_web_contents,
       int* count_on_enter_back_forward_cache)
       : updated_timings_(updated_timings),
         updated_subframe_timings_(updated_subframe_timings),
@@ -126,7 +126,7 @@ class TimingLoggingPageLoadMetricsObserver final
   const raw_ptr<std::vector<blink::UseCounterFeature>> observed_features_;
   const raw_ptr<std::vector<GURL>> observed_committed_urls_;
   const raw_ptr<std::vector<GURL>> observed_aborted_urls_;
-  raw_ptr<absl::optional<bool>> is_first_navigation_in_web_contents_;
+  raw_ptr<std::optional<bool>> is_first_navigation_in_web_contents_;
   const raw_ptr<int> count_on_enter_back_forward_cache_;
 };
 

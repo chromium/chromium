@@ -74,7 +74,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
   int32_t pointer_id_;
 
   // Id for prediction configuration to draw. No value if disabled.
-  absl::optional<int> should_draw_predicted_ink_points_;
+  std::optional<int> should_draw_predicted_ink_points_;
 };
 
 }  // namespace viz

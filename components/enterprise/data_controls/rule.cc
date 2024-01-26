@@ -130,7 +130,7 @@ std::optional<Rule> Rule::Create(const base::Value::Dict& value) {
     return std::nullopt;
   }
 
-  return absl::make_optional(Rule(
+  return std::make_optional(Rule(
       GetStringOrEmpty(value, kKeyName), GetStringOrEmpty(value, kKeyRuleId),
       GetStringOrEmpty(value, kKeyDescription), std::move(condition),
       std::move(restrictions)));

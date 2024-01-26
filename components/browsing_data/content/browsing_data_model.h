@@ -113,7 +113,7 @@ class BrowsingDataModel {
 
     // Returns the non-1P SchemefulSite this data is partitioned on. Returns
     // base::nullopt if the data is not partitioned, or is the 1P partition.
-    absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite() const;
+    std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite() const;
 
     // The logical owner of this browsing data. This is the entity which this
     // information will be most strongly associated with in UX surfaces.
@@ -159,7 +159,7 @@ class BrowsingDataModel {
     // Returns the owner of the data identified by the given DataKey and
     // StorageType, or nullopt if the delegate does not manage the entity that
     // owns the given data.
-    virtual absl::optional<DataOwner> GetDataOwner(
+    virtual std::optional<DataOwner> GetDataOwner(
         const DataKey& data_key,
         StorageType storage_type) const = 0;
 
@@ -169,7 +169,7 @@ class BrowsingDataModel {
     // This method isn't aware of the context in which the data key is being
     // accessed and may return false positive in case it was called for a first
     // party key in a first party context.
-    virtual absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+    virtual std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
         const DataKey& data_key,
         StorageType storage_type) const = 0;
 

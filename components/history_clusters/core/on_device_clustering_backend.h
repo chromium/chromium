@@ -77,7 +77,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // `entity_metadata_map` after metrics collected.
   void OnBatchEntityMetadataRetrieved(
       optimization_guide::BatchEntityMetadataTask* completed_task,
-      absl::optional<base::TimeTicks> entity_metadata_start,
+      std::optional<base::TimeTicks> entity_metadata_start,
       EntityRetrievedCallback entity_retrieved_callback,
       const base::flat_map<std::string, optimization_guide::EntityMetadata>&
           entity_metadata_map);

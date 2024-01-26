@@ -16,13 +16,13 @@ StubIconLoader::StubIconLoader() = default;
 
 StubIconLoader::~StubIconLoader() = default;
 
-absl::optional<IconKey> StubIconLoader::GetIconKey(const std::string& id) {
+std::optional<IconKey> StubIconLoader::GetIconKey(const std::string& id) {
   int32_t update_version = IconKey::kInitVersion;
   auto iter = update_version_by_app_id_.find(id);
   if (iter != update_version_by_app_id_.end()) {
     update_version = iter->second;
   }
-  auto icon_key = absl::make_optional<IconKey>();
+  auto icon_key = std::make_optional<IconKey>();
   icon_key->update_version = update_version;
   return icon_key;
 }

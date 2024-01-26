@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include <optional>
 #include <string>
 
 #include "base/atomic_sequence_num.h"
@@ -18,7 +19,6 @@
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/wayland/server_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 namespace wayland {
@@ -68,7 +68,7 @@ class WaylandNotificationShellNotification {
     wl_client_flush(wl_resource_get_client(resource_));
   }
 
-  void OnClick(const absl::optional<int>& button_index) {
+  void OnClick(const std::optional<int>& button_index) {
     int32_t index = button_index ? *button_index : -1;
     zcr_notification_shell_notification_v1_send_clicked(resource_, index);
     wl_client_flush(wl_resource_get_client(resource_));

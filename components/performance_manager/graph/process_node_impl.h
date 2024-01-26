@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PROCESS_NODE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -98,7 +98,7 @@ class ProcessNodeImpl
   const base::Process& GetProcess() const override;
   resource_attribution::ProcessContext GetResourceContext() const override;
   base::TimeTicks GetLaunchTime() const override;
-  absl::optional<int32_t> GetExitStatus() const override;
+  std::optional<int32_t> GetExitStatus() const override;
   const std::string& GetMetricsName() const override;
   bool GetMainThreadTaskLoadIsLow() const override;
   uint64_t GetPrivateFootprintKb() const override;
@@ -199,7 +199,7 @@ class ProcessNodeImpl
       process_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::TimeTicks launch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-  absl::optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string metrics_name_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The type of the process that this node represents.

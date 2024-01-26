@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -31,7 +32,6 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webauthn {
 namespace {
@@ -64,7 +64,7 @@ bool WebauthnCredentialSpecificsValid(
          (specifics.has_private_key() || specifics.has_encrypted());
 }
 
-absl::optional<std::string> FindHeadOfShadowChain(
+std::optional<std::string> FindHeadOfShadowChain(
     const std::map<std::string, sync_pb::WebauthnCredentialSpecifics>& passkeys,
     const std::string& rp_id,
     const std::string& user_id) {
@@ -80,8 +80,8 @@ absl::optional<std::string> FindHeadOfShadowChain(
   std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
       passkey_model_utils::FilterShadowedCredentials(rpid_passkeys);
   CHECK_LE(filtered.size(), 1u);
-  return filtered.empty() ? absl::nullopt
-                          : absl::make_optional(filtered.at(0).sync_id());
+  return filtered.empty() ? std::nullopt
+                          : std::make_optional(filtered.at(0).sync_id());
 }
 
 PasskeyModelChange::ChangeType ToPasskeyModelChangeType(
@@ -130,7 +130,7 @@ PasskeySyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes,
     syncer::EntityChangeList entity_changes) {
   // Passkeys should be deleted when sync is turned off. Therefore, there should
@@ -161,10 +161,10 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyPasskeysChanged(std::move(changes));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PasskeySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -208,7 +208,7 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
   if (!entity_changes.empty()) {
     NotifyPasskeysChanged(std::move(changes));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasskeySyncBridge::GetData(StorageKeyList storage_keys,
@@ -280,7 +280,7 @@ PasskeySyncBridge::GetAllPasskeys() const {
   return passkeys;
 }
 
-absl::optional<sync_pb::WebauthnCredentialSpecifics>
+std::optional<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetPasskeyByCredentialId(
     const std::string& rp_id,
     const std::string& credential_id) const {
@@ -300,7 +300,7 @@ PasskeySyncBridge::GetPasskeyByCredentialId(
       return passkey;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>
@@ -327,7 +327,7 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   }
   std::string rp_id = passkey_it->second.rp_id();
   std::string user_id = passkey_it->second.user_id();
-  absl::optional<std::string> shadow_head_sync_id =
+  std::optional<std::string> shadow_head_sync_id =
       FindHeadOfShadowChain(data_, rp_id, user_id);
 
   // There must be a head of the shadow chain. Otherwise, something is wrong
@@ -457,7 +457,7 @@ void PasskeySyncBridge::AddPasskeyInternal(
 }
 
 void PasskeySyncBridge::OnCreateStore(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -470,7 +470,7 @@ void PasskeySyncBridge::OnCreateStore(
 }
 
 void PasskeySyncBridge::OnStoreReadAllData(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -483,7 +483,7 @@ void PasskeySyncBridge::OnStoreReadAllData(
 
 void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "PasskeySyncBridge::OnStoreReadAllMetadata");
   if (error) {
@@ -507,7 +507,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
     return;

@@ -39,16 +39,16 @@ MediaDeviceSaltDatabase::MediaDeviceSaltDatabase(const base::FilePath& db_path)
     : db_path_(db_path),
       db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 16}) {}
 
-absl::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(
+std::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(
     const blink::StorageKey& storage_key,
-    absl::optional<std::string> candidate_salt) {
+    std::optional<std::string> candidate_salt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (storage_key.origin().opaque() || !EnsureOpen()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   static constexpr char kGetSaltSql[] =
       "SELECT salt FROM media_device_salts WHERE storage_key=?";
@@ -60,7 +60,7 @@ absl::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(
     return select_statement.ColumnString(0);
   }
   if (!select_statement.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static constexpr char kInsertSaltSql[] =
@@ -74,8 +74,8 @@ absl::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(
   std::string new_salt = candidate_salt.value_or(CreateRandomSalt());
   insert_statement.BindString(2, new_salt);
   return insert_statement.Run() && transaction.Commit()
-             ? absl::make_optional(new_salt)
-             : absl::nullopt;
+             ? std::make_optional(new_salt)
+             : std::nullopt;
 }
 
 void MediaDeviceSaltDatabase::DeleteEntries(
@@ -119,7 +119,7 @@ void MediaDeviceSaltDatabase::DeleteEntries(
 
   base::EraseIf(serialized_storage_keys,
                 [&matcher](const std::string& serialized_storage_key) {
-                  absl::optional<blink::StorageKey> storage_key =
+                  std::optional<blink::StorageKey> storage_key =
                       blink::StorageKey::Deserialize(serialized_storage_key);
                   if (!storage_key.has_value()) {
                     // This shouldn't happen, but include non-Deserializable
@@ -169,7 +169,7 @@ std::vector<blink::StorageKey> MediaDeviceSaltDatabase::GetAllStorageKeys() {
   DCHECK(db_.IsSQLValid(kGetStorageKeysSql));
   sql::Statement statement(db_.GetUniqueStatement(kGetStorageKeysSql));
   while (statement.Step()) {
-    absl::optional<blink::StorageKey> key =
+    std::optional<blink::StorageKey> key =
         blink::StorageKey::Deserialize(statement.ColumnString(0));
     if (key.has_value()) {
       storage_keys.push_back(*key);

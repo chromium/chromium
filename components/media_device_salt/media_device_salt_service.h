@@ -61,7 +61,7 @@ class MediaDeviceSaltService : public KeyedService {
 
  private:
   void FinalizeGetSalt(base::OnceCallback<void(const std::string&)> callback,
-                       absl::optional<std::string> new_salt);
+                       std::optional<std::string> new_salt);
   void FinalizeDeleteSalts(base::OnceClosure done_closure);
   void FinalizeGetAllStorageKeys(
       base::OnceCallback<void(std::vector<blink::StorageKey>)> callback,

@@ -4,12 +4,13 @@
 
 #include "components/viz/common/quads/shared_quad_state.h"
 
+#include <optional>
+
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/traced_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace viz {
@@ -59,7 +60,7 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
                              const gfx::Rect& layer_rect,
                              const gfx::Rect& visible_layer_rect,
                              const gfx::MaskFilterInfo& filter_info,
-                             const absl::optional<gfx::Rect>& clip,
+                             const std::optional<gfx::Rect>& clip,
                              bool contents_opaque,
                              float opacity_f,
                              SkBlendMode blend,

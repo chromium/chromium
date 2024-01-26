@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/update_client/persisted_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -82,14 +82,14 @@ class CrxUpdateService : public ComponentUpdateService,
 
   CrxComponent ToCrxComponent(const ComponentRegistration& component) const;
 
-  absl::optional<ComponentRegistration> GetComponent(
+  std::optional<ComponentRegistration> GetComponent(
       const std::string& id) const;
 
   const CrxUpdateItem* GetComponentState(const std::string& id) const;
 
   void GetCrxComponents(
       const std::vector<std::string>& ids,
-      base::OnceCallback<void(const std::vector<absl::optional<CrxComponent>>&)>
+      base::OnceCallback<void(const std::vector<std::optional<CrxComponent>>&)>
           callback);
   void OnUpdateComplete(Callback callback,
                         const base::TimeTicks& start_time,

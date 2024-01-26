@@ -5,6 +5,7 @@
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -53,7 +53,7 @@ const char* PdfNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 PdfNavigationThrottle::WillStartRequest() {
   // Ignore unless navigating to the stream URL.
-  const absl::optional<GURL> original_url =
+  const std::optional<GURL> original_url =
       stream_delegate_->MapToOriginalUrl(*navigation_handle());
   if (!original_url.has_value())
     return PROCEED;

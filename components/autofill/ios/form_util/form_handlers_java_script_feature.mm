@@ -59,7 +59,7 @@ void FormHandlersJavaScriptFeature::ToggleTrackingUserEditedFields(
                          base::Value::List().Append(track_user_edited_fields));
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 FormHandlersJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptMessageName;
 }

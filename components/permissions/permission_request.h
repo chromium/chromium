@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace permissions {
@@ -134,7 +134,7 @@ class PermissionRequest {
 
   // Returns prompt text appropriate for displaying on the chip button in the
   // location bar.
-  absl::optional<std::u16string> GetRequestChipText(ChipTextType type) const;
+  std::optional<std::u16string> GetRequestChipText(ChipTextType type) const;
 
   // Returns prompt text appropriate for displaying under the dialog title
   // "[domain] wants to:".

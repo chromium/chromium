@@ -79,7 +79,7 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
 }
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::ClearAuthError(
-    const absl::optional<CoreAccountId>& account_id) {
+    const std::optional<CoreAccountId>& account_id) {
   delegate_->ClearAuthError(account_id);
 }
 

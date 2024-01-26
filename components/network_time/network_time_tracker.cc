@@ -4,8 +4,10 @@
 
 #include "components/network_time/network_time_tracker.h"
 
-#include <memory>
 #include <stdint.h>
+
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,7 +39,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Time updates happen in two ways. First, other components may call
 // UpdateNetworkTime() if they happen to obtain the time securely. This will
@@ -182,11 +183,11 @@ NetworkTimeTracker::NetworkTimeTracker(
       time_query_completed_(false) {
   const base::Value::Dict& time_mapping =
       pref_service_->GetDict(prefs::kNetworkTimeMapping);
-  absl::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
-  absl::optional<double> ticks_js = time_mapping.FindDouble(kPrefTicks);
-  absl::optional<double> uncertainty_js =
+  std::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
+  std::optional<double> ticks_js = time_mapping.FindDouble(kPrefTicks);
+  std::optional<double> uncertainty_js =
       time_mapping.FindDouble(kPrefUncertainty);
-  absl::optional<double> network_time_js =
+  std::optional<double> network_time_js =
       time_mapping.FindDouble(kPrefNetworkTime);
   if (time_js && ticks_js && uncertainty_js && network_time_js) {
     time_at_last_measurement_ =
@@ -486,7 +487,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
   response.remove_prefix(5);  // Skips leading )]}'\n
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value) {
     DVLOG(1) << "bad JSON";
     return false;
@@ -495,7 +496,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     DVLOG(1) << "not a dictionary";
     return false;
   }
-  absl::optional<double> current_time_millis =
+  std::optional<double> current_time_millis =
       value->GetDict().FindDouble("current_time_millis");
   if (!current_time_millis) {
     DVLOG(1) << "no current_time_millis";

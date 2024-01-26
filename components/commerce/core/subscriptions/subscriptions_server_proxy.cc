@@ -407,7 +407,7 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
   return subscription_json;
 }
 
-absl::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
+std::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
     const base::Value& value) {
   if (value.is_dict()) {
     const base::Value::Dict& value_dict = value.GetDict();
@@ -419,7 +419,7 @@ absl::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
     auto timestamp =
         base::ValueToInt64(value_dict.Find(kSubscriptionTimestampKey));
     if (type && id_type && id && management_type && timestamp) {
-      return absl::make_optional<CommerceSubscription>(
+      return std::make_optional<CommerceSubscription>(
           StringToSubscriptionType(*type), StringToSubscriptionIdType(*id_type),
           *id, StringToSubscriptionManagementType(*management_type),
           *timestamp);
@@ -427,7 +427,7 @@ absl::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
   }
 
   VLOG(1) << "Subscription in response is not valid";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace commerce

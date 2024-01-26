@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <queue>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -133,7 +133,7 @@ class ScopedReservation {
 
  private:
   scoped_refptr<ResourceManager> resource_manager_;
-  absl::optional<uint64_t> size_;
+  std::optional<uint64_t> size_;
 };
 
 }  // namespace reporting

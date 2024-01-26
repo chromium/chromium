@@ -241,17 +241,17 @@ const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
   return tab_iter->second;
 }
 
-absl::optional<sync_pb::SyncEnums::BrowserType>
+std::optional<sync_pb::SyncEnums::BrowserType>
 SyncedSessionTracker::LookupWindowType(const std::string& session_tag,
                                        SessionID window_id) const {
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto window_iter = session->synced_window_map.find(window_id);
   if (window_iter == session->synced_window_map.end()) {
-    return absl::nullopt;  // We have no record of this window.
+    return std::nullopt;  // We have no record of this window.
   }
 
   return window_iter->second->window_type;

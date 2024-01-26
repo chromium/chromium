@@ -219,8 +219,8 @@ void MediaRouterAndroidBridge::OnRouteClosed(
   native_media_router_->OnRouteClosed(
       ConvertJavaStringToUTF8(env, jmedia_route_id),
       jerror.is_null()
-          ? absl::nullopt
-          : absl::make_optional(ConvertJavaStringToUTF8(env, jerror)));
+          ? std::nullopt
+          : std::make_optional(ConvertJavaStringToUTF8(env, jerror)));
 }
 
 void MediaRouterAndroidBridge::OnMessage(

@@ -13,11 +13,11 @@ FakeSyncChangeProcessor::FakeSyncChangeProcessor() = default;
 
 FakeSyncChangeProcessor::~FakeSyncChangeProcessor() = default;
 
-absl::optional<ModelError> FakeSyncChangeProcessor::ProcessSyncChanges(
+std::optional<ModelError> FakeSyncChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {
   changes_.insert(changes_.end(), change_list.begin(), change_list.end());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const SyncChangeList& FakeSyncChangeProcessor::changes() const {

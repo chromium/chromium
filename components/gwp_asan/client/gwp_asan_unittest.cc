@@ -5,6 +5,7 @@
 #include "components/gwp_asan/client/gwp_asan.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -15,12 +16,11 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan {
 namespace internal {
 
-absl::optional<AllocatorSettings> GetAllocatorSettings(
+std::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
     bool boost_sampling,
     const char* process_type);

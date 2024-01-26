@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_REPORTING_METRICS_COLLECTOR_BASE_H_
 #define COMPONENTS_REPORTING_METRICS_COLLECTOR_BASE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -30,9 +31,8 @@ class CollectorBase {
 
  protected:
   // Callback executed when metric data is collected.
-  virtual void OnMetricDataCollected(
-      bool is_event_driven,
-      absl::optional<MetricData> metric_data) = 0;
+  virtual void OnMetricDataCollected(bool is_event_driven,
+                                     std::optional<MetricData> metric_data) = 0;
 
   void CheckOnSequence() const;
 

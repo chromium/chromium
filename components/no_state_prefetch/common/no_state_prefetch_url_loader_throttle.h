@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace prerender {
@@ -53,7 +54,7 @@ class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The throttle changes most request priorities to IDLE during prerendering.
   // The priority is reset back to the original priority when prerendering is
   // finished.
-  absl::optional<net::RequestPriority> original_request_priority_;
+  std::optional<net::RequestPriority> original_request_priority_;
 
   base::OnceClosure destruction_closure_;
 

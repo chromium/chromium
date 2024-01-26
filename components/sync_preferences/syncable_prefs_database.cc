@@ -16,7 +16,7 @@ bool SyncablePrefsDatabase::IsPreferenceSyncable(
 
 bool SyncablePrefsDatabase::IsPreferenceMergeable(
     const std::string& pref_name) const {
-  absl::optional<SyncablePrefMetadata> metadata =
+  std::optional<SyncablePrefMetadata> metadata =
       GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());
   return metadata->merge_behavior() != MergeBehavior::kNone;

@@ -332,9 +332,8 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 
   // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
-  absl::optional<base::Value::Dict> reprompt_params =
-      base::JSONReader::ReadDict(
-          switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+  std::optional<base::Value::Dict> reprompt_params = base::JSONReader::ReadDict(
+      switches::kSearchEngineChoiceTriggerRepromptParams.Get());
   if (!reprompt_params) {
     // No valid reprompt parameters.
     base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,

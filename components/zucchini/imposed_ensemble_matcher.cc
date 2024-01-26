@@ -88,8 +88,8 @@ ImposedMatchParser::Status ImposedMatchParser::Parse(
       continue;
     }
     // Check executable types of sub-images.
-    absl::optional<Element> old_element = detector.Run(old_sub_image);
-    absl::optional<Element> new_element = detector.Run(new_sub_image);
+    std::optional<Element> old_element = detector.Run(old_sub_image);
+    std::optional<Element> new_element = detector.Run(new_sub_image);
     if (!old_element || !new_element) {
       // Skip unknown types, including those mixed with known types.
       bad_matches_.push_back(matches_[read_idx]);

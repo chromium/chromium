@@ -161,10 +161,10 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     test_annotator_ = std::make_unique<TestPageContentAnnotator>();
-    test_annotator_->UseVisibilityScores(/*model_info=*/absl::nullopt,
+    test_annotator_->UseVisibilityScores(/*model_info=*/std::nullopt,
                                          {{"test", 0.5}});
     test_annotator_->UseTextEmbeddings(
-        /*model_info=*/absl::nullopt,
+        /*model_info=*/std::nullopt,
         {{"cat", {5.9957, 0.9872, 2.3524, 6.0717, 4.9405}},
          {"dog", {2.2856, 1.2177, 1.5583, 7.5789, 7.2837}},
          {"kitten", {6.6554, 4.7054, 9.8516, 2.589, 5.8918}}});
@@ -176,7 +176,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
   void VisitURL(const GURL& url,
                 const std::u16string& title,
                 history::VisitID visit_id,
-                absl::optional<int64_t> local_navigation_id,
+                std::optional<int64_t> local_navigation_id,
                 bool is_synced_visit = false) {
     history::URLRow url_row(url);
     url_row.set_title(title);

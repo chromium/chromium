@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SESSION_POLICY_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SESSION_POLICY_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_education {
 
@@ -68,7 +69,7 @@ class FeaturePromoSessionPolicy {
   // promo is allowed; returns a reason for rejecting the promo otherwise.
   virtual FeaturePromoResult CanShowPromo(
       PromoInfo to_show,
-      absl::optional<PromoInfo> currently_showing) const;
+      std::optional<PromoInfo> currently_showing) const;
 
  protected:
   const FeaturePromoSessionManager* session_manager() const {
@@ -84,7 +85,7 @@ class FeaturePromoSessionPolicy {
 
   raw_ptr<const FeaturePromoSessionManager> session_manager_ = nullptr;
   raw_ptr<FeaturePromoStorageService> storage_service_ = nullptr;
-  absl::optional<base::Time> current_promo_shown_time_;
+  std::optional<base::Time> current_promo_shown_time_;
 };
 
 // Represents the promo policy for User Education Experience V2, above and
@@ -97,7 +98,7 @@ class FeaturePromoSessionPolicyV2 : public FeaturePromoSessionPolicy {
   // FeaturePromoSessionPolicyCommon:
   FeaturePromoResult CanShowPromo(
       PromoInfo to_show,
-      absl::optional<PromoInfo> currently_showing) const override;
+      std::optional<PromoInfo> currently_showing) const override;
 
  protected:
   FeaturePromoSessionPolicyV2(base::TimeDelta session_start_grace_period,

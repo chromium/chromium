@@ -57,7 +57,7 @@ const char kOrigin3[] = "chrome://settings";
 bool PutTestData(blink::mojom::StorageArea* area) {
   base::RunLoop run_loop;
   bool success = false;
-  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt, "source",
+  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt, "source",
             base::BindLambdaForTesting([&](bool success_in) {
               run_loop.Quit();
               success = success_in;

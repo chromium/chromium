@@ -4,6 +4,8 @@
 
 #include "components/soda/soda_installer.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
@@ -15,7 +17,6 @@
 #include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -284,15 +285,15 @@ bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
          base::Contains(language_pack_progress_, language_code);
 }
 
-absl::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
+std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
     LanguageCode language_code) const {
   if (IsSodaDownloading(language_code))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto error_code = error_codes_.find(language_code);
   if (error_code != error_codes_.end())
     return error_code->second;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {

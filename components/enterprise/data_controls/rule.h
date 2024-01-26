@@ -13,7 +13,6 @@
 #include "components/enterprise/data_controls/action_context.h"
 #include "components/enterprise/data_controls/condition.h"
 #include "components/policy/core/common/schema.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class PolicyErrorMap;

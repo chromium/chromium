@@ -224,10 +224,10 @@ ParseNetworkErrorLoggingHeaders(
 // Applies |f| to the value contained by |maybe|, returns empty optional
 // otherwise.
 template <typename T, typename F>
-auto map(absl::optional<T> maybe, F&& f) {
+auto map(std::optional<T> maybe, F&& f) {
   if (!maybe)
-    return absl::optional<std::invoke_result_t<F, T>>();
-  return absl::optional<std::invoke_result_t<F, T>>(f(maybe.value()));
+    return std::optional<std::invoke_result_t<F, T>>();
+  return std::optional<std::invoke_result_t<F, T>>(f(maybe.value()));
 }
 
 }  // namespace
@@ -269,7 +269,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    absl::optional<double> network_thread_priority)
+    std::optional<double> network_thread_priority)
     : enable_quic(enable_quic),
       enable_spdy(enable_spdy),
       enable_brotli(enable_brotli),
@@ -309,8 +309,8 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    absl::optional<double> network_thread_priority) {
-  absl::optional<base::Value::Dict> experimental_options =
+    std::optional<double> network_thread_priority) {
+  std::optional<base::Value::Dict> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {
     // For the time being maintain backward compatibility by only failing to
@@ -330,7 +330,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
 }
 
 // static
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 URLRequestContextConfig::ParseExperimentalOptions(
     std::string unparsed_experimental_options) {
   // From a user perspective no experimental options means an empty string. The
@@ -344,14 +344,14 @@ URLRequestContextConfig::ParseExperimentalOptions(
     LOG(ERROR) << "Parsing experimental options failed: '"
                << unparsed_experimental_options << "', error "
                << parsed_json.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict* experimental_options_dict = parsed_json->GetIfDict();
   if (!experimental_options_dict) {
     LOG(ERROR) << "Experimental options string is not a dictionary: "
                << *parsed_json;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(*experimental_options_dict);
@@ -387,7 +387,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   bool disable_ipv6_on_wifi = false;
   bool nel_enable = false;
   bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
-  absl::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
+  std::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
   StaleHostResolver::StaleOptions stale_dns_options;
   const std::string* host_resolver_rules_string;
@@ -475,7 +475,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           quic_args.FindBool(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);
 
-      absl::optional<bool> quic_migrate_sessions_on_network_change_v2_in =
+      std::optional<bool> quic_migrate_sessions_on_network_change_v2_in =
           quic_args.FindBool(kQuicMigrateSessionsOnNetworkChangeV2);
       if (quic_migrate_sessions_on_network_change_v2_in.has_value()) {
         quic_params->migrate_sessions_on_network_change_v2 =
@@ -497,7 +497,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
                         ->max_migrations_to_non_default_network_on_path_degrading);
       }
 
-      absl::optional<bool> quic_migrate_idle_sessions_in =
+      std::optional<bool> quic_migrate_idle_sessions_in =
           quic_args.FindBool(kQuicMigrateIdleSessions);
       if (quic_migrate_idle_sessions_in.has_value()) {
         quic_params->migrate_idle_sessions =

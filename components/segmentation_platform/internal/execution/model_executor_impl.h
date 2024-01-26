@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/public/model_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -66,7 +66,7 @@ class ModelExecutorImpl : public ModelExecutor {
   // ExecuteModel(...).
   void OnModelExecutionComplete(
       std::unique_ptr<ExecutionState> state,
-      const absl::optional<ModelProvider::Response>& result);
+      const std::optional<ModelProvider::Response>& result);
 
   // Helper function for synchronously invoking the callback with the given
   // result and status. Before invoking this, it is required to move the

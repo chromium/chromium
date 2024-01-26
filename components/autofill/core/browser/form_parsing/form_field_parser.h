@@ -71,8 +71,8 @@ class RegexMatchesCache {
   static Key BuildKey(base::StringPiece16 input, base::StringPiece16 pattern);
 
   // Returns whether `pattern` in the key matched `input` if this information is
-  // cached. absl::nullopt if the information is not cached.
-  absl::optional<bool> Get(Key key);
+  // cached. std::nullopt if the information is not cached.
+  std::optional<bool> Get(Key key);
 
   // Stores whether `pattern` in the key matched `input`.
   void Put(Key key, bool value);

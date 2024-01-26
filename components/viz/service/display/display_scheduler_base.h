@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -12,7 +14,6 @@
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -26,7 +27,7 @@ struct DrawAndSwapParams {
   base::TimeTicks frame_time;
   base::TimeTicks expected_display_time;
   int max_pending_swaps = -1;
-  absl::optional<int64_t> choreographer_vsync_id;
+  std::optional<int64_t> choreographer_vsync_id;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {

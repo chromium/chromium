@@ -90,13 +90,13 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void OnItemsAdded(const OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const absl::optional<UpdateDelta>& update_delta) override;
+                     const std::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(OfflineContentProvider* provider,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
-                         const absl::optional<OfflineItem>& item);
+                         const std::optional<OfflineItem>& item);
 
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the

@@ -3513,8 +3513,8 @@ struct ShellSurfaceCallbacks {
     configure_state.reset();
     origin.reset();
   }
-  absl::optional<ConfigureState> configure_state;
-  absl::optional<gfx::Point> origin;
+  std::optional<ConfigureState> configure_state;
+  std::optional<gfx::Point> origin;
   int32_t serial = 0;
 };
 
@@ -3975,7 +3975,7 @@ TEST_F(ShellSurfaceTest, SetShapeUpdatesAndUnsetsCorrectlyAfterCommit) {
   EXPECT_EQ(shape_region_3, CreateRegion(*layer_shape_rects));
 
   // Setting a null shape should unset the host window's layer shape.
-  shell_surface->SetShape(absl::nullopt);
+  shell_surface->SetShape(std::nullopt);
   shell_surface->root_surface()->Commit();
   layer_shape_rects = widget->GetNativeWindow()->layer()->alpha_shape();
   EXPECT_FALSE(layer_shape_rects);

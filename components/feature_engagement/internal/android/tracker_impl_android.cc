@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/android/tracker_impl_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/android/callback_android.h"
@@ -18,7 +19,6 @@
 #include "components/feature_engagement/internal/jni_headers/TrackerImpl_jni.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -166,7 +166,7 @@ void TrackerImplAndroid::DismissedWithSnooze(
 
   tracker_->DismissedWithSnooze(
       *features_[feature],
-      absl::make_optional(static_cast<Tracker::SnoozeAction>(snooze_action)));
+      std::make_optional(static_cast<Tracker::SnoozeAction>(snooze_action)));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

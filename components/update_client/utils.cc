@@ -161,18 +161,18 @@ CrxInstaller::Result InstallFunctionWrapper(
                                   : InstallError::GENERIC_ERROR);
 }
 
-absl::optional<base::Value::Dict> ReadManifest(
+std::optional<base::Value::Dict> ReadManifest(
     const base::FilePath& unpack_path) {
   base::FilePath manifest =
       unpack_path.Append(FILE_PATH_LITERAL("manifest.json"));
   if (!base::PathExists(manifest)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root || !root->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(root->GetDict());
 }

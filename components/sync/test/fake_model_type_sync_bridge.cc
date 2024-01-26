@@ -185,7 +185,7 @@ FakeModelTypeSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-absl::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
+std::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   if (error_next_) {
@@ -230,7 +230,7 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
   return {};
 }
 
-absl::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_changes,
     EntityChangeList entity_changes) {
   if (error_next_) {

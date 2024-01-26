@@ -267,7 +267,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
           plane.damage_rect.value_or(gfx::Rect(plane.resource_size)),
           plane.opacity, plane.priority_hint, plane.rounded_corners,
           presenter_image->color_space(),
-          /*hdr_metadata=*/absl::nullopt));
+          /*hdr_metadata=*/std::nullopt));
 }
 
 void OutputPresenterGL::ScheduleOverlayPlane(

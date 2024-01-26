@@ -49,7 +49,7 @@ void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
     base::RepeatingClosure closure,
     bool expected_error,
     ModelProvider::Response expected_result,
-    const absl::optional<ModelProvider::Response>& result) {
+    const std::optional<ModelProvider::Response>& result) {
   if (expected_error) {
     EXPECT_FALSE(result.has_value());
   } else {
@@ -59,9 +59,9 @@ void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
   std::move(closure).Run();
 }
 
-absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
+std::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
     const ModelProvider::Request& inputs) {
-  absl::optional<ModelProvider::Response> result;
+  std::optional<ModelProvider::Response> result;
   base::RunLoop loop;
   model_->ExecuteModelWithInput(
       inputs,
@@ -91,8 +91,8 @@ void DefaultModelTestBase::ExpectClassifierResults(
 
 void DefaultModelTestBase::OnFinishedExecuteWithInput(
     base::RepeatingClosure closure,
-    absl::optional<ModelProvider::Response>* output,
-    const absl::optional<ModelProvider::Response>& result) {
+    std::optional<ModelProvider::Response>* output,
+    const std::optional<ModelProvider::Response>& result) {
   *output = result;
   std::move(closure).Run();
 }

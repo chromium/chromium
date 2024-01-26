@@ -231,7 +231,7 @@ void AttachHistoryClustersActions(
 
     if (AutocompleteMatch::IsSearchType(match.type)) {
       std::string query = base::UTF16ToUTF8(match.contents);
-      absl::optional<history::ClusterKeywordData> matched_keyword_data =
+      std::optional<history::ClusterKeywordData> matched_keyword_data =
           service->DoesQueryMatchAnyCluster(query);
       if (matched_keyword_data) {
         match.actions.push_back(base::MakeRefCounted<HistoryClustersAction>(

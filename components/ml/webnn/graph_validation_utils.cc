@@ -878,7 +878,7 @@ base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
                                               a_dimensions.end() - 2);
     std::vector<uint32_t> sliced_b_dimensions(b_dimensions.begin(),
                                               b_dimensions.end() - 2);
-    absl::optional<std::vector<uint32_t>> optional_output_dimensions =
+    std::optional<std::vector<uint32_t>> optional_output_dimensions =
         BroadcastShapes(sliced_a_dimensions, sliced_b_dimensions, true);
     if (!optional_output_dimensions) {
       return base::unexpected("The matmul input shapes are not broadcastable.");
@@ -1611,7 +1611,7 @@ base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
   return base::ok();
 }
 
-absl::optional<std::vector<uint32_t>> BroadcastShapes(
+std::optional<std::vector<uint32_t>> BroadcastShapes(
     base::span<const uint32_t> dims_lhs,
     base::span<const uint32_t> dims_rhs,
     bool bidirectional) {
@@ -1630,10 +1630,10 @@ absl::optional<std::vector<uint32_t>> BroadcastShapes(
     // they are equal, or the lhs dimension is 1.
     if (bidirectional) {
       if (dim_lhs != dim_rhs && dim_lhs != 1 && dim_rhs != 1) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     } else if (dim_lhs != dim_rhs && dim_lhs != 1) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     // If bidirectional is true, for each dimension of the output tensor, its
     // size is the maximum size along that dimension of the input shapes.
@@ -1644,11 +1644,11 @@ absl::optional<std::vector<uint32_t>> BroadcastShapes(
   return dims_output;
 }
 
-absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
-                                                    const uint32_t input_size,
-                                                    const uint32_t filter_size,
-                                                    const uint32_t stride,
-                                                    const uint32_t dilation) {
+std::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
+                                                   const uint32_t input_size,
+                                                   const uint32_t filter_size,
+                                                   const uint32_t stride,
+                                                   const uint32_t dilation) {
   auto checked_output_size =
       (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
   auto checked_dilated_filter_size =
@@ -1656,7 +1656,7 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
   auto checked_needed_input_size =
       (checked_output_size - 1) * stride + checked_dilated_filter_size;
   if (!checked_needed_input_size.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto checked_total_padding =
       checked_needed_input_size.ValueOrDie() > input_size
@@ -1680,12 +1680,12 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
   uint32_t padding_begin, padding_end;
   if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
       !checked_padding_end.AssignIfValid(&padding_end)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
-absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
+std::optional<PaddingSizes> CalculateConvTranspose2dPadding(
     AutoPad auto_pad,
     const uint32_t input_size,
     const uint32_t filter_size,
@@ -1717,7 +1717,7 @@ absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
   uint32_t padding_begin, padding_end;
   if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
       !checked_padding_end.AssignIfValid(&padding_end)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
 }

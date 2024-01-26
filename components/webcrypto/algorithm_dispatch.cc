@@ -289,7 +289,7 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
     return status;
 
   // Determine how many bits long the derived key should be.
-  absl::optional<unsigned int> length_bits;
+  std::optional<unsigned int> length_bits;
   status = import_impl->GetKeyLength(key_length_algorithm, &length_bits);
   if (status.IsError()) {
     return status;

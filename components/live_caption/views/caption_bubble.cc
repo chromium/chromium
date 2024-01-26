@@ -1199,7 +1199,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
 }
 
 void CaptionBubble::UpdateCaptionStyle(
-    absl::optional<ui::CaptionStyle> caption_style) {
+    std::optional<ui::CaptionStyle> caption_style) {
   caption_style_ = caption_style;
   SetCaptionBubbleStyle();
   Redraw();

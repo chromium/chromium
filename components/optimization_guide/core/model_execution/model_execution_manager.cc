@@ -116,7 +116,7 @@ ModelExecutionManager::ModelExecutionManager(
       features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-        /*model_metadata=*/absl::nullopt, this);
+        /*model_metadata=*/std::nullopt, this);
   }
 }
 

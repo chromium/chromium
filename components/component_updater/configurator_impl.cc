@@ -5,6 +5,7 @@
 #include "components/component_updater/configurator_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
 #include "net/base/network_change_notifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -162,7 +162,7 @@ update_client::UpdaterStateProvider ConfiguratorImpl::GetUpdaterStateProvider()
   });
 }
 
-absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
+std::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1320776): For legacy compatibility, this uses
@@ -170,7 +170,7 @@ absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
   // Consider whether this should use IsManagedDevice() instead.
   return base::IsEnterpriseDevice();
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 

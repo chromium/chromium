@@ -1915,10 +1915,10 @@ TEST_F(BookmarkModelTest, GetNodeByUuid) {
   // Create two more with an explicit UUID provided.
   const BookmarkNode* url_node_with_explicit_uuid = model_->AddURL(
       bookmark_bar_node, 0, u"title", GURL("http://foo.com"),
-      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt, explicit_uuid1);
+      /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, explicit_uuid1);
   const BookmarkNode* folder_node_with_explicit_uuid = model_->AddFolder(
       bookmark_bar_node, 0, u"title",
-      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt, explicit_uuid2);
+      /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, explicit_uuid2);
 
   ASSERT_TRUE(url_node_with_implicit_uuid);
   ASSERT_TRUE(folder_node_with_implicit_uuid);

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -38,7 +38,7 @@ class AndroidPaymentAppTest : public testing::Test,
   static std::unique_ptr<AndroidPaymentApp> CreateAndroidPaymentApp(
       base::WeakPtr<AndroidAppCommunication> communication,
       content::WebContents* web_contents,
-      const absl::optional<base::UnguessableToken>& twa_instance_identifier) {
+      const std::optional<base::UnguessableToken>& twa_instance_identifier) {
     std::set<std::string> payment_method_names;
     payment_method_names.insert(methods::kGooglePlayBilling);
     auto stringified_method_data =
@@ -101,7 +101,7 @@ class AndroidPaymentAppTest : public testing::Test,
   std::string stringified_details_;
   std::string error_message_;
   base::OnceClosure on_payment_app_response_callback_;
-  absl::optional<base::UnguessableToken> twa_instance_identifier_ =
+  std::optional<base::UnguessableToken> twa_instance_identifier_ =
       base::UnguessableToken::Create();
 
   base::WeakPtrFactory<AndroidPaymentAppTest> weak_ptr_factory_{this};

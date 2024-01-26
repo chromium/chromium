@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_LOG_SOURCE_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_LOG_SOURCE_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "components/download/internal/background_service/controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -21,7 +21,7 @@ struct StartupStatus;
 // instance of LogSource to push relevant log information to observers.
 class LogSource {
  public:
-  using EntryDetails = std::pair<const Entry*, absl::optional<DriverEntry>>;
+  using EntryDetails = std::pair<const Entry*, std::optional<DriverEntry>>;
   using EntryDetailsList = std::vector<EntryDetails>;
 
   virtual ~LogSource() = default;
@@ -36,7 +36,7 @@ class LogSource {
   virtual EntryDetailsList GetServiceDownloads() = 0;
 
   // Returns the (Driver)Entry object representing the donwnload at |guid|.
-  virtual absl::optional<EntryDetails> GetServiceDownload(
+  virtual std::optional<EntryDetails> GetServiceDownload(
       const std::string& guid) = 0;
 };
 

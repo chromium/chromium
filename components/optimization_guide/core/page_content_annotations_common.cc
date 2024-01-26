@@ -134,7 +134,7 @@ std::ostream& operator<<(std::ostream& stream,
 //  static
 BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
     const std::string& input,
-    absl::optional<std::vector<ScoredEntityMetadata>> entities) {
+    std::optional<std::vector<ScoredEntityMetadata>> entities) {
   BatchAnnotationResult result;
   result.input_ = input;
   result.entities_ = entities;
@@ -154,7 +154,7 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
 //  static
 BatchAnnotationResult BatchAnnotationResult::CreateContentVisibilityResult(
     const std::string& input,
-    absl::optional<double> visibility_score) {
+    std::optional<double> visibility_score) {
   BatchAnnotationResult result;
   result.input_ = input;
   result.visibility_score_ = visibility_score;
@@ -165,7 +165,7 @@ BatchAnnotationResult BatchAnnotationResult::CreateContentVisibilityResult(
 // static
 BatchAnnotationResult BatchAnnotationResult::CreateTextEmbeddingResult(
     const std::string& input,
-    absl::optional<std::vector<float>> embeddings) {
+    std::optional<std::vector<float>> embeddings) {
   BatchAnnotationResult result;
   result.input_ = input;
   result.embeddings_ = embeddings;

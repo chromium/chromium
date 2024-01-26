@@ -17,7 +17,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 

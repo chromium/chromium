@@ -35,18 +35,18 @@ bool ShouldOfferSignin(syncer::SyncService* sync_service,
 
 namespace internal {
 
-absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     const GURL& url_to_share,
     syncer::SyncService* sync_service,
     SendTabToSelfModel* send_tab_to_self_model,
     PrefService* pref_service) {
   if (!url_to_share.SchemeIsHTTPOrHTTPS()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!send_tab_to_self_model || !sync_service) {
     // Send-tab-to-self can't work properly, don't show the entry point.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (ShouldOfferSignin(sync_service, pref_service)) {
@@ -63,7 +63,7 @@ absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
       // non send-tab-to-self UI. So just treat this as the no device case.
       return EntryPointDisplayReason::kInformNoTargetDevice;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!send_tab_to_self_model->HasValidTargetDevice()) {

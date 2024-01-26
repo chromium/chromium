@@ -78,7 +78,7 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
   const std::string* field_type = message_body->FindString("fieldType");
   const std::string* type = message_body->FindString("type");
   const std::string* value = message_body->FindString("value");
-  absl::optional<bool> has_user_gesture =
+  std::optional<bool> has_user_gesture =
       message_body->FindBool("hasUserGesture");
   if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
       !has_user_gesture) {

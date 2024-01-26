@@ -64,8 +64,8 @@ class MockNetworkContext : public network::TestNetworkContext {
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     const std::string& name,
     const std::string& domain,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key =
-        absl::nullopt) {
+    std::optional<net::CookiePartitionKey> cookie_partition_key =
+        std::nullopt) {
   return net::CanonicalCookie::CreateUnsafeCookieForTesting(
       name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
@@ -203,8 +203,8 @@ TEST_F(BrowsingDataModelTest, ConcurrentDeletions) {
   // Check that the model is able to support multiple deletion operations in
   // flight at the same time, even if the backends finish out-of-order.
   std::vector<::network::mojom::StoredTrustTokensForIssuerPtr> tokens;
-  tokens.emplace_back(absl::in_place, kSubdomainOrigin, 10);
-  tokens.emplace_back(absl::in_place, kAnotherSiteOrigin, 20);
+  tokens.emplace_back(std::in_place, kSubdomainOrigin, 10);
+  tokens.emplace_back(std::in_place, kAnotherSiteOrigin, 20);
 
   EXPECT_CALL(*mock_network_context(), GetStoredTrustTokenCounts(testing::_))
       .WillOnce(
@@ -382,17 +382,17 @@ class OriginOwnershipDelegate final : public BrowsingDataModel::Delegate {
     std::move(callback).Run();
   }
 
-  absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
+  std::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
     const url::Origin* origin = absl::get_if<url::Origin>(&data_key);
     if (origin && origin->host() == origin_owned_host_) {
       return *origin;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+  std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
     return false;

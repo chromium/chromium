@@ -152,7 +152,7 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  absl::optional<base::Value> json =
+  std::optional<base::Value> json =
       base::JSONReader::Read(stringified_json->GetString());
   if (!json) {
     return std::vector<double>();
@@ -163,10 +163,10 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
   }
 
   auto& dict = json->GetDict();
-  absl::optional<double> numElements = dict.FindDouble("numElements");
-  absl::optional<double> numAnchors = dict.FindDouble("numAnchors");
-  absl::optional<double> numForms = dict.FindDouble("numForms");
-  absl::optional<bool> isOGArticle = dict.FindBool("opengraph");
+  std::optional<double> numElements = dict.FindDouble("numElements");
+  std::optional<double> numAnchors = dict.FindDouble("numAnchors");
+  std::optional<double> numForms = dict.FindDouble("numForms");
+  std::optional<bool> isOGArticle = dict.FindBool("opengraph");
 
   std::string* url = dict.FindString("url");
   std::string* innerText = dict.FindString("innerText");

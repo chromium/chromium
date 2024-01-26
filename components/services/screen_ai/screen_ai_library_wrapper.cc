@@ -164,12 +164,12 @@ bool ScreenAILibraryWrapper::InitMainContentExtraction() {
 }
 
 NO_SANITIZE("cfi-icall")
-absl::optional<chrome_screen_ai::VisualAnnotation>
+std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
   CHECK(perform_ocr_);
   CHECK(free_library_allocated_char_array_);
 
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
   // Memory allocated in `library_buffer` should be release only using
@@ -193,12 +193,12 @@ ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
 }
 
 NO_SANITIZE("cfi-icall")
-absl::optional<chrome_screen_ai::VisualAnnotation>
+std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
   CHECK(extract_layout_);
   CHECK(free_library_allocated_char_array_);
 
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;
   // Memory allocated in `library_buffer` should be release only using
@@ -221,12 +221,12 @@ ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
 }
 
 NO_SANITIZE("cfi-icall")
-absl::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
+std::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
     const std::string& serialized_view_hierarchy) {
   CHECK(extract_main_content_);
   CHECK(free_library_allocated_int32_array_);
 
-  absl::optional<std::vector<int32_t>> node_ids;
+  std::optional<std::vector<int32_t>> node_ids;
 
   uint32_t nodes_count = 0;
   // Memory allocated in `library_buffer` should be release only using

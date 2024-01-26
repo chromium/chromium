@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_SCALABLE_IPH_FEATURE_CONFIGURATIONS_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_SCALABLE_IPH_FEATURE_CONFIGURATIONS_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
 struct FeatureConfig;
 
-absl::optional<FeatureConfig> GetScalableIphFeatureConfig(
+std::optional<FeatureConfig> GetScalableIphFeatureConfig(
     const base::Feature* feature);
 
 }  // namespace feature_engagement

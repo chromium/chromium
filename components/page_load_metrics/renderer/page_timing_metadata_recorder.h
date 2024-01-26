@@ -6,9 +6,10 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METADATA_RECORDER_H_
 
 #include <cstdint>
+#include <optional>
+
 #include "base/profiler/sample_metadata.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace page_load_metrics {
@@ -30,18 +31,18 @@ class PageTimingMetadataRecorder {
     MonotonicTiming(MonotonicTiming&&);
     MonotonicTiming& operator=(MonotonicTiming&&);
 
-    absl::optional<base::TimeTicks> navigation_start;
-    absl::optional<base::TimeTicks> first_contentful_paint;
+    std::optional<base::TimeTicks> navigation_start;
+    std::optional<base::TimeTicks> first_contentful_paint;
 
-    absl::optional<base::TimeTicks> first_input_timestamp;
-    absl::optional<base::TimeDelta> first_input_delay;
+    std::optional<base::TimeTicks> first_input_timestamp;
+    std::optional<base::TimeDelta> first_input_delay;
     // Frame local largest contentful paint timestamp.
-    absl::optional<base::TimeTicks> frame_largest_contentful_paint;
+    std::optional<base::TimeTicks> frame_largest_contentful_paint;
 
     // Stores the `DocumentToken` so that we can use it to find the value of
     // some browser side calculated metrics. Currently it is used to retrieve
     // Largest Contentful Paint value on the browser side.
-    absl::optional<blink::DocumentToken> document_token;
+    std::optional<blink::DocumentToken> document_token;
   };
 
   PageTimingMetadataRecorder(const MonotonicTiming& initial_timing,
@@ -83,15 +84,15 @@ class PageTimingMetadataRecorder {
 
  private:
   void UpdateFirstInputDelayMetadata(
-      const absl::optional<base::TimeTicks>& first_input_timestamp,
-      const absl::optional<base::TimeDelta>& first_input_delay);
+      const std::optional<base::TimeTicks>& first_input_timestamp,
+      const std::optional<base::TimeDelta>& first_input_delay);
   void UpdateFirstContentfulPaintMetadata(
-      const absl::optional<base::TimeTicks>& navigation_start,
-      const absl::optional<base::TimeTicks>& first_contentful_paint);
+      const std::optional<base::TimeTicks>& navigation_start,
+      const std::optional<base::TimeTicks>& first_contentful_paint);
   void UpdateLargestContentfulPaintMetadata(
-      const absl::optional<base::TimeTicks>& navigation_start,
-      const absl::optional<base::TimeTicks>& largest_contentful_paint,
-      const absl::optional<blink::DocumentToken>& document_token);
+      const std::optional<base::TimeTicks>& navigation_start,
+      const std::optional<base::TimeTicks>& largest_contentful_paint,
+      const std::optional<blink::DocumentToken>& document_token);
 
   // Uniquely identifies an instance of the PageTimingMetadataRecorder. Used to
   // distinguish page loads for different documents when applying sample

@@ -213,7 +213,7 @@ HRESULT NetworkFetcher::BeginFetch(
     return HRESULTFromLastError();
   }
 
-  absl::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
+  std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
       proxy_configuration_->GetProxyForUrl(*session_handle_, url_);
 
   request_handle_ = OpenRequest();

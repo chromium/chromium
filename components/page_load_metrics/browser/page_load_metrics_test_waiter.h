@@ -353,7 +353,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     bool did_set_main_frame_intersection_ = false;
     bool did_observed_main_frame_image_ad_rects_ = false;
     std::vector<gfx::Rect> main_frame_intersections_;
-    absl::optional<gfx::Rect> main_frame_viewport_rect_;
+    std::optional<gfx::Rect> main_frame_viewport_rect_;
     std::unordered_set<content::GlobalRenderFrameHostId,
                        content::GlobalRenderFrameHostIdHasher>
         memory_update_frame_ids_;

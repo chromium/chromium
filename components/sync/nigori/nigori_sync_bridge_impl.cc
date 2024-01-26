@@ -48,7 +48,7 @@ enum class KeyDerivationMethodStateForMetrics {
 };
 
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
-    const absl::optional<KeyDerivationParams>& key_derivation_params) {
+    const std::optional<KeyDerivationParams>& key_derivation_params) {
   if (!key_derivation_params.has_value()) {
     return KeyDerivationMethodStateForMetrics::NOT_SET;
   }
@@ -76,7 +76,7 @@ std::string GetScryptSaltFromSpecifics(
 
 KeyDerivationParams GetKeyDerivationParamsFromSpecifics(
     const sync_pb::NigoriSpecifics& specifics) {
-  absl::optional<KeyDerivationMethod> key_derivation_method =
+  std::optional<KeyDerivationMethod> key_derivation_method =
       ProtoKeyDerivationMethodToEnum(
           specifics.custom_passphrase_key_derivation_method());
   // Guaranteed by validations (e.g. SpecificsHasValidKeyDerivationParams()).
@@ -107,7 +107,7 @@ std::vector<std::string> Base64EncodeKeys(
 }
 
 bool SpecificsHasValidKeyDerivationParams(const NigoriSpecifics& specifics) {
-  absl::optional<KeyDerivationMethod> key_derivation_method =
+  std::optional<KeyDerivationMethod> key_derivation_method =
       ProtoKeyDerivationMethodToEnum(
           specifics.custom_passphrase_key_derivation_method());
   if (!key_derivation_method) {
@@ -226,7 +226,7 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
-absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
+std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
@@ -314,7 +314,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     : processor_(std::move(processor)),
       storage_(std::move(storage)),
       broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
-  absl::optional<sync_pb::NigoriLocalData> deserialized_data =
+  std::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
   if (!deserialized_data) {
     // We either have no Nigori node stored locally or it was corrupted.
@@ -449,7 +449,7 @@ void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
   NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
   const std::string new_key_name = tmp_key_bag.AddKey(std::move(key));
 
-  absl::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
+  std::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
   if (error.has_value()) {
     processor_->ReportError(*error);
     return;
@@ -497,7 +497,7 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
         GetKeyDerivationParamsForPendingKeys(), encoded_key));
   }
 
-  absl::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
+  std::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
   if (error.has_value()) {
     processor_->ReportError(*error);
     return;
@@ -566,7 +566,7 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     // keystore mode.
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
 
-    absl::optional<ModelError> error =
+    std::optional<ModelError> error =
         TryDecryptPendingKeysWith(BuildDecryptionKeyBagForRemoteKeybag());
     if (error.has_value()) {
       processor_->ReportError(*error);
@@ -587,8 +587,8 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
   return true;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
-    absl::optional<EntityData> data) {
+std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
+    std::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!data) {
     return ModelError(FROM_HERE,
@@ -622,11 +622,11 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   // keystore Nigori.
   QueuePendingLocalCommit(
       PendingLocalNigoriCommit::ForKeystoreInitialization());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
-    absl::optional<EntityData> data) {
+std::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
+    std::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data) {
@@ -649,10 +649,10 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
   // Receiving empty |data| means metadata-only change (e.g. no remote updates,
   // or local commit completion), so we need to persist its state.
   storage_->StoreData(SerializeAsNigoriLocalData());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
+std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     const NigoriSpecifics& specifics) {
   if (!IsValidNigoriSpecifics(specifics)) {
     return ModelError(FROM_HERE, "NigoriSpecifics is not valid.");
@@ -696,7 +696,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
         GetKeyDerivationParamsFromSpecifics(specifics);
   }
 
-  absl::optional<sync_pb::NigoriKey> keystore_decryptor_key;
+  std::optional<sync_pb::NigoriKey> keystore_decryptor_key;
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
     state_.pending_keystore_decryptor_token =
         specifics.keystore_decryptor_token();
@@ -724,7 +724,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
         specifics.cross_user_sharing_public_key().version();
   }
 
-  absl::optional<ModelError> error =
+  std::optional<ModelError> error =
       TryDecryptPendingKeysWith(decryption_key_bag_for_remote_update);
   if (error.has_value()) {
     return error;
@@ -758,7 +758,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   storage_->StoreData(SerializeAsNigoriLocalData());
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
@@ -793,19 +793,19 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
   return decryption_key_bag;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
+std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     const NigoriKeyBag& key_bag) {
   DCHECK(state_.pending_keys.has_value());
   DCHECK(state_.cryptographer->GetDefaultEncryptionKeyName().empty());
 
   std::string decrypted_pending_keys_str;
   if (!key_bag.Decrypt(*state_.pending_keys, &decrypted_pending_keys_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sync_pb::EncryptionKeys decrypted_pending_keys;
   if (!decrypted_pending_keys.ParseFromString(decrypted_pending_keys_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string new_default_key_name = state_.pending_keys->key_name();
@@ -846,8 +846,8 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
       // Reset keys so that on next startup they would be recreated and
       // committed to the server.
       // TODO(crbug/1474918): Clear obsolete key-pairs from cryptographer.
-      state_.cross_user_sharing_key_pair_version = absl::nullopt;
-      state_.cross_user_sharing_public_key = absl::nullopt;
+      state_.cross_user_sharing_key_pair_version = std::nullopt;
+      state_.cross_user_sharing_public_key = std::nullopt;
     } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
       // Use the keys from the server and replace any pre-existing ones (so in
       // case of conflict the server wins). One of cases when this can happen is
@@ -863,13 +863,13 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
   // TRUSTED_VAULT passphrase type. The callers are responsible to set it again
   // if needed.
-  state_.last_default_trusted_vault_key_name = absl::nullopt;
+  state_.last_default_trusted_vault_key_name = std::nullopt;
   state_.cryptographer->EmplaceKeysFrom(new_key_bag);
   state_.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
   state_.pending_keys.reset();
   state_.pending_keystore_decryptor_token.reset();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetData() {
@@ -914,12 +914,12 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.encrypt_everything = false;
   state_.custom_passphrase_time = base::Time();
   state_.keystore_migration_time = base::Time();
-  state_.custom_passphrase_key_derivation_params = absl::nullopt;
-  state_.last_default_trusted_vault_key_name = absl::nullopt;
+  state_.custom_passphrase_key_derivation_params = std::nullopt;
+  state_.last_default_trusted_vault_key_name = std::nullopt;
   state_.trusted_vault_debug_info =
       sync_pb::NigoriSpecifics::TrustedVaultDebugInfo();
-  state_.cross_user_sharing_public_key = absl::nullopt;
-  state_.cross_user_sharing_key_pair_version = absl::nullopt;
+  state_.cross_user_sharing_public_key = std::nullopt;
+  state_.cross_user_sharing_key_pair_version = std::nullopt;
 
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(),

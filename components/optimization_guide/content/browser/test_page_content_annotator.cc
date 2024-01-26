@@ -22,7 +22,7 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   if (annotation_type == AnnotationType::kPageEntities) {
     for (const std::string& input : inputs) {
       auto it = entities_by_input_.find(input);
-      absl::optional<std::vector<ScoredEntityMetadata>> output;
+      std::optional<std::vector<ScoredEntityMetadata>> output;
       if (it != entities_by_input_.end()) {
         output = it->second;
       }
@@ -34,7 +34,7 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   if (annotation_type == AnnotationType::kContentVisibility) {
     for (const std::string& input : inputs) {
       auto it = visibility_scores_for_input_.find(input);
-      absl::optional<double> output;
+      std::optional<double> output;
       if (it != visibility_scores_for_input_.end()) {
         output = it->second;
       }
@@ -46,7 +46,7 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   if (annotation_type == AnnotationType::kTextEmbedding) {
     for (const std::string& input : inputs) {
       auto it = text_embeddings_for_input_.find(input);
-      absl::optional<std::vector<float>> output;
+      std::optional<std::vector<float>> output;
       if (it != text_embeddings_for_input_.end()) {
         output = it->second;
       }
@@ -62,7 +62,7 @@ void TestPageContentAnnotator::SetAlwaysHang(bool hang) {
   always_hang_ = hang;
 }
 
-absl::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
+std::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
     AnnotationType annotation_type) const {
   if (annotation_type == AnnotationType::kPageEntities)
     return entities_model_info_;
@@ -70,11 +70,11 @@ absl::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
   if (annotation_type == AnnotationType::kPageEntities)
     return visibility_scores_model_info_;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TestPageContentAnnotator::UsePageEntities(
-    const absl::optional<ModelInfo>& model_info,
+    const std::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
         entities_by_input) {
   entities_model_info_ = model_info;
@@ -82,14 +82,14 @@ void TestPageContentAnnotator::UsePageEntities(
 }
 
 void TestPageContentAnnotator::UseVisibilityScores(
-    const absl::optional<ModelInfo>& model_info,
+    const std::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, double>& visibility_scores_for_input) {
   visibility_scores_model_info_ = model_info;
   visibility_scores_for_input_ = visibility_scores_for_input;
 }
 
 void TestPageContentAnnotator::UseTextEmbeddings(
-    const absl::optional<ModelInfo>& model_info,
+    const std::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, std::vector<float>>&
         text_embeddings_for_input) {
   text_embeddings_model_info_ = model_info;

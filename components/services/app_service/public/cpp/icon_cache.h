@@ -86,7 +86,7 @@ class IconCache : public IconLoader {
   ~IconCache() override;
 
   // IconLoader overrides.
-  absl::optional<IconKey> GetIconKey(const std::string& id) override;
+  std::optional<IconKey> GetIconKey(const std::string& id) override;
   std::unique_ptr<Releaser> LoadIconFromIconKey(
       const std::string& id,
       const IconKey& icon_key,

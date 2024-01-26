@@ -4,12 +4,12 @@
 
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
 
+#include <optional>
 #include <utility>
 
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -30,16 +30,16 @@ FakePdfStreamDelegate::FakePdfStreamDelegate() {
 
 FakePdfStreamDelegate::~FakePdfStreamDelegate() = default;
 
-absl::optional<GURL> FakePdfStreamDelegate::MapToOriginalUrl(
+std::optional<GURL> FakePdfStreamDelegate::MapToOriginalUrl(
     content::NavigationHandle& navigation_handle) {
   if (!stream_info_ || stream_info_->stream_url != navigation_handle.GetURL()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return stream_info_->original_url;
 }
 
-absl::optional<PdfStreamDelegate::StreamInfo>
+std::optional<PdfStreamDelegate::StreamInfo>
 FakePdfStreamDelegate::GetStreamInfo(content::RenderFrameHost* embedder_frame) {
   EXPECT_TRUE(embedder_frame);
   return stream_info_;

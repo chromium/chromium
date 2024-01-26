@@ -4,13 +4,13 @@
 
 #include "components/origin_trials/common/persisted_trial_token.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace origin_trials {
 

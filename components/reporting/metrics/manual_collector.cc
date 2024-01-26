@@ -38,7 +38,7 @@ bool ManualCollector::CanCollect() const {
 
 void ManualCollector::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   CheckOnSequence();
   CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {

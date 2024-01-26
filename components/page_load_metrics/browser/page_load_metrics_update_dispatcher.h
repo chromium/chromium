@@ -177,7 +177,7 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::FrameRenderDataUpdatePtr render_data,
                      mojom::CpuTimingPtr new_cpu_timing,
                      mojom::InputTimingPtr input_timing_delta,
-                     const absl::optional<blink::SubresourceLoadMetrics>&
+                     const std::optional<blink::SubresourceLoadMetrics>&
                          subresource_load_metrics,
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
                      internal::PageLoadTrackerPageType page_type);
@@ -244,8 +244,8 @@ class PageLoadMetricsUpdateDispatcher {
   const mojom::InputTiming& page_input_timing() const {
     return *page_input_timing_;
   }
-  const absl::optional<blink::SubresourceLoadMetrics>&
-  subresource_load_metrics() const {
+  const std::optional<blink::SubresourceLoadMetrics>& subresource_load_metrics()
+      const {
     return subresource_load_metrics_;
   }
   void UpdateResponsivenessMetricsNormalizationForBfcache() {
@@ -349,7 +349,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::InputTimingPtr page_input_timing_;
 
   // SubresourceLoadMetrics for the main frame.
-  absl::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
+  std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
 
   // True if this page load started in prerender.
   const bool is_prerendered_page_load_;
@@ -378,7 +378,7 @@ class PageLoadMetricsUpdateDispatcher {
 
   // The last main frame viewport rect dispatched to page load metrics
   // observers.
-  absl::optional<gfx::Rect> main_frame_viewport_rect_;
+  std::optional<gfx::Rect> main_frame_viewport_rect_;
 
   LayoutShiftNormalization layout_shift_normalization_;
   LayoutShiftNormalization soft_nav_interval_layout_shift_normalization_;

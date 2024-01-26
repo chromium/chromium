@@ -286,7 +286,7 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: Attestations Map");
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()
           ->SetAttestationsForTesting(
-              GetItemValue<absl::optional<
+              GetItemValue<std::optional<
                   privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }

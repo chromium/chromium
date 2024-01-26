@@ -266,7 +266,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicy) {
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
   const base::Value::Dict* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
-  absl::optional<bool> disabled =
+  std::optional<bool> disabled =
       dictionary->FindBool(DefaultSearchManager::kDisabledByPolicy);
   EXPECT_TRUE(disabled.has_value());
   EXPECT_TRUE(disabled.value());

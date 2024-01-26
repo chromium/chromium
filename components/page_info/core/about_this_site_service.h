@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_SERVICE_H_
 #define COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -14,7 +15,6 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -47,7 +47,7 @@ class AboutThisSiteService : public KeyedService {
 
   using DecisionAndMetadata =
       std::pair<optimization_guide::OptimizationGuideDecision,
-                absl::optional<page_info::proto::AboutThisSiteMetadata>>;
+                std::optional<page_info::proto::AboutThisSiteMetadata>>;
 
   class TabHelper {
    public:
@@ -82,7 +82,7 @@ class AboutThisSiteService : public KeyedService {
   AboutThisSiteService& operator=(const AboutThisSiteService&) = delete;
 
   // Returns "About this site" information for the website with |url|.
-  absl::optional<proto::SiteInfo> GetAboutThisSiteInfo(
+  std::optional<proto::SiteInfo> GetAboutThisSiteInfo(
       const GURL& url,
       ukm::SourceId source_id,
       const TabHelper* tab_helper) const;

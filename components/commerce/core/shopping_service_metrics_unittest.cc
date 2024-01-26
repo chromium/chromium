@@ -86,7 +86,7 @@ TEST_F(ShoppingServiceMetricsTest,
   DidNavigatePrimaryMainFrame(&web);
 
   // We should be able to access the cached data.
-  absl::optional<ProductInfo> cached_info =
+  std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
@@ -122,7 +122,7 @@ TEST_F(ShoppingServiceMetricsTest,
   DidNavigatePrimaryMainFrame(&web);
 
   // We should be able to access the cached data.
-  absl::optional<ProductInfo> cached_info =
+  std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
@@ -158,7 +158,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
   DidNavigatePrimaryMainFrame(&web);
 
   // We should be able to access the cached data.
-  absl::optional<ProductInfo> cached_info =
+  std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
@@ -193,7 +193,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
   DidNavigatePrimaryMainFrame(&web);
 
   // We should be able to access the cached data.
-  absl::optional<ProductInfo> cached_info =
+  std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_EQ(kImageUrl, cached_info->image_url);
 
@@ -225,7 +225,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoRecordIfJSNotRun) {
   DidNavigatePrimaryMainFrame(&web);
 
   // We should be able to access the cached data.
-  absl::optional<ProductInfo> cached_info =
+  std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 

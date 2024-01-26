@@ -35,7 +35,7 @@ class HistogramReporter
     : public ShellSurfacePresentationTimeRecorder::Reporter {
  public:
   HistogramReporter(const char* latency_histogram_name,
-                    absl::optional<const char*> max_latency_histogram_name)
+                    std::optional<const char*> max_latency_histogram_name)
       : latency_histogram_(CreateTimesHistogram(latency_histogram_name)),
         max_latency_histogram_name_(max_latency_histogram_name) {}
 
@@ -60,7 +60,7 @@ class HistogramReporter
 
  private:
   const raw_ptr<base::HistogramBase> latency_histogram_;
-  const absl::optional<const char*> max_latency_histogram_name_;
+  const std::optional<const char*> max_latency_histogram_name_;
   base::TimeDelta max_latency_;
 };
 
@@ -70,7 +70,7 @@ class HistogramReporter
 std::unique_ptr<ShellSurfacePresentationTimeRecorder::Reporter>
 ShellSurfacePresentationTimeRecorder::CreateHistogramReporter(
     const char* latency_histogram_name,
-    absl::optional<const char*> max_latency_histogram_name) {
+    std::optional<const char*> max_latency_histogram_name) {
   return std::make_unique<HistogramReporter>(latency_histogram_name,
                                              max_latency_histogram_name);
 }
@@ -89,7 +89,7 @@ void ShellSurfacePresentationTimeRecorder::PrepareToRecord() {
   if (pending_request_.has_value())
     return;
 
-  pending_request_ = absl::make_optional<Request>();
+  pending_request_ = std::make_optional<Request>();
   pending_request_->request_id = next_request_id_++;
 }
 

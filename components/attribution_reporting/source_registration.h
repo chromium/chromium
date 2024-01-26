@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
@@ -24,7 +25,6 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -72,7 +72,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   MaxEventLevelReports max_event_level_reports;
   int64_t priority = 0;
   FilterData filter_data;
-  absl::optional<uint64_t> debug_key;
+  std::optional<uint64_t> debug_key;
   AggregationKeys aggregation_keys;
   bool debug_reporting = false;
   mojom::TriggerDataMatching trigger_data_matching =

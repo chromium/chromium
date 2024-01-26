@@ -95,7 +95,7 @@ class EpochTopics {
   }
 
  private:
-  absl::optional<Topic> TopicForSiteHelper(
+  std::optional<Topic> TopicForSiteHelper(
       const std::string& top_domain,
       bool need_filtering,
       bool allow_random_or_padded_topic,

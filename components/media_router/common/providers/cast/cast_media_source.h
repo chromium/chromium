@@ -7,6 +7,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using cast_channel::CastDeviceCapabilitySet;
 using cast_channel::ReceiverAppType;
@@ -150,11 +150,11 @@ class CastMediaSource {
   DefaultActionPolicy default_action_policy() const {
     return default_action_policy_;
   }
-  absl::optional<base::TimeDelta> target_playout_delay() const {
+  std::optional<base::TimeDelta> target_playout_delay() const {
     return target_playout_delay_;
   }
   void set_target_playout_delay(
-      const absl::optional<base::TimeDelta>& target_playout_delay) {
+      const std::optional<base::TimeDelta>& target_playout_delay) {
     target_playout_delay_ = target_playout_delay;
   }
   // See also: ProvidesStreamingAudioCapture().
@@ -188,7 +188,7 @@ class CastMediaSource {
   base::TimeDelta launch_timeout_ = kDefaultLaunchTimeout;
   // Optional parameters.
   std::string client_id_;
-  absl::optional<base::TimeDelta> target_playout_delay_;
+  std::optional<base::TimeDelta> target_playout_delay_;
   bool site_requested_audio_capture_ = true;
   std::vector<ReceiverAppType> supported_app_types_ = {ReceiverAppType::kWeb};
   std::string app_params_;

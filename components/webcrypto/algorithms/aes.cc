@@ -205,7 +205,7 @@ Status AesAlgorithm::DeserializeKeyForClone(
 
 Status AesAlgorithm::GetKeyLength(
     const blink::WebCryptoAlgorithm& key_length_algorithm,
-    absl::optional<unsigned int>* length_bits) const {
+    std::optional<unsigned int>* length_bits) const {
   *length_bits = key_length_algorithm.AesDerivedKeyParams()->LengthBits();
 
   if (length_bits->value() == 128 || length_bits->value() == 256) {

@@ -31,7 +31,7 @@ class PredictionServiceBase : public KeyedService {
   using LookupResponseCallback = base::OnceCallback<void(
       bool,  // Lookup successful.
       bool,  // Response from cache.
-      const absl::optional<GeneratePredictionsResponse>&)>;
+      const std::optional<GeneratePredictionsResponse>&)>;
 
   virtual void StartLookup(const PredictionRequestFeatures& entity,
                            LookupRequestCallback request_callback,

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_HANDLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_HANDLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -24,7 +26,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -57,9 +58,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
       std::unique_ptr<ModelExecutor<OutputType, InputType>> model_executor,
       // Passing nullopt will use a default value.
-      absl::optional<base::TimeDelta> model_inference_timeout,
+      std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata)
+      const std::optional<proto::Any>& model_metadata)
       : model_provider_(model_provider),
         optimization_target_(optimization_target),
         model_executor_(std::move(model_executor)),
@@ -104,7 +105,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // when completed. Virtual for testing.
   // TODO(crbug/1173328): Add a way to surface errors.
   using ExecutionCallback =
-      base::OnceCallback<void(const absl::optional<OutputType>&)>;
+      base::OnceCallback<void(const std::optional<OutputType>&)>;
   virtual void ExecuteModelWithInput(ExecutionCallback callback,
                                      InputType input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -139,7 +140,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // |ExecuteModelWithInput| with a |base::BarrierClosure| (see
   // page_content_annotation_job_executor.cc for an example and explanation).
   using BatchExecutionCallback =
-      base::OnceCallback<void(const std::vector<absl::optional<OutputType>>&)>;
+      base::OnceCallback<void(const std::vector<std::optional<OutputType>>&)>;
   virtual void BatchExecuteModelWithInput(
       BatchExecutionCallback callback,
       typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
@@ -162,7 +163,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // Runs synchronous batch model execution.
   // Returns batch model outputs.
-  std::vector<absl::optional<OutputType>> BatchExecuteModelWithInputSync(
+  std::vector<std::optional<OutputType>> BatchExecuteModelWithInputSync(
       typename ModelExecutor<OutputType, InputType>::ConstRefInputVector
           inputs) {
     base::ElapsedTimer timer;
@@ -217,7 +218,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
                       base::optional_ref<const ModelInfo> model_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    absl::optional<base::FilePath> model_file_path;
+    std::optional<base::FilePath> model_file_path;
 
     if (optimization_target_ != optimization_target)
       return;
@@ -227,7 +228,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
           "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable." +
               GetStringNameForOptimizationTarget(optimization_target_),
           base::TimeTicks::Now() - *handler_created_time_);
-      handler_created_time_ = absl::nullopt;
+      handler_created_time_ = std::nullopt;
     }
 
     model_available_ = model_info.has_value();
@@ -235,7 +236,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       model_info_ = *model_info;
       model_file_path = model_info->GetModelFilePath();
     } else {
-      model_info_ = absl::nullopt;
+      model_info_ = std::nullopt;
     }
 
     model_executor_task_runner_->PostTask(
@@ -268,7 +269,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
     on_model_updated_callbacks_.AddUnsafe(std::move(callback));
   }
 
-  absl::optional<ModelInfo> GetModelInfo() const {
+  std::optional<ModelInfo> GetModelInfo() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return model_info_;
   }
@@ -279,10 +280,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
       class T,
       class = typename std::enable_if<
           std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
-  absl::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
+  std::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!model_info_ || !model_info_->GetModelMetadata())
-      return absl::nullopt;
+      return std::nullopt;
     return ParsedAnyMetadata<T>(*model_info_->GetModelMetadata());
   }
 
@@ -325,7 +326,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       ExecutionCallback callback,
       proto::OptimizationTarget optimization_target,
       base::TimeTicks model_execute_start_time,
-      const absl::optional<OutputType>& output) {
+      const std::optional<OutputType>& output) {
     RecordTaskExecutionLatency(
         optimization_target,
         /*execution_time=*/base::TimeTicks::Now() - model_execute_start_time);
@@ -337,7 +338,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
       BatchExecutionCallback callback,
       proto::OptimizationTarget optimization_target,
       base::TimeTicks model_execute_start_time,
-      const std::vector<absl::optional<OutputType>>& output) {
+      const std::vector<std::optional<OutputType>>& output) {
     RecordTaskExecutionLatency(
         optimization_target,
         /*execution_time=*/base::TimeTicks::Now() - model_execute_start_time);
@@ -356,7 +357,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   //
   // Will only be non-nullopt if a model has not been received yet after the
   // target was registered.
-  absl::optional<base::TimeTicks> handler_created_time_;
+  std::optional<base::TimeTicks> handler_created_time_;
 
   // The owned model executor.
   std::unique_ptr<ModelExecutor<OutputType, InputType>> model_executor_;
@@ -368,7 +369,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 
   // Set in |OnModelUpdated|.
-  absl::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Populated with callbacks if |AddOnModelUpdatedCallback| is called before a
   // model file is available, then is notified when |OnModelUpdated| is called.

@@ -163,7 +163,7 @@ ProfileOAuth2TokenServiceIOSDelegate::~ProfileOAuth2TokenServiceIOSDelegate() {
 void ProfileOAuth2TokenServiceIOSDelegate::Shutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   accounts_.clear();
-  ClearAuthError(absl::nullopt);
+  ClearAuthError(std::nullopt);
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
@@ -286,7 +286,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
 
 void ProfileOAuth2TokenServiceIOSDelegate::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const absl::optional<CoreAccountId>& primary_account_id) {
+        const std::optional<CoreAccountId>& primary_account_id) {
   ReloadCredentials(primary_account_id.value_or(CoreAccountId()));
 }
 

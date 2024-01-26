@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -152,9 +152,9 @@ class ModelExecutionFetcherTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
 
-  absl::optional<proto::ExecuteRequest> last_execute_request_;
-  absl::optional<base::expected<proto::ExecuteResponse,
-                                OptimizationGuideModelExecutionError>>
+  std::optional<proto::ExecuteRequest> last_execute_request_;
+  std::optional<base::expected<proto::ExecuteResponse,
+                               OptimizationGuideModelExecutionError>>
       last_execute_response_;
   std::string last_authorization_request_header_;
 };

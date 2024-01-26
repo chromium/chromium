@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 AutocompleteScoringModelService::AutocompleteScoringModelService(
     optimization_guide::OptimizationGuideModelProvider* model_provider) {
@@ -27,7 +27,7 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
             model_provider, model_executor_task_runner_.get(),
             std::make_unique<AutocompleteScoringModelExecutor>(),
             optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
-            /*model_metadata=*/absl::nullopt);
+            /*model_metadata=*/std::nullopt);
   }
 }
 
@@ -53,7 +53,7 @@ AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
     return {};
   }
 
-  absl::optional<std::vector<std::vector<float>>> batch_model_input =
+  std::optional<std::vector<std::vector<float>>> batch_model_input =
       url_scoring_model_handler_->GetBatchModelInput(batch_scoring_signals);
   if (!batch_model_input) {
     return {};
@@ -66,9 +66,8 @@ AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
   std::vector<Result> batch_results;
   batch_results.reserve(batch_model_output.size());
   for (const auto& model_output : batch_model_output) {
-    batch_results.emplace_back(model_output
-                                   ? absl::make_optional(model_output->at(0))
-                                   : absl::nullopt);
+    batch_results.emplace_back(
+        model_output ? std::make_optional(model_output->at(0)) : std::nullopt);
   }
   return batch_results;
 }

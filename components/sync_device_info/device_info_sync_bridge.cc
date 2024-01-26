@@ -71,11 +71,11 @@ base::TimeDelta GetPulseIntervalFromSpecifics(
   return base::Days(1);
 }
 
-absl::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
+std::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
     const DeviceInfoSpecifics& specifics) {
   TRACE_EVENT0("sync", "syncer::SpecificsToSharingInfo");
   if (!specifics.has_sharing_fields()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
@@ -97,10 +97,10 @@ std::vector<uint8_t> VectorFromString(const std::string& s) {
   return std::vector<uint8_t>(ptr, ptr + s.size());
 }
 
-absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo>
+std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>
 SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   if (!specifics.has_paask_fields()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DeviceInfo::PhoneAsASecurityKeyInfo to;
@@ -109,19 +109,19 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
       !from.has_contact_id() || !from.has_secret() ||
       !from.has_peer_public_key_x962() ||
       from.tunnel_server_domain() >= 0x10000) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   to.tunnel_server_domain = from.tunnel_server_domain();
   to.id = from.id();
   to.contact_id = VectorFromString(from.contact_id());
 
   if (from.secret().size() != to.secret.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   memcpy(to.secret.data(), from.secret().data(), to.secret.size());
 
   if (from.peer_public_key_x962().size() != to.peer_public_key_x962.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   memcpy(to.peer_public_key_x962.data(), from.peer_public_key_x962().data(),
          to.peer_public_key_x962.size());
@@ -235,7 +235,7 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   feature_fields->set_send_tab_to_self_receiving_enabled(
       info.send_tab_to_self_receiving_enabled());
 
-  const absl::optional<DeviceInfo::SharingInfo>& sharing_info =
+  const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
   if (sharing_info) {
     SharingSpecificFields* sharing_fields = specifics->mutable_sharing_fields();
@@ -256,7 +256,7 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     }
   }
 
-  const absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& paask_info =
+  const std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& paask_info =
       info.paask_info();
   if (paask_info) {
     *specifics->mutable_paask_fields() =
@@ -412,7 +412,7 @@ DeviceInfoSyncBridge::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
+std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -444,10 +444,10 @@ absl::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   // Complete batch with local data and commit.
   SendLocalDataWithBatch(std::move(batch));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK(!local_cache_guid_.empty());
@@ -496,7 +496,7 @@ absl::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     reuploaded_on_tombstone_ = true;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeviceInfoSyncBridge::GetData(StorageKeyList storage_keys,
@@ -639,8 +639,7 @@ void DeviceInfoSyncBridge::NotifyObservers() {
 }
 
 // static
-absl::optional<ModelError>
-DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
+std::optional<ModelError> DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
     ClientIdToDeviceInfo* all_data,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK(all_data);
@@ -657,7 +656,7 @@ DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
     all_data->try_emplace(std::move(cache_guid), std::move(specifics));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeviceInfoSyncBridge::StoreSpecifics(DeviceInfoSpecifics specifics,
@@ -695,7 +694,7 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
 }
 
 void DeviceInfoSyncBridge::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -725,7 +724,7 @@ void DeviceInfoSyncBridge::OnLocalDeviceNameInfoRetrieved(
 
 void DeviceInfoSyncBridge::OnReadAllData(
     std::unique_ptr<ClientIdToDeviceInfo> all_data,
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   DCHECK(all_data);
 
   if (error) {
@@ -741,7 +740,7 @@ void DeviceInfoSyncBridge::OnReadAllData(
 }
 
 void DeviceInfoSyncBridge::OnReadAllMetadata(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::OnReadAllMetadata");
   if (error) {
@@ -821,7 +820,7 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
 }
 
 void DeviceInfoSyncBridge::OnCommit(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

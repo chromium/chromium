@@ -94,6 +94,6 @@ WebAuthnCredManDelegate::CredManMode() {
   return CredManEnabledMode::kNotEnabled;
 }
 
-std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = absl::nullopt;
+std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = std::nullopt;
 
 }  // namespace webauthn

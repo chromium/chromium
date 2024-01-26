@@ -5,6 +5,7 @@
 #include "components/reporting/metrics/one_shot_collector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -86,7 +86,7 @@ bool OneShotCollector::CanCollect() const {
 
 void OneShotCollector::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   CheckOnSequence();
   CHECK(is_event_driven || on_data_reported_);
   CHECK(metric_report_queue_);

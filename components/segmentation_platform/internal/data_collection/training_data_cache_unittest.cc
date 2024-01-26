@@ -43,15 +43,15 @@ class TrainingDataCacheTest : public testing::Test {
   void VerifyGetInputsAndDelete(SegmentId segment_id,
                                 ModelSource model_source,
                                 TrainingRequestId request_id,
-                                absl::optional<proto::TrainingData> expected) {
+                                std::optional<proto::TrainingData> expected) {
     training_data_cache_->GetInputsAndDelete(
         kSegmentId, model_source, kRequestId,
         base::BindOnce(&TrainingDataCacheTest::OnGetTrainingData,
                        base::Unretained(this), expected));
   }
 
-  void OnGetTrainingData(absl::optional<proto::TrainingData> expected,
-                         absl::optional<proto::TrainingData> actual) {
+  void OnGetTrainingData(std::optional<proto::TrainingData> expected,
+                         std::optional<proto::TrainingData> actual) {
     EXPECT_EQ(actual.has_value(), expected.has_value());
     if (expected.has_value()) {
       EXPECT_EQ(actual.value().inputs_size(), expected.value().inputs_size());
@@ -69,9 +69,9 @@ class TrainingDataCacheTest : public testing::Test {
 TEST_F(TrainingDataCacheTest, GetTrainingDataFromEmptyCache) {
   // Empty cache should return no result.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::DEFAULT_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::SERVER_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
 }
 
 TEST_F(TrainingDataCacheTest, GetTrainingDataFromCache) {
@@ -86,7 +86,7 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromCache) {
 
   // Cache/DB doesn't have entry for default model source for given segment.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::DEFAULT_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
 
   // Cache will return and delete the corresponding training data.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::SERVER_MODEL_SOURCE,
@@ -94,7 +94,7 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromCache) {
 
   // Cache/DB will return no result since the request has been deleted.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::SERVER_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
 }
 
 TEST_F(TrainingDataCacheTest, GetTrainingDataFromDB) {
@@ -109,7 +109,7 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromDB) {
 
   // Cache/DB doesn't have entry for server model source for given segment.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::SERVER_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
 
   // DB will return and delete the corresponding training data.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::DEFAULT_MODEL_SOURCE,
@@ -117,7 +117,7 @@ TEST_F(TrainingDataCacheTest, GetTrainingDataFromDB) {
 
   // Cache/DB will return no result since the request has been deleted.
   VerifyGetInputsAndDelete(kSegmentId, ModelSource::DEFAULT_MODEL_SOURCE,
-                           kRequestId, absl::nullopt);
+                           kRequestId, std::nullopt);
 }
 
 }  // namespace segmentation_platform

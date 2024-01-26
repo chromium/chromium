@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/optimization_guide/core/optimization_guide_store.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_util.h"
@@ -29,7 +31,6 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -808,7 +809,7 @@ void OptimizationGuideStore::OnLoadHint(
   UMA_HISTOGRAM_ENUMERATION("OptimizationGuide.HintCache.HintType.Loaded",
                             store_entry_type);
 
-  absl::optional<base::Time> expiry_time;
+  std::optional<base::Time> expiry_time;
   if (entry->has_expiry_time_secs()) {
     expiry_time = base::Time::FromDeltaSinceWindowsEpoch(
         base::Seconds(entry->expiry_time_secs()));
@@ -831,7 +832,7 @@ void OptimizationGuideStore::CleanUpFilePaths() {
   ScopedDictPrefUpdate file_paths_to_delete_pref(
       pref_service_, prefs::kStoreFilePathsToDelete);
   for (const auto entry : *file_paths_to_delete_pref) {
-    absl::optional<base::FilePath> path_to_delete =
+    std::optional<base::FilePath> path_to_delete =
         StringToFilePath(entry.first);
     if (!path_to_delete) {
       // This is probably not a real file path so delete it from the pref, so we

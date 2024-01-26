@@ -4,12 +4,13 @@
 
 #include "components/user_manager/user_directory_integrity_manager.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 
@@ -50,13 +51,13 @@ void UserDirectoryIntegrityManager::ClearPrefs() {
   local_state_->CommitPendingWrite();
 }
 
-absl::optional<AccountId>
+std::optional<AccountId>
 UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
-  absl::optional<std::string> misconfigured_user_email =
+  std::optional<std::string> misconfigured_user_email =
       GetMisconfiguredUserEmail();
 
   if (!misconfigured_user_email.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   UserList users = UserManager::Get()->GetUsers();
@@ -86,21 +87,21 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
   // `auth_session_authenticator` for regular and kiosk users, it should be
   // impossible to reach here after checking for both types of users above.
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 UserDirectoryIntegrityManager::GetMisconfiguredUserEmail() {
   auto incomplete_user_email =
       local_state_->GetString(kUserDirectoryIntegrityAccountPref);
   return incomplete_user_email.empty()
-             ? absl::nullopt
-             : absl::make_optional(incomplete_user_email);
+             ? std::nullopt
+             : std::make_optional(incomplete_user_email);
 }
 
 bool UserDirectoryIntegrityManager::IsUserMisconfigured(
     const AccountId& account_id) {
-  absl::optional<std::string> incomplete_user_email =
+  std::optional<std::string> incomplete_user_email =
       GetMisconfiguredUserEmail();
   return incomplete_user_email.has_value() &&
          incomplete_user_email == account_id.GetUserEmail();

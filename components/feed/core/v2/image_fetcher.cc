@@ -76,7 +76,7 @@ void ImageFetcher::OnFetchComplete(ImageFetchId id,
                                    std::unique_ptr<std::string> response_data) {
   TRACE_EVENT_END("android.ui.jank", perfetto::Track(GetTrackId(id)), "bytes",
                   response_data ? response_data->size() : 0);
-  absl::optional<PendingRequest> request = RemovePending(id);
+  std::optional<PendingRequest> request = RemovePending(id);
   if (!request)
     return;
 
@@ -96,7 +96,7 @@ void ImageFetcher::OnFetchComplete(ImageFetchId id,
 }
 
 void ImageFetcher::Cancel(ImageFetchId id) {
-  absl::optional<PendingRequest> request = RemovePending(id);
+  std::optional<PendingRequest> request = RemovePending(id);
   if (!request)
     return;
 
@@ -106,13 +106,13 @@ void ImageFetcher::Cancel(ImageFetchId id) {
       .Run({/*response_bytes=*/std::string(), net::Error::ERR_ABORTED});
 }
 
-absl::optional<ImageFetcher::PendingRequest> ImageFetcher::RemovePending(
+std::optional<ImageFetcher::PendingRequest> ImageFetcher::RemovePending(
     ImageFetchId id) {
   auto iterator = pending_requests_.find(id);
   if (iterator == pending_requests_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
-  auto request = absl::make_optional(std::move(iterator->second));
+  auto request = std::make_optional(std::move(iterator->second));
   pending_requests_.erase(iterator);
   return request;
 }

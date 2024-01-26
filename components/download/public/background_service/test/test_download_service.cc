@@ -115,13 +115,13 @@ Logger* TestDownloadService::GetLogger() {
   return logger_.get();
 }
 
-const absl::optional<DownloadParams>& TestDownloadService::GetDownload(
+const std::optional<DownloadParams>& TestDownloadService::GetDownload(
     const std::string& guid) const {
   for (const auto& download : downloads_) {
     if (download.value().guid == guid)
       return download;
   }
-  static base::NoDestructor<absl::optional<DownloadParams>> none;
+  static base::NoDestructor<std::optional<DownloadParams>> none;
   return *none;
 }
 

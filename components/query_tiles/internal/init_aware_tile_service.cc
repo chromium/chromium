@@ -56,7 +56,7 @@ void InitAwareTileService::GetTile(const std::string& tile_id,
 
   if (IsFailed()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -123,7 +123,7 @@ void InitAwareTileService::OnTileClicked(const std::string& tile_id) {
 }
 
 void InitAwareTileService::OnQuerySelected(
-    const absl::optional<std::string>& parent_tile_id,
+    const std::optional<std::string>& parent_tile_id,
     const std::u16string& query_text) {
   if (IsReady()) {
     tile_service_->OnQuerySelected(std::move(parent_tile_id), query_text);

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_set>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -149,7 +149,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   bool has_deadline() const { return deadline_ && deadline_->has_deadline(); }
 
-  absl::optional<base::TimeTicks> deadline_for_testing() const {
+  std::optional<base::TimeTicks> deadline_for_testing() const {
     return deadline_->deadline_for_testing();
   }
 
@@ -316,11 +316,11 @@ class VIZ_SERVICE_EXPORT Surface final {
       CompositorRenderPassId render_pass_id);
 
   // Returns frame id of the oldest uncommitted frame if any,
-  absl::optional<uint64_t> GetFirstUncommitedFrameIndex();
+  std::optional<uint64_t> GetFirstUncommitedFrameIndex();
 
   // Returns frame index of the oldest uncommitted frame that is newer than
   // provided `frame_index`.
-  absl::optional<uint64_t> GetUncommitedFrameIndexNewerThan(
+  std::optional<uint64_t> GetUncommitedFrameIndexNewerThan(
       uint64_t frame_index);
 
  private:
@@ -383,7 +383,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // dependencies will be added even if they're not yet available.
   void UpdateActivationDependencies(const CompositorFrame& current_frame);
 
-  void UnrefFrameResourcesAndRunCallbacks(absl::optional<FrameData> frame_data);
+  void UnrefFrameResourcesAndRunCallbacks(std::optional<FrameData> frame_data);
   void ClearCopyRequests();
 
   void TakePendingLatencyInfo(std::vector<ui::LatencyInfo>* latency_info);
@@ -397,8 +397,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   base::WeakPtr<SurfaceClient> surface_client_;
   std::unique_ptr<SurfaceDependencyDeadline> deadline_;
 
-  absl::optional<FrameData> pending_frame_data_;
-  absl::optional<FrameData> active_frame_data_;
+  std::optional<FrameData> pending_frame_data_;
+  std::optional<FrameData> active_frame_data_;
 
   // Queue of uncommitted frames, oldest first.
   base::circular_deque<FrameData> uncommitted_frames_;

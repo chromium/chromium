@@ -243,10 +243,10 @@ TEST_F(LibsecretTest, LibsecretRepeats) {
   KeyStorageLibsecret libsecret("chromium");
   MockLibsecretLoader::ResetForOSCrypt();
   g_password_store.Pointer()->SetPassword("initial password");
-  absl::optional<std::string> password = libsecret.GetKey();
+  std::optional<std::string> password = libsecret.GetKey();
   EXPECT_TRUE(password.has_value());
   EXPECT_FALSE(password.value().empty());
-  absl::optional<std::string> password_repeat = libsecret.GetKey();
+  std::optional<std::string> password_repeat = libsecret.GetKey();
   EXPECT_TRUE(password_repeat.has_value());
   EXPECT_EQ(password.value(), password_repeat.value());
 }
@@ -254,9 +254,9 @@ TEST_F(LibsecretTest, LibsecretRepeats) {
 TEST_F(LibsecretTest, LibsecretCreatesRandomised) {
   KeyStorageLibsecret libsecret("chromium");
   MockLibsecretLoader::ResetForOSCrypt();
-  absl::optional<std::string> password = libsecret.GetKey();
+  std::optional<std::string> password = libsecret.GetKey();
   MockLibsecretLoader::ResetForOSCrypt();
-  absl::optional<std::string> password_new = libsecret.GetKey();
+  std::optional<std::string> password_new = libsecret.GetKey();
   EXPECT_TRUE(password.has_value());
   EXPECT_TRUE(password_new.has_value());
   EXPECT_NE(password.value(), password_new.value());

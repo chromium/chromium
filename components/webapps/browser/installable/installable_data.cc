@@ -13,7 +13,7 @@
 
 namespace webapps {
 
-Screenshot::Screenshot(SkBitmap image, absl::optional<std::u16string> label)
+Screenshot::Screenshot(SkBitmap image, std::optional<std::u16string> label)
     : image(std::move(image)), label(label) {}
 
 Screenshot::Screenshot(const Screenshot& screenshot) = default;

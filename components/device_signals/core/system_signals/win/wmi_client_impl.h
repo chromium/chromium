@@ -15,7 +15,7 @@ namespace device_signals {
 class WmiClientImpl : public WmiClient {
  public:
   using RunWmiQueryCallback =
-      base::RepeatingCallback<absl::optional<base::win::WmiError>(
+      base::RepeatingCallback<std::optional<base::win::WmiError>(
           const std::wstring&,
           const std::wstring&,
           Microsoft::WRL::ComPtr<IEnumWbemClassObject>*)>;

@@ -708,12 +708,12 @@ class HeaderAndFooterContext {
         /*client=*/nullptr,
         /*is_hidden=*/false, /*is_prerendering=*/false,
         /*is_inside_portal=*/false,
-        /*fenced_frame_mode=*/absl::nullopt,
+        /*fenced_frame_mode=*/std::nullopt,
         /*compositing_enabled=*/false, /*widgets_never_composited=*/false,
         /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
         *source_frame.GetAgentGroupScheduler(),
         /*session_storage_namespace_id=*/base::EmptyString(),
-        /*page_base_background_color=*/absl::nullopt,
+        /*page_base_background_color=*/std::nullopt,
         blink::BrowsingContextGroupInfo::CreateUnique());
     view->GetSettings()->SetJavaScriptEnabled(true);
     return view;
@@ -983,13 +983,13 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_hidden=*/false,
       /*is_prerendering=*/false,
       /*is_inside_portal=*/false,
-      /*fenced_frame_mode=*/absl::nullopt,
+      /*fenced_frame_mode=*/std::nullopt,
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       *agent_group_scheduler_,
       /*session_storage_namespace_id=*/base::EmptyString(),
-      /*page_base_background_color=*/absl::nullopt,
+      /*page_base_background_color=*/std::nullopt,
       blink::BrowsingContextGroupInfo::CreateUnique());
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
@@ -1180,7 +1180,7 @@ bool PrintRenderFrameHelper::IsScriptInitiatedPrintAllowed(
 
 void PrintRenderFrameHelper::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   is_loading_ = true;
 }
 

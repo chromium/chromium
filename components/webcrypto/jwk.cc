@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/values.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // JSON Web Key Format (JWK) is defined by:
 // http://tools.ietf.org/html/draft-ietf-jose-json-web-key
@@ -208,7 +208,7 @@ Status JwkReader::Init(base::span<const uint8_t> bytes,
   {
     // Limit the visibility for |value| as it is moved to |dict_| (via
     // |dict_value|) once it has been loaded successfully.
-    absl::optional<base::Value> dict = base::JSONReader::Read(json_string);
+    std::optional<base::Value> dict = base::JSONReader::Read(json_string);
 
     if (!dict.has_value() || !dict->is_dict())
       return Status::ErrorJwkNotDictionary();

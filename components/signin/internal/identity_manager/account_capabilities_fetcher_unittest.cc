@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
+
+#include <optional>
+
 #include "account_capabilities_fetcher.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -17,7 +20,6 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
@@ -350,9 +352,9 @@ TEST_F(AccountCapabilitiesFetcherTest, FetchFailure) {
   base::HistogramTester tester;
 
   fetcher->Start();
-  absl::optional<AccountCapabilities> expected_capabilities;
+  std::optional<AccountCapabilities> expected_capabilities;
 #if BUILDFLAG(IS_ANDROID)
-  // Android never returns absl::nullopt even if the fetcher has failed to get
+  // Android never returns std::nullopt even if the fetcher has failed to get
   // all capabilities.
   expected_capabilities = AccountCapabilities();
 #endif
@@ -380,7 +382,7 @@ TEST_F(AccountCapabilitiesFetcherTest, TokenFailure) {
   base::HistogramTester tester;
 
   fetcher->Start();
-  EXPECT_CALL(callback, Run(account_id(), Eq(absl::nullopt)));
+  EXPECT_CALL(callback, Run(account_id(), Eq(std::nullopt)));
   SimulateIssueAccessTokenPersistentError();
 
   tester.ExpectTotalCount(

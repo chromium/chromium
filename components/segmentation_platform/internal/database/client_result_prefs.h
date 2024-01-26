@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CLIENT_RESULT_PREFS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CLIENT_RESULT_PREFS_H_
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/proto/client_results.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -35,7 +36,7 @@ class ClientResultPrefs {
   // with the new result.
   virtual void SaveClientResultToPrefs(
       const std::string& client_key,
-      absl::optional<proto::ClientResult> client_result);
+      std::optional<proto::ClientResult> client_result);
 
   // Reads the `ClientResult` from prefs, if present.
   virtual const proto::ClientResult* ReadClientResultFromPrefs(

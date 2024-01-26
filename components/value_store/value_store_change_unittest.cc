@@ -12,8 +12,8 @@ namespace value_store {
 
 TEST(ValueStoreChangeTest, ToValue) {
   ValueStoreChangeList changes;
-  changes.push_back(ValueStoreChange("foo", absl::nullopt, base::Value("bar")));
-  changes.push_back(ValueStoreChange("baz", base::Value("qux"), absl::nullopt));
+  changes.push_back(ValueStoreChange("foo", std::nullopt, base::Value("bar")));
+  changes.push_back(ValueStoreChange("baz", base::Value("qux"), std::nullopt));
 
   base::Value::Dict expected;
   base::Value::Dict expected_foo;

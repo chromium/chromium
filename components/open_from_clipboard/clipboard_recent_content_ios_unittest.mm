@@ -171,9 +171,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
     __block BOOL callback_called = NO;
-    __block absl::optional<GURL> optional_gurl;
+    __block std::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(absl::optional<GURL> copied_url) {
+        base::BindOnce(^(std::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));
@@ -186,7 +186,7 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   }
 
   bool VerifyCacheClipboardContentTypeExists(ClipboardContentType type) {
-    absl::optional<std::set<ClipboardContentType>> cached_content_types =
+    std::optional<std::set<ClipboardContentType>> cached_content_types =
         clipboard_content_->GetCachedClipboardContentTypes();
     if (cached_content_types.has_value()) {
       return cached_content_types.value().find(type) !=
@@ -200,9 +200,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
     __block BOOL callback_called = NO;
-    __block absl::optional<GURL> optional_gurl;
+    __block std::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(absl::optional<GURL> copied_url) {
+        base::BindOnce(^(std::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));

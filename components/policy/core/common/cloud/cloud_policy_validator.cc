@@ -283,7 +283,7 @@ CloudPolicyValidatorBase::CloudPolicyValidatorBase(
   if (command_line->HasSwitch(switches::kDisablePolicyKeyVerification)) {
     base::SysInfo::CrashIfChromeOSNonTestImage();
     // GetPolicyVerificationKey() returns a non-empty string.
-    verification_key_ = absl::nullopt;
+    verification_key_ = std::nullopt;
   } else {
     DCHECK(verification_key_);
   }

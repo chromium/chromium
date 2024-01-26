@@ -2613,11 +2613,11 @@ void PdfAccessibilityTree::HandleAction(
   action_handler_->HandleAccessibilityAction(action_data);
 }
 
-absl::optional<PdfAccessibilityTree::AnnotationInfo>
+std::optional<PdfAccessibilityTree::AnnotationInfo>
 PdfAccessibilityTree::GetPdfAnnotationInfoFromAXNode(int32_t ax_node_id) const {
   auto iter = node_id_to_annotation_info_.find(ax_node_id);
   if (iter == node_id_to_annotation_info_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return AnnotationInfo(iter->second.page_index, iter->second.annotation_index);
 }

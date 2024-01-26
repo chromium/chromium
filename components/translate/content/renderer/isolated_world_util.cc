@@ -4,18 +4,18 @@
 
 #include "components/translate/content/renderer/isolated_world_util.h"
 
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
 #include "components/translate/core/common/translate_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_url.h"
 
 namespace translate {
 
 void EnsureIsolatedWorldInitialized(int world_id) {
-  static absl::optional<int> last_used_world_id;
+  static std::optional<int> last_used_world_id;
   if (last_used_world_id) {
     // Early return since the isolated world info. is already initialized.
     DCHECK_EQ(*last_used_world_id, world_id)

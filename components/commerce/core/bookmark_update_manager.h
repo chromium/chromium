@@ -56,7 +56,7 @@ class BookmarkUpdateManager {
   // update the corresponding bookmark if there is new information.
   void HandleOnDemandResponse(const int64_t bookmark_id,
                               const GURL& url,
-                              absl::optional<ProductInfo> info);
+                              std::optional<ProductInfo> info);
 
   raw_ptr<ShoppingService> shopping_service_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;

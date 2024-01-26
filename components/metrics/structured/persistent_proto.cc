@@ -143,7 +143,7 @@ std::optional<std::string> PersistentProto<T>::SerializeData() {
   std::string proto_str;
   if (!proto_->SerializeToString(&proto_str)) {
     OnWriteComplete(WriteStatus::kSerializationError);
-    return absl::nullopt;
+    return std::nullopt;
   }
   proto_file_.RegisterOnNextWriteCallbacks(
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory),

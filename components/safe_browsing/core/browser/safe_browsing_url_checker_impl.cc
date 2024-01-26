@@ -114,7 +114,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     UnsafeResource::RenderProcessId render_process_id,
     const UnsafeResource::RenderFrameToken& render_frame_token,
     UnsafeResource::FrameTreeNodeId frame_tree_node_id,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
     bool can_check_db,
@@ -224,7 +224,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
 void SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf(
     PerformedCheck performed_check,
     bool timed_out,
-    absl::optional<std::unique_ptr<CompleteCheckResult>> result) {
+    std::optional<std::unique_ptr<CompleteCheckResult>> result) {
   DCHECK_EQ(result.has_value(), !timed_out);
   lookup_mechanism_runner_.reset();
   if (timed_out) {
@@ -233,7 +233,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf(
     OnUrlResultInternalAndMaybeDeleteSelf(urls_[next_index_].url,
                                           safe_browsing::SB_THREAT_TYPE_SAFE,
                                           ThreatMetadata(),
-                                          /*threat_source=*/absl::nullopt,
+                                          /*threat_source=*/std::nullopt,
                                           /*rt_lookup_response=*/nullptr,
                                           /*timed_out=*/true, performed_check);
   } else {
@@ -249,7 +249,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    absl::optional<ThreatSource> threat_source,
+    std::optional<ThreatSource> threat_source,
     std::unique_ptr<RTLookupResponse> rt_lookup_response,
     bool timed_out,
     PerformedCheck performed_check) {

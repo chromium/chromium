@@ -129,9 +129,9 @@ std::string GetStringNameForOptimizationTarget(
   return std::string();
 }
 
-absl::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
+std::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
   if (str_path.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(str_path));
@@ -160,13 +160,13 @@ std::string ModelOverrideSeparator() {
   return kModelOverrideSeparator;
 }
 
-absl::optional<
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
+std::optional<
+    std::pair<std::string, std::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   auto model_override_switch_value = switches::GetModelOverride();
   if (!model_override_switch_value)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<std::string> model_overrides =
       base::SplitString(*model_override_switch_value, ",",
@@ -178,7 +178,7 @@ GetModelOverrideForOptimizationTarget(
     if (override_parts.size() != 2 && override_parts.size() != 3) {
       // Input is malformed.
       DLOG(ERROR) << "Invalid string format provided to the Model Override";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     optimization_guide::proto::OptimizationTarget recv_optimization_target;
@@ -187,7 +187,7 @@ GetModelOverrideForOptimizationTarget(
       // Optimization target is invalid.
       DLOG(ERROR)
           << "Invalid optimization target provided to the Model Override";
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (optimization_target != recv_optimization_target)
       continue;
@@ -196,30 +196,30 @@ GetModelOverrideForOptimizationTarget(
     base::FilePath file_path = *StringToFilePath(file_name);
     if (!file_path.IsAbsolute()) {
       DLOG(ERROR) << "Provided model file path must be absolute " << file_name;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (override_parts.size() == 2) {
-      std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
-          file_path_and_metadata = std::make_pair(file_name, absl::nullopt);
+      std::pair<std::string, std::optional<optimization_guide::proto::Any>>
+          file_path_and_metadata = std::make_pair(file_name, std::nullopt);
       return file_path_and_metadata;
     }
 
     std::string binary_pb;
     if (!base::Base64Decode(override_parts[2], &binary_pb)) {
       DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
-      return absl::nullopt;
+      return std::nullopt;
     }
     optimization_guide::proto::Any model_metadata;
     if (!model_metadata.ParseFromString(binary_pb)) {
       DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
-      return absl::nullopt;
+      return std::nullopt;
     }
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>
+    std::pair<std::string, std::optional<optimization_guide::proto::Any>>
         file_path_and_metadata = std::make_pair(file_name, model_metadata);
     return file_path_and_metadata;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool CheckAllPathsExist(

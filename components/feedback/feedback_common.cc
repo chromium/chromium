@@ -222,7 +222,7 @@ void FeedbackCommon::PrepareReport(
   }
   if (!ai_metadata_.empty()) {
     // Add feedback data for each key/value pair.
-    absl::optional<base::Value::Dict> dict =
+    std::optional<base::Value::Dict> dict =
         base::JSONReader::ReadDict(ai_metadata_);
     CHECK(dict);
     for (auto pair : dict.value()) {

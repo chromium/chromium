@@ -96,8 +96,8 @@ void LogSignalCollectionFailed(SignalName signal_name,
 
 void LogSignalCollectionSucceeded(SignalName signal_name,
                                   base::TimeTicks start_time,
-                                  absl::optional<size_t> signal_collection_size,
-                                  absl::optional<size_t> signal_request_size) {
+                                  std::optional<size_t> signal_collection_size,
+                                  std::optional<size_t> signal_request_size) {
   base::UmaHistogramEnumeration(kCollectionSuccessHistogram, signal_name);
 
   const std::string histogram_variant = GetHistogramVariant(signal_name);

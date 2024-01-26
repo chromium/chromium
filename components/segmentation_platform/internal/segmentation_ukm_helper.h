@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_UKM_HELPER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_UKM_HELPER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -14,7 +15,6 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -59,8 +59,8 @@ class SegmentationUkmHelper {
       const ModelProvider::Request& input_tensors,
       const ModelProvider::Response& outputs,
       const std::vector<int>& output_indexes,
-      absl::optional<proto::PredictionResult> prediction_result,
-      absl::optional<SelectedSegment> selected_segment);
+      std::optional<proto::PredictionResult> prediction_result,
+      std::optional<SelectedSegment> selected_segment);
 
   // Returns whether a segment needs to upload training tensors.
   bool IsUploadRequested(const proto::SegmentInfo& segment_info) const;

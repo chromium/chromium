@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_GROUP_CONFIGURATIONS_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_GROUP_CONFIGURATIONS_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 struct GroupConfig;
@@ -15,7 +16,7 @@ struct GroupConfig;
 // optional. For this GroupConfig to be usable, the feature also needs to
 // be enabled by default. As GroupConfigs can only be client-side, this
 // function should return a non-empty optional for all supported Groups.
-absl::optional<GroupConfig> GetClientSideGroupConfig(
+std::optional<GroupConfig> GetClientSideGroupConfig(
     const base::Feature* feature);
 
 }  // namespace feature_engagement

@@ -231,7 +231,7 @@ class TestHintsFetcher : public HintsFetcher {
     request_context_requested_ = request_context;
     switch (fetch_state) {
       case HintsFetcherEndState::kFetchFailed:
-        std::move(hints_fetched_callback).Run(absl::nullopt);
+        std::move(hints_fetched_callback).Run(std::nullopt);
         return false;
       case HintsFetcherEndState::kFetchSuccessWithHostHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

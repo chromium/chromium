@@ -485,7 +485,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteMostVisitedOnHistoryDeletion) {
                                 /*expired=*/false,
                                 {history::URLRow(GURL(kTestCase2[1].url))},
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
   EXPECT_EQ(std::vector<Link>(
                 {Link{GURL(kTestCase2[0].url), kTestCase2[0].title, true}}),
             custom_links_->GetLinks());
@@ -512,7 +512,7 @@ TEST_F(CustomLinksManagerImplTest,
           history::DeletionInfo(history::DeletionTimeRange::AllTime(),
                                 /*expired=*/false, history::URLRows(),
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
   EXPECT_TRUE(custom_links_->GetLinks().empty());
 
   task_environment_.RunUntilIdle();
@@ -541,7 +541,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteOnHistoryDeletionAfterShutdown) {
           history::DeletionInfo(history::DeletionTimeRange::AllTime(),
                                 /*expired=*/false, history::URLRows(),
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
   EXPECT_TRUE(custom_links_->GetLinks().empty());
 
   task_environment_.RunUntilIdle();
@@ -570,7 +570,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
                           history::DeletionTimeRange::Invalid(),
                           /*expired=*/false, {history::URLRow(GURL(kTestUrl))},
                           /*favicon_urls=*/std::set<GURL>(),
-                          /*restrict_urls=*/absl::nullopt));
+                          /*restrict_urls=*/std::nullopt));
   EXPECT_EQ(links_after_add, custom_links_->GetLinks());
 
   // Delete all Most Visited links.
@@ -581,7 +581,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
           history::DeletionInfo(history::DeletionTimeRange::AllTime(),
                                 /*expired=*/false, history::URLRows(),
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
   EXPECT_EQ(std::vector<Link>({Link{GURL(kTestUrl), kTestTitle16, false}}),
             custom_links_->GetLinks());
 
@@ -606,7 +606,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
           history::DeletionInfo(history::DeletionTimeRange::AllTime(),
                                 /*expired=*/true, history::URLRows(),
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
   static_cast<history::HistoryServiceObserver*>(custom_links_.get())
       ->OnURLsDeleted(
           // /*history_service=*/nullptr,
@@ -615,7 +615,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
                                 /*expired=*/true,
                                 {history::URLRow(GURL(kTestCase1[0].url))},
                                 /*favicon_urls=*/std::set<GURL>(),
-                                /*restrict_urls=*/absl::nullopt));
+                                /*restrict_urls=*/std::nullopt));
 
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 

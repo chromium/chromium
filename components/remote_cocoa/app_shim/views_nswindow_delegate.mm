@@ -4,6 +4,8 @@
 
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
@@ -13,7 +15,6 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/resize_utils.h"
 
 @implementation ViewsNSWindowDelegate {
@@ -21,7 +22,7 @@
   raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged>
       _parent;  // Weak. Owns this.
   NSCursor* __strong _cursor;
-  absl::optional<float> _aspectRatio;
+  std::optional<float> _aspectRatio;
   gfx::Size _excludedMargin;
   BOOL _updatedWindowTitleAfterFirstMiniaturization;
 
@@ -35,7 +36,7 @@
   // stick to it. This is necessary to achieve stable results, because in order
   // to keep the aspect ratio fixed we override one window dimension with a
   // value computed from the other dimension.
-  absl::optional<bool> _resizingHorizontally;
+  std::optional<bool> _resizingHorizontally;
 }
 
 - (instancetype)initWithBridgedNativeWidget:
@@ -137,7 +138,7 @@
   gfx::Rect resizedWindowRect(gfx::Point([window frame].origin),
                               gfx::Size(size));
 
-  absl::optional<gfx::Size> maxSizeParam;
+  std::optional<gfx::Size> maxSizeParam;
   gfx::Size maxSize([window maxSize]);
   if (!maxSize.IsEmpty())
     maxSizeParam = maxSize;

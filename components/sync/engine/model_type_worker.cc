@@ -268,7 +268,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     return false;
   }
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       cryptographer.AuthDecryptForCrossUserSharing(
           base::as_bytes(base::make_span(
               invitation.encrypted_password_sharing_invitation_data())),
@@ -338,9 +338,9 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
             std::make_unique<SyncInvalidationAdapter>(
                 model_type_state_.invalidations(i).hint(),
                 model_type_state_.invalidations(i).has_version()
-                    ? absl::optional<int64_t>(
+                    ? std::optional<int64_t>(
                           model_type_state_.invalidations(i).version())
-                    : absl::nullopt),
+                    : std::nullopt),
             false);
       }
 
@@ -1419,7 +1419,7 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     specifics->clear_client_only_unencrypted_data();
     CHECK(success);
 
-    absl::optional<std::vector<uint8_t>> encrypted_data =
+    std::optional<std::vector<uint8_t>> encrypted_data =
         cryptographer_->AuthEncryptForCrossUserSharing(
             base::as_bytes(base::make_span(serialized_password_data)),
             base::as_bytes(base::make_span(

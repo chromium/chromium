@@ -4,6 +4,7 @@
 
 #include "components/desks_storage/core/desk_template_conversion.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
@@ -27,7 +28,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -196,7 +196,7 @@ bool GetString(const base::Value::Dict& dict,
 }
 
 bool GetInt(const base::Value::Dict& dict, const char* key, int* out) {
-  absl::optional<int> value = dict.FindInt(key);
+  std::optional<int> value = dict.FindInt(key);
   if (!value)
     return false;
 
@@ -205,7 +205,7 @@ bool GetInt(const base::Value::Dict& dict, const char* key, int* out) {
 }
 
 bool GetBool(const base::Value::Dict& dict, const char* key, bool* out) {
-  absl::optional<bool> value = dict.FindBool(key);
+  std::optional<bool> value = dict.FindBool(key);
   if (!value)
     return false;
 
@@ -331,9 +331,9 @@ bool MakeTabGroupRangeFromDict(const base::Value::Dict& tab_group,
 
 // Constructs a TabGroupInfo from `tab_group` IFF all fields are present
 // and valid in the value parameter. Returns true on success, false on failure.
-absl::optional<tab_groups::TabGroupInfo> MakeTabGroupInfoFromDict(
+std::optional<tab_groups::TabGroupInfo> MakeTabGroupInfoFromDict(
     const base::Value::Dict& tab_group) {
-  absl::optional<tab_groups::TabGroupInfo> tab_group_info = absl::nullopt;
+  std::optional<tab_groups::TabGroupInfo> tab_group_info = std::nullopt;
 
   tab_groups::TabGroupVisualData visual_data;
   gfx::Range range;
@@ -492,7 +492,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     const base::Value::List* tab_groups = app.FindList(kTabGroups);
     if (tab_groups) {
       for (auto& tab : *tab_groups) {
-        absl::optional<tab_groups::TabGroupInfo> tab_group =
+        std::optional<tab_groups::TabGroupInfo> tab_group =
             MakeTabGroupInfoFromDict(tab.GetDict());
         if (tab_group.has_value()) {
           app_launch_info->tab_group_infos.push_back(

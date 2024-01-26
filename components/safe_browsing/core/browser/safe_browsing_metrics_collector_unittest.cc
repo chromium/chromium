@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -20,7 +21,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -722,8 +722,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
-  EXPECT_EQ(absl::nullopt, metrics_collector_->GetLatestEventTimestamp(
-                               EventType::DATABASE_INTERSTITIAL_BYPASS));
+  EXPECT_EQ(std::nullopt, metrics_collector_->GetLatestEventTimestamp(
+                              EventType::DATABASE_INTERSTITIAL_BYPASS));
   // Timestamps are rounded to second when stored in prefs.
   base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Seconds(base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
@@ -740,7 +740,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
        GetLatestSecuritySensitiveEventTimestamp) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
   // Timestamps are rounded to second when stored in prefs.
   base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(

@@ -7,15 +7,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
-
-#include "base/base64url.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -23,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -45,7 +44,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -346,12 +344,12 @@ class AutocompleteProviderTest : public testing::Test {
 
   struct SuggestionGroupsTestData {
     omnibox::GroupConfigMap suggestion_groups_map;
-    std::vector<absl::optional<omnibox::GroupId>> suggestion_group_ids;
+    std::vector<std::optional<omnibox::GroupId>> suggestion_group_ids;
   };
 
   struct SearchboxStatsTestData {
     const AutocompleteMatch::Type match_type;
-    absl::optional<omnibox::GroupId> group_id;
+    std::optional<omnibox::GroupId> group_id;
     const omnibox::metrics::ChromeSearchboxStats expected_searchbox_stats;
     omnibox::SuggestType type;
     base::flat_set<omnibox::SuggestSubtype> subtypes;

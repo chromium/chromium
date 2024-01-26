@@ -16,7 +16,7 @@ namespace commerce {
 
 shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
-    const absl::optional<const ProductInfo>& info,
+    const std::optional<const ProductInfo>& info,
     const std::string& locale) {
   auto product_info = shopping_service::mojom::ProductInfo::New();
 

@@ -37,7 +37,7 @@ TEST(EventTriggerDataTest, FromJSON) {
           R"json({})json",
           ValueIs(AllOf(Field(&EventTriggerData::data, 0),
                         Field(&EventTriggerData::priority, 0),
-                        Field(&EventTriggerData::dedup_key, absl::nullopt),
+                        Field(&EventTriggerData::dedup_key, std::nullopt),
                         Field(&EventTriggerData::filters, FilterPair()))),
       },
       {

@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_REPORTING_METRICS_SAMPLER_H_
 #define COMPONENTS_REPORTING_METRICS_SAMPLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
 using OptionalMetricCallback =
-    base::OnceCallback<void(absl::optional<MetricData>)>;
+    base::OnceCallback<void(std::optional<MetricData>)>;
 
 // A sampler is an object capable of collecting metrics data of a given type.
 // Metrics data can be either Information or Telemetry.

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_CONFIGURATION_POLICY_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefValueMap;
 
@@ -170,7 +170,7 @@ class POLICY_EXPORT ListPolicyHandler : public TypeCheckingPolicyHandler {
   // |errors| is not nullptr.
   bool CheckAndGetList(const policy::PolicyMap& policies,
                        policy::PolicyErrorMap* errors,
-                       absl::optional<base::Value::List>& filtered_list);
+                       std::optional<base::Value::List>& filtered_list);
 
   // Expected value type for list entries. All other types are filtered out.
   base::Value::Type list_entry_type_;

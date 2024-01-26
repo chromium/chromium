@@ -110,7 +110,7 @@ class LiveCaptionController : public KeyedService,
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
-  absl::optional<ui::CaptionStyle> caption_style_;
+  std::optional<ui::CaptionStyle> caption_style_;
 
   const std::string application_locale_;
 

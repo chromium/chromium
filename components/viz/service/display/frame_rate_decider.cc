@@ -200,7 +200,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // animating. This ensures that, for instance, if we're currently displaying
   // a video while the rest of the page is static, we choose the frame interval
   // optimal for the video.
-  absl::optional<base::TimeDelta> min_frame_sink_interval;
+  std::optional<base::TimeDelta> min_frame_sink_interval;
   [[maybe_unused]] bool all_frame_sinks_have_same_interval = true;
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =

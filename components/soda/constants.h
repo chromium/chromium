@@ -6,12 +6,12 @@
 #define COMPONENTS_SODA_CONSTANTS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "components/soda/pref_names.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace speech {
 
@@ -224,16 +224,16 @@ const base::FilePath GetSodaBinaryPath();
 // if SODA is not installed.
 const base::FilePath GetSodaTestBinaryPath();
 
-absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code);
 
-absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name);
 
 // Get the language component config matching a given language subtag. For
 // example, the "fr-CA" language name will return the language component config
 // for "fr-FR".
-absl::optional<SodaLanguagePackComponentConfig>
+std::optional<SodaLanguagePackComponentConfig>
 GetLanguageComponentConfigMatchingLanguageSubtag(
     const std::string& language_name);
 

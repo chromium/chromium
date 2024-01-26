@@ -6,12 +6,12 @@
 #define COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -34,7 +34,7 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
   // The type of bookmark to search for. By default this is empty which will
   // retrieve any type of bookmark. If set to PowerBookmarkType::UNSPECIFIED,
   // any bookmark that has power bookmark meta is retrieved.
-  absl::optional<power_bookmarks::PowerBookmarkType> type;
+  std::optional<power_bookmarks::PowerBookmarkType> type;
 };
 
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info

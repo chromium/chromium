@@ -21,9 +21,9 @@ void AnnotatorNoOp::BatchAnnotate(BatchAnnotationCallback callback,
 
 void AnnotatorNoOp::NotifyWhenModelAvailable(base::OnceClosure callback) {}
 
-absl::optional<optimization_guide::ModelInfo>
+std::optional<optimization_guide::ModelInfo>
 AnnotatorNoOp::GetBrowsingTopicsModelInfo() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace browsing_topics

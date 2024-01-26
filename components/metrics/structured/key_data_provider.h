@@ -53,13 +53,13 @@ class KeyDataProvider {
   // Retrieves the ID for given |project_name|.
   //
   // If no valid key is found for |project_name|, this function will return
-  // absl::nullopt.
+  // std::nullopt.
   virtual std::optional<uint64_t> GetId(const std::string& project_name) = 0;
 
   // Retrieves the secondary ID for given |project_name|.
   //
   // If no valid secondary key is found for |project_name|, this function will
-  // return absl::nullopt.
+  // return std::nullopt.
   //
   // TODO(b/290096302): Refactor event sequence populator so there is no
   // dependency on concepts such as device/profile in //components.

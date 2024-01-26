@@ -4,9 +4,10 @@
 
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
@@ -25,6 +26,6 @@ FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() {
 void FakeAccountCapabilitiesFetcher::StartImpl() {}
 
 void FakeAccountCapabilitiesFetcher::CompleteFetch(
-    const absl::optional<AccountCapabilities>& account_capabilities) {
+    const std::optional<AccountCapabilities>& account_capabilities) {
   CompleteFetchAndMaybeDestroySelf(account_capabilities);
 }

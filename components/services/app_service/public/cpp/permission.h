@@ -6,13 +6,13 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PERMISSION_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -47,7 +47,7 @@ struct COMPONENT_EXPORT(APP_TYPES) Permission {
   Permission(PermissionType permission_type,
              PermissionValue value,
              bool is_managed,
-             absl::optional<std::string> details = absl::nullopt);
+             std::optional<std::string> details = std::nullopt);
   Permission(const Permission&) = delete;
   Permission& operator=(const Permission&) = delete;
   ~Permission();
@@ -71,7 +71,7 @@ struct COMPONENT_EXPORT(APP_TYPES) Permission {
   // permission. May be displayed next to the permission value in UI surfaces.
   // e.g. a kLocation permission might have `details` of "While in use" or
   // "Approximate location only".
-  absl::optional<std::string> details;
+  std::optional<std::string> details;
 };
 
 using PermissionPtr = std::unique_ptr<Permission>;

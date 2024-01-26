@@ -47,7 +47,7 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, content_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                 are_contents_opaque, opacity, blend_mode, sorting_context_id,
                 /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return state;

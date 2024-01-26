@@ -305,7 +305,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
     network::mojom::CookieDeletionFilterPtr filter =
         network::mojom::CookieDeletionFilter::New();
     filter->including_domains =
-        absl::optional<std::vector<std::string>>({kGoogleDomain});
+        std::optional<std::vector<std::string>>({kGoogleDomain});
     cookie_manager->DeleteCookies(std::move(filter),
                                   base::OnceCallback<void(uint)>());
   }

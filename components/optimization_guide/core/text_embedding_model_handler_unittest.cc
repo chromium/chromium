@@ -21,7 +21,7 @@ class TextEmbeddingModelHandlerTest : public testing::Test {
     model_provider_ = std::make_unique<TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
         model_provider_.get(), task_environment_.GetMainThreadTaskRunner(),
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -90,7 +90,7 @@ TEST_F(TextEmbeddingModelHandlerTest, ShouldNotExtractTwoEmbeddings) {
   model_handler()->PostprocessEmbeddingsToBatchAnnotationResult(
       std::move(callback), AnnotationType::kTextEmbedding, "input", result);
 
-  EXPECT_EQ(embedding_result.embeddings(), absl::nullopt);
+  EXPECT_EQ(embedding_result.embeddings(), std::nullopt);
 }
 
 TEST_F(TextEmbeddingModelHandlerTest, HasNoEmbeddings) {
@@ -110,7 +110,7 @@ TEST_F(TextEmbeddingModelHandlerTest, HasNoEmbeddings) {
   model_handler()->PostprocessEmbeddingsToBatchAnnotationResult(
       std::move(callback), AnnotationType::kTextEmbedding, "input", result);
 
-  EXPECT_EQ(embedding_result.embeddings(), absl::nullopt);
+  EXPECT_EQ(embedding_result.embeddings(), std::nullopt);
 }
 
 }  // namespace optimization_guide

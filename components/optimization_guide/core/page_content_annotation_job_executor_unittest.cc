@@ -75,9 +75,9 @@ TEST_F(PageContentAnnotationJobExecutorTest, FullFlow) {
 
   ASSERT_EQ(2U, results.size());
   EXPECT_EQ(results[0].input(), "input1");
-  EXPECT_EQ(results[0].visibility_score(), absl::make_optional(kOutput));
+  EXPECT_EQ(results[0].visibility_score(), std::make_optional(kOutput));
   EXPECT_EQ(results[1].input(), "input2");
-  EXPECT_EQ(results[1].visibility_score(), absl::make_optional(kOutput));
+  EXPECT_EQ(results[1].visibility_score(), std::make_optional(kOutput));
 }
 
 }  // namespace optimization_guide

@@ -346,7 +346,7 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
   }
 
   if (UsesAutomaticEmbargo()) {
-    absl::optional<content::PermissionResult> result =
+    std::optional<content::PermissionResult> result =
         PermissionsClient::Get()
             ->GetPermissionDecisionAutoBlocker(browser_context_)
             ->GetEmbargoResult(requesting_origin, content_settings_type_);

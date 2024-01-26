@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_HOST_GPU_HOST_IMPL_H_
 
 #include <map>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -40,7 +41,6 @@
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "url/gurl.h"
 
@@ -74,8 +74,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     virtual void DidInitialize(
         const gpu::GPUInfo& gpu_info,
         const gpu::GpuFeatureInfo& gpu_feature_info,
-        const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-        const absl::optional<gpu::GpuFeatureInfo>&
+        const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+        const std::optional<gpu::GpuFeatureInfo>&
             gpu_feature_info_for_hardware_gpu,
         const gfx::GpuExtraInfo& gpu_extra_info) = 0;
     virtual void DidFailInitialize() = 0;
@@ -128,7 +128,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     std::string product;
 
     // Number of frames to CompositorFrame activation deadline.
-    absl::optional<uint32_t> deadline_to_synchronize_surfaces;
+    std::optional<uint32_t> deadline_to_synchronize_surfaces;
 
     // Task runner corresponding to the main thread.
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner;
@@ -248,8 +248,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void DidInitialize(
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
-      const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-      const absl::optional<gpu::GpuFeatureInfo>&
+      const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+      const std::optional<gpu::GpuFeatureInfo>&
           gpu_feature_info_for_hardware_gpu,
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   void DidFailInitialize() override;

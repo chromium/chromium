@@ -394,7 +394,7 @@ void BrowsingTopicsCalculator::OnRequestModelCompleted(
 
 void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     const std::vector<Annotation>& results) {
-  absl::optional<optimization_guide::ModelInfo> model_info =
+  std::optional<optimization_guide::ModelInfo> model_info =
       annotator_->GetBrowsingTopicsModelInfo();
 
   if (!model_info) {

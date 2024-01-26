@@ -90,15 +90,15 @@ class SegmentationModelExecutorTest : public testing::Test {
   }
 
   void PushModelFileToModelExecutor(
-      absl::optional<proto::SegmentationModelMetadata> metadata) {
-    absl::optional<optimization_guide::proto::Any> any;
+      std::optional<proto::SegmentationModelMetadata> metadata) {
+    std::optional<optimization_guide::proto::Any> any;
 
     // Craft a correct Any proto in the case we passed in metadata.
     if (metadata.has_value()) {
       std::string serialized_metadata;
       (*metadata).SerializeToString(&serialized_metadata);
       optimization_guide::proto::Any any_proto;
-      any = absl::make_optional(any_proto);
+      any = std::make_optional(any_proto);
       any->set_value(serialized_metadata);
       // Need to set the type URL for ParsedSupportedFeaturesForLoadedModel() to
       // work correctly, since it's verifying the type name.
@@ -145,7 +145,7 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
       [](base::RunLoop* run_loop,
          proto::SegmentationModelMetadata original_metadata,
          proto::SegmentId segment_id,
-         absl::optional<proto::SegmentationModelMetadata> actual_metadata,
+         std::optional<proto::SegmentationModelMetadata> actual_metadata,
          int64_t model_version) {
         // Verify that the callback is invoked with the correct data.
         EXPECT_EQ(kSegmentId, segment_id);
@@ -168,7 +168,7 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
   opt_guide_model_provider_->ExecuteModelWithInput(
       input, base::BindOnce(
                  [](base::RunLoop* run_loop,
-                    const absl::optional<ModelProvider::Response>& output) {
+                    const std::optional<ModelProvider::Response>& output) {
                    EXPECT_TRUE(output.has_value());
                    // 4 + 5 = 9
                    EXPECT_NEAR(9, output.value().at(0), 1e-1);
@@ -188,9 +188,9 @@ TEST_F(SegmentationModelExecutorTest, FailToProvideMetadata) {
   CreateModelExecutor(callback.Get());
   EXPECT_CALL(callback, Run(_, _, _)).Times(0);
 
-  // Intentionally pass an empty metadata which will pass absl::nullopt as the
+  // Intentionally pass an empty metadata which will pass std::nullopt as the
   // Any proto.
-  PushModelFileToModelExecutor(absl::nullopt);
+  PushModelFileToModelExecutor(std::nullopt);
   model_update_runloop->RunUntilIdle();
 
   EXPECT_TRUE(opt_guide_model_handler().ModelAvailable());

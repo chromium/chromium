@@ -93,8 +93,8 @@ constexpr int kMaxCastPresentationUrlLength = 64 * 1024;
 
 namespace {
 
-// A nonmember version of absl::optional::value_or that works on pointers as
-// well as instance of absl::optional.
+// A nonmember version of std::optional::value_or that works on pointers as
+// well as instance of std::optional.
 template <typename T>
 inline auto value_or(const T& optional,
                      const std::decay_t<decltype(*optional)>& default_value)

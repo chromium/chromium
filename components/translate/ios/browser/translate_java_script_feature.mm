@@ -27,7 +27,7 @@ TranslateJavaScriptFeature::TranslateJavaScriptFeature()
 
 TranslateJavaScriptFeature::~TranslateJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 TranslateJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptMessageName;
 }

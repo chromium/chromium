@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -58,7 +58,7 @@ bool CompareSavedTabGroups(const SavedTabGroup& g1, const SavedTabGroup& g2) {
 SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                         const std::u16string& title,
                                         const base::Uuid& group_guid,
-                                        absl::optional<int> position) {
+                                        std::optional<int> position) {
   SavedTabGroupTab tab(GURL(url), title, group_guid, position);
   tab.SetFavicon(gfx::Image());
   return tab;
@@ -79,7 +79,7 @@ SavedTabGroup CreateTestSavedTabGroup() {
 
   std::vector<SavedTabGroupTab> tabs = {tab1, tab2};
 
-  SavedTabGroup group(title, color, tabs, absl::nullopt, id);
+  SavedTabGroup group(title, color, tabs, std::nullopt, id);
   return group;
 }
 
@@ -111,7 +111,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override {
+      const std::optional<base::Uuid>& tab_guid = std::nullopt) override {
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
@@ -129,7 +129,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override {
+      const std::optional<base::Uuid>& tab_guid = std::nullopt) override {
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
@@ -208,11 +208,11 @@ class SavedTabGroupModelTest : public ::testing::Test {
                                /*position=*/2)};
 
     saved_tab_group_model_->Add(
-        SavedTabGroup(title_1, color_1, group_1_tabs, absl::nullopt, id_1_));
+        SavedTabGroup(title_1, color_1, group_1_tabs, std::nullopt, id_1_));
     saved_tab_group_model_->Add(
-        SavedTabGroup(title_2, color_2, group_2_tabs, absl::nullopt, id_2_));
+        SavedTabGroup(title_2, color_2, group_2_tabs, std::nullopt, id_2_));
     saved_tab_group_model_->Add(
-        SavedTabGroup(title_3, color_3, group_3_tabs, absl::nullopt, id_3_));
+        SavedTabGroup(title_3, color_3, group_3_tabs, std::nullopt, id_3_));
   }
 
   void RemoveTestData() {
@@ -298,7 +298,7 @@ TEST_F(SavedTabGroupModelTest, AddNewElement) {
       "2nd link", u"Second Tab 4th Group", id_4, /*position=*/1);
 
   std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
-  SavedTabGroup group_4(title_4, color_4, group_4_tabs, absl::nullopt, id_4);
+  SavedTabGroup group_4(title_4, color_4, group_4_tabs, std::nullopt, id_4);
   saved_tab_group_model_->Add(group_4);
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_4));
@@ -733,7 +733,7 @@ TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {}, 3);
   SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {}, 4);
   SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {},
-                        absl::nullopt);
+                        std::nullopt);
 
   // This is the order we expect the groups in the model to be.
   std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
@@ -795,7 +795,7 @@ TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   // The model will have already removed and sent the index our element was at
   // before it was removed from the model. As such, we should get -1 when
   // checking the model and 0 for the retrieved index.
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(retrieved_guid_), absl::nullopt);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(retrieved_guid_), std::nullopt);
 }
 
 // Tests that SavedTabGroupModelObserver::Updated passes the correct
@@ -857,7 +857,7 @@ TEST_F(SavedTabGroupModelObserverTest, RemovedElementFromSync) {
   // The model will have already removed and sent the index our element was at
   // before it was removed from the model. As such, we should get -1 when
   // checking the model and 0 for the retrieved index.
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(retrieved_guid_), absl::nullopt);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(retrieved_guid_), std::nullopt);
 }
 
 // Tests that SavedTabGroupModelObserver::UpdatedFromSync passes the correct
@@ -908,7 +908,7 @@ TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
   // a valid index when searched by tab group id, but does return the right
   // index when searched by saved guid.
   saved_tab_group_model_->OnGroupClosedInTabStrip(tab_group_id);
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(tab_group_id), absl::nullopt);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(tab_group_id), std::nullopt);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(group_4.saved_guid()), index);
 }
 
@@ -916,13 +916,13 @@ TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
 // element from the model.
 TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   SavedTabGroup stg_1(std::u16string(u"stg_1"),
-                      tab_groups::TabGroupColorId::kGrey, {}, absl::nullopt,
+                      tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
                       base::Uuid::GenerateRandomV4());
   SavedTabGroup stg_2(std::u16string(u"stg_2"),
-                      tab_groups::TabGroupColorId::kGrey, {}, absl::nullopt,
+                      tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
                       base::Uuid::GenerateRandomV4());
   SavedTabGroup stg_3(std::u16string(u"stg_3"),
-                      tab_groups::TabGroupColorId::kGrey, {}, absl::nullopt,
+                      tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
                       base::Uuid::GenerateRandomV4());
 
   saved_tab_group_model_->Add(stg_1);
@@ -964,7 +964,7 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   base::Token matching_local_tab_id = base::Token::CreateRandom();
 
   SavedTabGroupTab tab(GURL(url::kAboutBlankURL), std::u16string(u"title"),
-                       matching_group.saved_guid(), /*position=*/absl::nullopt,
+                       matching_group.saved_guid(), /*position=*/std::nullopt,
                        matching_tab_guid, matching_local_tab_id);
   matching_group.AddTabLocally(std::move(tab));
   saved_tab_group_model_->Add(std::move(matching_group));

@@ -106,7 +106,7 @@ class PageTextObserver : public content::WebContentsObserver,
   friend class content::WebContentsUserData<PageTextObserver>;
 
   void OnFrameTextDumpCompleted(
-      absl::optional<FrameTextDumpResult> frame_result);
+      std::optional<FrameTextDumpResult> frame_result);
 
   void DispatchResponses();
 

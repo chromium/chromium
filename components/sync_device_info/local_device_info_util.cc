@@ -66,7 +66,7 @@ void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |full_hardware_class| is set on Chrome OS devices if the user has UMA
   // enabled. Otherwise |full_hardware_class| is set to an empty string.
-  if (const absl::optional<base::StringPiece> full_hardware_class =
+  if (const std::optional<base::StringPiece> full_hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {
     name_info_ptr->full_hardware_class =

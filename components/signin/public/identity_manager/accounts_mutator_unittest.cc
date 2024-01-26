@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -20,7 +21,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

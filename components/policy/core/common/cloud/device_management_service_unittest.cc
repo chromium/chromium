@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::DoAll;
@@ -142,7 +142,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
       DMAuth auth_data,
-      absl::optional<std::string>&& oauth_token,
+      std::optional<std::string>&& oauth_token,
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
           DeviceManagementService::Job::NO_RETRY,
@@ -1173,7 +1173,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
 
   std::unique_ptr<DeviceManagementService::Job> StartJobWithAuthData(
       DMAuth auth,
-      absl::optional<std::string> oauth_token) {
+      std::optional<std::string> oauth_token) {
     EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _));
     EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
 
@@ -1181,7 +1181,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
     std::unique_ptr<DeviceManagementService::Job> job =
         StartJob(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
                  /*critical=*/false, std::move(auth),
-                 oauth_token ? *oauth_token : absl::optional<std::string>());
+                 oauth_token ? *oauth_token : std::optional<std::string>());
     return job;
   }
 
@@ -1193,12 +1193,12 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
   }
 
   // Returns the value of 'Authorization' header if found.
-  absl::optional<std::string> GetAuthHeader(
+  std::optional<std::string> GetAuthHeader(
       const network::TestURLLoaderFactory::PendingRequest& request) {
     std::string header;
     bool result =
         request.request.headers.GetHeader(dm_protocol::kAuthHeader, &header);
-    return result ? absl::optional<std::string>(header) : absl::nullopt;
+    return result ? std::optional<std::string>(header) : std::nullopt;
   }
 };
 
@@ -1228,7 +1228,7 @@ TEST_F(DeviceManagementRequestAuthTest, OnlyOAuthToken) {
 TEST_F(DeviceManagementRequestAuthTest, OnlyDMToken) {
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartJobWithAuthData(DMAuth::FromDMToken(kDMToken),
-                           absl::nullopt /* oauth_token */));
+                           std::nullopt /* oauth_token */));
   EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
 
   const network::TestURLLoaderFactory::PendingRequest* request =
@@ -1246,7 +1246,7 @@ TEST_F(DeviceManagementRequestAuthTest, OnlyDMToken) {
 TEST_F(DeviceManagementRequestAuthTest, OnlyEnrollmentToken) {
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartJobWithAuthData(DMAuth::FromEnrollmentToken(kEnrollmentToken),
-                           absl::nullopt /* oauth_token */));
+                           std::nullopt /* oauth_token */));
   EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
 
   const network::TestURLLoaderFactory::PendingRequest* request =

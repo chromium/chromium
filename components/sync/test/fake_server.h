@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace switches {
 
@@ -300,7 +300,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   std::vector<std::unique_ptr<testing::ScopedTrace>> gtest_scoped_traces_;
 
   // If set, the server will return HTTP errors.
-  absl::optional<net::HttpStatusCode> http_error_status_code_;
+  std::optional<net::HttpStatusCode> http_error_status_code_;
 
   // All URLs received via HISTORY sync.
   std::set<std::string> committed_history_urls_;

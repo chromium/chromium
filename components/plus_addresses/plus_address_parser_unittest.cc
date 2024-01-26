@@ -4,11 +4,12 @@
 
 #include "components/plus_addresses/plus_address_parser.h"
 
+#include <optional>
+
 #include "base/json/json_reader.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
 
@@ -17,10 +18,10 @@ namespace plus_addresses {
 TEST(PlusAddressParsing, NotValidJson) {
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(
                 base::unexpected("error!")),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(PlusAddressParser::ParsePlusAddressMapFromV1List(
                 base::unexpected("error!")),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
@@ -28,7 +29,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   std::string plus_address = "fubar@plus.com";
 
   // Test when the plusMode should set is_confirmed to true.
-  absl::optional<base::Value> valid_mode =
+  std::optional<base::Value> valid_mode =
       base::JSONReader::Read(base::ReplaceStringPlaceholders(
           R"(
     {
@@ -48,7 +49,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   ASSERT_TRUE(valid_mode.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(valid_mode.value());
 
-  absl::optional<PlusProfile> valid_result =
+  std::optional<PlusProfile> valid_result =
       PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value));
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->facet, facet);
@@ -56,7 +57,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   EXPECT_EQ(valid_result->is_confirmed, true);
 
   // Test when the plusMode should set is_confirmed to false.
-  absl::optional<base::Value> invalid_mode =
+  std::optional<base::Value> invalid_mode =
       base::JSONReader::Read(base::ReplaceStringPlaceholders(
           R"(
     {
@@ -76,7 +77,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   data_decoder::DataDecoder::ValueOrError decoded =
       std::move(invalid_mode.value());
 
-  absl::optional<PlusProfile> invalid_result =
+  std::optional<PlusProfile> invalid_result =
       PlusAddressParser::ParsePlusProfileFromV1Create(std::move(decoded));
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->facet, facet);
@@ -86,7 +87,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
 
 // Validate that there is a plusAddress field in the plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfile":  {
         "plusEmail" : {
@@ -98,12 +99,12 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Validate that there is a plusMode field in the plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusMode) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfile":  {
         "plusEmail" : {
@@ -115,12 +116,12 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusMode) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Validate that there is a plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfile":  {
         "address": "foobar"
@@ -130,11 +131,11 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfile": {}
     }
@@ -142,11 +143,11 @@ TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
       {
         "plusAddress": "wouldnt this be nice?"
       }
@@ -154,11 +155,11 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
       {
         "plusProfile": "not a dict"
       }
@@ -166,12 +167,12 @@ TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Success case - Returns the plus address map.
 TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
-  absl::optional<base::Value> perfect = base::JSONReader::Read(R"(
+  std::optional<base::Value> perfect = base::JSONReader::Read(R"(
     {
       "plusProfiles": [
         {
@@ -194,7 +195,7 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
     )");
   ASSERT_TRUE(perfect.has_value());
 
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(
           std::move(perfect.value()));
   ASSERT_TRUE(result.has_value());
@@ -203,7 +204,7 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
   {
       "plusProfiles": [
         {
@@ -224,14 +225,14 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
     )");
   ASSERT_TRUE(json.has_value());
 
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
   {
       "plusProfiles": [
         {
@@ -252,14 +253,14 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
     )");
   ASSERT_TRUE(json.has_value());
 
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
   {
       "plusProfiles": [
         {
@@ -280,47 +281,47 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
     )");
   ASSERT_TRUE(json.has_value());
 
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_ReturnsEmptyMapForEmptyProfileList) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfiles": []
     }
     )");
   ASSERT_TRUE(json.has_value());
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap());
 }
 
 TEST(PlusAddressParsing, FromV1List_FailsIfPlusProfilesIsNotList) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfiles": 123
     }
     )");
   ASSERT_TRUE(json.has_value());
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   EXPECT_FALSE(result.has_value());
 }
 
 TEST(PlusAddressParsing, FromV1List_FailsIfMissingPlusProfilesKey) {
   // Note the slight difference in syntax ("plusProfiles" vs "plusProfile").
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
     {
       "plusProfile": [],
       "otherKey": 123
     }
     )");
   ASSERT_TRUE(json.has_value());
-  absl::optional<PlusAddressMap> result =
+  std::optional<PlusAddressMap> result =
       PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
   EXPECT_FALSE(result.has_value());
 }

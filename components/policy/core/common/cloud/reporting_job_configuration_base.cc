@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -215,7 +215,7 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
     int net_error,
     int response_code,
     const std::string& response_body) {
-  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
+  std::optional<base::Value> response = base::JSONReader::Read(response_body);
 
   // Parse the response even if |response_code| is not a success since the
   // response data may contain an error message.
@@ -249,10 +249,9 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
     }
   }
 
-  auto response_dict =
-      response && response->is_dict()
-          ? absl::make_optional(std::move(*response).TakeDict())
-          : absl::nullopt;
+  auto response_dict = response && response->is_dict()
+                           ? std::make_optional(std::move(*response).TakeDict())
+                           : std::nullopt;
   std::move(callback_).Run(job, status, response_code,
                            std::move(response_dict));
 }
@@ -282,7 +281,7 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
     UploadCompleteCallback callback)
     : JobConfigurationBase(type,
                            std::move(auth_data),
-                           /*oauth_token=*/absl::nullopt,
+                           /*oauth_token=*/std::nullopt,
                            factory),
       callback_(std::move(callback)),
       server_url_(server_url) {}

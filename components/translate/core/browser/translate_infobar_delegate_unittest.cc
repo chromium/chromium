@@ -311,7 +311,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
 
   const base::Value::Dict* dict =
       &pref_service_->GetDict(TranslatePrefs::kPrefTranslateAutoAlwaysCount);
-  absl::optional<int> translate_auto_always_count =
+  std::optional<int> translate_auto_always_count =
       dict->FindInt(kSourceLanguage);
   EXPECT_FALSE(translate_auto_always_count.has_value());
 
@@ -324,13 +324,13 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
       infobar_manager_->infobars()[0]->delegate()->AsTranslateInfoBarDelegate();
   EXPECT_TRUE(delegate->ShouldAutoAlwaysTranslate());
 
-  absl::optional<int> count =
+  std::optional<int> count =
       update_translate_accepted_dict.FindInt(kSourceLanguage);
-  EXPECT_EQ(absl::optional<int>(0), count);
+  EXPECT_EQ(std::optional<int>(0), count);
   // Get the dictionary again in order to update it.
   dict = &pref_service_->GetDict(TranslatePrefs::kPrefTranslateAutoAlwaysCount);
   translate_auto_always_count = dict->FindInt(kSourceLanguage);
-  EXPECT_EQ(absl::optional<int>(1), translate_auto_always_count);
+  EXPECT_EQ(std::optional<int>(1), translate_auto_always_count);
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
@@ -344,7 +344,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
 
   const base::Value::Dict* dict =
       &pref_service_->GetDict(TranslatePrefs::kPrefTranslateAutoAlwaysCount);
-  absl::optional<int> translate_auto_always_count =
+  std::optional<int> translate_auto_always_count =
       dict->FindInt(kUnknownLanguageCode);
   EXPECT_FALSE(translate_auto_always_count.has_value());
 
@@ -357,7 +357,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
       infobar_manager_->infobars()[0]->delegate()->AsTranslateInfoBarDelegate();
   EXPECT_FALSE(delegate->ShouldAutoAlwaysTranslate());
 
-  absl::optional<int> count =
+  std::optional<int> count =
       update_translate_accepted_dict.FindInt(kSourceLanguage);
   // Always translate not triggered, so count should be unchanged.
   EXPECT_FALSE(count.has_value());
@@ -397,7 +397,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
 
   const base::Value::Dict* dict =
       &pref_service_->GetDict(TranslatePrefs::kPrefTranslateAutoNeverCount);
-  absl::optional<int> translate_auto_never_count =
+  std::optional<int> translate_auto_never_count =
       dict->FindInt(kSourceLanguage);
   ASSERT_FALSE(translate_auto_never_count.has_value());
 
@@ -410,13 +410,13 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
       infobar_manager_->infobars()[0]->delegate()->AsTranslateInfoBarDelegate();
   EXPECT_TRUE(delegate->ShouldAutoNeverTranslate());
 
-  absl::optional<int> count =
+  std::optional<int> count =
       update_translate_denied_dict.FindInt(kSourceLanguage);
-  EXPECT_EQ(absl::optional<int>(0), count);
+  EXPECT_EQ(std::optional<int>(0), count);
   // Get the dictionary again in order to update it.
   dict = &pref_service_->GetDict(TranslatePrefs::kPrefTranslateAutoNeverCount);
   translate_auto_never_count = dict->FindInt(kSourceLanguage);
-  ASSERT_EQ(absl::optional<int>(1), translate_auto_never_count);
+  ASSERT_EQ(std::optional<int>(1), translate_auto_never_count);
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate_Not) {

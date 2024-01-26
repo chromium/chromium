@@ -333,9 +333,9 @@ void NudgeTracker::SetLocalChangeDelayIgnoringMinForTest(
 }
 
 void NudgeTracker::SetQuotaParamsForExtensionTypes(
-    absl::optional<int> max_tokens,
-    absl::optional<base::TimeDelta> refill_interval,
-    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+    std::optional<int> max_tokens,
+    std::optional<base::TimeDelta> refill_interval,
+    std::optional<base::TimeDelta> depleted_quota_nudge_delay) {
   for (const auto& [type, tracker] : type_trackers_) {
     tracker->SetQuotaParamsIfExtensionType(max_tokens, refill_interval,
                                            depleted_quota_nudge_delay);

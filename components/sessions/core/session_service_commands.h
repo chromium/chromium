@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/sessions/core/command_storage_manager.h"
@@ -15,7 +16,6 @@
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 namespace sessions {
@@ -46,12 +46,12 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     SessionWindow::WindowType type);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     SessionID tab_id,
-    absl::optional<tab_groups::TabGroupId> group);
+    std::optional<tab_groups::TabGroupId> group);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
     const tab_groups::TabGroupVisualData* visual_data,
-    const absl::optional<std::string> saved_guid = absl::nullopt);
+    const std::optional<std::string> saved_guid = std::nullopt);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
     SessionID tab_id,
     bool is_pinned);

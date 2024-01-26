@@ -47,7 +47,7 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
   const base::Value::Dict& dict =
       local_state_->GetDict(kBackgroundTracingSessionState);
 
-  absl::optional<int> state = dict.FindInt(kTracingStateKey);
+  std::optional<int> state = dict.FindInt(kTracingStateKey);
 
   if (state) {
     if (*state >= 0 &&

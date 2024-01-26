@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSIONS_CLIENT_H_
 #define COMPONENTS_PERMISSIONS_PERMISSIONS_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -19,7 +21,6 @@
 #include "components/permissions/request_type.h"
 #include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -137,7 +138,7 @@ class PermissionsClient {
   // with the result, and may be run synchronously if the result is available
   // immediately.
   using GetUkmSourceIdCallback =
-      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
+      base::OnceCallback<void(std::optional<ukm::SourceId>)>;
   virtual void GetUkmSourceId(content::BrowserContext* browser_context,
                               content::WebContents* web_contents,
                               const GURL& requesting_origin,
@@ -162,11 +163,11 @@ class PermissionsClient {
   virtual void TriggerPromptHatsSurveyIfEnabled(
       content::WebContents* web_contents,
       permissions::RequestType request_type,
-      absl::optional<permissions::PermissionAction> action,
+      std::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       permissions::PermissionRequestGestureType gesture_type,
-      absl::optional<base::TimeDelta> prompt_display_duration,
+      std::optional<base::TimeDelta> prompt_display_duration,
       bool is_post_prompt,
       const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_);
@@ -179,21 +180,21 @@ class PermissionsClient {
       PermissionPromptDisposition prompt_disposition,
       PermissionPromptDispositionReason prompt_disposition_reason,
       PermissionRequestGestureType gesture_type,
-      absl::optional<QuietUiReason> quiet_ui_reason,
+      std::optional<QuietUiReason> quiet_ui_reason,
       base::TimeDelta prompt_display_duration,
       content::WebContents* web_contents);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.
-  // Returns absl::nullopt if the user is not in the adoptive activation quiet
+  // Returns std::nullopt if the user is not in the adoptive activation quiet
   // ui dry run experiment group.
-  virtual absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
+  virtual std::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context);
 
   // Returns whether the |permission| has already been auto-revoked due to abuse
   // at least once for the given |origin|. Returns `nullopt` if permission
   // auto-revocation is not supported for a given permission type.
-  virtual absl::optional<bool> HasPreviouslyAutoRevokedPermission(
+  virtual std::optional<bool> HasPreviouslyAutoRevokedPermission(
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission);
@@ -201,7 +202,7 @@ class PermissionsClient {
   // If the embedder returns an origin here, any requests matching that origin
   // will be approved. Requests that do not match the returned origin will
   // immediately be finished without granting/denying the permission.
-  virtual absl::optional<url::Origin> GetAutoApprovalOrigin();
+  virtual std::optional<url::Origin> GetAutoApprovalOrigin();
 
   // Allows the embedder to bypass checking the embedding origin when performing
   // permission availability checks. This is used for example when a permission
@@ -213,7 +214,7 @@ class PermissionsClient {
   // Allows embedder to override the canonical origin for a permission request.
   // This is the origin that will be used for requesting/storing/displaying
   // permissions.
-  virtual absl::optional<GURL> OverrideCanonicalOrigin(
+  virtual std::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 

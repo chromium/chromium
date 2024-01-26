@@ -68,8 +68,8 @@ bool ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
   return false;
 }
 
-absl::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
-  return absl::nullopt;
+std::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
+  return std::nullopt;
 }
 
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(

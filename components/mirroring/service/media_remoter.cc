@@ -45,8 +45,8 @@ void MediaRemoter::StartRpcMessaging(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
     std::unique_ptr<openscreen::cast::Sender> audio_sender,
     std::unique_ptr<openscreen::cast::Sender> video_sender,
-    absl::optional<FrameSenderConfig> audio_config,
-    absl::optional<FrameSenderConfig> video_config) {
+    std::optional<FrameSenderConfig> audio_config,
+    std::optional<FrameSenderConfig> video_config) {
   DCHECK(audio_sender || video_sender);
   DCHECK(!openscreen_audio_sender_);
   DCHECK(!openscreen_video_sender_);
@@ -58,8 +58,8 @@ void MediaRemoter::StartRpcMessaging(
 
 void MediaRemoter::StartRpcMessagingInternal(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
-    absl::optional<FrameSenderConfig> audio_config,
-    absl::optional<FrameSenderConfig> video_config) {
+    std::optional<FrameSenderConfig> audio_config,
+    std::optional<FrameSenderConfig> video_config) {
   DCHECK(!cast_environment_);
 
   if (state_ != STARTING_REMOTING) {
@@ -123,8 +123,8 @@ void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
   cast_environment_ = nullptr;
   openscreen_audio_sender_ = nullptr;
   openscreen_video_sender_ = nullptr;
-  audio_config_ = absl::nullopt;
-  video_config_ = absl::nullopt;
+  audio_config_ = std::nullopt;
+  video_config_ = std::nullopt;
 
   // Don't change `state_` if remoting is disabled so that it won't attempt to
   // start remoting again after mirroring resumed.

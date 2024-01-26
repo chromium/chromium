@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_DB_ENTRY_H_
 #define COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_DB_ENTRY_H_
 
+#include <optional>
 #include <string>
 
 #include "components/download/database/download_info.h"
 #include "components/download/database/download_namespace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -27,7 +27,7 @@ struct DownloadDBEntry {
   std::string GetGuid() const;
 
   // Information about a regular download.
-  absl::optional<DownloadInfo> download_info;
+  std::optional<DownloadInfo> download_info;
 };
 
 }  // namespace download

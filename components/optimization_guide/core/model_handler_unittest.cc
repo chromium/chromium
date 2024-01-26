@@ -20,7 +20,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     // Make sure we send what is expected based on
     // TestModelHandler ctor.
@@ -28,8 +28,9 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
         proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
       return;
     }
-    if (model_metadata != absl::nullopt)
+    if (model_metadata != std::nullopt) {
       return;
+    }
 
     add_observer_called_ = true;
   }
@@ -88,7 +89,7 @@ class ModelHandlerTest : public testing::Test {
 
   void PushModelFileToModelExecutor(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata) {
+      const std::optional<proto::Any>& model_metadata) {
     DCHECK(model_handler());
     std::unique_ptr<ModelInfo> model_info =
         TestModelInfoBuilder()
@@ -138,7 +139,7 @@ TEST_F(ModelHandlerTest, ModelFileUpdatedWrongTarget) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
 
   EXPECT_FALSE(model_handler()->ModelAvailable());
 
@@ -157,7 +158,7 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
   EXPECT_TRUE(model_handler()->GetModelInfo());
 
@@ -180,10 +181,10 @@ TEST_F(ModelHandlerTest, MultipleModelUpdatesOnlyRecordsMetricOnce) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
@@ -206,7 +207,7 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
       any_metadata);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
-  absl::optional<proto::Duration> supported_features_for_loaded_model =
+  std::optional<proto::Duration> supported_features_for_loaded_model =
       model_handler()->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
   ASSERT_TRUE(supported_features_for_loaded_model.has_value());
   EXPECT_EQ(123, supported_features_for_loaded_model->seconds());
@@ -224,7 +225,7 @@ TEST_F(ModelHandlerTest, Execute) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             EXPECT_EQ((size_t)1, output.value().size());
             EXPECT_EQ(1.0f, output.value().at(0));
@@ -256,7 +257,7 @@ TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTracker) {
       &task_tracker,
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             EXPECT_EQ((size_t)1, output.value().size());
             EXPECT_EQ(1.0f, output.value().at(0));
@@ -288,7 +289,7 @@ TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTrackerCanceled) {
       &task_tracker,
       base::BindOnce(
           [](bool* task_completed,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             *task_completed = true;
           },
           &task_completed),

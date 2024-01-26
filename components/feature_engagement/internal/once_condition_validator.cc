@@ -4,10 +4,11 @@
 
 #include "components/feature_engagement/internal/once_condition_validator.h"
 
+#include <optional>
+
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -74,11 +75,11 @@ void OnceConditionValidator::NotifyDismissed(const base::Feature& feature) {
 }
 
 void OnceConditionValidator::SetPriorityNotification(
-    const absl::optional<std::string>& feature) {
+    const std::optional<std::string>& feature) {
   pending_priority_notification_ = feature;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 OnceConditionValidator::GetPendingPriorityNotification() {
   return pending_priority_notification_;
 }

@@ -37,7 +37,7 @@ AboutThisSiteService::AboutThisSiteService(
     TemplateURLService* template_url_service)
     : client_(std::move(client)), template_url_service_(template_url_service) {}
 
-absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
+std::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
     ukm::SourceId source_id,
     const TabHelper* tab_helper) const {
@@ -45,21 +45,21 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownNonGoogleDSE);
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!optimization_guide::IsValidURLForURLKeyedHint(url)) {
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownLocalHost);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!client_->IsOptimizationGuideAllowed()) {
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed);
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata;
+  std::optional<proto::AboutThisSiteMetadata> about_this_site_metadata;
   optimization_guide::OptimizationGuideDecision decision;
   if (tab_helper) {
     std::tie(decision, about_this_site_metadata) =
@@ -124,7 +124,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static

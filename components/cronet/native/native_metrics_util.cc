@@ -13,7 +13,7 @@ namespace native_metrics_util {
 void ConvertTime(const base::TimeTicks& ticks,
                  const base::TimeTicks& start_ticks,
                  const base::Time& start_time,
-                 absl::optional<Cronet_DateTime>* out) {
+                 std::optional<Cronet_DateTime>* out) {
   Cronet_DateTime date_time;
   date_time.value = metrics_util::ConvertTime(ticks, start_ticks, start_time);
   if (date_time.value == metrics_util::kNullTime) {

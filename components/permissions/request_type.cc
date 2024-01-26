@@ -203,7 +203,7 @@ bool IsRequestablePermissionType(ContentSettingsType content_settings_type) {
   return !!ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
 }
 
-absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
+std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     ContentSettingsType content_settings_type) {
   switch (content_settings_type) {
     case ContentSettingsType::ACCESSIBILITY_EVENTS:
@@ -234,7 +234,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       if (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault)) {
         return RequestType::kMidi;
       } else {
-        return absl::nullopt;
+        return std::nullopt;
       }
     case ContentSettingsType::MIDI_SYSEX:
       return RequestType::kMidiSysex;
@@ -271,19 +271,19 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kWebPrinting;
 #endif
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 RequestType ContentSettingsTypeToRequestType(
     ContentSettingsType content_settings_type) {
-  absl::optional<RequestType> request_type =
+  std::optional<RequestType> request_type =
       ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
   CHECK(request_type);
   return *request_type;
 }
 
-absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
+std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     RequestType request_type) {
   switch (request_type) {
     case RequestType::kAccessibilityEvents:
@@ -316,7 +316,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       if (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault)) {
         return ContentSettingsType::MIDI;
       } else {
-        return absl::nullopt;
+        return std::nullopt;
       }
     case RequestType::kMidiSysex:
       return ContentSettingsType::MIDI_SYSEX;
@@ -350,7 +350,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     default:
       // Not associated with a ContentSettingsType.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

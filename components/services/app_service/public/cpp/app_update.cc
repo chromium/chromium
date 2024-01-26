@@ -29,12 +29,12 @@ static const std::vector<std::string>& EmptyStringVector() {
   return g_empty_string_vector;
 }
 
-absl::optional<apps::RunOnOsLogin> CloneRunOnOsLogin(
+std::optional<apps::RunOnOsLogin> CloneRunOnOsLogin(
     const apps::RunOnOsLogin& login_data) {
   return apps::RunOnOsLogin(login_data.login_mode, login_data.is_managed);
 }
 
-std::string FormatBytes(absl::optional<uint64_t> bytes) {
+std::string FormatBytes(std::optional<uint64_t> bytes) {
   return bytes.has_value() ? base::NumberToString(bytes.value()) : "null";
 }
 
@@ -80,7 +80,7 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
 //
 // For `icon_key`, if `delta`'s `update_version` is true, increase `state`'s
 // `update_version`.
-absl::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
+std::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
   //`state` should have int32_t `update_version` only.
   CHECK(!state || !state->icon_key.has_value() ||
         absl::holds_alternative<int32_t>(state->icon_key->update_version));
@@ -339,7 +339,7 @@ bool AppUpdate::AdditionalSearchTermsChanged() const {
   IS_VALUE_CHANGED_WITH_CHECK(additional_search_terms, empty);
 }
 
-absl::optional<apps::IconKey> AppUpdate::IconKey() const {
+std::optional<apps::IconKey> AppUpdate::IconKey() const {
   return MergeIconKey(state_, delta_);
 }
 
@@ -420,88 +420,88 @@ bool AppUpdate::InstalledInternally() const {
   }
 }
 
-absl::optional<bool> AppUpdate::IsPlatformApp() const {
-  GET_VALUE_WITH_FALLBACK(is_platform_app, absl::nullopt)
+std::optional<bool> AppUpdate::IsPlatformApp() const {
+  GET_VALUE_WITH_FALLBACK(is_platform_app, std::nullopt)
 }
 
 bool AppUpdate::IsPlatformAppChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(is_platform_app);
 }
 
-absl::optional<bool> AppUpdate::Recommendable() const {
-  GET_VALUE_WITH_FALLBACK(recommendable, absl::nullopt)
+std::optional<bool> AppUpdate::Recommendable() const {
+  GET_VALUE_WITH_FALLBACK(recommendable, std::nullopt)
 }
 
 bool AppUpdate::RecommendableChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(recommendable);
 }
 
-absl::optional<bool> AppUpdate::Searchable() const {
-  GET_VALUE_WITH_FALLBACK(searchable, absl::nullopt)
+std::optional<bool> AppUpdate::Searchable() const {
+  GET_VALUE_WITH_FALLBACK(searchable, std::nullopt)
 }
 
 bool AppUpdate::SearchableChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(searchable);
 }
 
-absl::optional<bool> AppUpdate::ShowInLauncher() const {
-  GET_VALUE_WITH_FALLBACK(show_in_launcher, absl::nullopt)
+std::optional<bool> AppUpdate::ShowInLauncher() const {
+  GET_VALUE_WITH_FALLBACK(show_in_launcher, std::nullopt)
 }
 
 bool AppUpdate::ShowInLauncherChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(show_in_launcher);
 }
 
-absl::optional<bool> AppUpdate::ShowInShelf() const {
-  GET_VALUE_WITH_FALLBACK(show_in_shelf, absl::nullopt)
+std::optional<bool> AppUpdate::ShowInShelf() const {
+  GET_VALUE_WITH_FALLBACK(show_in_shelf, std::nullopt)
 }
 
 bool AppUpdate::ShowInShelfChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(show_in_shelf);
 }
 
-absl::optional<bool> AppUpdate::ShowInSearch() const {
-  GET_VALUE_WITH_FALLBACK(show_in_search, absl::nullopt)
+std::optional<bool> AppUpdate::ShowInSearch() const {
+  GET_VALUE_WITH_FALLBACK(show_in_search, std::nullopt)
 }
 
 bool AppUpdate::ShowInSearchChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(show_in_search);
 }
 
-absl::optional<bool> AppUpdate::ShowInManagement() const {
-  GET_VALUE_WITH_FALLBACK(show_in_management, absl::nullopt)
+std::optional<bool> AppUpdate::ShowInManagement() const {
+  GET_VALUE_WITH_FALLBACK(show_in_management, std::nullopt)
 }
 
 bool AppUpdate::ShowInManagementChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(show_in_management);
 }
 
-absl::optional<bool> AppUpdate::HandlesIntents() const {
-  GET_VALUE_WITH_FALLBACK(handles_intents, absl::nullopt)
+std::optional<bool> AppUpdate::HandlesIntents() const {
+  GET_VALUE_WITH_FALLBACK(handles_intents, std::nullopt)
 }
 
 bool AppUpdate::HandlesIntentsChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(handles_intents);
 }
 
-absl::optional<bool> AppUpdate::AllowUninstall() const {
-  GET_VALUE_WITH_FALLBACK(allow_uninstall, absl::nullopt)
+std::optional<bool> AppUpdate::AllowUninstall() const {
+  GET_VALUE_WITH_FALLBACK(allow_uninstall, std::nullopt)
 }
 
 bool AppUpdate::AllowUninstallChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(allow_uninstall);
 }
 
-absl::optional<bool> AppUpdate::HasBadge() const {
-  GET_VALUE_WITH_FALLBACK(has_badge, absl::nullopt)
+std::optional<bool> AppUpdate::HasBadge() const {
+  GET_VALUE_WITH_FALLBACK(has_badge, std::nullopt)
 }
 
 bool AppUpdate::HasBadgeChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(has_badge);
 }
 
-absl::optional<bool> AppUpdate::Paused() const {
-  GET_VALUE_WITH_FALLBACK(paused, absl::nullopt);
+std::optional<bool> AppUpdate::Paused() const {
+  GET_VALUE_WITH_FALLBACK(paused, std::nullopt);
 }
 
 bool AppUpdate::PausedChanged() const {
@@ -523,8 +523,8 @@ bool AppUpdate::IntentFiltersChanged() const {
          (!state_ || !IsEqual(delta_->intent_filters, state_->intent_filters));
 }
 
-absl::optional<bool> AppUpdate::ResizeLocked() const {
-  GET_VALUE_WITH_FALLBACK(resize_locked, absl::nullopt);
+std::optional<bool> AppUpdate::ResizeLocked() const {
+  GET_VALUE_WITH_FALLBACK(resize_locked, std::nullopt);
 }
 
 bool AppUpdate::ResizeLockedChanged() const {
@@ -539,22 +539,22 @@ bool AppUpdate::WindowModeChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown);
 }
 
-absl::optional<apps::RunOnOsLogin> AppUpdate::RunOnOsLogin() const {
+std::optional<apps::RunOnOsLogin> AppUpdate::RunOnOsLogin() const {
   if (delta_ && delta_->run_on_os_login.has_value()) {
     return CloneRunOnOsLogin(delta_->run_on_os_login.value());
   }
   if (state_ && state_->run_on_os_login.has_value()) {
     return CloneRunOnOsLogin(state_->run_on_os_login.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AppUpdate::RunOnOsLoginChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(run_on_os_login);
 }
 
-absl::optional<bool> AppUpdate::AllowClose() const {
-  GET_VALUE_WITH_FALLBACK(allow_close, absl::nullopt)
+std::optional<bool> AppUpdate::AllowClose() const {
+  GET_VALUE_WITH_FALLBACK(allow_close, std::nullopt)
 }
 
 bool AppUpdate::AllowCloseChanged() const {
@@ -565,16 +565,16 @@ const ::AccountId& AppUpdate::AccountId() const {
   return *account_id_;
 }
 
-absl::optional<uint64_t> AppUpdate::AppSizeInBytes() const {
-  GET_VALUE_WITH_FALLBACK(app_size_in_bytes, absl::nullopt);
+std::optional<uint64_t> AppUpdate::AppSizeInBytes() const {
+  GET_VALUE_WITH_FALLBACK(app_size_in_bytes, std::nullopt);
 }
 
 bool AppUpdate::AppSizeInBytesChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(app_size_in_bytes);
 }
 
-absl::optional<uint64_t> AppUpdate::DataSizeInBytes() const {
-  GET_VALUE_WITH_FALLBACK(data_size_in_bytes, absl::nullopt);
+std::optional<uint64_t> AppUpdate::DataSizeInBytes() const {
+  GET_VALUE_WITH_FALLBACK(data_size_in_bytes, std::nullopt);
 }
 
 bool AppUpdate::DataSizeInBytesChanged() const {
@@ -590,21 +590,21 @@ bool AppUpdate::SupportedLocalesChanged() const {
   IS_VALUE_CHANGED_WITH_CHECK(supported_locales, empty);
 }
 
-absl::optional<std::string> AppUpdate::SelectedLocale() const {
+std::optional<std::string> AppUpdate::SelectedLocale() const {
   GET_VALUE_WITH_FALLBACK(selected_locale, base::EmptyString())
 }
 
 bool AppUpdate::SelectedLocaleChanged() const {
     RETURN_OPTIONAL_VALUE_CHANGED(selected_locale)}
 
-absl::optional<base::Value::Dict> AppUpdate::Extra() const {
+std::optional<base::Value::Dict> AppUpdate::Extra() const {
   if (delta_ && delta_->extra.has_value()) {
     return delta_->extra->Clone();
   }
   if (state_ && state_->extra.has_value()) {
     return state_->extra->Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AppUpdate::ExtraChanged() const {

@@ -138,8 +138,8 @@ void TextInput::SetSurroundingText(
     base::StringPiece16 text,
     uint32_t offset,
     const gfx::Range& cursor_pos,
-    const absl::optional<ui::GrammarFragment>& grammar_fragment,
-    const absl::optional<ui::AutocorrectInfo>& autocorrect_info) {
+    const std::optional<ui::GrammarFragment>& grammar_fragment,
+    const std::optional<ui::AutocorrectInfo>& autocorrect_info) {
   surrounding_text_tracker_.Update(text, offset, cursor_pos);
 
   grammar_fragment_at_cursor_ = grammar_fragment;
@@ -355,7 +355,7 @@ bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
 
 bool TextInput::SetEditableSelectionRange(const gfx::Range& range) {
   const auto& predicted_state = surrounding_text_tracker_.predicted_state();
-  absl::optional<base::StringPiece16> composition_text =
+  std::optional<base::StringPiece16> composition_text =
       predicted_state.GetCompositionText();
   if (!range.IsBoundedBy(predicted_state.GetSurroundingTextRange()) ||
       !composition_text.has_value()) {
@@ -503,7 +503,7 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
   return true;
 }
 
-absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
+std::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
     const {
   return grammar_fragment_at_cursor_;
 }
@@ -545,8 +545,8 @@ bool TextInput::SupportsAlwaysConfirmComposition() {
 }
 
 void GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

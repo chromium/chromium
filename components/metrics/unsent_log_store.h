@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -143,7 +143,7 @@ class UnsentLogStore : public LogStore {
   const std::string& staged_log() const override;
   const std::string& staged_log_hash() const override;
   const std::string& staged_log_signature() const override;
-  absl::optional<uint64_t> staged_log_user_id() const override;
+  std::optional<uint64_t> staged_log_user_id() const override;
   const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
   void DiscardStagedLog(base::StringPiece reason = "") override;

@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_OBSERVER_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_OBSERVER_H_
 
+#include <optional>
+
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Serves to notify any SavedTabGroupModel listeners that a change has occurred
 // supply the SavedTabGroup that was changed.
@@ -35,7 +36,7 @@ class SavedTabGroupModelObserver {
   // being changed.
   virtual void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) {}
+      const std::optional<base::Uuid>& tab_guid = std::nullopt) {}
 
   // Called when the order of tabs in an open saved tab group are changed in the
   // tabstrip.
@@ -62,7 +63,7 @@ class SavedTabGroupModelObserver {
   // when addressing merge conflicts for duplicate groups and tabs.
   virtual void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid = absl::nullopt) {}
+      const std::optional<base::Uuid>& tab_guid = std::nullopt) {}
 
   // Called when SavedTabGroupModel::LoadStoredEntries has finished loading.
   // This is currently used to notify the SavedTabGroupKeyedService to link any

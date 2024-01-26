@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -77,7 +78,6 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
@@ -1184,7 +1184,7 @@ void AutocompleteController::PostProcessMatches() {
 }
 
 bool AutocompleteController::CheckWhetherDefaultMatchChanged(
-    absl::optional<AutocompleteMatch> last_default_match,
+    std::optional<AutocompleteMatch> last_default_match,
     std::u16string last_default_associated_keyword) {
   const bool default_is_valid = internal_result_.default_match();
   std::u16string default_associated_keyword;
@@ -1383,7 +1383,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
 
   int count = 0;
   int num_zero_prefix_suggestions_shown = 0;
-  absl::optional<omnibox::SuggestType> last_type;
+  std::optional<omnibox::SuggestType> last_type;
   base::flat_set<omnibox::SuggestSubtype> last_subtypes = {};
   omnibox::GroupId previous_group_id = omnibox::GROUP_INVALID;
   std::vector<size_t> match_index_to_position(result->size());

@@ -13,6 +13,7 @@
 // class is to get hash prefixes from the SB server for the given set of lists.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -24,7 +25,6 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -182,7 +182,7 @@ class V4UpdateProtocolManager {
 
   // The time when the next update is scheduled to be requested. This is valid
   // only when |update_timer_| is running.
-  absl::optional<base::Time> next_update_time_ = absl::nullopt;
+  std::optional<base::Time> next_update_time_ = std::nullopt;
 
   // The config of the client making Pver4 requests.
   const V4ProtocolConfig config_;

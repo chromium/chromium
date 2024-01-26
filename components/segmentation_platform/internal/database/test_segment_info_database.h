@@ -37,11 +37,11 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                                           ModelSource model_source) override;
   void UpdateSegment(SegmentId segment_id,
                      ModelSource model_score,
-                     absl::optional<proto::SegmentInfo> segment_info,
+                     std::optional<proto::SegmentInfo> segment_info,
                      SuccessCallback callback) override;
   void SaveSegmentResult(SegmentId segment_id,
                          ModelSource model_source,
-                         absl::optional<proto::PredictionResult> result,
+                         std::optional<proto::PredictionResult> result,
                          SuccessCallback callback) override;
   void SaveTrainingData(SegmentId segment_id,
                         ModelSource model_source,

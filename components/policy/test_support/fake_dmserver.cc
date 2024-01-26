@@ -81,7 +81,7 @@ BuildWaitRemoteCommandResultResponse(const em::RemoteCommandResult& result) {
 
 }  // namespace
 
-void InitLogging(const absl::optional<std::string>& log_path,
+void InitLogging(const std::optional<std::string>& log_path,
                  bool log_to_console,
                  int min_log_level) {
   logging::LoggingSettings settings;
@@ -106,7 +106,7 @@ void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
                 std::string& grpc_unix_socket_uri,
-                absl::optional<std::string>& log_path,
+                std::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
                 int& min_log_level) {
@@ -622,7 +622,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   }
 
   if (const base::Value* v = dict->Find(kAllowSetDeviceAttributesKey); v) {
-    absl::optional<bool> allow_set_device_attributes = v->GetIfBool();
+    std::optional<bool> allow_set_device_attributes = v->GetIfBool();
     if (!allow_set_device_attributes.has_value()) {
       LOG(ERROR)
           << "The allow_set_device_attributes key isn't a bool, found type "
@@ -636,7 +636,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   const base::Value* use_universal_signing_keys =
       dict->Find(kUseUniversalSigningKeysKey);
   if (use_universal_signing_keys) {
-    absl::optional<bool> maybe_value = use_universal_signing_keys->GetIfBool();
+    std::optional<bool> maybe_value = use_universal_signing_keys->GetIfBool();
     if (!maybe_value.has_value()) {
       LOG(ERROR)
           << "The use_universal_signing_keys key isn't a bool, found type "
@@ -660,7 +660,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   const base::Value::Dict* request_errors = dict->FindDict(kRequestErrorsKey);
   if (request_errors) {
     for (auto request_error : *request_errors) {
-      absl::optional<int> net_error_code = request_error.second.GetIfInt();
+      std::optional<int> net_error_code = request_error.second.GetIfInt();
       if (!net_error_code.has_value()) {
         LOG(ERROR) << "The error code isn't an int";
         return false;
@@ -689,7 +689,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
         LOG(ERROR) << "The management_domain key isn't a string";
         return false;
       }
-      absl::optional<int> initial_enrollment_mode =
+      std::optional<int> initial_enrollment_mode =
           state_val->FindInt(kInitialEnrollmentModeKey);
       if (!initial_enrollment_mode.has_value()) {
         LOG(ERROR) << "The initial_enrollment_mode key isn't an int";
@@ -705,7 +705,7 @@ bool FakeDMServer::ReadPolicyBlobFile() {
   }
 
   if (const base::Value* v = dict->Find(kCurrentKeyIndexKey); v) {
-    absl::optional<int> current_key_index = v->GetIfInt();
+    std::optional<int> current_key_index = v->GetIfInt();
     if (!current_key_index.has_value()) {
       LOG(ERROR) << "The current_key_index key isn't an int, found type "
                  << v->type() << ", found value " << *v;
@@ -812,13 +812,13 @@ bool FakeDMServer::FindKey(const base::Value::Dict& dict,
   }
 }
 
-absl::optional<policy::ClientStorage::ClientInfo>
+std::optional<policy::ClientStorage::ClientInfo>
 FakeDMServer::GetClientFromValue(const base::Value& v) {
   policy::ClientStorage::ClientInfo client_info;
   const base::Value::Dict* dict = v.GetIfDict();
   if (!dict) {
     LOG(ERROR) << "Client value isn't a dict";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!FindKey(*dict, kDeviceIdKey, base::Value::Type::STRING) ||
@@ -827,7 +827,7 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
       !FindKey(*dict, kUsernameKey, base::Value::Type::STRING) ||
       !FindKey(*dict, kStateKeysKey, base::Value::Type::LIST) ||
       !FindKey(*dict, kAllowedPolicyTypesKey, base::Value::Type::LIST)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   client_info.device_id = *dict->FindString(kDeviceIdKey);
@@ -839,7 +839,7 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
     const std::string* key = it.GetIfString();
     if (!key) {
       LOG(ERROR) << "State key list entry is not a string: " << it;
-      return absl::nullopt;
+      return std::nullopt;
     }
     client_info.state_keys.emplace_back(*key);
   }
@@ -849,7 +849,7 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
     const std::string* key = it.GetIfString();
     if (!key) {
       LOG(ERROR) << "Policy type list entry is not a string: " << it;
-      return absl::nullopt;
+      return std::nullopt;
     }
     client_info.allowed_policy_types.insert(*key);
   }
@@ -878,7 +878,7 @@ bool FakeDMServer::ReadClientStateFile() {
     return false;
   }
   for (auto it : *dict) {
-    absl::optional<policy::ClientStorage::ClientInfo> c =
+    std::optional<policy::ClientStorage::ClientInfo> c =
         GetClientFromValue(it.second);
     if (!c.has_value()) {
       LOG(ERROR) << "The client isn't configured correctly.";

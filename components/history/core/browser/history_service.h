@@ -850,7 +850,7 @@ class HistoryService : public KeyedService,
   // `content::NavigationHandle` and will be populated only during local visits.
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& new_visit,
-                        absl::optional<int64_t> local_navigation_id);
+                        std::optional<int64_t> local_navigation_id);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

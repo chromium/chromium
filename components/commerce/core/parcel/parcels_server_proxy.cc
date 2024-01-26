@@ -227,29 +227,29 @@ base::Value::List Serialize(
 }
 
 // Deserializes a ParcelStatus from JSON.
-absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
+std::optional<ParcelStatus> Deserialize(const base::Value& value) {
   if (!value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::Dict& value_dict = value.GetDict();
   auto* parcel_identifier = value_dict.FindDict(kParcelIdentifierKey);
   if (!parcel_identifier) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* tracking_id = parcel_identifier->FindString(kTrackingIdKey);
   auto* carrier_str = parcel_identifier->FindString(kCarrierKey);
   auto* parcel_state_str = value_dict.FindString(kParcelStateKey);
   if (!tracking_id || !carrier_str || !parcel_state_str) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParcelIdentifier::Carrier carrier;
   ParcelStatus::ParcelState parcel_state;
   if (!ParcelIdentifier::Carrier_Parse(*carrier_str, &carrier) ||
       !ParcelStatus::ParcelState_Parse(*parcel_state_str, &parcel_state)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* tracking_url = value_dict.FindString(kTrackingUrlKey);
@@ -273,7 +273,7 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
           time_to_deliver.ToDeltaSinceWindowsEpoch().InMicroseconds());
     }
   }
-  return absl::make_optional<ParcelStatus>(status);
+  return std::make_optional<ParcelStatus>(status);
 }
 
 void OnInvalidParcelIdentifierError(

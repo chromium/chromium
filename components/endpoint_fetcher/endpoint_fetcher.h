@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
 #define COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -44,7 +44,7 @@ enum class FetchErrorType {
 struct EndpointResponse {
   std::string response;
   int http_status_code{-1};
-  absl::optional<FetchErrorType> error_type;
+  std::optional<FetchErrorType> error_type;
 };
 
 using EndpointFetcherCallback =
@@ -176,7 +176,7 @@ class EndpointFetcher {
       identity_manager_;
   // `consent_level_` is used together with `identity_manager_`, so it can be
   // null if `identity_manager_` is null.
-  const absl::optional<signin::ConsentLevel> consent_level_;
+  const std::optional<signin::ConsentLevel> consent_level_;
   bool sanitize_response_;
   bool is_stable_channel_;
 

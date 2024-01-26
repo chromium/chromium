@@ -32,9 +32,9 @@ IconCache::IconCache(IconLoader* wrapped_loader,
 
 IconCache::~IconCache() = default;
 
-absl::optional<IconKey> IconCache::GetIconKey(const std::string& id) {
+std::optional<IconKey> IconCache::GetIconKey(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(id) : absl::nullopt;
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(id) : std::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(

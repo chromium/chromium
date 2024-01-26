@@ -152,7 +152,7 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
 
 // Should map to ModelExecutionStatus variant string in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-absl::optional<base::StringPiece> ModelExecutionStatusToHistogramVariant(
+std::optional<base::StringPiece> ModelExecutionStatusToHistogramVariant(
     ModelExecutionStatus status) {
   switch (status) {
     case ModelExecutionStatus::kSuccess:
@@ -168,7 +168,7 @@ absl::optional<base::StringPiece> ModelExecutionStatusToHistogramVariant(
     case ModelExecutionStatus::kSkippedNotEnoughSignals:
     case ModelExecutionStatus::kSkippedResultNotExpired:
     case ModelExecutionStatus::kFailedToSaveResultAfterSuccess:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -224,7 +224,7 @@ void RecordModelUpdateTimeDifference(SegmentId segment_id,
 void RecordSegmentSelectionComputed(
     const Config& config,
     SegmentId new_selection,
-    absl::optional<SegmentId> previous_selection) {
+    std::optional<SegmentId> previous_selection) {
   // Special case adaptive toolbar since it already has histograms being
   // recorded and updating names will affect current work.
   if (config.segmentation_key == kAdaptiveToolbarSegmentationKey) {
@@ -411,7 +411,7 @@ void RecordModelExecutionDurationModel(SegmentId segment_id,
                                        base::TimeDelta duration) {
   ModelExecutionStatus status = success ? ModelExecutionStatus::kSuccess
                                         : ModelExecutionStatus::kExecutionError;
-  absl::optional<base::StringPiece> status_variant =
+  std::optional<base::StringPiece> status_variant =
       ModelExecutionStatusToHistogramVariant(status);
   if (!status_variant)
     return;
@@ -425,7 +425,7 @@ void RecordModelExecutionDurationModel(SegmentId segment_id,
 void RecordModelExecutionDurationTotal(SegmentId segment_id,
                                        ModelExecutionStatus status,
                                        base::TimeDelta duration) {
-  absl::optional<base::StringPiece> status_variant =
+  std::optional<base::StringPiece> status_variant =
       ModelExecutionStatusToHistogramVariant(status);
   if (!status_variant)
     return;

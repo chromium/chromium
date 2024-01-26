@@ -72,7 +72,7 @@ void MediaDeviceSaltService::GetSalt(
     return;
   }
 
-  absl::optional<std::string> candidate_salt;
+  std::optional<std::string> candidate_salt;
   if (!base::FeatureList::IsEnabled(kMediaDeviceIdRandomSaltsPerStorageKey)) {
     candidate_salt = GetGlobalSalt();
   }
@@ -85,7 +85,7 @@ void MediaDeviceSaltService::GetSalt(
 
 void MediaDeviceSaltService::FinalizeGetSalt(
     base::OnceCallback<void(const std::string&)> callback,
-    absl::optional<std::string> salt) {
+    std::optional<std::string> salt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(salt.has_value() ? *salt : fallback_salt_);
 }

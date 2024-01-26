@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -53,7 +54,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/scoped_critical_policy_section.h"
 #include "components/policy/policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -78,7 +78,7 @@ void ParsePolicy(const RegistryDict* gpo_dict,
   if (!gpo_dict)
     return;
 
-  absl::optional<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
+  std::optional<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
   DCHECK(policy_value);
   const base::Value::Dict* policy_dict = policy_value->GetIfDict();
   if (!policy_dict) {

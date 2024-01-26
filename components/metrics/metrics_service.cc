@@ -735,11 +735,11 @@ void MetricsService::InitPerUserMetrics() {
   client_->InitPerUserMetrics();
 }
 
-absl::optional<bool> MetricsService::GetCurrentUserMetricsConsent() const {
+std::optional<bool> MetricsService::GetCurrentUserMetricsConsent() const {
   return client_->GetCurrentUserMetricsConsent();
 }
 
-absl::optional<std::string> MetricsService::GetCurrentUserId() const {
+std::optional<std::string> MetricsService::GetCurrentUserId() const {
   return client_->GetCurrentUserId();
 }
 
@@ -1022,7 +1022,7 @@ void MetricsService::IndependentMetricsLoader::FinalizeLog() {
 
   // Note that the close_time param must not be set for independent logs.
   finalized_log_ = MetricsService::FinalizeLog(
-      std::move(log_), /*truncate_events=*/false, /*close_time=*/absl::nullopt,
+      std::move(log_), /*truncate_events=*/false, /*close_time=*/std::nullopt,
       app_version_, signing_key_);
 }
 
@@ -1423,7 +1423,7 @@ bool MetricsService::PrepareInitialStabilityLog(
   // close_time param must not be set for initial stability logs.
   FinalizedLog finalized_log = SnapshotDeltasAndFinalizeLog(
       std::move(log_histogram_writer), std::move(initial_stability_log),
-      /*truncate_events=*/false, /*close_time=*/absl::nullopt,
+      /*truncate_events=*/false, /*close_time=*/std::nullopt,
       client_->GetVersionString(), std::move(signing_key));
   StoreFinalizedLog(log_type, MetricsLogsEventManager::CreateReason::kStability,
                     base::DoNothing(), std::move(finalized_log));
@@ -1456,7 +1456,7 @@ std::unique_ptr<MetricsLog> MetricsService::CreateLog(
   new_metrics_log->AssignRecordId(local_state_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<std::string> user_id = GetCurrentUserId();
+  std::optional<std::string> user_id = GetCurrentUserId();
   if (user_id.has_value())
     new_metrics_log->SetUserId(user_id.value());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1642,7 +1642,7 @@ MetricsService::FinalizedLog MetricsService::SnapshotDeltasAndFinalizeLog(
     std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
-    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderDeltas();
@@ -1656,7 +1656,7 @@ MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
     MetricsLogHistogramWriter* log_histogram_writer,
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
-    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderUnloggedSamples();
@@ -1668,7 +1668,7 @@ MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
 MetricsService::FinalizedLog MetricsService::FinalizeLog(
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
-    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     const std::string& current_app_version,
     const std::string& signing_key) {
   DCHECK(log->uma_proto()->has_record_id());

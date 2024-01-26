@@ -436,7 +436,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
   oauth2_service_delegate_->refresh_tokens_.clear();
-  oauth2_service_delegate_->ClearAuthError(absl::nullopt);
+  oauth2_service_delegate_->ClearAuthError(std::nullopt);
   EXPECT_EQ(2, end_batch_changes_);
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
@@ -501,7 +501,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
   oauth2_service_delegate_->refresh_tokens_.clear();
-  oauth2_service_delegate_->ClearAuthError(absl::nullopt);
+  oauth2_service_delegate_->ClearAuthError(std::nullopt);
   EXPECT_EQ(2, end_batch_changes_);
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();

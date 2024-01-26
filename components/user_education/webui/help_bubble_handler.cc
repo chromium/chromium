@@ -132,7 +132,7 @@ struct HelpBubbleHandlerBase::ElementData {
 };
 
 void HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility(
-    absl::optional<bool> visible) {
+    std::optional<bool> visible) {
   handler_->OnWebContentsVisibilityChanged(visible);
 }
 
@@ -256,7 +256,7 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
 }
 
 void HelpBubbleHandlerBase::OnWebContentsVisibilityChanged(
-    absl::optional<bool> visibility) {
+    std::optional<bool> visibility) {
   const bool old_visibility = is_web_contents_visible();
   web_contents_visibility_ = visibility;
   const bool new_visibility = is_web_contents_visible();
@@ -550,10 +550,10 @@ class HelpBubbleHandler::VisibilityProvider
   VisibilityProvider() = default;
   ~VisibilityProvider() override = default;
 
-  absl::optional<bool> CheckIsVisible() override {
+  std::optional<bool> CheckIsVisible() override {
     auto* const contents = handler()->GetWebContents();
     if (!contents) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     CHECK(!web_contents());
     Observe(contents);
@@ -565,9 +565,7 @@ class HelpBubbleHandler::VisibilityProvider
   void OnVisibilityChanged(content::Visibility new_visibility) override {
     SetLastKnownVisibility(new_visibility == content::Visibility::VISIBLE);
   }
-  void WebContentsDestroyed() override {
-    SetLastKnownVisibility(absl::nullopt);
-  }
+  void WebContentsDestroyed() override { SetLastKnownVisibility(std::nullopt); }
 };
 
 HelpBubbleHandler::HelpBubbleHandler(

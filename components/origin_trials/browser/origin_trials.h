@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
@@ -118,8 +118,8 @@ class OriginTrials : public KeyedService,
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::Time current_time,
-      const absl::optional<blink::mojom::OriginTrialFeature>
-          trial_feature_match) const;
+      const std::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
+      const;
 
   // Update the stored tokens for `origin` with the `new_tokens`, partitioned by
   // `partition_site`.

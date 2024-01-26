@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_CAPABILITY_ACCESS_UPDATE_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_CAPABILITY_ACCESS_UPDATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -57,10 +57,10 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
 
   const std::string& AppId() const;
 
-  absl::optional<bool> Camera() const;
+  std::optional<bool> Camera() const;
   bool CameraChanged() const;
 
-  absl::optional<bool> Microphone() const;
+  std::optional<bool> Microphone() const;
   bool MicrophoneChanged() const;
 
   const ::AccountId& AccountId() const;

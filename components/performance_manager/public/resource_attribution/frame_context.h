@@ -6,11 +6,11 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_FRAME_CONTEXT_H_
 
 #include <compare>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -38,7 +38,7 @@ class FrameContext {
   // not registered with PerformanceManager. (There is a brief window after the
   // RenderFrameHost is created before a PerformanceManager FrameNode is created
   // for it.)
-  static absl::optional<FrameContext> FromRenderFrameHost(
+  static std::optional<FrameContext> FromRenderFrameHost(
       content::RenderFrameHost* host);
 
   // Returns the RenderFrameHost for this context, or nullptr if it no longer
@@ -60,7 +60,7 @@ class FrameContext {
   static FrameContext FromFrameNode(const FrameNode* node);
 
   // Returns the FrameContext for `node`, or nullopt if `node` is null.
-  static absl::optional<FrameContext> FromWeakFrameNode(
+  static std::optional<FrameContext> FromWeakFrameNode(
       base::WeakPtr<FrameNode> node);
 
   // Returns the FrameNode for this context, or nullptr if it no longer exists.

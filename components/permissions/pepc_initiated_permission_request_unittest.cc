@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,7 +23,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
@@ -275,7 +276,7 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
       /*allowed_origins=*/
       std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
           url::Origin::Create(origin()))},
-      /*self_if_matches=*/absl::nullopt, /*matches_all_origins=*/false,
+      /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
   content::RenderFrameHost* valid_child =
       content::RenderFrameHostTester::For(main_rfh())
@@ -304,7 +305,7 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
                           /*allowed_origins=*/
                           {*blink::OriginWithPossibleWildcards::FromOrigin(
                               url::Origin::Create(GURL("http://fakeurl.com")))},
-                          /*self_if_matches=*/absl::nullopt,
+                          /*self_if_matches=*/std::nullopt,
                           /*matches_all_origins=*/false,
                           /*matches_opaque_src=*/false});
   content::RenderFrameHost* invalid_child =

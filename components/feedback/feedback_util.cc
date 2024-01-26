@@ -83,7 +83,7 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
 }
 
 void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
-  absl::optional<base::Value::Dict> autofill_data = base::JSONReader::ReadDict(
+  std::optional<base::Value::Dict> autofill_data = base::JSONReader::ReadDict(
       autofill_metadata, base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!autofill_data) {

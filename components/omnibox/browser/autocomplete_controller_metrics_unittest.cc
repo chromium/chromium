@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::ElementsAre;
 using testing::ElementsAreArray;
@@ -138,7 +138,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
 
   // Convenience method to check the buckets of a single metric.
   void ExpectMetrics(const std::string metric_name,
-                     absl::optional<int> expected_time_ms) {
+                     std::optional<int> expected_time_ms) {
     SCOPED_TRACE(metric_name);
     const std::string full_name =
         "Omnibox.AsyncAutocompletionTime2." + metric_name;
@@ -157,13 +157,13 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // - '...<metric>.[Completed]' will be expected to either have
   //   `buckets` or be empty, depending on `completed`.
   void ExpectSlicedMetrics(const std::string& metric,
-                           absl::optional<int> expected_time_ms,
+                           std::optional<int> expected_time_ms,
                            bool completed) {
     ExpectMetrics(metric, expected_time_ms);
     ExpectMetrics(metric + ".Completed",
-                  completed ? expected_time_ms : absl::nullopt);
+                  completed ? expected_time_ms : std::nullopt);
     ExpectMetrics(metric + ".Interrupted",
-                  !completed ? expected_time_ms : absl::nullopt);
+                  !completed ? expected_time_ms : std::nullopt);
   }
 
   // Convenience method to check all 9 suggestion finalization metrics are

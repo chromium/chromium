@@ -42,7 +42,7 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
         link.GetDict().FindString(kDictionaryKeyUrl);
     const std::string* title_string =
         link.GetDict().FindString(kDictionaryKeyTitle);
-    const absl::optional<bool> mv_value =
+    const std::optional<bool> mv_value =
         link.GetDict().FindBool(kDictionaryKeyIsMostVisited);
 
     GURL url = GURL(url_string ? *url_string : std::string());

@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_PAGE_INFO_PAGE_INFO_UI_DELEGATE_H_
 #define COMPONENTS_PAGE_INFO_PAGE_INFO_UI_DELEGATE_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 enum class PermissionType;
@@ -26,7 +27,7 @@ class PageInfoUiDelegate {
   virtual bool IsTrackingProtection3pcdEnabled() = 0;
   virtual content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) = 0;
-  virtual absl::optional<content::PermissionResult> GetEmbargoResult(
+  virtual std::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) = 0;
 };
 

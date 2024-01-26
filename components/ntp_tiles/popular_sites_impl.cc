@@ -153,7 +153,7 @@ PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
       large_icon_url = *ptr;
 
     TileTitleSource title_source = TileTitleSource::UNKNOWN;
-    absl::optional<int> title_source_int = item.FindInt("title_source");
+    std::optional<int> title_source_int = item.FindInt("title_source");
     if (!title_source_int) {
       // Only v6 and later have "title_source". Earlier versions use title tags.
       title_source = TileTitleSource::TITLE_TAG;
@@ -164,11 +164,11 @@ PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
 
     sites.emplace_back(title, GURL(url), GURL(favicon_url),
                        GURL(large_icon_url), title_source);
-    absl::optional<int> default_icon_resource =
+    std::optional<int> default_icon_resource =
         item.FindInt("default_icon_resource");
     if (default_icon_resource)
       sites.back().default_icon_resource = *default_icon_resource;
-    absl::optional<bool> baked_in = item.FindBool("baked_in");
+    std::optional<bool> baked_in = item.FindBool("baked_in");
     if (baked_in.has_value())
       sites.back().baked_in = baked_in.value();
   }
@@ -232,7 +232,7 @@ void SetDefaultResourceForSite(size_t index,
 #endif
 
 // Creates the list of popular sites based on a snapshot available for mobile.
-base::Value::List DefaultPopularSites(absl::optional<std::string> country) {
+base::Value::List DefaultPopularSites(std::optional<std::string> country) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return base::Value::List();
 #else
@@ -247,7 +247,7 @@ base::Value::List DefaultPopularSites(absl::optional<std::string> country) {
   }
 #endif
 
-  absl::optional<base::Value> sites = base::JSONReader::Read(
+  std::optional<base::Value> sites = base::JSONReader::Read(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           popular_sites_json));
   base::Value::List& sites_list = sites->GetList();
@@ -472,13 +472,13 @@ void PopularSitesImpl::RegisterProfilePrefs(
     country_code_estimate = GetDeviceCountryCode();
   }
 
-  absl::optional<std::string> country(country_code_estimate);
+  std::optional<std::string> country(country_code_estimate);
 
   user_prefs->RegisterListPref(prefs::kPopularSitesJsonPref,
                                DefaultPopularSites(country));
 #else
   user_prefs->RegisterListPref(prefs::kPopularSitesJsonPref,
-                               DefaultPopularSites(absl::nullopt));
+                               DefaultPopularSites(std::nullopt));
 #endif
   int version;
   base::StringToInt(kPopularSitesDefaultVersion, &version);

@@ -261,7 +261,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
     std::string label;
     bool enabled;
     std::map<std::string, std::string> params;
-    std::vector<std::pair<proto::OptimizationTarget, absl::optional<int>>> want;
+    std::vector<std::pair<proto::OptimizationTarget, std::optional<int>>> want;
   };
 
   struct TestCase tests[] = {
@@ -271,8 +271,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .params = {},
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -281,8 +281,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .params = {},
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -294,7 +294,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
                   {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, 1},
               },
       },
@@ -307,8 +307,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -320,8 +320,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -333,7 +333,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
                   {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, -1},
               },
       },
@@ -381,7 +381,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
 
     for (const auto& expectation : test.want) {
       proto::OptimizationTarget opt_target = expectation.first;
-      absl::optional<int> num_threads = expectation.second;
+      std::optional<int> num_threads = expectation.second;
 
       EXPECT_EQ(num_threads,
                 features::OverrideNumThreadsForOptTarget(opt_target))

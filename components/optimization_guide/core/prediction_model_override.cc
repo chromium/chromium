@@ -115,7 +115,7 @@ void BuildPredictionModelFromCommandLineForOptimizationTarget(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir,
     OnPredictionModelBuiltCallback callback) {
-  absl::optional<std::pair<std::string, absl::optional<proto::Any>>>
+  std::optional<std::pair<std::string, std::optional<proto::Any>>>
       model_file_path_and_metadata =
           GetModelOverrideForOptimizationTarget(optimization_target);
   if (!model_file_path_and_metadata) {

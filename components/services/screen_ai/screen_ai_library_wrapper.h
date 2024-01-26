@@ -6,7 +6,9 @@
 #define COMPONENTS_SERVICES_SCREEN_AI_SCREEN_AI_LIBRARY_WRAPPER_H_
 
 #include <stdint.h>
+
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -15,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace screen_ai {
@@ -58,11 +59,11 @@ class ScreenAILibraryWrapper {
   bool InitOCR();
   bool InitMainContentExtraction();
 
-  absl::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
+  std::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
       const SkBitmap& image);
-  absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
+  std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image);
-  absl::optional<std::vector<int32_t>> ExtractMainContent(
+  std::optional<std::vector<int32_t>> ExtractMainContent(
       const std::string& serialized_view_hierarchy);
 
  private:

@@ -25,7 +25,7 @@ class Surface;
 
 // Returns |damage_rect| field from the DrawQuad if it exists otherwise returns
 // an empty optional.
-const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
+const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad);
 
 // Data associated with a DrawQuad in a resolved frame.

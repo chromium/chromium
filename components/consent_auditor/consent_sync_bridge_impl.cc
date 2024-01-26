@@ -84,7 +84,7 @@ ConsentSyncBridgeImpl::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
+std::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
@@ -95,7 +95,7 @@ absl::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<ModelError> ConsentSyncBridgeImpl::ApplyIncrementalSyncChanges(
+std::optional<ModelError> ConsentSyncBridgeImpl::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -163,7 +163,7 @@ void ConsentSyncBridgeImpl::ReadAllDataAndResubmit() {
 }
 
 void ConsentSyncBridgeImpl::OnReadAllDataToResubmit(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<RecordList> data_records) {
   if (change_processor()->TrackedAccountId().empty()) {
     // Meanwhile the sync has been disabled. We will try next time.
@@ -247,7 +247,7 @@ void ConsentSyncBridgeImpl::ProcessQueuedEvents() {
 }
 
 void ConsentSyncBridgeImpl::OnStoreCreated(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -261,7 +261,7 @@ void ConsentSyncBridgeImpl::OnStoreCreated(
 }
 
 void ConsentSyncBridgeImpl::OnReadAllMetadata(
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "ConsentSyncBridgeImpl::OnReadAllMetadata");
   if (error) {
@@ -279,7 +279,7 @@ void ConsentSyncBridgeImpl::OnReadAllMetadata(
   }
 }
 
-void ConsentSyncBridgeImpl::OnCommit(const absl::optional<ModelError>& error) {
+void ConsentSyncBridgeImpl::OnCommit(const std::optional<ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }
@@ -287,7 +287,7 @@ void ConsentSyncBridgeImpl::OnCommit(const absl::optional<ModelError>& error) {
 
 void ConsentSyncBridgeImpl::OnReadData(
     DataCallback callback,
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<RecordList> data_records,
     std::unique_ptr<IdList> missing_id_list) {
   OnReadAllData(std::move(callback), error, std::move(data_records));
@@ -295,7 +295,7 @@ void ConsentSyncBridgeImpl::OnReadData(
 
 void ConsentSyncBridgeImpl::OnReadAllData(
     DataCallback callback,
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<RecordList> data_records) {
   if (error) {
     change_processor()->ReportError(*error);

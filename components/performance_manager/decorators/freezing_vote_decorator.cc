@@ -4,8 +4,9 @@
 
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 
+#include <optional>
+
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -49,7 +50,7 @@ void FreezingVoteDecorator::OnVoteInvalidated(
   // causes recursive notifications and useless policy dispatches.
   if (page_node->GetNodeState() == NodeState::kLeavingGraph)
     return;
-  PageNodeImpl::FromNode(page_node)->set_freezing_vote(absl::nullopt);
+  PageNodeImpl::FromNode(page_node)->set_freezing_vote(std::nullopt);
 }
 
 }  // namespace performance_manager

@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,7 +16,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ModelInput = AutocompleteScoringModelExecutor::ModelInput;
 using ModelOutput = AutocompleteScoringModelExecutor::ModelOutput;
@@ -60,12 +60,12 @@ AutocompleteScoringModelHandler::AutocompleteScoringModelHandler(
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     std::unique_ptr<AutocompleteScoringModelExecutor> model_executor,
     OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata)
+    const std::optional<optimization_guide::proto::Any>& model_metadata)
     : optimization_guide::ModelHandler<ModelOutput, ModelInput>(
           model_provider,
           model_executor_task_runner,
           std::move(model_executor),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_target,
           model_metadata) {
   // Store the model in memory as soon as it is available and keep it loaded for
@@ -77,32 +77,32 @@ AutocompleteScoringModelHandler::AutocompleteScoringModelHandler(
 
 AutocompleteScoringModelHandler::~AutocompleteScoringModelHandler() = default;
 
-absl::optional<std::vector<float>>
+std::optional<std::vector<float>>
 AutocompleteScoringModelHandler::GetModelInput(
     const ScoringSignals& scoring_signals) {
   DCHECK(ModelAvailable());
-  absl::optional<AutocompleteScoringModelMetadata> model_metadata =
+  std::optional<AutocompleteScoringModelMetadata> model_metadata =
       ParsedSupportedFeaturesForLoadedModel<AutocompleteScoringModelMetadata>();
   if (!model_metadata) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ExtractInputFromScoringSignals(scoring_signals,
                                         model_metadata.value());
 }
 
-absl::optional<std::vector<std::vector<float>>>
+std::optional<std::vector<std::vector<float>>>
 AutocompleteScoringModelHandler::GetBatchModelInput(
     const std::vector<const ScoringSignals*>& scoring_signals_vec) {
   std::vector<std::vector<float>> batch_model_input;
   for (const auto* scoring_signals : scoring_signals_vec) {
-    const absl::optional<std::vector<float>> model_input =
+    const std::optional<std::vector<float>> model_input =
         GetModelInput(*scoring_signals);
     if (model_input) {
       batch_model_input.push_back(std::move(*model_input));
     } else {
       // Return null if any input in the batch is invalid.
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return batch_model_input;
@@ -126,7 +126,7 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
 
   std::vector<float> model_input;
   for (const auto& scoring_signal_spec : metadata.scoring_signal_specs()) {
-    absl::optional<float> val;
+    std::optional<float> val;
     switch (scoring_signal_spec.type()) {
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_TYPED_COUNT:
         if (scoring_signals.has_typed_count()) {
@@ -307,7 +307,7 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
                << optimization_guide::proto::ScoringSignalType_Name(
                       scoring_signal_spec.type())
                << "': " << *val;
-      val = absl::nullopt;
+      val = std::nullopt;
     }
 
     if (val && scoring_signal_spec.has_transformation()) {

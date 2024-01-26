@@ -117,7 +117,7 @@ class StartSuggestServiceTest : public ::testing::Test {
 
   void TearDown() override { service_->Shutdown(); }
 
-  void ResetSuggestions() { suggestions_ = absl::nullopt; }
+  void ResetSuggestions() { suggestions_ = std::nullopt; }
 
   void WaitForSuggestions() {
     if (suggestions_.has_value()) {
@@ -171,7 +171,7 @@ class StartSuggestServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestStartSuggestService> service_;
 
-  absl::optional<std::vector<QuerySuggestion>> suggestions_;
+  std::optional<std::vector<QuerySuggestion>> suggestions_;
   std::unique_ptr<base::RunLoop> suggestions_run_loop_;
 
   base::WeakPtrFactory<StartSuggestServiceTest> weak_factory_;

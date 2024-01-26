@@ -41,10 +41,10 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       const sync_pb::ModelTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
-  void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates,
-                        absl::optional<sync_pb::GarbageCollectionDirective>
-                            gc_directive) override;
+  void OnUpdateReceived(
+      const sync_pb::ModelTypeState& type_state,
+      UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
@@ -108,7 +108,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   // The first model error that occurred, if any. Stored to track model state
   // and so it can be passed to sync if it happened prior to sync being ready.
-  absl::optional<ModelError> model_error_;
+  std::optional<ModelError> model_error_;
 
   std::unique_ptr<ProcessorEntity> entity_;
 

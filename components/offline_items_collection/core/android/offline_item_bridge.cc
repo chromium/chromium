@@ -95,7 +95,7 @@ ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateOfflineItemList(
 // static
 ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateUpdateDelta(
     JNIEnv* env,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   if (!update_delta.has_value())
     return ScopedJavaLocalRef<jobject>();
 

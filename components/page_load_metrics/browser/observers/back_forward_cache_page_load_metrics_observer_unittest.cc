@@ -76,7 +76,7 @@ class BackForwardCachePageLoadMetricsObserverTest
       FakePageLoadMetricsObserverDelegate* fake_delegate,
       bool was_in_foreground,
       int64_t navigation_id,
-      absl::optional<base::TimeDelta> background_time) {
+      std::optional<base::TimeDelta> background_time) {
     observer->back_forward_cache_navigation_ids_.push_back(navigation_id);
     auto bf_state = PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
         was_in_foreground, base::TimeTicks::Now());
@@ -177,8 +177,8 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 //   cache restore.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        TestOnFirstPaintAfterBackForwardCacheRestoreInPage) {
-  absl::optional<base::TimeDelta> first_bg_time(base::Milliseconds(50));
-  absl::optional<base::TimeDelta> second_bg_time(base::Milliseconds(200));
+  std::optional<base::TimeDelta> first_bg_time(base::Milliseconds(50));
+  std::optional<base::TimeDelta> second_bg_time(base::Milliseconds(200));
 
   AddBFCacheRestoreState(observer_with_fake_delegate_.get(),
                          fake_delegate_.get(), /*was_in_foreground=*/true,
@@ -191,7 +191,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   AddBFCacheRestoreState(observer_with_fake_delegate_.get(),
                          fake_delegate_.get(), /*was_in_foreground=*/true,
                          /*navigation_id=*/789,
-                         /*background_time=*/absl::optional<base::TimeDelta>());
+                         /*background_time=*/std::optional<base::TimeDelta>());
 
   page_load_metrics::mojom::BackForwardCacheTiming bf_cache_timing;
   bf_cache_timing.first_paint_after_back_forward_cache_restore =
@@ -244,8 +244,8 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
   // None of these should cause logs, as all of these restores are started in
   // the background.
-  std::vector<absl::optional<base::TimeDelta>> test_times(
-      {first_bg_time, second_bg_time, absl::optional<base::TimeDelta>()});
+  std::vector<std::optional<base::TimeDelta>> test_times(
+      {first_bg_time, second_bg_time, std::optional<base::TimeDelta>()});
   size_t index = 3;
   for (auto bg_time : test_times) {
     AddBFCacheRestoreState(observer_with_fake_delegate_.get(),

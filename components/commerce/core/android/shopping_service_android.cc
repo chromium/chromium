@@ -4,6 +4,8 @@
 
 #include "components/commerce/core/android/shopping_service_android.h"
 
+#include <optional>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -11,7 +13,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -69,7 +70,7 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
 
   GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       shopping_service_->GetAvailableProductInfoForUrl(url);
 
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
@@ -93,7 +94,7 @@ void ShoppingServiceAndroid::HandleProductInfoCallback(
     JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
-    const absl::optional<const ProductInfo>& info) {
+    const std::optional<const ProductInfo>& info) {
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     info_java_object = Java_ShoppingService_createProductInfo(
@@ -132,7 +133,7 @@ void ShoppingServiceAndroid::HandleMerchantInfoCallback(
     JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
-    absl::optional<MerchantInfo> info) {
+    std::optional<MerchantInfo> info) {
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     info_java_object = Java_ShoppingService_createMerchantInfo(
@@ -167,7 +168,7 @@ void ShoppingServiceAndroid::HandlePriceInsightsInfoCallback(
     JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
-    const absl::optional<PriceInsightsInfo>& info) {
+    const std::optional<PriceInsightsInfo>& info) {
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     ScopedJavaLocalRef<jobject> j_price_points = nullptr;
@@ -230,7 +231,7 @@ void ShoppingServiceAndroid::Subscribe(
   std::string seen_country = ConvertJavaStringToUTF8(j_seen_country);
   CHECK(!id.empty());
 
-  auto user_seen_offer = absl::make_optional<UserSeenOffer>(
+  auto user_seen_offer = std::make_optional<UserSeenOffer>(
       seen_offer_id, j_seen_price, seen_country);
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
@@ -259,7 +260,7 @@ void ShoppingServiceAndroid::Unsubscribe(
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
-                           kUnknownSubscriptionTimestamp, absl::nullopt);
+                           kUnknownSubscriptionTimestamp, std::nullopt);
   std::unique_ptr<std::vector<CommerceSubscription>> subs =
       std::make_unique<std::vector<CommerceSubscription>>();
   subs->push_back(std::move(sub));
@@ -283,7 +284,7 @@ void ShoppingServiceAndroid::IsSubscribed(
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
-                           kUnknownSubscriptionTimestamp, absl::nullopt);
+                           kUnknownSubscriptionTimestamp, std::nullopt);
 
   shopping_service_->IsSubscribed(
       std::move(sub),
@@ -306,7 +307,7 @@ bool ShoppingServiceAndroid::IsSubscribedFromCache(
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
-                           kUnknownSubscriptionTimestamp, absl::nullopt);
+                           kUnknownSubscriptionTimestamp, std::nullopt);
 
   return shopping_service_->IsSubscribedFromCache(std::move(sub));
 }

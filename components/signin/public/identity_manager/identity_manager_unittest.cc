@@ -61,7 +61,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

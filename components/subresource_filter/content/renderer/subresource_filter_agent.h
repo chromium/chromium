@@ -94,7 +94,7 @@ class SubresourceFilterAgent
   // True if the frame has been heuristically determined to be an ad frame.
   virtual bool IsAdFrame();
 
-  virtual const absl::optional<blink::FrameAdEvidence>& AdEvidence();
+  virtual const std::optional<blink::FrameAdEvidence>& AdEvidence();
   virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence);
 
   // The browser will not inform the renderer of the (sub)frame's ad status and
@@ -107,7 +107,7 @@ class SubresourceFilterAgent
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
       mojom::ActivationStatePtr activation_state,
-      const absl::optional<blink::FrameAdEvidence>& ad_evidence) override;
+      const std::optional<blink::FrameAdEvidence>& ad_evidence) override;
 
  private:
   // Returns the activation state for the `render_frame` to inherit. Root frames

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DiscardableSharedMemory;
@@ -191,7 +191,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   void ReleaseMemory(const base::DiscardableSharedMemory* shared_memory,
                      size_t size);
 
-  absl::optional<size_t> GetResidentSize() const;
+  std::optional<size_t> GetResidentSize() const;
 
   // Dumps memory statistics about a memory segment for chrome://tracing.
   void OnMemoryDump(const base::DiscardableSharedMemory* shared_memory,

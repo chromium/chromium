@@ -274,9 +274,8 @@ class LenientFakeBackgroundTracingManager
 
   bool HasTraceToUpload() override { return false; }
   void GetTraceToUpload(
-      base::OnceCallback<void(absl::optional<std::string>,
-                              absl::optional<std::string>)> callback) override {
-  }
+      base::OnceCallback<void(std::optional<std::string>,
+                              std::optional<std::string>)> callback) override {}
   std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override {
     return nullptr;

@@ -51,9 +51,9 @@ base::WeakPtr<FeatureProcessorState> FeatureProcessorState::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+std::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
 FeatureProcessorState::PopNextProcessor() {
-  absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+  std::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
       next_processor;
   if (!out_processors_.empty()) {
     std::unique_ptr<QueryProcessor> processor =

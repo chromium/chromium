@@ -4,13 +4,13 @@
 
 #include "components/feature_engagement/internal/never_availability_model.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -30,9 +30,9 @@ bool NeverAvailabilityModel::IsReady() const {
   return ready_;
 }
 
-absl::optional<uint32_t> NeverAvailabilityModel::GetAvailability(
+std::optional<uint32_t> NeverAvailabilityModel::GetAvailability(
     const base::Feature& feature) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void NeverAvailabilityModel::ForwardedOnInitializedCallback(

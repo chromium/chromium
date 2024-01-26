@@ -158,7 +158,7 @@ void RecordModelAvailableAtRegistration(
 }  // namespace
 
 PredictionManager::ModelRegistrationInfo::ModelRegistrationInfo(
-    absl::optional<proto::Any> metadata,
+    std::optional<proto::Any> metadata,
     OptimizationTargetModelObserver* model_observer)
     : metadata(metadata), model_observer(model_observer) {}
 
@@ -211,7 +211,7 @@ void PredictionManager::Initialize(
 
 void PredictionManager::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata,
+    const std::optional<proto::Any>& model_metadata,
     OptimizationTargetModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_registration_info_map_.find(optimization_target) ==
@@ -433,7 +433,7 @@ void PredictionManager::FetchModels() {
 
 void PredictionManager::OnModelsFetched(
     const std::vector<proto::ModelInfo> models_request_info,
-    absl::optional<std::unique_ptr<proto::GetModelsResponse>>
+    std::optional<std::unique_ptr<proto::GetModelsResponse>>
         get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(store_is_ready_);
@@ -836,7 +836,7 @@ void PredictionManager::RemoveModelFromStore(
                                           model_cache_key_)) {
       prediction_model_store_->RemoveModel(
           optimization_target, model_cache_key_, model_removal_reason);
-      NotifyObserversOfNewModel(optimization_target, absl::nullopt);
+      NotifyObserversOfNewModel(optimization_target, std::nullopt);
     }
     return;
   }
@@ -930,7 +930,7 @@ void PredictionManager::OverrideTargetModelForTesting(
     std::unique_ptr<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<ModelInfo> model_info_copy;
+  std::optional<ModelInfo> model_info_copy;
   if (model_info) {
     model_info_copy = *model_info;
   }

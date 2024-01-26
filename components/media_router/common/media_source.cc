@@ -169,32 +169,32 @@ bool MediaSource::IsRemotePlaybackSource() const {
   return url_.SchemeIs(kRemotePlaybackPresentationUrlScheme);
 }
 
-absl::optional<int> MediaSource::TabId() const {
+std::optional<int> MediaSource::TabId() const {
   int tab_id;
   if (sscanf(id_.c_str(), kTabMediaUrnFormat, &tab_id) != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return tab_id;
 }
 
-absl::optional<int> MediaSource::TabIdFromRemotePlaybackSource() const {
+std::optional<int> MediaSource::TabIdFromRemotePlaybackSource() const {
   if (!IsRemotePlaybackSource()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string tab_id_str;
   if (!net::GetValueForKeyInQuery(url(), "tab_id", &tab_id_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int tab_id;
   if (!base::StringToInt(tab_id_str, &tab_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return tab_id;
 }
 
-absl::optional<std::string> MediaSource::DesktopStreamId() const {
+std::optional<std::string> MediaSource::DesktopStreamId() const {
   if (base::StartsWith(id_, kDesktopMediaUrnPrefix,
                        base::CompareCase::SENSITIVE)) {
     const auto begin = id_.begin() + kDesktopMediaUrnPrefix.size();
@@ -205,7 +205,7 @@ absl::optional<std::string> MediaSource::DesktopStreamId() const {
     }
     return std::string(begin, end);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool MediaSource::IsDesktopSourceWithAudio() const {

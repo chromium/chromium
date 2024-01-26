@@ -5,6 +5,7 @@
 #include "components/download/public/common/android/auto_resumption_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,7 +22,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using network::mojom::ConnectionType;
 using testing::_;

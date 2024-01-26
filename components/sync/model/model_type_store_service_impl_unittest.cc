@@ -33,7 +33,7 @@ std::unique_ptr<ModelTypeStore> ExerciseStoreFactoryAndWait(
   std::unique_ptr<ModelTypeStore> result;
   base::RunLoop loop;
   store_factory.Run(model_type, base::BindLambdaForTesting(
-                                    [&](const absl::optional<ModelError>& error,
+                                    [&](const std::optional<ModelError>& error,
                                         std::unique_ptr<ModelTypeStore> store) {
                                       EXPECT_FALSE(error.has_value());
                                       result = std::move(store);
@@ -52,17 +52,17 @@ void WriteDataAndWait(ModelTypeStore* store,
   store->CommitWriteBatch(
       std::move(batch),
       base::BindLambdaForTesting(
-          [&](const absl::optional<ModelError>& error) { loop.Quit(); }));
+          [&](const std::optional<ModelError>& error) { loop.Quit(); }));
   loop.Run();
 }
 
-absl::optional<std::string> ReadDataAndWait(ModelTypeStore* store,
-                                            const std::string& id) {
+std::optional<std::string> ReadDataAndWait(ModelTypeStore* store,
+                                           const std::string& id) {
   base::RunLoop loop;
-  absl::optional<std::string> read_value;
+  std::optional<std::string> read_value;
   store->ReadData(
       {id}, base::BindLambdaForTesting(
-                [&](const absl::optional<ModelError>& error,
+                [&](const std::optional<ModelError>& error,
                     std::unique_ptr<ModelTypeStore::RecordList> data_records,
                     std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
                   EXPECT_THAT(*data_records, SizeIs(Le(1u)));
@@ -166,7 +166,7 @@ TEST_F(ModelTypeStoreServiceImplTest,
         service->GetStoreFactoryForAccountStorage();
     std::unique_ptr<ModelTypeStore> account_store = ExerciseStoreFactoryAndWait(
         account_store_factory, ModelType::READING_LIST);
-    EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq(absl::nullopt));
+    EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq(std::nullopt));
   }
 
   // Set the migration pref and recreate the service again. The ReadingList data
@@ -182,7 +182,7 @@ TEST_F(ModelTypeStoreServiceImplTest,
         service->GetStoreFactory();
     std::unique_ptr<ModelTypeStore> default_store = ExerciseStoreFactoryAndWait(
         default_store_factory, ModelType::READING_LIST);
-    EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), absl::nullopt);
+    EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), std::nullopt);
 
     // It should be in the *account* store now.
     const RepeatingModelTypeStoreFactory account_store_factory =

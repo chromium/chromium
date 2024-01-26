@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,7 +28,7 @@ class Schema;
 // Converts a value (as read from the registry) to meet |schema|, converting
 // types as necessary. Unconvertible types will show up as null values in the
 // result.
-absl::optional<base::Value> POLICY_EXPORT
+std::optional<base::Value> POLICY_EXPORT
 ConvertRegistryValue(const base::Value& value, const Schema& schema);
 
 // A case-insensitive string comparison functor.
@@ -68,7 +68,7 @@ class POLICY_EXPORT RegistryDict {
   // Sets a value.
   void SetValue(const std::string& name, base::Value&& value);
   // Removes a value. If the value doesn't exist, nullopt is returned.
-  absl::optional<base::Value> RemoveValue(const std::string& name);
+  std::optional<base::Value> RemoveValue(const std::string& name);
   // Clears all values.
   void ClearValues();
 
@@ -87,7 +87,7 @@ class POLICY_EXPORT RegistryDict {
   // for each policy.
   // The underlying data of the returned object is either a base::Value::Dict or
   // a base::Value::List.
-  absl::optional<base::Value> ConvertToJSON(const class Schema& schema) const;
+  std::optional<base::Value> ConvertToJSON(const class Schema& schema) const;
 #endif
 
   const KeyMap& keys() const { return keys_; }

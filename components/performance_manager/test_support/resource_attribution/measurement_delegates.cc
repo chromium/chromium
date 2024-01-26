@@ -123,7 +123,7 @@ void SimulatedCPUMeasurementDelegate::SetError(base::TimeDelta usage_error) {
 }
 
 void SimulatedCPUMeasurementDelegate::ClearError() {
-  usage_error_ = absl::nullopt;
+  usage_error_ = std::nullopt;
 }
 
 base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {

@@ -243,8 +243,7 @@ class PermissionContextBase : public content_settings::Observer {
       std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>
       pending_requests_;
 
-  mutable absl::optional<bool> last_has_device_permission_result_ =
-      absl::nullopt;
+  mutable std::optional<bool> last_has_device_permission_result_ = std::nullopt;
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers

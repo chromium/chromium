@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/overlay_transform.h"
@@ -163,8 +163,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       uint32_t embedder_client_namespace_id,
       float parent_device_scale_factor,
       const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect> added_clip_rect,
-      const absl::optional<gfx::Rect> dest_root_target_clip_rect,
+      const std::optional<gfx::Rect> added_clip_rect,
+      const std::optional<gfx::Rect> dest_root_target_clip_rect,
       AggregatedRenderPass* dest_pass,
       bool ignore_undamaged,
       gfx::Rect* damage_rect_in_quad_space,
@@ -177,8 +177,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const SurfaceDrawQuad* surface_quad,
       uint32_t embedder_client_namespace_id,
       const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect> added_clip_rect,
-      const absl::optional<gfx::Rect> dest_root_target_clip_rect,
+      const std::optional<gfx::Rect> added_clip_rect,
+      const std::optional<gfx::Rect> dest_root_target_clip_rect,
       AggregatedRenderPass* dest_pass,
       bool ignore_undamaged,
       gfx::Rect* damage_rect_in_quad_space,
@@ -189,7 +189,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const SurfaceDrawQuad* surface_quad,
       uint32_t embedder_client_namespace_id,
       const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect> clip_rect,
+      const std::optional<gfx::Rect> clip_rect,
       AggregatedRenderPass* dest_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
@@ -199,7 +199,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const SharedQuadState* primary_shared_quad_state,
       uint32_t embedder_client_namespace_id,
       const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect> clip_rect,
+      const std::optional<gfx::Rect> clip_rect,
       SkColor4f background_color,
       AggregatedRenderPass* dest_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
@@ -210,8 +210,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       AggregatedRenderPass* dest_pass,
       float parent_device_scale_factor,
       const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect> clip_rect,
-      const absl::optional<gfx::Rect> dest_root_target_clip_rect,
+      const std::optional<gfx::Rect> clip_rect,
+      const std::optional<gfx::Rect> dest_root_target_clip_rect,
       const Surface* surface,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
@@ -301,7 +301,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   void AddSurfaceDamageToDamageList(
       const gfx::Rect& default_damage_rect,
       const gfx::Transform& parent_target_transform,
-      const absl::optional<gfx::Rect> dest_root_target_clip_rect,
+      const std::optional<gfx::Rect> dest_root_target_clip_rect,
       const gfx::Transform& dest_transform_to_root_target,
       ResolvedFrameData* resolved_frame);
 
@@ -309,7 +309,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const ResolvedFrameData& resolved_frame,
       const CompositorRenderPassDrawQuad* render_pass_quad,
       const gfx::Transform& parent_target_transform,
-      const absl::optional<gfx::Rect> dest_root_target_clip_rect,
+      const std::optional<gfx::Rect> dest_root_target_clip_rect,
       const gfx::Transform& dest_transform_to_root_target);
 
   // Determine the overlay damage and location in the surface damage list.
@@ -394,7 +394,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   SurfaceId root_surface_id_;
   gfx::Transform root_surface_transform_;
 
-  absl::optional<AggregateStatistics> stats_;
+  std::optional<AggregateStatistics> stats_;
 
   // For each Surface used in the last aggregation, gives the frame_index at
   // that time.

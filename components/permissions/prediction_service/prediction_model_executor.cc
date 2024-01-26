@@ -133,15 +133,14 @@ bool PredictionModelExecutor::Preprocess(
   return true;
 }
 
-absl::optional<GeneratePredictionsResponse>
-PredictionModelExecutor::Postprocess(
+std::optional<GeneratePredictionsResponse> PredictionModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   DCHECK(request_type_ == RequestType::kNotifications ||
          request_type_ == RequestType::kGeolocation);
   std::vector<float> data;
   if (!tflite::task::core::PopulateVector<float>(output_tensors[0], &data)
            .ok()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   float threshold = request_type_ == RequestType::kNotifications

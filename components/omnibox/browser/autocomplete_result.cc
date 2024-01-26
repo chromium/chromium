@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -46,7 +47,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "omnibox_triggered_feature_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -288,7 +288,7 @@ void AutocompleteResult::DeduplicateMatches(
 void AutocompleteResult::Sort(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
-    absl::optional<AutocompleteMatch> default_match_to_preserve) {
+    std::optional<AutocompleteMatch> default_match_to_preserve) {
   if (!is_ios)
     DemoteOnDeviceSearchSuggestions();
 
@@ -347,7 +347,7 @@ void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
-    absl::optional<AutocompleteMatch> default_match_to_preserve) {
+    std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
   Sort(input, template_url_service, default_match_to_preserve);
@@ -757,7 +757,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
     // If already converted this match, don't re-search through open tabs and
     // possibly re-change the description.
     // Note: explicitly check for value rather than deferring to implicit
-    // boolean conversion of absl::optional.
+    // boolean conversion of std::optional.
     if (match.has_tab_match.has_value()) {
       continue;
     }

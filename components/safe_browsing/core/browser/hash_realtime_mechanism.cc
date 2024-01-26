@@ -91,7 +91,7 @@ void HashRealTimeMechanism::StartLookupOnUIThread(
 
 void HashRealTimeMechanism::OnLookupResponse(
     bool is_lookup_successful,
-    absl::optional<SBThreatType> threat_type) {
+    std::optional<SBThreatType> threat_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_lookup_successful) {
     PerformHashBasedCheck(url_);
@@ -120,7 +120,7 @@ void HashRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
   if (result.is_safe_synchronously) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt);
+        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/std::nullopt);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
     // here but return.
@@ -139,7 +139,7 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
 void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    absl::optional<ThreatSource> threat_source) {
+    std::optional<ThreatSource> threat_source) {
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type, metadata, threat_source,
       /*url_real_time_lookup_response=*/nullptr));

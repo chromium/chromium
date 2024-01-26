@@ -95,7 +95,7 @@ AutocompleteMatch CreateACMatchWithScoringSignals(
     float site_engagement,
     bool allowed_to_be_default_match) {
   AutocompleteMatch match;
-  match.scoring_signals = absl::make_optional<ScoringSignals>();
+  match.scoring_signals = std::make_optional<ScoringSignals>();
   match.scoring_signals->set_typed_count(typed_count);
   match.scoring_signals->set_visit_count(visit_count);
   match.scoring_signals->set_elapsed_time_last_visit_secs(
@@ -1229,7 +1229,7 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
       omnibox::ActionInfo info;
       info.set_action_type(action_type);
       match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(info), absl::nullopt));
+          std::move(info), std::nullopt));
     }
 
     match.FilterAndSortActionsInSuggest();

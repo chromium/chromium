@@ -353,8 +353,8 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
       layer_tree_frame_sink_holder_->NeedsFullDamageForNextFrame(),
       layer_tree_frame_sink_holder_->resource_manager(),
       client_submits_surfaces_in_pixel_coordinates()
-          ? absl::nullopt
-          : absl::make_optional(GetScaleFactor()),
+          ? std::nullopt
+          : std::make_optional(GetScaleFactor()),
       &frame);
 
   // Update after resource is updated.
@@ -404,7 +404,7 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   quad_state->SetAll(gfx::Transform(), /*layer_rect=*/quad_rect,
                      /*visible_layer_rect=*/quad_rect,
                      /*filter_info=*/gfx::MaskFilterInfo(),
-                     /*clip=*/absl::nullopt,
+                     /*clip=*/std::nullopt,
                      /*contents_opaque=*/true, /*opacity_f=*/1.f,
                      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
                      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -721,7 +721,7 @@ SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
 }
 
 float SurfaceTreeHost::CalculateScaleFactor(
-    const absl::optional<float>& scale_factor) const {
+    const std::optional<float>& scale_factor) const {
   if (scale_factor) {
     // TODO(crbug.com/1412420): Remove this once the scale factor precision
     // issue is fixed for ARC.

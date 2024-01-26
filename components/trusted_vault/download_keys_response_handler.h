@@ -6,12 +6,12 @@
 #define COMPONENTS_TRUSTED_VAULT_DOWNLOAD_KEYS_RESPONSE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
@@ -45,7 +45,7 @@ class DownloadKeysResponseHandler {
   // Returns error cases that can be directly determined from the HTTP status,
   // or nullopt if successful. Exposed publicly for membership-verification
   // purposes.
-  static absl::optional<TrustedVaultDownloadKeysStatus> GetErrorFromHttpStatus(
+  static std::optional<TrustedVaultDownloadKeysStatus> GetErrorFromHttpStatus(
       TrustedVaultRequest::HttpStatus http_status);
 
   // |device_key_pair| must not be null. It will be verified that the new keys

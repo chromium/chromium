@@ -67,21 +67,20 @@ data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
   return ParseJson(json);
 }
 
-absl::optional<base::Value::Dict> GetDictionaryFromCastMessage(
+std::optional<base::Value::Dict> GetDictionaryFromCastMessage(
     const CastMessage& message) {
   if (!message.has_payload_utf8())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(message.payload_utf8());
   if (!value || !value->is_dict())
-    return absl::nullopt;
+    return std::nullopt;
   return std::move(*value).TakeDict();
 }
 
 CastMessageType GetMessageType(const CastMessage& message) {
-  absl::optional<base::Value::Dict> dict =
-      GetDictionaryFromCastMessage(message);
+  std::optional<base::Value::Dict> dict = GetDictionaryFromCastMessage(message);
   if (!dict)
     return CastMessageType::kOther;
 
@@ -167,7 +166,7 @@ class CastMessageHandlerTest : public testing::Test {
   void CreatePendingRequests() {
     EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
     handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(),
-                           {"WEB"}, /* appParams */ absl::nullopt,
+                           {"WEB"}, /* appParams */ std::nullopt,
                            launch_session_callback_.Get());
     for (int i = 0; i < 2; i++) {
       handler_.RequestAppAvailability(&cast_socket_, kAppId1,
@@ -193,7 +192,7 @@ class CastMessageHandlerTest : public testing::Test {
       EXPECT_CALL(*transport_,
                   SendMessage_(HasMessageType(CastMessageType::kConnect), _))
           .WillOnce(WithArg<0>([&](const CastMessage& message) {
-            absl::optional<base::Value::Dict> dict =
+            std::optional<base::Value::Dict> dict =
                 GetDictionaryFromCastMessage(message);
             EXPECT_EQ(connection_type, dict->FindInt("connType").value());
           }));
@@ -318,10 +317,10 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailability) {
       base::BindOnce(&CastMessageHandlerTest::OnAppAvailability,
                      base::Unretained(this)));
 
-  absl::optional<base::Value::Dict> dict =
+  std::optional<base::Value::Dict> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
-  const absl::optional<int> request_id_value = dict->FindInt("requestId");
+  const std::optional<int> request_id_value = dict->FindInt("requestId");
   ASSERT_TRUE(request_id_value);
   int request_id = *request_id_value;
   EXPECT_GT(request_id, 0);
@@ -441,7 +440,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
       static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing));
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
-  const absl::optional<base::Value> json = base::JSONReader::Read(kAppParams);
+  const std::optional<base::Value> json = base::JSONReader::Read(kAppParams);
 
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"}, json,
@@ -449,10 +448,10 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kOk));
 
-  absl::optional<base::Value::Dict> dict =
+  std::optional<base::Value::Dict> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
-  const absl::optional<int> request_id_value = dict->FindInt("requestId");
+  const std::optional<int> request_id_value = dict->FindInt("requestId");
   ASSERT_TRUE(request_id_value);
   int request_id = *request_id_value;
   EXPECT_GT(request_id, 0);
@@ -491,7 +490,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {
 
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"},
-      /* appParams */ absl::nullopt,
+      /* appParams */ std::nullopt,
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kTimedOut));
@@ -506,7 +505,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
   json.Set("key", invalid_url);
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"},
-      absl::make_optional<base::Value>(std::move(json)),
+      std::make_optional<base::Value>(std::move(json)),
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kError));
@@ -579,7 +578,7 @@ TEST_F(CastMessageHandlerTest, SendMediaRequest) {
   std::string message_str = R"({
     "type": "PLAY",
   })";
-  absl::optional<int> request_id = handler_.SendMediaRequest(
+  std::optional<int> request_id = handler_.SendMediaRequest(
       channel_id_, ParseJsonDict(message_str), "theSourceId", kDestinationId);
   EXPECT_EQ(1, request_id);
 }
@@ -626,7 +625,7 @@ TEST_F(CastMessageHandlerTest, PendingRequestsDestructor) {
   EXPECT_CALL(launch_session_callback_, Run(_, _))
       .WillOnce(WithArg<0>([&](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::kError, response.result);
-        EXPECT_EQ(absl::nullopt, response.receiver_status);
+        EXPECT_EQ(std::nullopt, response.receiver_status);
       }));
   EXPECT_CALL(get_app_availability_callback_,
               Run(kAppId1, GetAppAvailabilityResult::kUnknown))
@@ -701,12 +700,12 @@ TEST_F(CastMessageHandlerTest, SendMultipleLaunchRequests) {
       }));
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          expect_success_callback.Get());
   // When there already is a launch request queued, we expect subsequent
   // requests to fail.
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          expect_failure_callback.Get());
   // This resolves the first launch request.
   HandlePendingLaunchSessionRequest(next_request_id++);
@@ -719,7 +718,7 @@ TEST_F(CastMessageHandlerTest, SendMultipleStopRequests) {
 
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          launch_session_callback_.Get());
   EXPECT_CALL(launch_session_callback_, Run(_, _))
       .WillOnce(WithArg<0>([&](LaunchSessionResponse response) {
@@ -765,7 +764,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionWithPromptUserAllowed) {
 
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          expect_user_prompt_callback.Get());
 
   HandleLaunchStatusResponse(request_id, kWaitingUserResponse);
@@ -793,7 +792,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionWithPromptUserNotAllowed) {
 
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          expect_user_prompt_callback.Get());
 
   HandleLaunchStatusResponse(request_id, kWaitingUserResponse);
@@ -812,7 +811,7 @@ TEST_F(CastMessageHandlerTest,
 
   EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
-                         /* appParams */ absl::nullopt,
+                         /* appParams */ std::nullopt,
                          launch_session_callback_.Get());
 
   HandleLaunchErrorResponse(request_id, kNotificationDisabledError);

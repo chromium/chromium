@@ -6,13 +6,14 @@
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_STORAGE_AREA_TEST_UTIL_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 // Utility functions and classes for testing StorageArea implementations.
@@ -30,7 +31,7 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(base::OnceClosure callback,
 bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
-             const absl::optional<std::vector<uint8_t>>& old_value,
+             const std::optional<std::vector<uint8_t>>& old_value,
              const std::string& source);
 
 bool GetSync(blink::mojom::StorageArea* area,
@@ -44,7 +45,7 @@ bool GetAllSync(blink::mojom::StorageArea* area,
 // received. Returns if the call was successful.
 bool DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
-                const absl::optional<std::vector<uint8_t>>& client_old_value,
+                const std::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source);
 
 // Does a |DeleteAll| call on the area and waits until the response is
@@ -65,14 +66,14 @@ class MockLevelDBObserver : public blink::mojom::StorageAreaObserver {
   MOCK_METHOD4(KeyChanged,
                void(const std::vector<uint8_t>& key,
                     const std::vector<uint8_t>& new_value,
-                    const absl::optional<std::vector<uint8_t>>& old_value,
+                    const std::optional<std::vector<uint8_t>>& old_value,
                     const std::string& source));
   MOCK_METHOD2(KeyChangeFailed,
                void(const std::vector<uint8_t>& key,
                     const std::string& source));
   MOCK_METHOD3(KeyDeleted,
                void(const std::vector<uint8_t>& key,
-                    const absl::optional<std::vector<uint8_t>>& old_value,
+                    const std::optional<std::vector<uint8_t>>& old_value,
                     const std::string& source));
   MOCK_METHOD2(AllDeleted, void(bool was_nonempty, const std::string& source));
   MOCK_METHOD1(ShouldSendOldValueOnMutations, void(bool value));

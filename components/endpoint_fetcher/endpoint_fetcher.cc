@@ -70,7 +70,7 @@ EndpointFetcher::EndpointFetcher(
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true),
       is_stable_channel_(is_stable_channel) {}
 
@@ -87,7 +87,7 @@ EndpointFetcher::EndpointFetcher(
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(false) {}
 
 EndpointFetcher::EndpointFetcher(
@@ -141,7 +141,7 @@ EndpointFetcher::EndpointFetcher(
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true) {}
 
 EndpointFetcher::EndpointFetcher(
@@ -149,7 +149,7 @@ EndpointFetcher::EndpointFetcher(
     : timeout_(kDefaultTimeOut),
       annotation_tag_(annotation_tag),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true) {}
 
 EndpointFetcher::~EndpointFetcher() = default;
@@ -166,7 +166,7 @@ void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
     VLOG(1) << __func__ << " No primary accounts found";
     response->response = "No primary accounts found";
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -194,7 +194,7 @@ void EndpointFetcher::OnAuthTokenFetched(
     auto response = std::make_unique<EndpointResponse>();
     response->response = "There was an authentication error";
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -283,7 +283,7 @@ void EndpointFetcher::OnResponseFetched(
   if (http_status_code == net::HTTP_UNAUTHORIZED ||
       http_status_code == net::HTTP_FORBIDDEN) {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // We cannot assume that the response was in JSON, and hence cannot sanitize
     // the response. Send the respond as-is. For error cases, we may not have a
     // valid string pointer -- if we don't, send a simple message indicating
@@ -297,7 +297,7 @@ void EndpointFetcher::OnResponseFetched(
 
   if (net_error_code != net::OK) {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kNetError);
   }
 
   if (response_body) {
@@ -327,7 +327,7 @@ void EndpointFetcher::OnSanitizationResult(
     response->response = result.value();
   } else {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
     response->response = "There was a sanitization error: " + result.error();
   }
   // The EndpointFetcher and its members will be destroyed after

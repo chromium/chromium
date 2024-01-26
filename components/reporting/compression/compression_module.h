@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
 #define COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -13,7 +14,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -41,8 +41,8 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   void CompressRecord(
       std::string record,
       scoped_refptr<ResourceManager> memory_resource,
-      base::OnceCallback<
-          void(std::string, absl::optional<CompressionInformation>)> cb) const;
+      base::OnceCallback<void(std::string,
+                              std::optional<CompressionInformation>)> cb) const;
 
   // Returns 'true' if |kCompressReportingPipeline| feature is enabled.
   static bool is_enabled();
@@ -65,8 +65,8 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   // Compresses a record using snappy
   void CompressRecordSnappy(
       std::string record,
-      base::OnceCallback<
-          void(std::string, absl::optional<CompressionInformation>)> cb) const;
+      base::OnceCallback<void(std::string,
+                              std::optional<CompressionInformation>)> cb) const;
 
   // Minimum compression threshold (in bytes) for when a record will be
   // compressed

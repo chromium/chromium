@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -61,7 +62,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/rgba_to_yuva.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -387,7 +387,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   shared_image_factory_.reset();
   if (has_context && gr_context()) {
     TRACE_EVENT0("viz", "Cleanup");
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -467,7 +467,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-    absl::optional<gfx::Rect> draw_rectangle) {
+    std::optional<gfx::Rect> draw_rectangle) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!scoped_output_device_paint_);
@@ -514,7 +514,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   }
 
   {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -630,7 +630,7 @@ void SkiaOutputSurfaceImplOnGpu::SetDrawTimings(base::TimeTicks task_posted) {
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SwapBuffersInternal(absl::nullopt);
+  SwapBuffersInternal(std::nullopt);
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
@@ -681,7 +681,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
-  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
   if (gr_context() && dependency_->GetGrShaderCache()) {
     // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
     cache_use.emplace(dependency_->GetGrShaderCache(),
@@ -944,7 +944,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
-      absl::optional<SkVector> scaling;
+      std::optional<SkVector> scaling;
       if (request->is_scaled()) {
         scaling =
             SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
@@ -1002,7 +1002,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
 void SkiaOutputSurfaceImplOnGpu::RenderSurface(
     SkSurface* surface,
     const SkIRect& source_selection,
-    absl::optional<SkVector> scaling,
+    std::optional<SkVector> scaling,
     bool is_downscale_or_identity_in_both_dimensions,
     SkSurface* dest_surface) {
   SkCanvas* dest_canvas = dest_surface->getCanvas();
@@ -1358,7 +1358,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  absl::optional<SkVector> scaling;
+  std::optional<SkVector> scaling;
   if (request->is_scaled()) {
     scaling = SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
                                  request->scale_from().x(),
@@ -1699,7 +1699,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   bool need_discard_alpha =
       from_framebuffer && (output_device_->is_emulated_rgbx());
   if (need_discard_alpha) {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
@@ -1714,7 +1714,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
   }
 
-  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
   if (dependency_->GetGrShaderCache()) {
     cache_use.emplace(dependency_->GetGrShaderCache(),
                       gpu::kDisplayCompositorClientId);
@@ -2309,7 +2309,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync(uint64_t sync_fence_release) {
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
-    absl::optional<OutputSurfaceFrame> frame) {
+    std::optional<OutputSurfaceFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
@@ -2348,7 +2348,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
 }
 
 void SkiaOutputSurfaceImplOnGpu::PostSubmit(
-    absl::optional<OutputSurfaceFrame> frame) {
+    std::optional<OutputSurfaceFrame> frame) {
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
   overlay_pass_accesses_.clear();

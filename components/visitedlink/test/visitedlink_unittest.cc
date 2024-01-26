@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;

@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -56,7 +57,6 @@
 #include "media/parsers/jpeg_parser.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -315,7 +315,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   DCHECK(gpu_memory_buffer_manager_);
 
   // Create a GpuMemoryBuffer and get a NativePixmapHandle from it.
-  const absl::optional<gfx::BufferFormat> gfx_format =
+  const std::optional<gfx::BufferFormat> gfx_format =
       media::VideoPixelFormatToGfxBufferFormat(format);
   if (!gfx_format) {
     LOG(ERROR) << "Unsupported pixel format: " << format;
@@ -363,7 +363,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
                         base::checked_cast<size_t>(plane.size));
     dmabuf_fds.push_back(std::move(plane.fd));
   }
-  const absl::optional<media::VideoFrameLayout> layout =
+  const std::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes),
           media::VideoFrameLayout::kBufferAddressAlignment,
@@ -460,7 +460,7 @@ MjpegDecodeAcceleratorTestEnvironment::GetSupportedDmaBufFormats() {
   };
   std::vector<media::VideoPixelFormat> supported_formats;
   for (const media::VideoPixelFormat format : kPreferredFormats) {
-    const absl::optional<gfx::BufferFormat> gfx_format =
+    const std::optional<gfx::BufferFormat> gfx_format =
         media::VideoPixelFormatToGfxBufferFormat(format);
     if (gfx_format && gpu_memory_buffer_manager_->IsFormatAndUsageSupported(
                           *gfx_format, kBufferUsage))

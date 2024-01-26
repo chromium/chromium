@@ -144,7 +144,7 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   parent->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF{}, gfx::PointF{},
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
-      /*device_scale_factor=*/absl::nullopt, &frame1);
+      /*device_scale_factor=*/std::nullopt, &frame1);
 
   // Parent surface damage is extended when sub_surface stacking order changes.
   EXPECT_FALSE(frame1.render_pass_list.back()->damage_rect.IsEmpty());
@@ -158,7 +158,7 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   parent->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF{}, gfx::PointF{},
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
-      /*device_scale_factor=*/absl::nullopt, &frame2);
+      /*device_scale_factor=*/std::nullopt, &frame2);
 
   // Parent surface damage is unaffected.
   EXPECT_TRUE(frame2.render_pass_list.back()->damage_rect.IsEmpty());

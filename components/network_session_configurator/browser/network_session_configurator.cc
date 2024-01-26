@@ -164,7 +164,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
         (length > 0) ? base::RandBytesAsString(length) : std::string();
 
     params->greased_http2_frame =
-        absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+        std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
             {type, flags, payload});
   }
 
@@ -239,7 +239,7 @@ bool ShouldQuicGoAwaySessionsOnIpChange(
       "true");
 }
 
-absl::optional<bool> GetExponentialBackOffOnInitialDelay(
+std::optional<bool> GetExponentialBackOffOnInitialDelay(
     const VariationParameters& quic_trial_params) {
   if (base::EqualsCaseInsensitiveASCII(
           GetVariationParam(quic_trial_params,
@@ -253,7 +253,7 @@ absl::optional<bool> GetExponentialBackOffOnInitialDelay(
           "true")) {
     return true;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetQuicIdleConnectionTimeoutSeconds(

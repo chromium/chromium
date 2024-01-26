@@ -199,7 +199,7 @@ void BookmarkModelTypeProcessor::OnCommitCompleted(
 void BookmarkModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     syncer::UpdateResponseDataList updates,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!model_type_state.cache_guid().empty());
   CHECK_EQ(model_type_state.cache_guid(), activation_request_.cache_guid);

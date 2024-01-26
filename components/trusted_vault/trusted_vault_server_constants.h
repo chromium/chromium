@@ -6,13 +6,13 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace trusted_vault {
@@ -60,7 +60,7 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
 
 // Computes full URL, including alternate proto param.
 GURL GetGetSecurityDomainMembersURLForTesting(
-    const absl::optional<std::string>& next_page_token,
+    const std::optional<std::string>& next_page_token,
     const GURL& server_url);
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url,
                                              SecurityDomainId security_domain);
@@ -71,7 +71,7 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
                                            SecurityDomainId security_domain);
 
 std::string GetSecurityDomainName(SecurityDomainId domain);
-absl::optional<SecurityDomainId> GetSecurityDomainByName(
+std::optional<SecurityDomainId> GetSecurityDomainByName(
     base::StringPiece domain);
 
 }  // namespace trusted_vault

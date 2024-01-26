@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -315,7 +315,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(
     return DENIED;
   }
 
-  absl::optional<int> policy_decision =
+  std::optional<int> policy_decision =
       cert_error_dict->FindInt(GetKey(cert, error));
 
   // If a policy decision was successfully retrieved and it's a valid value of
@@ -638,13 +638,13 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
     base::Value::Dict& dict) {
   // Extract the version of the certificate decision structure from the content
   // setting.
-  absl::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
+  std::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
   if (!version) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)
       return nullptr;
 
     dict.Set(kSSLCertDecisionVersionKey, kDefaultSSLCertDecisionVersion);
-    version = absl::make_optional<int>(kDefaultSSLCertDecisionVersion);
+    version = std::make_optional<int>(kDefaultSSLCertDecisionVersion);
   }
 
   // If the version is somehow a newer version than Chrome can handle, there's

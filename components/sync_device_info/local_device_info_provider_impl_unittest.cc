@@ -50,7 +50,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
   MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
-  MOCK_METHOD(absl::optional<DeviceInfo::SharingInfo>,
+  MOCK_METHOD(std::optional<DeviceInfo::SharingInfo>,
               GetLocalSharingInfo,
               (),
               (const override));
@@ -58,11 +58,11 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetPhoneAsASecurityKeyInfo,
               (),
               (const override));
-  MOCK_METHOD(absl::optional<std::string>,
+  MOCK_METHOD(std::optional<std::string>,
               GetFCMRegistrationToken,
               (),
               (const override));
-  MOCK_METHOD(absl::optional<ModelTypeSet>,
+  MOCK_METHOD(std::optional<ModelTypeSet>,
               GetInterestedDataTypes,
               (),
               (const override));
@@ -197,7 +197,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingEnabled) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
-      .WillByDefault(Return(absl::nullopt));
+      .WillByDefault(Return(std::nullopt));
 
   InitializeProvider();
 
@@ -206,8 +206,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
 
   std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features(
       std::begin(kSharingEnabledFeatures), std::end(kSharingEnabledFeatures));
-  absl::optional<DeviceInfo::SharingInfo> sharing_info =
-      absl::make_optional<DeviceInfo::SharingInfo>(
+  std::optional<DeviceInfo::SharingInfo> sharing_info =
+      std::make_optional<DeviceInfo::SharingInfo>(
           DeviceInfo::SharingTargetInfo{kSharingVapidFCMRegistrationToken,
                                         kSharingVapidP256dh,
                                         kSharingVapidAuthSecret},
@@ -219,7 +219,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
       .WillByDefault(Return(sharing_info));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  const absl::optional<DeviceInfo::SharingInfo>& local_sharing_info =
+  const std::optional<DeviceInfo::SharingInfo>& local_sharing_info =
       provider_->GetLocalDeviceInfo()->sharing_info();
   ASSERT_TRUE(local_sharing_info);
   EXPECT_EQ(kSharingVapidFCMRegistrationToken,
@@ -274,7 +274,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
       "full_hardware_class", base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/true,
-      /*sharing_info=*/absl::nullopt, paask_info, kFCMRegistrationToken,
+      /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
@@ -286,9 +286,9 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
                         &device_info_restored_from_store);
 
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
       .WillOnce(Return(DeviceInfo::PhoneAsASecurityKeyInfo::NotReady()));
 
@@ -321,7 +321,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, PhoneAsASecurityKeyInfo) {
       .WillByDefault(Return(paask_info));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  const absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& result_paask_info =
+  const std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& result_paask_info =
       provider_->GetLocalDeviceInfo()->paask_info();
   ASSERT_TRUE(result_paask_info);
   EXPECT_EQ(paask_info.tunnel_server_domain,

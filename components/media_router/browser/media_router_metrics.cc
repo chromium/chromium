@@ -31,7 +31,7 @@ constexpr char kHistogramProviderTerminateRouteResult[] =
 
 std::string GetHistogramNameForProvider(
     const std::string& base_name,
-    absl::optional<mojom::MediaRouteProviderId> provider_id) {
+    std::optional<mojom::MediaRouteProviderId> provider_id) {
   if (!provider_id) {
     return base_name;
   }
@@ -174,7 +174,7 @@ void MediaRouterMetrics::RecordIconStateAtDialogOpen(bool is_pinned) {
 // static
 void MediaRouterMetrics::RecordCreateRouteResultCode(
     mojom::RouteRequestResultCode result_code,
-    absl::optional<mojom::MediaRouteProviderId> provider_id) {
+    std::optional<mojom::MediaRouteProviderId> provider_id) {
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderCreateRouteResult,
                                   provider_id),
@@ -184,7 +184,7 @@ void MediaRouterMetrics::RecordCreateRouteResultCode(
 // static
 void MediaRouterMetrics::RecordJoinRouteResultCode(
     mojom::RouteRequestResultCode result_code,
-    absl::optional<mojom::MediaRouteProviderId> provider_id) {
+    std::optional<mojom::MediaRouteProviderId> provider_id) {
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderJoinRouteResult,
                                   provider_id),
@@ -194,7 +194,7 @@ void MediaRouterMetrics::RecordJoinRouteResultCode(
 // static
 void MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
     mojom::RouteRequestResultCode result_code,
-    absl::optional<mojom::MediaRouteProviderId> provider_id) {
+    std::optional<mojom::MediaRouteProviderId> provider_id) {
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,
                                   provider_id),

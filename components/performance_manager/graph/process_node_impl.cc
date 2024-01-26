@@ -216,7 +216,7 @@ base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
   return launch_time_;
 }
 
-absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
+std::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exit_status_;
 }

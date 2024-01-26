@@ -5,6 +5,7 @@
 #include "components/sync/engine/syncer_proto_util.h"
 
 #include <map>
+#include <optional>
 
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -25,7 +26,6 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "google_apis/google_api_keys.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using std::string;
 using std::stringstream;
@@ -217,16 +217,16 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
     cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
   }
 
-  absl::optional<int> max_tokens;
+  std::optional<int> max_tokens;
   if (command.has_extension_types_max_tokens()) {
     max_tokens = command.extension_types_max_tokens();
   }
-  absl::optional<base::TimeDelta> refill_interval;
+  std::optional<base::TimeDelta> refill_interval;
   if (command.has_extension_types_refill_interval_seconds()) {
     refill_interval =
         base::Seconds(command.extension_types_refill_interval_seconds());
   }
-  absl::optional<base::TimeDelta> depleted_quota_nudge_delay;
+  std::optional<base::TimeDelta> depleted_quota_nudge_delay;
   if (command.has_extension_types_depleted_quota_nudge_delay_seconds()) {
     depleted_quota_nudge_delay = base::Seconds(
         command.extension_types_depleted_quota_nudge_delay_seconds());

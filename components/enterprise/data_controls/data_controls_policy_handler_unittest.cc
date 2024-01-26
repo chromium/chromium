@@ -5,6 +5,7 @@
 #include "components/enterprise/data_controls/data_controls_policy_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -12,7 +13,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_controls {
 
@@ -411,7 +411,7 @@ class DataControlsPolicyHandlerTest : public testing::Test {
     return policy_map;
   }
 
-  absl::optional<base::Value> policy_value(const std::string& policy) const {
+  std::optional<base::Value> policy_value(const std::string& policy) const {
     return base::JSONReader::Read(policy, base::JSON_ALLOW_TRAILING_COMMAS);
   }
 };

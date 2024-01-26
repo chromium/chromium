@@ -90,7 +90,7 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOrigin(
     const url::Origin& partition_origin,
     const base::Time current_time) {
   return GetPersistedTrialsForOriginWithMatch(origin, partition_origin,
-                                              current_time, absl::nullopt);
+                                              current_time, std::nullopt);
 }
 
 bool OriginTrials::IsFeaturePersistedForOrigin(
@@ -193,7 +193,7 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
     const url::Origin& origin,
     const url::Origin& partition_origin,
     const base::Time current_time,
-    const absl::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
+    const std::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
     const {
   if (origin.opaque())
     return {};

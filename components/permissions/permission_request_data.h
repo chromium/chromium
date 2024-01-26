@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_DATA_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_DATA_H_
 
+#include <optional>
+
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -58,7 +59,7 @@ struct PermissionRequestData {
   }
 
   // The type of request.
-  absl::optional<RequestType> request_type;
+  std::optional<RequestType> request_type;
 
   //  Uniquely identifier of particular permission request.
   PermissionRequestID id;
@@ -78,7 +79,7 @@ struct PermissionRequestData {
   // Anchor element position (in screen coordinates), gennerally when the
   // permission request is made from permission element. Used to calculate
   // position where the secondary prompt UI is expected to be shown.
-  absl::optional<gfx::Rect> anchor_element_position;
+  std::optional<gfx::Rect> anchor_element_position;
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;

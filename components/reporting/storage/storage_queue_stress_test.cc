@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/storage/storage_queue.h"
-
 #include <cstdint>
 #include <initializer_list>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -28,6 +27,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -35,7 +35,6 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -54,7 +53,7 @@ class TestUploadClient : public UploaderInterface {
   // generation is uploaded without last record digest.
   using LastRecordDigestMap = base::flat_map<
       std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-      absl::optional<std::string /*digest*/>>;
+      std::optional<std::string /*digest*/>>;
 
   explicit TestUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {
@@ -126,7 +125,7 @@ class TestUploadClient : public UploaderInterface {
  private:
   SEQUENCE_CHECKER(test_uploader_checker_);
 
-  absl::optional<int64_t> generation_id_
+  std::optional<int64_t> generation_id_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
   const raw_ptr<LastRecordDigestMap> last_record_digest_map_
       GUARDED_BY_CONTEXT(test_uploader_checker_);

@@ -40,7 +40,7 @@ class MockThreatDetails : public ThreatDetails {
            int num_visits,
            std::unique_ptr<security_interstitials::InterstitialInteractionMap>
                interstitial_interactions,
-           absl::optional<int64_t> warning_shown_ts));
+           std::optional<int64_t> warning_shown_ts));
 };
 
 class MockThreatDetailsFactory : public ThreatDetailsFactory {

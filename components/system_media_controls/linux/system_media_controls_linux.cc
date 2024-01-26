@@ -508,7 +508,7 @@ void SystemMediaControlsLinux::ClearTrackId() {
 }
 
 void SystemMediaControlsLinux::ClearPosition() {
-  position_ = absl::nullopt;
+  position_ = std::nullopt;
   StopPositionUpdateTimer();
   UpdatePosition(/*emit_signal=*/true);
 }

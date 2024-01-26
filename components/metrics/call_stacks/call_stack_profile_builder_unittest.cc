@@ -476,7 +476,7 @@ TEST(CallStackProfileBuilderTest, RecordMetadata) {
   base::TestModule module;
   base::Frame frame = {0x10, &module};
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
+  metadata_recorder.Set(100, std::nullopt, std::nullopt, 10);
   profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
       &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
@@ -537,7 +537,7 @@ TEST(CallStackProfileBuilderTest, ApplyMetadataRetrospectively_Basic) {
   profile_builder->ApplyMetadataRetrospectively(
       profile_start_time + sample_time_delta,
       profile_start_time + sample_time_delta * 2,
-      base::MetadataRecorder::Item(3, 30, absl::nullopt, 300));
+      base::MetadataRecorder::Item(3, 30, std::nullopt, 300));
 
   profile_builder->OnProfileCompleted(3 * sample_time_delta, sample_time_delta);
 
@@ -601,7 +601,7 @@ TEST(CallStackProfileBuilderTest,
   profile_builder->ApplyMetadataRetrospectively(
       profile_start_time - base::Microseconds(1),
       profile_start_time + sample_time_delta,
-      base::MetadataRecorder::Item(3, 30, absl::nullopt, 300));
+      base::MetadataRecorder::Item(3, 30, std::nullopt, 300));
 
   profile_builder->OnProfileCompleted(3 * sample_time_delta, sample_time_delta);
 

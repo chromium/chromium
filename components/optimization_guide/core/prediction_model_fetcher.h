@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -18,7 +18,7 @@ namespace optimization_guide {
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
 using ModelsFetchedCallback = base::OnceCallback<void(
-    absl::optional<
+    std::optional<
         std::unique_ptr<optimization_guide::proto::GetModelsResponse>>)>;
 
 // A class to handle requests for prediction models (and prediction data) from

@@ -4,13 +4,13 @@
 
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
 #include "components/enterprise/common/strings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -133,7 +133,7 @@ std::string RealtimeReportingJobConfiguration::GetUmaString() const {
 std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
     const std::string& response_body) const {
   std::set<std::string> failedIds;
-  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
+  std::optional<base::Value> response = base::JSONReader::Read(response_body);
   if (!response || !response->is_dict()) {
     return failedIds;
   }

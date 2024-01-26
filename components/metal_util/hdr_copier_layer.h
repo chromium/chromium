@@ -7,8 +7,9 @@
 
 #include <IOSurface/IOSurfaceRef.h>
 
+#include <optional>
+
 #include "components/metal_util/metal_util_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace gfx {
@@ -38,7 +39,7 @@ UpdateHDRCopierLayer(CALayer* layer,
                      IOSurfaceRef buffer,
                      id<MTLDevice> device,
                      const gfx::ColorSpace& color_space,
-                     const absl::optional<gfx::HDRMetadata>& hdr_metadata);
+                     const std::optional<gfx::HDRMetadata>& hdr_metadata);
 
 }  // namespace metal
 

@@ -98,7 +98,7 @@ class FrameNodeImpl
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
-  absl::optional<bool> IntersectsViewport() const override;
+  std::optional<bool> IntersectsViewport() const override;
   Visibility GetVisibility() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   uint64_t GetResidentSetKbEstimate() const override;
@@ -355,7 +355,7 @@ class FrameNodeImpl
   // point in tracking it. To avoid programming mistakes, it is forbidden to
   // query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      absl::optional<bool>,
+      std::optional<bool>,
       &FrameNodeObserver::OnIntersectsViewportChanged>
       intersects_viewport_;
 

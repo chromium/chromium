@@ -136,7 +136,7 @@ void CrossDeviceUserSegment::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != kCrossDeviceUserUMAFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   CrossDeviceUserBin segment = CrossDeviceUserBin::kNoCrossDeviceUsage;

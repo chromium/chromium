@@ -32,7 +32,7 @@ class MockTileService : public query_tiles::TileService {
   MOCK_METHOD1(OnTileClicked, void(const std::string&));
   MOCK_METHOD1(SetServerUrl, void(const std::string&));
   MOCK_METHOD2(OnQuerySelected,
-               void(const absl::optional<std::string>&, const std::u16string&));
+               void(const std::optional<std::string>&, const std::u16string&));
   MOCK_METHOD0(GetLogger, query_tiles::Logger*());
 };
 

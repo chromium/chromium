@@ -42,12 +42,12 @@ std::optional<KeyProto> CreateKeyProtoFromValue(
     return std::nullopt;
   }
 
-  absl::optional<int> last_rotation = value.FindInt(kLastRotationString);
+  std::optional<int> last_rotation = value.FindInt(kLastRotationString);
   if (!last_rotation.has_value()) {
     return std::nullopt;
   }
 
-  absl::optional<int> rotation_period = value.FindInt(kRotationPeriodString);
+  std::optional<int> rotation_period = value.FindInt(kRotationPeriodString);
   if (!rotation_period.has_value()) {
     return std::nullopt;
   }

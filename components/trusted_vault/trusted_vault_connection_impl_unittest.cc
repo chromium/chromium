@@ -95,7 +95,7 @@ enum class Member {
 trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
     SecurityDomainId security_domain_id,
     const std::vector<Member>& members,
-    absl::optional<std::string> next_page_token) {
+    std::optional<std::string> next_page_token) {
   trusted_vault_pb::ListSecurityDomainMembersResponse response;
 
   for (auto member_type : members) {
@@ -219,7 +219,7 @@ class TrustedVaultConnectionImplTest
   }
 
   bool RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
-      const absl::optional<std::string>& next_page_token,
+      const std::optional<std::string>& next_page_token,
       net::HttpStatusCode response_http_code,
       const std::string& response_body) {
     // Allow request to reach |test_url_loader_factory_|.
@@ -327,7 +327,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           kLastKeyVersion, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt,
+          /*authentication_factor_type_hint=*/std::nullopt,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -433,7 +433,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess)));
@@ -533,7 +533,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/0, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
@@ -556,7 +556,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/0, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
@@ -579,7 +579,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
@@ -602,7 +602,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // Advance time to bypass retry logic.
@@ -626,7 +626,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
@@ -651,7 +651,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_BAD_REQUEST indicates that
@@ -689,7 +689,7 @@ TEST_P(
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // No requests should be sent to the network.
@@ -709,7 +709,7 @@ TEST_P(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
           /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
           AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+          /*authentication_factor_type_hint=*/std::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run).Times(0);
@@ -945,13 +945,13 @@ TEST_P(TrustedVaultConnectionImplTest,
       Run(DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
-      /*next_page_token=*/absl::nullopt, net::HTTP_OK,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
       /*response_body=*/
       MakeSecurityDomainMembers(
           security_domain(),
           {Member::kPhysical, Member::kOtherSecurityDomain,
            Member::kUsableVirtual},
-          /*next_page_token=*/absl::nullopt)
+          /*next_page_token=*/std::nullopt)
           .SerializeAsString()));
 }
 
@@ -1024,7 +1024,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     SCOPED_TRACE(test_case);
     test_case++;
 
-    absl::optional<DownloadAuthenticationFactorsRegistrationStateResult> result;
+    std::optional<DownloadAuthenticationFactorsRegistrationStateResult> result;
     auto callback = base::BindLambdaForTesting(
         [&result](
             DownloadAuthenticationFactorsRegistrationStateResult in_result) {
@@ -1036,7 +1036,7 @@ TEST_P(TrustedVaultConnectionImplTest,
             /*account_info=*/CoreAccountInfo(), std::move(callback));
     ASSERT_THAT(request, NotNull());
 
-    absl::optional<std::string> prev_next_page_token;
+    std::optional<std::string> prev_next_page_token;
     int num_pages_downloaded = 0;
     for (size_t i = 0; i < test.responses.size(); i++) {
       if (result.has_value()) {
@@ -1045,7 +1045,7 @@ TEST_P(TrustedVaultConnectionImplTest,
         break;
       }
 
-      absl::optional<std::string> next_page_token;
+      std::optional<std::string> next_page_token;
       if (i < test.responses.size() - 1) {
         next_page_token = base::NumberToString(i);
       }
@@ -1081,7 +1081,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
-      /*next_page_token=*/absl::nullopt, net::HTTP_INTERNAL_SERVER_ERROR,
+      /*next_page_token=*/std::nullopt, net::HTTP_INTERNAL_SERVER_ERROR,
       /*response_body=*/""));
 }
 
@@ -1101,7 +1101,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
-      /*next_page_token=*/absl::nullopt, net::HTTP_OK,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
       /*response_body=*/"not a valid protobuf"));
 }
 

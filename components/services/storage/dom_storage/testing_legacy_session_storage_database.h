@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class ProcessMemoryDump;
 namespace storage {
 
 using LegacyDomStorageValuesMap =
-    std::map<std::u16string, absl::optional<std::u16string>>;
+    std::map<std::u16string, std::optional<std::u16string>>;
 
 // A legacy implementation of Session Storage used only in tests to provide
 // coverage of session storage migration code.

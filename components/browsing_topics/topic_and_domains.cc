@@ -33,7 +33,7 @@ TopicAndDomains::~TopicAndDomains() = default;
 TopicAndDomains TopicAndDomains::FromDictValue(
     const base::Value::Dict& dict_value) {
   Topic topic(0);
-  absl::optional<int> topic_value = dict_value.FindInt(kTopicNameKey);
+  std::optional<int> topic_value = dict_value.FindInt(kTopicNameKey);
   if (topic_value)
     topic = Topic(*topic_value);
 
@@ -42,7 +42,7 @@ TopicAndDomains TopicAndDomains::FromDictValue(
       dict_value.FindList(kHashedDomainsNameKey);
   if (hashed_domains_value) {
     for (const base::Value& hashed_domain_value : *hashed_domains_value) {
-      absl::optional<int64_t> hashed_domain_int64_value =
+      std::optional<int64_t> hashed_domain_int64_value =
           base::ValueToInt64(hashed_domain_value);
       if (!hashed_domain_int64_value)
         return TopicAndDomains();

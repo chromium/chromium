@@ -177,7 +177,7 @@ using DiscountsOptGuideCallback = base::OnceCallback<void(DiscountsPair)>;
 // A callback for getting updated ProductInfo for a bookmark. This provides the
 // bookmark ID being updated, the URL, and the product info.
 using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
-    void(const int64_t, const GURL&, absl::optional<ProductInfo>)>;
+    void(const int64_t, const GURL&, std::optional<ProductInfo>)>;
 
 // Under Desktop browser test or interactive ui test, use
 // ShoppingServiceFactory::SetTestingFactory to create a
@@ -258,7 +258,7 @@ class ShoppingService : public KeyedService,
   // the specified |url|. This method is less reliable than GetProductInfoForUrl
   // above as it may return an empty or partial result prior to the page being
   // processed or information being available from the backend.
-  virtual absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
+  virtual std::optional<ProductInfo> GetAvailableProductInfoForUrl(
       const GURL& url);
 
   // Get updated product info (including price) for the provided list of
@@ -484,7 +484,7 @@ class ShoppingService : public KeyedService,
   void RunLocalExtractionForProductInfoForShoppingPage(
       base::WeakPtr<WebWrapper> web,
       const GURL& url,
-      absl::optional<bool> is_shopping_page);
+      std::optional<bool> is_shopping_page);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.

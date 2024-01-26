@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/search_suggestion_parser.h"
+
 #include <stddef.h>
 #include <stdint.h>
+
+#include <optional>
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // From crbug.com/774858
@@ -30,7 +32,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   std::unique_ptr<std::string> response_body =
       std::make_unique<std::string>(reinterpret_cast<const char*>(data), size);
-  absl::optional<base::Value::List> root_list =
+  std::optional<base::Value::List> root_list =
       SearchSuggestionParser::DeserializeJsonData(
           SearchSuggestionParser::ExtractJsonData(nullptr,
                                                   std::move(response_body)));

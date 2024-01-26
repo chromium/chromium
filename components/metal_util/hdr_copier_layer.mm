@@ -207,13 +207,13 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
 - (void)setHDRContents:(IOSurfaceRef)buffer
                 device:(id<MTLDevice>)device
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(absl::optional<gfx::HDRMetadata>)hdrMetadata;
+              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata;
 @end
 
 @implementation HDRCopierLayer {
   id<MTLRenderPipelineState> __strong _renderPipelineState;
   gfx::ColorSpace _colorSpace;
-  absl::optional<gfx::HDRMetadata> _hdrMetadata;
+  std::optional<gfx::HDRMetadata> _hdrMetadata;
 }
 - (id)init {
   if (self = [super init]) {
@@ -235,7 +235,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
 - (void)setHDRContents:(IOSurfaceRef)buffer
                 device:(id<MTLDevice>)device
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(absl::optional<gfx::HDRMetadata>)hdrMetadata {
+              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata {
   // Retrieve information about the IOSurface.
   size_t width = IOSurfaceGetWidth(buffer);
   size_t height = IOSurfaceGetHeight(buffer);
@@ -399,12 +399,11 @@ CALayer* MakeHDRCopierLayer() {
   return [[HDRCopierLayer alloc] init];
 }
 
-void UpdateHDRCopierLayer(
-    CALayer* layer,
-    IOSurfaceRef buffer,
-    id<MTLDevice> device,
-    const gfx::ColorSpace& color_space,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+void UpdateHDRCopierLayer(CALayer* layer,
+                          IOSurfaceRef buffer,
+                          id<MTLDevice> device,
+                          const gfx::ColorSpace& color_space,
+                          const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   if (auto* hdr_copier_layer = base::apple::ObjCCast<HDRCopierLayer>(layer)) {
     [hdr_copier_layer setHDRContents:buffer
                               device:device

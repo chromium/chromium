@@ -44,13 +44,13 @@ struct DeepScanDebugData {
   ~DeepScanDebugData();
 
   base::Time request_time;
-  absl::optional<enterprise_connectors::ContentAnalysisRequest> request;
+  std::optional<enterprise_connectors::ContentAnalysisRequest> request;
   bool per_profile_request;
   std::string access_token_truncated;
 
   base::Time response_time;
   std::string response_status;
-  absl::optional<enterprise_connectors::ContentAnalysisResponse> response;
+  std::optional<enterprise_connectors::ContentAnalysisResponse> response;
 };
 #endif
 
@@ -440,7 +440,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void ClearURTLookupPings();
 
   // HashRealTimeService::WebUIDelegate:
-  absl::optional<int> AddToHPRTLookupPings(
+  std::optional<int> AddToHPRTLookupPings(
       V5::SearchHashesRequest* inner_request,
       std::string relay_url_spec,
       std::string ohttp_key) override;

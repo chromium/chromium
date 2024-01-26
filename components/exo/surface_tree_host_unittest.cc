@@ -126,7 +126,7 @@ TEST_F(SurfaceTreeHostTest,
             std::make_pair(internal_display_id, external_display_id));
 
   // Change to mirror mode, which should make internal display primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(leave_enter_ids.size(), 2u);
@@ -134,7 +134,7 @@ TEST_F(SurfaceTreeHostTest,
             std::make_pair(external_display_id, internal_display_id));
 
   // Switch back to extend mode, which should restore external as primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(leave_enter_ids.size(), 3u);

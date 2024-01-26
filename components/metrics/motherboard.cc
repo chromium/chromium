@@ -4,6 +4,7 @@
 
 #include "components/metrics/motherboard.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -27,11 +27,11 @@ namespace metrics {
 namespace {
 
 struct MotherboardDetails {
-  absl::optional<std::string> manufacturer;
-  absl::optional<std::string> model;
-  absl::optional<std::string> bios_manufacturer;
-  absl::optional<std::string> bios_version;
-  absl::optional<Motherboard::BiosType> bios_type;
+  std::optional<std::string> manufacturer;
+  std::optional<std::string> model;
+  std::optional<std::string> bios_manufacturer;
+  std::optional<std::string> bios_version;
+  std::optional<Motherboard::BiosType> bios_type;
 };
 
 #if BUILDFLAG(IS_LINUX)
@@ -76,8 +76,9 @@ using Microsoft::WRL::ComPtr;
 using base::win::ScopedBstr;
 using base::win::ScopedVariant;
 
-absl::optional<std::string> ReadStringMember(
-    ComPtr<IWbemClassObject> class_object, const wchar_t* key) {
+std::optional<std::string> ReadStringMember(
+    ComPtr<IWbemClassObject> class_object,
+    const wchar_t* key) {
   ScopedVariant variant;
   HRESULT hr = class_object->Get(key, 0, variant.Receive(), 0, 0);
   if (SUCCEEDED(hr) && variant.type() == VT_BSTR) {
@@ -89,8 +90,8 @@ absl::optional<std::string> ReadStringMember(
 }
 
 void ReadWin32BaseBoard(const ComPtr<IWbemServices>& services,
-                        absl::optional<std::string>* manufacturer,
-                        absl::optional<std::string>* model) {
+                        std::optional<std::string>* manufacturer,
+                        std::optional<std::string>* model) {
   static constexpr wchar_t kManufacturer[] = L"Manufacturer";
   static constexpr wchar_t kProduct[] = L"Product";
   static constexpr wchar_t kQueryProcessor[] =
@@ -115,8 +116,8 @@ void ReadWin32BaseBoard(const ComPtr<IWbemServices>& services,
 }
 
 void ReadWin32Bios(const ComPtr<IWbemServices>& services,
-                   absl::optional<std::string>* bios_manufacturer,
-                   absl::optional<std::string>* bios_version) {
+                   std::optional<std::string>* bios_manufacturer,
+                   std::optional<std::string>* bios_version) {
   static constexpr wchar_t kManufacturer[] = L"Manufacturer";
   static constexpr wchar_t kVersion[] = L"Version";
   static constexpr wchar_t kQueryProcessor[] =
@@ -140,7 +141,7 @@ void ReadWin32Bios(const ComPtr<IWbemServices>& services,
   *bios_version = ReadStringMember(class_object, kVersion);
 }
 
-void ReadFirmwareType(absl::optional<Motherboard::BiosType>* bios_type) {
+void ReadFirmwareType(std::optional<Motherboard::BiosType>* bios_type) {
   FIRMWARE_TYPE firmware_type = FirmwareTypeUnknown;
   if (::GetFirmwareType(&firmware_type)) {
     if (firmware_type == FirmwareTypeBios) {
@@ -148,7 +149,7 @@ void ReadFirmwareType(absl::optional<Motherboard::BiosType>* bios_type) {
     } else if (firmware_type == FirmwareTypeUefi) {
       *bios_type = Motherboard::BiosType::kUefi;
     } else {
-      *bios_type = absl::nullopt;
+      *bios_type = std::nullopt;
     }
   }
 }

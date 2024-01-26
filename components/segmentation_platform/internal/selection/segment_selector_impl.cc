@@ -251,7 +251,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
     stats::RecordSegmentSelectionComputed(*config_, segment_id_and_rank.first,
-                                          absl::nullopt);
+                                          std::nullopt);
   } else {
     DCHECK(callback.is_null());
     UpdateSelectedSegment(segment_id_and_rank.first,
@@ -335,8 +335,8 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
   stats::RecordSegmentSelectionComputed(
       *config_, new_selection,
       previous_selection.has_value()
-          ? absl::make_optional(previous_selection->segment_id)
-          : absl::nullopt);
+          ? std::make_optional(previous_selection->segment_id)
+          : std::nullopt);
 
   VLOG(1) << __func__ << " Key=" << config_->segmentation_key
           << " : skip_updating_prefs=" << skip_updating_prefs;
@@ -345,7 +345,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
 
   // Write result to prefs.
   auto updated_selection =
-      absl::make_optional<SelectedSegment>(new_selection, rank);
+      std::make_optional<SelectedSegment>(new_selection, rank);
   updated_selection->selection_time = clock_->Now();
 
   result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,
@@ -359,7 +359,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
   for (const auto& segment : config_->segments) {
     training_data_collector_->OnDecisionTime(
         segment.first, nullptr, proto::TrainingOutputs::TriggerConfig::PERIODIC,
-        absl::nullopt, /*decision_result_update_trigger=*/true);
+        std::nullopt, /*decision_result_update_trigger=*/true);
   }
 }
 

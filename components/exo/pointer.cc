@@ -4,6 +4,7 @@
 
 #include "components/exo/pointer.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/drag_drop/drag_drop_controller.h"
@@ -29,7 +30,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -530,7 +530,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsMouseEvent()) {
     // Ordinal motion is sent only on platforms that support it, which is
     // indicated by the presence of a flag.
-    absl::optional<gfx::Vector2dF> ordinal_motion = absl::nullopt;
+    std::optional<gfx::Vector2dF> ordinal_motion = std::nullopt;
     if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
         base::FeatureList::IsEnabled(ash::features::kExoOrdinalMotion)) {
       ordinal_motion = event->movement();
@@ -1035,7 +1035,7 @@ void Pointer::MoveCursorToCenterOfActiveDisplay() {
 bool Pointer::HandleRelativePointerMotion(
     base::TimeTicks time_stamp,
     gfx::PointF location_in_root,
-    const absl::optional<gfx::Vector2dF>& ordinal_motion) {
+    const std::optional<gfx::Vector2dF>& ordinal_motion) {
   if (!relative_pointer_delegate_)
     return false;
 

@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace update_client {
@@ -229,7 +229,7 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const absl::optional<base::Value> root_val = base::JSONReader::Read(msg);
+    const std::optional<base::Value> root_val = base::JSONReader::Read(msg);
     ASSERT_TRUE(root_val);
     const base::Value::Dict& root = root_val->GetDict();
     const base::Value::Dict* request = root.FindDict("request");
@@ -467,8 +467,8 @@ TEST_P(PingManagerTest, SendPing) {
 
   // Tests the presence of the `domain joined` in the ping request.
   {
-    for (const auto is_managed : std::initializer_list<absl::optional<bool>>{
-             absl::nullopt, false, true}) {
+    for (const auto is_managed : std::initializer_list<std::optional<bool>>{
+             std::nullopt, false, true}) {
       config_->SetIsMachineExternallyManaged(is_managed);
       EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
       Component component(*update_context, "abc");
@@ -489,7 +489,7 @@ TEST_P(PingManagerTest, SendPing) {
                 root->GetDict().FindBoolByDottedPath("request.domainjoined"));
     }
   }
-  config_->SetIsMachineExternallyManaged(absl::nullopt);
+  config_->SetIsMachineExternallyManaged(std::nullopt);
 }
 
 // Tests that sending the ping fails when the component requires encryption but

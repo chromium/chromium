@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/variations/variations_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
 
@@ -189,7 +188,7 @@ bool HeapProfilerParameters::UpdateFromJSON(base::StringPiece json_string) {
     return true;
 
   base::JSONValueConverter<HeapProfilerParameters> converter;
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS |
                                               base::JSON_ALLOW_COMMENTS);
   if (value && converter.Convert(*value, this))

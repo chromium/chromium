@@ -27,7 +27,7 @@ class FeatureAggregatorImpl : public FeatureAggregator {
   FeatureAggregatorImpl& operator=(const FeatureAggregatorImpl&) = delete;
 
   // FeatureAggregator overrides.
-  absl::optional<std::vector<float>> Process(
+  std::optional<std::vector<float>> Process(
       proto::SignalType signal_type,
       uint64_t name_hash,
       proto::Aggregation aggregation,

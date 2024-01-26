@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_ENTRY_POINT_DISPLAY_REASON_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_ENTRY_POINT_DISPLAY_REASON_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 class GURL;
 class PrefService;
@@ -41,7 +41,7 @@ namespace internal {
 // `sync_service` and `send_tab_to_self_sync_model` can be null and that's
 // handled as if send-tab-to-self or the sync backbone aren't working, so the
 // entry point should be hidden (returns nullopt).
-absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     const GURL& url_to_share,
     syncer::SyncService* sync_service,
     SendTabToSelfModel* send_tab_to_self_model,

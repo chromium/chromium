@@ -5,6 +5,7 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 #include <functional>
+#include <optional>
 #include <string>
 
 #include "components/content_settings/core/common/content_settings.h"
@@ -13,7 +14,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content_settings {

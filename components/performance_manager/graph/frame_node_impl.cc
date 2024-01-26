@@ -218,7 +218,7 @@ bool FrameNodeImpl::IsCapturingMediaStream() const {
   return is_capturing_media_stream_.value();
 }
 
-absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
+std::optional<bool> FrameNodeImpl::IntersectsViewport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The intersection with the viewport of the outermost main frame or embedder
   // is not tracked.

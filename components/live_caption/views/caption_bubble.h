@@ -99,7 +99,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetModel(CaptionBubbleModel* model);
 
   // Changes the caption style of the caption bubble.
-  void UpdateCaptionStyle(absl::optional<ui::CaptionStyle> caption_style);
+  void UpdateCaptionStyle(std::optional<ui::CaptionStyle> caption_style);
 
   // Returns whether the bubble has activity. Activity is defined as
   // transcription received from the speech service or user interacting with the
@@ -280,7 +280,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::Checkbox> media_foundation_renderer_error_checkbox_ = nullptr;
 #endif
 
-  absl::optional<ui::CaptionStyle> caption_style_;
+  std::optional<ui::CaptionStyle> caption_style_;
   raw_ptr<CaptionBubbleModel> model_ = nullptr;
   raw_ptr<PrefService> profile_prefs_;
 

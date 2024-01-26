@@ -133,10 +133,10 @@ class MockOptGuideDecider
   void SetDefaultShoppingPage(bool default_shopping_page);
 
  private:
-  absl::optional<GURL> response_url_;
-  absl::optional<OptimizationType> optimization_type_;
-  absl::optional<OptimizationGuideDecision> optimization_decision_;
-  absl::optional<OptimizationMetadata> optimization_data_;
+  std::optional<GURL> response_url_;
+  std::optional<OptimizationType> optimization_type_;
+  std::optional<OptimizationGuideDecision> optimization_decision_;
+  std::optional<OptimizationMetadata> optimization_data_;
 
   // Shopping responses for the on-demand API.
   std::unordered_map<std::string,

@@ -36,7 +36,7 @@ const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id) {
   return "Unknown provider_id";
 }
 
-absl::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
+std::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
     base::StringPiece provider_id) {
   if (provider_id == kWiredDisplay) {
     return mojom::MediaRouteProviderId::WIRED_DISPLAY;
@@ -49,7 +49,7 @@ absl::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
   } else if (provider_id == kTest) {
     return mojom::MediaRouteProviderId::TEST;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 

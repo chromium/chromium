@@ -112,7 +112,7 @@ class OAuth2TokenServiceDelegateAndroidTest
     if (IsSeedAccountsRevampEnabled()) {
       account_tracker_service_.SeedAccountsInfo(
           {account1_, account2_},
-          /*primary_account_id=*/absl::nullopt,
+          /*primary_account_id=*/std::nullopt,
           /*should_remove_stale_accounts=*/false);
     } else {
       account_tracker_service_.SeedAccountInfo(account1_);

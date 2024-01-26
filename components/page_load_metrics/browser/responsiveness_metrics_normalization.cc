@@ -11,9 +11,9 @@ ResponsivenessMetricsNormalization::ResponsivenessMetricsNormalization() =
 ResponsivenessMetricsNormalization::~ResponsivenessMetricsNormalization() =
     default;
 
-absl::optional<mojom::UserInteractionLatency>
+std::optional<mojom::UserInteractionLatency>
 ResponsivenessMetricsNormalization::ApproximateHighPercentile() const {
-  absl::optional<mojom::UserInteractionLatency> approximate_high_percentile;
+  std::optional<mojom::UserInteractionLatency> approximate_high_percentile;
   if (worst_ten_latencies_.size()) {
     uint64_t index =
         std::min(static_cast<uint64_t>(worst_ten_latencies_.size() - 1),
@@ -24,9 +24,9 @@ ResponsivenessMetricsNormalization::ApproximateHighPercentile() const {
   return approximate_high_percentile;
 }
 
-absl::optional<mojom::UserInteractionLatency>
+std::optional<mojom::UserInteractionLatency>
 ResponsivenessMetricsNormalization::worst_latency() const {
-  absl::optional<mojom::UserInteractionLatency> worst_latency;
+  std::optional<mojom::UserInteractionLatency> worst_latency;
   if (worst_ten_latencies_.size()) {
     worst_latency = worst_ten_latencies_[0];
   }

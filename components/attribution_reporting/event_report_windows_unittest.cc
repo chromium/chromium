@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/event_report_windows.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/test/gmock_expected_support.h"
@@ -15,7 +16,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -38,19 +38,19 @@ TEST(EventReportWindowsTest, FromDefaults) {
     const char* desc;
     base::TimeDelta report_window;
     SourceType source_type;
-    ::testing::Matcher<absl::optional<EventReportWindows>> matches;
+    ::testing::Matcher<std::optional<EventReportWindows>> matches;
   } kTestCases[] = {
       {
           "negative-navigation",
           base::Seconds(-1),
           SourceType::kNavigation,
-          Eq(absl::nullopt),
+          Eq(std::nullopt),
       },
       {
           "negative-event",
           base::Seconds(-1),
           SourceType::kEvent,
-          Eq(absl::nullopt),
+          Eq(std::nullopt),
       },
       {
           "=-last-navigation",
@@ -114,56 +114,56 @@ TEST(EventReportWindowsTest, CreateWindows) {
     const char* name;
     base::TimeDelta start_time;
     std::vector<base::TimeDelta> end_times;
-    ::testing::Matcher<absl::optional<EventReportWindows>> matches;
+    ::testing::Matcher<std::optional<EventReportWindows>> matches;
   } kTestCases[] = {
       {
           .name = "end_time-eq-start_time",
           .start_time = base::Hours(1),
           .end_times = {base::Hours(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "end_time-lt-start_time",
           .start_time = base::Hours(2),
           .end_times = {base::Hours(2) - base::Microseconds(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "end_time-eq-prev-end_time",
           .start_time = base::Seconds(0),
           .end_times = {base::Hours(1), base::Hours(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "end_time-lt-prev-end_time",
           .start_time = base::Seconds(0),
           .end_times = {base::Hours(2), base::Hours(2) - base::Microseconds(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "negative-start_time",
           .start_time = base::Seconds(-1),
           .end_times = {base::Hours(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "empty-end_times",
           .start_time = base::Seconds(0),
           .end_times = {},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "too-many-end_times",
           .start_time = base::Seconds(0),
           .end_times = {base::Hours(1), base::Hours(2), base::Hours(3),
                         base::Hours(4), base::Hours(5), base::Hours(6)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "end-time-less-than-min-report-window",
           .start_time = base::Seconds(0),
           .end_times = {base::Hours(1) - base::Microseconds(1)},
-          .matches = Eq(absl::nullopt),
+          .matches = Eq(std::nullopt),
       },
       {
           .name = "valid",

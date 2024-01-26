@@ -15,7 +15,7 @@ namespace {
 TEST(CrossUserSharingPublicKeyTest,
      GetRawCrossUserSharingPublicKeyShouldAlwaysSucceed) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN, 0xDE);
-  const absl::optional<CrossUserSharingPublicKey> public_key =
+  const std::optional<CrossUserSharingPublicKey> public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
 
   ASSERT_TRUE(public_key.has_value());
@@ -27,7 +27,7 @@ TEST(CrossUserSharingPublicKeyTest,
 
 TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnLongerKeys) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN * 2);
-  const absl::optional<CrossUserSharingPublicKey> public_key =
+  const std::optional<CrossUserSharingPublicKey> public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
 
   EXPECT_FALSE(public_key.has_value());
@@ -35,7 +35,7 @@ TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnLongerKeys) {
 
 TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnShorterKeys) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN - 1);
-  const absl::optional<CrossUserSharingPublicKey> public_key =
+  const std::optional<CrossUserSharingPublicKey> public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
 
   EXPECT_FALSE(public_key.has_value());
@@ -43,10 +43,10 @@ TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnShorterKeys) {
 
 TEST(CrossUserSharingPublicKeyTest, CloneShouldAlwaysSucceed) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN, 0xDE);
-  const absl::optional<CrossUserSharingPublicKey> public_key =
+  const std::optional<CrossUserSharingPublicKey> public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
 
-  absl::optional<CrossUserSharingPublicKey> clone = public_key->Clone();
+  std::optional<CrossUserSharingPublicKey> clone = public_key->Clone();
 
   ASSERT_TRUE(clone.has_value());
 

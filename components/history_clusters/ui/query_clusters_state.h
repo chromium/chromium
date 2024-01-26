@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
 

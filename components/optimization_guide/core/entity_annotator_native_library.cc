@@ -454,17 +454,17 @@ EntityAnnotatorNativeLibrary::AnnotateText(void* annotator,
                                            const std::string& text) {
   DCHECK(IsValid());
   if (!IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!annotator) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void* job = annotate_job_create_func_(reinterpret_cast<void*>(annotator));
   int32_t output_metadata_count = run_annotate_job_func_(job, text.c_str());
   if (output_metadata_count <= 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<ScoredEntityMetadata> scored_md;
   scored_md.reserve(output_metadata_count);
@@ -486,10 +486,10 @@ EntityAnnotatorNativeLibrary::GetEntityMetadataForEntityId(
     const std::string& entity_id) {
   DCHECK(IsValid());
   if (!IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!annotator) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void* job =
@@ -497,7 +497,7 @@ EntityAnnotatorNativeLibrary::GetEntityMetadataForEntityId(
   const void* entity_metadata =
       run_entity_metadata_job_func_(job, entity_id.c_str());
   if (!entity_metadata) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   EntityMetadata md =
       GetEntityMetadataFromOptimizationGuideEntityMetadata(entity_metadata);

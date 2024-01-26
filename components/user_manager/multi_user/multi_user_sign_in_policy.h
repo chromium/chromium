@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_USER_MANAGER_MULTI_USER_MULTI_USER_SIGN_IN_POLICY_H_
 #define COMPONENTS_USER_MANAGER_MULTI_USER_MULTI_USER_SIGN_IN_POLICY_H_
 
+#include <optional>
 #include <string_view>
 
 #include "components/user_manager/user_manager_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 
@@ -30,7 +30,7 @@ USER_MANAGER_EXPORT std::string_view MultiUserSignInPolicyToPrefValue(
     MultiUserSignInPolicy policy);
 
 // Parses the pref stored string into enum value. Returns nullopt on failure.
-USER_MANAGER_EXPORT absl::optional<MultiUserSignInPolicy>
+USER_MANAGER_EXPORT std::optional<MultiUserSignInPolicy>
 ParseMultiUserSignInPolicyPref(std::string_view s);
 
 }  // namespace user_manager

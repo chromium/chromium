@@ -65,7 +65,7 @@ struct GetDataOwner {
   template <class T>
   BrowsingDataModel::DataOwner operator()(const T& data_key) const {
     if (delegate_) {
-      absl::optional<BrowsingDataModel::DataOwner> owner =
+      std::optional<BrowsingDataModel::DataOwner> owner =
           delegate_->GetDataOwner(data_key, storage_type_);
       if (owner.has_value()) {
         return *owner;
@@ -545,10 +545,10 @@ void OnDelegateDataLoaded(
 }
 
 // If `data_key` represents a non-1P partition, returns the site on which it
-// is partitioned, absl::nullopt otherwise.
-absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
+// is partitioned, std::nullopt otherwise.
+std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
     const BrowsingDataModel::DataKey& data_key) {
-  absl::optional<net::SchemefulSite> top_level_site = absl::nullopt;
+  std::optional<net::SchemefulSite> top_level_site = std::nullopt;
   absl::visit(
       base::Overloaded{
           [&](const url::Origin&) {},
@@ -631,7 +631,7 @@ bool BrowsingDataModel::BrowsingDataEntryView::Matches(
                      *data_owner);
 }
 
-absl::optional<net::SchemefulSite>
+std::optional<net::SchemefulSite>
 BrowsingDataModel::BrowsingDataEntryView::GetThirdPartyPartitioningSite()
     const {
   // Partition information is only dependent on it's `data_key`.

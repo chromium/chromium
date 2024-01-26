@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -35,7 +36,6 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace {

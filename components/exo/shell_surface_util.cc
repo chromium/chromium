@@ -76,7 +76,7 @@ aura::WindowTargeter* FindTargeter(ui::EventTarget* target) {
 }  // namespace
 
 void SetShellApplicationId(ui::PropertyHandler* property_handler,
-                           const absl::optional<std::string>& id) {
+                           const std::optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetApplicationId", "application_id", id ? *id : "null");
 
   if (id)
@@ -90,7 +90,7 @@ const std::string* GetShellApplicationId(const aura::Window* property_handler) {
 }
 
 void SetShellStartupId(ui::PropertyHandler* property_handler,
-                       const absl::optional<std::string>& id) {
+                       const std::optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetStartupId", "startup_id", id ? *id : "null");
 
   if (id)
@@ -112,7 +112,7 @@ void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
 }
 
 void SetShellClientAccessibilityId(aura::Window* window,
-                                   const absl::optional<int32_t>& id) {
+                                   const std::optional<int32_t>& id) {
   TRACE_EVENT1("exo", "SetClientAccessibilityId", "id",
                id ? base::NumberToString(*id) : "null");
 
@@ -122,18 +122,18 @@ void SetShellClientAccessibilityId(aura::Window* window,
     window->ClearProperty(ash::kClientAccessibilityIdKey);
 }
 
-const absl::optional<int32_t> GetShellClientAccessibilityId(
+const std::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window) {
   auto id = window->GetProperty(ash::kClientAccessibilityIdKey);
   if (id < 0)
-    return absl::nullopt;
+    return std::nullopt;
   else
     return id;
 }
 
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,
-    const absl::optional<ClientControlledShellSurface*>& shell_surface) {
+    const std::optional<ClientControlledShellSurface*>& shell_surface) {
   if (shell_surface)
     property_handler->SetProperty(kClientControlledShellSurface,
                                   shell_surface.value());

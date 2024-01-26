@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -23,7 +24,6 @@
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 namespace content {
@@ -204,7 +204,7 @@ class ContentSubresourceFilterThrottleManager
   // navigation or the last navigation was not evaluated by the subresource
   // filter. Load policy is determined by presence of the navigation url in the
   // filter list.
-  absl::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
+  std::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
       int frame_tree_node_id) const;
 
   // Called when the user has requested a reload of a page with
@@ -221,10 +221,10 @@ class ContentSubresourceFilterThrottleManager
                               bool is_ad_frame);
 
   // Returns the matching FrameAdEvidence for the frame indicated by
-  // `render_frame_host` or `absl::nullopt` if there is none (i.e. the frame is
+  // `render_frame_host` or `std::nullopt` if there is none (i.e. the frame is
   // a main frame, or no navigation or commit has yet occurred and no evidence
   // has been reported by the renderer).
-  absl::optional<blink::FrameAdEvidence> GetAdEvidenceForFrame(
+  std::optional<blink::FrameAdEvidence> GetAdEvidenceForFrame(
       content::RenderFrameHost* render_frame_host);
 
  protected:
@@ -289,8 +289,8 @@ class ContentSubresourceFilterThrottleManager
       content::RenderFrameHost* frame_host);
 
   // Returns the activation state of the frame's filter. If the frame is not
-  // activated (and therefore has no subresource filter), returns absl::nullopt.
-  const absl::optional<subresource_filter::mojom::ActivationState>
+  // activated (and therefore has no subresource filter), returns std::nullopt.
+  const std::optional<subresource_filter::mojom::ActivationState>
   GetFrameActivationState(content::RenderFrameHost* frame_host);
 
   // Calls MaybeShowNotification on `profile_interaction_manager_` at most once

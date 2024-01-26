@@ -49,8 +49,8 @@ class BuildProtoRunner {
                  const std::string& splash_icon_data,
                  const GURL& manifest_id,
                  const GURL& app_key,
-                 const absl::optional<SkColor>& dark_theme_color,
-                 const absl::optional<SkColor>& dark_background_color,
+                 const std::optional<SkColor>& dark_theme_color,
+                 const std::optional<SkColor>& dark_background_color,
                  bool is_manifest_stale,
                  bool is_app_identity_update_supported,
                  const std::vector<GURL>& best_shortcut_icon_urls) {
@@ -656,8 +656,8 @@ TEST_F(WebApkProtoBuilderTest, IconUrlInListAndHash) {
 }
 
 TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoDarkThemeAndBackground) {
-  absl::optional<SkColor> dark_theme_color = 0x000000;
-  absl::optional<SkColor> dark_background_color = 0x888888;
+  std::optional<SkColor> dark_theme_color = 0x000000;
+  std::optional<SkColor> dark_background_color = 0x888888;
   std::string dark_theme_color_expected = "rgba(0,0,0,0)";
   std::string dark_background_color_expected = "rgba(136,136,136,0)";
 

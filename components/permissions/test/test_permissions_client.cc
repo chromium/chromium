@@ -90,7 +90,7 @@ void TestPermissionsClient::GetUkmSourceId(
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     std::move(callback).Run(source_id);
   } else {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 }
 

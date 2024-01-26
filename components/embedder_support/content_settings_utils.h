@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_CONTENT_SETTINGS_UTILS_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_CONTENT_SETTINGS_UTILS_H_
 
+#include <optional>
+
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -31,7 +32,7 @@ namespace embedder_support {
 content::AllowServiceWorkerResult AllowServiceWorker(
     const GURL& scope,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map);
 
@@ -39,7 +40,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 // settings of shared worker access.
 bool AllowSharedWorker(const GURL& worker_url,
                        const net::SiteForCookies& site_for_cookies,
-                       const absl::optional<url::Origin>& top_frame_origin,
+                       const std::optional<url::Origin>& top_frame_origin,
                        const std::string& name,
                        const blink::StorageKey& storage_key,
                        int render_process_id,

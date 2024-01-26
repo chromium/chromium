@@ -93,7 +93,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   void MakeServer(
       mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
       int result,
-      const absl::optional<net::IPEndPoint>& local_addr);
+      const std::optional<net::IPEndPoint>& local_addr);
 
   // HttpServer::Delegate
   void OnConnect(int connection_id) override;

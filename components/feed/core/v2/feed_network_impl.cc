@@ -452,7 +452,7 @@ class FeedNetworkImpl::NetworkFetch {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
     const network::mojom::URLResponseHead* loader_response_info =
         simple_loader_->ResponseInfo();
-    absl::optional<network::URLLoaderCompletionStatus> completion_status =
+    std::optional<network::URLLoaderCompletionStatus> completion_status =
         simple_loader_->CompletionStatus();
 
     NetworkResponseInfo response_info;
@@ -702,7 +702,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     base::StringPiece method,
     std::string request_body,
     const AccountInfo& account_info,
-    absl::optional<RequestMetadata> request_metadata,
+    std::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
   GURL url =
       GetOverriddenUrl(GURL(base::StrCat({kDiscoverHost, request_path})));

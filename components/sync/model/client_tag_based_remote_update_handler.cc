@@ -29,7 +29,7 @@ ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
   DCHECK(entity_tracker_);
 }
 
-absl::optional<ModelError>
+std::optional<ModelError>
 ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
     const sync_pb::ModelTypeState& model_type_state,
     UpdateResponseDataList updates) {

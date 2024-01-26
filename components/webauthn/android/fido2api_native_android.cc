@@ -32,7 +32,7 @@ static jboolean JNI_Fido2Api_ParseAttestationObject(
   std::vector<uint8_t> attestation_object_bytes;
   JavaByteArrayToByteVector(env, jattestation_object_bytes,
                             &attestation_object_bytes);
-  absl::optional<device::AttestationObject::ResponseFields> fields =
+  std::optional<device::AttestationObject::ResponseFields> fields =
       device::AttestationObject::ParseForResponseFields(
           std::move(attestation_object_bytes), attestation_acceptable);
   if (!fields) {

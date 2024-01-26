@@ -17,7 +17,7 @@ namespace data_controls {
 
 namespace {
 
-absl::optional<Rule> MakeRule(const std::string& value) {
+std::optional<Rule> MakeRule(const std::string& value) {
   auto dict = base::JSONReader::Read(value);
   EXPECT_TRUE(dict) << value << " is not valid JSON";
   return Rule::Create(*dict);

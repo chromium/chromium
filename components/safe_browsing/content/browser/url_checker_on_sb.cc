@@ -57,7 +57,7 @@ UrlCheckerOnSB::StartParams::~StartParams() = default;
 UrlCheckerOnSB::UrlCheckerOnSB(
     GetDelegateCallback delegate_getter,
     int frame_tree_node_id,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     OnCompleteCheckCallback complete_callback,
     bool url_real_time_lookup_enabled,

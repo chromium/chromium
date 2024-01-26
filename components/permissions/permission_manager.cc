@@ -398,7 +398,7 @@ PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
 
 bool PermissionManager::IsPermissionOverridable(
     PermissionType permission,
-    const absl::optional<url::Origin>& origin) {
+    const std::optional<url::Origin>& origin) {
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingTypeSafe(permission);
   PermissionContextBase* context = GetPermissionContext(type);
@@ -496,11 +496,11 @@ void PermissionManager::UnsubscribeFromPermissionStatusChange(
   }
 }
 
-absl::optional<gfx::Rect> PermissionManager::GetExclusionAreaBoundsInScreen(
+std::optional<gfx::Rect> PermissionManager::GetExclusionAreaBoundsInScreen(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* manager = PermissionRequestManager::FromWebContents(web_contents);
-  return manager ? manager->GetPromptBubbleViewBoundsInScreen() : absl::nullopt;
+  return manager ? manager->GetPromptBubbleViewBoundsInScreen() : std::nullopt;
 }
 
 void PermissionManager::OnPermissionsRequestResponseStatus(

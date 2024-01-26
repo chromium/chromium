@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_STORE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_STORE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SiteDataProto;
@@ -20,13 +20,13 @@ namespace performance_manager {
 class SiteDataStore {
  public:
   // Callback to call once the initialization from the store has completed,
-  // |site_data_proto| should be equal to absl::nullopt if the initialization
+  // |site_data_proto| should be equal to std::nullopt if the initialization
   // has failed.
   using ReadSiteDataFromStoreCallback =
-      base::OnceCallback<void(absl::optional<SiteDataProto> site_data_proto)>;
+      base::OnceCallback<void(std::optional<SiteDataProto> site_data_proto)>;
   using GetStoreSizeCallback =
-      base::OnceCallback<void(absl::optional<int64_t> num_rows,
-                              absl::optional<int64_t> on_disk_size_kb)>;
+      base::OnceCallback<void(std::optional<int64_t> num_rows,
+                              std::optional<int64_t> on_disk_size_kb)>;
 
   SiteDataStore() = default;
   virtual ~SiteDataStore() {}

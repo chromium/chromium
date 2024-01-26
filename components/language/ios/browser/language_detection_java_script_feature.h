@@ -32,7 +32,7 @@ class LanguageDetectionJavaScriptFeature : public web::JavaScriptFeature {
   // JavaScriptFeature:
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& script_message) override;
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
 };
 
 }  // namespace language

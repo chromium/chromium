@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregatable_values.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -37,9 +37,9 @@ bool IsValid(const AggregatableValues::Values& values) {
 }  // namespace
 
 // static
-absl::optional<AggregatableValues> AggregatableValues::Create(Values values) {
+std::optional<AggregatableValues> AggregatableValues::Create(Values values) {
   if (!IsValid(values))
-    return absl::nullopt;
+    return std::nullopt;
 
   return AggregatableValues(std::move(values));
 }
@@ -64,7 +64,7 @@ AggregatableValues::FromJSON(const base::Value* input_value) {
           TriggerRegistrationError::kAggregatableValuesKeyTooLong);
     }
 
-    absl::optional<int> int_value = key_value.GetIfInt();
+    std::optional<int> int_value = key_value.GetIfInt();
     if (!int_value.has_value()) {
       return base::unexpected(
           TriggerRegistrationError::kAggregatableValuesValueWrongType);

@@ -6,6 +6,7 @@
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 
 #include <list>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -29,7 +29,7 @@ namespace {
 struct SiblingSemanticMatchKey {
   // Bookmarked URL or nullopt for folders. This also means a URL node never
   // matches semantically with a folder.
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
   // Title equality is required, but the fact that Sync used to truncate the
   // title to a maximum size is incorporated here (i.e. the truncated title is
   // represented here).

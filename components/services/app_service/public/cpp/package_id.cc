@@ -4,13 +4,13 @@
 
 #include "components/services/app_service/public/cpp/package_id.h"
 
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -77,17 +77,17 @@ bool PackageId::operator!=(const PackageId& rhs) const {
 }
 
 // static
-absl::optional<PackageId> PackageId::FromString(
+std::optional<PackageId> PackageId::FromString(
     std::string_view package_id_string) {
   size_t separator = package_id_string.find_first_of(':');
   if (separator == std::string::npos ||
       separator == package_id_string.size() - 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AppType type = PlatformNameToAppType(package_id_string.substr(0, separator));
   if (type == AppType::kUnknown) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return PackageId(type, package_id_string.substr(separator + 1));

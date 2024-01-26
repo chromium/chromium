@@ -30,8 +30,8 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
   return additional_graph_created_callback.get();
 }
 
-absl::optional<GraphFeatures>* GetGraphFeaturesOverride() {
-  static absl::optional<GraphFeatures> graph_features_override;
+std::optional<GraphFeatures>* GetGraphFeaturesOverride() {
+  static std::optional<GraphFeatures> graph_features_override;
   return &graph_features_override;
 }
 

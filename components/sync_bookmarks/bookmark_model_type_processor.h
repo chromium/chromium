@@ -55,10 +55,10 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       const sync_pb::ModelTypeState& type_state,
       const syncer::CommitResponseDataList& committed_response_list,
       const syncer::FailedCommitResponseDataList& error_response_list) override;
-  void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        syncer::UpdateResponseDataList updates,
-                        absl::optional<sync_pb::GarbageCollectionDirective>
-                            gc_directive) override;
+  void OnUpdateReceived(
+      const sync_pb::ModelTypeState& type_state,
+      syncer::UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;

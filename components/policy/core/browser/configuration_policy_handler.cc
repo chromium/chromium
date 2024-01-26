@@ -118,13 +118,13 @@ ListPolicyHandler::~ListPolicyHandler() {}
 
 bool ListPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
                                             policy::PolicyErrorMap* errors) {
-  absl::optional<base::Value::List> empty = absl::nullopt;
+  std::optional<base::Value::List> empty = std::nullopt;
   return CheckAndGetList(policies, errors, empty);
 }
 
 void ListPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
                                             PrefValueMap* prefs) {
-  auto list = absl::make_optional<base::Value::List>();
+  auto list = std::make_optional<base::Value::List>();
   if (CheckAndGetList(policies, nullptr, list) && list) {
     ApplyList(*std::move(list), prefs);
   }
@@ -133,13 +133,13 @@ void ListPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
 bool ListPolicyHandler::CheckAndGetList(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors,
-    absl::optional<base::Value::List>& filtered_list) {
+    std::optional<base::Value::List>& filtered_list) {
   const base::Value* value = nullptr;
   if (!CheckAndGetValue(policies, errors, &value))
     return false;
 
   if (!value) {
-    filtered_list = absl::nullopt;  // nothing to apply
+    filtered_list = std::nullopt;  // nothing to apply
     return true;
   }
 

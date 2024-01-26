@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
+
+#include <optional>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -15,7 +18,6 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
-#include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -27,7 +29,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::InSequence;
@@ -88,8 +89,8 @@ BuildValidSubscriptions() {
       commerce::IdentifierType::kProductClusterId, kMockId2,
       commerce::ManagementType::kUserManaged,
       commerce::kUnknownSubscriptionTimestamp,
-      absl::make_optional<commerce::UserSeenOffer>(kMockOfferId, kMockPrice,
-                                                   kMockCountry)));
+      std::make_optional<commerce::UserSeenOffer>(kMockOfferId, kMockPrice,
+                                                  kMockCountry)));
   return subscriptions;
 }
 
@@ -388,7 +389,7 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_WrongHttpCode) {
 TEST_F(SubscriptionsServerProxyTest, TestGet_FetchError) {
   fetcher_->SetFetchResponse(
       kValidGetResponse, net::HTTP_OK,
-      absl::make_optional<FetchErrorType>(FetchErrorType::kNetError));
+      std::make_optional<FetchErrorType>(FetchErrorType::kNetError));
   EXPECT_CALL(*server_proxy_,
               CreateEndpointFetcher(GURL(kServiceUrlForGet), kGetHttpMethod,
                                     kEmptyPostData, _))
