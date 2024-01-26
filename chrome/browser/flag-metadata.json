@@ -4268,8 +4268,8 @@
   },
   {
     "name": "file-system-observer",
-    "owners": [ "asully@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 123
+    "owners": [ "dslee@chromium.org", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "file-system-provider-content-cache",
