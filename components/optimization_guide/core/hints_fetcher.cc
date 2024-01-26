@@ -181,7 +181,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
     const std::string& locale,
     const std::string& access_token,
     bool skip_cache,
-    HintsFetchedCallback hints_fetched_callback) {
+    HintsFetchedCallback hints_fetched_callback,
+    proto::RequestContextMetadata* request_context_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
   request_context_ = request_context;
@@ -237,6 +238,10 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   get_hints_request.set_context(request_context_);
 
   get_hints_request.set_locale(locale);
+
+  if (request_context_metadata) {
+    *get_hints_request.mutable_context_metadata() = *request_context_metadata;
+  }
 
   *get_hints_request.mutable_origin_info() =
       optimization_guide::GetClientOriginInfo();

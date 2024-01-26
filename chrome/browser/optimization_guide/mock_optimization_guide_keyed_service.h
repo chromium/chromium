@@ -54,7 +54,9 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
            optimization_types,
        optimization_guide::proto::RequestContext request_context,
        optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-           callback),
+           callback,
+       optimization_guide::proto::RequestContextMetadata*
+           request_context_metadata),
       (override));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,

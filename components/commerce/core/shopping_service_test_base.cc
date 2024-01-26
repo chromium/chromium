@@ -39,6 +39,7 @@ using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::Any;
 using optimization_guide::proto::OptimizationType;
 using optimization_guide::proto::RequestContext;
+using optimization_guide::proto::RequestContextMetadata;
 
 namespace commerce {
 
@@ -102,7 +103,8 @@ void MockOptGuideDecider::CanApplyOptimizationOnDemand(
     const std::vector<GURL>& urls,
     const base::flat_set<OptimizationType>& optimization_types,
     RequestContext request_context,
-    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+    RequestContextMetadata* request_context_metadata) {
   if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
     for (const GURL& url : urls) {
       if (on_demand_shopping_responses_.find(url.spec()) ==

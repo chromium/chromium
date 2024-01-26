@@ -149,7 +149,9 @@ class OptimizationGuideService
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-          callback) override;
+          callback,
+      optimization_guide::proto::RequestContextMetadata*
+          request_context_metadata) override;
 
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
