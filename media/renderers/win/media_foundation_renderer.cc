@@ -313,6 +313,13 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(class_factory->CreateInstance(0, creation_attributes.Get(),
                                                  &mf_media_engine_));
 
+  // The Media Foundation Media Engine has an initial playback rate of 1.0, but
+  // chromium uses an initial playback rate of 0.0. The Media Engine's topology
+  // may not be completely loaded at this point - so we use
+  // SetDefaultPlaybackRate as using SetPlaybackRate may be overwritten while
+  // the topology is loading.
+  RETURN_IF_FAILED(mf_media_engine_->SetDefaultPlaybackRate(0.0));
+
   auto media_resource_type_ = media_resource->GetType();
   if (media_resource_type_ != MediaResource::Type::kStream) {
     DLOG(ERROR) << "MediaResource is not of STREAM";
@@ -594,7 +601,19 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
 void MediaFoundationRenderer::SetPlaybackRate(double playback_rate) {
   DVLOG_FUNC(2) << "playback_rate=" << playback_rate;
 
-  HRESULT hr = mf_media_engine_->SetPlaybackRate(playback_rate);
+  // If the Media Engine's topology has not finished loading then
+  // the call to SetPlaybackRate may be overwritten. To work around this
+  // we call SetDefaultPlaybackRate which would be picked up when transitioning
+  // to the Play state.
+  HRESULT hr = mf_media_engine_->SetDefaultPlaybackRate(playback_rate);
+  if (FAILED(hr)) {
+    DVLOG(1) << "Failed to set default playback rate: " << PrintHr(hr);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetPlaybackRate, hr);
+    return;
+  }
+
+  hr = mf_media_engine_->SetPlaybackRate(playback_rate);
 
   if (SUCCEEDED(hr)) {
     playback_rate_ = playback_rate;
