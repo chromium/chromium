@@ -2266,7 +2266,9 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
   if (shelf_widget_->IsActive() || shelf_->navigation_widget()->IsActive() ||
       shelf_->hotseat_widget()->IsActive() ||
       (shelf_widget_->status_area_widget() &&
-       shelf_widget_->status_area_widget()->IsActive())) {
+       shelf_widget_->status_area_widget()->IsActive()) ||
+      (shelf_->desk_button_widget() &&
+       shelf_->desk_button_widget()->IsActive())) {
     return SHELF_AUTO_HIDE_SHOWN;
   }
 
