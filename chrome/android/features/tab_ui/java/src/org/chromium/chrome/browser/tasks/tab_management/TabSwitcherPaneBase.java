@@ -377,9 +377,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         return mFactory.getTabListMode();
     }
 
-    /** Returns whether the pane is visible onscreen. Note this is not the same as being focused. */
-    protected boolean isVisible() {
-        return mIsVisibleSupplier.get();
+    /**
+     * Returns a supplier for whether the pane is visible onscreen. Note this is not the same as
+     * being focused.
+     */
+    protected ObservableSupplier<Boolean> getIsVisibleSupplier() {
+        return mIsVisibleSupplier;
     }
 
     /** Returns whether the pane is focused. */
