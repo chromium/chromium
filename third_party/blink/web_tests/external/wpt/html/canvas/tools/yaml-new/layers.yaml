@@ -463,6 +463,8 @@
     assert_throws_dom("InvalidStateError",
                       () => {{ operation }});
   variants:
+    createPattern:
+      operation: ctx.createPattern(canvas, 'repeat')
     drawImage:
       setup: |-
         const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
