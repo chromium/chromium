@@ -5136,7 +5136,7 @@
   {
     "name": "launch-windows-native-hosts-directly",
     "owners": ["ericlaw@microsoft.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 135
   },
   {
     "name": "launcher-fuzzy-match-across-providers",
