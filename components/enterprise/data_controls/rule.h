@@ -135,6 +135,10 @@ class Rule {
   static std::unique_ptr<const Condition> GetSourcesAndDestinationsCondition(
       const base::Value::Dict& value);
 
+  // Helper to parse the JSON list of conditions under a "and" or "or" key.
+  static std::vector<std::unique_ptr<const Condition>> GetListConditions(
+      const base::Value::List& value);
+
   // Helper to parse the following JSON schema:
   // {
   //   class: CLIPBOARD|SCREENSHOT|PRINTING|PRIVACY_SCREEN|etc,

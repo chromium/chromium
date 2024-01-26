@@ -6,7 +6,6 @@
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_ACTION_CONTEXT_H_
 
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

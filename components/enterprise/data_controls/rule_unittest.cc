@@ -23,7 +23,7 @@ absl::optional<Rule> MakeRule(const std::string& value) {
   return Rule::Create(*dict);
 }
 
-struct NotTestCase {
+struct AndOrNotTestCase {
   const char* conditions;
   ActionContext context;
 };
@@ -32,7 +32,8 @@ struct NotTestCase {
 // opposite "IsTriggered" results when those conditions are nested in a "not"
 // attribute. This is parametrized with conditions and a corresponding context
 // to trigger them.
-class DataControlsRuleNotTest : public testing::TestWithParam<NotTestCase> {
+class DataControlsRuleNotTest
+    : public testing::TestWithParam<AndOrNotTestCase> {
  public:
   std::string normal_rule_string() {
     return base::StringPrintf(R"(
@@ -63,10 +64,53 @@ class DataControlsRuleNotTest : public testing::TestWithParam<NotTestCase> {
   }
 };
 
-// This is done as a function instead of a simple constant because some
-// sub-types of ActionContext (namely GURL) doesn't support being statically
-// instantiated.
-std::vector<NotTestCase> NotTestCases() {
+// Test to validate that a valid set of conditions in a rule will trigger when
+// inserted into an "and" attribute. This is parametrized with conditions and a
+// corresponding context to trigger them.
+class DataControlsRuleAndTest
+    : public testing::TestWithParam<AndOrNotTestCase> {
+ public:
+  std::string rule_string() {
+    return base::StringPrintf(R"(
+    {
+      "name": "Normal rule",
+      "rule_id": "1234",
+      "and": [
+        %s
+      ],
+      "restrictions": [
+        { "class": "CLIPBOARD", "level": "BLOCK" }
+      ]
+    })",
+                              GetParam().conditions);
+  }
+};
+
+// Test to validate that a valid set of conditions in a rule will trigger when
+// inserted into an "or" attribute. This is parametrized with conditions and a
+// corresponding context to trigger them.
+class DataControlsRuleOrTest : public testing::TestWithParam<AndOrNotTestCase> {
+ public:
+  std::string rule_string() {
+    return base::StringPrintf(R"(
+    {
+      "name": "Normal rule",
+      "rule_id": "1234",
+      "or": [
+        %s
+      ],
+      "restrictions": [
+        { "class": "CLIPBOARD", "level": "BLOCK" }
+      ]
+    })",
+                              GetParam().conditions);
+  }
+};
+
+// These helpers are implemented as functions instead of simple constants
+// because some sub-types of ActionContext (namely GURL) don't support being
+// statically instantiated.
+std::vector<AndOrNotTestCase> NotTestCases() {
   return {
       {.conditions = R"("sources": {"incognito":true})",
        .context = {.source = {.incognito = true}}},
@@ -83,9 +127,92 @@ std::vector<NotTestCase> NotTestCases() {
   };
 }
 
+std::vector<AndOrNotTestCase> AndTestCases() {
+  return {
+      {.conditions = R"(
+        {"sources": {"incognito":true}},
+        {"sources": {"urls": ["google.com"]}})",
+       .context = {.source = {.url = GURL("https://google.com"),
+                              .incognito = true}}},
+      {.conditions = R"(
+        {"not": {"sources": {"incognito":false}}},
+        {"sources": {"urls": ["google.com"]}})",
+       .context = {.source = {.url = GURL("https://google.com"),
+                              .incognito = true}}},
+      {.conditions = R"(
+        {"destinations": {"incognito": true}},
+        {"sources": {"os_clipboard": true}})",
+       .context = {.source = {.os_clipboard = true},
+                   .destination = {.incognito = true}}},
+      {.conditions = R"(
+        {"not": {"destinations": {"incognito": false}}},
+        {"sources": {"os_clipboard": true}})",
+       .context = {.source = {.os_clipboard = true},
+                   .destination = {.incognito = true}}},
+      {.conditions = R"(
+        {"or": [
+          {"sources": {"incognito":true}},
+          {"sources": {"urls": ["google.com"]}}
+        ]},
+        {"not": { "destinations": {"incognito": true} } })",
+       .context = {.source = {.url = GURL("https://google.com")},
+                   .destination = {.incognito = false}}},
+      {.conditions = R"(
+        {"or": [
+          {"sources": {"incognito":true}},
+          {"sources": {"urls": ["google.com"]}}
+        ]},
+        {"not": { "destinations": {"incognito": true} } })",
+       .context = {.source = {.incognito = true},
+                   .destination = {.incognito = false}}},
+  };
+}
+
+std::vector<AndOrNotTestCase> OrTestCases() {
+  return {
+      {.conditions = R"(
+        {"sources": {"incognito":true}},
+        {"sources": {"urls": ["google.com"]}})",
+       .context = {.source = {.incognito = true}}},
+      {.conditions = R"(
+        {"sources": {"incognito":true}},
+        {"sources": {"urls": ["google.com"]}})",
+       .context = {.source = {.url = GURL("https://google.com")}}},
+      {.conditions = R"(
+        {"destinations": {"os_clipboard":true}},
+        {"destinations": { "not": {"urls": ["google.com"]}}})",
+       .context = {.destination = {.os_clipboard = true}}},
+      {.conditions = R"(
+        {"destinations": {"os_clipboard":true}},
+        {"destinations": {"urls": ["google.com"]}})",
+       .context = {.destination = {.url = GURL("https://google.com")}}},
+      {.conditions = R"(
+        {"and": [
+          {"sources": {"incognito":true}},
+          {"sources": {"urls": ["google.com"]}}
+        ]},
+        {"destinations": {"incognito": true} })",
+       .context = {.source = {.url = GURL("https://google.com"),
+                              .incognito = true}}},
+      {.conditions = R"(
+        {"and": [
+          {"sources": {"incognito":true}},
+          {"sources": {"urls": ["google.com"]}}
+        ]},
+        {"not": { "destinations": {"incognito": false} } })",
+       .context = {.destination = {.incognito = true}}},
+  };
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DataControlsRuleNotTest,
                          testing::ValuesIn(NotTestCases()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataControlsRuleAndTest,
+                         testing::ValuesIn(AndTestCases()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataControlsRuleOrTest,
+                         testing::ValuesIn(OrTestCases()));
 
 }  // namespace
 
@@ -146,6 +273,16 @@ TEST(DataControlsRuleTest, InvalidConditions) {
       kTemplate, "",
       R"("destinations": {"components": ["not_a_real_component"]},)")));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Rules with invalid boolean attributes shouldn't be created.
+  ASSERT_FALSE(MakeRule(base::StringPrintf(
+      kTemplate, "",
+      R"("not": [{"sources": {"urls": ["not.is.not.an.array"]}}],)")));
+  ASSERT_FALSE(MakeRule(base::StringPrintf(
+      kTemplate, "",
+      R"("and": {"sources": {"urls": ["and.is.not.a.dict"]}},)")));
+  ASSERT_FALSE(MakeRule(base::StringPrintf(
+      kTemplate, "", R"("or": {"sources": {"urls": ["or.is.not.a.dict"]}},)")));
 }
 
 TEST(DataControlsRuleTest, ValidSourcesInvalidDestinationsConditions) {
@@ -424,6 +561,42 @@ TEST_P(DataControlsRuleNotTest, NonTriggeringContext) {
             Rule::Level::kNotSet);
   ASSERT_EQ(negative_rule->GetLevel(Rule::Restriction::kClipboard, {}),
             Rule::Level::kBlock);
+}
+
+TEST_P(DataControlsRuleAndTest, TriggeringContext) {
+  auto rule = MakeRule(rule_string());
+
+  ASSERT_TRUE(rule);
+
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, GetParam().context),
+            Rule::Level::kBlock);
+}
+
+TEST_P(DataControlsRuleAndTest, NonTriggeringContext) {
+  auto rule = MakeRule(rule_string());
+
+  ASSERT_TRUE(rule);
+
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, {}),
+            Rule::Level::kNotSet);
+}
+
+TEST_P(DataControlsRuleOrTest, TriggeringContext) {
+  auto rule = MakeRule(rule_string());
+
+  ASSERT_TRUE(rule);
+
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, GetParam().context),
+            Rule::Level::kBlock);
+}
+
+TEST_P(DataControlsRuleOrTest, NonTriggeringContext) {
+  auto rule = MakeRule(rule_string());
+
+  ASSERT_TRUE(rule);
+
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, {}),
+            Rule::Level::kNotSet);
 }
 
 }  // namespace data_controls
