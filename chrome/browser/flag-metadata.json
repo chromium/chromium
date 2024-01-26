@@ -5515,6 +5515,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "notification-one-tap-unsubscribe",
+    "owners": [ "engedy@chromium.org" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "notification-permission-rationale-bottom-sheet",
     "owners": ["shaktisahu@chromium.org", "salg@chromium.org"],
     "expiry_milestone": 114

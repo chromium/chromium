@@ -20955,6 +20955,7 @@ from previous Chrome versions.
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
   <int value="181908345" label="TearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
+  <int value="182475641" label="NotificationOneTapUnsubscribe:enabled"/>
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>
   <int value="182986882" label="TerminalSSH:disabled"/>
   <int value="183208826" label="TabGroups:enabled"/>
@@ -21074,6 +21075,7 @@ from previous Chrome versions.
       label="FriendlierSafeBrowsingSettingsStandardProtection:disabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
+  <int value="242181887" label="NotificationOneTapUnsubscribe:disabled"/>
   <int value="244040049" label="DrawImmediatelyWhenInteractive:disabled"/>
   <int value="244208319"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:disabled"/>

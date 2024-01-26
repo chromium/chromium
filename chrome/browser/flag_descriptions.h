@@ -2453,6 +2453,9 @@ extern const char kMouseAndTrackpadDropdownMenuDescription[];
 extern const char kNewTabSearchEngineUrlAndroidName[];
 extern const char kNewTabSearchEngineUrlAndroidDescription[];
 
+extern const char kNotificationOneTapUnsubscribeName[];
+extern const char kNotificationOneTapUnsubscribeDescription[];
+
 extern const char kNotificationPermissionRationaleName[];
 extern const char kNotificationPermissionRationaleDescription[];
 

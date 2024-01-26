@@ -7983,6 +7983,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMuteNotificationSnoozeAction)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"notification-one-tap-unsubscribe",
+     flag_descriptions::kNotificationOneTapUnsubscribeName,
+     flag_descriptions::kNotificationOneTapUnsubscribeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kNotificationOneTapUnsubscribe)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC)
     {"enable-new-mac-notification-api",
      flag_descriptions::kNewMacNotificationAPIName,

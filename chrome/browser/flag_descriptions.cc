@@ -4188,6 +4188,12 @@ const char kNewTabSearchEngineUrlAndroidDescription[] =
     "Swap out NTP and Start surface according to a user's default search "
     "engine.";
 
+const char kNotificationOneTapUnsubscribeName[] =
+    "Notification one-tap unsubscribe";
+const char kNotificationOneTapUnsubscribeDescription[] =
+    "Enables an experimental UX that replaces the [Site settings] button on "
+    "web push notifications with an [Unsubscribe] button.";
+
 const char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 const char kNotificationPermissionRationaleDescription[] =
