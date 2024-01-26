@@ -21,7 +21,6 @@ function openChannel(uid) {
 
 function addFrame(url) {
   const frame = document.createElement('iframe');
-  frame.allow = 'unload';
   frame.src = url;
   document.body.appendChild(frame);
   return frame;
@@ -30,17 +29,17 @@ function addFrame(url) {
 function addEventListeners(name, uid) {
   return new Promise(resolve => {
     const eventsSeen = [];
-    ['unload', 'pagehide', 'pageshow', 'visibilitychange'].forEach(eventName => {
+    ['pagehide', 'pageshow', 'visibilitychange'].forEach(eventName => {
       window.addEventListener(eventName, e => {
         eventsSeen.push(eventName + ' ' + name +
             (document.prerendering ? ' in prerendering' : ''));
         // The `unload` should be the last event.
-        if (eventName === 'unload') {
-          resolve();
+        if (eventName === 'pagehide') {
           // Send the event logs in bulk (not per event) to avoid reordering.
           // PrerenderChannel#postMessage() doesn't guarantee the message order
           // as it internally uses fetch().
           sendChannelMessage(eventsSeen, uid);
+          resolve();
         }
       });
     });

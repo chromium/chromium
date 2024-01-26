@@ -45,8 +45,9 @@
 
       // Ask the `start` page to navigate if on prerendering. Otherwise, finish
       // the test.
-      if (document.prerendering)
+      if (document.prerendering) {
         sendChannelMessage('request fallback', uid);
+      }
 
       // Wait for events fired during activation (e.g., unload).
       await eventPromise;
@@ -54,7 +55,6 @@
       // Reach here after the prerendering is cancelled and fallback request loads
       // the `prerendering` page with document.prerendering == false. The main
       // frame navigation will succeed this time.
-      window.close();
     }
 
   </script>

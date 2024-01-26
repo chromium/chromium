@@ -22,35 +22,22 @@ This file cannot be upstreamed to WPT until:
 <script>
   promise_test(async t => {
     const uid = token();
-    const gotMessages = waitChannelMessage('load another-page', uid);
+    const gotMessages = waitChannelMessage('load another-page in prerendering', uid);
     const url = `resources/unload-on-prerender-main-frame-navigation.html?uid=${uid}`;
     window.open(url, '_blank', 'noopener');
     const result = await gotMessages;
 
+    // TODO(https://crbug.com/1520703): This test doesn't have a suitable name
+    // any more as now the main frame navigation is permitted for the same
+    // origin, and it would not result in the unload, or prerender cancellation.
+    // Rename the test, and have a cross-origin variant to cover different
+    // scenarios.
     const expected = [
-      // If `optional` is specified as true, that entry may not appear.
-      { message: 'load start' },
-      { message: 'load prerendering in prerendering' },
-      { message: 'request fallback' },
-      // TODO(https://crbug.com/1200241): `pagehide` and `unload` may not run
-      // sometimes for unknown reason. Clarify the reason and fix it.
-      { message: 'pagehide main-frame in prerendering', optional: true },
-      { message: 'unload main-frame in prerendering', optional: true },
-      { message: 'load prerendering' },
-      { message: 'pagehide main-frame' },
-      { message: 'visibilitychange main-frame' },
-      { message: 'unload main-frame' },
-      { message: 'load another-page' },
+      'load start',
+      'load prerendering in prerendering',
+      'request fallback',
+      'load another-page in prerendering',
     ];
-    let offset = 0;
-    assert_less_than_equal(result.length, expected.length);
-    for (let i = 0; i < expected.length; ++i) {
-      assert_less_than(offset, result.length);
-      if (expected[i].optional && expected[i].message != result[offset])
-        continue;
-      assert_equals(result[offset], expected[i].message, `messages${offset}`);
-      offset++;
-    }
-    assert_equals(offset, result.length);
+    assert_array_equals(result, expected, 'gotMessages');
   }, 'unload on main frame navigation to cancel prerendering');
 </script>

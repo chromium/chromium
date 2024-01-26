@@ -27,16 +27,12 @@
       await waitChannelMessage('request removal', uid);
 
       frame.remove();
+      sendChannelMessage('remove frame in prerendering', uid);
     } else if (state == 'frame') {
-      const eventPromise = addEventListeners(state, uid);
-
       // Send load state and a request to remove the frame in bulk to avoid
       // reordering. PrerenderChannel#postMessage() doesn't guarantee the message
       // order as it internally uses fetch().
       sendChannelMessage(['load ' + state, 'request removal'], uid);
-
-      // Wait for events fired during activation (e.g., unload).
-      await eventPromise;
     }
   </script>
 </body>
