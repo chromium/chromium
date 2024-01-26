@@ -269,6 +269,117 @@ class GpuOverlayConfigUnittest(unittest.TestCase):
       self.assertEqual(config.GetExpectedPixelFormat(pixel_format),
                        overlay_support.PixelFormat.BGRA8)
 
+  def testZeroCopyVideoRotation(self):
+    """Tests the effect of video rotation on zero copy."""
+    config = overlay_support.GpuOverlayConfig()\
+             .WithDirectComposition()\
+             .WithHardwareNV12Support()\
+             .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                  supported_codecs=[overlay_support.ZeroCopyCodec.VP9]))\
+             .OnDriverVersion('1')
+
+    for r in overlay_support.VideoRotation:
+      zero_copy = config.GetExpectedZeroCopyUsage(
+          expected_pixel_format=overlay_support.PixelFormat.NV12,
+          video_rotation=r,
+          fullsize=True,
+          codec=overlay_support.ZeroCopyCodec.VP9)
+      if r == rotation.UNROTATED:
+        self.assertTrue(zero_copy)
+      else:
+        self.assertFalse(zero_copy)
+
+  def testZeroCopyPixelFormat(self):
+    """Tests the effect of pixel format on zero copy."""
+    config = overlay_support.GpuOverlayConfig()\
+             .WithDirectComposition()\
+             .WithHardwareNV12Support()\
+             .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                  supported_codecs=[overlay_support.ZeroCopyCodec.VP9]))\
+             .OnDriverVersion('1')
+
+    for pixel_format in overlay_support.PixelFormat.ALL_PIXEL_FORMATS:
+      zero_copy = config.GetExpectedZeroCopyUsage(
+          expected_pixel_format=pixel_format,
+          video_rotation=rotation.UNROTATED,
+          fullsize=True,
+          codec=overlay_support.ZeroCopyCodec.VP9)
+      if pixel_format == overlay_support.PixelFormat.NV12:
+        self.assertTrue(zero_copy)
+      else:
+        self.assertFalse(zero_copy)
+
+  def testZeroCopyScaledVideo(self):
+    """Tests the effect of scaled video support on zero copy."""
+    config = overlay_support.GpuOverlayConfig()\
+             .WithDirectComposition()\
+             .WithHardwareNV12Support()\
+             .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                  supported_codecs=[overlay_support.ZeroCopyCodec.VP9]))\
+             .OnDriverVersion('1')
+
+    self.assertTrue(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=True,
+            codec=overlay_support.ZeroCopyCodec.VP9))
+
+    # Same as above but with fullsize=False.
+    self.assertFalse(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=False,
+            codec=overlay_support.ZeroCopyCodec.VP9))
+
+    config = overlay_support.GpuOverlayConfig()\
+             .WithDirectComposition()\
+             .WithHardwareNV12Support()\
+             .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                  supports_scaled_video=True,
+                  supported_codecs=[overlay_support.ZeroCopyCodec.VP9]))\
+             .OnDriverVersion('1')
+
+    # Same as first assert.
+    self.assertTrue(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=True,
+            codec=overlay_support.ZeroCopyCodec.VP9))
+
+    # Same as second assert, but now we expect True.
+    self.assertTrue(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=False,
+            codec=overlay_support.ZeroCopyCodec.VP9))
+
+  def testZeroCopyCodecSupport(self):
+    """Tests the effect of codec support on zero copy."""
+    config = overlay_support.GpuOverlayConfig()\
+             .WithDirectComposition()\
+             .WithHardwareNV12Support()\
+             .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                  supported_codecs=[overlay_support.ZeroCopyCodec.H264]))\
+             .OnDriverVersion('1')
+
+    self.assertTrue(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=True,
+            codec=overlay_support.ZeroCopyCodec.H264))
+
+    self.assertFalse(
+        config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=overlay_support.PixelFormat.NV12,
+            video_rotation=rotation.UNROTATED,
+            fullsize=True,
+            codec=overlay_support.ZeroCopyCodec.VP9))
+
   def testNV12RotatedVideo(self):
     """Tests NV12 behavior with rotated video."""
     config = overlay_support.GpuOverlayConfig()\

@@ -191,19 +191,8 @@ crbug.com/dawn/549 [ mac ] WebGPUCachingTraceTest_* [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# VP9 videos fail to trigger zero copy video presentation path.
-crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
-
-# Zero copy also needs scaling to work.
-crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
-crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-
 # Hardware overlay promotion fails on Win10 AMD.
 crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-
-# Failed to create YUY2 swap chain on Win10 AMD RX 5500 XT
-crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
-crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
@@ -237,34 +226,10 @@ crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] Overl
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 
-# Win AMD failure since test added
-crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
-
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] TraceTest_Canvas2D* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] TraceTest_WebGL* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebGLCanvasCaptureTraceTest_VideoStream* [ RetryOnFailure ]
-
-# Fails on newer drivers due to detecting that we should use the zero copy path,
-# but failing to actually use it in practice.
-crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
-crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
-crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
-crbug.com/1519274 [ win nvidia nvidia_ge_31.0.15.4601 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
-
-# Mismatch between whether the test harness believes the zero copy path should
-# be used and what Chrome actually does.
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Underlay [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
-crbug.com/1519666 [ win qualcomm-0x41333430 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 
 
 #######################################################################

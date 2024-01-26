@@ -18,7 +18,6 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
-from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests import pixel_test_pages
@@ -715,12 +714,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     expected.zero_copy = other_args.get('zero_copy', None)
     expected.pixel_format = other_args.get('pixel_format', None)
     expected.no_overlay = other_args.get('no_overlay', False)
-    video_is_rotated = other_args.get('video_is_rotated', False)
+    video_rotation = other_args.get('video_rotation',
+                                    overlay_support.VideoRotation.UNROTATED)
     video_is_not_scaled = other_args.get('full_size', False)
-    if not video_is_rotated:
-      video_rotation = overlay_support.VideoRotation.UNROTATED
-    else:
-      video_rotation = other_args['video_rotation']
+    codec = other_args.get('codec', overlay_support.ZeroCopyCodec.UNSPECIFIED)
 
     if overlay_bot_config.supports_overlays:
       expected.pixel_format = overlay_bot_config.GetExpectedPixelFormat(
@@ -730,20 +727,12 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               expected_pixel_format=expected.pixel_format,
               video_rotation=video_rotation))
 
-      # TODO(crbug.com/1519724): Move zero copy logic into overlay config.
-      supports_downscaled_overlay_promotion = (gpu.vendor_id
-                                               != gpu_helper.GpuVendors.INTEL)
-      no_issue_with_downscaled_overlay_promotion = (
-          video_is_not_scaled or supports_downscaled_overlay_promotion)
-
-      if expected.zero_copy is None:
-        # TODO(sunnyps): Check for overlay scaling support after making the same
-        # change in SwapChainPresenter.
-        expected.zero_copy = (expected.presentation_mode == 'OVERLAY'
-                              and expected.pixel_format == 'NV12'
-                              and overlay_bot_config.supports_hw_nv12_overlays
-                              and no_issue_with_downscaled_overlay_promotion
-                              and not video_is_rotated)
+      if expected.zero_copy is None and not expected.no_overlay:
+        expected.zero_copy = overlay_bot_config.GetExpectedZeroCopyUsage(
+            expected_pixel_format=expected.pixel_format,
+            video_rotation=video_rotation,
+            fullsize=video_is_not_scaled,
+            codec=codec)
 
     return expected
 

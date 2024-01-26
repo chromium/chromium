@@ -8,6 +8,9 @@ import enum
 import functools
 from typing import Dict, Iterable, List, Optional, Union
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive
+
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 
 from telemetry.internal.platform import gpu_device
@@ -46,6 +49,12 @@ class PresentationMode:
   GET_STATISTICS_FAILED = 'GET_STATISTICS_FAILED'
 
 
+class ZeroCopyCodec(enum.Enum):
+  UNSPECIFIED = 0
+  H264 = 1
+  VP9 = 2
+
+
 # Trace events used by Chrome corresponding to PresentationMode values.
 class PresentationModeEvent(enum.IntEnum):
   # Defined by Chromium for internal testing use.
@@ -71,6 +80,12 @@ DriverConditional = collections.namedtuple('DriverConditional',
                                            ['operation', 'version'])
 
 
+@dataclasses.dataclass
+class ZeroCopyConfig:
+  supports_scaled_video: bool = False
+  supported_codecs: List[ZeroCopyCodec] = ct.EmptyList()
+
+
 class GpuOverlayConfig:
   """Contains all the video overlay information for a single GPU."""
 
@@ -78,6 +93,7 @@ class GpuOverlayConfig:
     self.direct_composition = False
     self.supports_overlays = False
     self._driver_version: Optional[str] = None
+    self._zero_copy_config = ZeroCopyConfig()
 
     self._possible_overlay_support: Dict[str, str] = {}
     self._driver_conditionals: Dict[str, Iterable[DriverConditional]] = {}
@@ -196,6 +212,12 @@ class GpuOverlayConfig:
     assert (self._driver_version is None
             or self._driver_version == driver_version)
     self._driver_version = driver_version
+    return self
+
+  def WithZeroCopyConfig(
+      self, zero_copy_config: ZeroCopyConfig) -> 'GpuOverlayConfig':
+    """Sets the ZeroCopyConfig to use."""
+    self._zero_copy_config = zero_copy_config
     return self
 
   @functools.cached_property
@@ -318,6 +340,43 @@ class GpuOverlayConfig:
 
   # pylint: enable=too-many-return-statements
 
+  def GetExpectedZeroCopyUsage(self, expected_pixel_format: str,
+                               video_rotation: VideoRotation, fullsize: bool,
+                               codec: ZeroCopyCodec) -> bool:
+    """Determines whether the zero copy path is expected to be used or not.
+
+    Args:
+      expected_pixel_format: A string containing the PixelFormat that is
+          expected to be used for swap chains.
+      video_rotation: The rotation of the video being played.
+      fullsize: Whether the video being played is at full size/unscaled or not.
+      codec: The ZeroCopyCodec of the video being played. Can be UNSPECIFIED,
+          but will be treated as an error if the codec actually ends up being
+          needed to determine zero copy usage.
+
+    Returns:
+      True if the zero copy path is expected to be used, otherwise False.
+    """
+    # Rotated videos necessitate a copy.
+    if video_rotation != VideoRotation.UNROTATED:
+      return False
+
+    # Zero copy path only enabled for NV12.
+    if expected_pixel_format != PixelFormat.NV12:
+      return False
+
+    # Certain GPUs (namely from Intel) do not support zero copy if the video
+    # is scaled at all.
+    if not fullsize and not self._zero_copy_config.supports_scaled_video:
+      return False
+
+    if codec == ZeroCopyCodec.UNSPECIFIED:
+      raise RuntimeError(
+          'Test did not specify the codec used when it is relevant to '
+          'determining zero copy usage')
+
+    return codec in self._zero_copy_config.supported_codecs
+
 
 BasicDirectCompositionConfig = lambda: (GpuOverlayConfig().
                                         WithDirectComposition())
@@ -333,7 +392,12 @@ OVERLAY_CONFIGS = {
                 .WithHardwareNV12Support(supported_rotations=[
                     VideoRotation.ROT90,
                     VideoRotation.ROT180,
-                    VideoRotation.ROT270]),
+                    VideoRotation.ROT270])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264,
+                        ZeroCopyCodec.VP9])),
         0x6613:
         BasicDirectCompositionConfig(),
         0x699f:
@@ -346,7 +410,12 @@ OVERLAY_CONFIGS = {
                 .WithHardwareNV12Support(driver_conditionals=[
                     DriverConditional('ne', '26.20.100.8141')])\
                 .WithHardwareYUY2Support()\
-                .WithHardwareBGRA8Support(),
+                .WithHardwareBGRA8Support()\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=False,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264,
+                        ZeroCopyCodec.VP9])),
         0x3e92:
         AllHardwareSupportDirectCompositionConfig(),
         0x9bc5:
@@ -361,12 +430,18 @@ OVERLAY_CONFIGS = {
                 .WithHardwareYUY2Support(driver_conditionals=[
                     DriverConditional('ge', '31.0.15.4601')])
                 .WithForceComposedBGRA8(driver_conditionals=[
-                    DriverConditional('lt', '31.0.15.4601')]),
+                    DriverConditional('lt', '31.0.15.4601')])\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
     },
     gpu_helper.GpuVendors.QUALCOMM: {
         0x41333430: BasicDirectCompositionConfig()\
                     .WithHardwareNV12Support(supported_rotations=[
-                        VideoRotation.ROT180]),
+                        VideoRotation.ROT180])\
+                    .WithZeroCopyConfig(ZeroCopyConfig(
+                        supports_scaled_video=True)),
     },
 }
 
