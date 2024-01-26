@@ -184,9 +184,6 @@
       <message name="IDS_OK_GOT_IT" desc="Label of a button by which the user confirms that they read and understood the information or instructions. Used in multiple contexts. [CHAR_LIMIT=20]">
         OK, got it
       </message>
-      <message name="IDS_YES" desc="Label for a button where the user accepts a disclosure/message. Used in multiple contexts." formatter_data="android_java">
-        Yes
-      </message>
       <message name="IDS_CANCEL" desc="Label for a cancel button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Cancel
       </message>

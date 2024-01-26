@@ -84,7 +84,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE,
-    FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
@@ -159,7 +158,6 @@ public @interface FeatureConstants {
     String READ_LATER_BOTTOM_SHEET_FEATURE = "IPH_ReadLaterBottomSheet";
     String REQUEST_DESKTOP_SITE_APP_MENU_FEATURE = "IPH_RequestDesktopSiteAppMenu";
     String REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE = "IPH_RequestDesktopSiteDefaultOn";
-    String REQUEST_DESKTOP_SITE_OPT_IN_FEATURE = "IPH_RequestDesktopSiteOptIn";
     String REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE =
             "IPH_RequestDesktopSiteExceptionsGeneric";
     String REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE = "IPH_RequestDesktopSiteWindowSetting";

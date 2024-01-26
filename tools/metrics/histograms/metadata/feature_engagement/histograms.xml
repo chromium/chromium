@@ -364,8 +364,8 @@ chromium-metrics-reviews@google.com.
       summary="educating tablet users about using the desktop site per-site
                settings in general"/>
   <variant name="IPH_RequestDesktopSiteOptIn"
-      summary="the in product help message to let users turn on the desktop
-               site global settings"/>
+      summary="(obsolete) the in product help message to let users turn on
+               the desktop site global settings"/>
   <variant name="IPH_RequestDesktopSiteWindowSetting"
       summary="educating users about using the desktop site window setting"/>
   <variant name="IPH_RestoreTabsOnFRE"

@@ -2549,15 +2549,6 @@ extern const char kRelatedSearchesAllLanguageDescription[];
 extern const char kRemoveUPMUnenrollmentName[];
 extern const char kRemoveUPMUnenrollmentDescription[];
 
-extern const char kRequestDesktopSiteDefaultsName[];
-extern const char kRequestDesktopSiteDefaultsDescription[];
-
-extern const char kRequestDesktopSiteDefaultsDowngradeName[];
-extern const char kRequestDesktopSiteDefaultsDowngradeDescription[];
-
-extern const char kRequestDesktopSiteDefaultsLoggingName[];
-extern const char kRequestDesktopSiteDefaultsLoggingDescription[];
-
 extern const char kRequestDesktopSiteWindowSettingName[];
 extern const char kRequestDesktopSiteWindowSettingDescription[];
 

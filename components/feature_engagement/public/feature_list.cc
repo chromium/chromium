@@ -81,7 +81,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadLaterBottomSheetFeature,
     &kIPHRequestDesktopSiteAppMenuFeature,
     &kIPHRequestDesktopSiteDefaultOnFeature,
-    &kIPHRequestDesktopSiteOptInFeature,
     &kIPHRequestDesktopSiteExceptionsGenericFeature,
     &kIPHRequestDesktopSiteWindowSettingFeature,
     &kIPHShoppingListMenuItemFeature,

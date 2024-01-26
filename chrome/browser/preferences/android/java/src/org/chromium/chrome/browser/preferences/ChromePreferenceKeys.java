@@ -214,30 +214,6 @@ public final class ChromePreferenceKeys {
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabled";
 
     /**
-     * Indicates whether the device qualifies for default-enabling the desktop site global setting.
-     * Not set: the device is not eligible for the experiment;
-     * True: the device is eligible for the experiment;
-     * False: a downgrade is pending because a previously eligible device is not eligible for the
-     * experiment any more.
-     */
-    public static final String DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT =
-            "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledCohort";
-
-    /**
-     * Indicates whether the device qualifies for showing a message to opt-in to the desktop site
-     * global setting.
-     */
-    public static final String DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT =
-            "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageCohort";
-
-    /**
-     * Indicates display spec when the device is added to the default-on cohort for the desktop site
-     * global setting experiment.
-     */
-    public static final String DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC =
-            "Chrome.RequestDesktopSiteGlobalSetting.DefaultOnCohortDisplaySpec";
-
-    /**
      * Indicates that Chrome should show an alert to the user about data privacy if the device
      * lock is removed.
      */
@@ -934,11 +910,8 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
-                DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                 DEPRECATED_HOMEPAGE_LOCATION_POLICY,
                 DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
-                DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
-                DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                 DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,

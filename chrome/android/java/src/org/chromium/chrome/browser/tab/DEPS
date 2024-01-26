@@ -78,8 +78,6 @@ specific_include_rules = {
   ],
   'RequestDesktopUtils\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/crash/ChromePureJavaExceptionReporter.java",
   ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
