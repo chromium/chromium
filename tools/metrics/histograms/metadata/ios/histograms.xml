@@ -1715,21 +1715,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.NavigationStateNotFinishedInLoadCancelled" enum="Boolean"
-    expires_after="2024-06-30">
-  <owner>ajuma@chromium.org</owner>
-  <owner>michaeldo@chromium.org</owner>
-  <summary>
-    The method -[CRWWKNavigationHandler loadCancelled] updates the navigation
-    state to finished if it is any other state. Additionally, if
-    `beingDestroyed` is false, the webstate's loading state is set to false.
-    There is a long standing TODO in this method with the comment: &quot;Check
-    if this function should be removed.&quot; This metric is logged when the
-    logic in this method is triggered. The results will be reviewed to see if
-    this logic is still ever called or if it can now be removed.
-  </summary>
-</histogram>
-
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
     enum="Boolean" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>
