@@ -215,7 +215,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
         action_identifier, user_info, on_complete_for_testing);
   }
 
-  std::vector<const std::string>& GetUrlsDelayedForLoading() {
+  std::vector<GURL>& GetUrlsDelayedForLoading() {
     return commerce_push_notification_client_.urls_delayed_for_loading_;
   }
 

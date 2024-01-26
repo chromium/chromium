@@ -24,11 +24,8 @@ static_library("push_notification") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/url_loading/model",
     "//url:url",
   ]
 
