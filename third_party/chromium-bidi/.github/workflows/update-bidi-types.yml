@@ -69,7 +69,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - name: Install cddlconv
-        run: cargo install cddlconv@0.1.2
+        run: cargo install cddlconv@0.1.3
       - name: Set up Node.js
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
