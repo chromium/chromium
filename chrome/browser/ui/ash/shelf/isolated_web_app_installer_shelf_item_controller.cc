@@ -85,13 +85,17 @@ void IsolatedWebAppInstallerShelfItemController::AddWindow(
   // window. However, multiple `AddWindow()` calls are allowed with the same
   // `window`.
   CHECK(!window_ || window_ == window);
-  window_ = window;
-  window_->AddObserver(this);
+  if (!window_) {
+    window_ = window;
+    window_->AddObserver(this);
+  }
   UpdateShelfItem();
 }
 
 void IsolatedWebAppInstallerShelfItemController::OnWindowDestroying(
     aura::Window* window) {
+  CHECK(window_);
+  window_->RemoveObserver(this);
   window_ = nullptr;
 }
 
