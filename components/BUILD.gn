@@ -915,16 +915,6 @@ if (use_blink) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "autofill/content/browser/risk/fingerprint_browsertest.cc",
-      "autofill/content/renderer/a11y_utils_browsertest.cc",
-      "autofill/content/renderer/autofill_agent_browsertest.cc",
-      "autofill/content/renderer/autofill_agent_form_interaction_browsertest.cc",
-      "autofill/content/renderer/form_autofill_issues_browsertest.cc",
-      "autofill/content/renderer/form_autofill_util_browsertest.cc",
-      "autofill/content/renderer/form_cache_browsertest.cc",
-      "autofill/content/renderer/form_tracker_browsertest.cc",
-      "autofill/content/renderer/html_based_username_detector_browsertest.cc",
-      "autofill/content/renderer/password_form_conversion_utils_browsertest.cc",
       "browsing_data/content/browsing_data_helper_browsertest.h",
       "browsing_data/content/cache_storage_helper_browsertest.cc",
       "browsing_data/content/database_helper_browsertest.cc",
@@ -964,7 +954,9 @@ if (use_blink) {
       "//base",
       "//base/test:test_support",
       "//components/autofill/content/browser",
+      "//components/autofill/content/browser:browser_tests",
       "//components/autofill/content/renderer",
+      "//components/autofill/content/renderer:browser_tests",
       "//components/autofill/content/renderer:test_support",
       "//components/autofill/core/browser",
       "//components/browsing_data/content",
