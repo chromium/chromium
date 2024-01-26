@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="WebAuthentication.Android.CredManAvailability" enum="Boolean"
+    expires_after="2024-06-30">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records whether Android Credential Management service is available. Recorded
+    only for Android 14+, after the first passkey request on the profile.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.CredManConditionalRequest"
     enum="CredManGetRequestEnum" expires_after="2024-06-30">
   <owner>derinel@google.com</owner>
