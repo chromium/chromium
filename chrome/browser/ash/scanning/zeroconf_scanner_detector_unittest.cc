@@ -672,6 +672,16 @@ TEST_F(ZeroconfScannerDetectorTest, MetadataPdl) {
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 
+// Test that metadata for a skipped scanner doesn't get converted.
+TEST_F(ZeroconfScannerDetectorTest, MetadataSkippedRecord) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kGenericScannerServiceType,
+      {"mfg=EPSON", "mdl=XP-7100 Series"}));
+  CreateDetector();
+  CompleteTasks();
+  EXPECT_TRUE(scanners_.empty());
+}
+
 // Test that a detected scanner can be removed.
 TEST_F(ZeroconfScannerDetectorTest, RemoveAddedScanner) {
   escl_lister_->Announce(MakeServiceDescription(

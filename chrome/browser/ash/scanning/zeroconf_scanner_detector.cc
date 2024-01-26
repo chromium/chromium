@@ -115,6 +115,26 @@ class ParsedMetadata {
   std::vector<std::string> pdl_;
 };
 
+// Some scanners return zeroconf responses for multiple protocols where some
+// protocols are known to work better than others.  This function looks at
+// |service_type| and |metadata| and returns true if this record represents a
+// protocol/device combination that should be skipped.
+bool ShouldSkipZeroconfScanner(const std::string& service_type,
+                               const ParsedMetadata& metadata) {
+  if (service_type != ZeroconfScannerDetector::kGenericScannerServiceType) {
+    return false;
+  }
+
+  if (metadata.manufacturer() == "EPSON") {
+    // Prefer eSCL for XP-7100 (b/288301496).
+    if (metadata.model().find("XP-7100") != std::string::npos) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // Attempts to create a Scanner using the information in |service_description|
 // and |metadata|. Returns the Scanner on success, std::nullopt on failure.
 std::optional<Scanner> CreateScanner(
@@ -129,12 +149,23 @@ std::optional<Scanner> CreateScanner(
       service_description.ip_address.empty() ||
       service_description.address.port() == 0) {
     PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
-                       << " scanner that isn't usable";
+                       << " scanner that isn't usable: "
+                       << service_description.service_name << "("
+                       << service_description.address.ToString() << ")";
     return std::nullopt;
   }
 
-  PRINTER_LOG(EVENT) << "Found zeroconf " << service_type
-                     << " scanner: " << service_description.instance_name();
+  if (ShouldSkipZeroconfScanner(service_type, metadata)) {
+    PRINTER_LOG(DEBUG) << "Skipped zeroconf " << service_type
+                       << " scanner named '"
+                       << service_description.instance_name() << "' at "
+                       << service_description.address.ToString();
+    return std::nullopt;
+  }
+
+  PRINTER_LOG(EVENT) << "Found zeroconf " << service_type << " scanner named '"
+                     << service_description.instance_name() << "' at "
+                     << service_description.address.ToString();
 
   return CreateSaneScanner(service_description.instance_name(), service_type,
                            metadata.manufacturer(), metadata.model(),
