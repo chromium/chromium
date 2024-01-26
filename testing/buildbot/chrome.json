@@ -1085,8 +1085,8 @@
           "--env-var",
           "LIBVA_DRIVER_NAME",
           "libfake",
-          "test-25fps.vp9",
-          "test-25fps.vp9.json",
+          "../../media/test/data/test-25fps.vp9",
+          "../../media/test/data/test-25fps.vp9.json",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "ci_only": true,
@@ -1538,8 +1538,8 @@
           "--env-var",
           "LIBVA_DRIVER_NAME",
           "libfake",
-          "test-25fps.vp9",
-          "test-25fps.vp9.json"
+          "../../media/test/data/test-25fps.vp9",
+          "../../media/test/data/test-25fps.vp9.json"
         ],
         "autotest_name": "chromium",
         "ci_only": true,

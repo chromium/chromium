@@ -998,8 +998,8 @@ targets.tests.gtest_test(
         "--env-var",
         "LIBVA_DRIVER_NAME",
         "libfake",
-        "test-25fps.vp9",
-        "test-25fps.vp9.json",
+        "../../media/test/data/test-25fps.vp9",
+        "../../media/test/data/test-25fps.vp9.json",
     ],
 )
 
