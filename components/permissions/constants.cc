@@ -62,6 +62,8 @@ const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 
 const char kRevokedKey[] = "revoked";
 
+const char kRevokedChooserPermissionsKey[] = "revoked-chooser-permissions";
+
 const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime =
     base::Days(30);
 

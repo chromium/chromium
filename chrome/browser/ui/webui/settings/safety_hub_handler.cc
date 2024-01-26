@@ -60,22 +60,19 @@ constexpr char kLifetimeKey[] = "lifetime";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
-std::tuple<url::Origin,
-           std::set<ContentSettingsType>,
-           content_settings::ContentSettingConstraints>
-GetUnusedSitePermissionsFromDict(
+SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
     const base::Value::Dict& unused_site_permissions) {
+  SafetyHubHandler::PermissionsData permissions_data;
   const std::string* origin_str =
       unused_site_permissions.FindString(site_settings::kOrigin);
   CHECK(origin_str);
   const auto url = GURL(*origin_str);
   CHECK(url.is_valid());
-  const url::Origin origin = url::Origin::Create(url);
+  permissions_data.origin = url::Origin::Create(url);
 
   const base::Value::List* permissions =
       unused_site_permissions.FindList(site_settings::kPermissions);
   CHECK(permissions);
-  std::set<ContentSettingsType> permission_types;
   for (const auto& permission : *permissions) {
     CHECK(permission.is_string());
     const std::string& type_string = permission.GetString();
@@ -83,8 +80,15 @@ GetUnusedSitePermissionsFromDict(
         site_settings::ContentSettingsTypeFromGroupName(type_string);
     CHECK(type != ContentSettingsType::DEFAULT)
         << type_string << " is not expected to have a UI representation.";
-    permission_types.insert(type);
+    permissions_data.permissions.insert(type);
   }
+
+  const base::Value::Dict* chooser_permissions_data =
+      unused_site_permissions.FindDict(
+          safety_hub::kSafetyHubChooserPermissionsData);
+  permissions_data.chooser_permissions_data =
+      chooser_permissions_data ? chooser_permissions_data->Clone()
+                               : base::Value::Dict();
 
   const base::Value* js_expiration =
       unused_site_permissions.Find(kExpirationKey);
@@ -99,11 +103,11 @@ GetUnusedSitePermissionsFromDict(
       base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
       /*expiration=*/expiration);
 
-  content_settings::ContentSettingConstraints constraints =
+  permissions_data.constraints =
       content_settings::ContentSettingConstraints(expiration - lifetime);
-  constraints.set_lifetime(lifetime);
+  permissions_data.constraints.set_lifetime(lifetime);
 
-  return std::make_tuple(origin, permission_types, constraints);
+  return permissions_data;
 }
 
 // Returns the state of Safe Browsing setting.
@@ -169,6 +173,12 @@ SafetyHubHandler::SafetyHubHandler(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
 SafetyHubHandler::~SafetyHubHandler() = default;
 
+SafetyHubHandler::PermissionsData::PermissionsData() = default;
+SafetyHubHandler::PermissionsData::~PermissionsData() = default;
+SafetyHubHandler::PermissionsData::PermissionsData(PermissionsData&&) = default;
+SafetyHubHandler::PermissionsData& SafetyHubHandler::PermissionsData::operator=(
+    PermissionsData&&) = default;
+
 // static
 std::unique_ptr<SafetyHubHandler> SafetyHubHandler::GetForProfile(
     Profile* profile) {
@@ -208,13 +218,15 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_dict());
 
-  auto [origin, permissions, constraints] =
+  PermissionsData permissions_data =
       GetUnusedSitePermissionsFromDict(args[0].GetDict());
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
-  service->UndoRegrantPermissionsForOrigin(permissions, constraints, origin);
+  service->UndoRegrantPermissionsForOrigin(
+      permissions_data.permissions, permissions_data.chooser_permissions_data,
+      permissions_data.constraints, permissions_data.origin);
 
   SendUnusedSitePermissionsReviewList();
 }
@@ -241,11 +253,11 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
 
   for (const auto& unused_site_permissions_js : unused_site_permissions_list) {
     CHECK(unused_site_permissions_js.is_dict());
-    auto [origin, permissions, constraints] =
+    PermissionsData permissions_data =
         GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
-
-    service->StorePermissionInRevokedPermissionSetting(permissions, constraints,
-                                                       origin);
+    service->StorePermissionInRevokedPermissionSetting(
+        permissions_data.permissions, permissions_data.chooser_permissions_data,
+        permissions_data.constraints, permissions_data.origin);
   }
 
   SendUnusedSitePermissionsReviewList();
@@ -304,6 +316,14 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         kLifetimeKey,
         base::TimeDeltaToValue(revoked_permissions.metadata.lifetime()));
+
+    auto* chooser_permissions_data_dict = stored_value.GetDict().FindDict(
+        permissions::kRevokedChooserPermissionsKey);
+    if (chooser_permissions_data_dict) {
+      revoked_permission_value.Set(
+          safety_hub::kSafetyHubChooserPermissionsData,
+          base::Value(chooser_permissions_data_dict->Clone()));
+    }
 
     result.Append(std::move(revoked_permission_value));
   }

@@ -26,6 +26,12 @@ namespace features {
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckUnusedSitePermissions);
 
+// When enabled, allowlisted website settings are considered for Safety Check,
+// in addition to content settings that are included by default.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(
+    kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
+
 // Lets the HostContentSettingsMap actively monitor when content settings expire
 // and delete them instantly. This also notifies observers that will, in turn,
 // terminate access to capabilities gated on those settings right away.

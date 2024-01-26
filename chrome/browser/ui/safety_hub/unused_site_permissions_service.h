@@ -176,8 +176,9 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   // Reverse changes made by |RegrantPermissionsForOrigin|. Adds this origin to
   // the removed permissions list and resets its permissions.
   void UndoRegrantPermissionsForOrigin(
-      const std::set<ContentSettingsType> permissions,
-      const std::optional<content_settings::ContentSettingConstraints>
+      const std::set<ContentSettingsType>& permissions,
+      const base::Value::Dict& chooser_permissions_data,
+      const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -187,8 +188,9 @@ class UnusedSitePermissionsService final : public SafetyHubService,
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::set<ContentSettingsType> permissions,
-      const std::optional<content_settings::ContentSettingConstraints>
+      const std::set<ContentSettingsType>& permissions,
+      const base::Value::Dict& chooser_permissions_data,
+      const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -238,8 +240,9 @@ class UnusedSitePermissionsService final : public SafetyHubService,
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::set<ContentSettingsType> permissions,
-      const std::optional<content_settings::ContentSettingConstraints>
+      const std::set<ContentSettingsType>& permissions,
+      const base::Value::Dict& chooser_permissions_data,
+      const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);

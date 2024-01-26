@@ -47,6 +47,18 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
 
   ~SafetyHubHandler() override;
 
+  struct PermissionsData {
+    PermissionsData();
+    ~PermissionsData();
+    PermissionsData(PermissionsData&&);
+    PermissionsData& operator=(PermissionsData&&);
+
+    url::Origin origin;
+    std::set<ContentSettingsType> permissions;
+    base::Value::Dict chooser_permissions_data;
+    content_settings::ContentSettingConstraints constraints;
+  };
+
   static std::unique_ptr<SafetyHubHandler> GetForProfile(Profile* profile);
 
  private:

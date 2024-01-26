@@ -25,6 +25,10 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
+             "SafetyCheckUnusedSitePermissionsForSupportedChooserPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kActiveContentSettingExpiry,
              "ActiveContentSettingExpiry",
              base::FEATURE_DISABLED_BY_DEFAULT);
