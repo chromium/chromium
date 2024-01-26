@@ -10,6 +10,7 @@
     --action-button-margins: 40px;
     --omnibox-width: 252px;
     --choice-list-bottom-padding: 50px;
+    --choice-title-line-height: 20px;
     color: var(--cr-primary-text-color);
   }
 
@@ -135,12 +136,11 @@
   }
 
   .choice-icon {
-    --choice-icon-height: 24px;
-    background-size: var(--choice-icon-height);
+    background-size: var(--iron-icon-height);
     border-radius: 4px;
     flex: none;
-    height: var(--choice-icon-height);
-    width: var(--choice-icon-height);
+    height: var(--iron-icon-height);
+    width: var(--iron-icon-height);
   }
 
   .omnibox-text,
@@ -148,7 +148,7 @@
     font-family: Roboto, Arial;
     font-size: 0.8125rem;
     font-weight: 400;
-    line-height: 20px;
+    line-height: var(--choice-title-line-height);
     text-align: start;
   }
 
@@ -163,6 +163,11 @@
   }
 
   cr-radio-button {
+    /* To center the radio button disc inside the content excluding the
+    marketing snippet text. */
+    --cr-radio-button-disc-margin-block-start:
+        calc((max(var(--choice-title-line-height), var(--iron-icon-height)) -
+        var(--cr-radio-button-size))/2);
     --cr-radio-button-label-spacing: 12px;
     --cr-radio-button-size: 20px;
     align-items: start;
