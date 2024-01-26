@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
@@ -396,6 +397,30 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+}
+
+TEST_F(AppSessionTest, ChromeAppKioskShouldClosePreexistingBrowsers) {
+  std::unique_ptr<Browser> preexisting_browser = CreateBrowserWithTestWindow();
+  base::test::TestFuture<void> closed_future;
+
+  static_cast<TestBrowserWindow*>(preexisting_browser->window())
+      ->SetCloseCallback(closed_future.GetCallback());
+
+  StartChromeAppKioskSession();
+
+  ASSERT_TRUE(closed_future.IsReady());
+}
+
+TEST_F(AppSessionTest, WebKioskShouldNotClosePreexistingBrowsers) {
+  std::unique_ptr<Browser> preexisting_browser = CreateBrowserWithTestWindow();
+  base::test::TestFuture<void> closed_future;
+
+  static_cast<TestBrowserWindow*>(preexisting_browser->window())
+      ->SetCloseCallback(closed_future.GetCallback());
+
+  StartWebKioskSession();
+
+  ASSERT_FALSE(closed_future.IsReady());
 }
 
 // Check that sessions list in local_state contains only sessions within the
