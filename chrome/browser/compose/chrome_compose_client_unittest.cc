@@ -447,7 +447,6 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -456,8 +455,6 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
       ukm_entries[0].metrics,
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1)));
@@ -517,7 +514,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -527,8 +523,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
                         1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
-                        0),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 
@@ -541,7 +535,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
   ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 2UL);
@@ -551,8 +544,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
                         2),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
-                        0),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 }
@@ -572,7 +563,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -581,8 +571,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
       ukm_entries[0].metrics,
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));

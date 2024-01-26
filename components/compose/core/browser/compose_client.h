@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/compose/core/browser/compose_metrics.h"
 
 namespace compose {
 
@@ -31,14 +32,20 @@ class ComposeClient {
   // Returns whether the `trigger_field_id` has a session (i.e., state).
   virtual bool HasSession(const autofill::FieldGlobalId& trigger_field_id) = 0;
 
+  // Requests the presentation of the Compose dialog for the provided field.
   virtual void ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
       std::optional<autofill::AutofillClient::PopupScreenLocation>
           popup_screen_location,
       ComposeCallback callback) = 0;
+
+  // Checks if the popup (aka nudge) should be presented for the provided field.
   virtual bool ShouldTriggerPopup(
       const autofill::FormFieldData& trigger_field) = 0;
+
+  // Getter for the PageUkmTracker instance for the currently loaded page.
+  virtual PageUkmTracker* getPageUkmTracker() = 0;
 };
 
 }  // namespace compose

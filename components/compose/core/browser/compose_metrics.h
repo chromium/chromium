@@ -236,6 +236,11 @@ class PageUkmTracker {
   // The composed text was accepted and inserted into the webpage by the user.
   void ComposeTextInserted();
 
+  // The compose dialog was requested but not shown due to problems obtaining
+  // form data from Autofill.
+  void ShowDialogAbortedDueToMissingFormData();
+  void ShowDialogAbortedDueToMissingFormFieldData();
+
   // Records UKM if any of the above events happened during this object's
   // lifetime.  Called in the destructor.
   void MaybeLogUkm();
@@ -245,6 +250,8 @@ class PageUkmTracker {
   unsigned int menu_item_shown_count_ = 0;
   unsigned int menu_item_clicked_count_ = 0;
   unsigned int compose_text_inserted_count_ = 0;
+  unsigned int missing_form_data_count_ = 0;
+  unsigned int missing_form_field_data_count_ = 0;
 
   ukm::SourceId source_id;
 };

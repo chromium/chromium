@@ -67,6 +67,16 @@ void PageUkmTracker::ComposeTextInserted() {
   ++compose_text_inserted_count_;
 }
 
+void PageUkmTracker::ShowDialogAbortedDueToMissingFormData() {
+  event_was_recorded_ = true;
+  ++missing_form_data_count_;
+}
+
+void PageUkmTracker::ShowDialogAbortedDueToMissingFormFieldData() {
+  event_was_recorded_ = true;
+  ++missing_form_field_data_count_;
+}
+
 void PageUkmTracker::MaybeLogUkm() {
   if (!event_was_recorded_) {
     return;
@@ -79,6 +89,10 @@ void PageUkmTracker::MaybeLogUkm() {
           ukm::GetExponentialBucketMinForCounts1000(menu_item_clicked_count_))
       .SetComposeTextInserted(ukm::GetExponentialBucketMinForCounts1000(
           compose_text_inserted_count_))
+      .SetMissingFormData(
+          ukm::GetExponentialBucketMinForCounts1000(missing_form_data_count_))
+      .SetMissingFormFieldData(ukm::GetExponentialBucketMinForCounts1000(
+          missing_form_field_data_count_))
       .Record(ukm::UkmRecorder::Get());
 }
 
