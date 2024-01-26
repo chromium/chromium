@@ -51,7 +51,7 @@ class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 class FieldDataManager;
 
-// AutofillAgent deals with Autofill related communications between WebKit and
+// AutofillAgent deals with Autofill related communications between Blink and
 // the browser.
 //
 // Each AutofillAgent is associated with exactly one RenderFrame and
