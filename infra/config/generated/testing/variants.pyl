@@ -220,7 +220,7 @@
     'identifier': 'TROGDOR_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-public/R123-15755.0.0',
+      'cros_img': 'trogdor-public/R123-15756.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -236,7 +236,7 @@
     'skylab': {
       'cros_board': 'volteer',
       'cros_model': 'voxel',
-      'cros_img': 'volteer-public/R123-15755.0.0',
+      'cros_img': 'volteer-public/R123-15756.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
