@@ -594,7 +594,6 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.
 crbug.com/626703 external/wpt/fullscreen/rendering/backdrop-inherit.html [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure ]
-crbug.com/626703 external/wpt/focus/focus-large-element-in-overflow-hidden-container.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-position/sticky/position-sticky-in-fixed-container.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-button-overflow.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-text-input-overflow.html [ Failure ]
