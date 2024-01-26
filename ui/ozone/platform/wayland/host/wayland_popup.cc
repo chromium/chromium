@@ -65,8 +65,6 @@ bool WaylandPopup::CreateShellPopup() {
 
   ShellPopupParams params;
   params.bounds = bounds_dip;
-  params.menu_type =
-      delegate()->GetMenuType().value_or(MenuType::kRootContextMenu);
   params.anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
   if (params.anchor.has_value()) {
     // The anchor should originate from the window geometry, not from the

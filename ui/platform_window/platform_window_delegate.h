@@ -217,9 +217,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // with lacros-chrome.
   virtual void OnSurfaceFrameLockingChanged(bool lock);
 
-  // Returns a menu type of the window. Valid only for the menu windows.
-  virtual absl::optional<MenuType> GetMenuType();
-
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
   // is captured either by implicitly or explicitly.

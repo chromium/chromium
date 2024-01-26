@@ -958,10 +958,6 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   return window_mask;
 }
 
-absl::optional<ui::MenuType> DesktopWindowTreeHostPlatform::GetMenuType() {
-  return GetContentWindow()->GetProperty(aura::client::kMenuType);
-}
-
 absl::optional<ui::OwnedWindowAnchor>
 DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInDIP() {
   const auto* anchor =

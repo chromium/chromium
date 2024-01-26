@@ -27,8 +27,6 @@ struct ShellPopupParams {
   ~ShellPopupParams();
 
   gfx::Rect bounds;
-  MenuType menu_type = MenuType::kRootContextMenu;
-
   // This parameter is temporarily optional. Later, when all the clients
   // start to pass these parameters, absl::optional type will be removed.
   absl::optional<OwnedWindowAnchor> anchor;

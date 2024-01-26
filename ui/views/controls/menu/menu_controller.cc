@@ -2239,7 +2239,6 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       // (crbug.com/1414232) The item to be open is a submenu. Make sure
       // params.context is set.
       DCHECK(params.context);
-      params.menu_type = ui::MenuType::kChildMenu;
     } else if (state_.context_menu) {
       if (!menu_stack_.empty()) {
         auto* last_menu_item = menu_stack_.back().first.item.get();
@@ -2250,10 +2249,8 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       } else {
         params.context = owner_;
       }
-      params.menu_type = ui::MenuType::kRootContextMenu;
     } else {
       params.context = owner_;
-      params.menu_type = ui::MenuType::kRootMenu;
     }
     item->GetSubmenu()->ShowAt(params);
 

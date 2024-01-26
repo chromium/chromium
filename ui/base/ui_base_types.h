@@ -140,19 +140,6 @@ enum MenuSourceType {
   MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
 };
 
-// Menu types that are used to position menu windows correctly.
-enum class MenuType {
-  // A context menu opened either via a right click or a long tap.
-  kRootContextMenu = 0,
-
-  // A root non-context menu. Example: The three dot menu.
-  kRootMenu,
-
-  // A child menu opened by clicking on a nested menu entry of either
-  // |kRootContextMenu| or |kRootParentMenu|.
-  kChildMenu,
-};
-
 // Where an owned anchored window should be anchored to. Used by such backends
 // as Wayland, which doesn't provide clients with on screen coordinates, but
 // rather forces them to position children windows relative to toplevel windows.
