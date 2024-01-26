@@ -47014,7 +47014,8 @@
           "testharness",
           "reftest",
           "crashtest",
-          "print-reftest"
+          "print-reftest",
+          "--additional-driver-flag=--headless=new"
         ],
         "merge": {
           "args": [
