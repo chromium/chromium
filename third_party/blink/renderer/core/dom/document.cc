@@ -186,6 +186,7 @@
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_resize_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
+#include "third_party/blink/renderer/core/events/visual_viewport_scrollend_event.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
@@ -5962,6 +5963,13 @@ void Document::EnqueueMediaQueryChangeListeners(
 void Document::EnqueueVisualViewportScrollEvent() {
   VisualViewportScrollEvent* event =
       MakeGarbageCollected<VisualViewportScrollEvent>();
+  event->SetTarget(domWindow()->visualViewport());
+  scripted_animation_controller_->EnqueuePerFrameEvent(event);
+}
+
+void Document::EnqueueVisualViewportScrollEndEvent() {
+  VisualViewportScrollEndEvent* event =
+      MakeGarbageCollected<VisualViewportScrollEndEvent>();
   event->SetTarget(domWindow()->visualViewport());
   scripted_animation_controller_->EnqueuePerFrameEvent(event);
 }

@@ -44,6 +44,7 @@ class CC_EXPORT Viewport {
     gfx::Vector2dF consumed_delta;
     gfx::Vector2dF content_scrolled_delta;
     gfx::Vector2dF outer_viewport_scrolled_delta;
+    gfx::Vector2dF inner_viewport_scrolled_delta;
   };
 
   static std::unique_ptr<Viewport> Create(LayerTreeHostImpl* host_impl);
