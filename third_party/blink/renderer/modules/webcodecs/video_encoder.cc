@@ -164,6 +164,12 @@ bool IsAcceleratedConfigurationSupported(
     return false;
   }
 
+  // Hardware encoders don't currently support subsampling other than 4:2:0.
+  if (options.subsampling.value_or(media::VideoChromaSampling::k420) !=
+      media::VideoChromaSampling::k420) {
+    return false;
+  }
+
   auto supported_profiles =
       gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
           media::VideoEncodeAccelerator::SupportedProfiles());
@@ -342,6 +348,14 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return result;
   }
 
+  if (parse_result->subsampling.value_or(media::VideoChromaSampling::k420) !=
+          media::VideoChromaSampling::k420 &&
+      parse_result->codec != media::VideoCodec::kVP9) {
+    result->not_supported_error_message =
+        "4:4:4 subsampling is currently only supported with VP9";
+    return result;
+  }
+
   // Some codec strings provide color space info, but for WebCodecs this is
   // ignored. Instead, the VideoFrames given to encode() are the source of truth
   // for input color space. Note also that the output color space is up to the
@@ -349,32 +363,54 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->codec = parse_result->codec;
   result->profile = parse_result->profile;
   result->level = parse_result->level;
-
-  // We are done with the parsing.
-  if (!config->hasAvc() && !config->hasHevc())
-    return result;
+  result->options.subsampling = parse_result->subsampling;
 
   switch (result->codec) {
+    case media::VideoCodec::kVP9:
+      // Ideally this would checked by the parser above, but unfortunately the
+      // parser is shared by many paths and enforcing profile and subsampling
+      // broke several sites. The error message below is more helpful anyways.
+      if (parse_result->subsampling.value_or(
+              media::VideoChromaSampling::k420) ==
+          media::VideoChromaSampling::k420) {
+        break;
+      }
+      if (result->options.subsampling == media::VideoChromaSampling::k444 &&
+          (result->profile == media::VP9PROFILE_PROFILE1 ||
+           result->profile == media::VP9PROFILE_PROFILE3)) {
+        break;
+      }
+      result->not_supported_error_message =
+          "Unsupported VP9 subsampling; 4:2:0 subsampling is supported with "
+          "profile 0 and 2, while 4:4:4 subsampling is supported with "
+          "profile 1 and 3.";
+      return result;
+
     case media::VideoCodec::kH264: {
-      std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
-      if (avc_format == "avc") {
-        result->options.avc.produce_annexb = false;
-      } else if (avc_format == "annexb") {
-        result->options.avc.produce_annexb = true;
-      } else {
-        NOTREACHED();
+      if (config->hasAvc()) {
+        std::string avc_format =
+            IDLEnumAsString(config->avc()->format()).Utf8();
+        if (avc_format == "avc") {
+          result->options.avc.produce_annexb = false;
+        } else if (avc_format == "annexb") {
+          result->options.avc.produce_annexb = true;
+        } else {
+          NOTREACHED();
+        }
       }
       break;
     }
     case media::VideoCodec::kHEVC: {
-      std::string hevc_format =
-          IDLEnumAsString(config->hevc()->format()).Utf8();
-      if (hevc_format == "hevc") {
-        result->options.hevc.produce_annexb = false;
-      } else if (hevc_format == "annexb") {
-        result->options.hevc.produce_annexb = true;
-      } else {
-        NOTREACHED();
+      if (config->hasHevc()) {
+        std::string hevc_format =
+            IDLEnumAsString(config->hevc()->format()).Utf8();
+        if (hevc_format == "hevc") {
+          result->options.hevc.produce_annexb = false;
+        } else if (hevc_format == "annexb") {
+          result->options.hevc.produce_annexb = true;
+        } else {
+          NOTREACHED();
+        }
       }
       break;
     }
@@ -860,6 +896,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
   // implemented, |force_opaque| must be set based on the
   // VideoEncoderConfig.
   const bool can_use_gmb =
+      active_config_->options.subsampling != media::VideoChromaSampling::k444 &&
       !disable_accelerated_frame_pool_ &&
       CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
   if (can_use_gmb && !accelerated_frame_pool_) {
