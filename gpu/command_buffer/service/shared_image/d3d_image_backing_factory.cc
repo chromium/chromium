@@ -50,7 +50,6 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
     return DXGI_FORMAT_NV12;
   }
 
-  NOTREACHED() << "Unsupported format: " << format.ToString();
   return DXGI_FORMAT_UNKNOWN;
 }
 
