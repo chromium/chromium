@@ -72,7 +72,7 @@ class VulkanImageProcessor::VulkanPipeline {
       const std::vector<VkDescriptorSetLayoutBinding>& ubo_bindings,
       std::unique_ptr<VulkanShader> vert_shader,
       std::unique_ptr<VulkanShader> frag_shader,
-      size_t push_constants_size,
+      const std::vector<size_t>& push_constants_size,
       VkRenderPass render_pass,
       VkDevice logical_device);
 
@@ -330,7 +330,7 @@ VulkanImageProcessor::VulkanPipeline::Create(
     const std::vector<VkDescriptorSetLayoutBinding>& ubo_bindings,
     std::unique_ptr<VulkanImageProcessor::VulkanShader> vert_shader,
     std::unique_ptr<VulkanImageProcessor::VulkanShader> frag_shader,
-    size_t push_constants_size,
+    const std::vector<size_t>& push_constants_size,
     VkRenderPass render_pass,
     VkDevice logical_device) {
   VkDescriptorSetLayoutCreateInfo descriptor_layout_info{};
@@ -347,19 +347,23 @@ VulkanImageProcessor::VulkanPipeline::Create(
     return nullptr;
   }
 
-  VkPushConstantRange push_constant_range;
-  push_constant_range.offset = 0;
-  push_constant_range.size = push_constants_size;
-  push_constant_range.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  std::vector<VkPushConstantRange> push_constant_range(2);
+  push_constant_range[0].offset = 0;
+  push_constant_range[0].size =
+      base::checked_cast<uint32_t>(push_constants_size[0]);
+  push_constant_range[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+  push_constant_range[1].offset =
+      base::checked_cast<uint32_t>(push_constants_size[0]);
+  push_constant_range[1].size =
+      base::checked_cast<uint32_t>(push_constants_size[1]);
+  push_constant_range[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
   VkPipelineLayoutCreateInfo pipeline_layout_info{};
   pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipeline_layout_info.setLayoutCount = 1;
   pipeline_layout_info.pSetLayouts = &descriptor_set_layout;
-  if (push_constants_size) {
-    pipeline_layout_info.pPushConstantRanges = &push_constant_range;
-    pipeline_layout_info.pushConstantRangeCount = 1;
-  }
+  pipeline_layout_info.pPushConstantRanges = push_constant_range.data();
+  pipeline_layout_info.pushConstantRangeCount = 2;
 
   VkPipelineLayout pipeline_layout;
   if (vkCreatePipelineLayout(logical_device, &pipeline_layout_info, nullptr,
@@ -395,7 +399,7 @@ VulkanImageProcessor::VulkanPipeline::Create(
   VkPipelineInputAssemblyStateCreateInfo input_assembly{};
   input_assembly.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-  input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
   input_assembly.primitiveRestartEnable = VK_FALSE;
 
   VkViewport viewport{};
@@ -424,7 +428,7 @@ VulkanImageProcessor::VulkanPipeline::Create(
   rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
   rasterizer.lineWidth = 1.0f;
   rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-  rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+  rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
   rasterizer.depthBiasEnable = VK_FALSE;
 
   VkPipelineMultisampleStateCreateInfo multisampling{};
@@ -819,7 +823,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   auto pipeline = VulkanPipeline::Create(
       binding_descriptions, attribute_descriptions, descriptor_bindings,
       std::move(vert_shader), std::move(frag_shader),
-      2 * 2 * sizeof(int), render_pass->Get(),
+      {4 * 2 * sizeof(float), 2 * 2 * sizeof(int)}, render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
   if (!pipeline) {
     return nullptr;
@@ -843,12 +847,76 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
                                    const gfx::Size& input_coded_size,
                                    const gfx::Size& input_visible_size,
                                    gpu::VulkanImage& out_image,
-                                   const gfx::Size& output_coded_size,
-                                   const gfx::Size& output_visible_size,
+                                   const gfx::Rect& display_rect,
+                                   const gfx::RectF& crop_rect,
+                                   gfx::OverlayTransform transform,
                                    std::vector<VkSemaphore>& begin_semaphores,
                                    std::vector<VkSemaphore>& end_semaphores) {
+  CHECK(crop_rect.width() <= 1.0f && crop_rect.width() >= 0.0f);
+  CHECK(crop_rect.height() <= 1.0f && crop_rect.height() >= 0.0f);
+  CHECK(crop_rect.x() <= 1.0f && crop_rect.x() >= 0.0f);
+  CHECK(crop_rect.y() <= 1.0f && crop_rect.y() >= 0.0f);
+  const gfx::Size output_resolution(
+      static_cast<int>(display_rect.width() / crop_rect.width()),
+      static_cast<int>(display_rect.height() / crop_rect.height()));
+
+  // TODO(b/251458823): Investigate whether it's more efficient to change the
+  // vertex coordinates or the UV coordinates. The latter may optimize for
+  // contiguous writes over contiguous reads, which takes better advantage of
+  // the write combiner.
+  float x_start = -1.0f - 2.0f * crop_rect.x();
+  float x_end = 1.0f - 2.0f * crop_rect.x();
+  float y_start = -1.0f - 2.0f * crop_rect.y();
+  float y_end = 1.0f - 2.0f * crop_rect.y();
+  float vertex_push_constants[8] = {0};
+  switch (transform) {
+    case gfx::OVERLAY_TRANSFORM_NONE:
+      vertex_push_constants[0] = x_end;
+      vertex_push_constants[1] = y_start;
+      vertex_push_constants[2] = x_end;
+      vertex_push_constants[3] = y_end;
+      vertex_push_constants[4] = x_start;
+      vertex_push_constants[5] = y_start;
+      vertex_push_constants[6] = x_start;
+      vertex_push_constants[7] = y_end;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+      vertex_push_constants[0] = x_end;
+      vertex_push_constants[1] = y_end;
+      vertex_push_constants[2] = x_start;
+      vertex_push_constants[3] = y_end;
+      vertex_push_constants[4] = x_end;
+      vertex_push_constants[5] = y_start;
+      vertex_push_constants[6] = x_start;
+      vertex_push_constants[7] = y_start;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+      vertex_push_constants[0] = x_start;
+      vertex_push_constants[1] = y_end;
+      vertex_push_constants[2] = x_start;
+      vertex_push_constants[3] = y_start;
+      vertex_push_constants[4] = x_end;
+      vertex_push_constants[5] = y_end;
+      vertex_push_constants[6] = x_end;
+      vertex_push_constants[7] = y_start;
+      break;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+      vertex_push_constants[0] = x_start;
+      vertex_push_constants[1] = y_start;
+      vertex_push_constants[2] = x_end;
+      vertex_push_constants[3] = y_start;
+      vertex_push_constants[4] = x_start;
+      vertex_push_constants[5] = y_end;
+      vertex_push_constants[6] = x_end;
+      vertex_push_constants[7] = y_end;
+      break;
+    default:
+      LOG(ERROR) << "Unsupported rotation requested for VulkanImageProcessor.";
+      return;
+  }
+
   auto out_texture = VulkanTextureImage::Create(
-      out_image, {VK_FORMAT_B8G8R8A8_UNORM}, {output_coded_size},
+      out_image, {VK_FORMAT_B8G8R8A8_UNORM}, {output_resolution},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());
@@ -895,16 +963,21 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(output_visible_size.width());
-    viewport.height = static_cast<float>(output_visible_size.height());
+    viewport.width = static_cast<float>(output_resolution.width());
+    viewport.height = static_cast<float>(output_resolution.height());
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(record.handle(), 0, 1, &viewport);
 
+    CHECK(viewport.width <= 10000.0f && viewport.width >= 0.0f);
+    CHECK(viewport.height <= 10000.0f && viewport.height >= 0.0f);
+
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent.width = static_cast<float>(output_visible_size.width());
-    scissor.extent.height = static_cast<float>(output_visible_size.height());
+    scissor.extent.width =
+        static_cast<uint32_t>(output_resolution.width() * crop_rect.width());
+    scissor.extent.height =
+        static_cast<uint32_t>(output_resolution.height() * crop_rect.height());
     vkCmdSetScissor(record.handle(), 0, 1, &scissor);
 
     in_texture->TransitionImageLayout(command_buf.get(),
@@ -916,8 +989,8 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
     render_pass_info.framebuffer = out_texture->GetFramebuffers()[0];
     render_pass_info.renderArea.offset = {0, 0};
     render_pass_info.renderArea.extent = {
-        static_cast<uint32_t>(output_visible_size.width()),
-        static_cast<uint32_t>(output_visible_size.height())};
+        base::checked_cast<uint32_t>(output_resolution.width()),
+        base::checked_cast<uint32_t>(output_resolution.height())};
     VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     render_pass_info.clearValueCount = 1;
     render_pass_info.pClearValues = &clear_color;
@@ -932,14 +1005,19 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
                             pipeline_->GetPipelineLayout(), 0, 1,
                             descriptor_pool_->Get().data(), 0, nullptr);
 
-    int push_constants[4] = {
+    vkCmdPushConstants(record.handle(), pipeline_->GetPipelineLayout(),
+                       VK_SHADER_STAGE_VERTEX_BIT, 0,
+                       sizeof(vertex_push_constants), vertex_push_constants);
+
+    int dims_push_constants[4] = {
         input_coded_size.width(), input_coded_size.height(),
         input_visible_size.width(), input_visible_size.height()};
     vkCmdPushConstants(record.handle(), pipeline_->GetPipelineLayout(),
-                       VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(push_constants),
-                       push_constants);
+                       VK_SHADER_STAGE_FRAGMENT_BIT,
+                       sizeof(vertex_push_constants),
+                       sizeof(dims_push_constants), dims_push_constants);
 
-    vkCmdDraw(record.handle(), 6, 1, 0, 0);
+    vkCmdDraw(record.handle(), 4, 1, 0, 0);
 
     vkCmdEndRenderPass(record.handle());
 
@@ -951,8 +1029,10 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
   auto* fence_helper =
       vulkan_device_queue_->GetVulkanDeviceQueue()->GetFenceHelper();
 
-  command_buf->Submit(begin_semaphores.size(), begin_semaphores.data(),
-                      end_semaphores.size(), end_semaphores.data());
+  if (!command_buf->Submit(begin_semaphores.size(), begin_semaphores.data(),
+                           end_semaphores.size(), end_semaphores.data())) {
+    LOG(ERROR) << "Could not submit command buf!";
+  }
 
   fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
       std::move(command_buf));

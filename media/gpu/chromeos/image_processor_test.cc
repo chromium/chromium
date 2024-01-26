@@ -61,7 +61,10 @@
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
@@ -897,10 +900,13 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
         gpu::RepresentationAccessMode::kWrite, begin_semaphores,
         end_semaphores);
 
+    // TODO(b/251458823): Add tests for more interesting crop and rotation
+    // parameters.
     vulkan_image_processor->Process(
         input_access->GetVulkanImage(), coded_size, visible_rect.size(),
-        output_access->GetVulkanImage(), output_size,
-        output_visible_rect.size(), begin_semaphores, end_semaphores);
+        output_access->GetVulkanImage(), gfx::Rect(output_size),
+        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
+        end_semaphores);
   }
 
   // This implicitly waits for all semaphores to signal.
