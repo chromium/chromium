@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -62,7 +63,6 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -959,21 +959,21 @@ base::FilePath WallpaperControllerImpl::GetDefaultWallpaperPath(
   // Guest wallpaper, child wallpaper, customized default wallpaper, and regular
   // default wallpaper.
   if (user_type == user_manager::USER_TYPE_GUEST) {
-    const base::StringPiece switch_string =
-        use_small ? switches::kGuestWallpaperSmall
-                  : switches::kGuestWallpaperLarge;
+    const std::string_view switch_string = use_small
+                                               ? switches::kGuestWallpaperSmall
+                                               : switches::kGuestWallpaperLarge;
     return command_line->GetSwitchValuePath(switch_string);
   } else if (user_type == user_manager::USER_TYPE_CHILD) {
-    const base::StringPiece switch_string =
-        use_small ? switches::kChildWallpaperSmall
-                  : switches::kChildWallpaperLarge;
+    const std::string_view switch_string = use_small
+                                               ? switches::kChildWallpaperSmall
+                                               : switches::kChildWallpaperLarge;
     return command_line->GetSwitchValuePath(switch_string);
   } else if (!customized_default_small_path_.empty()) {
     DCHECK(!customized_default_large_path_.empty());
     return use_small ? customized_default_small_path_
                      : customized_default_large_path_;
   } else {
-    const base::StringPiece switch_string =
+    const std::string_view switch_string =
         use_small ? switches::kDefaultWallpaperSmall
                   : switches::kDefaultWallpaperLarge;
     return command_line->GetSwitchValuePath(switch_string);

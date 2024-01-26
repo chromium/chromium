@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -18,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
@@ -131,26 +131,26 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   // `location`, if one can be found. The result is synthesized from Prominent
   // and KMean colors.
   virtual std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
-      base::StringPiece location) const = 0;
+      std::string_view location) const = 0;
 
   // DEPRECATED: Will be removed soon.
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
 
-  virtual void CacheKMeanColor(base::StringPiece location,
+  virtual void CacheKMeanColor(std::string_view location,
                                SkColor k_mean_color) = 0;
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCachedKMeanColor(
-      const base::StringPiece location) const = 0;
+      const std::string_view location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
   // Cache the prominent color sampled with the 'Celebi' algorithm.
-  virtual void CacheCelebiColor(base::StringPiece location,
+  virtual void CacheCelebiColor(std::string_view location,
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCelebiColor(
-      const base::StringPiece location) const = 0;
+      const std::string_view location) const = 0;
   virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
 
   virtual bool SetDailyGooglePhotosWallpaperIdCache(

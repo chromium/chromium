@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -390,7 +391,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
-      base::StringPiece location) const override {
+      std::string_view location) const override {
     std::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
     std::optional<SkColor> cached_celebi_color = GetCelebiColor(location);
     if (cached_k_mean_color.has_value() && cached_celebi_color.has_value()) {
@@ -413,13 +414,13 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     wallpaper_colors_update->Remove(old_info.location);
   }
 
-  void CacheKMeanColor(base::StringPiece location,
+  void CacheKMeanColor(std::string_view location,
                        SkColor k_mean_color) override {
     CacheSingleColor(prefs::kWallpaperMeanColors, location, k_mean_color);
   }
 
   std::optional<SkColor> GetCachedKMeanColor(
-      const base::StringPiece location) const override {
+      const std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperMeanColors, location);
   }
 
@@ -427,12 +428,12 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     RemoveCachedColor(prefs::kWallpaperMeanColors, account_id);
   }
 
-  void CacheCelebiColor(base::StringPiece location,
+  void CacheCelebiColor(std::string_view location,
                         SkColor celebi_color) override {
     CacheSingleColor(prefs::kWallpaperCelebiColors, location, celebi_color);
   }
   std::optional<SkColor> GetCelebiColor(
-      const base::StringPiece location) const override {
+      const std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperCelebiColors, location);
   }
   void RemoveCelebiColor(const AccountId& account_id) override {
@@ -536,7 +537,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
  private:
   // Caches a single `color` in the dictionary for `pref_name`.
   void CacheSingleColor(const std::string& pref_name,
-                        base::StringPiece location,
+                        std::string_view location,
                         SkColor color) {
     // Blank keys are not allowed and will not be stored.
     if (location.empty()) {
@@ -548,9 +549,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   // Returns the cached color for `location` in `pref_name` if it can be found.
-  std::optional<SkColor> GetSingleCachedColor(
-      const std::string& pref_name,
-      base::StringPiece location) const {
+  std::optional<SkColor> GetSingleCachedColor(const std::string& pref_name,
+                                              std::string_view location) const {
     // We don't support blank keys.
     if (location.empty()) {
       return std::nullopt;
