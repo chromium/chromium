@@ -94,7 +94,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     // Attempts to completely fill `dest`, zeroing `dest` if the request can not
     // be fulfilled (due to timeout). If `is_mixing` is set, the SyncReader
     // might use a mixing-specific timeout.
-    virtual void Read(media::AudioBus* dest, bool is_mixing) = 0;
+    // Returns true if data was read, false if there was a timeout. This helps
+    // distinguish between `dest` being zero'ed due to timeout, and `dest` being
+    // successfully filled with zero'ed audio data.
+    virtual bool Read(media::AudioBus* dest, bool is_mixing) = 0;
 
     // Close this synchronous reader.
     virtual void Close() = 0;

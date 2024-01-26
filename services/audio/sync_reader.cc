@@ -188,7 +188,7 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   }
 }
 
-void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
+bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
   bool missed_callback = !WaitUntilDataIsReady(is_mixing);
   glitch_counter_->ReportMissedCallback(missed_callback, is_mixing);
   if (missed_callback) {
@@ -203,14 +203,14 @@ void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     dest->Zero();
     // Add IPC glitch to the accumulated glitch info.
     pending_glitch_info_ += read_timeout_glitch_;
-    return;
+    return false;
   }
 
   // Zeroed buffers may be discarded immediately when outputing compressed
   // bitstream.
   if (mute_audio_for_testing_ && !output_bus_->is_bitstream_format()) {
     dest->Zero();
-    return;
+    return true;
   }
 
   if (output_bus_->is_bitstream_format()) {
@@ -224,16 +224,17 @@ void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
         !base::IsValueInRangeForNumericType<int>(bitstream_frames)) {
       // Received data doesn't fit in the buffer, shouldn't happen.
       dest->Zero();
-      return;
+      return true;
     }
     output_bus_->SetBitstreamDataSize(data_size);
     output_bus_->SetBitstreamFrames(bitstream_frames);
     output_bus_->CopyTo(dest);
-    return;
+    return true;
   }
 
   // Copy and clip data coming across the shared memory since it's untrusted.
   output_bus_->CopyAndClipTo(dest);
+  return true;
 }
 
 void SyncReader::Close() {
