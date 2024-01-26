@@ -114,7 +114,9 @@ class HttpStreamFactory::Job
         Job* job,
         const ConnectionAttempts& attempts) = 0;
 
-    // Invoked when |job| finishes initiating a connection.
+    // Invoked when |job| finishes initiating a connection. This may occur
+    // before the handshake is complete, and provides the delegate an
+    // early chance to handle any errors.
     virtual void OnConnectionInitialized(Job* job, int rv) = 0;
 
     // Return false if |job| can advance to the next state. Otherwise, |job|

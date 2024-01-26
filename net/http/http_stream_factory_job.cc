@@ -967,6 +967,9 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     // delay the main job.
     delegate_->MaybeSetWaitTimeForMainJob(
         quic_request_.GetTimeDelayForWaitingJob());
+    // Set up to get notified of either host resolution completion or session
+    // creation, in order to call the delegate's `OnConnectionInitialized`
+    // callback.
     expect_on_quic_host_resolution_ = quic_request_.WaitForHostResolution(
         base::BindOnce(&Job::OnQuicHostResolution, base::Unretained(this)));
     expect_on_quic_session_created_ = quic_request_.WaitForQuicSessionCreation(
@@ -975,18 +978,23 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   return rv;
 }
 
+void HttpStreamFactory::Job::OnQuicHostResolution(int result) {
+  DCHECK(expect_on_quic_host_resolution_);
+  expect_on_quic_host_resolution_ = false;
+  // If no `OnQuicSessionCreated` call is expected, then consider the
+  // connection "initialized" and inform the delegate. Note that
+  // `OnQuicHostResolution` is actually called somewhat _after_ host resolution
+  // is complete -- the `Job` has already run to the point where it can make no
+  // further progress.
+  if (!expect_on_quic_session_created_) {
+    delegate_->OnConnectionInitialized(this, result);
+  }
+}
+
 void HttpStreamFactory::Job::OnQuicSessionCreated(int result) {
   DCHECK(expect_on_quic_session_created_);
   expect_on_quic_session_created_ = false;
   delegate_->OnConnectionInitialized(this, result);
-}
-
-void HttpStreamFactory::Job::OnQuicHostResolution(int result) {
-  DCHECK(expect_on_quic_host_resolution_);
-  expect_on_quic_host_resolution_ = false;
-  if (!expect_on_quic_session_created_) {
-    delegate_->OnConnectionInitialized(this, result);
-  }
 }
 
 void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {
