@@ -280,7 +280,13 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
+// TODO(crbug.com/1454288): Disable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Sources_Enclosure DISABLED_Sources_Enclosure
+#else
+#define MAYBE_Sources_Enclosure Sources_Enclosure
+#endif
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_Sources_Enclosure) {
   RunWPT("sources-enclosure.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
          /*num_layout_shifts=*/2);
 }
