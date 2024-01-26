@@ -1415,6 +1415,16 @@ void ArcNetHostImpl::NotifySocketConnectionEvent(
   ash::PatchPanelClient::Get()->NotifySocketConnectionEvent(*notification);
 }
 
-void ArcNetHostImpl::NotifyVPNSocketConnectionEvent(
-    mojom::SocketConnectionEventPtr msg) {}
+void ArcNetHostImpl::NotifyARCVPNSocketConnectionEvent(
+    mojom::SocketConnectionEventPtr msg) {
+  auto notification = net_utils::TranslateSocketConnectionEvent(msg);
+  if (!notification) {
+    NET_LOG(ERROR) << "Translate socket connection event failed, not sending "
+                      "notification for ARC VPN socket.";
+    return;
+  }
+  ash::PatchPanelClient::Get()->NotifyARCVPNSocketConnectionEvent(
+      *notification);
+}
+
 }  // namespace arc

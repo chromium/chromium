@@ -212,7 +212,6 @@ patchpanel::SocketConnectionEvent::QosCategory TranslateQosCategory(
       return patchpanel::SocketConnectionEvent::QosCategory::
           SocketConnectionEvent_QosCategory_MULTIMEDIA_CONFERENCING;
     case arc::mojom::QosCategory::kUnknown:
-      NET_LOG(ERROR) << "Unknown QoS category";
       return patchpanel::SocketConnectionEvent::QosCategory::
           SocketConnectionEvent_QosCategory_UNKNOWN_CATEGORY;
   }
@@ -670,15 +669,8 @@ TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom) {
     return nullptr;
   }
 
-  if (const auto category = TranslateQosCategory(mojom->qos_category);
-      category != patchpanel::SocketConnectionEvent::QosCategory::
-                      SocketConnectionEvent_QosCategory_UNKNOWN_CATEGORY) {
+  if (const auto category = TranslateQosCategory(mojom->qos_category)) {
     msg->set_category(category);
-  } else {
-    NET_LOG(ERROR) << "QoS category is unknown, translate socket connection "
-                      "event failed. QoS category is: "
-                   << mojom->qos_category;
-    return nullptr;
   }
 
   return msg;

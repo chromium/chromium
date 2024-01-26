@@ -877,7 +877,8 @@ interface NetHost {
   [MinVersion=34] NotifySocketConnectionEvent@23(SocketConnectionEvent msg);
 
   // Sends a notification to Chrome about a socket connection event of ARC VPN.
-  [MinVersion=35] NotifyVPNSocketConnectionEvent@24(SocketConnectionEvent msg);
+  [MinVersion=35] NotifyARCVPNSocketConnectionEvent@24(
+      SocketConnectionEvent msg);
 };
 
 // Next Method ID: 12

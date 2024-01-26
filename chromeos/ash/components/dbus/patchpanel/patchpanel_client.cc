@@ -115,6 +115,27 @@ class PatchPanelClientImpl : public PatchPanelClient {
                                   base::DoNothing());
   }
 
+  void NotifyARCVPNSocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) override {
+    dbus::MethodCall method_call(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNotifyARCVPNSocketConnectionEventMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::NotifyARCVPNSocketConnectionEventRequest request;
+    *request.mutable_msg() = msg;
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to serialize NotifyARCVPNSocketConnectionEvent "
+                    "request proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override {
     dbus::MethodCall method_call(patchpanel::kPatchPanelInterface,

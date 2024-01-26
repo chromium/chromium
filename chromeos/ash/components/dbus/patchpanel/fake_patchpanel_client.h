@@ -30,6 +30,8 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
   void NotifySocketConnectionEvent(
       const patchpanel::SocketConnectionEvent& msg) override;
+  void NotifyARCVPNSocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) override;
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override;
 
