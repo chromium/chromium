@@ -213,6 +213,21 @@ It has minimal use of unsafe and so I have paged though it all with \"::\"
 highlighted and paid attention to which imported functions are being called.
 """
 
+[[audits.libc]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "ub-risk-4"
+version = "0.2.152"
+notes = """
+Discussions related to the `unsafe` audit can be found in
+https://crrev.com/c/5178771.  (This audit covered multiple crates that have
+been rolled when processing a backlog of crate updates - `libc` was one of
+them.)
+
+The audit found an unsound usage of `unsafe` when the `extra_traits` feature of
+the `libc` crate is enabled.  See https://github.com/rust-lang/libc/issues/3560
+for more details.
+"""
+
 [[audits.minimal-lexical]]
 who = "danakj@chromium.org"
 criteria = "ub-risk-3"
