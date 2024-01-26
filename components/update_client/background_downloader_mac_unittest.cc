@@ -176,7 +176,8 @@ class BackgroundDownloaderTest : public testing::Test {
   EmbeddedTestServerHandle test_server_handle_;
 };
 
-TEST_F(BackgroundDownloaderTest, SimpleDownload) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderTest, DISABLED_SimpleDownload) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
         std::make_unique<BasicHttpResponse>();
@@ -203,7 +204,8 @@ TEST_F(BackgroundDownloaderTest, SimpleDownload) {
   run_loop.Run();
 }
 
-TEST_F(BackgroundDownloaderTest, DownloadDiscoveredInCache) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderTest, DISABLED_DownloadDiscoveredInCache) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     EXPECT_TRUE(false) << "The download server was expected to not be reached.";
     return base::WrapUnique<HttpResponse>(nullptr);
@@ -257,8 +259,9 @@ class InterruptedHttpResponse : public HttpResponse {
   base::RepeatingClosure on_reply_;
 };
 
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
 // Tests that the download can resume after the server unexpectedly disconnects.
-TEST_F(BackgroundDownloaderTest, ServerHangup) {
+TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
   const std::string data = GetLargeDownloadData();
   // If the request contains a range request, serve the content as requested.
   // Otherwise, send the first half of the data before hanging up.
@@ -300,7 +303,8 @@ TEST_F(BackgroundDownloaderTest, ServerHangup) {
   run_loop.Run();
 }
 
-TEST_F(BackgroundDownloaderTest, DuplicateDownload) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderTest, DISABLED_DuplicateDownload) {
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
   base::RunLoop second_download_run_loop;
@@ -340,9 +344,10 @@ TEST_F(BackgroundDownloaderTest, DuplicateDownload) {
   first_download_run_loop.Run();
 }
 
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
 // Tests that downloads can complete when using multiple instances of
 // BackgroundDownloader.
-TEST_F(BackgroundDownloaderTest, ConcurrentDownloaders) {
+TEST_F(BackgroundDownloaderTest, DISABLED_ConcurrentDownloaders) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
         std::make_unique<BasicHttpResponse>();
@@ -383,7 +388,8 @@ TEST_F(BackgroundDownloaderTest, ConcurrentDownloaders) {
   run_loop.Run();
 }
 
-TEST_F(BackgroundDownloaderTest, MaxDownloads) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderTest, DISABLED_MaxDownloads) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest& request) {
     return base::WrapUnique<HttpResponse>(new HungResponse());
   });
@@ -448,7 +454,8 @@ class BackgroundDownloaderPeriodicTasksTest : public BackgroundDownloaderTest {
   }
 };
 
-TEST_F(BackgroundDownloaderPeriodicTasksTest, CleansStaleDownloads) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderPeriodicTasksTest, DISABLED_CleansStaleDownloads) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
         std::make_unique<BasicHttpResponse>();
@@ -479,7 +486,9 @@ TEST_F(BackgroundDownloaderPeriodicTasksTest, CleansStaleDownloads) {
   EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file2")));
 }
 
-TEST_F(BackgroundDownloaderPeriodicTasksTest, CancelsTasksWithNoProgress) {
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
+TEST_F(BackgroundDownloaderPeriodicTasksTest,
+       DISABLED_CancelsTasksWithNoProgress) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     return base::WrapUnique<HttpResponse>(new HungResponse());
   });
@@ -544,8 +553,9 @@ class BackgroundDownloaderCrashingClientTest : public testing::Test {
   EmbeddedTestServerHandle test_server_handle_;
 };
 
+// TODO(https://crbug.com/1499017): Disabled due to excessive flakiness.
 // Test that the download can be recovered after the client process crashes.
-TEST_F(BackgroundDownloaderCrashingClientTest, ClientCrash) {
+TEST_F(BackgroundDownloaderCrashingClientTest, DISABLED_ClientCrash) {
   const std::string data = GetLargeDownloadData();
   base::Process test_child_process;
   // If the request contains a range request, serve the content as requested.
