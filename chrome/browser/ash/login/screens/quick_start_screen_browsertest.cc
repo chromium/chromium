@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,7 +14,9 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
@@ -789,6 +792,32 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, HandleEmptyAccounts) {
 
   // Returns to the Gaia screen
   OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+}
+
+class QuickStartLoginScreenTest : public QuickStartBrowserTest {
+ public:
+  QuickStartLoginScreenTest() : QuickStartBrowserTest() {
+    login_manager_mixin_.AppendRegularUsers(1);
+  }
+
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(QuickStartLoginScreenTest, EntryPointNotVisible) {
+  SetupNetwork(/*connected=*/true);
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath({"user-creation", "selfButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  base::RunLoop().RunUntilIdle();
+  test::OobeJS().ExpectHiddenPath(kQuickStartButtonGaia);
 }
 
 }  // namespace ash

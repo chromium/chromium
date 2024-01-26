@@ -2011,9 +2011,14 @@ BASE_FEATURE(kOobeSkipAssistant,
              "OobeSkipAssistant",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the Oobe quick start flow.
+// Enables or disables the OOBE QuickStart flow.
 BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the OOBE QuickStart flow on the login screen.
+BASE_FEATURE(kOobeQuickStartOnLoginScreen,
+             "OobeQuickStartOnLoginScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables search customizable shortcuts in launcher.
@@ -3986,6 +3991,11 @@ bool IsOobeLazyLoadingEnabled() {
 
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
+}
+
+bool IsOobeQuickStartOnLoginScreenEnabled() {
+  return IsOobeQuickStartEnabled() &&
+         base::FeatureList::IsEnabled(kOobeQuickStartOnLoginScreen);
 }
 
 bool IsOobeTouchpadScrollEnabled() {
