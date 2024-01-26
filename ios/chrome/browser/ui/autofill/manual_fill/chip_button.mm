@@ -17,12 +17,17 @@ static const CGFloat kChipVerticalPadding = 14;
 static const CGFloat kChipHorizontalPadding = 14;
 // Vertical margins for the button. How much bigger the tap target is.
 static const CGFloat kChipVerticalMargin = 4;
+// Font size for the button's title.
+static const CGFloat kFontSize = 14;
 }  // namespace
 
 @interface ChipButton ()
 
 // Gray rounded background view which gives the aspect of a chip.
 @property(strong, nonatomic) UIView* backgroundView;
+
+// Attributes of the button's title.
+@property(strong, nonatomic) NSDictionary* titleAttributes;
 
 @end
 
@@ -78,6 +83,38 @@ static const CGFloat kChipVerticalMargin = 4;
   self.configuration = buttonConfiguration;
 }
 
+#pragma mark - Getters
+
+- (NSDictionary*)titleAttributes {
+  // `titleAttributes` shouldn't be accessed if the Keyboard Accessory Upgrade
+  // is disabled.
+  CHECK(IsKeyboardAccessoryUpgradeEnabled());
+
+  if (_titleAttributes) {
+    return _titleAttributes;
+  }
+
+  UIFont* font = [UIFont systemFontOfSize:kFontSize weight:UIFontWeightMedium];
+  _titleAttributes = @{NSFontAttributeName : font};
+
+  return _titleAttributes;
+}
+
+#pragma mark - Setters
+
+- (void)setTitle:(NSString*)title forState:(UIControlState)state {
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    UIButtonConfiguration* buttonConfiguration = self.configuration;
+    NSAttributedString* attributedTitle =
+        [[NSAttributedString alloc] initWithString:title
+                                        attributes:self.titleAttributes];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    self.configuration = buttonConfiguration;
+  } else {
+    [super setTitle:title forState:state];
+  }
+}
+
 #pragma mark - Private
 
 - (NSDirectionalEdgeInsets)chipNSDirectionalEdgeInsets {
@@ -106,18 +143,24 @@ static const CGFloat kChipVerticalMargin = 4;
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
-             forState:UIControlStateNormal];
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
 
   [self updateTitleLabelFont];
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kTextPrimaryColor];
   self.configuration = buttonConfiguration;
 }
 
 - (void)updateTitleLabelFont {
+  // With the Keyboard Accessory Upgrade feature, the title's font is applied
+  // through the button's `attributedTitle`.
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   UIFontDescriptor* boldFontDescriptor = [font.fontDescriptor
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
