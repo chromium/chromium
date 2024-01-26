@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Wymagane hasło</translation>
 <translation id="1156303062776767266">Przeglądasz plik lokalny lub udostępniony</translation>
 <translation id="1158211211994409885">Serwer <ph name="HOST_NAME" /> nieoczekiwanie zakończył połączenie.</translation>
-<translation id="115926840831309955">Sprawdź kod CVC i spróbuj ponownie lub popraw datę ważności</translation>
 <translation id="1161325031994447685">Ponownie połącz się z Wi-Fi</translation>
 <translation id="11635448457105324">Przycisk Zarządzaj adresami; aktywuj, aby dodawać adresy i zarządzać nimi w ustawieniach Chrome</translation>
 <translation id="1165039591588034296">Błąd</translation>
@@ -2036,7 +2035,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4989809363548539747">Ta wtyczka nie jest obsługiwana</translation>
 <translation id="4990241977441916452">Koperta A2</translation>
 <translation id="4992066212339426712">Wyłącz wyciszenie</translation>
-<translation id="4995216769782533993">Aby udostępnić tej stronie dane karty, potwierdź kod zabezpieczający</translation>
 <translation id="4995474875135717171">Zmodyfikowano:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać wyszukiwarką w witrynie i wyszukiwarką domyślną, naciśnij Tab, a potem Enter</translation>
 <translation id="4998950033665438990">Jednostronny</translation>

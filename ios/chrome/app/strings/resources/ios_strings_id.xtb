@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Alihkan ke Jendela yang Terbuka</translation>
+<translation id="1108938384783527433">Sinkronisasi histori</translation>
 <translation id="1112015203684611006">Gagal mencetak.</translation>
 <translation id="1125564390852150847">Buat tab baru.</translation>
 <translation id="1126809382673880764">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Anda akan tetap mendapatkan perlindungan Safe Browsing, jika tersedia, di layanan Google lainnya, seperti Gmail dan Penelusuran.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Lacak Otomatis Semua Paket yang Terdeteksi</translation>
 <translation id="1894023287452300670">Pantau harga di sini</translation>
 <translation id="189531189292803889">iPad Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
+<translation id="1904580727789512086">URL yang Anda buka disimpan ke Akun Google Anda</translation>
 <translation id="1911619930368729126">Upload ke Google Drive</translation>
 <translation id="1923342640370224680">Sejam Terakhir</translation>
 <translation id="1930989359703290198">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5016420433031926653">Kirim ke <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ingatkan Saya Nanti</translation>
+<translation id="5024511550058813796">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
 <translation id="5038113048373546701">Dapatkan notifikasi berita, olahraga, dan lainnya berdasarkan minat Anda</translation>
 <translation id="5039804452771397117">Izinkan</translation>
@@ -1148,6 +1151,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6973630695168034713">Folder</translation>
+<translation id="69739764870135975">Jika Google juga merupakan mesin telusur default Anda, Anda akan melihat saran yang lebih baik dan relevan secara kontekstual</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>

@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">アプリケーションのバージョン</translation>
 <translation id="1428770807407000502">同期を OFF にしますか？</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1435593198351412143">PDF を自動的に開く</translation>
 <translation id="1436784010935106834">削除しました</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> で実行中</translation>
 <translation id="1448440926884431741">ブックマークでトラッキングしている商品を整理できます</translation>
@@ -342,6 +343,7 @@
 <translation id="2894821468041866720">ブラウザやデバイスの動作が大幅に遅くなることはありません。</translation>
 <translation id="2900528713135656174">予定を作成</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> の候補を表示しています</translation>
+<translation id="2904300462646366554">ダウンロードした PDF は、デバイス上のいずれかの PDF ビューアで自動的に開きます</translation>
 <translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2908243544703713905">未読の記事があります</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
@@ -609,7 +611,7 @@
 <translation id="4355272626458588338">重要なページは、ブックマークに追加しておくとすぐにアクセスできます</translation>
 <translation id="4369735607080757018">広告効果を測定するため、測定の対象となる広告が表示された時刻など、限定的な種類のデータが関係するウェブサイト間で共有されます</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4380055775103003110">この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
 <translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ダウンロードしています…</translation>
@@ -897,9 +899,11 @@
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="5814749351757353073">お気に入りのサイトの最新情報をチェックしよう</translation>
 <translation id="5822875253699806474">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します</translation>
+<translation id="5829586821381540080">「<ph name="FOLDER_NAME" />」に保存しました</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">リンクを共有</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> で PDF を開きますか？</translation>
 <translation id="5853623416121554550">一時停止中</translation>
 <translation id="5855546874025048181">絞り込み: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">エラーが発生しました。価格のトラッキングを更新できませんでした。</translation>
@@ -992,7 +996,7 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}}</translation>
 <translation id="6344622098450209924">トラッキング保護</translation>
 <translation id="6345878117466430440">既読にする</translation>
-<translation id="6356893102071098867">正しいアカウントを選択していることを確認する</translation>
+<translation id="6356893102071098867">正しいアカウントを選択していることを確認してください</translation>
 <translation id="6357653805084533597">この QR コードが表示されているデバイスに、このスマートフォンを使用してログインできます。</translation>
 <translation id="6363990818884053551">同期を開始するには、本人確認を行ってください</translation>
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
@@ -1123,7 +1127,7 @@
 <translation id="6908998565271542516">ウェブサイトを承認するかどうかを決定するオプション（最大の高さで表示）</translation>
 <translation id="6909589135458168665">ページをプリロードする</translation>
 <translation id="6910211073230771657">削除済み</translation>
-<translation id="6918398787259831832">この問題がまだ解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細をご覧ください<ph name="END_LINK" />。</translation>
+<translation id="6918398787259831832">問題が解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="6929224077895306814">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
@@ -1161,7 +1165,7 @@
 <translation id="7138678301420049075">その他</translation>
 <translation id="7140829094791862589">手動で並べ替え</translation>
 <translation id="7146622961999026732">以下のサイトやアプリは重要な可能性があります。</translation>
-<translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細をご覧ください<ph name="END_LINK" />。</translation>
+<translation id="7148400116894863598">詳細は <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> としてログインしています。設定を開きます。</translation>
 <translation id="7173114856073700355">設定を開く</translation>
@@ -1185,7 +1189,7 @@
 <translation id="7274013316676448362">ブロック中のサイト</translation>
 <translation id="7276100255011548441">Chrome では、4 週間以上経過したトピックは自動削除されます。閲覧を続けていると、トピックがリストに再度表示される場合もあります。ウェブサイトと共有したくないトピックはブロックできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="7284878711178835966">入力を始めると、アドレスバーや検索ボックスの内容が既定の検索エンジンに送信されます</translation>
-<translation id="7289303553784750393">オンラインであるにもかかわらず、この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="7289303553784750393">オンラインであるにもかかわらず問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="7290209999329137901">名前の変更はできません</translation>
 <translation id="7291910923717764901">このページの画像の説明が追加されました</translation>
 <translation id="7293429513719260019">言語を選択</translation>
@@ -1193,7 +1197,7 @@
 <translation id="7304072650267745798">お使いの Android デバイスにも、同様の設定が含まれていることがあります。Chrome と Android デバイスでこの設定が有効になっている場合、ユーザーが利用するウェブサイトやアプリ間で広告の効果が測定される可能性があります。</translation>
 <translation id="7304873321153398381">オフラインです。Chrome でパスワードを確認できません。</translation>
 <translation id="7313188324932846546">タップして同期を設定する</translation>
-<translation id="7324354302972299151">「トラッキング拒否」リクエストを送信する</translation>
+<translation id="7324354302972299151">「Do Not Track」リクエストを送信する</translation>
 <translation id="7332075081379534664">ログインが完了しました</translation>
 <translation id="7333232495927792353">同期すると、最も関連性の高いコンテンツを表示できます</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
@@ -1382,6 +1386,7 @@
 <translation id="8127542551745560481">ホームページを編集</translation>
 <translation id="8130309322784422030">保存されているログイン情報が最新でない可能性があります。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
+<translation id="8135406045838672858">ダウンロードした PDF を <ph name="APP_NAME" /> で自動的に開きます</translation>
 <translation id="8137562778192957619">このパスワードを覚えておく必要はありません。パスワードは Google パスワード マネージャーに保存されます。</translation>
 <translation id="8186512483418048923">残り <ph name="FILES" /> ファイル</translation>
 <translation id="8190358571722158785">残り 1 日</translation>

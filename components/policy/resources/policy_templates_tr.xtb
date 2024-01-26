@@ -3264,15 +3264,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3625900437628963632">Bu politika öğesinde ayarlanan Kerberos şifre değerinin hatırlanıp hatırlanmayacağı. Ayarlanmazsa veya doğru değerine ayarlanırsa şifre hatırlanır. Yanlış değerine ayarlanırsa şifre hatırlanmaz. Bu hesap için şifre alanı belirtilmemişse yoksayılır. Bu alan, ChromeOS 116 sürümünden itibaren desteklenir.</translation>
 <translation id="3627678165642179114">Yazım denetimi Web hizmetini etkinleştir veya devre dışı bırak</translation>
 <translation id="3628480121685794414">Tek yönlü yazdırmayı etkinleştir</translation>
-<translation id="3634117682099473917">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonu. Birden fazla DNS-over-HTTPS çözümleyicisi belirlemek için karşılık gelen URI şablonlarını boşlukla ayırın. Bu politika, <ph name="DOH_TEMPLATES_POLICY_NAME" /> politikasına çok benzer ve belirtilmesi halinde onu geçersiz kılar. Buna karşılık, kimlik bilgilerini belirtmeyi destekler.
-
-<ph name="DOH_MODE_POLICY_NAME" /> politikası, <ph name="SECURE_DNS_MODE_SECURE" /> değerine ayarlanırsa bu politika veya <ph name="DOH_TEMPLATES_POLICY_NAME" /> ayarlanmalı ve boş bırakılmamalıdır.
-
-<ph name="DOH_MODE_POLICY_NAME" />, <ph name="SECURE_DNS_MODE_AUTOMATIC" /> olarak ayarlandıysa ve bu politika da ayarlanırsa belirtilen URI şablonları kullanılır. Bu politika ayarlanmadan bırakılırsa kullanıcının geçerli DNS çözümleyicisini aynı sağlayıcı tarafından işletilen bir DoH çözümleyiciye yükseltmek için koda gömülmüş eşleşmeler kullanılır.
-
-URI şablonu <ph name="HTTP_VARIABLE_DNS" /> değişkeni içeriyorsa çözümleyiciye gelen istekler <ph name="HTTP_METHOD_GET" /> yöntemini kullanır; aksi takdirde istekler <ph name="HTTP_METHOD_POST" /> yöntemini kullanır.
-
-114 ve sonraki sürümlerde bu politika ayarlanmışsa <ph name="DOH_SALT_POLICY_NAME" /> isteğe bağlıdır.</translation>
 <translation id="3634125384445314047">Telefonda çekilen son fotoğraflara ve videolara Telefon Merkezi aracılığıyla erişime izin ver.</translation>
 <translation id="3637063789824963261">Politika, Etkin değerine ayarlanırsa kayıtlı cihazlar, cihaz çalışma zamanı sayaçlarını bildirir (yalnızca Intel vPro 14 ve sonraki sürümler).
 

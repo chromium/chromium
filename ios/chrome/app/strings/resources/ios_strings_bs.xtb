@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Objava na Facebooku je završena.</translation>
 <translation id="1103523840287552314">Uvijek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Prebaci na otvoreni prozor</translation>
+<translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1112015203684611006">Štampanje nije uspjelo.</translation>
 <translation id="1125564390852150847">Kreiranje nove kartice.</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. I dalje ćete dobijati zaštitu Sigurno pregledanje, tamo gdje je dostupna, na drugim Googleovim uslugama kao što su Gmail i Pretraživanje.</translation>
@@ -171,6 +172,7 @@
 <translation id="1891199774460536658">Automatski prati sve otkrivene pakete</translation>
 <translation id="1894023287452300670">Pratite cijenu ovdje</translation>
 <translation id="189531189292803889">Vaš iPad je nedavno vraćen u prethodno stanje, zbog čega vam je možda promijenjen zadani preglednik.</translation>
+<translation id="1904580727789512086">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="1911619930368729126">Otpremi na Google disk</translation>
 <translation id="1923342640370224680">Posljednji sat</translation>
 <translation id="1930989359703290198">Vaša organizacija vam dozvoljava da se prijavite samo s određenim računima. Računi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -764,6 +766,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5016420433031926653">Pošaljite primaocu <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Podsjeti me kasnije</translation>
+<translation id="5024511550058813796">Na svim vašim sinhroniziranim uređajima ćete imati historiju, pa možete nastaviti s onim što ste radili</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
 <translation id="5038113048373546701">Primajte obavještenja za vijesti, sportove i drugo na osnovu svojih interesovanja</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
@@ -1156,6 +1159,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6973630695168034713">Folderi</translation>
+<translation id="69739764870135975">Ako je Google vaš zadani pretraživač, vidjet ćete bolje, kontekstualno relevantne prijedloge</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Također možete dodirnuti i zadržati traku za adresu da promijenite položaj.</translation>
 <translation id="6988572888918530647">Upravljanje Google računom</translation>

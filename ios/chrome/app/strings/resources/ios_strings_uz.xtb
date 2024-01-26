@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
+<translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
 <translation id="1112015203684611006">Chop etilmadi.</translation>
 <translation id="1125564390852150847">Yangi sahifa ochish</translation>
 <translation id="1126809382673880764">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Gmail va Qidiruv kabi Google xizmatlarida Saytlarni xavfsiz kezish himoyasi ostida boʻlasiz.</translation>
@@ -171,6 +172,7 @@
 <translation id="1891199774460536658">Aniqlangan paketlar avtomatik kuzatilsin</translation>
 <translation id="1894023287452300670">Narxni shu yerdan kuzating</translation>
 <translation id="189531189292803889">iPad yaqinda asliga qaytarilgani uchun undagi asosiy brauzer oʻzgargan boʻlishi mumkin.</translation>
+<translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
 <translation id="1923342640370224680">So‘nggi soat</translation>
 <translation id="1930989359703290198">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi. Ruxsat etilmagan hisoblar yashirilgan. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -764,6 +766,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5016420433031926653">Kimga: <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Keyinroq eslatilsin</translation>
+<translation id="5024511550058813796">Brauzer tarixingiz barcha qurilmalaringizda sinxronlanadi va ishni qolgan joyingizdan davom ettira olasiz</translation>
 <translation id="5037676449506322593">Hammasini belgilash</translation>
 <translation id="5038113048373546701">Qiziqishingizga asoslangan yangiliklar, sport va boshqalar haqida bildirishnoma oling</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
@@ -1156,6 +1159,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Jildlar</translation>
+<translation id="69739764870135975">Agar Google birlamchi qidiruv tizmingiz boʻlsa, qidiruvda yanada yaxshi va yanada mos takliflar olasiz</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Joylashuvini oʻzgartirish uchun manzillar qatorini bosib turing.</translation>
 <translation id="6988572888918530647">Google hisobingizni boshqaring</translation>

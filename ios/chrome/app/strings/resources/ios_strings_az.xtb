@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Facebook paylaşımı tamamlandı.</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="110724200315609752">Açıq Pəncərəyə keçirin</translation>
+<translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1112015203684611006">Çap alınmadı.</translation>
 <translation id="1125564390852150847">Yeni panel yaradın.</translation>
 <translation id="1126809382673880764">Sizi təhlükəli veb sayt, endirmə və artırmalardan qorumur. Hələ də Gmail və Axtarış kimi digər Google xidmətlərində mümkün olduğu qədər Təhlükəsiz Baxış qoruması əldə edəcəksiniz.</translation>
@@ -171,6 +172,7 @@
 <translation id="1891199774460536658">Aşkarlanmış bağlamaları avtomatik izləyin</translation>
 <translation id="1894023287452300670">Qiyməti burada izləyin</translation>
 <translation id="189531189292803889">iPad bu yaxınlarda bərpa edildiyi üçün defolt brauzer dəyişmiş ola bilər.</translation>
+<translation id="1904580727789512086">Ziyarət etdiyiniz keçidlər Google Hesabınızda saxlanılır</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
 <translation id="1923342640370224680">Son Saat</translation>
 <translation id="1930989359703290198">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -764,6 +766,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ünvanına göndərin</translation>
 <translation id="5017828934289857214">Sonra xatırladın</translation>
+<translation id="5024511550058813796">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
 <translation id="5037676449506322593">Hamısını seçin</translation>
 <translation id="5038113048373546701">Maraqlarınıza əsasən xəbərlər, idman və s. barədə bildiriş alın</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
@@ -1156,6 +1159,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
+<translation id="69739764870135975">Google həm də defolt axtarış sisteminizdirsə daha yaxşı, kontekstə uyğun təkliflər görəcəksiniz</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Mövqeni dəyişmək üçün ünvan panelinə toxunub saxlaya bilərsiniz.</translation>
 <translation id="6988572888918530647">Google Hesabını İdarə Edin</translation>

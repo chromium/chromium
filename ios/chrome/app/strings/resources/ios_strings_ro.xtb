@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Comută la fereastra deschisă</translation>
+<translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1112015203684611006">Printarea nu a reușit.</translation>
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Urmărește automat toate coletele detectate</translation>
 <translation id="1894023287452300670">Urmărește prețul aici</translation>
 <translation id="189531189292803889">Dispozitivul iPad a fost restabilit recent, acțiune care ar fi putut schimba browserul prestabilit.</translation>
+<translation id="1904580727789512086">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1930989359703290198">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5016420433031926653">Trimite la <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Amintește-mi mai târziu</translation>
+<translation id="5024511550058813796">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
 <translation id="5038113048373546701">Primește notificări pentru știri, sport și altele pe baza intereselor tale</translation>
 <translation id="5039804452771397117">Permite</translation>
@@ -1148,6 +1151,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Dosare</translation>
+<translation id="69739764870135975">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Poți și să atingi lung bara de adrese pentru a schimba poziția.</translation>
 <translation id="6988572888918530647">Gestionează-ți Contul Google</translation>

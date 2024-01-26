@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Şifre gerekiyor</translation>
 <translation id="1156303062776767266">Yerel veya paylaşılan bir dosyayı görüntülüyorsunuz</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> bağlantıyı beklenmedik şekilde kapattı.</translation>
-<translation id="115926840831309955">CVC'nizi kontrol edip tekrar deneyin veya son kullanma tarihini güncelleyin</translation>
 <translation id="1161325031994447685">Kablosuz ağa yeniden bağlanma</translation>
 <translation id="11635448457105324">Adresleri yönet düğmesi, Chrome ayarlarında adres ekleyip yönetmek için etkinleştirin</translation>
 <translation id="1165039591588034296">Hata</translation>
@@ -2036,7 +2035,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4989809363548539747">Bu eklenti desteklenmiyor</translation>
 <translation id="4990241977441916452">Zarf A2</translation>
 <translation id="4992066212339426712">Sesi aç</translation>
-<translation id="4995216769782533993">Kart ayrıntılarınızı bu siteyle paylaşmak için güvenlik kodunu doğrulayın</translation>
 <translation id="4995474875135717171">Değiştirilme tarihi:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Site aramayı ve varsayılan arama motorunuzu yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="4998950033665438990">Tek Yüz</translation>

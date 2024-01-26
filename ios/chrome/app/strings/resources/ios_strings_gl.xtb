@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
+<translation id="1108938384783527433">Sincronización do historial</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Facer automaticamente o seguimento de todos os paquetes detectados</translation>
 <translation id="1894023287452300670">Fai un seguimento do prezo aquí</translation>
 <translation id="189531189292803889">O teu iPad restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
+<translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1930989359703290198">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
+<translation id="5024511550058813796">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038113048373546701">Recibe notificacións de noticias, deportes e moito máis en función dos teus intereses</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -1148,6 +1151,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Cartafoles</translation>
+<translation id="69739764870135975">Se o teu motor de busca predeterminado tamén é Google, recibirás mellores suxestións que serán relevantes segundo o contexto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Tamén podes manter premida a barra de enderezos para cambiar a posición.</translation>
 <translation id="6988572888918530647">Xestionar a túa Conta de Google</translation>

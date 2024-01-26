@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Facebook-færsla birt.</translation>
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Skipta yfir í opinn glugga</translation>
+<translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1112015203684611006">Prentun tókst ekki.</translation>
 <translation id="1125564390852150847">Búa til nýjan flipa.</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Rekja alla pakka sem greinast sjálfkrafa</translation>
 <translation id="1894023287452300670">Vakta verð hér</translation>
 <translation id="189531189292803889">iPad var endurheimtur nýlega sem gæti hafa breytt sjálfgefnum vafra.</translation>
+<translation id="1904580727789512086">Vefslóðirnar sem þú opnar eru vistaðar á Google reikningnum þínum</translation>
 <translation id="1911619930368729126">Hlaða inn á Google Drive</translation>
 <translation id="1923342640370224680">Undanfarin klukkustund</translation>
 <translation id="1930989359703290198">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5016420433031926653">Senda til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
+<translation id="5024511550058813796">Ferilinn þinn verður í öllum samstilltum tækjum svo að þú getir haldið áfram þar sem frá var horfið</translation>
 <translation id="5037676449506322593">Velja allt</translation>
 <translation id="5038113048373546701">Fáðu tilkynningar um fréttir, íþróttir og fleira byggt á áhugasviðunum þínum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
@@ -1148,6 +1151,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6973630695168034713">Möppur</translation>
+<translation id="69739764870135975">Ef þú notar Google einnig sem sjálfgefna leitarvél færðu betri tillögur með viðeigandi samhengi</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Þú getur einnig haldið fingri á veffangastikunni til að breyta staðsetningu hennar.</translation>
 <translation id="6988572888918530647">Stjórnaðu Google reikningnum</translation>

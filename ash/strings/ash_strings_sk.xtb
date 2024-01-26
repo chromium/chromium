@@ -1500,6 +1500,7 @@ Nová inštalácia</translation>
 <translation id="6981291220124935078">Zapnúť prístup</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>
 <translation id="698231206551913481">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odobratí natrvalo vymazané.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> nepodporuje <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rozlíšenie bolo zmenené na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Absolvujte krátku prehliadku a zistite tak, ako sa v Chromebooku orientovať. Naučte sa v šiestich krokoch, ako ho začať používať.</translation>
 <translation id="7004910047186208204">Pripojenie k mobilným dátam</translation>
 <translation id="7005239792648594238">Začnite otvorením aplikácie</translation>

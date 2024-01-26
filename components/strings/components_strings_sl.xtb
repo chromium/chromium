@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Potrebno je geslo</translation>
 <translation id="1156303062776767266">Ogledujete si lokalno datoteko ali datoteko v skupni rabi</translation>
 <translation id="1158211211994409885">Spletno mesto <ph name="HOST_NAME" /> je nepričakovano prekinilo povezavo.</translation>
-<translation id="115926840831309955">Preverite CVC in poskusite znova ali posodobite datum poteka veljavnosti</translation>
 <translation id="1161325031994447685">znova vzpostaviti povezavo z omrežjem Wi-Fi</translation>
 <translation id="11635448457105324">Gumb za upravljanje naslovov, aktivirajte, če želite dodati in upravljati naslove v Chromovih nastavitvah</translation>
 <translation id="1165039591588034296">Napaka</translation>
@@ -2036,7 +2035,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4989809363548539747">Ta vtičnik ni podprt</translation>
 <translation id="4990241977441916452">Kuverta A2</translation>
 <translation id="4992066212339426712">Vklopi zvok</translation>
-<translation id="4995216769782533993">Potrdite varnostno kodo, če želite s tem mestom deliti podatke o kartici</translation>
 <translation id="4995474875135717171">Spremenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati iskanje po spletnem mestu in privzeti iskalnik</translation>
 <translation id="4998950033665438990">Single Face</translation>

@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Salasana vaaditaan</translation>
 <translation id="1156303062776767266">Katselet paikallista tai jaettua tiedostoa</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> katkaisi yhteyden yllättäen.</translation>
-<translation id="115926840831309955">Tarkista CVC ja yritä uudelleen tai korjaa viimeinen voimassaolopäivä</translation>
 <translation id="1161325031994447685">Muodosta yhteys Wi-Fi-verkkoon uudelleen.</translation>
 <translation id="11635448457105324">Ylläpidä osoitteita ‑painike, aktivoi lisätäksesi ja muuttaaksesi osoitteita Chromen asetuksista</translation>
 <translation id="1165039591588034296">Virhe</translation>
@@ -2037,7 +2036,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4989809363548539747">Tätä laajennusta ei tueta.</translation>
 <translation id="4990241977441916452">Kirjekuori A2</translation>
 <translation id="4992066212339426712">Poista mykistys</translation>
-<translation id="4995216769782533993">Vahvista turvakoodi, jotta kortin tiedot voidaan jakaa tälle sivustolle</translation>
 <translation id="4995474875135717171">Muokattu:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ylläpidä sivustohakuja ja oletushakukonettasi painamalla sarkainta ja sitten Enter</translation>
 <translation id="4998950033665438990">Yksi puoli</translation>

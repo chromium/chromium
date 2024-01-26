@@ -2203,7 +2203,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2643698698624765890">Gestionați extensiile făcând clic pe Extensii în meniul Window (Fereastră).</translation>
 <translation id="2645047101481282803">Dispozitivul este gestionat de <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Se proiectează fila pe <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Sistemul de operare Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">ASCII codificat Base64, lanț de certificate</translation>
 <translation id="265156376773362237">Preîncărcare standard</translation>
@@ -9104,7 +9104,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8062844841289846053">{COUNT,plural, =1{O coală de hârtie}few{{COUNT} coli de hârtie}other{{COUNT} de coli de hârtie}}</translation>
 <translation id="8063235345342641131">Avatar verde prestabilit</translation>
 <translation id="8063535366119089408">Vezi fișierul</translation>
-<translation id="8064015586118426197">Sistemul de operare Chrome Flex</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Fereastră de dialog de conectare</translation>
 <translation id="8070662218171013510">Feedback haptic</translation>

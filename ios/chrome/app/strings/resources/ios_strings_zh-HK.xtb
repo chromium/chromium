@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">已在 Facebook 上發佈。</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
+<translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1112015203684611006">無法列印。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">自動追蹤所有偵測到的包裹</translation>
 <translation id="1894023287452300670">在此處追蹤價格</translation>
 <translation id="189531189292803889">您的 iPad 最近已還原，可能已變更預設瀏覽器。</translation>
+<translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1930989359703290198">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
+<translation id="5024511550058813796">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
 <translation id="5037676449506322593">全部選取</translation>
 <translation id="5038113048373546701">接收你感興趣的新聞、體育賽事等通知</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -1148,6 +1151,7 @@
 <translation id="6945221475159498467">選取</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6973630695168034713">資料夾</translation>
+<translation id="69739764870135975">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
 <translation id="6988572888918530647">管理您的 Google 帳戶</translation>

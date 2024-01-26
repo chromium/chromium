@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Wedi gorffen postio i Facebook.</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="110724200315609752">Newid i ffenestr sydd ar Agor</translation>
+<translation id="1108938384783527433">Cysoni hanes</translation>
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Olrhain Pecynnau sydd wedi'u Canfod yn Awtomatig</translation>
 <translation id="1894023287452300670">Dilyn y pris yma</translation>
 <translation id="189531189292803889">Cafodd eich iPad ei adfer yn ddiweddar, a allai fod wedi newid eich porwr diofyn</translation>
+<translation id="1904580727789512086">Mae'r cyfeiriadau URL rydych yn ymweld â nhw wedi'u cadw i'ch Cyfrif Google</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
 <translation id="1923342640370224680">Awr Ddiwethaf</translation>
 <translation id="1930989359703290198">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig. Mae cyfrifon na chaniateir yn cael eu cuddio. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
 <translation id="5016420433031926653">Anfon at <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Atgoffa Fi yn Nes Ymlaen</translation>
+<translation id="5024511550058813796">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni, felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
 <translation id="5037676449506322593">Dewis pob un</translation>
 <translation id="5038113048373546701">Cael hysbysiadau am newyddion, chwaraeon a rhagor yn seiliedig ar eich diddordeb</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
@@ -1148,6 +1151,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6973630695168034713">Ffolderi</translation>
+<translation id="69739764870135975">Os mai Google yw eich peiriant chwilio diofyn hefyd, byddwch yn gweld awgrymiadau gwell sy'n berthnasol yn eu cyd-destun</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Gallwch hefyd gyffwrdd a dal y bar cyfeiriad i newid y safle.</translation>
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>

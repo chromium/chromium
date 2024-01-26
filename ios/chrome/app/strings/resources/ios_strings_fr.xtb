@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Post Facebook publié.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
+<translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Suivre automatiquement tous les colis détectés</translation>
 <translation id="1894023287452300670">Effectuez le suivi du prix ici</translation>
 <translation id="189531189292803889">Votre iPad a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
+<translation id="1904580727789512086">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
 <translation id="1930989359703290198">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
+<translation id="5024511550058813796">Comme vous aurez votre historique sur tous vos appareils synchronisés, vous pourrez continuer vos activités</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5038113048373546701">Recevez des notifications sur l'actualité, le sport et plus selon vos centres d'intérêt</translation>
 <translation id="5039804452771397117">Autoriser</translation>
@@ -1148,6 +1151,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Dossiers</translation>
+<translation id="69739764870135975">Si Google est aussi votre moteur de recherche par défaut, vous obtiendrez des suggestions plus pertinentes en fonction du contexte</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6988572888918530647">Gérer votre compte Google</translation>

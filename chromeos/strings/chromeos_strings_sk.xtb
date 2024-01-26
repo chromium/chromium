@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">vynásobíte</translation>
 <translation id="1145018782460575098">Okno aktualizácie firmvéru externých zariadení je otvorené. K dispozícii je tento počet aktualizácií: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Vyhľadajte články pomocníka a odpovede na bežné otázky o Chromebooku</translation>
 <translation id="1154390310959620237">Môžete prispôsobiť iba päť skratiek. Ak chcete pridať novú, odstráňte niektorú existujúcu.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prispôsobiť naskenovanej ploche</translation>
 <translation id="1367951781824006909">Vybrať súbor</translation>
+<translation id="1371650399987522809">Spätná väzba k tapete používajúcej umelú inteligenciu od Googlu</translation>
 <translation id="1387854245479784695">Toto je agregácia všetkých jadier</translation>
 <translation id="1394661041439318933">Úroveň batérie puzdra zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Je možné testovať dostupnosť (ping) brány</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">farba podsvietenia</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> sa nedá aktualizovať</translation>
+<translation id="1566493343215789965">vydelíte</translation>
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1578784163189013834">Vybrať pozadie šetriča obrazovky</translation>
 <translation id="160633243685262989">Zobraziť ukážku obrázka</translation>
 <translation id="1611649489706141841">dopredu</translation>
 <translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generujú sa obrázky…</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1626590945318984973">Skratka nie je k dispozícii. Stlačte novú skratku bez použitia funkčných klávesov a klávesov <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
 <translation id="2880569433548999039">Šetrič obrazovky s plynúcimi oblakmi</translation>
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
+<translation id="2938573842839598578">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> <ph name="OPERATOR_TEXT" /> číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Zariadenie sa nedá testovať. Ak chcete testovať, znova otvorte kryt.</translation>
 <translation id="2941112035454246133">Nízka</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
+<translation id="3547264467365135390">Vzorec</translation>
 <translation id="3557205324756024651">Miestna identita (nepovinné)</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
 <translation id="3569407787324516067">Šetrič obrazovky</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7184043045742675738">Ak chcete tlačidlo prispôsobiť, kliknite na ľubovoľný kláves. Presuňte kláves myšou alebo klávesmi so šípkami.</translation>
+<translation id="7206979415662233817">Zmluvné podmienky</translation>
 <translation id="7212547870105584639">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizácie firmvéru pre externé zariadenia</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">farba klávesnice</translation>
 <translation id="7317831949569936035">Zápis do školy</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Musíte mať minimálne 18 rokov a vyjadriť súhlas s tým, že na vaše používanie tapiet od umelej inteligencie sa vzťahujú <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />zmluvné podmienky spoločnosti Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />dodatočné zmluvné podmienky generatívnej umelej inteligencie<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Tapety môžete pomocou umelej inteligencie vytvárať iba na osobné a nekomerčné použitie. Keď získate pomoc s tapetou, text sa odošle na servery umelej inteligencie od Googlu, ktoré vygenerujú návrhy tapety, a to v súlade s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />pravidlami ochrany súkromia spoločnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. výsledok vyhľadávania z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Na skratku prejdete stlačením klávesa Enter.</translation>

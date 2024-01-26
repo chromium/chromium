@@ -12,7 +12,7 @@
 <translation id="1125124144982679672">誰在使用 Chrome？</translation>
 <translation id="1142745911746664600">無法更新 Chrome</translation>
 <translation id="1149651794389918149">登入 Chrome。如果您想只登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。</translation>
-<translation id="1152920704813762236">關於 Chrome OS</translation>
+<translation id="1152920704813762236">關於 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
 <translation id="1194807384646768652">由於此檔案類型不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -107,7 +107,7 @@
 <translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 取得 Chrome 瀏覽器內容</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2622559029861875898">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
@@ -356,7 +356,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6851981911629679515">開啟 Chrome 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
-<translation id="6933858244219479645">Chrome OS 系統</translation>
+<translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>

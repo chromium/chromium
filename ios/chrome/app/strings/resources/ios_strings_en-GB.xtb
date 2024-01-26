@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Facebook post completed.</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Switch to open window</translation>
+<translation id="1108938384783527433">History sync</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Auto-track all detected packages</translation>
 <translation id="1894023287452300670">Track price here</translation>
 <translation id="189531189292803889">Your iPad was recently restored, which might have changed your default browser.</translation>
+<translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
 <translation id="1930989359703290198">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5016420433031926653">Send to <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Remind me later</translation>
+<translation id="5024511550058813796">You'll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038113048373546701">Receive notifications for news, sports and more, based on your interests</translation>
 <translation id="5039804452771397117">Allow</translation>
@@ -1148,6 +1151,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6945221475159498467">Select</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folders</translation>
+<translation id="69739764870135975">If Google is also your default search engine, you'll see better, contextually relevant suggestions</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">You can also touch and hold the address bar to change the position.</translation>
 <translation id="6988572888918530647">Manage your Google Account</translation>

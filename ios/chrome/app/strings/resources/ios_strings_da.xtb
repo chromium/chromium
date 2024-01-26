@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Opslag delt på Facebook.</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Skift til åbent vindue</translation>
+<translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1112015203684611006">Udskrift mislykkedes.</translation>
 <translation id="1125564390852150847">Opret ny fane.</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Spor automatisk alle registrerede pakker</translation>
 <translation id="1894023287452300670">Hold øje med prisen her</translation>
 <translation id="189531189292803889">Din iPad blev for nylig gendannet, hvilket muligvis har ændret din standardbrowser.</translation>
+<translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1911619930368729126">Upload til Google Drev</translation>
 <translation id="1923342640370224680">Den seneste time</translation>
 <translation id="1930989359703290198">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
+<translation id="5024511550058813796">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="5037676449506322593">Vælg alle</translation>
 <translation id="5038113048373546701">Modtag notifikationer om nyheder, sport m.m. baseret på dine interesser</translation>
 <translation id="5039804452771397117">Tillad</translation>
@@ -1148,6 +1151,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mapper</translation>
+<translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6983306615164277634">Du kan også holde fingeren nede på adresselinjen for at ændre placeringen.</translation>
 <translation id="6988572888918530647">Administrer din Google-konto</translation>

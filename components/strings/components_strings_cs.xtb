@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Je vyžadováno heslo</translation>
 <translation id="1156303062776767266">Prohlížíte si místní nebo sdílený soubor.</translation>
 <translation id="1158211211994409885">Web <ph name="HOST_NAME" /> neočekávaně ukončil připojení.</translation>
-<translation id="115926840831309955">Zkontrolujte kód CVC a zkuste to znovu nebo aktualizujte datum konce platnosti</translation>
 <translation id="1161325031994447685">Obnovit připojení k síti Wi-Fi</translation>
 <translation id="11635448457105324">Tlačítko Spravovat adresy, aktivací můžete přidávat a spravovat adresy v nastavení Chromu</translation>
 <translation id="1165039591588034296">Chyba</translation>
@@ -2037,7 +2036,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4989809363548539747">Tento plugin není podporován</translation>
 <translation id="4990241977441916452">Obálka A2</translation>
 <translation id="4992066212339426712">Zapnout zvuk</translation>
-<translation id="4995216769782533993">Chcete-li s tímto webem sdílet údaje o kartě, zadejte bezpečnostní kód</translation>
 <translation id="4995474875135717171">Změněno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter můžete spravovat vyhledávání na webech a svůj výchozí vyhledávač</translation>
 <translation id="4998950033665438990">Jednostranné</translation>

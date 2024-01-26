@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
+<translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">自动跟踪检测到的所有包裹</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="189531189292803889">您最近恢复过您的 iPad，这可能更改了您的默认浏览器设置。</translation>
+<translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1923342640370224680">过去 1 小时</translation>
 <translation id="1930989359703290198">根据贵单位的要求，您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -337,7 +339,7 @@
 <translation id="2754492786623500387">此设备上的账号</translation>
 <translation id="2755595981383829244">现在您将收到内容通知</translation>
 <translation id="2762000892062317888">刚刚</translation>
-<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 (<ph name="USER_EMAIL" />)。</translation>
+<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
 <translation id="277771892408211951">选择语言</translation>
 <translation id="2780046210906776326">没有电子邮件账号</translation>
@@ -757,6 +759,7 @@
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5016420433031926653">发送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
+<translation id="5024511550058813796">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5038113048373546701">接收您感兴趣的新闻、体育赛事等通知</translation>
 <translation id="5039804452771397117">允许</translation>
@@ -1148,6 +1151,7 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6973630695168034713">文件夹</translation>
+<translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6983306615164277634">您也可轻触并按住地址栏来更改其位置。</translation>
 <translation id="6988572888918530647">管理 Google 账号</translation>

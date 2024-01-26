@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Es requereix una contrasenya</translation>
 <translation id="1156303062776767266">Estàs consultant un fitxer local o compartit</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ha tancat la connexió de manera inesperada.</translation>
-<translation id="115926840831309955">Comprova el CVC i torna-ho a provar o actualitza la data de caducitat</translation>
 <translation id="1161325031994447685">Torna't a connectar a la xarxa Wi-Fi.</translation>
 <translation id="11635448457105324">Botó Gestiona les adreces: activa'l per afegir i gestionar adreces a la configuració de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -2036,7 +2035,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4989809363548539747">Aquest connector no és compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
 <translation id="4992066212339426712">Deixa de silenciar</translation>
-<translation id="4995216769782533993">Confirma el codi de seguretat per compartir els detalls de la targeta amb aquest lloc web</translation>
 <translation id="4995474875135717171">Data de modificació:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar les cerques al lloc web i el motor de cerca predeterminat</translation>
 <translation id="4998950033665438990">Cara única</translation>

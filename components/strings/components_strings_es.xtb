@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Contraseña obligatoria</translation>
 <translation id="1156303062776767266">Estás viendo un archivo local o compartido</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ha cerrado la conexión de forma inesperada.</translation>
-<translation id="115926840831309955">Comprueba el código CVC y vuelve a intentarlo o actualiza la fecha de vencimiento</translation>
 <translation id="1161325031994447685">Volver a conectarte a una red Wi-Fi</translation>
 <translation id="11635448457105324">Botón Gestionar direcciones: actívalo para añadir y gestionar direcciones en la configuración de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -2036,7 +2035,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
 <translation id="4992066212339426712">Activar sonido</translation>
-<translation id="4995216769782533993">Confirma el código de seguridad para compartir la información de tu tarjeta con este sitio web</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar las búsquedas en el sitio y tu buscador predeterminado</translation>
 <translation id="4998950033665438990">Una cara</translation>

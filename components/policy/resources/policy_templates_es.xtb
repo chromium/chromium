@@ -3214,15 +3214,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3625900437628963632">Indica si se recordará el valor de la contraseña de Kerberos definido en este elemento de la política. Si no se define o se le asigna el valor true, se recordará la contraseña. Si se le asigna el valor false, no se recordará la contraseña. Se ignorará si el campo de contraseña de esta cuenta no se especifica. Este campo es compatible desde la versión 116 de ChromeOS.</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
-<translation id="3634117682099473917">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" />, la cual anulará si se establece. Por el contrario, permite especificar información de identificación.
-
-Si se le asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a <ph name="DOH_MODE_POLICY_NAME" />, esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" /> deberá establecerse y no dejarse vacía.
-
-Si se asigna el valor <ph name="SECURE_DNS_MODE_AUTOMATIC" /> a <ph name="DOH_MODE_POLICY_NAME" /> y esta política se establece, se usarán las plantillas URI especificadas. Si la política no se establece, se usarán las asignaciones codificadas para intentar cambiar la resolución de DNS actual de los usuarios a una resolución de DoH operada por el mismo proveedor.
-
-Si la plantilla URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes para la resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
-
-En la versión 114 y posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se establece esta política.</translation>
 <translation id="3634125384445314047">Permite acceder a través de la función Mi teléfono a fotos y vídeos recientes hechos con el teléfono.</translation>
 <translation id="3637063789824963261">Si se habilita esta política, los dispositivos registrados informarán sobre los contadores de tiempo de ejecución del dispositivo (solo Intel vPro de una generación superior a la 14).
 

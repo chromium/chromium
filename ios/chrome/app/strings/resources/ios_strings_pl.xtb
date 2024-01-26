@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
+<translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Automatycznie śledź wszystkie wykryte przesyłki</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
+<translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
 <translation id="1923342640370224680">Ostatnia godzina</translation>
 <translation id="1930989359703290198">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5016420433031926653">Wysyłaj na adres <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Przypomnij później</translation>
+<translation id="5024511550058813796">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
 <translation id="5037676449506322593">Wybierz wszystko</translation>
 <translation id="5038113048373546701">Otrzymuj powiadomienia o wiadomościach, wydarzeniach sportowych i inne na podstawie swoich zainteresowań</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
@@ -1148,6 +1151,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Foldery</translation>
+<translation id="69739764870135975">Jeśli Google jest Twoją domyślną wyszukiwarką, zobaczysz lepiej dopasowane sugestie</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6983306615164277634">Możesz też kliknąć i przytrzymać pasek adresu, aby zmienić jego pozycję.</translation>
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
