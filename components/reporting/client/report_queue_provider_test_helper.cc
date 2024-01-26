@@ -4,22 +4,24 @@
 
 #include "components/reporting/client/report_queue_provider_test_helper.h"
 
-#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue_provider.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
-namespace reporting::test {
+namespace reporting {
 
-ReportQueueProviderTestHelper::ReportQueueProviderTestHelper()
-    : provider_(new ::testing::NiceMock<MockReportQueueProvider>(),
-                base::OnTaskRunnerDeleter(
-                    base::SequencedTaskRunner::GetCurrentDefault())) {}
+namespace report_queue_provider_test_helper {
 
-ReportQueueProviderTestHelper::~ReportQueueProviderTestHelper() = default;
+static MockReportQueueProvider* g_mock_report_queue_provider = nullptr;
 
-MockReportQueueProvider* ReportQueueProviderTestHelper::mock_provider() const {
-  CHECK(provider_);
-  return provider_.get();
+void SetForTesting(MockReportQueueProvider* provider) {
+  g_mock_report_queue_provider = provider;
 }
-}  // namespace reporting::test
+
+}  // namespace report_queue_provider_test_helper
+
+// Implementation of the mock report provider for this test helper.
+ReportQueueProvider* ReportQueueProvider::GetInstance() {
+  return report_queue_provider_test_helper::g_mock_report_queue_provider;
+}
+
+}  // namespace reporting

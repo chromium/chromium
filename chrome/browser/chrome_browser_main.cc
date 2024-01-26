@@ -79,7 +79,6 @@
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -870,10 +869,6 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   // platforms (e.g. chromeos) may have already initialized this.
   if (!device_event_log::IsInitialized())
     device_event_log::Initialize(0 /* default max entries */);
-
-  // Set up and register ERP reporting client.
-  reporting_client_ =
-      reporting::ReportingClient::Create(content::GetUIThreadTaskRunner({}));
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostCreateMainMessageLoop();

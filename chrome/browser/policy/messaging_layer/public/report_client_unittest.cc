@@ -35,6 +35,7 @@
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -77,8 +78,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
     // Provide client test environment with local storage.
 #if BUILDFLAG(IS_CHROMEOS)
-    test_reporting_ =
-        ReportingClient::TestEnvironment::CreateWithStorageModule();
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
+        base::MakeRefCounted<test::TestStorageModule>());
 #else
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithLocalStorage(

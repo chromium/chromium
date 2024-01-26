@@ -9,7 +9,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/storage/storage_module_interface.h"
-#include "components/reporting/storage/test_storage_module.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
@@ -34,8 +33,7 @@ class ReportingClient::TestEnvironment {
   // Factory method creates an environment with a given storage module
   // (usually it is `test::TestStorageModule`).
   static std::unique_ptr<TestEnvironment> CreateWithStorageModule(
-      scoped_refptr<StorageModuleInterface> storage =
-          base::MakeRefCounted<test::TestStorageModule>());
+      scoped_refptr<StorageModuleInterface> storage);
 
   TestEnvironment(const TestEnvironment& other) = delete;
   TestEnvironment& operator=(const TestEnvironment& other) = delete;
@@ -46,7 +44,7 @@ class ReportingClient::TestEnvironment {
   explicit TestEnvironment(
       ReportingClient::StorageModuleCreateCallback storage_create_cb);
 
-  ReportQueueProvider::SmartPtr<ReportingClient> client_;
+  ReportingClient::StorageModuleCreateCallback saved_storage_create_cb_;
 };
 }  // namespace reporting
 

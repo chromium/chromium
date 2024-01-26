@@ -62,10 +62,14 @@ ReportingClient::TestEnvironment::CreateWithStorageModule(
 
 ReportingClient::TestEnvironment::TestEnvironment(
     ReportingClient::StorageModuleCreateCallback storage_create_cb)
-    : client_(ReportingClient::Create(
-          base::SequencedTaskRunner::GetCurrentDefault())) {
-  client_->storage_create_cb_ = storage_create_cb;
+    : saved_storage_create_cb_(
+          std::move(ReportingClient::GetInstance()->storage_create_cb_)) {
+  ReportingClient::GetInstance()->storage_create_cb_ = storage_create_cb;
 }
 
-ReportingClient::TestEnvironment::~TestEnvironment() = default;
+ReportingClient::TestEnvironment::~TestEnvironment() {
+  ReportingClient::GetInstance()->storage_create_cb_ =
+      std::move(saved_storage_create_cb_);
+  base::Singleton<ReportingClient>::OnExit(nullptr);
+}
 }  // namespace reporting

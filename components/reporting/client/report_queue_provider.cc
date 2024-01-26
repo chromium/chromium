@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,8 +32,6 @@
 namespace reporting {
 
 using InitCompleteCallback = base::OnceCallback<void(Status)>;
-
-ReportQueueProvider* g_report_queue_provider_instance = nullptr;
 
 // Report queue creation request. Recorded in the `create_request_queue_` when
 // provider cannot create queues yet.
@@ -105,12 +102,7 @@ ReportQueueProvider::ReportQueueProvider(
     StorageModuleCreateCallback storage_create_cb,
     scoped_refptr<base::SequencedTaskRunner> seq_task_runner)
     : storage_create_cb_(storage_create_cb),
-      sequenced_task_runner_(seq_task_runner) {
-  if (g_report_queue_provider_instance) {
-    CHECK_IS_TEST();  // Duplicate is allowed in tests only.
-  }
-  g_report_queue_provider_instance = this;
-}
+      sequenced_task_runner_(seq_task_runner) {}
 
 ReportQueueProvider::~ReportQueueProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -122,7 +114,6 @@ ReportQueueProvider::~ReportQueueProvider() {
             Status(error::UNAVAILABLE, "ReportQueueProvider shut down")));
     create_request_queue_.pop();
   }
-  g_report_queue_provider_instance = nullptr;
 }
 
 base::WeakPtr<ReportQueueProvider> ReportQueueProvider::GetWeakPtr() {
@@ -294,12 +285,5 @@ void ReportQueueProvider::OnStorageModuleConfigured(
                    report_queue_request->release_create_cb());
     create_request_queue_.pop();
   }
-}
-
-// static
-ReportQueueProvider* ReportQueueProvider::GetInstance() {
-  CHECK(g_report_queue_provider_instance)
-      << "Report queue provider not set yet";
-  return g_report_queue_provider_instance;
 }
 }  // namespace reporting

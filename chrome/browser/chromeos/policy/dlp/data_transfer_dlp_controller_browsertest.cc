@@ -35,6 +35,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -206,8 +207,9 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    test_reporting_ = ::reporting::ReportingClient::TestEnvironment::
-        CreateWithStorageModule();
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            base::MakeRefCounted<::reporting::test::TestStorageModule>());
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
@@ -244,8 +246,6 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     reporting_queue_ = nullptr;
     dlp_controller_.reset();
     reporting_manager_.reset();
-    test_reporting_.reset();
-    base::RunLoop().RunUntilIdle();  // Let ReportClient mock destruct.
   }
 
   void SetupTextfield() {

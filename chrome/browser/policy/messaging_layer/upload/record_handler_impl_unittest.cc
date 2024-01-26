@@ -32,6 +32,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -123,8 +124,9 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
         base::BindRepeating([]() -> std::unique_ptr<FileUploadJob::Delegate> {
           return std::make_unique<MockFileUploadDelegate>();
         }));
-    test_reporting_ =
-        ReportingClient::TestEnvironment::CreateWithStorageModule();
+    test_storage_ = base::MakeRefCounted<test::TestStorageModule>();
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
+        test_storage_);
 
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
@@ -133,6 +135,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   void TearDown() override {
     handler_.reset();
     test_reporting_.reset();
+    test_storage_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -145,6 +148,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   FileUploadJob::TestEnvironment manager_test_env_;
   ReportingServerConnector::TestEnvironment test_env_;
 
+  scoped_refptr<test::TestStorageModule> test_storage_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
   std::unique_ptr<RecordHandlerImpl> handler_;

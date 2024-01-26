@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
+#include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,8 +46,7 @@ const base::FilePath::CharType kReportingDirectory[] =
 }  // namespace
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-ReportingClient::ReportingClient(
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+ReportingClient::ReportingClient()
     : ReportQueueProvider(
           base::BindRepeating(
               [](base::OnceCallback<void(
@@ -74,17 +73,22 @@ ReportingClient::ReportingClient(
                     std::move(storage_created_cb));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
               }),
-          sequenced_task_runner) {
+          base::SequencedTaskRunner::GetCurrentDefault()) {
 }
 
 ReportingClient::~ReportingClient() = default;
 
 // static
-ReportQueueProvider::SmartPtr<ReportingClient> ReportingClient::Create(
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
-  return SmartPtr<ReportingClient>(
-      new ReportingClient(sequenced_task_runner),
-      base::OnTaskRunnerDeleter(sequenced_task_runner));
+ReportingClient* ReportingClient::GetInstance() {
+  return base::Singleton<ReportingClient>::get();
+}
+
+// static
+ReportQueueProvider* ReportQueueProvider::GetInstance() {
+  // Forward to ReportingClient::GetInstance, because
+  // base::Singleton<ReportingClient>::get() cannot be called
+  // outside ReportingClient class.
+  return ReportingClient::GetInstance();
 }
 
 void ReportingClient::ConfigureReportQueue(
@@ -289,10 +293,10 @@ ReportingClient::CreateLocalUploadProvider(
   // is instantiated.
   return std::make_unique<EncryptedReportingUploadProvider>(
       base::BindPostTask(
-          ReportQueueProvider::GetInstance()->sequenced_task_runner(),
+          ReportingClient::GetInstance()->sequenced_task_runner(),
           StorageSelector::GetLocalReportSuccessfulUploadCb(storage_module)),
       base::BindPostTask(
-          ReportQueueProvider::GetInstance()->sequenced_task_runner(),
+          ReportingClient::GetInstance()->sequenced_task_runner(),
           StorageSelector::GetLocalEncryptionKeyAttachedCb(storage_module)));
 }
 
