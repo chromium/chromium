@@ -6,6 +6,7 @@
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 
 #include "base/time/time.h"
+#include "components/compose/core/browser/compose_enums.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -193,6 +194,17 @@ struct ComposeSessionEvents {
   bool inserted_results = false;
   // True if the the user closed the compose session via the "x" button.
   bool close_clicked = false;
+  // Number of on-device responses received.
+  unsigned int on_device_responses = 0;
+  // Number of server responses received.
+  unsigned int server_responses = 0;
+};
+
+enum class EvalLocation {
+  // Response was evaluated on the server.
+  kServer,
+  // Response was evaluated on the device.
+  kOnDevice,
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -264,9 +276,14 @@ void LogOpenComposeDialogResult(OpenComposeDialogResult result);
 
 void LogComposeRequestReason(ComposeRequestReason reason);
 
+void LogComposeRequestStatus(EvalLocation eval_location,
+                             compose::mojom::ComposeStatus status);
+
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.
-void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
+void LogComposeRequestDuration(base::TimeDelta duration,
+                               EvalLocation eval_location,
+                               bool is_ok);
 
 void LogComposeFirstRunSessionCloseReason(
     ComposeFirstRunSessionCloseReason reason);

@@ -36,6 +36,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -108,8 +109,11 @@ void LogComposeRewriteReason(const compose::mojom::StyleModifiersPtr& style) {
   }
 }
 
-void LogComposeRequestStatus(compose::mojom::ComposeStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(compose::kComposeRequestStatus, status);
+compose::EvalLocation GetEvalLocation(
+    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
+        result) {
+  return result.provided_by_on_device ? compose::EvalLocation::kOnDevice
+                                      : compose::EvalLocation::kServer;
 }
 
 }  // namespace
@@ -247,6 +251,7 @@ ComposeSession::~ComposeSession() {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
   }
+
   LogComposeSessionCloseMetrics(close_reason_, session_events_);
 
   LogComposeSessionCloseUkmMetrics(ukm_source_id_, session_events_);
@@ -356,7 +361,8 @@ void ComposeSession::MakeRequest(
   if (!session_ ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
-    ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
+    ProcessError(compose::EvalLocation::kServer,
+                 compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
 
@@ -396,35 +402,33 @@ void ComposeSession::ModelExecutionCallback(
     const base::ElapsedTimer& request_timer,
     int request_id,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   base::TimeDelta request_delta = request_timer.Elapsed();
 
   // A new request has been issued, ignore this one.
   if (request_id != request_id_) {
-    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
     return;
   }
 
-  if (result.has_value() && !result->is_complete) {
-    ModelExecutionProgress(result);
+  if (result.response.has_value() && !result.response->is_complete) {
+    ModelExecutionProgress(std::move(result.response).value());
     return;
   }
 
-  ModelExecutionComplete(request_delta, was_input_edited, result,
-                         std::move(log_entry));
+  ModelExecutionComplete(request_delta, was_input_edited, std::move(result));
 }
 
 void ComposeSession::ModelExecutionProgress(
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+    optimization_guide::StreamingResponse result) {
   CHECK(base::FeatureList::IsEnabled(
       optimization_guide::features::kOptimizationGuideOnDeviceModel));
   if (!dialog_remote_.is_bound()) {
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result->response);
+      optimization_guide::proto::ComposeResponse>(result.response);
   if (!response) {
     DLOG(ERROR) << "Failed to parse partial compose response";
     return;
@@ -437,34 +441,41 @@ void ComposeSession::ModelExecutionProgress(
 void ComposeSession::ModelExecutionComplete(
     base::TimeDelta request_delta,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   // Handle 'complete' results.
   current_state_->has_pending_request = false;
+  compose::EvalLocation eval_location = GetEvalLocation(result);
+  if (eval_location == compose::EvalLocation::kOnDevice) {
+    ++session_events_.on_device_responses;
+  } else {
+    ++session_events_.server_responses;
+  }
 
   compose::mojom::ComposeStatus status =
       ComposeStatusFromOptimizationGuideResult(result);
 
   if (status != compose::mojom::ComposeStatus::kOk) {
-    compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
+    compose::LogComposeRequestDuration(request_delta, eval_location,
+                                       /* is_valid */ false);
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
-      ProcessError(compose::mojom::ComposeStatus::kOffline);
+      ProcessError(eval_location, compose::mojom::ComposeStatus::kOffline);
     } else {
-      ProcessError(status);
+      ProcessError(eval_location, status);
     }
-    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
     return;
   }
-  DCHECK(result->is_complete);
+  DCHECK(result.response->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result->response);
+      optimization_guide::proto::ComposeResponse>(result.response->response);
 
   if (!response) {
-    compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
-    ProcessError(compose::mojom::ComposeStatus::kNoResponse);
-    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+    compose::LogComposeRequestDuration(request_delta, eval_location,
+                                       /* is_valid */ false);
+    ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse);
+    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
     return;
   }
@@ -472,12 +483,14 @@ void ComposeSession::ModelExecutionComplete(
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
-  ui_response->on_device_evaluation_used = result->provided_by_on_device;
+  ui_response->on_device_evaluation_used = result.provided_by_on_device;
   current_state_->response = ui_response->Clone();
 
   // Log successful response status.
-  LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
-  compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
+  compose::LogComposeRequestStatus(eval_location,
+                                   compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestDuration(request_delta, eval_location,
+                                     /* is_valid */ true);
 
   SaveMostRecentOkStateToUndoStack();
   most_recent_ok_state_->SetMojoState(current_state_->Clone());
@@ -487,18 +500,19 @@ void ComposeSession::ModelExecutionComplete(
     dialog_remote_->ResponseReceived(std::move(ui_response));
   }
 
-  if (log_entry) {
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+  if (result.log_entry) {
+    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_was_generated_via_edit(was_input_edited);
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
     optimization_guide::proto::Int128* token =
-        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        result.log_entry
+            ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
             ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
-    most_recent_ok_state_->SetModelingLogEntry(std::move(log_entry));
+    most_recent_ok_state_->SetModelingLogEntry(std::move(result.log_entry));
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten
     if (most_recent_error_log_ && model_quality_logs_uploader_) {
@@ -511,8 +525,9 @@ void ComposeSession::ModelExecutionComplete(
   }
 }
 
-void ComposeSession::ProcessError(compose::mojom::ComposeStatus error) {
-  LogComposeRequestStatus(error);
+void ComposeSession::ProcessError(compose::EvalLocation eval_location,
+                                  compose::mojom::ComposeStatus error) {
+  compose::LogComposeRequestStatus(eval_location, error);
 
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();

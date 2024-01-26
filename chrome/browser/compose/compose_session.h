@@ -181,21 +181,20 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
  private:
-  void ProcessError(compose::mojom::ComposeStatus status);
+  void ProcessError(compose::EvalLocation eval_location,
+                    compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
       const base::ElapsedTimer& request_start,
       int request_id,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
-  void ModelExecutionProgress(
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
+  void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
 
   // Adds page content to the session context.
   void AddPageContentToSession(std::string inner_text,

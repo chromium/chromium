@@ -35,12 +35,13 @@ optimization_guide::proto::ComposeTone ComposeTone(compose::mojom::Tone tone) {
 }
 
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
-  if (result.has_value()) {
+    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
+        result) {
+  if (result.response.has_value()) {
     return compose::mojom::ComposeStatus::kOk;
   }
 
-  switch (result.error().error()) {
+  switch (result.response.error().error()) {
     case ModelExecutionError::kUnknown:
     case ModelExecutionError::kGenericFailure:
       return compose::mojom::ComposeStatus::kServerError;

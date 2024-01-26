@@ -253,12 +253,12 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
                   FROM_HERE,
                   base::BindOnce(
                       std::move(callback),
-                      OptimizationGuideResponse(
-                          ComposeResponse(true, "Cucumbers")),
-                      std::make_unique<
-                          optimization_guide::ModelQualityLogEntry>(
+                      OptimizationGuideStreamingResult(
+                          ComposeResponse(true, "Cucumbers"), true, false,
                           std::make_unique<
-                              optimization_guide::proto::LogAiDataRequest>())));
+                              optimization_guide::ModelQualityLogEntry>(
+                              std::make_unique<optimization_guide::proto::
+                                                   LogAiDataRequest>()))));
             })));
   }
 
@@ -301,6 +301,18 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
         .response = any,
         .is_complete = is_complete,
     };
+  }
+
+  optimization_guide::OptimizationGuideModelStreamingExecutionResult
+  OptimizationGuideStreamingResult(
+      const optimization_guide::proto::ComposeResponse compose_response,
+      bool is_complete = true,
+      bool provided_by_on_device = false,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+          nullptr) {
+    return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+        base::ok(OptimizationGuideResponse(compose_response, is_complete)),
+        provided_by_on_device, std::move(log_entry));
   }
 
   optimization_guide::proto::ComposeResponse ComposeResponse(
