@@ -3662,6 +3662,10 @@ test("base_unittests") {
     }
   }
 
+  if (enable_base_tracing) {
+    sources += [ "test/test_trace_processor_unittest.cc" ]
+  }
+
   if (is_posix) {
     sources += [
       "files/dir_reader_posix_unittest.cc",
