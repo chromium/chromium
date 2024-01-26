@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace blink {
@@ -386,13 +387,27 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
                                         new_display_item_list);
     if (index != kNotFound) {
       ShowDebugData();
+      const auto& chunks = new_paint_artifact_->PaintChunks();
+      const PaintChunk* chunk =
+          std::upper_bound(chunks.begin(), chunks.end(), index,
+                           [](wtf_size_t index, const PaintChunk& chunk) {
+                             return index < chunk.end_index;
+                           });
+      DCHECK_NE(chunk, chunks.end());
       NOTREACHED() << "DisplayItem "
                    << display_item.AsDebugString(*new_paint_artifact_).Utf8()
-                   << " has duplicated id with previous "
+                   << " (index="
+                   << new_display_item_list.size()
+                   // The last chunk might not be the chunk the new item would
+                   // be in because the new item might start a new chunk.
+                   << " last chunk "
+                   << chunks.back().ToString(*new_paint_artifact_).Utf8()
+                   << ")\n has duplicated id with previous "
                    << new_display_item_list[index]
                           .AsDebugString(*new_paint_artifact_)
                           .Utf8()
-                   << " (index=" << index << ")";
+                   << " (index=" << index << " in chunk "
+                   << chunk->ToString(*new_paint_artifact_).Utf8() << ")";
     }
     AddToIdIndexMap(display_item.GetId(), new_display_item_list.size() - 1,
                     new_display_item_id_index_map_);
