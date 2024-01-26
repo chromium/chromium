@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.modelutil.PropertyModel;
+
 /**
  * The View for the tab resumption module, consisting of a header followed by suggestion tile(s).
  */
@@ -19,4 +21,15 @@ public class TabResumptionModuleView extends LinearLayout {
     }
 
     void destroy() {}
+
+    /** Reads suggestion bundle from `model`, render if non-null. */
+    public void renderFromModel(PropertyModel model) {
+        SuggestionBundle bundle =
+                (SuggestionBundle) model.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
+        if (bundle == null) {
+            // TODO(crbug.com/1515325): Remove all tiles.
+        } else {
+            // TODO(crbug.com/1515325): Fetch images and render all tiles.
+        }
+    }
 }

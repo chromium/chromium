@@ -18,6 +18,15 @@ class TabResumptionModuleViewBinder implements ViewBinder<PropertyModel, View, P
         if (TabResumptionModuleProperties.IS_VISIBLE == propertyKey) {
             moduleView.setVisibility(
                     model.get(TabResumptionModuleProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+
+        } else if (TabResumptionModuleProperties.DATA_PROVIDER == propertyKey) {
+
+        } else if (TabResumptionModuleProperties.URL_IMAGE_PROVIDER == propertyKey) {
+
+        } else if (TabResumptionModuleProperties.CLICK_CALLBACK == propertyKey) {
+
+        } else if (TabResumptionModuleProperties.SUGGESTION_BUNDLE == propertyKey) {
+            moduleView.renderFromModel(model);
         } else {
             assert false : "Unhandled property detected in TabResumptionModuleViewBinder!";
         }

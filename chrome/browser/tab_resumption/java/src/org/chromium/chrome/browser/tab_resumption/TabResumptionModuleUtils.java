@@ -65,6 +65,16 @@ public class TabResumptionModuleUtils {
             int moduleContainerStubId) {
         if (!shouldShowTabResumptionModule(profile)) return null;
 
-        return new TabResumptionModuleCoordinator(parent.findViewById(moduleContainerStubId));
+        TabResumptionDataProvider dataProvider =
+                ForeignSessionTabResumptionDataProvider.createFromProfile(profile);
+        UrlImageProvider urlImageProvider = new UrlImageProvider(profile, parent.getContext());
+        TabResumptionModuleCoordinator coordinator =
+                new TabResumptionModuleCoordinator(
+                        dataProvider,
+                        urlImageProvider,
+                        suggestionClickCallback,
+                        parent.findViewById(moduleContainerStubId));
+        coordinator.reload();
+        return coordinator;
     }
 }
