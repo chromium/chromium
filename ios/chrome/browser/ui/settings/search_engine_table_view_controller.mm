@@ -126,6 +126,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     search_engines::SearchEngineChoiceService* search_engine_choice_service =
         ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
     _shouldShowUpdatedSettings =
+        search_engines::IsEeaChoiceCountry(
+            search_engine_choice_service->GetCountryId()) &&
         search_engine_choice_service->ShouldShowUpdatedSettings();
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;

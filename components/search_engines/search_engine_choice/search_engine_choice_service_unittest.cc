@@ -332,12 +332,7 @@ TEST_F(SearchEngineChoiceServiceTest,
        DoNotShowChoiceScreenIfCountryOutOfScope) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "US");
-#if BUILDFLAG(IS_IOS)
-  // TODO(b/318820137): There should not be a dependency on the country here.
-  EXPECT_FALSE(search_engine_choice_service().ShouldShowUpdatedSettings());
-#else
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
-#endif
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
                 template_url_service()),

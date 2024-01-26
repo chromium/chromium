@@ -126,12 +126,6 @@ SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs)
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
 bool SearchEngineChoiceService::ShouldShowUpdatedSettings() {
-#if BUILDFLAG(IS_IOS)
-  // TODO(b/318820137): There should not be a dependency on the country here.
-  if (!IsEeaChoiceCountry(GetCountryId())) {
-    return false;
-  }
-#endif
   return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
 }
 
