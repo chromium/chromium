@@ -6,8 +6,10 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuidePreloadFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import type {PrivacyGuideCompletionFragmentElement, PrivacyGuidePreloadFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, SafeBrowsingSetting, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

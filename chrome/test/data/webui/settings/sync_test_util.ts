@@ -5,7 +5,8 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Route, Router, SettingsRoutes, StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import type {SettingsRoutes, StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import {Route, Router} from 'chrome://settings/settings.js';
 // clang-format on
 
 /**

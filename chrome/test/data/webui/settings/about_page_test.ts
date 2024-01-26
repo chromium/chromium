@@ -4,7 +4,8 @@
 
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router, SettingsAboutPageElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import type {SettingsAboutPageElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
@@ -17,7 +18,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 
 // <if expr="_google_chrome and is_macosx">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
+import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
 
 // <if expr="not chromeos_ash">

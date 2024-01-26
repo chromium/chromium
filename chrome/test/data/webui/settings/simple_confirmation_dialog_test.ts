@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

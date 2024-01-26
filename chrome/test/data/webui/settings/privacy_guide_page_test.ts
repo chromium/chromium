@@ -6,8 +6,10 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncStatus} from 'chrome://settings/settings.js';
+import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

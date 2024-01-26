@@ -5,15 +5,17 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="not chromeos_ash">
-import {CrActionMenuElement} from 'chrome://settings/settings.js';
+import type {CrActionMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 
-import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SettingsSyncAccountControlElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
+import {MAX_SIGNIN_PROMO_IMPRESSION, Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {setupRouterWithSyncRoutes, simulateStoredAccounts, SyncRoutes} from './sync_test_util.js';
+import type {SyncRoutes} from './sync_test_util.js';
+import {setupRouterWithSyncRoutes, simulateStoredAccounts} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on

@@ -4,7 +4,8 @@
 
 'chrome://settings/settings.js';
 
-import {LifetimeBrowserProxyImpl, SettingsAiPageFeaturePrefName as PrefName, SettingsToggleButtonElement, SettingsAiPageElement, CrSettingsPrefs, SettingsPrefsElement, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

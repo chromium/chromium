@@ -6,8 +6,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
-import {ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
+import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
+import type {SearchEngine} from 'chrome://settings/settings.js';
+import {ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

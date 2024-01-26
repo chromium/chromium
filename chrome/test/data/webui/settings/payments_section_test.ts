@@ -4,11 +4,14 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
+import type {TestPaymentsManager} from './autofill_fake_data.js';
+import {createCreditCardEntry} from './autofill_fake_data.js';
 import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 

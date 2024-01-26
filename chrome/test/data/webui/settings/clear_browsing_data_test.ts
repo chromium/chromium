@@ -7,8 +7,10 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
+import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
+import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
+import {loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

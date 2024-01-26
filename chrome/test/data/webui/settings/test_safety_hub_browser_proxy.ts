@@ -4,7 +4,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import type {CardInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import {CardState} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 

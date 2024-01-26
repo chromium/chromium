@@ -5,7 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {convertDateToWindowsEpoch, ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import type {ExceptionAddDialogElement, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

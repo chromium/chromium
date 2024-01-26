@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FileSystemGrant, FileSystemSiteEntryItemElement} from 'chrome://settings/lazy_load.js';
+import type {FileSystemGrant, FileSystemSiteEntryItemElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

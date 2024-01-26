@@ -5,7 +5,7 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
-import {PasswordCheckReferrer, PasswordManagerProxy, PasswordManagerPage} from 'chrome://settings/settings.js';
+import type {PasswordCheckReferrer, PasswordManagerProxy, PasswordManagerPage} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on

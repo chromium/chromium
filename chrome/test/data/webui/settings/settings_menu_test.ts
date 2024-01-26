@@ -6,7 +6,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {buildRouter, loadTimeData, pageVisibility, Router, SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import {buildRouter, loadTimeData, pageVisibility, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

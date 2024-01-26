@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
+import type {SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsCheckboxListEntry', function() {

@@ -9,7 +9,8 @@ import {loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
-import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO, TestPaymentsManager} from './autofill_fake_data.js';
+import type {TestPaymentsManager} from './autofill_fake_data.js';
+import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
 
 import {isVisible} from 'chrome://webui-test/test_util.js';

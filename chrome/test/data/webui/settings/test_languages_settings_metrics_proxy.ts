@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {LanguageSettingsMetricsProxy, LanguageSettingsActionType, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
+import type {LanguageSettingsMetricsProxy, LanguageSettingsActionType, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on

@@ -5,8 +5,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import type {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import {SettingsPrivacySandboxFledgeSubpageElement} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isChildVisible, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';

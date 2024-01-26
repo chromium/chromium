@@ -5,7 +5,8 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {SettingsUnusedSitePermissionsElement, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import type {SettingsUnusedSitePermissionsElement} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';

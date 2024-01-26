@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {AutofillManagerProxy, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
+import type {AutofillManagerProxy, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

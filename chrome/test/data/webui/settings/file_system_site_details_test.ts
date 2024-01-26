@@ -8,7 +8,8 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FileSystemGrant, FileSystemSiteDetailsElement, OriginFileSystemGrants, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
+import {FileSystemSiteDetailsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
