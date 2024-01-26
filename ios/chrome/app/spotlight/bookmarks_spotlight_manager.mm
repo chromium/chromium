@@ -421,14 +421,21 @@ class SpotlightBookmarkModelBridge;
 - (std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>)
     nodesByURL:(const GURL&)url {
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      localOrSyncableNodes = _localOrSyncableBookmarkModel->GetNodesByURL(url);
+      allNodes;
+
+  if (_localOrSyncableBookmarkModel) {
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        localOrSyncableNodes =
+            _localOrSyncableBookmarkModel->GetNodesByURL(url);
+    allNodes.insert(allNodes.end(), localOrSyncableNodes.begin(),
+                    localOrSyncableNodes.end());
+  }
   if (_accountBookmarkModel) {
     std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
         accountNodes = _accountBookmarkModel->GetNodesByURL(url);
-    localOrSyncableNodes.insert(localOrSyncableNodes.end(),
-                                accountNodes.begin(), accountNodes.end());
+    allNodes.insert(allNodes.end(), accountNodes.begin(), accountNodes.end());
   }
-  return localOrSyncableNodes;
+  return allNodes;
 }
 
 // Clears the reindex stack.
