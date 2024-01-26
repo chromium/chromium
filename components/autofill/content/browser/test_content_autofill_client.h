@@ -29,9 +29,6 @@ class TestContentAutofillClient
   void InitAgent(
       base::PassKey<ContentAutofillDriverFactory> pass_key,
       const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) override;
-
- private:
-  bool use_test_autofill_manager_ = false;
 };
 
 }  // namespace autofill
