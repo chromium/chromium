@@ -3497,6 +3497,10 @@ const char kTopLevelTpcdTrialSettingsDescription[] =
     "https://developer.chrome.com/blog/cookie-countdown-2023oct/ for more "
     "details.";
 
+const char kCookieSettingsUiAlignmentName[] = "Cookie Settings UI Alignment";
+const char kCookieSettingsUiAlignmentDescription[] =
+    "Updates UI on cookie settings page to align with Tracking Protection UI.";
+
 const char kIpProtectionV1Name[] = "IP Protection Setting";
 const char kIpProtectionV1Description[] =
     "Adds an IP Protection setting to the cookies settings page.";

@@ -189,6 +189,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionV1);
 
+// Enables updated cookie settings page UI.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kCookieSettingsUiAlignment);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the trackingProtectionNoticeController to notify the
 // TrackingProtectionOnboardingService when a notice was requested (Message

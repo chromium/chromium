@@ -8150,6 +8150,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
 #endif
 
+    {"cookie-settings-ui-alignment",
+     flag_descriptions::kCookieSettingsUiAlignmentName,
+     flag_descriptions::kCookieSettingsUiAlignmentDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kCookieSettingsUiAlignment)},
+
     {"ip-protection-v1", flag_descriptions::kIpProtectionV1Name,
      flag_descriptions::kIpProtectionV1Description, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(privacy_sandbox::kIpProtectionV1)},

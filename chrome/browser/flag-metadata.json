@@ -1358,6 +1358,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "cookie-settings-ui-alignment",
+    "owners": [ "fmacintosh@google.com", "koilos@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "coral-feature-key",
     "owners": [ "cros-coral@google.com" ],
     "expiry_milestone": 122
