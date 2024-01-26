@@ -198,7 +198,8 @@ class TestWaylandServerThread : public base::Thread,
   bool SetupExplicitSynchronizationProtocol(
       ShouldUseExplicitSynchronizationProtocol usage);
 
-  std::unique_ptr<base::MessagePump> CreateMessagePump();
+  std::unique_ptr<base::MessagePump> CreateMessagePump(
+      base::OnceClosure closure);
 
   // Executes the closure and flushes the server event queue. Must be run on
   // server's thread.
