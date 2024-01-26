@@ -64,10 +64,19 @@ public abstract class BasePageStation extends TransitStation {
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
-    public TabSwitcherStation openTabSwitcher() {
+    public <T extends TabSwitcherStation> T openTabSwitcher(Class<T> expectedDestination) {
         recheckEnterConditions();
 
-        TabSwitcherStation destination = new TabSwitcherStation(mChromeTabbedActivityTestRule);
+        T destination;
+        if (mIncognito) {
+            destination =
+                    expectedDestination.cast(
+                            new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule));
+        } else {
+            destination =
+                    expectedDestination.cast(
+                            new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
+        }
         return Trip.travelSync(
                 this, destination, (e) -> onView(TAB_SWITCHER_BUTTON).perform(click()));
     }

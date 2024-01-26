@@ -65,7 +65,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 if (tabModelSelector.getModel(false).getCount() == 0) {
                     destination =
                             expectedDestination.cast(
-                                    new TabSwitcherStation(mChromeTabbedActivityTestRule));
+                                    new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
                 } else {
                     destination =
                             expectedDestination.cast(
@@ -78,7 +78,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 // No tabs left, so closing the last will take us to the tab switcher.
                 destination =
                         expectedDestination.cast(
-                                new TabSwitcherStation(mChromeTabbedActivityTestRule));
+                                new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
             }
         } else {
             // Another tab will be displayed.

@@ -195,6 +195,7 @@ java_group("chrome_java_unit_test_support") {
 
 android_library("chrome_java_transit") {
   testonly = true
+  resources_package = "org.chromium.chrome.test"
 
   sources = [
     "javatests/src/org/chromium/chrome/test/transit/BasePageStation.java",
@@ -202,12 +203,14 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/EntryPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/HubAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/HubStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/IncognitoTabSwitcherStation.java",
     "javatests/src/org/chromium/chrome/test/transit/NewTabPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/NtpLoadedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/PageAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/PageInteractableOrHiddenCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/PageLoadedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/PageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/RegularTabSwitcherStation.java",
     "javatests/src/org/chromium/chrome/test/transit/TabSwitcherActionMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/TabSwitcherStation.java",
   ]
@@ -218,7 +221,9 @@ android_library("chrome_java_transit") {
     "//base:base_java_test_support",
     "//base/test:public_transit_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
+    "//chrome/android/features/tab_ui:java_resources",
     "//chrome/browser/hub:factory_java",
     "//chrome/browser/hub:java",
     "//chrome/browser/hub/internal:java",

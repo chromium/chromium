@@ -38,6 +38,28 @@ public class TransitAsserts {
         }
     }
 
+    /**
+     * Asserts the current station is of a given expected type.
+     *
+     * @param stationType the expected type of {@link TransitStation}
+     * @param situation a String describing the context of the check for a clear assert message
+     * @param allowNull whether no active station is considered an expected state
+     */
+    public static void assertCurrentStationType(
+            Class<? extends TransitStation> stationType, String situation, boolean allowNull) {
+        TransitStation activeStation = TrafficControl.getActiveStation();
+        if ((activeStation == null && !allowNull)
+                || (activeStation != null && !stationType.isInstance(activeStation))) {
+            raiseAssertion(
+                    String.format(
+                            "Expected current station to be of type <%s> at <%s>, but was actually"
+                                    + " of type <%s>",
+                            stationType,
+                            situation,
+                            activeStation != null ? activeStation.getClass() : "null"));
+        }
+    }
+
     private static void raiseAssertion(String message) {
         List<TransitStation> allStations = TrafficControl.getAllStations();
         assert false : message + "\n" + stationListToString(allStations);

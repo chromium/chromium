@@ -31,6 +31,17 @@ import java.util.regex.Pattern;
 
 /** {@link Condition}s related to Android {@link View}s. */
 public class ViewConditions {
+    /**
+     * Provides a View that has been matched previously.
+     *
+     * <p>Used by Conditions that want to check elements that had been matched by another
+     * Conditions, e.g. a {@link DoesNotExistAnymoreCondition} needs to check the View matched by a
+     * {@link DisplayedCondition} does not exist anymore.
+     */
+    public interface MatchedViewProvider {
+        View getViewMatched();
+    }
+
     /** Fulfilled when a single matching View exists and is displayed. */
     public static class DisplayedCondition extends ExistsCondition {
         public DisplayedCondition(Matcher<View> matcher) {
@@ -38,8 +49,47 @@ public class ViewConditions {
         }
     }
 
+    /**
+     * Fulfilled when a single matching View exists and is displayed, but ignored if |gate| returns
+     * true.
+     */
+    public static class GatedDisplayedCondition extends InstrumentationThreadCondition
+            implements MatchedViewProvider {
+
+        private final DisplayedCondition mDisplayedCondition;
+        private final Condition mGate;
+
+        public GatedDisplayedCondition(Matcher<View> matcher, Condition gate) {
+            super();
+            mDisplayedCondition = new DisplayedCondition(matcher);
+            mGate = gate;
+        }
+
+        @Override
+        public boolean check() {
+            if (!mGate.check()) {
+                return true;
+            }
+
+            return mDisplayedCondition.check();
+        }
+
+        @Override
+        public String buildDescription() {
+            return String.format(
+                    "%s (if %s)", mDisplayedCondition.buildDescription(), mGate.buildDescription());
+        }
+
+        // interface {@link MatchedViewProvider}
+        @Override
+        public View getViewMatched() {
+            return mDisplayedCondition.getViewMatched();
+        }
+    }
+
     /** Fulfilled when a single matching View exists. */
-    public static class ExistsCondition extends InstrumentationThreadCondition {
+    public static class ExistsCondition extends InstrumentationThreadCondition
+            implements MatchedViewProvider {
         private final Matcher<View> mMatcher;
         private View mViewMatched;
 
@@ -95,6 +145,8 @@ public class ViewConditions {
             }
         }
 
+        // interface {@link MatchedViewProvider}
+        @Override
         public View getViewMatched() {
             return mViewMatched;
         }
@@ -104,13 +156,13 @@ public class ViewConditions {
     public static class DoesNotExistAnymoreCondition extends InstrumentationThreadCondition {
         private final Matcher<View> mMatcher;
         private Matcher<View> mStricterMatcher;
-        private final ExistsCondition mExistsCondition;
+        private final MatchedViewProvider mMatchedViewProvider;
 
         public DoesNotExistAnymoreCondition(
-                Matcher<View> matcher, ExistsCondition existsCondition) {
+                Matcher<View> matcher, MatchedViewProvider matchedViewProvider) {
             super();
             mMatcher = matcher;
-            mExistsCondition = existsCondition;
+            mMatchedViewProvider = matchedViewProvider;
         }
 
         @Override
@@ -130,8 +182,8 @@ public class ViewConditions {
             Matcher<View> matcherToUse;
             if (mStricterMatcher != null) {
                 matcherToUse = mStricterMatcher;
-            } else if (mExistsCondition.getViewMatched() != null) {
-                mStricterMatcher = is(mExistsCondition.getViewMatched());
+            } else if (mMatchedViewProvider.getViewMatched() != null) {
+                mStricterMatcher = is(mMatchedViewProvider.getViewMatched());
                 rebuildDescription();
                 matcherToUse = mStricterMatcher;
             } else {
