@@ -1954,6 +1954,28 @@ inline constexpr char kF11KeyModifier[] = "ash.settings.f11_key_modifier";
 // settings. Can be controlled through the F12KeyModifier policy.
 inline constexpr char kF12KeyModifier[] = "ash.settings.f12_key_modifier";
 
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the Home/End "six pack" keys. These settings can be
+// controlled through policy HomeAndEndKeysModifier.
+inline constexpr char kHomeAndEndKeysModifier[] =
+    "ash.settings.home_and_end_keys_modifier";
+
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the PageUp/PageUp "six pack" keys. These settings
+// can be controlled through policy PageUpAndPageDownKeysModifier.
+inline constexpr char kPageUpAndPageDownKeysModifier[] =
+    "ash.settings.page_up_and_page_down_keys_modifier";
+
+// An integer pref that controls the default shortcut (Alt/Search/Disabled) for
+// remapping a key event to the Delete "six pack" key. This setting can be
+// controlled through policy DeleteKeyModifier.
+inline constexpr char kDeleteKeyModifier[] = "ash.settings.delete_key_modifier";
+
+// An integer pref that controls the default shortcut (Search/Disabled) for
+// remapping a key event to the Insert "six pack" key. This setting can be
+// controlled through policy InsertKeyModifier.
+inline constexpr char kInsertKeyModifier[] = "ash.settings.insert_key_modifier";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

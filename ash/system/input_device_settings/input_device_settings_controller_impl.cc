@@ -687,6 +687,18 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kF12KeyModifier,
       static_cast<int>(ui::mojom::ExtendedFkeysModifier::kDisabled));
+  pref_registry->RegisterIntegerPref(
+      prefs::kHomeAndEndKeysModifier,
+      static_cast<int>(ui::mojom::SixPackShortcutModifier::kNone));
+  pref_registry->RegisterIntegerPref(
+      prefs::kPageUpAndPageDownKeysModifier,
+      static_cast<int>(ui::mojom::SixPackShortcutModifier::kNone));
+  pref_registry->RegisterIntegerPref(
+      prefs::kDeleteKeyModifier,
+      static_cast<int>(ui::mojom::SixPackShortcutModifier::kNone));
+  pref_registry->RegisterIntegerPref(
+      prefs::kInsertKeyModifier,
+      static_cast<int>(ui::mojom::SixPackShortcutModifier::kNone));
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(

@@ -2021,6 +2021,10 @@ chromium-metrics-reviews@google.com.
   <int value="1201" label="F12KeyModifier"/>
   <int value="1202" label="VirtualKeyboardSmartVisibilityEnabled"/>
   <int value="1203" label="WebAnnotations"/>
+  <int value="1204" label="DeleteKeyModifier"/>
+  <int value="1205" label="HomeAndEndKeysModifier"/>
+  <int value="1206" label="PageUpAndPageDownKeysModifier"/>
+  <int value="1207" label="InsertKeyModifier"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
