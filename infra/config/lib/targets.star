@@ -13,24 +13,29 @@ load("./nodes.star", "nodes")
 #
 # Created by:
 # * functions in targets.binaries
-# * targets.tests.junit_test
-#   * a binary with type "generated_script" and the same name as the test is
-#     created
-# * targets.compile_target
-#   * a binary is created if name != "all", so that an entry will be generated
-#     in gn_isolate_map.pyl
 #
 # Parents:
-# * project (1)
-#   * created for all binaries
-#   * traversed to generate entries in gn_isolate_map.pyl
 # * legacy-test (>=0)
 #   * created by targets.test.gtest_test and targets.tests.isolated_script_test
 #   * traversed when generating details in test_suites.pyl for a test in a basic
 #     suite that references a binary
-# TODO(gbeaty) Create a separate node type for gn_isolate_map.pyl entries so
-# that we don't create binary nodes for compile targets or junit tests
 _TARGET_BINARY = nodes.create_unscoped_node_type("target-binary")
+
+# A mapping from the ninja target name to GN label and associated details.
+#
+# Created by:
+# * functions in targets.binaries
+# * targets.tests.junit_test
+#   * a mapping with type "generated_script" and the same name as the test is
+#     created
+# * targets.compile_target
+#   * a mapping is created if name != "all"
+#
+# Parents:
+# * project (1)
+#   * created for all mappings
+#   * traversed to generate entries in gn_isolate_map.pyl
+_TARGET_LABEL_MAPPING = nodes.create_unscoped_node_type("target-label-mapping")
 
 # A set of modifications to make when expanding tests in a suite
 #
@@ -244,6 +249,29 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
 def _create_compile_target(*, name):
     _COMPILE_TARGET.add(name)
 
+def _create_label_mapping(
+        *,
+        name,
+        type,
+        label,
+        label_type = None,
+        executable = None,
+        executable_suffix = None,
+        script = None,
+        skip_usage_check = False,
+        args = None):
+    mapping_key = _TARGET_LABEL_MAPPING.add(name, props = dict(
+        type = type,
+        label = label,
+        label_type = label_type,
+        executable = executable,
+        executable_suffix = executable_suffix,
+        script = script,
+        skip_usage_check = skip_usage_check,
+        args = args,
+    ))
+    graph.add_edge(keys.project(), mapping_key)
+
 def _create_binary(
         *,
         name,
@@ -256,7 +284,8 @@ def _create_binary(
         skip_usage_check = False,
         args = None,
         test_config = None):
-    binary_key = _TARGET_BINARY.add(name, props = dict(
+    _create_label_mapping(
+        name = name,
         type = type,
         label = label,
         label_type = label_type,
@@ -265,9 +294,11 @@ def _create_binary(
         script = script,
         skip_usage_check = skip_usage_check,
         args = args,
+    )
+
+    _TARGET_BINARY.add(name, props = dict(
         test_config = test_config,
     ))
-    graph.add_edge(keys.project(), binary_key)
 
     _create_compile_target(
         name = name,
@@ -365,21 +396,18 @@ def _compile_target(*, name, label = None, skip_usage_check = False):
 
     # The all target is a special ninja target that doesn't map to a GN label
     # and so we don't create an entry in gn_isolate_map.pyl
-    if name == "all":
-        if label != None:
-            fail("label should not be set for compile target all")
-        _create_compile_target(
+    if name != "all":
+        if label == None:
+            fail("label must be set in compile_target {}".format(name))
+        _create_label_mapping(
             name = name,
+            type = "additional_compile_target",
+            label = label,
+            skip_usage_check = skip_usage_check,
         )
-        return
 
-    if label == None:
-        fail("label must be set in compile_target {}".format(name))
-    _create_binary(
+    _create_compile_target(
         name = name,
-        type = "additional_compile_target",
-        label = label,
-        skip_usage_check = skip_usage_check,
     )
 
 def _console_test_launcher(
@@ -667,7 +695,10 @@ def _junit_test(*, name, label, skip_usage_check = False):
 
     # We don't need to reuse the test binary for multiple junit tests, so just
     # define the isolate entry as part of the test declaration
-    _create_binary(
+    _create_compile_target(
+        name = name,
+    )
+    _create_label_mapping(
         name = name,
         type = "generated_script",
         label = label,
@@ -1417,7 +1448,7 @@ _PYL_HEADER_FMT = """\
 
 def _generate_gn_isolate_map_pyl(ctx):
     entries = []
-    for n in graph.children(keys.project(), _TARGET_BINARY.kind, graph.KEY_ORDER):
+    for n in graph.children(keys.project(), _TARGET_LABEL_MAPPING.kind, graph.KEY_ORDER):
         entries.append('  "{}": {{'.format(n.key.id))
         entries.append('    "label": "{}",'.format(n.props.label))
         if n.props.label_type != None:
