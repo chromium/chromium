@@ -341,7 +341,6 @@ public class SigninFirstRunMediator
             mDelegate.advanceToNextPage();
             return;
         }
-        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager =
                 IdentityServicesProvider.get()
                         .getSigninManager(
@@ -372,8 +371,10 @@ public class SigninFirstRunMediator
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
                         mSelectedAccountEmail);
-        assert selectedAccount != null;
-        signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
+        if (selectedAccount != null) {
+            mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
+            signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
+        }
     }
 
     /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */
