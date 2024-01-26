@@ -114,12 +114,15 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void OpenBugReportingLink() override;
 
   // Opens the Compose Learn More page in a new tab when the "Learn more" link
-  // is clicked in the FRE dialog.
+  // is clicked in the FRE or Compose dialog.
   void OpenComposeLearnMorePage() override;
 
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
   void OpenFeedbackSurveyLink() override;
+
+  // Opens the sign in page in a new tab when the "Sign in" link is clicked.
+  void OpenSignInPage() override;
 
   // Saves the user feedback supplied form the UI to include in quality logs.
   void SetUserFeedback(compose::mojom::UserFeedback feedback) override;

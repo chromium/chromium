@@ -616,7 +616,14 @@
 
     <div id="errorFooter" class="footer"
         hidden="[[!hasFailedResponse_(response_)]]">
-      <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
+      <div on-click="onFooterClick_" class="footer-text">
+        <span hidden="[[hasErrorWithLink_(response_)]]"
+          >[[failedResponseErrorText_(response_)]]</span>
+        <span hidden="[[!hasUnsupportedLanguageResponse_(response_)]]"
+          >$i18nRaw{errorUnsupportedLanguage}</span>
+        <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
+          >$i18nRaw{errorPermissionDenied}</span>
+      </div>
     </div>
 
     <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">

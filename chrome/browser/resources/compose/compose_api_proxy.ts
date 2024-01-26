@@ -16,6 +16,7 @@ export interface ComposeApiProxy {
   openComposeLearnMorePage(): void;
   openComposeSettings(): void;
   openFeedbackSurveyLink(): void;
+  openSignInPage(): void;
   setUserFeedback(reason: UserFeedback): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
@@ -88,6 +89,9 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeSessionPageHandler.openFeedbackSurveyLink();
   }
 
+  openSignInPage() {
+    this.composeSessionPageHandler.openSignInPage();
+  }
 
   requestInitialState(): Promise<OpenMetadata> {
     return this.composeSessionPageHandler.requestInitialState().then(

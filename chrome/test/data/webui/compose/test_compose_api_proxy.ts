@@ -44,7 +44,9 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'compose',
       'rewrite',
       'openBugReportingLink',
+      'openComposeLearnMorePage',
       'openFeedbackSurveyLink',
+      'openSignInPage',
       'requestInitialState',
       'saveWebuiState',
       'setUserFeedback',
@@ -89,10 +91,16 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     this.methodCalled('openBugReportingLink');
   }
 
-  openComposeLearnMorePage() {}
+  openComposeLearnMorePage() {
+    this.methodCalled('openComposeLearnMorePage');
+  }
 
   openFeedbackSurveyLink() {
     this.methodCalled('openFeedbackSurveyLink');
+  }
+
+  openSignInPage() {
+    this.methodCalled('openSignInPage');
   }
 
   openComposeSettings() {}

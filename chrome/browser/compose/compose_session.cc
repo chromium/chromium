@@ -77,6 +77,7 @@ const char kOnDeviceComposeBugReportURL[] = "https://goto.google.com/ccbrfdod";
 const char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
+const char kSignInPageURL[] = "https://accounts.google.com";
 const char kOnDeviceComposeFeedbackSurveyURL[] =
     "https://goto.google.com/ccfsfdod";
 
@@ -609,6 +610,13 @@ void ComposeSession::OpenFeedbackSurveyLink() {
   web_contents_->OpenURL(content::OpenURLParams(
       GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK,
+      /* is_renderer_initiated= */ false));
+}
+
+void ComposeSession::OpenSignInPage() {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(kSignInPageURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated= */ false));
 }
 

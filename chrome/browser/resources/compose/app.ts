@@ -500,15 +500,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
     e.preventDefault();
-    // The "File a bug" and "survey" links are embedded into the string.
-    // Embedded links do not work in WebUI so handle each click in the parent
-    // event listener.
+    // The "File a bug", "survey", and "sign in" links are embedded into the
+    // string. Embedded links do not work in WebUI so handle each click in the
+    // parent event listener.
     switch ((e.target as HTMLElement).id) {
       case 'bugLink':
         this.apiProxy_.openBugReportingLink();
         break;
       case 'surveyLink':
         this.apiProxy_.openFeedbackSurveyLink();
+        break;
+      case 'signInLink':
+        this.apiProxy_.openSignInPage();
         break;
       default:
         this.apiProxy_.openComposeLearnMorePage();
@@ -638,6 +641,27 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.response_.status !== ComposeStatus.kOk;
   }
 
+  private hasErrorWithLink_(): boolean {
+    return this.hasUnsupportedLanguageResponse_() ||
+        this.hasPermissionDeniedResponse_();
+  }
+
+  private hasUnsupportedLanguageResponse_(): boolean {
+    if (!this.response_) {
+      return false;
+    }
+
+    return this.response_.status === ComposeStatus.kUnsupportedLanguage;
+  }
+
+  private hasPermissionDeniedResponse_(): boolean {
+    if (!this.response_) {
+      return false;
+    }
+
+    return this.response_.status === ComposeStatus.kPermissionDenied;
+  }
+
   private onDeviceEvaluationUsed_(): boolean {
     return Boolean(this.response_?.onDeviceEvaluationUsed);
   }
@@ -656,15 +680,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     switch (this.response_?.status) {
       case ComposeStatus.kFiltered:
         return this.i18n('errorFiltered');
-      case ComposeStatus.kUnsupportedLanguage:
-        return this.i18n('errorUnsupportedLanguage');
-      case ComposeStatus.kPermissionDenied:
-        return this.i18n('errorPermissionDenied');
       case ComposeStatus.kRequestThrottled:
         return this.i18n('errorRequestThrottled');
-      case ComposeStatus.kClientError:
       case ComposeStatus.kOffline:
         return this.i18n('errorOffline');
+      case ComposeStatus.kClientError:
       case ComposeStatus.kMisconfiguration:
       case ComposeStatus.kServerError:
       case ComposeStatus.kInvalidRequest:
