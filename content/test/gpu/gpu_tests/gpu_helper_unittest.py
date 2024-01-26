@@ -250,7 +250,7 @@ class TagHelpersUnittest(unittest.TestCase):
                           feature_status={'skia_graphite': 'disabled'}),
         # Feature status on.
         TagHelperTestCase('graphite-enabled',
-                          feature_status={'skia_graphite': 'enabled'}),
+                          feature_status={'skia_graphite': 'enabled_on'}),
     ]
 
     for tc in cases:
