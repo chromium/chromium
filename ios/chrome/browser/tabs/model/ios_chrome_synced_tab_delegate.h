@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -65,7 +66,7 @@ class IOSChromeSyncedTabDelegate
   bool GetSessionStorageIfNeeded() const;
 
   // The associated WebState.
-  web::WebState* const web_state_;
+  const raw_ptr<web::WebState> web_state_;
 
   // Whether placeholder tabs support is enabled.
   const bool placeholder_tabs_support_enabled_;

@@ -185,7 +185,7 @@ void SessionRestorationWebStateListObserver::MarkWebStateDirty(
     dirty_web_states_.insert(web_state);
 
     if (!is_web_state_list_dirty_) {
-      callback_.Run(web_state_list_);
+      callback_.Run(web_state_list_.get());
     }
   }
 }
@@ -197,6 +197,6 @@ void SessionRestorationWebStateListObserver::MarkDirty() {
 
   is_web_state_list_dirty_ = true;
   if (dirty_web_states_.empty()) {
-    callback_.Run(web_state_list_);
+    callback_.Run(web_state_list_.get());
   }
 }

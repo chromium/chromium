@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -47,10 +48,10 @@
   // Bridges C++ UrlLoadingObserver methods to TabEventsMediator.
   std::unique_ptr<UrlLoadingObserverBridge> _loadingObserverBridge;
 
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
-  UrlLoadingNotifierBrowserAgent* _loadingNotifier;
-  ChromeBrowserState* _browserState;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> _loadingNotifier;
+  raw_ptr<ChromeBrowserState> _browserState;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList

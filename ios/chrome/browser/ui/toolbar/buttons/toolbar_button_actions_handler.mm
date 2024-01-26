@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -21,7 +22,7 @@
 #import "url/gurl.h"
 
 @implementation ToolbarButtonActionsHandler {
-  feature_engagement::Tracker* _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 }
 
 - (instancetype)initWithEngagementTracker:

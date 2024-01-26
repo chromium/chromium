@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 
 class ChromeBrowserState;
@@ -50,7 +51,7 @@ class IOSChromeTabRestoreServiceClient
   bool HasLastSession() override;
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
 
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_

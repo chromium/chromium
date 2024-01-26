@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/stl_util.h"
@@ -113,7 +114,7 @@ BOOL ShouldSwitchOmniboxToBottom(
   /// Observes web state activation.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 
   /// Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;

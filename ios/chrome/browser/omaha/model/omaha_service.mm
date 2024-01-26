@@ -13,6 +13,7 @@
 #import "base/i18n/time_formatting.h"
 #import "base/ios/device_util.h"
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/no_destructor.h"
 #import "base/rand_util.h"
@@ -110,7 +111,7 @@ class XmlElement {
   }
 
  private:
-  XmlWriter* writer_ = nullptr;
+  raw_ptr<XmlWriter> writer_ = nullptr;
   const std::string name_;
 };
 

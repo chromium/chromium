@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_IOS_SYNCED_WINDOW_DELEGATE_GETTER_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_IOS_SYNCED_WINDOW_DELEGATE_GETTER_H_
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
 

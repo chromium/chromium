@@ -5,6 +5,7 @@
 #import <objc/runtime.h>
 
 #import "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -211,7 +212,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   __strong NSString* session_identifier_ = nil;
   TestSessionService* test_session_service_;
-  SessionRestorationBrowserAgent* session_restoration_agent_;
+  raw_ptr<SessionRestorationBrowserAgent> session_restoration_agent_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
 };
@@ -476,7 +477,7 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
   base::ScopedObservation<SessionRestorationBrowserAgent,
                           SessionRestorationObserver>
       scoped_observation(&observer);
-  scoped_observation.Observe(session_restoration_agent_);
+  scoped_observation.Observe(session_restoration_agent_.get());
 
   SessionWindowIOS* window =
       CreateSessionWindow(SessionInfo<3>{.active_index = 2,

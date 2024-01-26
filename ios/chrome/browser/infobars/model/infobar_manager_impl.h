@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_MANAGER_IMPL_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_MANAGER_IMPL_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -45,7 +46,7 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
