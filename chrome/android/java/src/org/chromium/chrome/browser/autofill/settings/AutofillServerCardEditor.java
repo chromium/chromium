@@ -56,6 +56,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     private boolean mAwaitingUpdateVirtualCardEnrollmentResponse;
     private boolean mServerCardEditorClosed;
     private Callback<Boolean> mVirtualCardEnrollmentUpdateResponseCallback;
+    private Callback<String> mServerCardEditLinkOpenerCallback =
+            url -> CustomTabActivity.showInfoPage(getActivity(), url);
 
     // Enum to represent the types of cards that show info in a server card editor page.
     @IntDef({CardType.SERVER_CARD, CardType.VIRTUAL_CARD})
@@ -182,9 +184,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
                                             ? CardType.VIRTUAL_CARD
                                             : CardType.SERVER_CARD,
                                     ButtonType.EDIT_CARD);
-                            CustomTabActivity.showInfoPage(
-                                    getActivity(),
-                                    ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL);
+                            mServerCardEditLinkOpenerCallback.onResult(getEditCardLink());
                         });
 
         final LinearLayout virtualCardContainerLayout =
@@ -197,7 +197,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
             mVirtualCardEnrollmentButton.setOnClickListener(
                     view -> {
                         assert mDelegate != null
-                                : "mDelegate must be initialized before making (un)enrolment calls.";
+                                : "mDelegate must be initialized before making (un)enrolment"
+                                        + " calls.";
                         final ModalDialogManager modalDialogManager =
                                 new ModalDialogManager(
                                         new AppModalPresenter(getActivity()), ModalDialogType.APP);
@@ -349,6 +350,21 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
                         : R.string.autofill_card_editor_virtual_card_turn_on_button_label);
     }
 
+    // Returns the URL for managing the card in GPay Web.
+    // TODO (crbug.com/1518026): For sandbox cards, direct to the sandbox card management page at
+    // pay.sandbox.google.com.
+    private String getEditCardLink() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB)) {
+            return ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL;
+        }
+        return new StringBuilder(
+                        ChromeStringConstants.AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB)
+                .append("&id=")
+                .append(mCard.getInstrumentId())
+                .toString();
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.autofill_server_card_editor;
@@ -385,5 +401,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    public void setServerCardEditLinkOpenerCallbackForTesting(Callback<String> callback) {
+        mServerCardEditLinkOpenerCallback = callback;
     }
 }

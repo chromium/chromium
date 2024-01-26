@@ -173,6 +173,8 @@ public class AutofillServerCardEditorTest {
                     /* cvc= */ "");
 
     @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
+    @Mock private Callback<String> mServerCardEditLinkOpenerCallback;
+
     private AutofillTestHelper mAutofillTestHelper;
 
     @Before
@@ -959,6 +961,67 @@ public class AutofillServerCardEditorTest {
 
         // Ensure that the native delegate is cleaned up when the test has finished.
         verify(mNativeMock).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB})
+    public void testCustomUrlForServerCardEditPage_newGPayWebLinkEnabled() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(
+                        fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
+        mSettingsActivityTestRule
+                .getFragment()
+                .setServerCardEditLinkOpenerCallbackForTesting(mServerCardEditLinkOpenerCallback);
+
+        // Verify that the edit card button is shown and enabled.
+        onView(withId(R.id.edit_server_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_server_card)).check(matches(isEnabled()));
+
+        // Click the server card edit button.
+        onView(withId(R.id.edit_server_card)).perform(click());
+
+        // Verify that the callback to open the custom tab for editing card was called with the
+        // expected URL.
+        verify(mServerCardEditLinkOpenerCallback)
+                .onResult(
+                        eq(
+                                "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                        + SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getInstrumentId()));
+
+        // Ensure that the native delegate is cleaned up when the test has finished.
+        finishAndWaitForActivity(activity);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB})
+    public void testCustomUrlForServerCardEditPage_newGPayWebLinkDisabled() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(
+                        fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
+        mSettingsActivityTestRule
+                .getFragment()
+                .setServerCardEditLinkOpenerCallbackForTesting(mServerCardEditLinkOpenerCallback);
+
+        // Verify that the edit card button is shown and enabled.
+        onView(withId(R.id.edit_server_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_server_card)).check(matches(isEnabled()));
+
+        // Click the server card edit button.
+        onView(withId(R.id.edit_server_card)).perform(click());
+
+        // Verify that the callback to open the custom tab for editing card was called with the
+        // expected URL.
+        verify(mServerCardEditLinkOpenerCallback)
+                .onResult(eq("https://payments.google.com/#paymentMethods"));
+
+        // Ensure that the native delegate is cleaned up when the test has finished.
+        finishAndWaitForActivity(activity);
     }
 
     private void finishAndWaitForActivity(Activity activity) {
