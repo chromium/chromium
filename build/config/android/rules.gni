@@ -5126,6 +5126,9 @@ if (enable_java_templates && is_android) {
         data_deps += [ "//build/android/stacktrace:java_deobfuscate" ]
         data += [ _proguard_mapping_path ]
       }
+      if (is_official_build) {
+        args += [ "--is-official-build" ]
+      }
     }
 
     _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
