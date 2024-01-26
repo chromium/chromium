@@ -426,7 +426,7 @@
                 processIncomingFrame(single_frame);
                 curr_draws = [];
                 sources_this_frame = [];
-                threads_this_frame = [];
+                threads_this_frame.clear();
               }
               else {
                 const single_call = { "drawindex": curr_draws.length, "option": { "alpha": 5, "color": "#ff0000" }, "pos": [-1, -1], "size": [-1, -1], "source_index": -1, "thread_id": 1, "buff_id": -1 };
@@ -500,7 +500,7 @@
 
                     draw_calls.push({
                       "source_index": getSourceIndex("frame.render_pass.material"),
-                      "drawindex": 5,
+                      "drawindex": draw_calls.length + logs.length,
                       "option": { "alpha": 0, "color": "#00ff00" },
                       "pos": [
                         quad.rect_as_target_space_quad[0],
