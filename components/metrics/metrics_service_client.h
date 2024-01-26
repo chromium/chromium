@@ -158,10 +158,6 @@ class MetricsServiceClient {
   // Return true iff the system is currently on a cellular connection.
   virtual bool IsOnCellularConnection();
 
-  // Returns whether the allowlist for external experiment ids is enabled. Some
-  // embedders like WebLayer disable it. For Chrome, it should be enabled.
-  virtual bool IsExternalExperimentAllowlistEnabled();
-
   // Returns true iff UKM is allowed for all profiles.
   // See //components/ukm/observers/ukm_consent_state_observer.h for details.
   virtual bool IsUkmAllowedForAllProfiles();

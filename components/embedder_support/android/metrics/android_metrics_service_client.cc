@@ -268,8 +268,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   init_finished_ = true;
 
   synthetic_trial_registry_ =
-      std::make_unique<variations::SyntheticTrialRegistry>(
-          IsExternalExperimentAllowlistEnabled());
+      std::make_unique<variations::SyntheticTrialRegistry>();
   synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
 
   // Create the MetricsService immediately so that other code can make use of

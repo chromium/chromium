@@ -152,10 +152,6 @@ bool MetricsServiceClient::IsOnCellularConnection() {
   return false;
 }
 
-bool MetricsServiceClient::IsExternalExperimentAllowlistEnabled() {
-  return true;
-}
-
 bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return false;
 }
