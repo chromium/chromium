@@ -4609,9 +4609,28 @@
                     "enable_features": [
                         "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting",
-                        "FledgeFacilitatedTestingSignalsHeaders",
                         "SkipTpcdMitigationsForAds",
                         "TPCDAdHeuristicSubframeRequestTagging"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CookieDeprecationFacilitatedTestingFledgeTrustedSignalsHeaders": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "windows",
+                "mac",
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeFacilitatedTestingSignalsHeaders"
                     ]
                 }
             ]
