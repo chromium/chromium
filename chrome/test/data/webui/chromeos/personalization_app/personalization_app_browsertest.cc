@@ -151,7 +151,9 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplateQuery) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplates) {
+// TODO(b/322108635): Re-enable when the flakiness is resolved.
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
+                       DISABLED_SeaPenTemplates) {
   RunTest("chromeos/personalization_app/sea_pen_templates_element_test.js",
           "mocha.run()");
 }
