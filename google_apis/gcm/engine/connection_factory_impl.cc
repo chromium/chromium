@@ -261,9 +261,6 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     // the backoff entry that was saved off at login completion time.
     backoff_entry_.swap(previous_backoff_);
     backoff_entry_->InformOfRequest(false);
-  } else {
-    // We shouldn't be in backoff in thise case.
-    DCHECK_EQ(0, backoff_entry_->failure_count());
   }
 
   // At this point the last login time has been consumed or deemed irrelevant,
