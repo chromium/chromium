@@ -155,6 +155,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
 
+  const int random_anchor_sampling_period_;
+
   Member<IntersectionObserver> intersection_observer_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>

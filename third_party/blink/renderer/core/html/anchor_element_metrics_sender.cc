@@ -179,6 +179,10 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
                         TaskType::kInternalDefault),
                     this,
                     &AnchorElementMetricsSender::UpdateMetrics),
+      random_anchor_sampling_period_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kNavigationPredictor,
+          "random_anchor_sampling_period",
+          100)),
       clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(document.IsInOutermostMainFrame());
@@ -423,10 +427,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     mojom::blink::AnchorElementMetricsPtr anchor_element_metrics =
         CreateAnchorElementMetrics(anchor_element);
 
-    int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
-        blink::features::kNavigationPredictor, "random_anchor_sampling_period",
-        100);
-    int random = base::RandInt(1, sampling_period);
+    int random = base::RandInt(1, random_anchor_sampling_period_);
     if (random == 1) {
       // This anchor element is sampled in.
       const auto anchor_id = AnchorElementId(anchor_element);
