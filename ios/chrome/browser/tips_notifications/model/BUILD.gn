@@ -26,7 +26,11 @@ source_set("utils") {
     "utils.h",
     "utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
 }
 
 source_set("unit_tests") {
