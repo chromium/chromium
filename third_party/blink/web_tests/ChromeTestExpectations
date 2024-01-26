@@ -674,9 +674,6 @@ crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capita
 crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-030.html [ Failure Pass ]
 crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure Pass ]
 
-# Flaky
-crbug.com/1515071 external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
-
 # 12-05-2023 Flaky tests that trigger shard level retry
 crbug.com/1499775 external/wpt/css/css-contain/contain-paint-clip-015.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
