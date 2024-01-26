@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/fuchsia-compile-x64-dbg/gn-args.json"
+        "infra/config/generated/builders/try/fuchsia-arm64-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-dbg",
+              "builder": "fuchsia-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -20,14 +20,16 @@
                 "apply_configs": [
                   "mb"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "fuchsia"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "fuchsia_x64"
+                  "fuchsia_arm64",
+                  "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
               }
@@ -38,11 +40,10 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-dbg",
+          "builder": "fuchsia-arm64-rel",
           "project": "chromium"
         }
-      ],
-      "is_compile_only": true
+      ]
     }
   },
   "$build/flakiness": {

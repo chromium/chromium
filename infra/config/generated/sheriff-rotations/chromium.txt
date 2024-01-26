@@ -83,8 +83,10 @@ ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
 ci/fuchsia-arm64-cast-receiver-rel
-ci/fuchsia-x64-cast-receiver-dbg
+ci/fuchsia-arm64-rel
 ci/fuchsia-x64-cast-receiver-rel
+ci/fuchsia-x64-dbg
+ci/fuchsia-x64-rel
 ci/ios-catalyst
 ci/ios-device
 ci/ios-simulator
