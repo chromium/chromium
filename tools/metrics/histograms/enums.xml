@@ -30865,18 +30865,18 @@ Called by update_net_error_codes.py.-->
 
 <enum name="SearchEngineChoiceScreenEvents">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Choice Screen Was Displayed"/>
-  <int value="2" label="FRE Choice Screen Was Displayed"/>
-  <int value="3" label="Default Was Set"/>
-  <int value="4" label="FRE Default Was Set"/>
-  <int value="5" label="Learn More Screen Was Displayed"/>
-  <int value="6" label="Learn More Screen Was Displayed in the FRE"/>
+  <int value="1" label="[Dialog] Choice Screen Was Displayed"/>
+  <int value="2" label="[FRE] Choice Screen Was Displayed"/>
+  <int value="3" label="[Dialog] Default Was Set"/>
+  <int value="4" label="[FRE] Default Was Set"/>
+  <int value="5" label="[Dialog] Learn More Screen Was Displayed"/>
+  <int value="6" label="[FRE] Learn More Screen Was Displayed"/>
   <int value="7"
-      label="Profile Creation Choice Screen Was Displayed (Desktop only)"/>
-  <int value="8" label="Profile Creation Default Was Set (Desktop only)"/>
+      label="[Profile Creation] Choice Screen Was Displayed (Desktop only)"/>
+  <int value="8" label="[Profile Creation] Default Was Set (Desktop only)"/>
   <int value="9"
-      label="Learn More Screen Was Displayed in the Profile Creation Specific
-             Screen (Desktop only)"/>
+      label="[Profile Creation] Learn More Screen Was Displayed (Desktop
+             only)"/>
 </enum>
 
 <enum name="SearchEngineChoiceWipeReason">
