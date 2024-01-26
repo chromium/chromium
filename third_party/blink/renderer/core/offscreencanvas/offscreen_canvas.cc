@@ -666,10 +666,10 @@ void OffscreenCanvas::NotifyGpuContextLost() {
 void OffscreenCanvas::CheckForGpuContextLost() {
   // If the GPU has crashed, it is necessary to notify the OffscreenCanvas so
   // the context can be recovered.
-  if (ResourceProvider() && ResourceProvider()->IsAccelerated() &&
+  if (!context_lost() && ResourceProvider() &&
+      ResourceProvider()->IsAccelerated() &&
       ResourceProvider()->IsGpuContextLost()) {
     set_context_lost(true);
-    ReplaceResourceProvider(nullptr);
     NotifyGpuContextLost();
   }
 }
