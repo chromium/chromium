@@ -380,11 +380,11 @@ function sendCDPMessage(method, params) {
   return undefined;
 }
 
-/**
- * [RUN-3160] We have dependencies on this in the backend, via Target.evaluatePrivileged.
- * @deprecated Use {@link sendCDPMessage} instead.
- */
-// eslint-disable-next-line
+/**	
+ * [RUN-3160] We have dependencies on this in the backend, via Target.evaluatePrivileged.	
+ * @deprecated Use {@link sendCDPMessage} instead.	
+ */	
+// eslint-disable-next-line	
 const sendMessage = sendCDPMessage;
 
 
@@ -684,7 +684,7 @@ function buildRrpObjectResult(cdpReturnValue) {
     }
   } else {
     // Sometimes things go wrong.
-    // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage
+    // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendCDPMessage
     // from Pause_evaluateIn*.
     log(`[RuntimeError] buildRrpObjectResult called without cdpReturnValue ()`);
     rrpResult.failed = true;
@@ -811,8 +811,8 @@ function Pause_getExceptionValue() {
   return { exception: rv.exception ? buildRrpObjectFromCdpObject(rv.exception) : undefined, data: {} };
 }
 
-function Pause_getObjectPreview({ object, level = "full" }) {
-  const objectData = createPauseObject(object, level);
+function Pause_getObjectPreview({ object, level = "full", pageSizeForTesting = 0 }) {
+  const objectData = createPauseObject(object, level, pageSizeForTesting);
   return { data: { objects: [objectData] } };
 }
 
@@ -1265,11 +1265,15 @@ function isCdpObjectProxy(cdpObj) {
   return cdpObj.subtype === "proxy";
 }
 
+function isCdpObjectPromise(cdpObj) {
+  return cdpObj.subtype === "promise";
+}
+
 /**
  * @return {RRP.Pause.Object}
  * @see https://static.replay.io/protocol/tot/Pause/#type-Object
  */
-function createPauseObject(rrpId, level) {
+function createPauseObject(rrpId, level, pageSizeForTesting) {
   rrpId = rrpId + ""; // Must be a string.
   const existingPreview = gObjectPreviewByRrpId.get(rrpId);
   if (existingPreview) {
@@ -1284,7 +1288,7 @@ function createPauseObject(rrpId, level) {
   const { persistentId } = cdpObj;
   let preview;
   if (level != "none") {
-    preview = new ProtocolObjectPreview(rrpId, cdpObj, level).fill();
+    preview = new ProtocolObjectPreview(rrpId, cdpObj, level, pageSizeForTesting).fill();
   }
 
   return { objectId: rrpId, persistentId, className, preview };
@@ -1333,10 +1337,11 @@ const MaxItems = {
   "full": 1000,
 };
 
-function ProtocolObjectPreview(rrpId, obj, level) {
+function ProtocolObjectPreview(rrpId, obj, level, pageSizeForTesting) {
   this.rrpId = rrpId;
   this.cdpObj = obj;
   this.level = level;
+  this.pageSizeForTesting = pageSizeForTesting;
   this.overflow = false;
   this.numItems = 0;
   this.extra = {};
@@ -1355,21 +1360,33 @@ ProtocolObjectPreview.prototype = {
   },
 
   startAddItem(force) {
-    if (!force && this.numItems >= MaxItems[this.level]) {
-      this.overflow = true;
+    if (!force) {
+      if (this.hasReachedItemLimit) {
+        this.overflow = true;
+        return false;
+      }
+      this.numItems++;
+    }
+    return true;
+  },
+
+  checkAddProperty(ownerCdpObject, name) {
+    if (isObjectPropertyBlacklisted(ownerCdpObject, name)) {
       return false;
     }
-    this.numItems++;
+    if (this.getterValues?.has(name)) {
+      return false;
+    }
     return true;
   },
 
   addProperty(ownerCdpObject, rrpProp, force) {
-    if (isObjectPropertyBlacklisted(ownerCdpObject, rrpProp.name)) {
-      return;
+    if (this.checkAddProperty(ownerCdpObject, rrpProp.name)) {
+      this.addPropertyUnchecked(rrpProp, force);
     }
-    if (this.getterValues?.has(rrpProp.name)) {
-      return;
-    }
+  },
+
+  addPropertyUnchecked(rrpProp, force) {
     if (!this.startAddItem(force)) {
       return;
     }
@@ -1393,7 +1410,7 @@ ProtocolObjectPreview.prototype = {
 
     const rrpValue = evalPropRrpNotNull(this.raw, propKey);
     if (rrpValue) {
-      this.setGetterValue(propKey, rrpValue, force);
+      this.setGetterValueUnchecked(propKey, rrpValue, force);
     }
   },
 
@@ -1408,12 +1425,12 @@ ProtocolObjectPreview.prototype = {
     const plainValue = this.raw[propKey].call(this.raw);
     const rrpValue = createRrpValueRaw(plainValue);
     if (rrpValue) {
-      this.setGetterValue(propKey, rrpValue, /* force */ true);
+      this.setGetterValueUnchecked(propKey, rrpValue, /* force */ true);
     }
     return plainValue;
   },
 
-  setGetterValue(key, valueObject, force = true) {
+  setGetterValueUnchecked(key, valueObject, force = true) {
     if (!this.startAddItem(force)) {
       return;
     }
@@ -1434,56 +1451,155 @@ ProtocolObjectPreview.prototype = {
     Array_push.call(this.containerEntries, entry);
   },
 
-  get pageIndex() { return 0; },
+  get unlimitedItems() {
+    // Ignore prop limits of native objects.
+    // (Because that is how we do it in gecko.)
+    return isBlinkObject(this.raw, this.cdpObj);
+  },
 
-  get pageSize() {
-    if (isBlinkObject(this.raw, this.cdpObj) || CustomPreviewers[this.cdpObj.className]) {
-      // Don't limit props of native objects, and ignore prop limits.
-      // (Because that is how we do it in gecko.)
-      return 0;
-    }
+  get nRequestedItems() {
     return MaxItems[this.level] || 10;
   },
 
+  get hasReachedItemLimit() {
+    if (this.unlimitedItems) {
+      return false;
+    }
+    return this.numItems >= this.nRequestedItems;
+  },
+
+  /**
+   * Limit the amount of props we get back.
+   * @see https://linear.app/replay/issue/RUN-1315/very-bad-command-performance-getallframes-wandb#comment-f8f54931
+   */
+  get pageSize() {
+    // The +5 is a heuristic to force overflow.
+    // We theoretically only want to add +1 but we might end up not getting
+    // enough props to determine overflow, so +5 is slightly safer.
+    // If +5 is not enough, we will loop and do a lot more work.
+    if (this.pageSizeForTesting) {
+      return this.pageSizeForTesting;
+    }
+    if (this.unlimitedItems) {
+      return 0;
+    }
+    return this.nRequestedItems + 5;
+  },
+
+  /**
+   * Ignore certain prototype props.
+   */
+  shouldAddProp(cdpProp) {
+    // The debugger provides all prototype props on top of the object's own props.
+    // This heuristic happens to keep only what we want:
+    //    Own props and prototype getters.
+    // See: https://linear.app/replay/issue/RUN-1592#comment-4011cec0
+    return (cdpProp.isOwn || (cdpProp.configurable && cdpProp.enumerable)) &&
+      this.checkAddProperty(this.cdpObj, cdpProp.name);
+  },
+
   fill() {
+    // Data returned from V8 debugger.
     let cdpProperties;
-    if (this.level !== 'noProperties') {
-      // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
-      //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
-      //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
-      try {
-        cdpProperties = sendCDPMessage("Runtime.getProperties", {
-          objectId: this.cdpObj.objectId,
-          ownProperties: false,
-          generatePreview: false,
-          pageIndex: this.pageIndex,
-          pageSize: this.pageSize,
-          objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-        });
-      } catch (e) {
-        // No available context group; this can happen, so just return nothing.
-        if (e.code == CDPERROR_MISSINGCONTEXT) {
-          warning(`[RUN-2600] JS ProtocolObjectPreview.fill has no context.`);
-          cdpProperties = { result: [] };
-        } else {
-          throw e;
-        }
-      }
-    } else {
+
+    if (this.pageSizeForTesting && !(this.pageSizeForTesting > 0)) {
+      throw new Error("invalid pageSizeForTesting: " + this.pageSizeForTesting);
+    }
+
+    // Names of properties + getters.
+    const foundProps = new Set();
+
+    if (this.level === 'noProperties') {
       cdpProperties = { result: [] };
+    } else {
+      // Loop until we have as many items as requested. We need to loop because
+      // the debugger, for some reason, also returns many unwanted prototype
+      // props, which might wash out the actual props that we want.
+      // See |shouldAddProp| for reference.
+      let pageSize = 0;
+      let nReturnedProperties = 0;
+
+      do {
+        // Note: Often, we get more properties than we asked for.
+        pageSize = nReturnedProperties + this.pageSize;
+
+        // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
+        //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
+        //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
+        try {
+          cdpProperties = sendCDPMessage("Runtime.getProperties", {
+            objectId: this.cdpObj.objectId,
+            ownProperties: false,
+            generatePreview: false,
+            pageIndex: 0, // Warning: NYI
+            pageSize,
+            objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+          });
+        } catch (e) {
+          // No available context group; this can happen, so just return nothing.
+          if (e.code == CDPERROR_MISSINGCONTEXT) {
+            warning(`[RUN-2600] JS ProtocolObjectPreview.fill has no context.`);
+            cdpProperties = { result: [] };
+            break;
+          } else {
+            throw e;
+          }
+        }
+
+        if (!cdpProperties.result) {
+          return {
+            prototypeId: undefined
+          };
+        }
+        nReturnedProperties = cdpProperties.result.length;
+
+        /**
+         * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
+         */
+        for (let i = 0; i < cdpProperties.result.length; ++i) {
+          const cdpProp = cdpProperties.result[i];
+          const { name: propKey } = cdpProp;
+          if (propKey === "__proto__" || foundProps.has(propKey)) {
+            continue;
+          }
+          if (this.shouldAddProp(cdpProp)) {
+            foundProps.add(propKey);
+          }
+        }
+
+        // Keep going if we did not get enough items but the query returned as many items as requested.
+        // Note: Go to +1 for the `overflow` flag.
+        // log(`DDBG fill() C ${[foundProps.size, this.unlimitedItems, this.nRequestedItems, nReturnedProperties, pageSize].join(", ")}`);
+      } while (
+        !this.unlimitedItems &&
+        foundProps.size <= (this.nRequestedItems + 1) &&
+        nReturnedProperties >= pageSize
+      );
+    }
+    
+    for (const cdpProp of cdpProperties.result) {
+      const { name: propKey } = cdpProp;
+      if (!foundProps.has(propKey)) {
+        continue;
+      }
+      const rrpProp = createRrpPropertyDescriptor(cdpProp);
+      const force = false;
+      this.addPropertyUnchecked(rrpProp, force);
     }
 
-    if (!cdpProperties.result) {
-      return {
-        prototypeId: undefined
-      };
-    }
+    /**
+     * Explanation:The following logic depends on more `cdpProperties` but
+     * is not affected by above `pageSize`:
+     * 
+     * 1. Inherent props of built-ins, such as Error.stack or Array.length are
+     *    always added unconditionally.
+     * 2. {Weak,}{Set,Map} is a container type whose contents are not in
+     *    `properties`, but rather require a separate query that only returns
+     *    actual container contents, thereby not requiring above loop.
+     */
 
-    // Add data for blink objects
-    this.extra = getExtraObjectPreviewData(this.cdpObj, cdpProperties) || {};
-
+    // Add builtin-specific data.
     if (!isPrototype(this.raw)) { // Ignore prototype itself.
-      // Add class-specific data.
       const previewers = CustomPreviewers[this.cdpObj.className];
       if (previewers) {
         for (const entry of previewers) {
@@ -1494,63 +1610,32 @@ ProtocolObjectPreview.prototype = {
             const cdpEntry = cdpProperties.result.find(prop => prop.name === entry);
             if (cdpEntry) {
               const rrpEntry = buildRrpObjectFromCdpObject(cdpEntry.value);
-              this.setGetterValue(entry, rrpEntry);
+              this.setGetterValueUnchecked(entry, rrpEntry);
             }
           }
         }
       }
     }
-
-
-    // add properties + getterValues (based on what we did in gecko).
-    const addedProps = new Set();
-
-    /**
-     * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
-     */
-    for (const cdpProp of cdpProperties.result) {
-      if (this.overflow) {
-        // early out
-        break;
-      }
-
-      const { name: propKey } = cdpProp;
-      if (propKey === "__proto__" || addedProps.has(propKey)) {
-        continue;
-      }
-      addedProps.add(propKey);
-
-      // only add complete prop data for own props
-      const rrpProp = createRrpPropertyDescriptor(cdpProp);
-      // NOTE: according to the official docs, CDP will just only provide `get` and `set`
-      // for "accessor descriptors only", so we use some heuristics to "kinda" guess what might be good targets
-      // while ignoring static members of native classes in the proto chain.
-      // See: https://linear.app/replay/issue/RUN-1592#comment-4011cec0
-      if (cdpProp.isOwn || (cdpProp.configurable && cdpProp.enumerable)) {
-        // Goal: only add own props or prototype's getters
-        const force = false;
-        this.addProperty(this.cdpObj, rrpProp, force);
-      }
-    }
-
+    // Add data for blink and other special objects.
+    Object.assign(this.extra, getExtraObjectPreviewData(this.cdpObj, cdpProperties));
+    // Add Prototype data.
     let prototypeCdp = getInternalProp(cdpProperties, '[[Prototype]]')?.value;
     let prototypeRrpId;
-    let getterValues;
     if (prototypeCdp) {
       prototypeRrpId = registerCdpObject(prototypeCdp);
     }
-    if (this.getterValues) {
-      getterValues = [...this.getterValues.values()];
-    }
 
-    return {
+    // Produce final PauseData object.
+    const result = {
       prototypeId: prototypeRrpId,
       overflow: (this.overflow && this.level != "full") ? true : undefined,
       properties: this.properties,
-      getterValues,
+      getterValues: this.getterValues ? [...this.getterValues.values()] : undefined,
       containerEntries: this.containerEntries,
       ...this.extra,
     };
+
+    return result;
   }
 };
 
@@ -1567,6 +1652,18 @@ function getExtraObjectPreviewData(cdpObject, cdpProperties) {
         target: buildRrpObjectFromCdpObject(targetCdpObj),
         handler: buildRrpObjectFromCdpObject(handlerCdpObj)
       }
+    };
+  } else if (isCdpObjectPromise(cdpObject)) {
+    let stateCdpObj = getInternalProp(cdpProperties, '[[PromiseState]]')?.value;
+    let valueCdpObj = getInternalProp(cdpProperties, '[[PromiseResult]]')?.value;
+    const promiseState = {
+      state: stateCdpObj.value || undefined
+    };
+    if (promiseState.state !== "pending") {
+      promiseState.value = buildRrpObjectFromCdpObject(valueCdpObj);
+    }
+    return {
+      promiseState
     };
   } else {
     const plainObject = getPlainObjectByRrpId(rrpId);
@@ -1678,18 +1775,18 @@ function previewBlinkStyle(style) {
   };
 }
 
+function getDescriptionCount(description) {
+  const match = /\((\d+)\)/.exec(description || "");
+  if (match) {
+    return +match[1];
+  }
+  return undefined;
+}
+
 function previewArray(_cdpProperties) {
   // TODO: [RUN-2223] Find out why Array.length does not always return a value.
-  // this.addGetterValue('length', this.cdpObj, /* force */ true);
-
-  // Workaround: Get length from CDP description.
-  const desc = this.cdpObj.description || "";
-  const lengthStr = desc.match(/\d+/)?.[0];
-  if (!lengthStr) {
-    warning(`[RUN-2223] JS previewArray - could not extract length from CDP description: ${JSON_stringify(this.cdpObj)}`);
-  }
-  const length = parseInt(lengthStr || "0");
-  this.setGetterValue("length", createRrpValueRaw(length));
+  const length = getDescriptionCount(this.cdpObj.description);
+  this.setGetterValueUnchecked("length", createRrpValueRaw(length));
 }
 
 function previewTypedArray() {
@@ -1700,6 +1797,10 @@ function previewTypedArray() {
   this.addGetterValue('buffer', this.cdpObj, /* force */ true);
 }
 
+/**
+ * Query the internal object of {Weak,}{Set,Map}s that store their
+ * containerEntries.
+ */
 function previewSetMap(cdpProperties) {
   if (!cdpProperties.internalProperties) {
     return;
@@ -1710,12 +1811,25 @@ function previewSetMap(cdpProperties) {
     return;
   }
 
-  // get size for Set and Map (Weak{Set,Map} don't have an observable size)
+  // Get size from description.
+  let size;
+
   if (["Set", "Map"].includes(this.cdpObj.className)) {
-    // simply invoke the native getter
-    this.addGetterValue('size', this.cdpObj, /* force */ true);
-    this.extra.containerEntryCount = this.raw.size;
+    // NOTE: For some reason, the internal backing array size is capped to
+    // pageSize for Set and Map.
+    // This type of inconsistency is possible since *we* added paging to the
+    // debugger (RUN-1315), and it might have (albeit small) negative impacts
+    // like this.
+    // SLN: Simply query the size getter instead.
+    size = this.raw.size;
+    const rrpSize = { name: "size", value: size };
+    this.addPropertyUnchecked(rrpSize, /* force */ true);
+    this.setGetterValueUnchecked(rrpSize.name, rrpSize, /* force */ true);
+  } else {
+    // Weak{Set,Map}
+    size = getDescriptionCount(internal.value.description);
   }
+  this.extra.containerEntryCount = size;
 
   const entries = sendCDPMessage("Runtime.getProperties", {
     objectId: internal.value.objectId,
@@ -1761,7 +1875,7 @@ function previewDate() {
 }
 
 function previewError() {
-  this.setGetterValue("name", { value: this.cdpObj.className });
+  this.setGetterValueUnchecked("name", { value: this.cdpObj.className });
 }
 
 const ErrorProperties = [
@@ -3201,6 +3315,7 @@ sendCDPMessage("Runtime.enable");
 const char* gSourceMapScript = R""""(
 //js
 (() => {
+
 const {
   log,
   warning,
@@ -3445,6 +3560,7 @@ function isValidBaseURL(url) {
 }
 
 })();
+
 )"""";
 
 // Script that injects React DevTools "stub" functions to capture
@@ -5656,7 +5772,7 @@ void OnRootFrameInit(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8:
   // 1. Reset paint surface so that paints to the new root's surface are not ignored.
   // See: https://linear.app/replay/issue/RUN-2400
   recordreplay::DoResetPaintSurface();
-
+  
   // 2. Initialize sourcemap worker, command handlers etc.
   gReplayScriptsAlive = true;
   recordreplay::Print("ReplayScript STATUS_CHANGE_ALIVE");

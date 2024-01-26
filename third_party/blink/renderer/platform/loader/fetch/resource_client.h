@@ -49,7 +49,7 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
 
  public:
   ResourceClient() {
-    // Pointer registration is needed by ResourceClientWalker.
+    // Pointer registration is needed by ResourceClientWalker and in Resource::AddClient.
     recordreplay::RegisterPointer("ResourceClient", this);
   }
   virtual ~ResourceClient() {
