@@ -15,7 +15,8 @@ namespace data_controls {
 // ---------------------------
 
 RulesService::RulesService(content::BrowserContext* browser_context)
-    : rules_manager_(Profile::FromBrowserContext(browser_context)) {}
+    : profile_(Profile::FromBrowserContext(browser_context)),
+      rules_manager_(Profile::FromBrowserContext(browser_context)) {}
 
 RulesService::~RulesService() = default;
 
@@ -50,6 +51,13 @@ Verdict RulesService::GetPasteVerdict(
             ->IsIncognitoProfile();
   }
   return rules_manager_.GetVerdict(Rule::Restriction::kClipboard, context);
+}
+
+Verdict RulesService::GetCopyToOSClipboardVerdict(const GURL& source) const {
+  return rules_manager_.GetVerdict(
+      Rule::Restriction::kClipboard,
+      {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()},
+       .destination = {.os_clipboard = true}});
 }
 
 // ----------------------------------

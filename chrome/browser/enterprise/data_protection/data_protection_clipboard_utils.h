@@ -30,6 +30,18 @@ void PasteIfAllowedByPolicy(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
+// This funcction checks if data copied from a browser tab is allowed to be
+// written to the OS clipboard according to the following policies:
+// - CopyPreventionSettings
+// - DataControlsRules
+//
+// If the copy is not allowed, `replacement_data` is populated with a string
+// that should instead be put into the OS clipboard.
+bool IsClipboardCopyAllowedByPolicy(content::BrowserContext* browser_context,
+                                    const GURL& url,
+                                    size_t data_size_in_bytes,
+                                    std::u16string& replacement_data);
+
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_

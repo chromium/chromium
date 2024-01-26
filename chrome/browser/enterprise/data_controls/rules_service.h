@@ -29,6 +29,7 @@ class RulesService : public KeyedService {
   Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
                           const content::ClipboardEndpoint& destination,
                           const content::ClipboardMetadata& metadata) const;
+  Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
 
  protected:
   friend class RulesServiceFactory;
@@ -36,7 +37,9 @@ class RulesService : public KeyedService {
   explicit RulesService(content::BrowserContext* browser_context);
 
  private:
-  // Initialized with the profile passed in the constructor.
+  // `profile_` and `rules_manager_` are initialized with the browser_context
+  // passed in the constructor.
+  const raw_ptr<Profile> profile_ = nullptr;
   ChromeDlpRulesManager rules_manager_;
 };
 

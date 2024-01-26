@@ -10,4 +10,8 @@
   <message name="IDS_ENTERPRISE_COPY_PREVENTION_WARNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked from being copied by the CopyPreventionSettings policy. This message will be visible to the user when they attempt to paste into any UI element (perhaps even outside of Chome) that supports displaying text.">
     Your admin has prohibited this data from being copied.
   </message>
+
+  <message name="IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked from being copied by the DataControlsRules policy. This message will be visible to the user when they attempt to paste into any UI element (perhaps even outside of Chome) that supports displaying text.">
+    Pasting this content here is blocked by your administrator.
+  </message>
 </grit-part>

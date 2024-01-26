@@ -28,6 +28,7 @@ source_set("data_controls") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//components/constrained_window",
+    "//components/enterprise/content",
     "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",

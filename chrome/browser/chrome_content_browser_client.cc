@@ -7445,11 +7445,16 @@ bool ChromeContentBrowserClient::IsClipboardCopyAllowed(
     const GURL& url,
     size_t data_size_in_bytes,
     std::u16string& replacement_data) {
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  return enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
+      browser_context, url, data_size_in_bytes, replacement_data);
+#else
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
           browser_context);
   return service->IsUrlAllowedToCopy(url, data_size_in_bytes,
                                      &replacement_data);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 
 #if BUILDFLAG(ENABLE_VR)
