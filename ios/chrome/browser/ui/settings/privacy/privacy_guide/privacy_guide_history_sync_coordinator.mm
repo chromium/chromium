@@ -7,6 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_view_controller.h"
@@ -40,6 +44,7 @@
 
 - (void)start {
   _viewController = [[PrivacyGuideHistorySyncViewController alloc] init];
+  _viewController.delegate = self;
   _viewController.presentationDelegate = self;
   // TODO(crbug.com/1520481): Implement History Sync mediator.
 
@@ -57,6 +62,14 @@
 - (void)privacyGuideViewControllerDidRemove:(UIViewController*)controller {
   CHECK_EQ(controller, _viewController);
   [self.delegate privacyGuideCoordinatorDidRemove:self];
+}
+
+#pragma mark - PromoStyleViewControllerDelegate
+
+- (void)didTapPrimaryActionButton {
+  id<PrivacyGuideCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PrivacyGuideCommands);
+  [handler showNextStep];
 }
 
 @end
