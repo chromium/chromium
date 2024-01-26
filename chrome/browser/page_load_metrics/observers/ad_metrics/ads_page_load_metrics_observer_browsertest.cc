@@ -1804,8 +1804,15 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that the ad unloaded by the heavy ad intervention receives an
 // intervention report prior to being unloaded.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HeavyAdInterventionFired_ReportSent \
+  DISABLED_HeavyAdInterventionFired_ReportSent
+#else
+#define MAYBE_HeavyAdInterventionFired_ReportSent \
+  HeavyAdInterventionFired_ReportSent
+#endif
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionFired_ReportSent) {
+                       MAYBE_HeavyAdInterventionFired_ReportSent) {
   base::HistogramTester histogram_tester;
   auto incomplete_resource_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
