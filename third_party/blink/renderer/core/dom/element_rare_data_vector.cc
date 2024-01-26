@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
-#include "third_party/blink/renderer/core/css/position_fallback_data.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
@@ -311,13 +311,12 @@ StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
   return static_cast<StyleScopeData*>(GetField(FieldId::kStyleScopeData));
 }
 
-PositionFallbackData& ElementRareDataVector::EnsurePositionFallbackData() {
-  return EnsureField<PositionFallbackData>(FieldId::kPositionFallbackData);
+OutOfFlowData& ElementRareDataVector::EnsureOutOfFlowData() {
+  return EnsureField<OutOfFlowData>(FieldId::kOutOfFlowData);
 }
 
-PositionFallbackData* ElementRareDataVector::GetPositionFallbackData() const {
-  return static_cast<PositionFallbackData*>(
-      GetField(FieldId::kPositionFallbackData));
+OutOfFlowData* ElementRareDataVector::GetOutOfFlowData() const {
+  return static_cast<OutOfFlowData*>(GetField(FieldId::kOutOfFlowData));
 }
 
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()

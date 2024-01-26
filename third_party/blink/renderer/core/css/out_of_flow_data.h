@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POSITION_FALLBACK_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POSITION_FALLBACK_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
@@ -14,8 +14,12 @@ namespace blink {
 
 class CSSPropertyValueSet;
 
-class CORE_EXPORT PositionFallbackData final
-    : public GarbageCollected<PositionFallbackData>,
+// Contains data related to interleaved style updates from
+// OOF-layout.
+//
+// See UpdateStyleForOutOfFlow.
+class CORE_EXPORT OutOfFlowData final
+    : public GarbageCollected<OutOfFlowData>,
       public ElementRareDataField {
  public:
   // Speculative @try styling: the last @try rule chosen by
@@ -38,11 +42,11 @@ class CORE_EXPORT PositionFallbackData final
   // present here will be added to the cascade in the author origin
   // with CascadePriority::is_fallback_style=true.
   //
-  // See also StyleEngine::UpdateStyleForPositionFallback,
+  // See also StyleEngine::UpdateStyleForOutOfFlow,
   // which sets this value.
   Member<const CSSPropertyValueSet> try_set_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POSITION_FALLBACK_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_

@@ -314,7 +314,7 @@ class OOFCandidateStyleIterator {
         // and re-resolves the ComputedStyle.
         //
         // Note that UpdateStyle returns early without any update
-        // if the incoming try_set matches the set on PositionFallbackData
+        // if the incoming try_set matches the set on OutOfFlowData
         // (including the case where both are unllptr).
         style_ = UpdateStyle(/* try_set */ nullptr);
       }
@@ -395,7 +395,7 @@ class OOFCandidateStyleIterator {
     CHECK(element_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-      style_engine.UpdateStyleForPositionFallback(*element_, try_set);
+      style_engine.UpdateStyleForOutOfFlow(*element_, try_set);
     }
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout

@@ -40,7 +40,7 @@ class ResizeObservation;
 class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
-class PositionFallbackData;
+class OutOfFlowData;
 class HTMLElement;
 
 enum class ElementFlags;
@@ -97,7 +97,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kLastRememberedInlineSize = 28,
     kRestrictionTargetId = 29,
     kStyleScopeData = 30,
-    kPositionFallbackData = 31,
+    kOutOfFlowData = 31,
 
     kNumFields = 32,
   };
@@ -257,8 +257,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   StyleScopeData& EnsureStyleScopeData();
   StyleScopeData* GetStyleScopeData() const;
 
-  PositionFallbackData& EnsurePositionFallbackData();
-  PositionFallbackData* GetPositionFallbackData() const;
+  OutOfFlowData& EnsureOutOfFlowData();
+  OutOfFlowData* GetOutOfFlowData() const;
 
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;

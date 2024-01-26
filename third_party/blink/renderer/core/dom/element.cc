@@ -3534,9 +3534,10 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
-  // We are both a size container and trying to compute position-fallback styles
-  // from layout. Our children should be the first opportunity to skip recalc.
-  if (style_recalc_context.is_position_fallback) {
+  // We are both a size container and trying to compute interleaved styles
+  // from out-of-flow layout. Our children should be the first opportunity to
+  // skip recalc.
+  if (style_recalc_context.is_interleaved_oof) {
     return false;
   }
 
@@ -3651,7 +3652,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  child_recalc_context.is_position_fallback = false;
+  child_recalc_context.is_interleaved_oof = false;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
@@ -6964,13 +6965,12 @@ StyleScopeData* Element::GetStyleScopeData() const {
   return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
 }
 
-PositionFallbackData& Element::EnsurePositionFallbackData() {
-  return EnsureElementRareData().EnsurePositionFallbackData();
+OutOfFlowData& Element::EnsureOutOfFlowData() {
+  return EnsureElementRareData().EnsureOutOfFlowData();
 }
 
-PositionFallbackData* Element::GetPositionFallbackData() const {
-  return HasRareData() ? GetElementRareData()->GetPositionFallbackData()
-                       : nullptr;
+OutOfFlowData* Element::GetOutOfFlowData() const {
+  return HasRareData() ? GetElementRareData()->GetOutOfFlowData() : nullptr;
 }
 
 bool Element::SkippedContainerStyleRecalc() const {

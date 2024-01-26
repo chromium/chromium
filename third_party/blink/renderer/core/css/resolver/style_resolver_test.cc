@@ -17,8 +17,8 @@
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
-#include "third_party/blink/renderer/core/css/position_fallback_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -109,15 +109,15 @@ class StyleResolverTest : public PageTestBase {
     return style.MaxHeight();
   }
 
-  void UpdateStyleForPositionFallback(Element& element,
-                                      ScopedCSSName* name,
-                                      wtf_size_t index) {
+  void UpdateStyleForOutOfFlow(Element& element,
+                               ScopedCSSName* name,
+                               wtf_size_t index) {
     DCHECK(name);
     StyleRulePositionFallback* rule =
         GetStyleEngine().GetPositionFallbackRule(*name);
     if (rule) {
       const CSSPropertyValueSet* set = rule->TryPropertyValueSetAt(index);
-      GetStyleEngine().UpdateStyleForPositionFallback(element, set);
+      GetStyleEngine().UpdateStyleForOutOfFlow(element, set);
     }
   }
 };
@@ -2790,20 +2790,20 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallbackStylesBasic_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
   EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-  UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
   EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
 
-  UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
   EXPECT_EQ(Length::Auto(), GetLeft(*try2));
 
   // Shorthand should also work
-  UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -2812,7 +2812,7 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallbackStylesBasic_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
 
   // Style without fallback when index is out of bounds.
-  UpdateStyleForPositionFallback(*target, fallback_name, 4);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 4);
   const ComputedStyle* try4 = target->GetComputedStyle();
   EXPECT_EQ(Length::Auto(), GetTop(*try4));
   EXPECT_EQ(Length::Auto(), GetLeft(*try4));
@@ -2854,7 +2854,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   // 'inset-inline-start' should resolve to 'bottom'
-  UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -2863,7 +2863,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   // 'inset-block' with two parameters should set 'right' and then 'left'
-  UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -2872,7 +2872,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(100), GetRight(*try2));
 
   // @try index out of bounds
-  UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -2911,7 +2911,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // '2em' should resolve to '40px'
-  UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
@@ -2951,7 +2951,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // 'position-fallback' applies to ::before pseudo-element.
-  UpdateStyleForPositionFallback(*before, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*before, fallback_name, 1);
   const ComputedStyle* try1 = before->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -2998,7 +2998,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
-  UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
@@ -3006,7 +3006,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
-  UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -3014,7 +3014,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
 
-  UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -3060,7 +3060,7 @@ TEST_P(ParameterizedStyleResolverTest,
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleForPositionFallback(*target, foo_name, 1);
+    UpdateStyleForOutOfFlow(*target, foo_name, 1);
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
@@ -3076,7 +3076,7 @@ TEST_P(ParameterizedStyleResolverTest,
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleForPositionFallback(*target, bar_name, 1);
+    UpdateStyleForOutOfFlow(*target, bar_name, 1);
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     ASSERT_TRUE(fallback);
@@ -3110,26 +3110,26 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallback_PersistentTrySet) {
   ASSERT_TRUE(style);
   EXPECT_EQ(Length::Fixed(100), GetLeft(*style));
   EXPECT_EQ(Length::Auto(), GetTop(*style));
-  EXPECT_TRUE(target->GetPositionFallbackData() &&
-              target->GetPositionFallbackData()->GetTryPropertyValueSet());
+  EXPECT_TRUE(target->GetOutOfFlowData() &&
+              target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
   // The set should be cleared when 'position-fallback' is cleared.
   target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "none");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target->GetPositionFallbackData() &&
-               target->GetPositionFallbackData()->GetTryPropertyValueSet());
+  EXPECT_FALSE(target->GetOutOfFlowData() &&
+               target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
   target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback,
                                  "--fallback");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(target->GetPositionFallbackData() &&
-              target->GetPositionFallbackData()->GetTryPropertyValueSet());
+  EXPECT_TRUE(target->GetOutOfFlowData() &&
+              target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
   // The set should also be cleared when referencing a non-existent fallback.
   target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "--unknown");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target->GetPositionFallbackData() &&
-               target->GetPositionFallbackData()->GetTryPropertyValueSet());
+  EXPECT_FALSE(target->GetOutOfFlowData() &&
+               target->GetOutOfFlowData()->GetTryPropertyValueSet());
 }
 
 TEST_P(ParameterizedStyleResolverTest, PositionFallback_PaintInvalidation) {
@@ -3197,7 +3197,7 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_Basic) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
   const ComputedStyle* try_style = StyleForId("div");
   ASSERT_TRUE(try_style);
   EXPECT_EQ("20px", ComputedValue("left", *try_style));
@@ -3228,7 +3228,7 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_RevertLayer) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
   const ComputedStyle* try_style = StyleForId("div");
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
@@ -3259,7 +3259,7 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_Revert) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
   const ComputedStyle* try_style = StyleForId("div");
   ASSERT_TRUE(try_style);
   EXPECT_EQ("auto", ComputedValue("left", *try_style));
@@ -3291,7 +3291,7 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_NonAbsPos) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
   const ComputedStyle* try_style = StyleForId("div");
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
@@ -3326,7 +3326,7 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_NonAbsPosDynamic) {
   ASSERT_TRUE(try_set);
 
   div->SetInlineStyleProperty(CSSPropertyID::kPosition, "static");
-  div->EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
   const ComputedStyle* try_style = StyleForId("div");
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));

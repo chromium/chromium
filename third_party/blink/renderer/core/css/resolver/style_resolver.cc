@@ -57,9 +57,9 @@
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
-#include "third_party/blink/renderer/core/css/position_fallback_data.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -152,7 +152,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // explicitly inherits insets or other valid @try properties from the element
   // with position-fallback.
   return (style_recalc_context.container ||
-          style_recalc_context.is_position_fallback ||
+          style_recalc_context.is_interleaved_oof ||
           (RuntimeEnabledFeatures::
                CSSAnchorPositioningCascadeFallbackEnabled() &&
            state.StyleBuilder().PositionFallback())) &&
@@ -824,22 +824,23 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
 }
 
 // Declarations within @try rules match when ResolveStyle is invoked
-// with that rule explicitly specified to match
-// (see StyleRecalcContext.position_fallback/index).
+// with that rule explicitly specified to match.
+//
+// See OutOfFlowData::GetTryPropertyValueSet.
+// See StyleEngine::UpdateStyleForOutOfFlow.
 void StyleResolver::MatchTryRules(const Element& element,
                                   ElementRuleCollector& collector) {
-  // If StyleEngine::UpdateStyleForPositionFallback was called with
-  // a PseudoElement, the CSSPropertyValueSet we need is stored on the
-  // PositionFallbackData of that pseudo element. However, when resolving
-  // the style of that pseudo element, `element` is the _originating element_,
-  // not the pseudo element itself.
+  // If StyleEngine::UpdateStyleForOutOfFlow was called with a PseudoElement,
+  // the CSSPropertyValueSet we need is stored on the OutOfFlowData of that
+  // pseudo element. However, when resolving the style of that pseudo element,
+  // `element` is the _originating element_, not the pseudo element itself.
   PseudoId pseudo_id = collector.GetPseudoId();
   const Element* try_element =
       pseudo_id == kPseudoIdNone
           ? &element
           : element.GetPseudoElement(pseudo_id, collector.GetPseudoArgument());
   if (try_element) {
-    if (PositionFallbackData* data = try_element->GetPositionFallbackData()) {
+    if (OutOfFlowData* data = try_element->GetOutOfFlowData()) {
       collector.AddTryStyleProperties(data->GetTryPropertyValueSet());
     }
   }

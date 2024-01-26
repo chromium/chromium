@@ -97,11 +97,12 @@ class CORE_EXPORT StyleRecalcContext {
   // not have a style.
   bool is_outside_flat_tree = false;
 
-  // True if we're computing the position fallback style of an element
-  // triggered by layout. Note however that try styles may still be included
-  // when this flag is false (see PositionFallbackData,
-  // "speculative @try styling").
-  bool is_position_fallback = false;
+  // True when we're computing style interleaved from OOF-layout. This can
+  // happen when e.g. position-fallback is used.
+  //
+  // Note however that declarations from @try styles may still be included
+  // when this flag is false (see OutOfFlowData, "speculative @try styling").
+  bool is_interleaved_oof = false;
 };
 
 }  // namespace blink
