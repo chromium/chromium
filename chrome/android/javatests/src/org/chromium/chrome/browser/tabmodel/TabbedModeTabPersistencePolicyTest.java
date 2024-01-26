@@ -30,6 +30,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -217,6 +218,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Feature("TabPersistentStore")
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
+    @DisabledTest(message = "crbug.com/1522173")
     public void testCleanupInstanceState() throws Throwable {
         Assert.assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
 
