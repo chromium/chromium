@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.features.magic_stack.ChromeHomeModulesConfigManager;
 import org.chromium.chrome.features.tasks.MostVisitedTileNavigationDelegate;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.chrome.features.tasks.TasksSurface;
@@ -396,7 +397,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                                 new HomeModulesCoordinator(
                                         mActivity,
                                         moduleDelegateHost,
-                                        mView.findViewById(R.id.task_surface_header)),
+                                        mView.findViewById(R.id.task_surface_header),
+                                        ChromeHomeModulesConfigManager.getInstance()),
                         mParentTabSupplier,
                         logoContainerView,
                         mGridTabSwitcher == null ? backPressManager : null,

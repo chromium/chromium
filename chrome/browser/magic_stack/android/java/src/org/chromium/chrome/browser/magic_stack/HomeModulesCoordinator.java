@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +27,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Root coordinator which is responsible for showing modules on home surfaces. */
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
@@ -45,6 +48,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Nullable private UiConfig mUiConfig;
     @Nullable private DisplayStyleObserver mDisplayStyleObserver;
 
+    private Set<Integer> mEnabledModuleList;
+    private HomeModulesConfigManager mHomeModulesConfigManager;
+    private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
+
     /**
      * @param activity The instance of {@link Activity}.
      * @param moduleDelegateHost The home surface which owns the magic stack.
@@ -53,7 +60,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public HomeModulesCoordinator(
             @NonNull Activity activity,
             @NonNull ModuleDelegateHost moduleDelegateHost,
-            @NonNull ViewGroup parentView) {
+            @NonNull ViewGroup parentView,
+            @NonNull HomeModulesConfigManager homeModulesConfigManager) {
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
@@ -71,6 +79,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         // Add pager indicator.
         setupRecyclerView(activity);
+
+        mHomeModulesConfigManager = homeModulesConfigManager;
+        mHomeModulesStateListener = this::onModuleConfigChanged;
+        mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
+        mEnabledModuleList = mHomeModulesConfigManager.getEnabledModuleList();
 
         mMediator = new HomeModulesMediator(mModel, ModuleRegistry.getInstance());
     }
@@ -172,6 +185,16 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 });
     }
 
+    /** Reacts when the home modules' specific module type is disabled or enabled. */
+    void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
+        if (isEnabled) {
+            mEnabledModuleList.add(moduleType);
+        } else {
+            mEnabledModuleList.remove(moduleType);
+            removeModule(moduleType);
+        }
+    }
+
     /** Hides the modules and cleans up. */
     public void hide() {
         mMediator.hide();
@@ -264,15 +287,28 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mUiConfig.removeObserver(mDisplayStyleObserver);
             mUiConfig = null;
         }
+        if (mHomeModulesConfigManager != null) {
+            mHomeModulesConfigManager.removeListener(mHomeModulesStateListener);
+            mHomeModulesConfigManager = null;
+        }
     }
 
     public boolean getIsSnapHelperAttachedForTesting() {
         return mIsSnapHelperAttached;
     }
 
-    private List<Integer> getModuleList() {
+    @VisibleForTesting
+    List<Integer> getModuleList() {
         // TODO(https://crbug.com/1512962): Gets the modules ranking list using segmentation service
         // API.
-        return List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        List<Integer> generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        List<Integer> moduleList = new ArrayList<>();
+        for (int i = 0; i < generalModuleList.size(); i++) {
+            @ModuleType int currentModuleType = generalModuleList.get(i);
+            if (mEnabledModuleList.contains(currentModuleType)) {
+                moduleList.add(currentModuleType);
+            }
+        }
+        return moduleList;
     }
 }
