@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -128,11 +129,14 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     private ToolbarColorObserverManager mToolbarColorObserverManager;
 
+    private TabObscuringHandler mTabObscuringHandler;
+
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
+     *
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarStub The stub for the tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
@@ -140,7 +144,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabController The controller that handles interactions with the tab.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param buttonDataProviders List of classes that wish to display an optional button in the
-     *        browsing mode toolbar.
+     *     browsing mode toolbar.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
@@ -157,22 +161,22 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
-     *        homepage is enabled.
+     *     homepage is enabled.
      * @param offlineDownloader Triggers downloading an offline page.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
-     *        colors.
+     *     colors.
      * @param startSurfaceLogoClickedCallback The callback to be notified when the logo is clicked
-     *        on Start surface. On NTP, the logo is in the new tab page layout instead of the
-     *        toolbar and the logo click events are processed in NewTabPageLayout. So this callback
-     *        will only be called on Start surface.
+     *     on Start surface. On NTP, the logo is in the new tab page layout instead of the toolbar
+     *     and the logo click events are processed in NewTabPageLayout. So this callback will only
+     *     be called on Start surface.
      * @param isStartSurfaceRefactorEnabled Whether Start surface refactoring is enabled.
      * @param constraintsSupplier Supplier for browser controls constraints.
      * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
      * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
-     *        captures are stale and not able to be taken.
+     *     captures are stale and not able to be taken.
      * @param shouldCreateLogoInStartToolbar Whether logo should be created in Start surface
-     *        toolbar. True if the logo should be created in the Start surface toolbar; False if
-     *        the logo should be shown in Start surface content.
+     *     toolbar. True if the logo should be created in the Start surface toolbar; False if the
+     *     logo should be shown in Start surface content.
      * @param fullscreenManager Used to check whether in fullscreen.
      */
     public TopToolbarCoordinator(
@@ -208,7 +212,8 @@ public class TopToolbarCoordinator implements Toolbar {
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             boolean shouldCreateLogoInStartToolbar,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            TabObscuringHandler tabObscuringHandler) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -223,6 +228,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
         mToolbarColorObserverManager = new ToolbarColorObserverManager(mToolbarLayout.getContext());
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
+        mTabObscuringHandler = tabObscuringHandler;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
             mStartSurfaceToolbarCoordinator =
@@ -376,7 +382,8 @@ public class TopToolbarCoordinator implements Toolbar {
                             browserControlsVisibilityManager,
                             mControlContainer,
                             mToolbarLayout,
-                            tabStripHeightResource);
+                            tabStripHeightResource,
+                            mTabObscuringHandler);
             mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
             mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         }
