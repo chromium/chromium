@@ -18247,6 +18247,7 @@ from previous Chrome versions.
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
   <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
   <int value="-1082602234" label="ReadAnythingReadAloud:enabled"/>
+  <int value="-1082472229" label="LauncherContinueSectionWithRecents:disabled"/>
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
@@ -23782,6 +23783,7 @@ from previous Chrome versions.
   <int value="1499009324" label="ZeroSuggestPrefetchingOnSRP:disabled"/>
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
+  <int value="1501382655" label="LauncherContinueSectionWithRecents:enabled"/>
   <int value="1502417134" label="BulkTabRestore:disabled"/>
   <int value="1503291145" label="ForceSigninFlowInProfilePicker:enabled"/>
   <int value="1504223335" label="PipPinchToResize:disabled"/>

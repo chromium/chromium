@@ -3906,6 +3906,9 @@ extern const char kLacrosWaylandLoggingDescription[];
 extern const char kLanguagePacksInSettingsName[];
 extern const char kLanguagePacksInSettingsDescription[];
 
+extern const char kLauncherContinueSectionWithRecentsName[];
+extern const char kLauncherContinueSectionWithRecentsDescription[];
+
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];
 

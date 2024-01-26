@@ -6794,6 +6794,12 @@ const char kLanguagePacksInSettingsDescription[] =
     "Enables the UI and logic to manage Language Packs in Settings. This is "
     "used for languages and input methods.";
 
+const char kLauncherContinueSectionWithRecentsName[] =
+    "Launcher continue section with recent drive files";
+const char kLauncherContinueSectionWithRecentsDescription[] =
+    "Adds Google Drive file suggestions based on users' recent activity to "
+    "\"Continue where you left off\" section in Launcher.";
+
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =
     "Allows configuration of experiment parameters for ItemSuggest in the "

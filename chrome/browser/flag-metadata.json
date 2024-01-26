@@ -5134,6 +5134,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "launcher-continue-section-with-recents",
+    "owners": ["tbarzic@chromium.org", "mmourgos@chromium.org"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "launcher-fuzzy-match-across-providers",
     "owners": ["chenjih@chromium.org", "laurencom@chromium.org"],
     "expiry_milestone": 125
