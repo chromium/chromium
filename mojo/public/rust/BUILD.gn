@@ -68,7 +68,7 @@ rust_static_library("mojo_system") {
     ":mojo_c_system_binding",
     ":mojo_c_system_wrapper",
     "//mojo/public/c/system",
-    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/bitflags/v2:lib",
   ]
 
   bindgen_output = get_target_outputs(":mojo_c_system_binding")
