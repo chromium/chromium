@@ -245,6 +245,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     dlp_controller_.reset();
     reporting_manager_.reset();
     test_reporting_.reset();
+    base::RunLoop().RunUntilIdle();  // Let ReportClient mock destruct.
   }
 
   void SetupTextfield() {

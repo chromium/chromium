@@ -268,6 +268,8 @@ class DeviceCloudPolicyManagerAshTest
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     reporting_test_enviroment_.reset();
+    // Let `reporting_test_enviroment_` shut down.
+    base::RunLoop().RunUntilIdle();
 
     DeviceSettingsTestBase::TearDown();
   }

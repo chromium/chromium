@@ -44,6 +44,7 @@ class ReportQueueProviderTest : public ::testing::Test {
 
   void TearDown() override {
     helper_.reset();
+    task_environment_.RunUntilIdle();  // Drain remaining scheduled tasks.
   }
 
   base::test::TaskEnvironment task_environment_{

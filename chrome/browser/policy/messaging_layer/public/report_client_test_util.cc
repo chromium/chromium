@@ -62,10 +62,8 @@ ReportingClient::TestEnvironment::CreateWithStorageModule(
 
 ReportingClient::TestEnvironment::TestEnvironment(
     ReportingClient::StorageModuleCreateCallback storage_create_cb)
-    // Below we convert ReportingClient::SmartPtr to std::unique_ptr.
     : client_(ReportingClient::Create(
-                  base::SequencedTaskRunner::GetCurrentDefault())
-                  .release()) {
+          base::SequencedTaskRunner::GetCurrentDefault())) {
   client_->storage_create_cb_ = storage_create_cb;
 }
 

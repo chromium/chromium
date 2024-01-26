@@ -43,6 +43,11 @@ class RealTimeUploaderTest : public ::testing::Test {
         std::make_unique<reporting::test::ReportQueueProviderTestHelper>();
   }
 
+  void TearDown() override {
+    helper_.reset();
+    task_environment_.RunUntilIdle();  // Drain remaining scheduled tasks.
+  }
+
   std::unique_ptr<ExtensionsWorkflowEvent> CreateReportAndGetSerializedString(
       const std::string& id,
       std::string* serialized_string) {

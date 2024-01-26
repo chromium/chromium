@@ -143,6 +143,8 @@ void DlpFilesTestWithMounts::TearDown() {
   reporting_manager_.reset();
 
   reporting_test_enviroment_.reset();
+  // Let `reporting_test_enviroment_` shut down.
+  task_environment_->RunUntilIdle();
 
   if (chromeos::DlpClient::Get()) {
     chromeos::DlpClient::Shutdown();
