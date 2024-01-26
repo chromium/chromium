@@ -154,9 +154,20 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   FieldSetAncestorsSetNeedsValidityCheck(&insertion_point);
   HideVisibleValidationMessage();
   has_validation_message_ = false;
-  ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
-  data_list_ancestor_state_ = DataListAncestorState::kUnknown;
-  UpdateWillValidateCache();
+  // Two values that might change as a result of being removed are
+  // `may_have_fieldset_ancestor_` and `data_list_ancestor_state_`. Both of
+  // these values feed into the WillValidate cache. If this ListedElement is
+  // not in a fieldset and not in a data-list, then it won't be in a fieldset
+  // or fieldset after the removal, so that the cache does not need to be
+  // updated.
+  if (!may_have_fieldset_ancestor_ &&
+      data_list_ancestor_state_ == DataListAncestorState::kNotInsideDataList) {
+    DCHECK_EQ(will_validate_, RecalcWillValidate());
+  } else {
+    ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
+    data_list_ancestor_state_ = DataListAncestorState::kUnknown;
+    UpdateWillValidateCache();
+  }
 
   HTMLElement& element = ToHTMLElement();
   if (insertion_point.isConnected() &&
