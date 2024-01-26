@@ -11288,6 +11288,7 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_custom_accelerator_and_reset_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_custom_accelerator_to_unlocked_action_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/edit_default_accelerator_interactive_uitest.cc",
+          "../browser/ui/webui/ash/shortcut_customization/integration_tests/search_for_shortcuts_interactive_ui_test.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
           # These cannot live in ":test_support" because they use
