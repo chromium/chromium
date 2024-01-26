@@ -46,13 +46,17 @@ struct LineBox {
   // Line bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
 
+  // Rotation angle (in degrees, clockwise) of the line bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
   // Line bounding box relative to the original image with bottom edge
   // representing estimated baseline of text.
   gfx.mojom.Rect baseline_box;
 
-  // Angle of rotation of (in degrees, clockwise is positive) of the box about
-  // the top-left corner.
-  float angle;
+  // Rotation angle (in degrees, clockwise) of the line baseline box about its
+  // top-left corner.
+  float baseline_box_angle;
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -73,6 +77,10 @@ struct WordBox {
 
   // Word bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
+
+  // Rotation angle (in degrees, clockwise) of the word bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
 
   // The direction of the script contained in the word.
   Direction direction;
