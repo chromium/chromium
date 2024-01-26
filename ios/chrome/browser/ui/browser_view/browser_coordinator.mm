@@ -2486,9 +2486,13 @@ enum class ToolbarKind {
               prefs::kIosParcelTrackingOptInStatus));
   switch (optInStatus) {
     case IOSParcelTrackingOptInStatus::kAlwaysTrack: {
+      web::WebState* activeWebState = self.activeWebState;
+      if (!activeWebState) {
+        return;
+      }
       commerce::ShoppingService* shoppingService =
           commerce::ShoppingServiceFactory::GetForBrowserState(
-              self.activeWebState->GetBrowserState());
+              activeWebState->GetBrowserState());
       // Track parcels and display infobar if successful.
       TrackParcels(
           shoppingService, parcels, std::string(),
