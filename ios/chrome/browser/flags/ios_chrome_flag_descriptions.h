@@ -692,11 +692,6 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOneTapForMapsName[];
 extern const char kOneTapForMapsDescription[];
 
-// Title and description for the flag to enable using annotations manager to
-// fetch web page text used for language detection.
-extern const char kUseAnnotationsForLanguageDetectionName[];
-extern const char kUseAnnotationsForLanguageDetectionDescription[];
-
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];
