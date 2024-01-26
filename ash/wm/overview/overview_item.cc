@@ -815,7 +815,7 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   // Windows which can snap will never show this warning.
   bool visible = true;
   if (SplitViewController::Get(root_window_)
-          ->ComputeSnapRatio(GetWindow())
+          ->ComputeAutoSnapRatio(GetWindow())
           .has_value()) {
     visible = false;
   } else {

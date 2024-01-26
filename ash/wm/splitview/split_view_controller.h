@@ -206,7 +206,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // if `window` can be snapped opposite of the default window. If default
   // window is 2/3 and `window` cannot be snapped 1/3 but can be snapped 1/2, it
   // will be snapped 1/2 unless default window cannot be snapped 1/2.
-  std::optional<float> ComputeSnapRatio(aura::Window* window);
+  std::optional<float> ComputeAutoSnapRatio(aura::Window* window);
 
   // Snap `window` in the split view at `snap_position`. It will send snap
   // WMEvent to `window` and rely on WindowState to do the actual work to

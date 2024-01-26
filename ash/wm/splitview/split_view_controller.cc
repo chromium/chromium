@@ -560,7 +560,7 @@ bool SplitViewController::CanKeepCurrentSnapRatio(
                            .value_or(chromeos::kDefaultSnapRatio));
 }
 
-std::optional<float> SplitViewController::ComputeSnapRatio(
+std::optional<float> SplitViewController::ComputeAutoSnapRatio(
     aura::Window* window) {
   // If there is no default snapped window, or it doesn't have a stored snap
   // ratio try snapping it to 1/2.
@@ -1386,7 +1386,7 @@ void SplitViewController::OnOverviewModeEnding(
         continue;
       }
 
-      std::optional<float> snap_ratio = ComputeSnapRatio(window);
+      std::optional<float> snap_ratio = ComputeAutoSnapRatio(window);
       if (!snap_ratio.has_value()) {
         continue;
       }
