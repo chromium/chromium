@@ -6,10 +6,10 @@
 #define PRINTING_COMMON_METAFILE_UTILS_H_
 
 #include <stdint.h>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/unguessable_token.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -42,7 +42,8 @@ enum class GeneratePdfDocumentOutline : bool {
 };
 
 sk_sp<SkDocument> MakePdfDocument(
-    base::StringPiece creator,
+    std::string_view creator,
+    std::string_view title,
     const ui::AXTreeUpdate& accessibility_tree,
     GeneratePdfDocumentOutline generate_document_outline,
     SkWStream* stream);

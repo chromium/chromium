@@ -100,4 +100,7 @@ interface PrintCompositor {
 
   // Sets the user-agent string for the document.
   SetUserAgent(string user_agent);
+
+  // Sets the title of the document.
+  SetTitle(string title);
 };

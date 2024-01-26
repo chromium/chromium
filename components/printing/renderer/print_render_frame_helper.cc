@@ -2236,6 +2236,10 @@ bool PrintRenderFrameHelper::PrintPagesNative(
             : GeneratePdfDocumentOutline::kNone);
   }
 
+  blink::WebString title = frame->GetDocument().Title();
+  metafile.set_title(title.IsEmpty() ? base::UTF16ToUTF8(print_params.title)
+                                     : title.Utf8());
+
   mojom::DidPrintDocumentParamsPtr page_params =
       mojom::DidPrintDocumentParams::New();
   page_params->content = mojom::DidPrintContentParams::New();
