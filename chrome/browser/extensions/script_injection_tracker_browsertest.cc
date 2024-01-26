@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -1578,8 +1579,16 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 
 // Tests that ScriptInjectionTracker monitors extension permission changes
 // between commit and load, and updates the renderer data accordingly.
+// TODO(crbug.com/1522216): Flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdateHostPermissions_RaceCondition \
+  DISABLED_UpdateHostPermissions_RaceCondition
+#else
+#define MAYBE_UpdateHostPermissions_RaceCondition \
+  UpdateHostPermissions_RaceCondition
+#endif
 IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
-                       UpdateHostPermissions_RaceCondition) {
+                       MAYBE_UpdateHostPermissions_RaceCondition) {
   // Step 0: Set up ControllableHttpResponse to control the timing of the
   // navigation (and therefore to control the timing of the "DOMContentLoaded"
   // event and therefore the timing of content script injection).
