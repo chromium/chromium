@@ -177,6 +177,7 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int w) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnFocus() override;
