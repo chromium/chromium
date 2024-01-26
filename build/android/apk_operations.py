@@ -1021,7 +1021,10 @@ def _RunCompileDex(devices, package_name, compilation_filter):
   cmd = ['cmd', 'package', 'compile', '-f', '-m', compilation_filter,
          package_name]
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
-  return parallel_devices.RunShellCommand(cmd, timeout=120).pGet(None)
+  outputs = parallel_devices.RunShellCommand(cmd, timeout=120).pGet(None)
+  for output in _PrintPerDeviceOutput(devices, outputs):
+    for line in output:
+      print(line)
 
 
 def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
@@ -1529,8 +1532,6 @@ class _InstallCommand(_Command):
       _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake)
     else:
       _InstallApk(self.devices, self.apk_helper, self.install_dict)
-    if self.args.is_official_build:
-      _RunCompileDex(self.devices, self.args.package_name, 'speed')
 
 
 class _UninstallCommand(_Command):
@@ -1855,11 +1856,8 @@ class _CompileDexCommand(_Command):
              '"speed-profile".')
 
   def Run(self):
-    outputs = _RunCompileDex(self.devices, self.args.package_name,
-                             self.args.compilation_filter)
-    for output in _PrintPerDeviceOutput(self.devices, outputs):
-      for line in output:
-        print(line)
+    _RunCompileDex(self.devices, self.args.package_name,
+                   self.args.compilation_filter)
 
 
 class _PrintCertsCommand(_Command):
@@ -2230,7 +2228,7 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
                  additional_apk_paths, aapt2_path, keystore_path,
                  keystore_password, keystore_alias, package_name,
                  command_line_flags_file, proguard_mapping_path, target_cpu,
-                 system_image_locales, default_modules, is_official_build):
+                 system_image_locales, default_modules):
   """Entry point for generated app bundle wrapper scripts.
 
   Args:
@@ -2270,8 +2268,7 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
       package_name=package_name,
       command_line_flags_file=command_line_flags_file,
       proguard_mapping_path=proguard_mapping_path,
-      target_cpu=target_cpu,
-      is_official_build=is_official_build)
+      target_cpu=target_cpu)
   _RunInternal(
       parser,
       output_directory=output_directory,
