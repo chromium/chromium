@@ -182,8 +182,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             return assignedIndex;
         }
 
-        if (!ChromeFeatureList.sTabWindowManagerReportIndicesMismatch.isEnabled()
-                && !BuildConfig.ENABLE_ASSERTS) {
+        boolean assertMismatch = !BuildConfig.IS_FOR_TEST && BuildConfig.ENABLE_ASSERTS;
+        boolean forceReportMismatch =
+                ChromeFeatureList.sTabWindowManagerReportIndicesMismatch.isEnabled();
+        if (!forceReportMismatch && !assertMismatch) {
             return assignedIndex;
         }
 
