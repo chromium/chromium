@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
 #include "chrome/services/sharing/nearby/platform/input_file.h"
@@ -746,7 +747,8 @@ Core* NearbyConnections::GetCore(const std::string& service_id) {
     // |service_controller_router| instance, but this value is expected to be
     // null for the first GetCore() call during normal operation.
     if (!service_controller_router_) {
-      service_controller_router_ = std::make_unique<ServiceControllerRouter>();
+      service_controller_router_ = std::make_unique<ServiceControllerRouter>(
+          /*enable_ble_v2=*/features::IsNearbyBleV2Enabled());
     }
 
     core = std::make_unique<Core>(service_controller_router_.get());

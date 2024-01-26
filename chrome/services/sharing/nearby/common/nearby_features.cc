@@ -8,6 +8,12 @@
 
 namespace features {
 
+// Enables the use of BleV2. This flag is CrOS owned, and overrides the value of
+// the flag "kEnableBleV2" owned by Nearby Connections.
+BASE_FEATURE(kEnableNearbyBleV2,
+             "EnableNearbyBleV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of Extended Advertising from within the implementation of BLE
 // V2, for incremental testing purposes. Assumes that the caller will also check
 // if the hardware supports Extended Advertising.
@@ -20,6 +26,10 @@ BASE_FEATURE(kEnableNearbyBleV2ExtendedAdvertising,
 BASE_FEATURE(kEnableNearbyBluetoothClassicAdvertising,
              "EnableNearbyBluetoothClassicAdvertising",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsNearbyBleV2Enabled() {
+  return base::FeatureList::IsEnabled(kEnableNearbyBleV2);
+}
 
 bool IsNearbyBleV2ExtendedAdvertisingEnabled() {
   return base::FeatureList::IsEnabled(kEnableNearbyBleV2ExtendedAdvertising);
