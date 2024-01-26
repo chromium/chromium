@@ -11803,6 +11803,22 @@
             ]
         }
     ],
+    "NotificationOneTapUnsubscribe": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationOneTapUnsubscribe"
+                    ],
+                    "min_os_version": "9.0.0"
+                }
+            ]
+        }
+    ],
     "NotificationsIgnoreRequireInteraction": [
         {
             "platforms": [
