@@ -474,8 +474,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and bookmarking it opens the
 // "added bookmark" snackbar.
-// TODO(crbug.com/1520513): Failing on iPhone, re-enable when fixed.
-- (void)DISABLED_testBookmarkInactiveTab {
+- (void)testBookmarkInactiveTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
                            @"only supported on iPhone.");

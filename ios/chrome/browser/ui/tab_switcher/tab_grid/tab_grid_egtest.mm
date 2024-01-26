@@ -831,8 +831,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests the Add to Bookmarks action on a tab grid item's context menu.
-// TODO(crbug.com/1519535): Test is failing on iPhone and iPad.
-- (void)DISABLED_testTabGridItemContextMenuAddToBookmarks {
+- (void)testTabGridItemContextMenuAddToBookmarks {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -2267,8 +2266,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that add to bookmarks action works successfully from the long press
 // context menu on search results.
-// TODO(crbug.com/1519535): Test is failing on iPhone and iPad.
-- (void)DISABLED_testSearchOpenTabsContextMenuAddToBookmarks {
+- (void)testSearchOpenTabsContextMenuAddToBookmarks {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
