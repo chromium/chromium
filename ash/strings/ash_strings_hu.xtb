@@ -1499,6 +1499,7 @@ Frissen telepítve</translation>
 <translation id="6981291220124935078">Hozzáférés engedélyezése</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="698231206551913481">A felhasználó eltávolításakor az összes hozzá tartozó fájl és helyi adat is véglegesen törlődik.</translation>
+<translation id="6984028004251196682">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
 <translation id="6989752354829085073">Fussa át gyorsan, hogy hogyan navigálhat a Chromebookon. Hat lépés után használatba is veheti eszközét.</translation>
 <translation id="7004910047186208204">Csatlakozás mobiladat-hálózathoz</translation>
 <translation id="7005239792648594238">A kezdéshez nyisson meg egy alkalmazást</translation>

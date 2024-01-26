@@ -258,6 +258,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1442987760062738829">Perfurar</translation>
 <translation id="1446396933673057385">Verificação de precisão</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">As chaves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" não podem ser definidas no mesmo dicionário que as chaves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1452803302401719440">As configurações que sua família escolheu garantem sua segurança on-line</translation>
 <translation id="1455413310270022028">Borracha</translation>
 <translation id="1458140305240870199">Roupa íntima</translation>
@@ -769,6 +770,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periféricos vinculados a este dispositivo enquanto sua conta está conectada</translation>
 <translation id="2450021089947420533">Jornadas</translation>
+<translation id="2452837234288608067">Não foi possível ajudar. Tente de novo.</translation>
 <translation id="2456755709261364512">O nível da bateria precisa estar acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2462599289530201834">Pesquisar "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="2463739503403862330">Preencher</translation>
@@ -910,6 +912,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2725927759457695883">Preencher nome completo</translation>
 <translation id="2726001110728089263">Bandeja lateral</translation>
 <translation id="2728127805433021124">O certificado do servidor é assinado com um algoritmo de assinatura fraco.</translation>
+<translation id="272937284275742856">Verificando seus detalhes de pagamento com segurança…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Conectividade<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Música clássica</translation>
 <translation id="2731382536835015353">44 x 68 pol.</translation>
@@ -1009,6 +1012,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2958544468932521864">Críquete</translation>
 <translation id="2959113999220720579">Tratamento corporal e facial</translation>
 <translation id="2962073860865348475">12 x 18 pol.</translation>
+<translation id="2967098518029543669">Salve a senha na sua Conta do Google</translation>
 <translation id="2968103128155246731">Vans e minivans</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
 <translation id="2977665033722899841">Selecionado no momento: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
@@ -1383,6 +1387,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3678914302246317895">Insira o código de verificação de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3681421644246505351">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente.</translation>
+<translation id="3682094733650754138">A opção de preencher um endereço foi selecionada</translation>
 <translation id="3689867156802445220">Número do edifício</translation>
 <translation id="3693327506115126094">Escolha como confirmar sua identidade</translation>
 <translation id="3698629142018988477">Botão "Criar site". Ative para criar rapidamente um novo site no Google Sites</translation>
@@ -2060,7 +2065,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="503498442187459473"><ph name="HOST" /> quer usar sua câmera e seu microfone</translation>
 <translation id="5035135400558156732">Jardinagem</translation>
 <translation id="503574301575803523">SRA3</translation>
-<translation id="5036337510084622581">Faça login de novo e volte a esta guia para receber ajuda com a escrita</translation>
 <translation id="5039762155821394373">Tamanho da fonte</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
@@ -2791,6 +2795,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6491663123807473970"><ph name="URL" /> quer usar seus dispositivos MIDI</translation>
 <translation id="6493924760403974580">O app só é compatível com este tamanho.</translation>
 <translation id="6494750904506170417">pop-ups e redirecionamentos</translation>
+<translation id="6495664197699704593">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Operações comerciais</translation>
 <translation id="6499038740797743453">Redefinir senha?</translation>
 <translation id="6502510275417601303">O alerta sobre a nova configuração de pagamento está fechado</translation>
@@ -2905,6 +2910,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6737708609449480586">Produtos assados</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
+<translation id="6740851646645036700">Você atingiu o limite da ajuda para escrever. Tente de novo mais tarde.</translation>
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto espera por uma conexão, acesse "Downloads" para ler artigos off-line.</translation>
 <translation id="6745592621698551453">Atualizar agora</translation>
@@ -2961,6 +2967,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6860888819347870819">Pode pedir para entrar no picture-in-picture</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Recursos para o consumidor</translation>
+<translation id="6865166112578825782">Preencha o endereço</translation>
 <translation id="6865412394715372076">Não é possível verificar este cartão no momento</translation>
 <translation id="6868573634057275953">Retomar atualização</translation>
 <translation id="6869334554832814367">Empréstimos pessoais</translation>
@@ -3430,6 +3437,7 @@ Mais detalhes:
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7701544340847569275">Atualização concluída com erros</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Ir para <ph name="SITE" /> (não seguro)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Quero ajuda para escrever</translation>
 <translation id="7705992072972338699">Disco óptico (alto brilho)</translation>
 <translation id="770607638235926858">Esqui e snowboard</translation>
 <translation id="7706689436519265630">Os arquivos copiados ou movidos são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa.</translation>
@@ -3649,6 +3657,7 @@ Mais detalhes:
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8163866351304776260">Perfuração quádrupla no lado esquerdo</translation>
 <translation id="8164078261547504572">Quer receber e-mails de reduções no preço?</translation>
+<translation id="8169175551046720804">As chaves "<ph name="DATA_CONTROLS_KEYS" />" não podem ser definidas no mesmo dicionário</translation>
 <translation id="8175796834047840627">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações.</translation>
 <translation id="8176440868214972690">O administrador do dispositivo enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="817820454357658398">Produtos para higiene feminina</translation>
@@ -4045,6 +4054,7 @@ Mais detalhes:
 <translation id="8949410982325929394">Tom</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Leis e governo</translation>
+<translation id="8952569554322479410">Um site quer acessar sua <ph name="REQUEST_TYPE" />. Responda a esta pesquisa de um minuto e ajude a melhorar a forma como os sites pedem permissão de acesso.</translation>
 <translation id="8954252855949068147">Vestuário</translation>
 <translation id="8956124158020778855">Depois de ativar essa configuração, volte a esta guia para começar a gravar.</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>

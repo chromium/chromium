@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Intern feil</translation>
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multipliser</translation>
 <translation id="1145018782460575098">Vinduet for oppdatering av fastvare på eksterne enheter er åpent. <ph name="NUM_UPDATES" /> oppdateringer er tilgjengelige.</translation>
 <translation id="1145516343487477149">Finn hjelpeartikler og svar på vanlige Chromebook-spørsmål</translation>
 <translation id="1154390310959620237">Du kan bare tilpasse fem hurtigtaster. Slett en hurtigtast for å legge til en ny.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
+<translation id="1371650399987522809">Tilbakemelding om bakgrunner basert på AI-løsninger fra Google</translation>
 <translation id="1387854245479784695">Dette er en sammenstilling av alle kjernene</translation>
 <translation id="1394661041439318933">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1561927818299383735">bakgrunnsbelyst farge</translation>
 <translation id="1565038567006703504">Kan ikke oppdatere <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">divider</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angi som bakgrunn</translation>
 <translation id="1578784163189013834">Velg skjermsparerbakgrunn</translation>
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
 <translation id="1611649489706141841">fremover</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Genererer bilder …</translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
 <translation id="1626590945318984973">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som ikke inneholder funksjonstastene eller <ph name="META_KEY" />-tasten.</translation>
 <translation id="1639239467298939599">Laster inn</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skjermsparer: Skyflyt</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
+<translation id="2938573842839598578">For å få et omtrentlig resultat, <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Kan ikke teste enheten. Åpne lokket igjen for å teste.</translation>
 <translation id="2941112035454246133">Lav</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
+<translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfritt)</translation>
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
 <translation id="3569407787324516067">Skjermsparer</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7180865173735832675">Tilpass</translation>
 <translation id="7184043045742675738">Klikk på hvilken som helst tast for å tilpasse knappen. Flytt tasten med musen eller piltastene.</translation>
+<translation id="7206979415662233817">Vilkår for bruk</translation>
 <translation id="7212547870105584639">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastvareoppdateringer for eksterne enheter</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">tastaturfarge</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Du må være minst 18 år gammel og godta at bruken din av AI-bakgrunner er underlagt <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles vilkår for bruk<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />tilleggsvilkårene for bruk av generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kan bare lage bakgrunner med AI til personlig og ikke-kommersiell bruk. Når du får hjelp med bakgrunner, sendes tekst til Googles AI-tjenere for å generere forslag til bakgrunner. Dette er underlagt <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7353413232959255829">Søkeresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Trykk på Enter for å navigere til snarveien.</translation>

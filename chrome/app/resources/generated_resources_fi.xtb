@@ -2042,7 +2042,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2501797496290880632">Syötä pikanäppäin</translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
 <translation id="2502441965851148920">Automaattiset päivitykset ovat käytössä, mutta järjestelmänvalvoja on estänyt manuaaliset päivitykset.</translation>
-<translation id="2502719318159902502">Täydet käyttöoikeudet</translation>
+<translation id="2502719318159902502">Täydet pääsyoikeudet</translation>
 <translation id="2504801073028762184">Turvallisuussuositukset</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Näyttö #}other{Näyttö #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>

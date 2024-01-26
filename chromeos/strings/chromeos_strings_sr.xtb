@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">помножите</translation>
 <translation id="1145018782460575098">Прозор за ажурирање фирмвера за спољне уређаје је отворен. Доступних ажурирања: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Пронађите чланке помоћи и одговоре на честа питања о Chromebook-у</translation>
 <translation id="1154390310959620237">Можете да прилагодите само 5 пречица. Избришите неку пречицу да бисте додали нову.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
 <translation id="1367951781824006909">Изабери датотеку</translation>
+<translation id="1371650399987522809">Повратне информације за позадину коју омогућава oмогућава Google AI</translation>
 <translation id="1387854245479784695">Ово је збир свих језгара</translation>
 <translation id="1394661041439318933">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије футроле.</translation>
 <translation id="1397738625398125236">Мрежни пролаз може да се пингује</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Додирна табла</translation>
 <translation id="1561927818299383735">боја позадинског осветљења</translation>
 <translation id="1565038567006703504">Ажурирање уређаја <ph name="DEVICE_NAME" /> није успело</translation>
+<translation id="1566493343215789965">поделите</translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1578784163189013834">Одаберите позадину чувара екрана</translation>
 <translation id="160633243685262989">Преглед слике</translation>
 <translation id="1611649489706141841">кретање напред</translation>
 <translation id="1615335640928990664">Потрошња података од <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Генеришу се слике…</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
 <translation id="1626590945318984973">Пречица није доступна. Притисните нову пречицу без коришћења функцијских тастера и тастера <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Учитава се</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Испражњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="2880569433548999039">Чувар екрана са облацима</translation>
 <translation id="2926057806159140518">Унесите корисничко име и лозинку или скенирајте QR кôд</translation>
+<translation id="2938573842839598578">За приближни резултат <ph name="OPERATOR_TEXT" /> вредност <ph name="CATEGORY_TEXT" /> са <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Тестирање уређаја није успело. Поново отворите поклопац да бисте га тестирали.</translation>
 <translation id="2941112035454246133">Низак</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локални идентитет (опционално)</translation>
 <translation id="3565064564551103223">Дозвољене IPа адресе</translation>
 <translation id="3569407787324516067">Чувар екрана</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Прилагоди</translation>
 <translation id="7184043045742675738">Кликните на било који тастер да бисте прилагодили дугме. Промените положај тастера помоћу тастера миша или тастера са стрелицама.</translation>
+<translation id="7206979415662233817">Услови коришћења услуге</translation>
 <translation id="7212547870105584639">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања фирмвера за екстерне уређаје</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">боја тастатуре</translation>
 <translation id="7317831949569936035">Регистрација за школу</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Морате да имате најмање 18 година и да прихватате да ваше коришћење AI позадина подлеже <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google условима коришћења услуге<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Додатним условима коришћења услуге Генеративна вештачка интелигенција<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Позадине можете да правите помоћу вештачке интелигенције само за личну и некомерцијалну употребу. Када добијете помоћ за позадину, текст се шаље серверима Google вештачке интелигенције да би се генерисали предлози за позадине, у складу са <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google политиком приватности<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. резултат претраге од <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Притисните Enter да бисте отишли на пречицу.</translation>

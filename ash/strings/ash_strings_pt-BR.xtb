@@ -1498,6 +1498,7 @@ Nova instalação</translation>
 <translation id="6981291220124935078">Ativar o acesso</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os arquivos e dados locais associados a este usuário serão excluídos permanentemente quando o usuário for removido.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> não oferece suporte a <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução mudou para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Clique em "Confirmar" para manter as modificações. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Faça um tour rápido para aprender a usar seu Chromebook. Comece a trabalhar em seis etapas.</translation>
 <translation id="7004910047186208204">Conectar-se aos dados móveis</translation>
 <translation id="7005239792648594238">Abra um app para começar</translation>
