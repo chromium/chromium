@@ -68,8 +68,7 @@ void OnWebauthnCredentialSelected(
     const std::vector<uint8_t>& credential_id) {
   base::android::RunObjectCallbackAndroid(
       jcallback, base::android::ToJavaByteArray(
-                     base::android::AttachCurrentThread(), credential_id.data(),
-                     credential_id.size()));
+                     base::android::AttachCurrentThread(), credential_id));
 }
 
 void OnHybridAssertionInvoked(
@@ -111,8 +110,7 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
     base::android::RunObjectCallbackAndroid(
         jget_assertion_callback,
         base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
-                                       credential_id.data(),
-                                       credential_id.size()));
+                                       credential_id));
     return;
   }
 

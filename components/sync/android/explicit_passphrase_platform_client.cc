@@ -40,7 +40,7 @@ void SendExplicitPassphraseToJavaPlatformClient(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ExplicitPassphrasePlatformClient_setExplicitDecryptionPassphrase(
       env, ConvertToJavaCoreAccountInfo(env, sync_service->GetAccountInfo()),
-      base::android::ToJavaByteArray(env, bytes.data(), byte_size));
+      base::android::ToJavaByteArray(env, bytes));
 }
 
 }  // namespace syncer

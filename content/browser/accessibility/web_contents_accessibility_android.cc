@@ -774,8 +774,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
   if (child_ids.size()) {
     Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren(
-        env, obj, info,
-        base::android::ToJavaIntArray(env, child_ids.data(), child_ids.size()));
+        env, obj, info, base::android::ToJavaIntArray(env, child_ids));
   }
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(

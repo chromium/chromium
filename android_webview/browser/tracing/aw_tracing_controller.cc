@@ -20,13 +20,6 @@ using base::android::JavaParamRef;
 
 namespace {
 
-base::android::ScopedJavaLocalRef<jbyteArray> StringToJavaBytes(
-    JNIEnv* env,
-    const std::string& str) {
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(str.data()), str.size());
-}
-
 class AwTraceDataEndpoint
     : public content::TracingController::TraceDataEndpoint {
  public:
@@ -119,7 +112,7 @@ void AwTracingController::OnTraceDataReceived(
   base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object_.get(env);
   if (obj.obj()) {
     base::android::ScopedJavaLocalRef<jbyteArray> java_trace_data =
-        StringToJavaBytes(env, *chunk);
+        base::android::ToJavaByteArray(env, *chunk);
     Java_AwTracingController_onTraceDataChunkReceived(env, obj,
                                                       java_trace_data);
   }

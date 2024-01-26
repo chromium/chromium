@@ -57,7 +57,7 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   int size = info->ByteSize();
   std::vector<uint8_t> data(size);
   info->SerializeToArray(data.data(), size);
-  return base::android::ToJavaByteArray(env, data.data(), size);
+  return base::android::ToJavaByteArray(env, data);
 }
 
 static void JNI_PageInfoAboutThisSiteController_OnAboutThisSiteRowClicked(

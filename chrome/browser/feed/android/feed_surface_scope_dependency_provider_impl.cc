@@ -36,9 +36,7 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
       env, response.status_code == 200, response.status_code,
       base::android::ToJavaArrayOfStrings(
           env, response.response_header_names_and_values),
-      base::android::ToJavaByteArray(
-          env, reinterpret_cast<const uint8_t*>(response.response_bytes.data()),
-          response.response_bytes.size()));
+      base::android::ToJavaByteArray(env, response.response_bytes));
 }
 
 void OnFetchResourceFinished(JNIEnv* env,

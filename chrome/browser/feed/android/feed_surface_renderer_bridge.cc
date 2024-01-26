@@ -122,11 +122,9 @@ void FeedSurfaceRendererBridge::StreamUpdate(
   JNIEnv* env = base::android::AttachCurrentThread();
   int32_t data_size = stream_update.ByteSize();
 
-  std::vector<uint8_t> data;
-  data.resize(data_size);
+  std::vector<uint8_t> data(data_size);
   stream_update.SerializeToArray(data.data(), data_size);
-  ScopedJavaLocalRef<jbyteArray> j_data =
-      ToJavaByteArray(env, data.data(), data_size);
+  ScopedJavaLocalRef<jbyteArray> j_data = ToJavaByteArray(env, data);
   Java_FeedSurfaceRendererBridge_onStreamUpdated(env, java_ref_, j_data);
 }
 
@@ -135,8 +133,7 @@ void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(base::StringPiece key,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_replaceDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key),
-      base::android::ToJavaByteArray(
-          env, reinterpret_cast<const uint8_t*>(data.data()), data.size()));
+      base::android::ToJavaByteArray(env, base::as_byte_span(data)));
 }
 
 void FeedSurfaceRendererBridge::RemoveDataStoreEntry(base::StringPiece key) {

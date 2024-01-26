@@ -46,6 +46,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/atomicops.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -871,9 +872,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   // Convert the certificate and return it
   base::StringPiece der_string = net::x509_util::CryptoBufferAsStringPiece(
       entry->GetSSL().certificate->cert_buffer());
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(der_string.data()),
-      der_string.length());
+  return base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
 }
 
 void AwContents::RequestNewHitTestDataAt(JNIEnv* env,
@@ -1005,8 +1004,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
 
   base::Pickle pickle;
   WriteToPickle(*web_contents_, &pickle);
-  return base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(pickle.data()), pickle.size());
+  return base::android::ToJavaByteArray(env, pickle);
 }
 
 jboolean AwContents::RestoreFromOpaqueState(
@@ -1018,8 +1016,7 @@ jboolean AwContents::RestoreFromOpaqueState(
   std::vector<uint8_t> state_vector;
   base::android::JavaByteArrayToByteVector(env, state, &state_vector);
 
-  base::Pickle pickle(reinterpret_cast<const char*>(state_vector.data()),
-                      state_vector.size());
+  base::Pickle pickle(state_vector);
   base::PickleIterator iterator(pickle);
 
   return RestoreFromPickle(&iterator, web_contents_.get());

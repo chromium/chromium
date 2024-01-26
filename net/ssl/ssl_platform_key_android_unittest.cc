@@ -38,10 +38,8 @@ bool ReadTestFile(const char* filename, std::string* pkcs8) {
 ScopedJava GetPKCS8PrivateKeyJava(android::PrivateKeyType key_type,
                                   const std::string& pkcs8_key) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jbyteArray> bytes(
-      base::android::ToJavaByteArray(
-          env, reinterpret_cast<const uint8_t*>(pkcs8_key.data()),
-          pkcs8_key.size()));
+  base::android::ScopedJavaLocalRef<jbyteArray> bytes =
+      base::android::ToJavaByteArray(env, pkcs8_key);
 
   ScopedJava key(Java_AndroidKeyStoreTestUtil_createPrivateKeyFromPKCS8(
       env, key_type, bytes));

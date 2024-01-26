@@ -739,11 +739,10 @@ ScopedJavaLocalRef<jbyteArray> BookmarkBridge::GetPowerBookmarkMeta(
   int size = meta->ByteSize();
   std::string proto_bytes;
   meta->SerializeToString(&proto_bytes);
-  std::vector<uint8_t> data;
-  data.resize(size);
+  std::vector<uint8_t> data(size);
   meta->SerializeToArray(data.data(), size);
 
-  return base::android::ToJavaByteArray(env, data.data(), size);
+  return base::android::ToJavaByteArray(env, data);
 }
 
 void BookmarkBridge::DeletePowerBookmarkMeta(
