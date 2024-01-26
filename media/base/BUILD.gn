@@ -559,6 +559,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//testing/gmock",
+    "//third_party/libyuv",
     "//ui/gfx:test_support",
     "//url",
   ]

@@ -22,6 +22,7 @@
 #include "media/base/sample_format.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -249,6 +250,17 @@ bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
 // Create a MockDemuxerStream for testing purposes.
 std::unique_ptr<::testing::StrictMock<MockDemuxerStream>>
 CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
+
+// Fills `dest_frame` with a four color frame which looks like:
+//
+//   YYYYRRRR
+//   BBBBGGGG
+//
+// Supports 8-bit xRGB, BGRx, NV12x, and I4xxx formats. If `xor_mask` is
+// provided the standard four colors will be XOR'd with the provided 00RRGGBB
+// value (alpha value must be zero).
+void FillFourColors(VideoFrame& dest_frame,
+                    absl::optional<uint32_t> xor_mask = absl::nullopt);
 
 // Compares two media::Status by StatusCode only.  Also allows the ok helper to
 // match kOk.  It's a special case because we don't know the TypedStatus traits

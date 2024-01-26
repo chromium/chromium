@@ -5,6 +5,7 @@
 #include "media/base/video_frame_converter.h"
 
 #include "base/logging.h"
+#include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,196 +68,6 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   return true;
 }
 
-std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> FourColors(bool opaque) {
-  const uint32_t alpha = (opaque ? 0xFF : 0x80) << 24;
-  const uint32_t yellow = 0x00FFFF00 | alpha;
-  const uint32_t red = 0x00FF0000 | alpha;
-  const uint32_t blue = 0x000000FF | alpha;
-  const uint32_t green = 0x0000FF00 | alpha;
-  return std::tie(yellow, red, blue, green);
-}
-
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb) {
-  // We're not trying to test the quality of Y, U, V, A conversion, just that
-  // it happened. So use the same internal method to convert ARGB to YUV values.
-  uint8_t y, u, v, a;
-  libyuv::ARGBToI444(reinterpret_cast<const uint8_t*>(&argb), 1, &y, 1, &u, 1,
-                     &v, 1, 1, 1);
-  a = argb >> 24;
-  return std::tie(y, u, v, a);
-}
-
-void I4xxxRect(VideoFrame* dest_frame,
-               int x,
-               int y,
-               int width,
-               int height,
-               uint8_t value_y,
-               uint8_t value_u,
-               uint8_t value_v,
-               uint8_t value_a) {
-  const int num_planes = VideoFrame::NumPlanes(dest_frame->format());
-  DCHECK(num_planes == 3 || num_planes == 4);
-  DCHECK(IsYuvPlanar(dest_frame->format()));
-
-  // Write known full size planes first.
-  libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::kYPlane) +
-                       y * dest_frame->stride(VideoFrame::kYPlane) + x,
-                   dest_frame->stride(VideoFrame::kYPlane), width, height,
-                   value_y);
-  if (num_planes == 4) {
-    libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::kAPlane) +
-                         y * dest_frame->stride(VideoFrame::kAPlane) + x,
-                     dest_frame->stride(VideoFrame::kAPlane), width, height,
-                     value_a);
-  }
-
-  // Adjust rect start and offset.
-  auto start_xy = VideoFrame::PlaneSize(dest_frame->format(),
-                                        VideoFrame::kUPlane, gfx::Size(x, y));
-  auto uv_size = VideoFrame::PlaneSize(
-      dest_frame->format(), VideoFrame::kUPlane, gfx::Size(width, height));
-
-  // Write variable sized planes.
-  libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::kUPlane) +
-          start_xy.height() * dest_frame->stride(VideoFrame::kUPlane) +
-          start_xy.width(),
-      dest_frame->stride(VideoFrame::kUPlane), uv_size.width(),
-      uv_size.height(), value_u);
-  libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::kVPlane) +
-          start_xy.height() * dest_frame->stride(VideoFrame::kVPlane) +
-          start_xy.width(),
-      dest_frame->stride(VideoFrame::kVPlane), uv_size.width(),
-      uv_size.height(), value_v);
-}
-
-void FillFourColorsFrameYUV(VideoFrame& dest_frame) {
-  DCHECK(IsYuvPlanar(dest_frame.format()));
-
-  auto visible_size = dest_frame.visible_rect().size();
-
-  auto* output_frame = &dest_frame;
-  scoped_refptr<VideoFrame> temp_frame;
-  if (dest_frame.format() == PIXEL_FORMAT_NV12 ||
-      dest_frame.format() == PIXEL_FORMAT_NV12A) {
-    temp_frame = VideoFrame::CreateZeroInitializedFrame(
-        dest_frame.format() == PIXEL_FORMAT_NV12 ? PIXEL_FORMAT_I420
-                                                 : PIXEL_FORMAT_I420A,
-        dest_frame.coded_size(), dest_frame.visible_rect(),
-        dest_frame.natural_size(), base::TimeDelta());
-    output_frame = temp_frame.get();
-  }
-
-  uint32_t yellow, red, blue, green;
-  std::tie(yellow, red, blue, green) =
-      FourColors(IsOpaque(dest_frame.format()));
-
-  uint8_t y, u, v, a;
-
-  // Yellow top left.
-  std::tie(y, u, v, a) = RGBToYUV(yellow);
-  I4xxxRect(output_frame, 0, 0, visible_size.width() / 2,
-            visible_size.height() / 2, y, u, v, a);
-
-  // Red top right.
-  std::tie(y, u, v, a) = RGBToYUV(red);
-  I4xxxRect(output_frame, visible_size.width() / 2, 0, visible_size.width() / 2,
-            visible_size.height() / 2, y, u, v, a);
-
-  // Blue bottom left.
-  std::tie(y, u, v, a) = RGBToYUV(blue);
-  I4xxxRect(output_frame, 0, visible_size.height() / 2,
-            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
-
-  // Green bottom right.
-  std::tie(y, u, v, a) = RGBToYUV(green);
-  I4xxxRect(output_frame, visible_size.width() / 2, visible_size.height() / 2,
-            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
-
-  if (temp_frame) {
-    ASSERT_EQ(libyuv::I420ToNV12(
-                  temp_frame->visible_data(VideoFrame::kYPlane),
-                  temp_frame->stride(VideoFrame::kYPlane),
-                  temp_frame->visible_data(VideoFrame::kUPlane),
-                  temp_frame->stride(VideoFrame::kUPlane),
-                  temp_frame->visible_data(VideoFrame::kVPlane),
-                  temp_frame->stride(VideoFrame::kVPlane),
-                  dest_frame.GetWritableVisibleData(VideoFrame::kYPlane),
-                  dest_frame.stride(VideoFrame::kYPlane),
-                  dest_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
-                  dest_frame.stride(VideoFrame::kUVPlane),
-                  dest_frame.visible_rect().width(),
-                  dest_frame.visible_rect().height()),
-              0);
-    if (dest_frame.format() == PIXEL_FORMAT_NV12A) {
-      libyuv::CopyPlane(
-          temp_frame->visible_data(VideoFrame::kAPlane),
-          temp_frame->stride(VideoFrame::kAPlane),
-          dest_frame.GetWritableVisibleData(VideoFrame::kAPlaneTriPlanar),
-          dest_frame.stride(VideoFrame::kAPlaneTriPlanar),
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height());
-    }
-  }
-}
-
-void FillFourColorsFrameARGB(VideoFrame& dest_frame) {
-  DCHECK(dest_frame.format() == PIXEL_FORMAT_ARGB ||
-         dest_frame.format() == PIXEL_FORMAT_XRGB ||
-         dest_frame.format() == PIXEL_FORMAT_ABGR ||
-         dest_frame.format() == PIXEL_FORMAT_XBGR);
-
-  auto visible_size = dest_frame.visible_rect().size();
-
-  uint32_t yellow, red, blue, green;
-  std::tie(yellow, red, blue, green) =
-      FourColors(IsOpaque(dest_frame.format()));
-
-  // Yellow top left.
-  ASSERT_EQ(libyuv::ARGBRect(
-                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
-                dest_frame.stride(VideoFrame::kARGBPlane), 0, 0,
-                visible_size.width() / 2, visible_size.height() / 2, yellow),
-            0);
-
-  // Red top right.
-  ASSERT_EQ(
-      libyuv::ARGBRect(
-          dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
-          dest_frame.stride(VideoFrame::kARGBPlane), visible_size.width() / 2,
-          0, visible_size.width() / 2, visible_size.height() / 2, red),
-      0);
-
-  // Blue bottom left.
-  ASSERT_EQ(libyuv::ARGBRect(
-                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
-                dest_frame.stride(VideoFrame::kARGBPlane), 0,
-                visible_size.height() / 2, visible_size.width() / 2,
-                visible_size.height() / 2, blue),
-            0);
-
-  // Green bottom right.
-  ASSERT_EQ(libyuv::ARGBRect(
-                dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
-                dest_frame.stride(VideoFrame::kARGBPlane),
-                visible_size.width() / 2, visible_size.height() / 2,
-                visible_size.width() / 2, visible_size.height() / 2, green),
-            0);
-
-  if (dest_frame.format() == PIXEL_FORMAT_XBGR ||
-      dest_frame.format() == PIXEL_FORMAT_ABGR) {
-    ASSERT_EQ(libyuv::ARGBToABGR(
-                  dest_frame.visible_data(VideoFrame::kARGBPlane),
-                  dest_frame.stride(VideoFrame::kARGBPlane),
-                  dest_frame.GetWritableVisibleData(VideoFrame::kARGBPlane),
-                  dest_frame.stride(VideoFrame::kARGBPlane),
-                  visible_size.width(), visible_size.height()),
-              0);
-  }
-}
-
 // SSIM/PSNR mismatch debugging function. Writes a VideoFrame into a packed
 // plane by plane layout that can be used with ffplay or ffmpeg to view the raw
 // output or convert to png. E.g.,
@@ -315,11 +126,7 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
       dest_format_, dest_coded_size_, dest_visible_rect_,
       dest_visible_rect_.size(), base::TimeDelta());
 
-  if (IsRGB(src_format_)) {
-    FillFourColorsFrameARGB(*src_frame);
-  } else {
-    FillFourColorsFrameYUV(*src_frame);
-  }
+  FillFourColors(*src_frame);
 
   if (!IsConversionSupported(src_format_, dest_format_)) {
     EXPECT_FALSE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
@@ -333,7 +140,7 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
   auto expected_dest_frame = VideoFrame::CreateZeroInitializedFrame(
       dest_format_, dest_coded_size_, dest_visible_rect_,
       dest_visible_rect_.size(), base::TimeDelta());
-  FillFourColorsFrameYUV(*expected_dest_frame);
+  FillFourColors(*expected_dest_frame);
 
   auto dest_visible_size = expected_dest_frame->visible_rect().size();
   for (size_t i = 0; i < VideoFrame::NumPlanes(expected_dest_frame->format());
