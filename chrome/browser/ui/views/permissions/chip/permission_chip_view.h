@@ -20,6 +20,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/view_tracker.h"
 
+class MultiImageContainer;
+
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
 class PermissionChipView : public views::MdTextButton {
@@ -82,6 +84,8 @@ class PermissionChipView : public views::MdTextButton {
   void RemoveObserver(Observer* observer);
 
  protected:
+  MultiImageContainer* multi_image_container();
+
   // The following virtual functions are used for the non-error state permission
   // chips (default/neutral states). For any other changes to the look and feel
   // of the chips, consider subclassing and overriding as needed.
