@@ -35,6 +35,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -688,6 +689,7 @@ public class ClipboardImpl extends Clipboard
     }
 
     public static void setSkipImageMimeTypeCheckForTesting(Boolean doSkip) {
+        ResettersForTesting.register(() -> sSkipImageMimeTypeCheckForTesting = null);
         sSkipImageMimeTypeCheckForTesting = doSkip;
     }
 }

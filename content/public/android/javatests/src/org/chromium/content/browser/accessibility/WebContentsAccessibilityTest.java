@@ -96,7 +96,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -240,13 +239,6 @@ public class WebContentsAccessibilityTest {
 
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
-    }
-
-    /** Helper method to tear down our tests so we can start the next test clean. */
-    @After
-    public void tearDown() {
-        mTestData = null;
-        mNodeInfo = null;
     }
 
     // Helper pass-through methods to make tests easier to read.

@@ -9,7 +9,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,11 +59,6 @@ public class ActionChipsProcessorUnitTest {
         mProcessor =
                 new ActionChipsProcessor(ContextUtils.getApplicationContext(), mSuggestionHost);
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
     }
 
     /**

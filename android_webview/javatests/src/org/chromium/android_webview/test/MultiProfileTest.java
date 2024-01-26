@@ -15,7 +15,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,11 +53,6 @@ public class MultiProfileTest extends AwParameterizedTest {
     public MultiProfileTest(AwSettingsMutation param) {
         this.mRule = new MultiProfileTestRule(param.getMutation());
         this.mContentsClient = mRule.getContentsClient();
-    }
-
-    @After
-    public void tearDown() {
-        mRule.tearDown();
     }
 
     @Test

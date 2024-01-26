@@ -61,7 +61,6 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     @After
     public void tearDown() {
         SafeModeController.getInstance().unregisterActionsForTesting();
-        mActivityTestRule.tearDown();
     }
 
     @Test
