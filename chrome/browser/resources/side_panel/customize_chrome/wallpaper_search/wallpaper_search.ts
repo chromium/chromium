@@ -455,6 +455,19 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.selectedHue_ !== null ? 'true' : 'false';
   }
 
+  private getInspirationDescriptorsCheckedStatus_(
+      groupDescriptors: ResultDescriptors): string {
+    const groupDescriptorColor = groupDescriptors.color?.name !== undefined ?
+        descriptorDNameToHex(groupDescriptors.color!.name) :
+        undefined;
+    return (groupDescriptors.subject || null) === this.selectedDescriptorA_ &&
+            (groupDescriptors.style || null) === this.selectedDescriptorB_ &&
+            (groupDescriptors.mood || null) === this.selectedDescriptorC_ &&
+            groupDescriptorColor === this.selectedDefaultColor_ ?
+        'true' :
+        'false';
+  }
+
   private getInspirationGroupTitle_(descriptors: ResultDescriptors): string {
     // Filter out undefined or null values, then join the rest into a comma
     // separated string.
@@ -745,6 +758,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
+    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
     const groupDescriptors = group.descriptors;
     this.selectedDescriptorA_ = groupDescriptors.subject || null;
     this.selectedDescriptorB_ = groupDescriptors.style || null;
@@ -762,6 +776,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       this.selectedHue_ = null;
       this.selectedDescriptorD_ = null;
     }
+    announcer.announce(
+        this.i18n('wallpaperSearchDescriptorsChangedA11yMessage'));
   }
 
   private shouldShowDeleteSelectedHueButton_() {

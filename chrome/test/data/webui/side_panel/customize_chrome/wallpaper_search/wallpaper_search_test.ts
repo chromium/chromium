@@ -1943,6 +1943,9 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('inspration group titles update selected descriptors', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchDescriptorsChangedA11yMessage': 'Descriptors updated',
+      });
       createWallpaperSearchElement(
           /*descriptors=*/ {
             descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
@@ -1985,9 +1988,14 @@ suite('WallpaperSearchTest', () => {
 
       const groupTitles = wallpaperSearchElement.shadowRoot!.querySelectorAll(
           '.inspiration-title');
-      const fistGroupTitle = groupTitles[0];
-      assertTrue(!!fistGroupTitle);
-      (fistGroupTitle as HTMLElement).click();
+      const firstGroupTitle = groupTitles[0];
+      const secondGroupTitle = groupTitles[1];
+      assertTrue(!!firstGroupTitle);
+      assertTrue(!!secondGroupTitle);
+
+      let loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      (firstGroupTitle as HTMLElement).click();
       await flushTasks();
 
       assertEquals(
@@ -2006,9 +2014,13 @@ suite('WallpaperSearchTest', () => {
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
       assertEquals('Yellow', checkedColor!.parentElement!.title);
+      assertEquals(firstGroupTitle.getAttribute('aria-current'), 'true');
+      assertEquals(secondGroupTitle.getAttribute('aria-current'), 'false');
+      let loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
 
-      const secondGroupTitle = groupTitles[1];
-      assertTrue(!!secondGroupTitle);
+      loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       (secondGroupTitle as HTMLElement)
           .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
       await flushTasks();
@@ -2027,9 +2039,16 @@ suite('WallpaperSearchTest', () => {
               wallpaperSearchElement, '#descriptorComboboxC')!.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+      assertEquals(firstGroupTitle.getAttribute('aria-current'), 'false');
+      assertEquals(secondGroupTitle.getAttribute('aria-current'), 'true');
+      loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
     });
 
     test('inspiration tiles updates selected descriptors', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchDescriptorsChangedA11yMessage': 'Descriptors updated',
+      });
       createWallpaperSearchElement(
           /*descriptors=*/ {
             descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
@@ -2083,6 +2102,8 @@ suite('WallpaperSearchTest', () => {
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
+      let loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       const inspirationGroupGrids =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
               '#inspirationCard cr-grid');
@@ -2108,7 +2129,11 @@ suite('WallpaperSearchTest', () => {
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
       assertEquals('Yellow', checkedColor!.parentElement!.title);
+      let loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
 
+      loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       inspirationTile = inspirationGroupGrids[1]!.querySelector('.tile');
       assertTrue(!!inspirationTile);
       (inspirationTile as HTMLElement).click();
@@ -2128,6 +2153,8 @@ suite('WallpaperSearchTest', () => {
               wallpaperSearchElement, '#descriptorComboboxC')!.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+      loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Descriptors updated'));
     });
 
     test('inspiration card toggles on click', async () => {

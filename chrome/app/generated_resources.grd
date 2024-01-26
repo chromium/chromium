@@ -8053,6 +8053,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE"  desc="Accessibility title for the toggle used to hide/show wallpaper search's inspiration.">
         Toggle Inspiration
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE" desc="Accessibility announcement message for when descriptors are updated by clicking on an inspiration.">
+        Form values updated
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

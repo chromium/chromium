@@ -212,6 +212,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_INSPIRATION},
       {"genericErrorDescriptionWithHistoryAndInspiration",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION},
+      {"wallpaperSearchDescriptorsChangedA11yMessage",
+       IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

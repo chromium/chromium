@@ -470,7 +470,8 @@
           <h3>
             <div class="inspiration-title" role="button" tabindex="0"
                 on-click="onInspirationGroupTitleClick_"
-                on-keydown="onInspirationGroupTitleKeydown_">
+                on-keydown="onInspirationGroupTitleKeydown_"
+                aria-current$="[[getInspirationDescriptorsCheckedStatus_(item.descriptors, selectedDescriptorA_, selectedDescriptorB_, selectedDescriptorC_, selectedDefaultColor_)]]">
               [[getInspirationGroupTitle_(item.descriptors)]]
             </div>
           </h3>
