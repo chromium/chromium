@@ -119,6 +119,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   void UpdateText();
 
+  void AddConsoleError(String error);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
