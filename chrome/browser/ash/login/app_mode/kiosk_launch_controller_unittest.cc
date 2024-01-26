@@ -133,6 +133,23 @@ class FakeNetworkMonitor : public ash::NetworkUiController::NetworkMonitor {
   raw_ptr<ash::NetworkUiController::NetworkMonitor::Observer> observer_;
   base::WeakPtrFactory<FakeNetworkMonitor> weak_ptr_factory_{this};
 };
+
+class FakeAcceleratorController
+    : public KioskLaunchController::AcceleratorController {
+ public:
+  FakeAcceleratorController() = default;
+  ~FakeAcceleratorController() override = default;
+
+  void EnableAccelerators() override { enabled_ = true; }
+
+  void DisableAccelerators() override { enabled_ = false; }
+
+  bool enabled() { return enabled_; }
+
+ private:
+  bool enabled_ = false;
+};
+
 }  // namespace
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -183,12 +200,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
     network_monitor_ = network_monitor_unique->GetWeakPtr();
+    auto fake_accelerator_controller =
+        std::make_unique<FakeAcceleratorController>();
+    accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
         /*host=*/nullptr, view_.get(),
         base::BindRepeating(
             &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
             base::Unretained(this)),
-        std::move(network_monitor_unique));
+        std::move(network_monitor_unique),
+        std::move(fake_accelerator_controller));
 
     // We can't call `crash_reporter::ResetCrashKeysForTesting()` to reset crash
     // keys since it destroys the storage for static crash keys. Instead we set
@@ -219,6 +240,10 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   KioskProfileLoader::Delegate& profile_controls() { return *controller_; }
 
   FakeKioskAppLauncher& launcher() { return *app_launcher_; }
+
+  FakeAcceleratorController& accelerator_controller() {
+    return *accelerator_controller_;
+  }
 
   int num_launchers_created() { return app_launchers_created_; }
 
@@ -324,12 +349,25 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       network_monitor_;  // owned by `controller_`.
   int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
+  raw_ptr<FakeAcceleratorController>
+      accelerator_controller_;  // owned by `controller_`.
   KioskAppId kiosk_app_id_;
 };
 
 TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   EXPECT_EQ(view().last_data().url, GURL(kInstallUrl));
+}
+
+TEST_F(KioskLaunchControllerTest, ControllerShouldDisableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  EXPECT_FALSE(accelerator_controller().enabled());
+}
+
+TEST_F(KioskLaunchControllerTest, CleanUpShouldReenableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  CleanUpController();
+  EXPECT_TRUE(accelerator_controller().enabled());
 }
 
 TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {
@@ -869,7 +907,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         base::BindRepeating(
             &KioskLaunchControllerUsingLacrosTest::BuildFakeKioskAppLauncher,
             base::Unretained(this)),
-        std::make_unique<FakeNetworkMonitor>());
+        std::make_unique<FakeNetworkMonitor>(),
+        std::make_unique<FakeAcceleratorController>());
 
     SetUpKioskAppInAppManager();
   }
