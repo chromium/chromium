@@ -154,6 +154,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
+
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingPerformanceMark);

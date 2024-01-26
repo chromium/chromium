@@ -115,6 +115,14 @@ typedef struct {
   float vals[3];
 } skcms_Vector3;
 
+typedef struct {
+  float vals[2];
+} skcms_Vector2;
+
+float dot(const skcms_Vector2& a, const skcms_Vector2& b) {
+  return a.vals[0] * b.vals[0] + a.vals[1] * b.vals[1];
+}
+
 static skcms_Vector3 skcms_Matrix3x3_apply(const skcms_Matrix3x3* m,
                                            const skcms_Vector3* v) {
   skcms_Vector3 dst = {{0, 0, 0}};
@@ -263,6 +271,116 @@ std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z) {
   float b = 200.0f * (y - z);
 
   return std::make_tuple(l, a, b);
+}
+
+// Projects the color (l,a,b) to be within a polyhedral approximation of the
+// Rec2020 gamut. This is done by finding the maximum value of alpha such that
+// (l, alpha*a, alpha*b) is within that polyhedral approximation.
+std::tuple<float, float, float> OklabGamutMap(float l, float a, float b) {
+  // Constants for the normal vector of the plane formed by white, black, and
+  // the specified vertex of the gamut.
+  const skcms_Vector2 normal_R{{0.409702, -0.912219}};
+  const skcms_Vector2 normal_M{{-0.397919, -0.917421}};
+  const skcms_Vector2 normal_B{{-0.906800, 0.421562}};
+  const skcms_Vector2 normal_C{{-0.171122, 0.985250}};
+  const skcms_Vector2 normal_G{{0.460276, 0.887776}};
+  const skcms_Vector2 normal_Y{{0.947925, 0.318495}};
+
+  // For the triangles formed by white (W) or black (K) with the vertices
+  // of Yellow and Red (YR), Red and Magenta (RM), etc, the constants to be
+  // used to compute the intersection of a line of constant hue and luminance
+  // with that plane.
+  const float c0_YR = 0.091132;
+  const skcms_Vector2 cW_YR{{0.070370, 0.034139}};
+  const skcms_Vector2 cK_YR{{0.018170, 0.378550}};
+  const float c0_RM = 0.113902;
+  const skcms_Vector2 cW_RM{{0.090836, 0.036251}};
+  const skcms_Vector2 cK_RM{{0.226781, 0.018764}};
+  const float c0_MB = 0.161739;
+  const skcms_Vector2 cW_MB{{-0.008202, -0.264819}};
+  const skcms_Vector2 cK_MB{{0.187156, -0.284304}};
+  const float c0_BC = 0.102047;
+  const skcms_Vector2 cW_BC{{-0.014804, -0.162608}};
+  const skcms_Vector2 cK_BC{{-0.276786, 0.004193}};
+  const float c0_CG = 0.092029;
+  const skcms_Vector2 cW_CG{{-0.038533, -0.001650}};
+  const skcms_Vector2 cK_CG{{-0.232572, -0.094331}};
+  const float c0_GY = 0.081709;
+  const skcms_Vector2 cW_GY{{-0.034601, -0.002215}};
+  const skcms_Vector2 cK_GY{{0.012185, 0.338031}};
+
+  const float L = l;
+  const float one_minus_L = 1.0 - L;
+  const skcms_Vector2 ab{{a, b}};
+
+  // Find the planes to intersect with and set the constants based on those
+  // planes.
+  float c0 = 0.f;
+  skcms_Vector2 cW{{0.f, 0.f}};
+  skcms_Vector2 cK{{0.f, 0.f}};
+  if (dot(ab, normal_R) < 0.0) {
+    if (dot(ab, normal_G) < 0.0) {
+      if (dot(ab, normal_C) < 0.0) {
+        c0 = c0_BC;
+        cW = cW_BC;
+        cK = cK_BC;
+      } else {
+        c0 = c0_CG;
+        cW = cW_CG;
+        cK = cK_CG;
+      }
+    } else {
+      if (dot(ab, normal_Y) < 0.0) {
+        c0 = c0_GY;
+        cW = cW_GY;
+        cK = cK_GY;
+      } else {
+        c0 = c0_YR;
+        cW = cW_YR;
+        cK = cK_YR;
+      }
+    }
+  } else {
+    if (dot(ab, normal_B) < 0.0) {
+      if (dot(ab, normal_M) < 0.0) {
+        c0 = c0_RM;
+        cW = cW_RM;
+        cK = cK_RM;
+      } else {
+        c0 = c0_MB;
+        cW = cW_MB;
+        cK = cK_MB;
+      }
+    } else {
+      c0 = c0_BC;
+      cW = cW_BC;
+      cK = cK_BC;
+    }
+  }
+
+  // Perform the intersection.
+  float alpha = 1.f;
+
+  // Intersect with the plane with white.
+  const float w_denom = dot(cW, ab);
+  if (w_denom > 0.f) {
+    const float w_num = c0 * one_minus_L;
+    if (w_num < w_denom) {
+      alpha = std::min(alpha, w_num / w_denom);
+    }
+  }
+
+  // Intersect with the plane with black.
+  const float k_denom = dot(cK, ab);
+  if (k_denom > 0.f) {
+    const float k_num = c0 * L;
+    if (k_num < k_denom) {
+      alpha = std::min(alpha, k_num / k_denom);
+    }
+  }
+
+  // Attenuate the ab coordinate by alpha.
+  return std::make_tuple(L, alpha * a, alpha * b);
 }
 
 std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b) {
@@ -537,6 +655,12 @@ SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha) {
   return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 
+SkColor4f OklabGamutMapToSkColor4f(float l, float a, float b, float alpha) {
+  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
+  auto [x, y, z] = OklabToXYZD65(l_gm, a_gm, b_gm);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
+}
+
 SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
   auto [x, y, z] = DisplayP3ToXYZD50(r, g, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
@@ -560,6 +684,16 @@ SkColor4f Rec2020ToSkColor4f(float r, float g, float b, float alpha) {
 SkColor4f OklchToSkColor4f(float l_input, float c, float h, float alpha) {
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = OklabToXYZD65(l, a, b);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
+}
+
+SkColor4f OklchGamutMapToSkColor4f(float l_input,
+                                   float c,
+                                   float h,
+                                   float alpha) {
+  auto [l, a, b] = LchToLab(l_input, c, h);
+  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
+  auto [x, y, z] = OklabToXYZD65(l_gm, a_gm, b_gm);
   return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 

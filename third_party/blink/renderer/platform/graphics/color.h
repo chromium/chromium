@@ -258,6 +258,15 @@ class PLATFORM_EXPORT Color {
   // Color has been converted to SkColor4f it should not be converted back.
   SkColor4f toSkColor4f() const;
 
+  // Convert a color to SkColor4f, for use as a gradient stop. Unlike the above
+  // function, this may avoid operations like gamut mapping, to ensure that
+  // round-trip conversions be preserved.
+  SkColor4f ToGradientStopSkColor4f(ColorSpace interpolation_space) const;
+
+  // Return true if the oklab and oklch spaces have gamut mapping baked into
+  // them.
+  static bool IsBakedGamutMappingEnabled();
+
   String SerializeInternal() const;
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
@@ -408,6 +417,9 @@ class PLATFORM_EXPORT Color {
   void GetHueMaxMin(double&, double&, double&) const;
 
   std::tuple<float, float, float> ExportAsXYZD50Floats() const;
+
+  // Common helper function to toSkColor4f and ToGradientStopSkColor4f.
+  SkColor4f ToSkColor4fInternal(bool gamut_map_oklab_oklch) const;
 
   // For testing purposes and for serializer.
   static String ColorSpaceToString(Color::ColorSpace color_space);

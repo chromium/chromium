@@ -117,9 +117,19 @@ GFX_EXPORT SkColor4f LabToSkColor4f(float l, float a, float b, float alpha);
 
 GFX_EXPORT SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha);
 
+GFX_EXPORT SkColor4f OklabGamutMapToSkColor4f(float l,
+                                              float a,
+                                              float b,
+                                              float alpha);
+
 GFX_EXPORT SkColor4f LchToSkColor4f(float l, float a, float b, float alpha);
 
 GFX_EXPORT SkColor4f OklchToSkColor4f(float l, float a, float h, float alpha);
+
+GFX_EXPORT SkColor4f OklchGamutMapToSkColor4f(float l,
+                                              float a,
+                                              float h,
+                                              float alpha);
 
 GFX_EXPORT SkColor4f SRGBLinearToSkColor4f(float r,
                                            float g,

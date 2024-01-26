@@ -32,6 +32,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -774,6 +775,24 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
 }
 
 SkColor4f Color::toSkColor4f() const {
+  return ToSkColor4fInternal(IsBakedGamutMappingEnabled());
+}
+
+SkColor4f
+Color::ToGradientStopSkColor4f(ColorSpace interpolation_space) const {
+  // Do not apply gamut mapping to gradient stops. Skia will perform
+  // gamut mapping on a per-pixel basis internally.
+  return ToSkColor4fInternal(/*gamut_map_oklab_oklch=*/false);
+}
+
+// static
+bool Color::IsBakedGamutMappingEnabled() {
+  static bool enabled =
+      base::FeatureList::IsEnabled(blink::features::kBakedGamutMapping);
+  return enabled;
+}
+
+SkColor4f Color::ToSkColor4fInternal(bool gamut_map_oklab_oklch) const {
   // Used value of an lab/lch color with lightness outside of the range
   // (0, 100) maps to black/white respectively.
   // The same is true for oklab/oklch, except the range is (0, 1).
@@ -784,11 +803,18 @@ SkColor4f Color::toSkColor4f() const {
         color_space_ == ColorSpace::kOklch) {
       upper_bound = 1.0;
     }
-    if (param0_ >= upper_bound) {
-      return SkColor4f{1.f, 1.f, 1.f, alpha_};
-    }
-    if (param0_ <= 0.0) {
-      return SkColor4f{0.f, 0.f, 0.f, alpha_};
+
+    if (IsBakedGamutMappingEnabled() && (color_space_ == ColorSpace::kOklab ||
+                                         color_space_ == ColorSpace::kOklch)) {
+      // Disable this behavior for oklab and oklch in the baked gamut mapping
+      // prototype.
+    } else {
+      if (param0_ >= upper_bound) {
+        return SkColor4f{1.f, 1.f, 1.f, alpha_};
+      }
+      if (param0_ <= 0.0) {
+        return SkColor4f{0.f, 0.f, 0.f, alpha_};
+      }
     }
   }
   switch (color_space_) {
@@ -815,11 +841,19 @@ SkColor4f Color::toSkColor4f() const {
     case ColorSpace::kLab:
       return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kOklab:
-      return gfx::OklabToSkColor4f(param0_, param1_, param2_, alpha_);
+      if (gamut_map_oklab_oklch) {
+        return gfx::OklabGamutMapToSkColor4f(param0_, param1_, param2_, alpha_);
+      } else {
+        return gfx::OklabToSkColor4f(param0_, param1_, param2_, alpha_);
+      }
     case ColorSpace::kLch:
       return gfx::LchToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kOklch:
-      return gfx::OklchToSkColor4f(param0_, param1_, param2_, alpha_);
+      if (gamut_map_oklab_oklch) {
+        return gfx::OklchGamutMapToSkColor4f(param0_, param1_, param2_, alpha_);
+      } else {
+        return gfx::OklchToSkColor4f(param0_, param1_, param2_, alpha_);
+      }
     case ColorSpace::kHSL:
       return gfx::HSLToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kHWB:

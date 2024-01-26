@@ -255,6 +255,12 @@ BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Redefine the oklab and oklch spaces to have gamut mapping baked into them.
+// https://crbug.com/1508329
+BASE_FEATURE(kBakedGamutMapping,
+             "BakedGamutMapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 BASE_FEATURE(kBackgroundTracingPerformanceMark,
