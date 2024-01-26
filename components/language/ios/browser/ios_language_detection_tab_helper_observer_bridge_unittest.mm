@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
@@ -75,7 +76,7 @@ class IOSLanguageDetectionTabHelperObserverBridgeTest : public PlatformTest {
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   web::FakeWebState web_state_;
-  language::IOSLanguageDetectionTabHelper* tab_helper_;
+  raw_ptr<language::IOSLanguageDetectionTabHelper> tab_helper_;
   TestIOSLanguageDetectionTabHelperObserver* observer_;
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
       oberserver_bridge_;

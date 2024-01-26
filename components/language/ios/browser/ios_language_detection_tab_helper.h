@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
@@ -115,9 +116,10 @@ class IOSLanguageDetectionTabHelper
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
-  UrlLanguageHistogram* const url_language_histogram_;
-  translate::LanguageDetectionModel* language_detection_model_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  const raw_ptr<UrlLanguageHistogram> url_language_histogram_;
+  raw_ptr<translate::LanguageDetectionModel> language_detection_model_ =
+      nullptr;
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;
   base::ObserverList<Observer, true>::Unchecked observer_list_;
