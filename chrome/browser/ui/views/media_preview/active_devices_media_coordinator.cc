@@ -22,7 +22,7 @@ constexpr char kMutableCoordinatorId[] = "changeable";
 using EligibleDevices = MediaCoordinator::EligibleDevices;
 
 bool IsWithinWebContents(content::GlobalRenderFrameHostId render_frame_host_id,
-                         content::WebContents* web_contents) {
+                         base::WeakPtr<content::WebContents> web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool is_request_in_frame = false;
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
@@ -41,14 +41,15 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
     content::WebContents* web_contents,
     MediaCoordinator::ViewType view_type,
     views::View* parent_view)
-    : web_contents_(web_contents),
-      view_type_(view_type),
+    : view_type_(view_type),
       parent_view_(parent_view),
       stream_type_(view_type_ == MediaCoordinator::ViewType::kCameraOnly
                        ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
                        : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+  CHECK(web_contents);
+  web_contents_ = web_contents->GetWeakPtr();
+
   CHECK(parent_view_);
-  CHECK(web_contents_);
   container_ = parent_view_->AddChildView(std::make_unique<MediaView>());
   CHECK(container_);
 
@@ -75,6 +76,10 @@ void ActiveDevicesMediaCoordinator::UpdateDevicePreferenceRanking() {
 }
 
 void ActiveDevicesMediaCoordinator::UpdateMediaCoordinatorList() {
+  if (!web_contents_.MaybeValid()) {
+    return;
+  }
+
   web_contents_->GetMediaCaptureRawDeviceIdsOpened(
       stream_type_,
       base::BindOnce(
@@ -106,6 +111,10 @@ void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(
 
 void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
     const std::optional<std::string>& active_device_id) {
+  if (!web_contents_.MaybeValid()) {
+    return;
+  }
+
   std::vector<std::string> active_device_id_vector;
   if (active_device_id.has_value()) {
     active_device_id_vector.push_back(active_device_id.value());
@@ -131,7 +140,7 @@ void ActiveDevicesMediaCoordinator::OnRequestUpdate(
     int render_frame_id,
     blink::mojom::MediaStreamType stream_type,
     const content::MediaRequestState state) {
-  if (stream_type != stream_type_) {
+  if (!web_contents_.MaybeValid() || stream_type != stream_type_) {
     return;
   }
 

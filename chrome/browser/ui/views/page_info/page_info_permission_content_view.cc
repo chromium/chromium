@@ -31,10 +31,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
     ChromePageInfoUiDelegate* ui_delegate,
     ContentSettingsType type,
     content::WebContents* web_contents)
-    : presenter_(presenter),
-      type_(type),
-      ui_delegate_(ui_delegate),
-      web_contents_(web_contents) {
+    : presenter_(presenter), type_(type), ui_delegate_(ui_delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // Use the same insets as buttons and permission rows in the main page for
@@ -108,7 +105,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 
-  MaybeAddMediaPreview();
+  MaybeAddMediaPreview(web_contents);
 
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -202,7 +199,8 @@ void PageInfoPermissionContentView::PermissionChanged() {
                                       permission_.is_one_time);
 }
 
-void PageInfoPermissionContentView::MaybeAddMediaPreview() {
+void PageInfoPermissionContentView::MaybeAddMediaPreview(
+    content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
     return;
@@ -220,7 +218,7 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview() {
   auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
                        ? MediaCoordinator::ViewType::kCameraOnly
                        : MediaCoordinator::ViewType::kMicOnly;
-  active_devices_media_preview_coordinator_.emplace(web_contents_, view_type,
+  active_devices_media_preview_coordinator_.emplace(web_contents, view_type,
                                                     /*parent_view=*/this);
 #endif
 }
