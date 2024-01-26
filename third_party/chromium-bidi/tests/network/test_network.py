@@ -140,20 +140,21 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                 "url": "http://example.com/qwe",
                 "method": "GET",
                 "headers": ANY_LIST,
-                "cookies": AnyOr([{
-                    "domain": "example.com",
-                    "expires": -1,
-                    "httpOnly": False,
-                    "name": "foo",
-                    "path": "/",
-                    "sameSite": "none",
-                    "secure": False,
-                    "size": 6,
-                    "value": {
-                        "type": "string",
-                        "value": "bar"
-                    },
-                }], []),
+                "cookies": AnyOr([
+                    AnyExtending({
+                        "domain": "example.com",
+                        "httpOnly": False,
+                        "name": "foo",
+                        "path": "/",
+                        "sameSite": "none",
+                        "secure": False,
+                        "size": 6,
+                        "value": {
+                            "type": "string",
+                            "value": "bar"
+                        },
+                    })
+                ], []),
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT

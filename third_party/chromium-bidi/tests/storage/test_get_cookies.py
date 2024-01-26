@@ -16,7 +16,7 @@
 import pytest
 from anys import ANY_DICT
 from storage import get_bidi_cookie, set_cookie
-from test_helpers import execute_command
+from test_helpers import AnyExtending, execute_command
 
 SOME_COOKIE_NAME = 'some_cookie_name'
 SOME_COOKIE_VALUE = 'some_cookie_value'
@@ -44,7 +44,31 @@ async def test_cookies_get_with_empty_params(websocket, context_id):
     })
 
     assert res == {
-        'cookies': [cookie],
+        'cookies': [AnyExtending(cookie)],
+        'partitionKey': {},
+    }
+
+
+@pytest.mark.asyncio
+async def test_cookies_get_cdp_specific_fields(websocket, context_id):
+    cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN)
+    await set_cookie(websocket, context_id, cookie)
+
+    res = await execute_command(websocket, {
+        'method': 'storage.getCookies',
+        'params': {}
+    })
+
+    assert res == {
+        'cookies': [
+            cookie | {
+                'goog:priority': 'Medium',
+                'goog:sameParty': False,
+                'goog:session': True,
+                'goog:sourcePort': 443,
+                'goog:sourceScheme': 'Secure',
+            }
+        ],
         'partitionKey': {},
     }
 
@@ -76,7 +100,7 @@ async def test_cookies_get_with_partition_source_origin(websocket, context_id):
 
     # Expect only a partitioned cookie to be presented.
     assert res == {
-        'cookies': [another_cookie],
+        'cookies': [AnyExtending(another_cookie)],
         'partitionKey': {
             # CDP's `partitionKey` does not support port.
             'sourceOrigin': SOME_ORIGIN_WITHOUT_PORT,
@@ -105,7 +129,7 @@ async def test_cookies_get_with_unsupported_partition_key(
         })
 
     assert res == {
-        'cookies': [cookie],
+        'cookies': [AnyExtending(cookie)],
         'partitionKey': {},
     }
 
@@ -128,7 +152,7 @@ async def test_cookies_get_with_partition_browsing_context(
         })
 
     assert resp == {
-        'cookies': [cookie],
+        'cookies': [AnyExtending(cookie)],
         'partitionKey': {},
     }
 
@@ -168,4 +192,7 @@ async def assert_cookie_filter(websocket, context_id, cookie_filter,
             'filter': cookie_filter
         }
     })
-    assert resp == {'cookies': [expected_cookie], 'partitionKey': ANY_DICT}
+    assert resp == {
+        'cookies': [AnyExtending(expected_cookie)],
+        'partitionKey': ANY_DICT
+    }

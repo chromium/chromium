@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {Protocol} from 'devtools-protocol';
-
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import type {Storage} from '../../../protocol/protocol.js';
-import {
-  InvalidArgumentException,
-  Network,
-  UnableToSetCookieException,
-  UnsupportedOperationException,
-} from '../../../protocol/protocol.js';
+import {UnableToSetCookieException} from '../../../protocol/protocol.js';
+import type {Storage, Network} from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkProcessor} from '../network/NetworkProcessor.js';
+import {bidiToCdpCookie, cdpToBiDiCookie} from '../network/NetworkUtils.js';
 
 /**
  * Responsible for handling the `storage` domain.
@@ -67,7 +61,7 @@ export class StorageProcessor {
           partitionKey.sourceOrigin === undefined ||
           c.partitionKey === partitionKey.sourceOrigin
       )
-      .map((c) => this.#cdpToBiDiCookie(c))
+      .map((c) => cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
 
     return {
@@ -80,7 +74,7 @@ export class StorageProcessor {
     params: Storage.SetCookieParameters
   ): Promise<Storage.SetCookieResult> {
     const partitionKey = this.#expandStoragePartitionSpec(params.partition);
-    const cdpCookie = this.#bidiToCdpCookie(params, partitionKey);
+    const cdpCookie = bidiToCdpCookie(params, partitionKey);
 
     try {
       await this.#browserCdpClient.sendCommand('Storage.setCookies', {
@@ -163,103 +157,6 @@ export class StorageProcessor {
     }
     assert(partitionSpec.type === 'storageKey', 'Unknown partition type');
     return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
-  }
-
-  #bidiToCdpCookie(
-    params: Storage.SetCookieParameters,
-    partitionKey: Storage.PartitionKey
-  ): Protocol.Network.CookieParam {
-    if (params.cookie.value.type !== 'string') {
-      // CDP supports only string values in cookies.
-      throw new UnsupportedOperationException(
-        'Only string cookie values are supported'
-      );
-    }
-    const deserializedValue = params.cookie.value.value;
-    return {
-      name: params.cookie.name,
-      value: deserializedValue,
-      domain: params.cookie.domain,
-      path: params.cookie.path ?? '/',
-      secure: params.cookie.secure ?? false,
-      httpOnly: params.cookie.httpOnly ?? false,
-      // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
-      ...(partitionKey.sourceOrigin !== undefined && {
-        partitionKey: partitionKey.sourceOrigin,
-      }),
-      ...(params.cookie.expiry !== undefined && {
-        expires: params.cookie.expiry,
-      }),
-      ...(params.cookie.sameSite !== undefined && {
-        sameSite: StorageProcessor.#sameSiteBiDiToCdp(params.cookie.sameSite),
-      }),
-      // TODO: extend with CDP-specific properties with `goog:` prefix after
-      //  https://github.com/w3c/webdriver-bidi/pull/637
-      //  * session: boolean;
-      //  * priority: CookiePriority;
-      //  * sameParty: boolean;
-      //  * sourceScheme: CookieSourceScheme;
-      //  * sourcePort: integer;
-      //  * partitionKey?: string;
-      //  * partitionKeyOpaque?: boolean;
-    };
-  }
-
-  #cdpToBiDiCookie(cookie: Protocol.Network.Cookie): Network.Cookie {
-    return {
-      name: cookie.name,
-      value: {type: 'string', value: cookie.value},
-      domain: cookie.domain,
-      path: cookie.path,
-      size: cookie.size,
-      httpOnly: cookie.httpOnly,
-      secure: cookie.secure,
-      sameSite:
-        cookie.sameSite === undefined
-          ? Network.SameSite.None
-          : StorageProcessor.#sameSiteCdpToBiDi(cookie.sameSite),
-      ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
-      // TODO: extend with CDP-specific properties with `goog:` prefix after
-      //  https://github.com/w3c/webdriver-bidi/pull/637
-      //  * session: boolean;
-      //  * priority: CookiePriority;
-      //  * sameParty: boolean;
-      //  * sourceScheme: CookieSourceScheme;
-      //  * sourcePort: integer;
-      //  * partitionKey?: string;
-      //  * partitionKeyOpaque?: boolean;
-    };
-  }
-
-  static #sameSiteCdpToBiDi(
-    sameSite: Protocol.Network.CookieSameSite
-  ): Network.SameSite {
-    switch (sameSite) {
-      case 'Strict':
-        return Network.SameSite.Strict;
-      case 'None':
-        return Network.SameSite.None;
-      case 'Lax':
-        return Network.SameSite.Lax;
-      default:
-        // Defaults to `Lax`:
-        // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
-        return Network.SameSite.Lax;
-    }
-  }
-
-  static #sameSiteBiDiToCdp(
-    sameSite: Network.SameSite
-  ): Protocol.Network.CookieSameSite {
-    switch (sameSite) {
-      case Network.SameSite.Strict:
-        return 'Strict';
-      case Network.SameSite.Lax:
-        return 'Lax';
-      case Network.SameSite.None:
-        return 'None';
-    }
-    throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
   }
 
   #matchCookie(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {
