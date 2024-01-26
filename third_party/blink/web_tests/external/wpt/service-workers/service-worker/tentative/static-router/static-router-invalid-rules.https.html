@@ -15,6 +15,8 @@
 
 const ROUTER_RULE_KEY_INVALID_REQUEST_METHOD =
     'condition-invalid-request-method';
+const ROUTER_RULE_KEY_SOURCE_FETCH_EVENT =
+    'condition-request-source-fetch-event';
 
 promise_test(async t => {
   const worker = await registerAndActivate(t, ROUTER_RULE_KEY_INVALID_REQUEST_METHOD);
@@ -22,5 +24,6 @@ promise_test(async t => {
   const {errors} = await get_info_from_worker(worker);
   assert_equals(errors.length, 1);
 }, 'addRoutes should raise for invalid request method.');
+
 </script>
 </body>

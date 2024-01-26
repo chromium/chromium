@@ -3063,6 +3063,12 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
     router_evaluator_.reset();
     return false;
   }
+  CHECK_NE(fetch_handler_existence(), FetchHandlerExistence::UNKNOWN);
+  if (router_evaluator_->has_fetch_event_source() &&
+      fetch_handler_existence() == FetchHandlerExistence::DOES_NOT_EXIST) {
+    router_evaluator_.reset();
+    return false;
+  }
   return true;
 }
 

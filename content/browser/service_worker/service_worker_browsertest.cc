@@ -7521,6 +7521,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       FetchEventShouldBeUsedWithFetchHandler) {
+  StartServerAndNavigateToSetup();
+
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+
+  WorkerRunningStatusObserver observer1(public_context());
+  ASSERT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  ASSERT_EQ("DONE",
+            EvalJs(GetPrimaryMainFrame(),
+                   "register('/service_worker/static_router_no_handler.js')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  // Expected to raise during addRoutes.
+  // No route should be added.
+  EXPECT_FALSE(version->router_evaluator());
+}
+
 // Test class for static routing API, if disables starting the ServiceWorker
 // automatically when the request matches the registered route.
 class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest

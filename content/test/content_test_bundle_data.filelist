@@ -7194,6 +7194,7 @@ data/service_worker/skip_waiting_and_clients_claim_worker.js
 data/service_worker/skip_waiting_and_clients_claim_worker.js.mock-http-headers
 data/service_worker/static_import_worker.js
 data/service_worker/static_router.js
+data/service_worker/static_router_no_handler.js
 data/service_worker/sync.js.mock-http-headers
 data/service_worker/throttling_blocking_cache_addall_sw.js
 data/service_worker/throttling_blocking_sw.js

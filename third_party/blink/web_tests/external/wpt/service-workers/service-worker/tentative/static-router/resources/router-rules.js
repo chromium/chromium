@@ -44,6 +44,8 @@ const routerRules = {
     },
     source: 'network'
   }],
+  'condition-request-source-fetch-event':
+      [{condition: {requestMode: 'no-cors'}, source: 'fetch-event'}],
   'multiple-router-rules': [
     {
       condition: {

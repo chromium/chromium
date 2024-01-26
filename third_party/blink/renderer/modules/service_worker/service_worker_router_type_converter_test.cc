@@ -104,9 +104,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -164,9 +165,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -220,9 +222,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -284,9 +287,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -316,9 +320,10 @@ TEST(ServiceWorkerRouterTypeConverterTest,
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -342,7 +347,9 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 
   V8TestingScope scope;
   auto blink_rule = ConvertV8RouterRuleToBlink(
-      scope.GetIsolate(), idl_rule, kFakeBaseUrl, scope.GetExceptionState());
+      scope.GetIsolate(), idl_rule, kFakeBaseUrl,
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
@@ -363,9 +370,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
                 blink::V8RouterSourceEnum::Enum::kNetwork)));
 
     V8TestingScope scope;
-    auto blink_rule =
-        ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule,
-                                   DefaultBaseUrl(), scope.GetExceptionState());
+    auto blink_rule = ConvertV8RouterRuleToBlink(
+        scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+        mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+        scope.GetExceptionState());
     EXPECT_TRUE(scope.GetExceptionState().HadException());
     EXPECT_FALSE(blink_rule.has_value());
   };
@@ -404,9 +412,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -443,12 +452,52 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
+}
+
+TEST(ServiceWorkerRouterTypeConverterTest,
+     FetchEventWithoutHandlerShouldRaise) {
+  test::TaskEnvironment task_environment;
+  constexpr const char kFakeUrlPattern[] = "/fake";
+  auto* idl_rule = blink::RouterRule::Create();
+  auto* idl_condition = blink::RouterCondition::Create();
+  idl_condition->setUrlPattern(
+      MakeGarbageCollected<blink::V8UnionURLPatternOrURLPatternInitOrUSVString>(
+          kFakeUrlPattern));
+  idl_rule->setCondition(idl_condition);
+  idl_rule->setSource(
+      MakeGarbageCollected<blink::V8UnionRouterSourceOrRouterSourceEnum>(
+          blink::V8RouterSourceEnum(
+              blink::V8RouterSourceEnum::Enum::kFetchEvent)));
+
+  blink::ServiceWorkerRouterRule expected_rule;
+  blink::SafeUrlPattern expected_url_pattern = DefaultStringUrlPattern();
+  {
+    auto parse_result = liburlpattern::Parse(
+        kFakeUrlPattern,
+        [](base::StringPiece input) { return std::string(input); });
+    ASSERT_TRUE(parse_result.ok());
+    expected_url_pattern.pathname = parse_result.value().PartList();
+  }
+  expected_rule.condition =
+      blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
+  blink::ServiceWorkerRouterSource expected_source;
+  expected_source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+  expected_source.fetch_event_source.emplace();
+  expected_rule.sources.emplace_back(expected_source);
+
+  V8TestingScope scope;
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler,
+      scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, Request) {
@@ -478,9 +527,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -510,9 +560,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
     expected_rule.sources.emplace_back(expected_source);
 
     V8TestingScope scope;
-    auto blink_rule =
-        ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule,
-                                   DefaultBaseUrl(), scope.GetExceptionState());
+    auto blink_rule = ConvertV8RouterRuleToBlink(
+        scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+        mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+        scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException());
     EXPECT_TRUE(blink_rule.has_value());
     EXPECT_EQ(expected_rule, *blink_rule);
@@ -553,9 +604,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
         expected_rule.sources.emplace_back(expected_source);
 
         V8TestingScope scope;
-        auto blink_rule = ConvertV8RouterRuleToBlink(scope.GetIsolate(),
-                                                     idl_rule, DefaultBaseUrl(),
-                                                     scope.GetExceptionState());
+        auto blink_rule = ConvertV8RouterRuleToBlink(
+            scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+            mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+            scope.GetExceptionState());
         EXPECT_FALSE(scope.GetExceptionState().HadException());
         EXPECT_TRUE(blink_rule.has_value());
         EXPECT_EQ(expected_rule, *blink_rule);
@@ -590,9 +642,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyOrConditionShouldBeAllowed) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -652,9 +705,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, OrConditionWithMultipleElements) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -693,9 +747,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, NestedOrCondition) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -719,7 +774,9 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 
   V8TestingScope scope;
   auto blink_rule = ConvertV8RouterRuleToBlink(
-      scope.GetIsolate(), idl_rule, kFakeBaseUrl, scope.GetExceptionState());
+      scope.GetIsolate(), idl_rule, kFakeBaseUrl,
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
@@ -756,9 +813,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -798,9 +856,10 @@ TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule =
-      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
-                                 scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
