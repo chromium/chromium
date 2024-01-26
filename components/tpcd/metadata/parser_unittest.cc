@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
@@ -88,16 +89,12 @@ class ParserTest : public ::testing::Test {
   // https://crbug.com/815537 &
   // https://source.chromium.org/chromium/chromium/src/+/main:base/test/test_suite.cc;l=633;drc=b24613adfd8336234c263d1cc8315752368ce7b5.
   bool ShouldSkipTest() {
-    // TODO(https://crbug.com/1478111): Investigate the failure of death test
-    // but in the meantime disabling them on all platforms as they are not
-    // paramount nor crucial.
-    return true;
-    // #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-    //     return base::android::BuildInfo::GetInstance()->sdk_int() <=
-    //            base::android::SDK_VERSION_NOUGAT;
-    // #else
-    //     return false;
-    // #endif
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+    return base::android::BuildInfo::GetInstance()->sdk_int() <=
+           base::android::SDK_VERSION_NOUGAT;
+#else
+    return false;
+#endif
   }
 
  private:
@@ -110,37 +107,31 @@ using ParserDeathTest = ParserTest;
 
 TEST_F(ParserDeathTest, ParseMetadata_NonSerializedProto) {
   if (ShouldSkipTest()) {
-    GTEST_SKIP_(
-        "Reason: The death test is not reliable on some platforms, like on old "
-        "x86 Android: "
-        "https://crbug.com/815537. ");
+    GTEST_SKIP() << "Reason: The death test is not reliable on some platforms, "
+                    "like on old x86 Android: https://crbug.com/815537.";
   }
 
-  ASSERT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       parser()->ParseMetadata("clearly not a proto"),
       "Check failed: metadata.ParseFromString.raw_metadata.");
 }
 
 TEST_F(ParserDeathTest, ParseMetadata_InvalidComponent) {
   if (ShouldSkipTest()) {
-    GTEST_SKIP_(
-        "Reason: The death test is not reliable on some platforms, like on old "
-        "x86 Android: "
-        "https://crbug.com/815537. ");
+    GTEST_SKIP() << "Reason: The death test is not reliable on some platforms, "
+                    "like on old x86 Android: https://crbug.com/815537.";
   }
 
   ExecFakeComponentInstallation("clearly not a proto");
-  ASSERT_DEATH_IF_SUPPORTED(
-      parser()->ParseMetadata(GetFakeComponent()),
+  EXPECT_CHECK_DEATH_WITH(
+      parser()->ParseMetadata("clearly not a proto"),
       "Check failed: metadata.ParseFromString.raw_metadata.");
 }
 
 TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToDecode) {
   if (ShouldSkipTest()) {
-    GTEST_SKIP_(
-        "Reason: The death test is not reliable on some platforms, like on old "
-        "x86 Android: "
-        "https://crbug.com/815537. ");
+    GTEST_SKIP() << "Reason: The death test is not reliable on some platforms, "
+                    "like on old x86 Android: https://crbug.com/815537.";
   }
 
   const base::FieldTrialParams params = {
@@ -148,7 +139,7 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToDecode) {
   // No-op: for consistency.
   EnableFeatureWithParams(params);
 
-  ASSERT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       parser()->ParseMetadataFromFeatureParamForTesting(params),
       "Check failed: base::Base64Decode. "
       "params.find.Parser::kMetadataFeatureParamName.->second, &raw_metadata.");
@@ -156,10 +147,8 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToDecode) {
 
 TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToUnzip) {
   if (ShouldSkipTest()) {
-    GTEST_SKIP_(
-        "Reason: The death test is not reliable on some platforms, like on old "
-        "x86 Android: "
-        "https://crbug.com/815537. ");
+    GTEST_SKIP() << "Reason: The death test is not reliable on some platforms, "
+                    "like on old x86 Android: https://crbug.com/815537.";
   }
 
   std::string encoded;
@@ -169,17 +158,15 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_FailedToUnzip) {
   // No-op: for consistency.
   EnableFeatureWithParams(params);
 
-  ASSERT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       parser()->ParseMetadataFromFeatureParamForTesting(params),
       "Check failed: compression::GzipUncompress.raw_metadata, &uncompressed.");
 }
 
 TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_InvalidProto) {
   if (ShouldSkipTest()) {
-    GTEST_SKIP_(
-        "Reason: The death test is not reliable on some platforms, like on old "
-        "x86 Android: "
-        "https://crbug.com/815537. ");
+    GTEST_SKIP() << "Reason: The death test is not reliable on some platforms, "
+                    "like on old x86 Android: https://crbug.com/815537.";
   }
 
   std::string compressed;
@@ -191,7 +178,7 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_InvalidProto) {
   // No-op: for consistency.
   EnableFeatureWithParams(params);
 
-  ASSERT_DEATH_IF_SUPPORTED(
+  EXPECT_CHECK_DEATH_WITH(
       parser()->ParseMetadataFromFeatureParamForTesting(params),
       "Check failed: metadata.ParseFromString.uncompressed.");
 }
