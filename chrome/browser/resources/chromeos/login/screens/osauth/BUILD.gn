@@ -2,27 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("../../login.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args
-  deps = [ ":osauth_error" ]
-}
-
-js_library("osauth_error") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/osauth_error.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 group("web_components") {
   public_deps = [

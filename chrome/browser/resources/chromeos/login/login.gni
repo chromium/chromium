@@ -202,20 +202,14 @@ osauth_screens_js_files = [
   "screens/osauth/local_password_setup.ts",
   "screens/osauth/local_data_loss_warning.ts",
   "screens/osauth/enter_old_password.ts",
-  "screens/osauth/osauth_error.js",
+  "screens/osauth/osauth_error.ts",
   "screens/osauth/password_selection.ts",
   "screens/osauth/pin_setup.ts",
 ]
 
 osauth_screens_html_files = []
 foreach(f, osauth_screens_js_files) {
-  # TODO(b/314761865): remove this check once all screens are migrated.
-  extension = get_path_info(f, "extension")
-  if (extension == "js") {
-    osauth_screens_html_files += [ string_replace(f, ".js", ".html") ]
-  } else {
-    osauth_screens_html_files += [ string_replace(f, ".ts", ".html") ]
-  }
+  osauth_screens_html_files += [ string_replace(f, ".ts", ".html") ]
 }
 
 osauth_screens_html_wrapped_files = []

@@ -14,60 +14,58 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './osauth_error.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const OSAuthErrorBase = mixinBehaviors(
+const OsAuthErrorBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+    PolymerElement) as { new (): PolymerElement
+      & OobeDialogHostBehaviorInterface
+      & OobeI18nBehaviorInterface
+      & LoginScreenBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
-class OSAuthErrorScreen extends OSAuthErrorBase {
+export class OsAuthErrorScreen extends OsAuthErrorBase {
   static get is() {
-    return 'osauth-error-element';
+    return 'osauth-error-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {};
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.initializeLoginScreen('OSAuthErrorScreen');
   }
 
   /** Initial UI State for screen */
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.BLOCKING;
   }
 
-  /**
-   * Invoked just before being shown. Contains all the data for the screen.
-   */
-  onBeforeShow(data) {}
-
-  onRetryLoginButtonPressed_() {
+  private onRetryLoginButtonPressed(): void {
     this.userActed('cancelLoginFlow');
   }
 }
 
-customElements.define(OSAuthErrorScreen.is, OSAuthErrorScreen);
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsAuthErrorScreen.is]: OsAuthErrorScreen;
+  }
+}
+
+customElements.define(OsAuthErrorScreen.is, OsAuthErrorScreen);
