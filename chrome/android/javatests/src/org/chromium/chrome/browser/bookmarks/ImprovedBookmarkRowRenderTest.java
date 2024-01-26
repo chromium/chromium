@@ -88,7 +88,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
@@ -300,11 +300,7 @@ public class ImprovedBookmarkRowRenderTest {
                                     mActivityTestRule.getActivity(), specifics, mShoppingService);
                     coordinator.setPriceTrackingEnabled(false);
 
-                    if (mUseVisualRowLayout) {
-                        mModel.set(
-                                ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
-                                coordinator.getView());
-                    }
+                    mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, coordinator.getView());
                 });
         mRenderTestRule.render(mContentView, "normal_with_price_tracking_disabled");
     }
