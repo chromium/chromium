@@ -136,6 +136,13 @@ source_set("components_unittests_filters") {
   ]
 }
 
+bundle_data("base_unittests_filters_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.base_unittests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 bundle_data("compositor_unittests_filters_bundle_data") {
   testonly = true
   sources = [ "//testing/buildbot/filters/ios.compositor_unittests.filter" ]

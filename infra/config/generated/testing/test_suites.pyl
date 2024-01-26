@@ -4006,7 +4006,12 @@
       'angle_unittests': {
         'use_isolated_scripts_api': True,
       },
-      'base_unittests': {},
+      'base_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter',
+        ],
+      },
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},

@@ -4811,6 +4811,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",

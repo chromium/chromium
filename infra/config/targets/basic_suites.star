@@ -3622,7 +3622,12 @@ targets.legacy_basic_suite(
         "angle_unittests": targets.legacy_test_config(
             use_isolated_scripts_api = True,
         ),
-        "base_unittests": targets.legacy_test_config(),
+        "base_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
         "blink_common_unittests": targets.legacy_test_config(),
         "blink_fuzzer_unittests": targets.legacy_test_config(),
         "blink_heap_unittests": targets.legacy_test_config(),
