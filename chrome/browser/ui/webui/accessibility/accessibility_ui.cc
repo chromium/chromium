@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/accessibility_ui.h"
+#include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 
 #include <memory>
 #include <optional>
@@ -238,24 +238,30 @@ void HandleAccessibilityRequestCallback(
 
   while (content::RenderWidgetHost* widget = widget_iter->GetNextHost()) {
     // Ignore processes that don't have a connection, such as crashed tabs.
-    if (!widget->GetProcess()->IsInitializedAndNotDead())
+    if (!widget->GetProcess()->IsInitializedAndNotDead()) {
       continue;
+    }
     content::RenderViewHost* rvh = content::RenderViewHost::From(widget);
-    if (!rvh)
+    if (!rvh) {
       continue;
+    }
     content::WebContents* web_contents =
         content::WebContents::FromRenderViewHost(rvh);
     content::WebContentsDelegate* delegate = web_contents->GetDelegate();
-    if (!delegate)
+    if (!delegate) {
       continue;
-    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh)
+    }
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh) {
       continue;
+    }
     // Ignore views that are never user-visible, like background pages.
-    if (delegate->IsNeverComposited(web_contents))
+    if (delegate->IsNeverComposited(web_contents)) {
       continue;
+    }
     content::BrowserContext* context = rvh->GetProcess()->GetBrowserContext();
-    if (context != current_context)
+    if (context != current_context) {
       continue;
+    }
 
     base::Value::Dict descriptor = BuildTargetDescriptor(rvh);
     descriptor.Set(kNative, is_native_enabled);
@@ -296,8 +302,9 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     ui::AXPlatformNode* node,
     int indent,
     const std::vector<AXPropertyFilter>& property_filters) {
-  if (!node)
+  if (!node) {
     return "";
+  }
   std::string str(2 * indent, '+');
   std::string line = node->GetDelegate()->GetData().ToString();
   std::vector<std::string> attributes = base::SplitString(
@@ -336,6 +343,18 @@ bool IsValidJSValue(const std::string* str) {
 }
 
 }  // namespace
+
+AccessibilityUIConfig::AccessibilityUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIAccessibilityHost) {}
+
+AccessibilityUIConfig::~AccessibilityUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+AccessibilityUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                             const GURL& url) {
+  return std::make_unique<AccessibilityUI>(web_ui);
+}
 
 AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
@@ -380,11 +399,13 @@ void AccessibilityUIObserver::AccessibilityEventReceived(
 AccessibilityUIMessageHandler::AccessibilityUIMessageHandler() = default;
 
 AccessibilityUIMessageHandler::~AccessibilityUIMessageHandler() {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
   content::WebContents* web_contents = observer_->web_contents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   StopRecording(web_contents);
 }
 
@@ -435,26 +456,32 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
   AllowJavascript();
   content::RenderViewHost* rvh =
       content::RenderViewHost::FromID(process_id, routing_id);
-  if (!rvh)
+  if (!rvh) {
     return;
+  }
   content::WebContents* web_contents =
       content::WebContents::FromRenderViewHost(rvh);
   ui::AXMode current_mode = web_contents->GetAccessibilityMode();
 
-  if (mode & ui::AXMode::kNativeAPIs)
+  if (mode & ui::AXMode::kNativeAPIs) {
     current_mode.set_mode(ui::AXMode::kNativeAPIs, true);
+  }
 
-  if (mode & ui::AXMode::kWebContents)
+  if (mode & ui::AXMode::kWebContents) {
     current_mode.set_mode(ui::AXMode::kWebContents, true);
+  }
 
-  if (mode & ui::AXMode::kInlineTextBoxes)
+  if (mode & ui::AXMode::kInlineTextBoxes) {
     current_mode.set_mode(ui::AXMode::kInlineTextBoxes, true);
+  }
 
-  if (mode & ui::AXMode::kScreenReader)
+  if (mode & ui::AXMode::kScreenReader) {
     current_mode.set_mode(ui::AXMode::kScreenReader, true);
+  }
 
-  if (mode & ui::AXMode::kHTML)
+  if (mode & ui::AXMode::kHTML) {
     current_mode.set_mode(ui::AXMode::kHTML, true);
+  }
 
   web_contents->SetAccessibilityMode(current_mode);
 
@@ -525,10 +552,11 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
 
   content::BrowserAccessibilityState* state =
       content::BrowserAccessibilityState::GetInstance();
-  if (enabled)
+  if (enabled) {
     state->AddAccessibilityModeFlags(new_mode);
-  else
+  } else {
     state->RemoveAccessibilityModeFlags(new_mode);
+  }
 }
 
 void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(

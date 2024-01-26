@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_UI_H_
-#define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ACCESSIBILITY_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ACCESSIBILITY_UI_H_
 
 #include <memory>
 #include <string>
@@ -16,6 +16,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
 struct AXEventNotificationDetails;
@@ -25,6 +26,17 @@ class WebContents;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+
+class AccessibilityUIConfig : public content::WebUIConfig {
+ public:
+  AccessibilityUIConfig();
+  ~AccessibilityUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 // Controls the accessibility web UI page.
 class AccessibilityUI : public content::WebUIController {
@@ -83,4 +95,4 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<AccessibilityUIMessageHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ACCESSIBILITY_ACCESSIBILITY_UI_H_

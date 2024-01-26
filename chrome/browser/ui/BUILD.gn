@@ -250,6 +250,8 @@ static_library("ui") {
     "webid/identity_dialog_controller.h",
     "webui/about/about_ui.cc",
     "webui/about/about_ui.h",
+    "webui/accessibility/accessibility_ui.cc",
+    "webui/accessibility/accessibility_ui.h",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.cc",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.h",
     "webui/autofill_and_password_manager_internals/internals_ui_handler.cc",

@@ -143,8 +143,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service_factory.h",
     "accessibility/accessibility_state_utils.cc",
     "accessibility/accessibility_state_utils.h",
-    "accessibility/accessibility_ui.cc",
-    "accessibility/accessibility_ui.h",
     "accessibility/page_colors.cc",
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",

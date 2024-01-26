@@ -19,6 +19,18 @@
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #endif
 
+BluetoothInternalsUIConfig::BluetoothInternalsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIBluetoothInternalsHost) {}
+
+BluetoothInternalsUIConfig::~BluetoothInternalsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+BluetoothInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
+  return std::make_unique<BluetoothInternalsUI>(web_ui);
+}
+
 BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://bluetooth-internals source.
