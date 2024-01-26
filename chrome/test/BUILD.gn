@@ -2928,6 +2928,18 @@ if (!is_android && !is_fuchsia) {
       ]
     }
 
+    if (enable_screen_ai_service) {
+      sources +=
+          [ "../browser/screen_ai/screen_ai_service_router_browsertest.cc" ]
+
+      if (is_linux) {
+        # Add a data dependency for pdf_extension_accessibility_test.cc to
+        # notify testing builders that this test needs this library, which will
+        # need to be downloaded from CIPD as defined in //DEPS.
+        data_deps += [ "//third_party/screen-ai:screen_ai_linux" ]
+      }
+    }
+
     if (enable_supervised_users) {
       sources += [
         # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.

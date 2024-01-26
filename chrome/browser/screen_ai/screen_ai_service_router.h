@@ -60,6 +60,9 @@ class ScreenAIServiceRouter : public KeyedService,
   // TODO(crbug.com/1520424): Move to private when all clients are updated.
   void InitializeServiceIfNeeded(Service service);
 
+  // Returns true if the connection for `service` is bound.
+  bool IsConnectionBoundForTesting(Service service);
+
  private:
   void InitializeOCR(int request_id,
                      mojo::PendingReceiver<mojom::OCRService> receiver,
