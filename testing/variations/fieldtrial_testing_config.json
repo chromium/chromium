@@ -19429,12 +19429,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableUnoPhase2FollowUp",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableBatchUploadFromBookmarksManager",
                         "EnableReviewAccountSettingsPromo",
                         "HistoryOptInForRestoreShortyAndReSignin",
-                        "IPH_iOSReplaceSyncPromosWithSignInPromos",
                         "LinkAccountSettingsToPrivacyFooter"
                     ]
                 }
