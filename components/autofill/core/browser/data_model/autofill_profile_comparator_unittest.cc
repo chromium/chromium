@@ -41,7 +41,6 @@ using autofill::COMPANY_NAME;
 using autofill::EMAIL_ADDRESS;
 using autofill::NAME_FIRST;
 using autofill::NAME_FULL;
-using autofill::NAME_HONORIFIC_PREFIX;
 using autofill::NAME_LAST;
 using autofill::NAME_MIDDLE;
 using autofill::PHONE_HOME_CITY_AND_NUMBER;
