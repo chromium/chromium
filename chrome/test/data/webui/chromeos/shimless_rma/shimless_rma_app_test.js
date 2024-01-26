@@ -870,4 +870,12 @@ suite('shimlessRMAAppTest', function() {
     await keydownEventPromise;
     assertTrue(logsDialog.open);
   });
+
+  test('3pDiagLoaded', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const diagnostics =
+        component.shadowRoot.querySelector('#shimless3pDiagnostics');
+    assertTrue(typeof diagnostics.launch3pDiagnostics === 'function');
+  });
 });
