@@ -55,7 +55,6 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarksFromFile(
       details->set_stored_checksum(codec.stored_checksum());
       details->set_ids_reassigned(codec.ids_reassigned());
       details->set_uuids_reassigned(codec.uuids_reassigned());
-      details->set_model_meta_info_map(codec.model_meta_info_map());
     }
   }
 

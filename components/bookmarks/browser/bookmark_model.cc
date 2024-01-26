@@ -665,6 +665,8 @@ void BookmarkModel::SetNodeMetaInfo(const BookmarkNode* node,
                                     const std::string& key,
                                     const std::string& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(node);
+  CHECK(!is_root_node(node));
 
   std::string old_value;
   if (node->GetMetaInfo(key, &old_value) && old_value == value) {
@@ -688,6 +690,8 @@ void BookmarkModel::SetNodeMetaInfoMap(
     const BookmarkNode* node,
     const BookmarkNode::MetaInfoMap& meta_info_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(node);
+  CHECK(!is_root_node(node));
 
   const BookmarkNode::MetaInfoMap* old_meta_info_map = node->GetMetaInfoMap();
   if ((!old_meta_info_map && meta_info_map.empty()) ||
@@ -1159,8 +1163,6 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   // Sorting the permanent nodes has to happen on the main thread, so we do it
   // here, after loading completes.
   root_->SortChildren(VisibilityComparator(client_.get()));
-
-  root_->SetMetaInfoMap(details->model_meta_info_map());
 
   loaded_ = true;
   client_->DecodeBookmarkSyncMetadata(

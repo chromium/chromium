@@ -46,7 +46,6 @@ class BookmarkCodec {
       const BookmarkNode* bookmark_bar_node,
       const BookmarkNode* other_folder_node,
       const BookmarkNode* mobile_folder_node,
-      const BookmarkNode::MetaInfoMap* model_meta_info_map,
       std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
@@ -70,11 +69,6 @@ class BookmarkCodec {
   // differ from the stored checksum if the file contents were changed by the
   // user.
   const std::string& stored_checksum() const { return stored_checksum_; }
-
-  // Return meta info of bookmark model root.
-  const BookmarkNode::MetaInfoMap& model_meta_info_map() const {
-    return model_meta_info_map_;
-  }
 
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
@@ -204,9 +198,6 @@ class BookmarkCodec {
 
   // Maximum ID assigned when decoding data.
   int64_t maximum_id_{0};
-
-  // Meta info set on bookmark model root.
-  BookmarkNode::MetaInfoMap model_meta_info_map_;
 };
 
 }  // namespace bookmarks

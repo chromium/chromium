@@ -46,13 +46,6 @@ class BookmarkLoadDetails {
 
   UuidIndex owned_uuid_index() { return std::move(uuid_index_); }
 
-  const BookmarkNode::MetaInfoMap& model_meta_info_map() const {
-    return model_meta_info_map_;
-  }
-  void set_model_meta_info_map(const BookmarkNode::MetaInfoMap& meta_info_map) {
-    model_meta_info_map_ = meta_info_map;
-  }
-
   // Max id of the nodes.
   void set_max_id(int64_t max_id) { max_id_ = max_id; }
   int64_t max_id() const { return max_id_; }
@@ -107,7 +100,6 @@ class BookmarkLoadDetails {
       nullptr;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;
   UuidIndex uuid_index_;
-  BookmarkNode::MetaInfoMap model_meta_info_map_;
   int64_t max_id_ = 1;
   std::string computed_checksum_;
   std::string stored_checksum_;
