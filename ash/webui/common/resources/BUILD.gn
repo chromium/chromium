@@ -606,6 +606,7 @@ checked_in_dts_files = [
   "network/network_password_input.d.ts",
   "network/network_property_list_mojo.d.ts",
   "network/network_proxy.d.ts",
+  "network/network_select_element.d.ts",
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
   "network_health/network_diagnostics.d.ts",

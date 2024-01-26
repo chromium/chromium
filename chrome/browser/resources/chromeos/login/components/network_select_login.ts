@@ -9,37 +9,45 @@
 import '//resources/ash/common/network/network_select.js';
 import './oobe_network_icons.html.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
 import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
+import {assert} from '//resources/js/assert.js';
 import {StartConnectResult} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkSelectElement} from 'chrome://resources/ash/common/network/network_select_element.js';
 
 import {Oobe} from '../cr_ui.js';
 
-/**
- * Custom data that is stored with network element to trigger action.
- * @typedef {{onTap: !function()}}
- */
-let networkCustomItemCustomData;
+import {getTemplate} from './network_select_login.html.js';
 
-/** @polymer */
+interface NetworkCustomItemCustomData {
+  onTap(): void;
+}
+
+interface NetworkCustomItem {
+  customItemType: NetworkList.CustomItemType;
+  customItemName: string;
+  polymerIcon: string;
+  showBeforeNetworksList: boolean;
+  customData: NetworkCustomItemCustomData;
+}
+
 export class NetworkSelectLogin extends PolymerElement {
   static get is() {
-    return 'network-select-login';
+    return 'network-select-login' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * True when connected to a network.
-       * @private
        */
       isNetworkConnected: {
         type: Boolean,
@@ -49,7 +57,6 @@ export class NetworkSelectLogin extends PolymerElement {
 
       /**
        * True when quick start is enabled.
-       * @private
        */
       isQuickStartVisible: {
         type: Boolean,
@@ -59,7 +66,6 @@ export class NetworkSelectLogin extends PolymerElement {
       /**
        * If true, when a connected network is selected the configure UI will be
        * requested instead of sending 'userActed' + 'continue'.
-       * @private
        */
       configureConnected: {
         type: Boolean,
@@ -78,65 +84,89 @@ export class NetworkSelectLogin extends PolymerElement {
 
       /**
        * Whether to show technology badge on mobile network icons.
-       * @private
        */
-      showTechnologyBadge_: {
+      showTechnologyBadge: {
         type: Boolean,
         value: false,
       },
     };
   }
 
+  private isNetworkConnected: boolean;
+  private isQuickStartVisible: boolean;
+  private configureConnected: boolean;
+  enableWifiScans: boolean;
+  private showTechnologyBadge: boolean;
+
+  /**
+   * GUID of the user-selected network. It is remembered after user taps on
+   * network entry. After we receive event "connected" on this network,
+   * OOBE will proceed.
+   */
+  private networkLastSelectedGuid: string;
+
+  /**
+   * Flag that ensures that OOBE configuration is applied only once.
+   */
+  private configurationApplied: boolean;
+
+  /**
+   * Flag that reflects if this element is currently shown.
+   */
+  private isShown: boolean;
+
   constructor() {
     super();
-    /**
-     * GUID of the user-selected network. It is remembered after user taps on
-     * network entry. After we receive event "connected" on this network,
-     * OOBE will proceed.
-     * @private {string}
-     */
-    this.networkLastSelectedGuid_ = '';
-    /**
-     * Flag that ensures that OOBE configuration is applied only once.
-     * @private {boolean}
-     */
-    this.configuration_applied_ = false;
-    /**
-     * Flag that reflects if this element is currently shown.
-     * @private {boolean}
-     */
-    this.is_shown_ = false;
+
+    this.networkLastSelectedGuid = '';
+    this.configurationApplied = false;
+    this.isShown = false;
+  }
+
+  private isNetworkSelectElement(obj: any): obj is NetworkSelectElement {
+    return typeof obj.refreshNetworks === 'function' &&
+        typeof obj.focus === 'function' &&
+        typeof obj.getDefaultNetwork === 'function' &&
+        typeof obj.getNetwork === 'function' &&
+        typeof obj.getNetworkListItemByNameForTest === 'function';
+  }
+
+  private getNetworkSelect(): NetworkSelectElement {
+    const networkSelect =
+        this.shadowRoot?.querySelector<NetworkSelectElement>('#networkSelect');
+    // TODO: replace with instanceof and remove the function
+    // once network_select.js has been migrated to TS (b/322154192)
+    assert(this.isNetworkSelectElement(networkSelect));
+    return networkSelect;
   }
 
   /** Refreshes the list of the networks. */
-  refresh() {
-    /** @type {!NetworkSelectElement} */ (this.$.networkSelect)
-        .refreshNetworks();
-    this.networkLastSelectedGuid_ = '';
+  refresh(): void {
+    this.getNetworkSelect().refreshNetworks();
+    this.networkLastSelectedGuid = '';
   }
 
-  focus() {
-    this.$.networkSelect.focus();
+  override focus(): void {
+    this.getNetworkSelect().focus();
   }
 
   /** Called when dialog is shown. */
-  onBeforeShow() {
-    this.is_shown_ = true;
-    this.attemptApplyConfiguration_();
+  onBeforeShow(): void {
+    this.isShown = true;
+    this.attemptApplyConfiguration();
   }
 
   /** Called when dialog is hidden. */
-  onBeforeHide() {
-    this.is_shown_ = false;
+  onBeforeHide(): void {
+    this.isShown = false;
   }
 
   /**
    * Returns custom items for network selector. Shows 'Proxy settings' only
    * when connected to a network.
-   * @private
    */
-  getNetworkCustomItems_() {
-    const items = [];
+  private getNetworkCustomItems(): NetworkCustomItem[] {
+    const items: NetworkCustomItem[] = [];
     if (this.isQuickStartVisible) {
       items.push({
         customItemType: NetworkList.CustomItemType.OOBE,
@@ -144,7 +174,7 @@ export class NetworkSelectLogin extends PolymerElement {
         polymerIcon: 'oobe-20:quick-start-android-device',
         showBeforeNetworksList: true,
         customData: {
-          onTap: () => this.quickStartClicked_(),
+          onTap: () => this.quickStartClicked(),
         },
       });
     }
@@ -155,7 +185,7 @@ export class NetworkSelectLogin extends PolymerElement {
         polymerIcon: 'oobe-network-20:add-proxy',
         showBeforeNetworksList: false,
         customData: {
-          onTap: () => this.openInternetDetailDialog_(),
+          onTap: () => this.openInternetDetailDialog(),
         },
       });
     }
@@ -165,7 +195,7 @@ export class NetworkSelectLogin extends PolymerElement {
       polymerIcon: 'oobe-network-20:add-wifi',
       showBeforeNetworksList: false,
       customData: {
-        onTap: () => this.openAddWiFiNetworkDialog_(),
+        onTap: () => this.openAddWiFiNetworkDialog(),
       },
     });
     return items;
@@ -174,9 +204,8 @@ export class NetworkSelectLogin extends PolymerElement {
   /**
    * Handle Network Setup screen "Quick Setup" button.
    *
-   * @private
    */
-  quickStartClicked_() {
+  private quickStartClicked(): void {
     this.dispatchEvent(new CustomEvent(
         'quick-start-clicked', {bubbles: true, composed: true}));
   }
@@ -184,98 +213,91 @@ export class NetworkSelectLogin extends PolymerElement {
   /**
    * Handle Network Setup screen "Proxy settings" button.
    *
-   * @private
    */
-  openInternetDetailDialog_() {
+  private openInternetDetailDialog(): void {
     chrome.send('launchInternetDetailDialog');
   }
 
   /**
    * Handle Network Setup screen "Add WiFi network" button.
    *
-   * @private
    */
-  openAddWiFiNetworkDialog_() {
+  private openAddWiFiNetworkDialog(): void {
     chrome.send('launchAddWiFiNetworkDialog');
   }
 
   /**
    * Called when network setup is done. Notifies parent that network setup is
    * done.
-   * @private
    */
-  onSelectedNetworkConnected_() {
-    this.networkLastSelectedGuid_ = '';
+  private onSelectedNetworkConnected(): void {
+    this.networkLastSelectedGuid = '';
     this.dispatchEvent(new CustomEvent(
         'selected-network-connected', {bubbles: true, composed: true}));
   }
 
   /**
    * Event triggered when the default network state may have changed.
-   * @param {!CustomEvent<OncMojo.NetworkStateProperties>} event
-   * @private
    */
-  onDefaultNetworkChanged_(event) {
+  private onDefaultNetworkChanged(
+      event: CustomEvent<OncMojo.NetworkStateProperties>): void {
     // Note: event.detail will be {} if there is no default network.
     const networkState = event.detail.type ? event.detail : undefined;
     this.isNetworkConnected = !!networkState &&
         OncMojo.connectionStateIsConnected(networkState.connectionState);
-    if (!this.isNetworkConnected || !this.is_shown_) {
+    if (!this.isNetworkConnected || !this.isShown) {
       return;
     }
-    this.attemptApplyConfiguration_();
+    this.attemptApplyConfiguration();
   }
 
   /**
    * Event triggered when a network-list-item connection state changes.
-   * @param {!CustomEvent<!OncMojo.NetworkStateProperties>} event
-   * @private
    */
-  onNetworkConnectChanged_(event) {
+  private onNetworkConnectChanged(
+      event: CustomEvent<OncMojo.NetworkStateProperties>): void {
     const networkState = event.detail;
-    if (networkState && networkState.guid === this.networkLastSelectedGuid_ &&
+    if (networkState && networkState.guid === this.networkLastSelectedGuid &&
         OncMojo.connectionStateIsConnected(networkState.connectionState)) {
-      this.onSelectedNetworkConnected_();
+      this.onSelectedNetworkConnected();
     }
   }
 
   /**
    * Event triggered when a list of networks get changed.
-   * @param {!CustomEvent<!Array<!OncMojo.NetworkStateProperties>>} event
-   * @private
    */
-  onNetworkListChanged_(event) {
-    if (!this.is_shown_) {
+  private onNetworkListChanged(
+      _event: CustomEvent<OncMojo.NetworkStateProperties[]>): void {
+    if (!this.isShown) {
       return;
     }
-    this.attemptApplyConfiguration_();
+    this.attemptApplyConfiguration();
   }
 
   /**
    * Tries to apply OOBE configuration on current list of networks.
-   * @private
    */
-  attemptApplyConfiguration_() {
-    if (this.configuration_applied_) {
+  private attemptApplyConfiguration(): void {
+    if (this.configurationApplied) {
       return;
     }
     const configuration = Oobe.getInstance().getOobeConfiguration();
     if (!configuration) {
       return;
     }
-    const defaultNetwork = this.$.networkSelect.getDefaultNetwork();
+    const defaultNetwork = this.getNetworkSelect().getDefaultNetwork();
     if (configuration.networkUseConnected && defaultNetwork &&
         OncMojo.connectionStateIsConnected(defaultNetwork.connectionState)) {
-      window.setTimeout(() => this.handleNetworkSelection_(defaultNetwork), 0);
-      this.configuration_applied_ = true;
+      window.setTimeout(() => this.handleNetworkSelection(defaultNetwork), 0);
+      this.configurationApplied = true;
       return;
     }
     if (configuration.networkSelectGuid) {
       const network =
-          this.$.networkSelect.getNetwork(configuration.networkSelectGuid);
+          this.getNetworkSelect().getNetwork(configuration.networkSelectGuid);
       if (network) {
-        window.setTimeout(() => this.handleNetworkSelection_(network), 0);
-        this.configuration_applied_ = true;
+        window.setTimeout(() => this.handleNetworkSelection(network), 0);
+        this.configurationApplied = true;
         return;
       }
     }
@@ -283,19 +305,17 @@ export class NetworkSelectLogin extends PolymerElement {
 
   /**
    * This is called when user taps on network entry in networks list.
-   * @param {!CustomEvent<!OncMojo.NetworkStateProperties>} event
-   * @private
    */
-  onNetworkListNetworkItemSelected_(event) {
-    this.handleNetworkSelection_(event.detail);
+  private onNetworkListNetworkItemSelected(
+      event: CustomEvent<OncMojo.NetworkStateProperties>): void {
+    this.handleNetworkSelection(event.detail);
   }
 
   /**
    * Handles selection of particular network.
-   * @param {!OncMojo.NetworkStateProperties} networkState
-   * @private
    */
-  handleNetworkSelection_(networkState) {
+  private handleNetworkSelection(networkState: OncMojo.NetworkStateProperties):
+      void {
     assert(networkState);
 
     const isNetworkConnected =
@@ -304,7 +324,7 @@ export class NetworkSelectLogin extends PolymerElement {
     // If |configureConnected| is false and a connected network is selected,
     // continue to the next screen.
     if (!this.configureConnected && isNetworkConnected) {
-      this.onSelectedNetworkConnected_();
+      this.onSelectedNetworkConnected();
       return;
     }
 
@@ -312,7 +332,7 @@ export class NetworkSelectLogin extends PolymerElement {
     // is pending connection attempt. So even if new selection is currently
     // connected, it may get disconnected at any time.
     // So just send one more connection request to cancel current attempts.
-    this.networkLastSelectedGuid_ = networkState.guid;
+    this.networkLastSelectedGuid = networkState.guid;
 
     const oncType = OncMojo.getNetworkTypeString(networkState.type);
     const guid = networkState.guid;
@@ -321,7 +341,7 @@ export class NetworkSelectLogin extends PolymerElement {
         networkState.connectionState === ConnectionStateType.kConnecting;
     // Cellular should normally auto connect. If it is selected, show the
     // details UI since there is no configuration UI for Cellular.
-    shouldShowNetworkDetails |= networkState.type === NetworkType.kCellular;
+    shouldShowNetworkDetails ||= networkState.type === NetworkType.kCellular;
 
     if (shouldShowNetworkDetails) {
       chrome.send('showNetworkDetails', [oncType, guid]);
@@ -362,12 +382,17 @@ export class NetworkSelectLogin extends PolymerElement {
   }
 
   /**
-   * @param {!CustomEvent<{customData:!networkCustomItemCustomData}>} event
-   * @private
    */
-  onNetworkListCustomItemSelected_(event) {
+  private onNetworkListCustomItemSelected(
+      event: CustomEvent<{customData: NetworkCustomItemCustomData}>): void {
     const itemState = event.detail;
     itemState.customData.onTap();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkSelectLogin.is]: NetworkSelectLogin;
   }
 }
 

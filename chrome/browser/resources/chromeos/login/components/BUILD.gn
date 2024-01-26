@@ -45,7 +45,6 @@ group("closure_compile") {
     ":keyboard_utils",
     ":keyboard_utils_oobe",
     ":long_touch_detector",
-    ":network_select_login",
     ":notification_card",
     ":oobe_a11y_option",
     ":oobe_carousel",
@@ -106,18 +105,6 @@ js_library("long_touch_detector") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.js" ]
   deps = []
   extra_deps = [ ":copy_js" ]
-}
-
-js_library("network_select_login") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.js" ]
-  deps = [
-    "../:cr_ui",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources/network:network_select",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("notification_card") {
@@ -313,7 +300,6 @@ html_to_js("web_components_local") {
   js_files = [
     "api_keys_notice.js",
     "hd_iron_icon.js",
-    "network_select_login.js",
     "notification_card.js",
     "oobe_a11y_option.js",
     "oobe_carousel.js",

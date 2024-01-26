@@ -72,7 +72,6 @@ js_library("error_message") {
   deps = [
     "../../:cr_ui",
     "../../components:display_manager_types",
-    "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",

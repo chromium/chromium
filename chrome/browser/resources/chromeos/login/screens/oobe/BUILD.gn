@@ -16,7 +16,6 @@ js_type_check("closure_compile") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":oobe_network",
     ":welcome",
     ":welcome_dialog",
   ]
@@ -25,25 +24,12 @@ js_type_check("closure_compile") {
 ###############################
 # Closure compiler libraries below
 
-js_library("oobe_network") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_network.js" ]
-  deps = [
-    "../../components:network_select_login",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("welcome") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.js" ]
   deps = [
     ":welcome_dialog",
     "../..:display_manager",
+    "../../:cr_ui",
     "../../components:oobe_cr_lottie",
     "../../components:oobe_select",
     "../../components:oobe_types",
