@@ -226,33 +226,37 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   gfx::Size GetMinimumSize() const override;
   void OnViewThemeChanged(View* view) override;
 
-  // Sets and activates the visible |arrow|. The position of the visible arrow
-  // on the edge of the |bubble_bounds| is determined using the
-  // |anchor_rect|. While the side of the arrow is already determined by
-  // |arrow|, the placement along the side is chosen to point towards the
-  // |anchor_rect|. For a horizontal bubble with an arrow on either the left
+  // Sets and activates the visible `arrow`. The position of the visible arrow
+  // on the edge of the `popup_bounds` is determined using the
+  // `anchor_rect`. While the side of the arrow is already determined by
+  // `arrow`, the placement along the side is chosen to point towards the
+  // `anchor_rect`. For a horizontal bubble with an arrow on either the left
   // or right side, the arrow is placed to point towards the vertical center of
-  // |anchor_rect|. For a vertical arrow that is either on top of below the
-  // bubble, the placement depends on the specifics of |arrow|:
+  // `anchor_rect`. For a vertical arrow that is either on top of below the
+  // bubble, the placement depends on the specifics of `arrow`:
   //
   //  * A right-aligned arrow (TOP_RIGHT, BOTTOM_RIGHT) optimizes the arrow
-  //  position to point at the right edge of the |element_bounds|.
+  //  position to point at the right edge of the `element_bounds`.
   //  * A center-aligned arrow (TOP_CENTER, BOTTOM_CENTER) points towards the
-  //  horizontal center of |element_bounds|.
-  //  * Otherwise, the arrow points towards the left edge of |element_bounds|.
+  //  horizontal center of `element_bounds`.
+  //  * Otherwise, the arrow points towards the left edge of `element_bounds`.
   //
   // If it is not possible for the arrow to point towards the targeted point
   // because there is no overlap between the bubble and the element in the
   // significant direction, the arrow is placed at the most extreme allowed
   // position that is closest to the targeted point.
   //
-  // Note that |bubble_bounds| can be slightly shifted to accommodate appended
-  // arrow and make the whole popup visialy pointing to the anchor element.
+  // Note that `popup_bounds` can be slightly shifted to accommodate appended
+  // arrow and make the whole popup visually pointing to the anchor element.
+  // `popup_min_y` limits this shift, which can be used to prevent overlapping
+  // the browser top elements (e.g., the address bar). The `popup_bounds`
+  // initial value is expected to not violate the `popup_min_y` restriction.
   //
   // Returns false if the arrow cannot be added due to missing space on the
   // bubble border.
   bool AddArrowToBubbleCornerAndPointTowardsAnchor(const gfx::Rect& anchor_rect,
-                                                   gfx::Rect& bubble_bounds);
+                                                   gfx::Rect& popup_bounds,
+                                                   int popup_min_y);
 
   // Returns a constant reference to the |visible_arrow_rect_| for teseting
   // purposes.

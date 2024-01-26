@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "cc/paint/paint_flags.h"
@@ -510,9 +511,11 @@ gfx::Size BubbleBorder::GetSizeForContentsSize(
 
 bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     const gfx::Rect& anchor_rect,
-    gfx::Rect& popup_bounds) {
+    gfx::Rect& popup_bounds,
+    int popup_min_y) {
   // This function should only be called for a visible arrow.
   DCHECK(arrow_ != Arrow::NONE && arrow_ != Arrow::FLOAT);
+  CHECK_GE(popup_bounds.y(), popup_min_y);
 
   // The total size of the arrow in its normal direction.
   const int kVisibleArrowDiamater = 2 * kVisibleArrowRadius;
@@ -618,6 +621,14 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
       GetContentsBoundsOffsetToPlaceVisibleArrow(arrow_, false);
   popup_bounds.set_origin(popup_bounds.origin() + popup_offset);
   visible_arrow_rect_.set_origin(visible_arrow_rect_.origin() + popup_offset);
+
+  // Adjust positions if the shifted popup violates the min y restrictions.
+  int min_y_overlay = popup_min_y - popup_bounds.y();
+  if (min_y_overlay > 0) {
+    // gfx::Vector2d min_y_offset{0, min_y_overlay};
+    popup_bounds.Offset(0, min_y_overlay);
+    visible_arrow_rect_.Offset(0, min_y_overlay);
+  }
 
   set_visible_arrow(true);
   return true;

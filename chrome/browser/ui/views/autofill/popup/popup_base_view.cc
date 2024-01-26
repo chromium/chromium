@@ -66,6 +66,11 @@ constexpr int kMaximumPixelsToMoveSuggestionToCenter = 120;
 // center of the focused field.
 constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 
+// The max number of pixels the popup is allowed to be rendered above the top
+// of the `WebContents`. Limiting overflow prevents the popup content from
+// covering important browser elements (e.g., the address bar).
+constexpr int kMaxPopupWebContentsTopYOverflow = 8;
+
 // Creates a border for a popup.
 std::unique_ptr<views::Border> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
@@ -456,8 +461,9 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
   if (show_arrow_pointer_) {
     // Set the arrow position to the border.
     border->set_arrow(arrow);
-    border->AddArrowToBubbleCornerAndPointTowardsAnchor(element_bounds,
-                                                        popup_bounds);
+    border->AddArrowToBubbleCornerAndPointTowardsAnchor(
+        element_bounds, popup_bounds,
+        max_bounds_for_popup.y() - kMaxPopupWebContentsTopYOverflow);
   }
 
   return popup_bounds;
