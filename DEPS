@@ -519,6 +519,8 @@ allowed_hosts = [
   'skia.googlesource.com',
   'swiftshader.googlesource.com',
   'webrtc.googlesource.com',
+  # for replayio deps
+  'github.com'
 ]
 
 deps = {
