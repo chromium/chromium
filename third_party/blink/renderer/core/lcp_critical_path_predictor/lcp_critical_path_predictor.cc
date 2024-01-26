@@ -118,7 +118,8 @@ bool LCPCriticalPathPredictor::IsElementMatchingLocator(
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     const Element& lcp_element) {
-  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
+  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) ||
+      base::FeatureList::IsEnabled(features::kLCPPLazyLoadImagePreload)) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
 
