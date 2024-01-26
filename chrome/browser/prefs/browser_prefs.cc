@@ -978,6 +978,14 @@ constexpr char kExtendedFkeysModifier[] =
 constexpr char kNtpShownPage[] = "ntp.shown_page";
 constexpr char kNtpAppPageNames[] = "ntp.app_page_names";
 
+// Deprecated 01/2024.
+#if BUILDFLAG(IS_WIN)
+const char kSearchResultsPagePrimaryFontsPref[] =
+    "cached_fonts.search_results_page.primary";
+const char kSearchResultsPageFallbackFontsPref[] =
+    "cached_fonts.search_results_page.fallback";
+#endif  // BUILDFLAG(IS_WIN)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1385,6 +1393,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2024.
   registry->RegisterIntegerPref(kNtpShownPage, 0);
   registry->RegisterListPref(kNtpAppPageNames);
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterListPref(kSearchResultsPagePrimaryFontsPref);
+  registry->RegisterListPref(kSearchResultsPageFallbackFontsPref);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2633,6 +2647,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2024.
   profile_prefs->ClearPref(kNtpShownPage);
   profile_prefs->ClearPref(kNtpAppPageNames);
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_WIN)
+  profile_prefs->ClearPref(kSearchResultsPagePrimaryFontsPref);
+  profile_prefs->ClearPref(kSearchResultsPageFallbackFontsPref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

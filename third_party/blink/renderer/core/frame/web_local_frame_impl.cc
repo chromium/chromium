@@ -757,11 +757,8 @@ WebFontFamilyNames WebLocalFrameImpl::GetWebFontFamilyNames() const {
   FontFamilyNames font_family_names;
   GetFontsUsedByFrame(*GetFrame(), font_family_names);
   WebFontFamilyNames result;
-  for (const String& font_family_name : font_family_names.primary_fonts)
-    result.primary_family_names.push_back(font_family_name);
-  for (const String& font_family_name : font_family_names.fallback_fonts) {
-    if (!font_family_names.primary_fonts.Contains(font_family_name))
-      result.fallback_family_names.push_back(font_family_name);
+  for (const String& font_family_name : font_family_names.font_names) {
+    result.font_names.push_back(font_family_name);
   }
   return result;
 }
