@@ -21,6 +21,8 @@ namespace {
 
 using updater::tagging::AppArgs;
 using updater::tagging::ErrorCode;
+using updater::tagging::NeedsAdmin;
+using updater::tagging::RuntimeModeArgs;
 using updater::tagging::TagArgs;
 
 // Builder pattern helper to construct the TagArgs struct.
@@ -72,6 +74,10 @@ class TagArgsBuilder {
     this->inner_.apps.push_back(std::move(app));
     return *this;
   }
+  TagArgsBuilder& WithRuntimeMode(RuntimeModeArgs runtime_mode) {
+    this->inner_.runtime_mode = runtime_mode;
+    return *this;
+  }
 
  private:
   TagArgs inner_;
@@ -88,7 +94,7 @@ class AppArgsBuilder {
     this->inner_.app_name = app_name;
     return *this;
   }
-  AppArgsBuilder& WithNeedsAdmin(AppArgs::NeedsAdmin needs_admin) {
+  AppArgsBuilder& WithNeedsAdmin(NeedsAdmin needs_admin) {
     this->inner_.needs_admin = needs_admin;
     return *this;
   }
@@ -116,6 +122,22 @@ class AppArgsBuilder {
 
  private:
   AppArgs inner_;
+};
+
+// Builder pattern helper to construct the RuntimeModeArgs struct.
+class RuntimeModeArgsBuilder {
+ public:
+  RuntimeModeArgsBuilder() = default;
+
+  RuntimeModeArgs Build() { return std::move(inner_); }
+
+  RuntimeModeArgsBuilder& WithNeedsAdmin(NeedsAdmin needs_admin) {
+    this->inner_.needs_admin = needs_admin;
+    return *this;
+  }
+
+ private:
+  RuntimeModeArgs inner_;
 };
 
 void VerifyTagParseSuccess(
@@ -296,6 +318,11 @@ TEST(TagParserTest, AppIdCaseInsensitive) {
           .Build());
 }
 
+TEST(TagParserTest, NoRuntimeModeOrAppOnlyNeedsAdminValue) {
+  VerifyTagParseFail("needsadmin=true", std::nullopt,
+                     ErrorCode::kApp_AppIdNotSpecified);
+}
+
 TEST(TagParserTest, NeedsAdminInvalid) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
@@ -317,7 +344,7 @@ TEST(TagParserTest, NeedsAdminTrueUpperCaseT) {
       std::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kYes)
+                       .WithNeedsAdmin(NeedsAdmin::kYes)
                        .Build())
           .Build());
 }
@@ -329,7 +356,7 @@ TEST(TagParserTest, NeedsAdminTrueLowerCaseT) {
       std::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kYes)
+                       .WithNeedsAdmin(NeedsAdmin::kYes)
                        .Build())
           .Build());
 }
@@ -341,7 +368,7 @@ TEST(TagParserTest, NeedsFalseUpperCaseF) {
       std::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kNo)
+                       .WithNeedsAdmin(NeedsAdmin::kNo)
                        .Build())
           .Build());
 }
@@ -353,7 +380,7 @@ TEST(TagParserTest, NeedsAdminFalseLowerCaseF) {
       std::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kNo)
+                       .WithNeedsAdmin(NeedsAdmin::kNo)
                        .Build())
           .Build());
 }
@@ -1105,7 +1132,7 @@ TEST(TagParserTestMultipleEntries, ThreeApplications) {
           .WithUsageStatsEnable(false)
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithAppName("TestApp")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kNo)
+                       .WithNeedsAdmin(NeedsAdmin::kNo)
                        .WithAp("test_ap")
                        .WithEncodedInstallerData("installerdata_app1")
                        .WithExperimentLabels("_experiment_a")
@@ -1113,7 +1140,7 @@ TEST(TagParserTestMultipleEntries, ThreeApplications) {
                        .Build())
           .WithApp(AppArgsBuilder("5e46de36-737d-4271-91c1-c062f9fe21d9")
                        .WithAppName("TestApp2")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kYes)
+                       .WithNeedsAdmin(NeedsAdmin::kYes)
                        .WithAp("test_ap2")
                        .WithExperimentLabels("_experiment_b")
                        .WithUntrustedData("X=5")
@@ -1121,9 +1148,56 @@ TEST(TagParserTestMultipleEntries, ThreeApplications) {
           .WithApp(AppArgsBuilder("5f46de36-737d-4271-91c1-c062f9fe21d9")
                        .WithAppName("TestApp3")
                        .WithEncodedInstallerData("installerdata_app3")
-                       .WithNeedsAdmin(AppArgs::NeedsAdmin::kPrefers)
+                       .WithNeedsAdmin(NeedsAdmin::kPrefers)
                        .Build())
           .Build());
+}
+
+TEST(TagParserTest, RuntimeModeBeforeApp) {
+  VerifyTagParseFail(
+      "runtime=true&appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
+      "appname1=Hello",
+      std::nullopt, ErrorCode::kUnrecognizedName);
+}
+
+TEST(TagParserTest, RuntimeModeAfterApp) {
+  VerifyTagParseFail(
+      "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&appname1=Hello&runtime="
+      "true",
+      std::nullopt, ErrorCode::kUnrecognizedName);
+}
+
+TEST(TagParserTest, RuntimeModeIncorrectValue) {
+  VerifyTagParseFail("runtime=foo", std::nullopt,
+                     ErrorCode::kGlobal_RuntimeModeValueIsInvalid);
+}
+
+TEST(TagParserTest, RuntimeModeIncorrectNeedsAdminValue) {
+  VerifyTagParseFail("runtime=true&needsadmin=foo", std::nullopt,
+                     ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid);
+}
+
+TEST(TagParserTest, RuntimeModeValid) {
+  VerifyTagParseSuccess("runtime=true", std::nullopt,
+                        TagArgsBuilder()
+                            .WithRuntimeMode(RuntimeModeArgsBuilder().Build())
+                            .Build());
+}
+
+TEST(TagParserTest, RuntimeModeValidSystem) {
+  VerifyTagParseSuccess(
+      "runtime=true&needsadmin=true", std::nullopt,
+      TagArgsBuilder()
+          .WithRuntimeMode(
+              RuntimeModeArgsBuilder().WithNeedsAdmin(NeedsAdmin::kYes).Build())
+          .Build());
+}
+
+TEST(TagParserTest, RuntimeModeValidUser) {
+  VerifyTagParseSuccess("runtime=true&needsadmin=false", std::nullopt,
+                        TagArgsBuilder()
+                            .WithRuntimeMode(RuntimeModeArgsBuilder().Build())
+                            .Build());
 }
 
 TEST(TagExtractorTest, AdvanceIt) {
@@ -1286,7 +1360,7 @@ INSTANTIATE_TEST_SUITE_P(
            tagging::AppArgs app_args("{8A69D345-D564-463C-AFF1-A69D9E530F96}");
            app_args.app_name = "Google Chrome";
            app_args.install_data_index = "defaultbrowser";
-           app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kPrefers;
+           app_args.needs_admin = tagging::NeedsAdmin::kPrefers;
            tag_args.apps = {app_args};
 
            return tag_args;
@@ -1301,7 +1375,7 @@ INSTANTIATE_TEST_SUITE_P(
 
            tagging::AppArgs app_args("{8237E44A-0054-442C-B6B6-EA0509993955}");
            app_args.app_name = "Google Chrome Beta";
-           app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kYes;
+           app_args.needs_admin = tagging::NeedsAdmin::kYes;
            tag_args.apps = {app_args};
 
            return tag_args;
