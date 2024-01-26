@@ -273,8 +273,6 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
     public static final String DYNAMIC_TOP_CHROME = "DynamicTopChrome";
     public static final String EARLY_INITIALIZE_STARTUP_METRICS = "EarlyInitializeStartupMetrics";
-    public static final String ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE =
-            "EnableBookmarkFoldersForAccountStorage";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_DYNAMIC_COLORS = "FeedDynamicColors";
@@ -739,9 +737,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
     public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
             newMutableFlagWithSafeDefault(DEFER_NOTIFY_IN_MOTION, false);
-    public static final MutableFlagWithSafeDefault sEnableBookmarkFoldersForAccountStorage =
-            newMutableFlagWithSafeDefault(ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE, false);
-
     public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
             newMutableFlagWithSafeDefault(INCOGNITO_NTP_REVAMP, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.sync.SyncFeatureMap;
 
 /** Self-documenting feature class for bookmarks. */
 public class BookmarkFeatures {
@@ -30,6 +31,6 @@ public class BookmarkFeatures {
     }
 
     public static boolean isBookmarksAccountStorageEnabled() {
-        return ChromeFeatureList.sEnableBookmarkFoldersForAccountStorage.isEnabled();
+        return SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE);
     }
 }

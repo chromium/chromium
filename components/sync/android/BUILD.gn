@@ -9,6 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClient.java",
+    "java/src/org/chromium/components/sync/SyncFeatureMap.java",
     "java/src/org/chromium/components/sync/SyncServiceImpl.java",
   ]
 }
@@ -27,6 +28,7 @@ android_library("sync_java") {
   ]
   sources = [
     "java/src/org/chromium/components/sync/Passphrase.java",
+    "java/src/org/chromium/components/sync/SyncFeatureMap.java",
     "java/src/org/chromium/components/sync/SyncService.java",
     "java/src/org/chromium/components/sync/SyncServiceImpl.java",
   ]
