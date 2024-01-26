@@ -1180,6 +1180,11 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="PREDICTION_SOURCE_OVERALL"/>
 </enum>
 
+<enum name="AutofillPreFilledFieldClassifications">
+  <int value="0" label="Had placeholder classification"/>
+  <int value="1" label="No placeholder classification"/>
+</enum>
+
 <enum name="AutofillPreFilledFieldStatus">
   <int value="0" label="Pre-filled on page load"/>
   <int value="1" label="Empty on page load"/>

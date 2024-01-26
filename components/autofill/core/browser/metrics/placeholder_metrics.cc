@@ -145,4 +145,18 @@ void LogPreFilledValueChanged(
       value_status);
 }
 
+void LogPreFilledFieldClassifications(
+    std::string_view form_type_name,
+    std::optional<bool> initial_value_changed,
+    std::optional<bool> may_use_prefilled_placeholder) {
+  if (!initial_value_changed.has_value()) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.PreFilledFieldClassifications.", form_type_name}),
+      may_use_prefilled_placeholder.has_value()
+          ? AutofillPreFilledFieldClassifications::kClassified
+          : AutofillPreFilledFieldClassifications::kNotClassified);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -3553,6 +3553,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
+    enum="AutofillPreFilledFieldClassifications" expires_after="2024-06-11">
+  <owner>bwolfgang@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the number of pre-filled fields that had a placeholder
+    classification. The metric is emitted on form submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.PreFilledFields.ByFieldType"
     enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2024-06-10">
   <owner>bwolfgang@google.com</owner>

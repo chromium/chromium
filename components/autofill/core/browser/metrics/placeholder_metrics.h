@@ -50,6 +50,17 @@ enum class AutofillPreFilledValueStatus {
   kMaxValue = kPreFilledValueChanged
 };
 
+// Enum for logging if a pre-filled field had a placeholder classification.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutofillPreFilledFieldClassifications {
+  // The field had a placeholder classification.
+  kClassified = 0,
+  // The field didn't have a placeholder classification.
+  kNotClassified = 1,
+  kMaxValue = kNotClassified
+};
+
 // Log if the field was pre-filled or empty on page load. Aggregated separately
 // by `form_type_name` and `field_type`.
 void LogPreFilledFieldStatus(std::string_view form_type_name,
@@ -65,6 +76,12 @@ void LogPreFilledValueChanged(
     const FieldTypeSet& possible_types,
     FieldType field_type,
     bool is_autofilled);
+
+// Logs if a pre-filled field had a placeholder classification.
+void LogPreFilledFieldClassifications(
+    std::string_view form_type_name,
+    std::optional<bool> initial_value_changed,
+    std::optional<bool> may_use_prefilled_placeholder);
 
 }  // namespace autofill::autofill_metrics
 
