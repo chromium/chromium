@@ -1171,11 +1171,9 @@ BASE_FEATURE(kWebAssemblyBaseline,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WebAssembly JSPI.
-#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 
 // Enable support for the WebAssembly Garbage Collection proposal:
 // https://github.com/WebAssembly/gc.
