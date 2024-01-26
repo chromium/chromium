@@ -415,12 +415,12 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   TextPainter text_painter(context, font, visual_rect, text_origin,
                            is_horizontal);
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
-                                           text_item, paint_info, style,
-                                           text_style, rotated_box, selection);
-  HighlightPainter highlight_painter(
-      fragment_paint_info, text_painter, decoration_painter, paint_info,
-      cursor_, *cursor_.CurrentItem(), rotation, physical_box.offset, style,
-      text_style, selection, is_printing);
+                                           paint_info, style, text_style,
+                                           rotated_box, selection);
+  HighlightPainter highlight_painter(fragment_paint_info, text_painter,
+                                     decoration_painter, paint_info, cursor_,
+                                     text_item, rotation, physical_box.offset,
+                                     style, text_style, selection, is_printing);
   if (paint_info.phase == PaintPhase::kForeground) {
     if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
@@ -506,14 +506,14 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   switch (highlight_case) {
     case HighlightPainter::kNoHighlights:
       // Fast path: just paint the text, including its decorations.
-      decoration_painter.Begin(TextDecorationPainter::kOriginating);
+      decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, text_style, node_id,
                          auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case HighlightPainter::kFastSpellingGrammar:
-      decoration_painter.Begin(TextDecorationPainter::kOriginating);
+      decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, text_style, node_id,
                          auto_dark_mode);
@@ -560,7 +560,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
             auto_dark_mode);
         break;
       case HighlightPainter::kSelectionOnly:
-        decoration_painter.Begin(TextDecorationPainter::kSelection);
+        decoration_painter.Begin(text_item, TextDecorationPainter::kSelection);
         decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(
             text_painter, fragment_paint_info, text_style, node_id,
