@@ -11,6 +11,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/model/constants.h"
@@ -54,7 +55,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 
 @implementation JavaScriptFindInPageController {
   // Object that manages searches and match traversals.
-  web::JavaScriptFindInPageManager* _findInPageManager;
+  raw_ptr<web::JavaScriptFindInPageManager> _findInPageManager;
 
   // Access to the web view from the web state.
   id<CRWWebViewProxy> _webViewProxy;
@@ -65,7 +66,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 
   // Bridge to observe FindInPageManager from Objective-C.
   std::unique_ptr<web::FindInPageManagerDelegateBridge>

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/find_in_page/java_script_find_in_page_request.h"
@@ -75,8 +76,8 @@ class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
  protected:
   // Holds the state of the most recent find in page request.
   JavaScriptFindInPageRequest last_find_request_;
-  FindInPageManagerDelegate* delegate_ = nullptr;
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<FindInPageManagerDelegate> delegate_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   base::WeakPtrFactory<JavaScriptFindInPageManagerImpl> weak_factory_;
 };
 }  // namespace web

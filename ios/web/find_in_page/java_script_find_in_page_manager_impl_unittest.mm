@@ -4,6 +4,7 @@
 
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
@@ -85,7 +86,7 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
   }
 
   std::unique_ptr<FakeWebState> fake_web_state_;
-  FakeWebFramesManager* fake_web_frames_manager_;
+  raw_ptr<FakeWebFramesManager> fake_web_frames_manager_;
   FakeFindInPageManagerDelegate fake_delegate_;
   base::UserActionTester user_action_tester_;
 };

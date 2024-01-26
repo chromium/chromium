@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_SERVICE_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_SERVICE_CONFIGURATION_H_
 
+#import "base/memory/raw_ptr.h"
+
 class ChromeAccountManagerService;
 @protocol SingleSignOnService;
 
@@ -15,7 +17,7 @@ struct DriveServiceConfiguration {
   // The SingleSignOnService instance to use by DriveService.
   id<SingleSignOnService> sso_service;
   // The account manager service to observe system identities.
-  ChromeAccountManagerService* account_manager_service;
+  raw_ptr<ChromeAccountManagerService> account_manager_service;
 };
 
 }  // namespace drive
