@@ -724,6 +724,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   std::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
+  // Set pref to track users who received GMSCore error.
+  prefs_->SetBoolean(prefs::kUserReceivedGMSCoreError, true);
+
   PasswordStoreOperation operation = reply->GetOperation();
 
   // The error to report is computed before potential eviction. This is because

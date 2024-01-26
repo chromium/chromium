@@ -180,6 +180,12 @@ inline constexpr char kLocalPasswordMigrationWarningPrefsVersion[] =
 // in a row. The counter resets when the user applies password generation.
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
     "password_generation_bottom_sheet_dismiss_count";
+
+// Becomes true when a user received an error from GMSCore. It's later used to
+// guard activation algorithm of "Remove unenrollment" experiment.
+inline constexpr char kUserReceivedGMSCoreError[] =
+    "user_received_gmscore_error";
+
 #endif
 
 #if BUILDFLAG(IS_WIN)

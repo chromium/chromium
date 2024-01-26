@@ -213,6 +213,8 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           20.22);
+    prefs_.registry()->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError,
+                                           false);
 
     ResetBackend(/*try_fix_passphrase_error_cb=*/base::NullCallback());
   }
