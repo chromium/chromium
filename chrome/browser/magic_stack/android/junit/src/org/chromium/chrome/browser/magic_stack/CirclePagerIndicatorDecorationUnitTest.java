@@ -344,7 +344,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
         when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
-        int expectedItemWith = (int) (mParentViewWidth / 2 - mIndicatorItemPadding);
+        int expectedItemWith = (int) (mParentViewWidth - mIndicatorItemPadding) / 2;
         // The recyclerview has 3 items shown.
         when(mAdapter.getItemCount()).thenReturn(3);
 

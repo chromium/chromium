@@ -445,9 +445,11 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     @VisibleForTesting
     public static Size getThumbnailSize(Context context) {
-        int size =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size);
+        int resourceId =
+                StartSurfaceConfiguration.useMagicStack()
+                        ? R.dimen.single_tab_module_tab_thumbnail_size_big
+                        : R.dimen.single_tab_module_tab_thumbnail_size;
+        int size = context.getResources().getDimensionPixelSize(resourceId);
         return new Size(size, size);
     }
 
