@@ -219,8 +219,8 @@ void PossiblyFetchBlockedDocWriteScript(
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
-                        ScriptResource::kNoStreaming, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer);
+                        context->GetIsolate(), ScriptResource::kNoStreaming,
+                        kNoCompileHintsProducer, kNoCompileHintsConsumer);
 }
 
 }  // namespace blink

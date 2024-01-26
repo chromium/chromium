@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -935,8 +936,9 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
       resource = ScriptResource::Fetch(
-          params, resource_fetcher, nullptr, ScriptResource::kAllowStreaming,
-          v8_compile_hints_producer, v8_compile_hints_consumer);
+          params, resource_fetcher, nullptr, document.GetAgent().isolate(),
+          ScriptResource::kAllowStreaming, v8_compile_hints_producer,
+          v8_compile_hints_consumer);
       break;
     }
     case ResourceType::kCSSStyleSheet:

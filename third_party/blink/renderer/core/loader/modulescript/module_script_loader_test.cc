@@ -97,7 +97,8 @@ class ModuleScriptLoaderTestModulator final : public DummyModulator {
       return MakeGarbageCollected<WorkletModuleScriptFetcher>(scope, pass_key);
     }
     EXPECT_EQ(ModuleScriptCustomFetchType::kNone, custom_fetch_type);
-    return MakeGarbageCollected<DocumentModuleScriptFetcher>(pass_key);
+    return MakeGarbageCollected<DocumentModuleScriptFetcher>(execution_context,
+                                                             pass_key);
   }
 
   void Trace(Visitor*) const override;

@@ -60,6 +60,9 @@ class CORE_EXPORT BackgroundHTMLScanner {
     void set_first_script_in_scan(bool value) { first_script_in_scan_ = value; }
 
    private:
+    // Careful this isolate doesn't belong to the sequence that this class
+    // executes on.
+    v8::Isolate* isolate_;
     CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     wtf_size_t min_script_size_;
