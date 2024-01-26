@@ -113,6 +113,18 @@ chromium-metrics-reviews@google.com.
                last day (wrt recording the metrics)."/>
 </variants>
 
+<histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
+    enum="AndroidExplicitPassphrasePlatformApiResponse"
+    expires_after="2025-01-25">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The response returned by the API internally called by
+    ExplicitPassphrasePlatformClient (see class docs). Recorded only on Android.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BackedOffModelType" enum="SyncModelTypes"
     expires_after="2024-07-21">
   <owner>victorvianna@google.com</owner>
