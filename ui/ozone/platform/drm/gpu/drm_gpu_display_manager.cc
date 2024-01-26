@@ -485,17 +485,6 @@ bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
   return display->SetPrivacyScreen(enabled);
 }
 
-void DrmGpuDisplayManager::SetColorSpace(int64_t crtc_id,
-                                         const gfx::ColorSpace& color_space) {
-  for (const auto& display : displays_) {
-    if (display->crtc() == crtc_id) {
-      display->SetColorSpace(color_space);
-      return;
-    }
-  }
-  LOG(WARNING) << __func__ << ": there is no display with CRTC ID " << crtc_id;
-}
-
 DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) {
   for (const auto& display : displays_) {
     if (display->display_id() == display_id)

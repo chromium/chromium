@@ -184,7 +184,6 @@ source_set("gbm_unittests") {
   testonly = true
   sources = [
     "common/drm_util_unittest.cc",
-    "gpu/drm_display_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",

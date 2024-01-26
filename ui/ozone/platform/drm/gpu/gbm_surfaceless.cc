@@ -70,9 +70,6 @@ bool GbmSurfaceless::Resize(const gfx::Size& size,
                             float scale_factor,
                             const gfx::ColorSpace& color_space,
                             bool has_alpha) {
-  if (window_)
-    window_->SetColorSpace(color_space);
-
   return true;
 }
 

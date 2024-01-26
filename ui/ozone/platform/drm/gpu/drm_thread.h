@@ -115,9 +115,6 @@ class DrmThread : public base::Thread,
   void AddDrmDeviceReceiver(
       mojo::PendingReceiver<ozone::mojom::DrmDevice> receiver);
 
-  void SetColorSpace(gfx::AcceleratedWidget widget,
-                     const gfx::ColorSpace& color_space);
-
   // Verifies if the display controller can successfully scanout the given set
   // of OverlaySurfaceCandidates and return the status associated with each
   // candidate.
