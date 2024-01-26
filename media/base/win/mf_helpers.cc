@@ -403,19 +403,19 @@ HRESULT GetDefaultAudioType(const AudioDecoderConfig decoder_config,
                                            samples_per_second));
   }
 
-  int bits_per_sample = decoder_config.bytes_per_frame() * 8;
+  int bits_per_sample = decoder_config.bytes_per_channel() * 8;
   if (bits_per_sample > 0) {
     RETURN_IF_FAILED(
         media_type->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, bits_per_sample));
   }
 
   if (uncompressed) {
-    unsigned long block_alignment = channels * (bits_per_sample / 8);
+    unsigned long block_alignment = decoder_config.bytes_per_frame();
     if (block_alignment > 0) {
       RETURN_IF_FAILED(
           media_type->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, block_alignment));
     }
-    unsigned long average_bps = samples_per_second * (bits_per_sample / 8);
+    unsigned long average_bps = samples_per_second * block_alignment;
     if (average_bps > 0) {
       RETURN_IF_FAILED(
           media_type->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, average_bps));
