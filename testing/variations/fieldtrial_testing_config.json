@@ -5481,6 +5481,25 @@
             ]
         }
     ],
+    "DeferredSparerRendererForTopChromeWebUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeferredSpareRendererForTopChromeWebUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayStructuredMetricsUntilHwidAvailable": [
         {
             "platforms": [
