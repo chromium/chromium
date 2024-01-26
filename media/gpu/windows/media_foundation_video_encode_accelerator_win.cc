@@ -303,7 +303,11 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   if (!InitializeMediaFoundation()) {
     return 0;
   }
-
+#if defined(ARCH_CPU_ARM64)
+  // TODO (crbug.com/1509117): Temporarily disable video encoding on arm64
+  // until we figure out what OS reports all codecs as supported.
+  return 0;
+#else
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
   input_info.guidMajorType = MFMediaType_Video;
@@ -332,6 +336,7 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   }
 
   return count - excluded_encoders;
+#endif
 }
 
 bool IsCodecSupportedForEncoding(VideoCodec codec, int* num_temporal_layers) {
