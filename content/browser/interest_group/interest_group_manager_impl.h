@@ -410,7 +410,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
   // Get the public key to use for the auction data. The `loader` pointer must
-  // remain valid until the `callback` is called or destroyed.
+  // remain valid until the `callback` is called or destroyed. The `callback`
+  // may be called synchronously if the key is already available or the
+  // coordinator is not recognized.
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
       std::optional<url::Origin> coordinator,

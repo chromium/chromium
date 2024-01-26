@@ -929,17 +929,20 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();
   network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
-  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      loader_ptr, std::move(state.coordinator),
-      base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
-                     weak_ptr_factory_.GetWeakPtr(), state.request_id,
-                     std::move(loader)));
 
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
       /* generation_id=*/base::Uuid::GenerateRandomV4(),
       base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
                      weak_ptr_factory_.GetWeakPtr(), state.request_id));
+
+  // GetBiddingAndAuctionServerKey can call its callback synchronously, so we
+  // need to call it last in case it invalidates `state`.
+  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
+      loader_ptr, std::move(state.coordinator),
+      base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
+                     weak_ptr_factory_.GetWeakPtr(), state.request_id,
+                     std::move(loader)));
 }
 
 void AdAuctionServiceImpl::OnGotAuctionData(base::Uuid request_id,
