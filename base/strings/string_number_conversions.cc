@@ -134,6 +134,10 @@ std::string HexEncode(span<const uint8_t> bytes) {
   return ret;
 }
 
+std::string HexEncode(StringPiece chars) {
+  return HexEncode(base::as_byte_span(chars));
+}
+
 bool HexStringToInt(StringPiece input, int* output) {
   return internal::HexStringToIntImpl(input, *output);
 }
