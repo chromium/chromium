@@ -242,6 +242,7 @@
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
@@ -372,10 +373,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
-
-#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
-#include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
-#endif
 
 #ifndef NDEBUG
 using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
@@ -1608,7 +1605,6 @@ void Document::SetContent(const String& content) {
 
 using AllowState = blink::Document::DeclarativeShadowRootAllowState;
 void Document::SetContentFromDOMParser(const String& content) {
-#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
   if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
       contentType() == "text/html" && IsA<HTMLDocument>(this)) {
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
@@ -1627,7 +1623,6 @@ void Document::SetContentFromDOMParser(const String& content) {
       return;
     }
   }
-#endif
   SetContent(content);
 }
 

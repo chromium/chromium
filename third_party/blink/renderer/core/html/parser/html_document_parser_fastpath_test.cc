@@ -19,12 +19,14 @@
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 namespace {
 
 TEST(HTMLDocumentParserFastpathTest, SanityCheck) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -43,6 +45,7 @@ TEST(HTMLDocumentParserFastpathTest, SanityCheck) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -59,6 +62,7 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -75,6 +79,7 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -90,6 +95,7 @@ TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -117,6 +123,7 @@ TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTags) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -137,6 +144,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTags) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTagsWithValidTag) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -158,6 +166,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTagsWithValidTag) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTag) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -179,6 +188,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTag) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, LogSvg) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -200,6 +210,7 @@ TEST(HTMLDocumentParserFastpathTest, LogSvg) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, HTMLInputElementCheckedState) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -224,6 +235,7 @@ TEST(HTMLDocumentParserFastpathTest, HTMLInputElementCheckedState) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -239,6 +251,7 @@ TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, HandlesCompleteCharacterReference) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -256,6 +269,7 @@ TEST(HTMLDocumentParserFastpathTest, HandlesCompleteCharacterReference) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, FailsWithNestedLis) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -274,6 +288,7 @@ TEST(HTMLDocumentParserFastpathTest, FailsWithNestedLis) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, HandlesLi) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -288,6 +303,7 @@ TEST(HTMLDocumentParserFastpathTest, HandlesLi) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -307,6 +323,7 @@ TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
 
 // Verifies DOMParser uses the fast path parser.
 TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   auto* parser_options = ParseFromStringOptions::Create();
@@ -317,6 +334,7 @@ TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, MixedEncoding) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -331,6 +349,7 @@ TEST(HTMLDocumentParserFastpathTest, MixedEncoding) {
 }
 
 TEST(HTMLDocumentParserFastpathTest, Escaped8BitText) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
