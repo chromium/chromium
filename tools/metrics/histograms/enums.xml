@@ -16244,6 +16244,7 @@ from previous Chrome versions.
   <int value="-2002754843" label="FedCmButtonMode:enabled"/>
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
+  <int value="-2001125545" label="OmniboxShortcutsAndroid:enabled"/>
   <int value="-2000862180" label="MerchantWidePromotion:disabled"/>
   <int value="-2000567059" label="SimplifyHttpsIndicator:enabled"/>
   <int value="-2000177300" label="JourneysLabel:disabled"/>
@@ -19491,6 +19492,7 @@ from previous Chrome versions.
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
+  <int value="-500107766" label="OmniboxShortcutsAndroid:disabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>

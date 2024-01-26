@@ -547,4 +547,9 @@ BASE_FEATURE(kAblateSearchProviderWarmup,
              "AblateSearchProviderWarmup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables storing successful query/match in the shortcut database On Android.
+BASE_FEATURE(kOmniboxShortcutsAndroid,
+             "OmniboxShortcutsAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

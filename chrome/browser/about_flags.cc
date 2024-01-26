@@ -3896,6 +3896,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRelatedSearchesAllLanguageName,
      flag_descriptions::kRelatedSearchesAllLanguageDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesAllLanguage)},
+    {"omnibox-shortcuts-android",
+     flag_descriptions::kOmniboxShortcutsAndroidName,
+     flag_descriptions::kOmniboxShortcutsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxShortcutsAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

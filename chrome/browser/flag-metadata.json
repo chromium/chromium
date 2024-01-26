@@ -6091,6 +6091,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "omnibox-shortcuts-android",
+    "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "omnibox-shortcuts-database-ios",
     "owners": [ "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 125

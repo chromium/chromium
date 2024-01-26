@@ -4215,6 +4215,11 @@ const char kOfflineAutoFetchDescription[]= "Enables auto fetch of content when C
 const char kOfflineContentOnNetErrorName[] = "Offline Content allowed on net errors";
 const char kOfflineContentOnNetErrorDescription[]=  "Enables use of Offline Content on network errors";
 
+const char kOmniboxShortcutsAndroidName[] = "Omnibox shortcuts on Android";
+const char kOmniboxShortcutsAndroidDescription[] =
+    "Enables storing successful query/match in the omnibox shortcut database "
+    "on Android";
+
 const char kPassExplicitSyncPassphraseToGmsCoreName[] =
     "Pass explicit sync passphrase to GmsCore";
 const char kPassExplicitSyncPassphraseToGmsCoreDescription[] =

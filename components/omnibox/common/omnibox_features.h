@@ -167,6 +167,8 @@ BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
 
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
 
+BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
