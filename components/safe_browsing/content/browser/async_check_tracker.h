@@ -82,7 +82,7 @@ class AsyncCheckTracker
   friend class content::WebContentsUserData<AsyncCheckTracker>;
   friend class SBBrowserUrlLoaderThrottleTestBase;
   friend class AsyncCheckTrackerTest;
-  friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
+  friend class SafeBrowsingBlockingPageTestHelper;
 
   AsyncCheckTracker(content::WebContents* web_contents,
                     scoped_refptr<BaseUIManager> ui_manager);
