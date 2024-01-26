@@ -527,8 +527,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // Update Read Aloud state.
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   current_text_index_ = 0;
-  processed_granularity_index_ = -1;
-  processed_granularities_on_current_page_.clear();
+  model_.ClearReadAloudState();
 
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
@@ -1272,39 +1271,19 @@ void ReadAnythingAppController::InitAXPositionWithNode(
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     current_text_index_ = 0;
-    processed_granularity_index_ = -1;
-    processed_granularities_on_current_page_.clear();
+    model_.ClearReadAloudState();
   }
-}
-
-bool ReadAnythingAppController::NodeBeenOrWillBeSpoken(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-    ui::AXNodeID id) {
-  if (base::Contains(current_granularity.segments, id)) {
-    return true;
-  }
-  for (ReadAnythingAppModel::ReadAloudCurrentGranularity granularity :
-       processed_granularities_on_current_page_) {
-    if (base::Contains(granularity.segments, id)) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
     int max_text_length) {
-  bool was_previously_processed =
-      processed_granularity_index_ <
-      processed_granularities_on_current_page_.size() - 1;
+  bool was_previously_processed = model_.InPreviousState();
 
   // If we've previously processed the triples at this location, return the
   // previously processed node information. Otherwise, get this information
   // GetNextNodes.
   ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      (was_previously_processed) ? processed_granularities_on_current_page_
-                                       [processed_granularity_index_ + 1]
+      (was_previously_processed) ? model_.GetNextGranularityFromPrevious()
                                  : GetNextNodes(max_text_length);
 
   // If the list of nodes is empty, don't adjust the processed nodes
@@ -1313,10 +1292,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
     return current_granularity.node_ids;
   }
 
-  if (!was_previously_processed) {
-    processed_granularities_on_current_page_.push_back(current_granularity);
-  }
-  processed_granularity_index_++;
+  model_.AddGranularity(current_granularity);
 
   return current_granularity.node_ids;
 }
@@ -1494,20 +1470,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
 // work (e.g. if we're switching granularities or jumping to a specific node),
 // so we should implement a method of retrieving previous text from AXPosition
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText() {
-  // If GetPreviousText is called before the tree is initialized or before
-  // there are any processed granularities, return an empty vector.
-  if (processed_granularities_on_current_page_.size() == 0) {
-    return std::vector<ui::AXNodeID>();
-  }
-
-  // If we've reached the beginning of the content, we should continue to return
-  // the text grouping, so don't decrement below 0.
-  if (processed_granularity_index_ > 0) {
-    processed_granularity_index_--;
-  }
-
-  return processed_granularities_on_current_page_[processed_granularity_index_]
-      .node_ids;
+  return model_.GetPreviousText();
 }
 
 // Returns either the node or the lowest platform ancestor of the node, if it's
@@ -1550,7 +1513,7 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition(
       is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
               : new_position->GetAnchor();
   bool was_previously_spoken =
-      NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
+      model_.NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
   bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
   const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
@@ -1580,7 +1543,7 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition(
       anchor_node = anchor_node->GetLowestPlatformAncestor();
     }
     was_previously_spoken =
-        NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
+        model_.NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
     is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
     contains_node = base::Contains(*node_ids, anchor_node->id());
   }
@@ -1589,35 +1552,11 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition(
 }
 
 int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
-  if (processed_granularities_on_current_page_.size() < 1) {
-    return -1;
-  }
-
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      processed_granularities_on_current_page_[processed_granularity_index_];
-  if (!current_granularity.segments.count(node_id)) {
-    return -1;
-  }
-  ReadAnythingAppModel::ReadAloudTextSegment segment =
-      current_granularity.segments[node_id];
-
-  return segment.text_start;
+  return model_.GetNextTextStartIndex(node_id);
 }
 
 int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
-  if (processed_granularities_on_current_page_.size() < 1) {
-    return -1;
-  }
-
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      processed_granularities_on_current_page_[processed_granularity_index_];
-  if (!current_granularity.segments.count(node_id)) {
-    return -1;
-  }
-  ReadAnythingAppModel::ReadAloudTextSegment segment =
-      current_granularity.segments[node_id];
-
-  return segment.text_end;
+  return model_.GetNextTextEndIndex(node_id);
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from

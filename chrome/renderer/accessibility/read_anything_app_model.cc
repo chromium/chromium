@@ -1090,3 +1090,83 @@ int ReadAnythingAppModel::GetNextSentence(const std::u16string& text,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
 }
+
+int ReadAnythingAppModel::GetNextTextStartIndex(ui::AXNodeID node_id) {
+  if (processed_granularities_on_current_page_.size() < 1) {
+    return -1;
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  if (!current_granularity.segments.count(node_id)) {
+    return -1;
+  }
+  ReadAnythingAppModel::ReadAloudTextSegment segment =
+      current_granularity.segments[node_id];
+
+  return segment.text_start;
+}
+
+int ReadAnythingAppModel::GetNextTextEndIndex(ui::AXNodeID node_id) {
+  if (processed_granularities_on_current_page_.size() < 1) {
+    return -1;
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  if (!current_granularity.segments.count(node_id)) {
+    return -1;
+  }
+  ReadAnythingAppModel::ReadAloudTextSegment segment =
+      current_granularity.segments[node_id];
+
+  return segment.text_end;
+}
+
+// TODO(crbug.com/1474951): Random access to processed nodes might not always
+// work (e.g. if we're switching granularities or jumping to a specific node),
+// so we should implement a method of retrieving previous text from AXPosition
+std::vector<ui::AXNodeID> ReadAnythingAppModel::GetPreviousText() {
+  // If GetPreviousText is called before the tree is initialized or before
+  // there are any processed granularities, return an empty vector.
+  if (processed_granularities_on_current_page_.size() == 0) {
+    return std::vector<ui::AXNodeID>();
+  }
+
+  // If we've reached the beginning of the content, we should continue to return
+  // the text grouping, so don't decrement below 0.
+  if (processed_granularity_index_ > 0) {
+    processed_granularity_index_--;
+  }
+
+  return processed_granularities_on_current_page_[processed_granularity_index_]
+      .node_ids;
+}
+
+bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
+    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
+    ui::AXNodeID id) {
+  if (base::Contains(current_granularity.segments, id)) {
+    return true;
+  }
+  for (ReadAnythingAppModel::ReadAloudCurrentGranularity granularity :
+       processed_granularities_on_current_page_) {
+    if (base::Contains(granularity.segments, id)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void ReadAnythingAppModel::ClearReadAloudState() {
+  processed_granularity_index_ = -1;
+  processed_granularities_on_current_page_.clear();
+}
+void ReadAnythingAppModel::AddGranularity(
+    ReadAnythingAppModel::ReadAloudCurrentGranularity granularity) {
+  if (!InPreviousState()) {
+    processed_granularities_on_current_page_.push_back(granularity);
+  }
+  processed_granularity_index_++;
+}

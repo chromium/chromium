@@ -121,25 +121,6 @@ class ReadAnythingAppController
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition();
 
-  // Returns true if the node was previously spoken or we expect to speak it
-  // to be spoken once the current run of #GetNextText which called
-  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
-  // sometimes returns leaf nodes, we sometimes need to use the parent of a
-  // node returned by AXPosition instead of the node itself. Because of this,
-  // we need to double-check that the node has not been used or currently
-  // in use.
-  // Example:
-  // parent node: id=5
-  //    child node: id=6
-  //    child node: id =7
-  // node: id = 10
-  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
-  // process them as 5, 10. Without checking for previously spoken nodes,
-  // id 5 will be spoken twice.
-  bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-      ui::AXNodeID id);
-
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -319,18 +300,6 @@ class ReadAnythingAppController
   ui::AXNodePosition::AXPositionInstance ax_position_;
   // The current text index within the given node.
   int current_text_index_ = 0;
-
-  // TODO(crbug.com/1474951): Clear this when granularity changes.
-  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
-  // backwards.
-  // Previously processed granularities on the current page.
-  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
-      processed_granularities_on_current_page_;
-
-  // Our current index within processed_granularities_on_current_page_. If it is
-  // equal to the size of the triples - 1, we're not navigating through
-  // previously processed text.
-  size_t processed_granularity_index_ = -1;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
