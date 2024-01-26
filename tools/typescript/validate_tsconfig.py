@@ -203,10 +203,12 @@ def isInAshFolder(path):
 # https://crbug.com/1512231
 def isMigratedAshFolder(path):
   migrated_ash_folders = [
+      "ash/webui/os_feedback_ui",
       "ash/webui/scanning",
       "chrome/browser/resources/chromeos/cloud_upload",
       "chrome/browser/resources/chromeos/enterprise_reporting",
       "chrome/browser/resources/chromeos/healthd_internals",
+      "chrome/test/data/webui/chromeos/os_feedback_ui",
   ]
   return any(path.startswith(folder) for folder in migrated_ash_folders)
 

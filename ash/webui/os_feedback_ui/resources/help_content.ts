@@ -4,17 +4,17 @@
 
 import './help_resources_icons.html.js';
 import './strings.m.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
+import '//resources/ash/common/cr_elements/cr_icons.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {strictQuery} from '//resources/ash/common/typescript_utils/strict_query.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
