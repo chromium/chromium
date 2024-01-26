@@ -116,7 +116,6 @@ public class ChromeContextMenuPopulatorTest {
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
                 });
-        FeatureList.resetTestCanUseDefaultsForTesting();
     }
 
     private void initializePopulator(@ContextMenuMode int mode, ContextMenuParams params) {

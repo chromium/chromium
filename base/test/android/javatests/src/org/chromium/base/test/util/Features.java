@@ -142,7 +142,8 @@ public class Features {
 
         @Override
         protected void after() {
-            reset();
+            // Resets state that might persist in between tests.
+            FeatureList.setTestFeatures(null);
 
             // sInstance may already be null if there are nested usages.
             if (sInstance == null) return;
@@ -211,12 +212,6 @@ public class Features {
 
         // Apply "--force-fieldtrials" passed by @CommandLineFlags.
         FieldTrials.getInstance().applyFieldTrials();
-    }
-
-    /** Resets Features-related state that might persist in between tests. */
-    private static void reset() {
-        FeatureList.setTestFeatures(null);
-        FeatureList.resetTestCanUseDefaultsForTesting();
     }
 
     private void clearRegisteredState() {

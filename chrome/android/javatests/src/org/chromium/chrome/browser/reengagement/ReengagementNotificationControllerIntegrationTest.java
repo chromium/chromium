@@ -90,8 +90,6 @@ public class ReengagementNotificationControllerIntegrationTest {
     @After
     public void tearDown() {
         DefaultBrowserInfo2.clearDefaultInfoForTests();
-        FeatureList.resetTestCanUseDefaultsForTesting();
-        FeatureList.setTestFeatures(null);
         closeReengagementNotifications();
     }
 
