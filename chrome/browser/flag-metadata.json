@@ -1630,11 +1630,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "delete-undecryptable-passwords",
-    "owners": [ "vasilii@chromium.org", "vsemeniuk@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
@@ -4746,11 +4741,6 @@
     "name": "ignore-ui-gains",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130
-  },
-  {
-    "name": "ignore-undecryptable-passwords",
-    "owners": [ "vasilii@chromium.org", "vsemeniuk@google.com"],
-    "expiry_milestone": 122
   },
   {
     "name": "improved-keyboard-shortcuts",

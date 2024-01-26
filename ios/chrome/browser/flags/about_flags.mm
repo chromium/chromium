@@ -1467,18 +1467,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-feed-containment", flag_descriptions::kEnableFeedContainmentName,
      flag_descriptions::kEnableFeedContainmentDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedContainment)},
-    {"delete-undecryptable-passwords",
-     flag_descriptions::kClearUndecryptablePasswordsOnSyncName,
-     flag_descriptions::kClearUndecryptablePasswordsOnSyncDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kClearUndecryptablePasswordsOnSync)},
-    {"ignore-undecryptable-passwords",
-     flag_descriptions::kSkipUndecryptablePasswordsName,
-     flag_descriptions::kSkipUndecryptablePasswordsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSkipUndecryptablePasswords)},
     {"privacy-guide-ios", flag_descriptions::kPrivacyGuideIosName,
      flag_descriptions::kPrivacyGuideIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPrivacyGuideIos)},
