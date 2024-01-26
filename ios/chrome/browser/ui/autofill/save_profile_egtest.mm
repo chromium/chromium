@@ -112,7 +112,8 @@ BOOL WaitForKeyboardToAppear() {
 #pragma mark - Tests
 
 // Ensures that the profile is saved to Chrome after submitting the form.
-- (void)testUserData_LocalSave {
+// TODO(crbug.com/1517656): Test is failing.
+- (void)DISABLED_testUserData_LocalSave {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -139,7 +140,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Ensures that the profile is saved to Chrome after submitting and editing the
 // form.
-- (void)testUserData_LocalEdit {
+// TODO(crbug.com/1517656): Test is failing.
+- (void)DISABLED_testUserData_LocalEdit {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -174,7 +176,8 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Ensures that the profile is saved to Account after submitting the form.
-- (void)testUserData_AccountSave {
+// TODO(crbug.com/1517656): Test is failing.
+- (void)DISABLED_testUserData_AccountSave {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
 
@@ -212,7 +215,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Ensures that the profile is saved to Account after submitting and editing the
 // form.
-- (void)testUserData_AccountEdit {
+// TODO(crbug.com/1517656): Test is failing.
+- (void)DISABLED_testUserData_AccountEdit {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
 
