@@ -871,6 +871,12 @@ void FakeSessionManagerClient::NotifySessionStopping() const {
   }
 }
 
+void FakeSessionManagerClient::SetServerBackedStateKeyError(
+    const StateKeyErrorType error_type) {
+  DCHECK_EQ(policy_storage_, PolicyStorageType::kInMemory);
+  server_backed_state_keys_ = base::unexpected(error_type);
+}
+
 const std::string& FakeSessionManagerClient::device_policy() const {
   login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
       login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);

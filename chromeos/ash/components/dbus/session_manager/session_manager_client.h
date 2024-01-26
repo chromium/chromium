@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
@@ -84,6 +85,17 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     kGuest = 0,
     // Restart browser without user session for headless Chromium.
     kUserless = 1,
+  };
+
+  // Error type encountered while retrieving state keys. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class StateKeyErrorType {
+    kNoError = 0,
+    kInvalidResponse = 1,
+    kCommunicationError = 2,
+    kMissingIdentifiers = 3,
+    kMaxValue = kMissingIdentifiers
   };
 
   // Interface for observing changes from the session manager.
@@ -443,8 +455,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const std::vector<std::string>& feature_flags,
       const std::map<std::string, std::string>& origin_list_flags) = 0;
 
-  using StateKeysCallback =
-      base::OnceCallback<void(const std::vector<std::string>& state_keys)>;
+  using StateKeysCallback = base::OnceCallback<void(
+      const base::expected<std::vector<std::string>, StateKeyErrorType>&
+          state_keys)>;
 
   // Get the currently valid server-backed state keys for the device.
   // Server-backed state keys are opaque, device-unique, time-dependent,
