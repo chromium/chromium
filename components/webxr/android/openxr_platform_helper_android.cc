@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/vr/openxr/android/openxr_graphics_binding_open_gles.h"
 #include "device/vr/openxr/openxr_platform.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 
 namespace webxr {
@@ -82,6 +83,11 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
 
 bool OpenXrPlatformHelperAndroid::CheckHardwareSupport(
     content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(
+          device::features::kOpenXrExtendedFeatureSupport)) {
+    return true;
+  }
+
   XrInstance instance = XR_NULL_HANDLE;
   if (!XR_SUCCEEDED(CreateTemporaryInstance(&instance, web_contents))) {
     return false;
