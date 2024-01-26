@@ -549,7 +549,11 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
 bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  DCHECK(ax_node);
+  // If the node is not in the active tree (this could happen when RM is still
+  // loading), ignore it.
+  if (!ax_node) {
+    return true;
+  }
   ax::mojom::Role role = ax_node->GetRole();
 
   // PDFs processed with OCR have additional nodes that mark the start and end
