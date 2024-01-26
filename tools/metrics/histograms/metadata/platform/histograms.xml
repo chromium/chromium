@@ -2352,6 +2352,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Platform.Trunks.EventIrrelatedTime.Authenticate" units="ms"
+    expires_after="2024-07-25">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    The time we spend on the TPM that is not directly related to the user
+    authenticate event. Recorded when user tries to authenticate the device.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Trunks.EventRelatedTime.Authenticate" units="ms"
+    expires_after="2024-07-25">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    The time we spend on the TPM that is directly related to the user
+    authenticate event. Recorded when user tries to authenticate the device.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Trunks.EventTime.Authenticate" units="ms"
+    expires_after="2024-07-25">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    The total time for the user authenticate event. Recorded when user tries to
+    authenticate the device.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Trunks.FirstTimeoutWritingCommand"
     enum="TPMCommandCode" expires_after="2024-07-14">
   <owner>chingkang@chromium.org</owner>
