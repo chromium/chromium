@@ -64,7 +64,7 @@ To use a third-party crate "bar" version 3 from first party code:
      an error will be printed. See [patching errors](#patching-errors) below for how to resolve
      this.
 1. Add the new files to git:
-   * `git add -f third_party/rust/chromium_crates_io/vendor`
+   * `git add -f third_party/rust/chromium_crates_io`
    * The `-f` is important, as files may be skipped otherwise from a
      `.gitignore` inside the crate.
 1. (optional) If the crate is only to be used by tests and tooling, then
