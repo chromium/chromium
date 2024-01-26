@@ -7,26 +7,28 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/process/process_info.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/elevation_service/elevator.h"
-#include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_constants.h"
-#include "chrome/install_static/install_details.h"
-#include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/version_info/version_info_values.h"
 #include "content/public/test/browser_test.h"
+
+namespace os_crypt {
 
 namespace {
 
@@ -48,66 +50,24 @@ void WaitForHistogram(const std::string& histogram_name) {
 
 }  // namespace
 
-// This class allows system-level tests to be carried out that do not interfere
-// with an existing system-level install.
-class FakeInstallDetails : public install_static::PrimaryInstallDetails {
- public:
-  // Copy template from first mode from install modes. Some of the values will
-  // then be overridden.
-  FakeInstallDetails() : constants_(install_static::kInstallModes[0]) {
-    // AppGuid determines registry locations, so use a test one.
-#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-    constants_.app_guid = L"testguid";
-#endif
-
-    // This is the CLSID of the test interface, used if
-    // kElevatorClsIdForTestingSwitch is supplied on the command line of the
-    // elevation service.
-    constants_.elevator_clsid = {elevation_service::kTestElevatorClsid};
-
-    // This is the IID of the non-channel specific IElevator Interface. See
-    // chrome/elevation_service/elevation_service_idl.idl.
-    constants_.elevator_iid = {
-        0xA949CB4E,
-        0xC4F9,
-        0x44C4,
-        {0xB2, 0x13, 0x6B, 0xF8, 0xAA, 0x9A, 0xC6,
-         0x9C}};  // IElevator IID and TypeLib
-                  // {A949CB4E-C4F9-44C4-B213-6BF8AA9AC69C}
-
-    // These are used to generate the name of the service, so keep them
-    // different from any real installs.
-    constants_.base_app_name = L"testapp";
-    constants_.base_app_id = L"testapp";
-
-    // This is needed for shell_integration::GetDefaultBrowser which runs on
-    // startup.
-    constants_.browser_prog_id_prefix = L"TestHTM";
-    constants_.pdf_prog_id_prefix = L"TestPDF";
-
-    set_mode(&constants_);
-    set_system_level(true);
-  }
-
-  FakeInstallDetails(const FakeInstallDetails&) = delete;
-  FakeInstallDetails& operator=(const FakeInstallDetails&) = delete;
-
- private:
-  install_static::InstallConstants constants_;
-};
-
 class AppBoundEncryptionWinTest : public InProcessBrowserTest {
  public:
   AppBoundEncryptionWinTest()
       : scoped_install_details_(std::make_unique<FakeInstallDetails>()) {}
 
  protected:
+  enum class Operation {
+    kEncrypt,
+    kDecrypt,
+  };
+
   void SetUp() override {
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
       GTEST_SKIP() << "Elevation is required for this test.";
     enable_metrics_feature_.InitAndEnableFeature(
         features::kAppBoundEncryptionMetrics);
-    InstallService();
+    ASSERT_TRUE(InstallService());
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     InProcessBrowserTest::SetUp();
   }
 
@@ -115,11 +75,55 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
       return;
     InProcessBrowserTest::TearDown();
-    UnInstallService();
+    std::ignore = UnInstallService();
+  }
+
+  void EncryptOrDecryptInTestProcess(base::FilePath::StringPieceType filename,
+                                     const std::string& input_data,
+                                     std::string& output_data,
+                                     Operation op,
+                                     HRESULT& result) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    const auto input_file_path = temp_dir_.GetPath().Append(L"input-file");
+    const auto output_file_path = temp_dir_.GetPath().Append(L"output-file");
+    ASSERT_TRUE(base::WriteFile(input_file_path, input_data));
+
+    auto executable_file_path = temp_dir_.GetPath().Append(filename);
+    std::ignore = base::DeleteFile(executable_file_path);
+
+    const auto orig_exe = base::PathService::CheckedGet(base::DIR_EXE)
+                              .Append(FILE_PATH_LITERAL("app_binary.exe"));
+    ASSERT_TRUE(base::CopyFile(orig_exe, executable_file_path));
+
+    base::CommandLine cmd(executable_file_path);
+
+    cmd.AppendSwitchPath(switches::kAppBoundTestInputFilename, input_file_path);
+    cmd.AppendSwitchPath(switches::kAppBoundTestOutputFilename,
+                         output_file_path);
+    switch (op) {
+      case Operation::kEncrypt:
+        cmd.AppendSwitch(switches::kAppBoundTestModeEncrypt);
+        break;
+      case Operation::kDecrypt:
+        cmd.AppendSwitch(switches::kAppBoundTestModeDecrypt);
+        break;
+    }
+
+    base::LaunchOptions options;
+    options.start_hidden = true;
+    options.wait = true;
+
+    auto process = base::LaunchProcess(cmd, options);
+    int exit_code;
+    EXPECT_TRUE(process.WaitForExit(&exit_code));
+    result = static_cast<HRESULT>(exit_code);
+    if (SUCCEEDED(result)) {
+      EXPECT_TRUE(base::ReadFileToString(output_file_path, &output_data));
+    }
   }
 
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList enable_metrics_feature_;
 
  private:
   static bool InstallService() {
@@ -150,6 +154,8 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   }
 
   install_static::ScopedInstallDetails scoped_install_details_;
+  base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList enable_metrics_feature_;
 };
 
 // Test the basic interface to Encrypt and Decrypt data.
@@ -159,14 +165,13 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   std::string ciphertext;
   DWORD last_error;
 
-  HRESULT hr = os_crypt::EncryptAppBoundString(
-      ProtectionLevel::PATH_VALIDATION, plaintext, ciphertext, last_error);
+  HRESULT hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION,
+                                     plaintext, ciphertext, last_error);
 
   ASSERT_HRESULT_SUCCEEDED(hr);
 
   std::string returned_plaintext;
-  hr = os_crypt::DecryptAppBoundString(ciphertext, returned_plaintext,
-                                       last_error);
+  hr = DecryptAppBoundString(ciphertext, returned_plaintext, last_error);
 
   ASSERT_HRESULT_SUCCEEDED(hr);
   EXPECT_EQ(plaintext, returned_plaintext);
@@ -197,26 +202,40 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   WaitForHistogram("OSCrypt.AppBoundEncryption.Decrypt.Time");
 }
 
-// Run this test manually to force uninstall the service.
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptProcess) {
+  const std::string kSecret("secret");
+  std::string ciphertext;
+  HRESULT result;
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app1.exe", kSecret, ciphertext, Operation::kEncrypt, result));
+  EXPECT_EQ(S_OK, result);
+  std::string plaintext;
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app1.exe", ciphertext, plaintext, Operation::kDecrypt, result));
+  EXPECT_EQ(S_OK, result);
+  EXPECT_EQ(kSecret, plaintext);
+
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app2.exe", ciphertext, plaintext, Operation::kDecrypt, result));
+  EXPECT_EQ(elevation_service::Elevator::kValidationDidNotPass, result);
+}
+
+// Run this test manually to force uninstall the service using
+// --gtest_filter=AppBoundEncryptionWinTest.MANUAL_Uninstall --run-manual.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
 
-class AppBoundEncryptionWinTestNoService : public InProcessBrowserTest {
- public:
-  AppBoundEncryptionWinTestNoService()
-      : scoped_install_details_(std::make_unique<FakeInstallDetails>()) {}
-
- private:
-  install_static::ScopedInstallDetails scoped_install_details_;
-};
+using AppBoundEncryptionWinTestNoService = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, NoService) {
   const std::string plaintext("plaintext");
   std::string ciphertext;
   DWORD last_error;
 
-  HRESULT hr = os_crypt::EncryptAppBoundString(
-      ProtectionLevel::PATH_VALIDATION, plaintext, ciphertext, last_error);
+  HRESULT hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION,
+                                     plaintext, ciphertext, last_error);
 
   EXPECT_EQ(REGDB_E_CLASSNOTREG, hr);
   EXPECT_EQ(DWORD{ERROR_GEN_FAILURE}, last_error);
 }
+
+}  // namespace os_crypt
