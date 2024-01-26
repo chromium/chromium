@@ -9656,6 +9656,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FamilyLinkUser.BlockedContent">
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Logged whenever a page load for a supervised user had some or all of its
+    content blocked. Either MainFrameBlocked is true, or NumBlockedIframes is
+    non-zero.
+  </summary>
+  <metric name="MainFrameBlocked" enum="Boolean">
+    <summary>
+      Whether the main frame for the navigation was blocked (in which case) none
+      of the content of the site is loaded.
+    </summary>
+  </metric>
+  <metric name="NumBlockedIframes">
+    <summary>
+      The number of Iframes that were blocked by the supervised user filtering
+      logic in this page load. Exponentially bucketed.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>
