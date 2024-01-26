@@ -298,10 +298,12 @@ public class HomeModulesMediator {
      *
      * @param moduleType The type of the module.
      */
-    void remove(@ModuleType int moduleType) {
-        if (!mModuleTypeToModuleProviderMap.containsKey(moduleType)) return;
+    boolean remove(@ModuleType int moduleType) {
+        if (!mIsShown || !mModuleTypeToModuleProviderMap.containsKey(moduleType)) {
+            return false;
+        }
 
-        remove(moduleType, mModuleTypeToRankingIndexMap.get(moduleType));
+        return remove(moduleType, mModuleTypeToRankingIndexMap.get(moduleType));
     }
 
     /**
@@ -311,9 +313,9 @@ public class HomeModulesMediator {
      * @param moduleType The type of the module.
      * @param index The original ranking index of the module.
      */
-    private void remove(@ModuleType int moduleType, int index) {
+    private boolean remove(@ModuleType int moduleType, int index) {
         int position = findModuleIndexInRecyclerView(moduleType, index);
-        if (position == INVALID_INDEX) return;
+        if (position == INVALID_INDEX) return false;
 
         mModel.removeAt(position);
         ModuleProvider moduleProvider = mModuleTypeToModuleProviderMap.get(moduleType);
@@ -325,6 +327,7 @@ public class HomeModulesMediator {
         if (mModel.size() == 0) {
             hide();
         }
+        return true;
     }
 
     /**

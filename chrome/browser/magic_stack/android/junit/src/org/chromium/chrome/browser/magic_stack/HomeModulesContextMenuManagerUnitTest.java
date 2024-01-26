@@ -67,7 +67,7 @@ public class HomeModulesContextMenuManagerUnitTest {
     public void testOnMenuItemClick() {
         doReturn(ContextMenuItemId.HIDE_MODULE).when(mMenuItem).getItemId();
         mManager.onMenuItemClickImpl(mMenuItem, mModuleProvider);
-        verify(mModuleDelegate).onHideModuleFromContextMenu(eq(mModuleType));
+        verify(mModuleDelegate).removeModule(eq(mModuleType));
 
         doReturn(ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS).when(mMenuItem).getItemId();
         mManager.onMenuItemClickImpl(mMenuItem, mModuleProvider);
