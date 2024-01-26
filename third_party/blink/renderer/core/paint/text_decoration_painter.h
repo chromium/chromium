@@ -61,6 +61,10 @@ class CORE_EXPORT TextDecorationPainter {
 
   const InlinePaintContext* InlineContext() const { return inline_context_; }
 
+  // Expand a (selection) rect to be suitable for clipping without affecting
+  // decorations. This is currently an approximation.
+  static gfx::RectF ExpandRectForDecorations(const LineRelativeRect&);
+
  private:
   enum Step { kBegin, kExcept, kOnly };
   void ClipIfNeeded(GraphicsContextStateSaver&);

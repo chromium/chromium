@@ -1080,21 +1080,8 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
 
 void HighlightPainter::ClipToPartDecorations(
     const LineRelativeRect& part_rect) {
-  gfx::RectF clip_rect{part_rect};
-
-  // Whether it’s best to clip to selection rect on both axes or only inline
-  // depends on the situation, but the latter can improve the appearance of
-  // decorations. For example, we often paint overlines entirely past the
-  // top edge of selection rect, and wavy underlines have similar problems.
-  //
-  // Sadly there’s no way to clip to a rect of infinite height, so for now,
-  // let’s clip to selection rect plus its height both above and below. This
-  // should be enough to avoid clipping most decorations in the wild.
-  //
-  // TODO(crbug.com/1433400): take text-underline-offset and other
-  // text-decoration properties into account?
-  clip_rect.set_y(clip_rect.y() - clip_rect.height());
-  clip_rect.set_height(3.0 * clip_rect.height());
+  const gfx::RectF clip_rect =
+      TextDecorationPainter::ExpandRectForDecorations(part_rect);
   paint_info_.context.Clip(clip_rect);
 }
 

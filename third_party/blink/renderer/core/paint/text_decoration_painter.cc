@@ -91,6 +91,25 @@ void TextDecorationPainter::UpdateDecorationInfo(
   }
 }
 
+gfx::RectF TextDecorationPainter::ExpandRectForDecorations(
+    const LineRelativeRect& rect) {
+  // Whether it’s best to clip to selection rect on both axes or only inline
+  // depends on the situation, but the latter can improve the appearance of
+  // decorations. For example, we often paint overlines entirely past the
+  // top edge of selection rect, and wavy underlines have similar problems.
+  //
+  // Sadly there’s no way to clip to a rect of infinite height, so for now,
+  // let’s clip to selection rect plus its height both above and below. This
+  // should be enough to avoid clipping most decorations in the wild.
+  //
+  // TODO(dazabani@igalia.com): take text-underline-offset and other
+  // text-decoration properties into account?
+  gfx::RectF clip_rect{rect};
+  clip_rect.set_y(clip_rect.y() - clip_rect.height());
+  clip_rect.set_height(3 * clip_rect.height());
+  return clip_rect;
+}
+
 void TextDecorationPainter::Begin(Phase phase) {
   DCHECK(step_ == kBegin);
 
@@ -99,21 +118,8 @@ void TextDecorationPainter::Begin(Phase phase) {
   clip_rect_.reset();
 
   if (decoration_info_ && UNLIKELY(selection_)) {
-    clip_rect_.emplace(selection_->LineRelativeSelectionRect());
-
-    // Whether it’s best to clip to selection rect on both axes or only inline
-    // depends on the situation, but the latter can improve the appearance of
-    // decorations. For example, we often paint overlines entirely past the
-    // top edge of selection rect, and wavy underlines have similar problems.
-    //
-    // Sadly there’s no way to clip to a rect of infinite height, so for now,
-    // let’s clip to selection rect plus its height both above and below. This
-    // should be enough to avoid clipping most decorations in the wild.
-    //
-    // TODO(dazabani@igalia.com): take text-underline-offset and other
-    // text-decoration properties into account?
-    clip_rect_->set_y(clip_rect_->y() - clip_rect_->height());
-    clip_rect_->set_height(3.0 * clip_rect_->height());
+    clip_rect_.emplace(
+        ExpandRectForDecorations(selection_->LineRelativeSelectionRect()));
   }
 
   step_ = kExcept;
