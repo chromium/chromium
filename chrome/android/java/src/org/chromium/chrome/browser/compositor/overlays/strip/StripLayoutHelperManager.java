@@ -157,7 +157,7 @@ public class StripLayoutHelperManager
     private int mOrientation;
     private TintedCompositorButton mModelSelectorButton;
     private Context mContext;
-    private boolean mBrowserScrimShowing;
+    private boolean mTabStripObscured;
     private boolean mIsHidden;
     private boolean mIsTransitioning;
     private final ToolbarManager mToolbarManager;
@@ -292,13 +292,13 @@ public class StripLayoutHelperManager
         @Override
         public void onStartedShowing(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            mBrowserScrimShowing = true;
+            mTabStripObscured = true;
         }
 
         @Override
         public void onStartedHiding(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            mBrowserScrimShowing = false;
+            mTabStripObscured = false;
         }
     }
 
@@ -432,14 +432,15 @@ public class StripLayoutHelperManager
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
-        mBrowserScrimShowing = false;
+        mTabStripObscured = false;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
         if (TabUiFeatureUtilities.isTabDragEnabled()) {
             mTabDragSource =
                     new TabDragSource(
                             context,
-                            () -> getActiveStripLayoutHelper(),
+                            this::getActiveStripLayoutHelper,
+                            () -> !mTabStripObscured,
                             tabContentManagerSupplier,
                             mLayerTitleCacheSupplier,
                             multiInstanceManager,
@@ -730,7 +731,7 @@ public class StripLayoutHelperManager
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (mBrowserScrimShowing) return;
+        if (mTabStripObscured) return;
         if (duringTabStripTransition() || mIsHidden) return;
         // Remove the a11y views when top controls is partially invisible.
         if (mBrowserControlsStateProvider.getTopControlOffset() < 0) return;

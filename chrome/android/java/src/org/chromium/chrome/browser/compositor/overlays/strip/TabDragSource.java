@@ -67,6 +67,7 @@ public class TabDragSource implements View.OnDragListener {
     private MultiInstanceManager mMultiInstanceManager;
     private DragAndDropDelegate mDragAndDropDelegate;
     private Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
+    private Supplier<Boolean> mStripLayoutVisibilitySupplier;
     private Supplier<TabContentManager> mTabContentManagerSupplier;
     private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private BrowserControlsStateProvider mBrowserControlStateProvider;
@@ -111,6 +112,7 @@ public class TabDragSource implements View.OnDragListener {
     public TabDragSource(
             @NonNull Context context,
             @NonNull Supplier<StripLayoutHelper> stripLayoutHelperSupplier,
+            @NonNull Supplier<Boolean> stripLayoutVisibilitySupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<LayerTitleCache> layerTitleCacheSupplier,
             @NonNull MultiInstanceManager multiInstanceManager,
@@ -121,6 +123,7 @@ public class TabDragSource implements View.OnDragListener {
         mPxToDp = 1.f / context.getResources().getDisplayMetrics().density;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
+        mStripLayoutVisibilitySupplier = stripLayoutVisibilitySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mMultiInstanceManager = multiInstanceManager;
@@ -290,9 +293,13 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
 
-        // Return false when dropping onto strip is disabled to not receive further events until
-        // dragEnd.
-        if (!isDragSource()) return !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue();
+        // Return true only when the tab strip is visible and dropping onto strip is not disabled.
+        // Otherwise, return false to not receive further events until dragEnd.
+        if (!isDragSource()) {
+            return Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get())
+                    && !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue();
+        }
+
         mStartScreenPos = new PointF(xPx, yPx);
         mLastXDp = xPx * mPxToDp;
         return true;
