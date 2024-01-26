@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
@@ -83,11 +82,11 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -311,10 +310,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kCSSContentDistributionClass:
         return CompareCSSValues<cssvalue::CSSContentDistributionValue>(*this,
                                                                        other);
-      case kCustomPropertyDeclarationClass:
-        return CompareCSSValues<CSSCustomPropertyDeclaration>(*this, other);
-      case kVariableReferenceClass:
-        return CompareCSSValues<CSSVariableReferenceValue>(*this, other);
+      case kUnparsedDeclarationClass:
+        return CompareCSSValues<CSSUnparsedDeclarationValue>(*this, other);
       case kPendingSubstitutionValueClass:
         return CompareCSSValues<cssvalue::CSSPendingSubstitutionValue>(*this,
                                                                        other);
@@ -467,10 +464,8 @@ String CSSValue::CssText() const {
       return To<CSSImageSetValue>(this)->CustomCSSText();
     case kCSSContentDistributionClass:
       return To<cssvalue::CSSContentDistributionValue>(this)->CustomCSSText();
-    case kVariableReferenceClass:
-      return To<CSSVariableReferenceValue>(this)->CustomCSSText();
-    case kCustomPropertyDeclarationClass:
-      return To<CSSCustomPropertyDeclaration>(this)->CustomCSSText();
+    case kUnparsedDeclarationClass:
+      return To<CSSUnparsedDeclarationValue>(this)->CustomCSSText();
     case kPendingSubstitutionValueClass:
       return To<cssvalue::CSSPendingSubstitutionValue>(this)->CustomCSSText();
     case kPendingSystemFontValueClass:
@@ -705,11 +700,8 @@ void CSSValue::Trace(Visitor* visitor) const {
       To<cssvalue::CSSContentDistributionValue>(this)->TraceAfterDispatch(
           visitor);
       return;
-    case kVariableReferenceClass:
-      To<CSSVariableReferenceValue>(this)->TraceAfterDispatch(visitor);
-      return;
-    case kCustomPropertyDeclarationClass:
-      To<CSSCustomPropertyDeclaration>(this)->TraceAfterDispatch(visitor);
+    case kUnparsedDeclarationClass:
+      To<CSSUnparsedDeclarationValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kPendingSubstitutionValueClass:
       To<cssvalue::CSSPendingSubstitutionValue>(this)->TraceAfterDispatch(
@@ -850,10 +842,8 @@ String CSSValue::ClassTypeToString() const {
       return "PathClass";
     case kRayClass:
       return "RayClass";
-    case kVariableReferenceClass:
-      return "VariableReferenceClass";
-    case kCustomPropertyDeclarationClass:
-      return "CustomPropertyDeclarationClass";
+    case kUnparsedDeclarationClass:
+      return "UnparsedDeclarationClass";
     case kPendingSubstitutionValueClass:
       return "PendingSubstitutionValueClass";
     case kPendingSystemFontValueClass:

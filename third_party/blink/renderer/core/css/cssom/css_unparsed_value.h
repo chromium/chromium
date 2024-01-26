@@ -16,9 +16,8 @@
 
 namespace blink {
 
-class CSSCustomPropertyDeclaration;
+class CSSUnparsedDeclarationValue;
 class CSSVariableData;
-class CSSVariableReferenceValue;
 
 class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,8 +32,7 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   static CSSUnparsedValue* Create() {
     return Create(HeapVector<Member<V8CSSUnparsedSegment>>());
   }
-  static CSSUnparsedValue* FromCSSValue(const CSSVariableReferenceValue&);
-  static CSSUnparsedValue* FromCSSValue(const CSSCustomPropertyDeclaration&);
+  static CSSUnparsedValue* FromCSSValue(const CSSUnparsedDeclarationValue&);
   static CSSUnparsedValue* FromCSSVariableData(const CSSVariableData&);
   static CSSUnparsedValue* FromString(const String& string) {
     HeapVector<Member<V8CSSUnparsedSegment>> tokens;
@@ -78,7 +76,7 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
  private:
   HeapVector<Member<V8CSSUnparsedSegment>> tokens_;
 
-  FRIEND_TEST_ALL_PREFIXES(CSSVariableReferenceValueTest, MixedList);
+  FRIEND_TEST_ALL_PREFIXES(CSSUnparsedDeclarationValueTest, MixedList);
 };
 
 template <>

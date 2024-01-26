@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -60,10 +60,10 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   // It is only possible to form a cycle if the value points to something else.
   // This is only possible with var(), or with revert-[layer] which may revert
   // to a value which contains var().
-  if (const auto* declaration =
-          DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    if (!declaration->Value().NeedsVariableResolution())
+  if (const auto* declaration = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    if (!declaration->VariableDataValue()->NeedsVariableResolution()) {
       return nullptr;
+    }
   } else if (!value.IsRevertValue() && !value.IsRevertLayerValue()) {
     return nullptr;
   }

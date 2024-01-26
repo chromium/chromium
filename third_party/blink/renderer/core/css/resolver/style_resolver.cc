@@ -1388,7 +1388,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 
       // Variables and reverts are resolved in StyleCascade, which we don't run
       // in this path; thus, we cannot support them.
-      if (property.Value().IsVariableReferenceValue() ||
+      if (property.Value().IsUnparsedDeclaration() ||
           property.Value().IsPendingSubstitutionValue() ||
           property.Value().IsRevertValue() ||
           property.Value().IsRevertLayerValue()) {

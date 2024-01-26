@@ -52,21 +52,6 @@
 
 namespace blink {
 
-namespace {
-
-#if DCHECK_IS_ON()
-
-bool IsCustomPropertyWithUniversalSyntax(const CSSProperty& property) {
-  if (const auto* custom_property = DynamicTo<CustomProperty>(property)) {
-    return custom_property->HasUniversalSyntax();
-  }
-  return false;
-}
-
-#endif  // DCHECK_IS_ON()
-
-}  // namespace
-
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
                                  const CSSValue& value,
@@ -105,13 +90,12 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
   DCHECK(!value.IsPendingSubstitutionValue());
   DCHECK(!value.IsRevertValue());
   DCHECK(!value.IsRevertLayerValue());
-  // CSSVariableReferenceValues should have been resolved as well, *except*
-  // for custom properties with universal syntax, which actually use
-  // CSSVariableReferenceValue to represent their computed value.
-#if DCHECK_IS_ON()
-  DCHECK(!value.IsVariableReferenceValue() ||
-         IsCustomPropertyWithUniversalSyntax(property));
-#endif  // DCHECK_IS_ON()
+  // CSSUnparsedDeclarationValues should have been resolved as well,
+  // *except* for custom properties, which either don't resolve this
+  // at all and leaves it unparsed (most cases), or resolves it
+  // during CustomProperty::ApplyValue() (registered custom properties
+  // with non-universal syntax).
+  DCHECK(!value.IsUnparsedDeclaration() || IsA<CustomProperty>(property));
 
   DCHECK(!property.IsShorthand())
       << "Shorthand property id = " << static_cast<int>(id)

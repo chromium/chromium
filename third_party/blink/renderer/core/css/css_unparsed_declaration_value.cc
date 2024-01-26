@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 
 namespace blink {
 
-void CSSVariableReferenceValue::TraceAfterDispatch(
+void CSSUnparsedDeclarationValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
   visitor->Trace(parser_context_);
 }
 
-String CSSVariableReferenceValue::CustomCSSText() const {
+String CSSUnparsedDeclarationValue::CustomCSSText() const {
   // We may want to consider caching this value.
   return data_->Serialize();
 }

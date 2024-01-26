@@ -7,8 +7,8 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -86,15 +86,15 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
         CSSParserImpl::ConsumeUnrestrictedPropertyValue(stream);
     const CSSParserContext* context =
         StrictCSSParserContext(SecureContextMode::kSecureContext);
-    CSSCustomPropertyDeclaration* value =
+    CSSUnparsedDeclarationValue* value =
         CSSVariableParser::ParseDeclarationValue(tokenized_value, false,
                                                  *context);
     DCHECK(value);
 
     ComputedStyleBuilder builder =
         GetDocument().GetStyleResolver().InitialStyleBuilderForElement();
-    builder.SetVariableData(AtomicString(custom_property_name), &value->Value(),
-                            false);
+    builder.SetVariableData(AtomicString(custom_property_name),
+                            value->VariableDataValue(), false);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
 
     auto* evaluator =

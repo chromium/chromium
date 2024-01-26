@@ -12,9 +12,9 @@
 
 namespace blink {
 
-class CSSCustomPropertyDeclaration;
+class CSSUnparsedDeclarationValue;
 class CSSParserContext;
-class CSSVariableReferenceValue;
+class CSSUnparsedDeclarationValue;
 struct CSSTokenizedValue;
 
 class CORE_EXPORT CSSVariableParser {
@@ -24,7 +24,7 @@ class CORE_EXPORT CSSVariableParser {
   static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
                                                     bool is_animation_tainted,
                                                     const CSSParserContext&);
-  static CSSCustomPropertyDeclaration* ParseDeclarationValue(
+  static CSSUnparsedDeclarationValue* ParseDeclarationValue(
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
@@ -32,7 +32,7 @@ class CORE_EXPORT CSSVariableParser {
   // this function.
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
-  static CSSVariableReferenceValue* ParseUniversalSyntaxValue(
+  static CSSUnparsedDeclarationValue* ParseUniversalSyntaxValue(
       CSSTokenizedValue,
       const CSSParserContext&,
       bool is_animation_tainted);

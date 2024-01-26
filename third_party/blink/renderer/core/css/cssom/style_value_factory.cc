@@ -7,13 +7,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_position_value.h"
@@ -43,11 +42,11 @@ CSSStyleValue* CreateStyleValueWithoutProperty(const CSSValue& value) {
     return CSSKeywordValue::FromCSSValue(value);
   }
   if (auto* variable_reference_value =
-          DynamicTo<CSSVariableReferenceValue>(value)) {
+          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
     return CSSUnparsedValue::FromCSSValue(*variable_reference_value);
   }
   if (auto* custom_prop_declaration =
-          DynamicTo<CSSCustomPropertyDeclaration>(value)) {
+          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
     return CSSUnparsedValue::FromCSSValue(*custom_prop_declaration);
   }
   return nullptr;

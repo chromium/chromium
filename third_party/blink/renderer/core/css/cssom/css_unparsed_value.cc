@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -71,14 +71,9 @@ HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenRangeToTokens(
 }  // namespace
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
-    const CSSVariableReferenceValue& value) {
+    const CSSUnparsedDeclarationValue& value) {
   DCHECK(value.VariableDataValue());
   return FromCSSVariableData(*value.VariableDataValue());
-}
-
-CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
-    const CSSCustomPropertyDeclaration& value) {
-  return FromCSSVariableData(value.Value());
 }
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
@@ -125,7 +120,7 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   CSSParserTokenRange range(tokens);
 
   if (range.AtEnd()) {
-    return MakeGarbageCollected<CSSVariableReferenceValue>(
+    return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
         CSSVariableData::Create());
   }
 
@@ -148,7 +143,7 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
 
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
-  return MakeGarbageCollected<CSSVariableReferenceValue>(
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       CSSVariableData::Create({range, original_text},
                               false /* is_animation_tainted */,
                               false /* needs_variable_resolution */));

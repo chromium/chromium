@@ -12,15 +12,14 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -746,7 +745,7 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   DCHECK(value);
   CascadeOrigin origin = priority->GetOrigin();
   value = Resolve(property, *value, *priority, origin, resolver);
-  DCHECK(!value->IsVariableReferenceValue());
+  DCHECK(IsA<CustomProperty>(property) || !value->IsUnparsedDeclaration());
   DCHECK(!value->IsPendingSubstitutionValue());
   const TreeScope* tree_scope{nullptr};
   if (origin == CascadeOrigin::kAuthor) {
@@ -918,11 +917,12 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
 const CSSValue* StyleCascade::ResolveSubstitutions(const CSSProperty& property,
                                                    const CSSValue& value,
                                                    CascadeResolver& resolver) {
-  if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    return ResolveCustomProperty(property, *v, resolver);
-  }
-  if (const auto* v = DynamicTo<CSSVariableReferenceValue>(value)) {
-    return ResolveVariableReference(property, *v, resolver);
+  if (const auto* v = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    if (property.GetCSSPropertyName().IsCustomProperty()) {
+      return ResolveCustomProperty(property, *v, resolver);
+    } else {
+      return ResolveVariableReference(property, *v, resolver);
+    }
   }
   if (const auto* v = DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value)) {
     return ResolvePendingSubstitution(property, *v, resolver);
@@ -932,14 +932,14 @@ const CSSValue* StyleCascade::ResolveSubstitutions(const CSSProperty& property,
 
 const CSSValue* StyleCascade::ResolveCustomProperty(
     const CSSProperty& property,
-    const CSSCustomPropertyDeclaration& decl,
+    const CSSUnparsedDeclarationValue& decl,
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
-  scoped_refptr<CSSVariableData> data = &decl.Value();
+  scoped_refptr<CSSVariableData> data = decl.VariableDataValue();
 
   if (data->NeedsVariableResolution()) {
     data = ResolveVariableData(data.get(), resolver);
@@ -961,7 +961,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     return CSSInvalidVariableValue::Create();
   }
 
-  if (data == &decl.Value()) {
+  if (data == decl.VariableDataValue()) {
     return &decl;
   }
 
@@ -981,13 +981,13 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     }
   }
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       data, decl.ParserContext());
 }
 
 const CSSValue* StyleCascade::ResolveVariableReference(
     const CSSProperty& property,
-    const CSSVariableReferenceValue& value,
+    const CSSUnparsedDeclarationValue& value,
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
   DCHECK(!resolver.IsLocked(property));
@@ -1034,7 +1034,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   bool is_cached = resolver.shorthand_cache_.value == &value;
 
   if (!is_cached) {
-    CSSVariableReferenceValue* shorthand_value = value.ShorthandValue();
+    CSSUnparsedDeclarationValue* shorthand_value = value.ShorthandValue();
     const auto* shorthand_data = shorthand_value->VariableDataValue();
     CSSPropertyID shorthand_property_id = value.ShorthandPropertyId();
 
@@ -1318,8 +1318,8 @@ CSSVariableData* StyleCascade::GetEnvironmentVariable(
 }
 
 const CSSParserContext* StyleCascade::GetParserContext(
-    const CSSVariableReferenceValue& value) {
-  // TODO(crbug.com/985028): CSSVariableReferenceValue should always have a
+    const CSSUnparsedDeclarationValue& value) {
+  // TODO(crbug.com/985028): CSSUnparsedDeclarationValue should always have a
   // CSSParserContext. (CSSUnparsedValue violates this).
   if (value.ParserContext()) {
     return value.ParserContext();

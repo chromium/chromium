@@ -12,14 +12,13 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
@@ -102,8 +101,9 @@ class ResolvedRegisteredCustomPropertyChecker
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
     const CSSValue* resolved = css_environment.Resolve(property_, value_);
     scoped_refptr<CSSVariableData> resolved_tokens;
-    if (const auto* decl = DynamicTo<CSSCustomPropertyDeclaration>(resolved))
-      resolved_tokens = &decl->Value();
+    if (const auto* decl = DynamicTo<CSSUnparsedDeclarationValue>(resolved)) {
+      resolved_tokens = decl->VariableDataValue();
+    }
 
     return base::ValuesEquivalent(resolved_tokens, resolved_tokens_);
   }
@@ -180,8 +180,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
                                                  conversion_checkers);
   }
 
-  if (value->IsVariableReferenceValue() ||
-      value->IsPendingSubstitutionValue()) {
+  if (value->IsUnparsedDeclaration() || value->IsPendingSubstitutionValue()) {
     const CSSValue* resolved_value =
         css_environment.Resolve(GetProperty(), value);
 
@@ -243,18 +242,19 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
             GetProperty(), value));
   }
   if (const auto* resolved_declaration =
-          DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    // If Resolve returned a different CSSCustomPropertyDeclaration, var()
+          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    // If Resolve returned a different CSSUnparsedDeclarationValue, var()
     // references were substituted.
     if (resolved_declaration != &declaration) {
       conversion_checkers.push_back(
           std::make_unique<ResolvedRegisteredCustomPropertyChecker>(
-              GetProperty(), declaration, &resolved_declaration->Value()));
+              GetProperty(), declaration,
+              resolved_declaration->VariableDataValue()));
     }
   }
 
   // Unfortunately we transport CSS-wide keywords inside the
-  // CSSCustomPropertyDeclaration. Expand those keywords into real CSSValues
+  // CSSUnparsedDeclarationValue. Expand those keywords into real CSSValues
   // if present.
   bool is_inherited = Registration().Inherits();
   const StyleInitialData* initial_data =
@@ -279,9 +279,10 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   }
 
   if (const auto* resolved_declaration =
-          DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    DCHECK(!resolved_declaration->Value().NeedsVariableResolution());
-    value = resolved_declaration->Value().ParseForSyntax(
+          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    DCHECK(
+        !resolved_declaration->VariableDataValue()->NeedsVariableResolution());
+    value = resolved_declaration->VariableDataValue()->ParseForSyntax(
         registration_->Syntax(),
         state.GetDocument().GetExecutionContext()->GetSecureContextMode());
     if (!value)
@@ -334,7 +335,7 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
 
   const CSSValue* css_value =
       CreateCSSValue(interpolable_value, non_interpolable_value, state);
-  DCHECK(!css_value->IsCustomPropertyDeclaration());
+  DCHECK(!css_value->IsUnparsedDeclaration());
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
                               *css_value, StyleBuilder::ValueMode::kAnimated);
 }

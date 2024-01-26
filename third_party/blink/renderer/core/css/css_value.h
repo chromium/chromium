@@ -163,11 +163,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsGridLineNamesValue() const {
     return class_type_ == kGridLineNamesClass;
   }
-  bool IsCustomPropertyDeclaration() const {
-    return class_type_ == kCustomPropertyDeclarationClass;
-  }
-  bool IsVariableReferenceValue() const {
-    return class_type_ == kVariableReferenceClass;
+  bool IsUnparsedDeclaration() const {
+    return class_type_ == kUnparsedDeclarationClass;
   }
   bool IsGridAutoRepeatValue() const {
     return class_type_ == kGridAutoRepeatClass;
@@ -300,8 +297,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kPaletteMixClass,
     kPathClass,
     kRayClass,
-    kVariableReferenceClass,
-    kCustomPropertyDeclarationClass,
+    kUnparsedDeclarationClass,
     kPendingSubstitutionValueClass,
     kPendingSystemFontValueClass,
     kInvalidVariableValueClass,
