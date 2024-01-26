@@ -999,6 +999,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cookie.ScriptExpirationInHoursGTOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours in the future a session cookie being set via JavaScript
+    wants to expire (for values greater than to one week). Recorded when the
+    cookie is stored via script.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.ScriptExpirationInHoursLTEOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours in the future a session cookie being set via JavaScript
+    wants to expire (for values less than or equal to one week). Recorded when
+    the cookie is stored via script.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2024-05-19">
   <owner>nharper@chromium.org</owner>
