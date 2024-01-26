@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
+#include "ash/system/model/clock_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +32,8 @@ class SystemTextfield;
 // This view displays the focus panel settings that a user can set.
 class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
                                          public FocusModeController::Observer,
-                                         public views::ViewObserver {
+                                         public views::ViewObserver,
+                                         public ClockObserver {
  public:
   METADATA_HEADER(FocusModeDetailedView);
 
@@ -42,6 +44,12 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
+
+  // ClockObserver:
+  void OnDateFormatChanged() override;
+  void OnSystemClockTimeUpdated() override;
+  void OnSystemClockCanSetTimeChanged(bool can_set_time) override;
+  void Refresh() override;
 
  private:
   class TimerTextfieldController;
@@ -121,9 +129,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // `UpdateTimerSettingViewUI`.
   void SetInactiveSessionDuration(base::TimeDelta duration);
 
-  // Updates the `end_time_label_` to show the current end time during a focus
-  // session.
-  void UpdateEndTimeLabelUI();
+  // Updates the `toggle_view_` sub text if a focus session is active and
+  // `end_time_label_` if it isn't.
+  void UpdateEndTimeLabel();
 
   // This view contains a description of the focus session, as well as a toggle
   // button for staring/ending focus mode.
@@ -144,7 +152,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   raw_ptr<IconButton> timer_decrement_button_ = nullptr;
   raw_ptr<IconButton> timer_increment_button_ = nullptr;
   // A label that displays the end time of the focus session when focus is
-  // active.
+  // not active.
   raw_ptr<views::Label> end_time_label_ = nullptr;
 
   // Records the height of the `task_view_container_`.
@@ -157,11 +165,11 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;
   raw_ptr<Switch> do_not_disturb_toggle_button_ = nullptr;
 
-  // Updates the subheading of the toggle view so that it can correctly show
-  // what time the focus mode session will end. This is activated when the panel
-  // is open but focus mode is not active, because we still need to update the
-  // subheading to say what time the focus mode session would end. In order to
-  // track this, this timer fires when the clock minute changes.
+  // Updates `end_time_label_` so that it can correctly show what time the focus
+  // mode session will end. This is activated when the panel is open but focus
+  // mode is not active, because we still need to update the label to say what
+  // time the focus mode session would end. In order to track this, this timer
+  // fires when the clock minute changes.
   base::OneShotTimer clock_timer_;
 
   base::WeakPtrFactory<FocusModeDetailedView> weak_factory_{this};

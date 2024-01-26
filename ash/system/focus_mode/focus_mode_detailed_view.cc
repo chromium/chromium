@@ -25,6 +25,8 @@
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/model/clock_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/time/time_view_utils.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -353,9 +355,11 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   focus_mode_controller->AddObserver(this);
   task_view_container_->AddObserver(this);
+  Shell::Get()->system_tray_model()->clock()->AddObserver(this);
 }
 
 FocusModeDetailedView::~FocusModeDetailedView() {
+  Shell::Get()->system_tray_model()->clock()->RemoveObserver(this);
   task_view_container_->RemoveObserver(this);
   FocusModeController::Get()->RemoveObserver(this);
 }
@@ -374,6 +378,22 @@ void FocusModeDetailedView::OnViewBoundsChanged(views::View* observed_view) {
   PerformTaskContainerViewResizeAnimation(task_view_container_->layer(),
                                           old_height);
   OnTaskViewAnimate(shift_height);
+}
+
+void FocusModeDetailedView::OnDateFormatChanged() {
+  UpdateEndTimeLabel();
+}
+
+void FocusModeDetailedView::OnSystemClockTimeUpdated() {
+  UpdateEndTimeLabel();
+}
+
+void FocusModeDetailedView::OnSystemClockCanSetTimeChanged(bool can_set_time) {
+  UpdateEndTimeLabel();
+}
+
+void FocusModeDetailedView::Refresh() {
+  UpdateEndTimeLabel();
 }
 
 void FocusModeDetailedView::AddedToWidget() {
@@ -644,7 +664,6 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
     timer_countdown_view_->UpdateUI(
         FocusModeController::Get()->current_session()->GetSnapshot(
             base::Time::Now()));
-    UpdateEndTimeLabelUI();
   } else {
     UpdateTimerSettingViewUI();
   }
@@ -804,11 +823,11 @@ void FocusModeDetailedView::OnClockMinutePassed() {
   }
 
   // When a clock minute passes outside of a focus session, we want to update
-  // the subheading to display the correct session end time and restart the
+  // `end_time_label_` to display the correct session end time and restart the
   // clock timer. If we are in a focus session, then
   // `FocusModeController::GetEndTime()` will tell us the time at which the
   // session will end.
-  UpdateTimerSettingViewUI();
+  UpdateEndTimeLabel();
 }
 
 void FocusModeDetailedView::StartClockTimer() {
@@ -867,9 +886,15 @@ void FocusModeDetailedView::SetInactiveSessionDuration(
   UpdateTimerSettingViewUI();
 }
 
-void FocusModeDetailedView::UpdateEndTimeLabelUI() {
-  end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(
-      FocusModeController::Get()->GetActualEndTime()));
+void FocusModeDetailedView::UpdateEndTimeLabel() {
+  FocusModeController* focus_mode_controller = FocusModeController::Get();
+  if (focus_mode_controller->in_focus_session()) {
+    toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
+        focus_mode_controller->GetActualEndTime()));
+  } else {
+    end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(
+        focus_mode_controller->session_duration() + base::Time::Now()));
+  }
 }
 
 BEGIN_METADATA(FocusModeDetailedView, TrayDetailedView)

@@ -35,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
@@ -684,6 +685,36 @@ TEST_F(FocusModeDetailedViewTest, CheckHistogramForToggleRowButton) {
           kToggleEndButtonDuringSessionHistogramName,
       /*sample=*/focus_mode_histogram_names::ToggleSource::kFocusPanel,
       /*expected_count=*/1);
+}
+
+// Tests that the "Until" end time labels update when the timezone updates.
+// Regression test for b/319523086.
+TEST_F(FocusModeDetailedViewTest, UpdateOnTimezoneChange) {
+  ash::system::ScopedTimezoneSettings timezone1(u"GMT");
+  auto* focus_mode_controller = FocusModeController::Get();
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
+                focus_mode_controller->session_duration() + base::Time::Now()),
+            GetEndTimeLabel()->GetText());
+
+  // Change the timezone without closing or opening the detailed view. The end
+  // time label should update.
+  ash::system::ScopedTimezoneSettings timezone2(u"GMT+3");
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
+                focus_mode_controller->session_duration() + base::Time::Now()),
+            GetEndTimeLabel()->GetText());
+
+  // Start a focus session to test the toggle row subtext.
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_TRUE(focus_mode_controller->in_focus_session());
+  CreateFakeFocusModeDetailedView();
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
+                focus_mode_controller->GetActualEndTime()),
+            GetToggleRowSubLabel()->GetText());
+
+  ash::system::ScopedTimezoneSettings timezone3(u"GMT+6");
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
+                focus_mode_controller->GetActualEndTime()),
+            GetToggleRowSubLabel()->GetText());
 }
 
 }  // namespace ash
