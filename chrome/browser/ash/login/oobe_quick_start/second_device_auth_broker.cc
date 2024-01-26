@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -79,8 +80,8 @@ constexpr char kTargetDeviceInfoKey[] = "targetDeviceInfo";
 constexpr char kCredentialDataKey[] = "credentialData";
 constexpr char kOauthTokenKey[] = "oauthToken";
 
-const int64_t kGetChallengeDataTimeoutInSeconds = 3 * 60;
-const int64_t kStartSessionTimeoutInSeconds = 3 * 60;
+constexpr base::TimeDelta kGetChallengeDataTimeout = base::Minutes(3);
+constexpr base::TimeDelta kStartSessionTimeout = base::Minutes(3);
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/json";
 
@@ -569,7 +570,7 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kGetChallengeDataApi),
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kGetChallengeDataTimeoutInSeconds * 1000,
+      /*timeout=*/kGetChallengeDataTimeout,
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
       /*annotation_tag=*/kChallengeDataAnnotation,
@@ -626,7 +627,7 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kStartSessionApi),
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kStartSessionTimeoutInSeconds * 1000,
+      /*timeout=*/kStartSessionTimeout,
       /*post_data=*/
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),

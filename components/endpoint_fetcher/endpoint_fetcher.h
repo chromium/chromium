@@ -18,6 +18,10 @@
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace network {
 struct ResourceRequest;
 class SimpleURLLoader;
@@ -68,7 +72,7 @@ class EndpointFetcher {
       const std::string& http_method,
       const std::string& content_type,
       const std::vector<std::string>& scopes,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       signin::IdentityManager* identity_manager,
@@ -80,7 +84,7 @@ class EndpointFetcher {
       const GURL& url,
       const std::string& http_method,
       const std::string& content_type,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const std::vector<std::string>& headers,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
@@ -100,7 +104,7 @@ class EndpointFetcher {
       const std::string& http_method,
       const std::string& content_type,
       const std::vector<std::string>& scopes,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -112,7 +116,7 @@ class EndpointFetcher {
       const GURL& url,
       const std::string& http_method,
       const std::string& content_type,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const std::vector<std::string>& headers,
       const std::vector<std::string>& cors_exempt_headers,
@@ -157,7 +161,7 @@ class EndpointFetcher {
   const GURL url_;
   const std::string http_method_;
   const std::string content_type_;
-  int64_t timeout_ms_;
+  base::TimeDelta timeout_;
   const std::string post_data_;
   const std::vector<std::string> headers_;
   const std::vector<std::string> cors_exempt_headers_;

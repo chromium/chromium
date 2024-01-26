@@ -28,7 +28,7 @@ constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
-constexpr base::TimeDelta kTimeoutMs = base::Seconds(90);
+constexpr base::TimeDelta kTimeout = base::Seconds(90);
 
 }  // namespace
 
@@ -78,7 +78,7 @@ std::unique_ptr<EndpointFetcher> SnapperProvider::CreateEndpointFetcher(
       /*oauth_consumer_name=*/kOauthConsumerName, /*url=*/url,
       /*http_method=*/kHttpMethod, /*content_type=*/kHttpContentType,
       /*scopes=*/scopes,
-      /*timeout_ms=*/kTimeoutMs.InMilliseconds(), /*post_data=*/post_data,
+      /*timeout=*/kTimeout, /*post_data=*/post_data,
       /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
       /*identity_manager=*/identity_manager_observation_.GetSource(),
       /*consent_level=*/signin::ConsentLevel::kSignin);

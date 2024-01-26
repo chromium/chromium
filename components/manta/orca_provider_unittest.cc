@@ -58,7 +58,7 @@ class FakeOrcaProvider : public OrcaProvider {
         /*url=*/GURL{kMockEndpoint},
         /*http_method=*/kHttpMethod, /*content_type=*/kMockContentType,
         /*scopes=*/std::vector<std::string>{kMockScope},
-        /*timeout_ms=*/kMockTimeout.InMilliseconds(), /*post_data=*/post_data,
+        /*timeout=*/kMockTimeout, /*post_data=*/post_data,
         /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         /*identity_manager=*/identity_manager_observation_.GetSource(),
         /*consent_level=*/signin::ConsentLevel::kSync);

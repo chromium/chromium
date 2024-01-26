@@ -33,7 +33,7 @@ constexpr char kAutopushEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
-constexpr base::TimeDelta kTimeoutMs = base::Seconds(30);
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 using Tone = proto::RequestConfig::Tone;
 
@@ -183,7 +183,7 @@ std::unique_ptr<EndpointFetcher> OrcaProvider::CreateEndpointFetcher(
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*scopes=*/scopes,
-      /*timeout_ms=*/kTimeoutMs.InMilliseconds(),
+      /*timeout=*/kTimeout,
       /*post_data=*/post_data,
       /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
       /*identity_manager=*/identity_manager_observation_.GetSource(),

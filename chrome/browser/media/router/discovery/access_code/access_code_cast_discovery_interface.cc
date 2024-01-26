@@ -41,7 +41,7 @@ constexpr char kLoggerComponent[] = "AccessCodeCastDiscoveryInterface";
 
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
-const int64_t kTimeoutMs = 30000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(30000);
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chrome_cast_discovery_api",
@@ -265,7 +265,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
           ->GetURLLoaderFactoryForBrowserProcess(),
       kDiscoveryOAuthConsumerName,
       GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
-      kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
+      kContentType, discovery_scopes, kTimeout, kEmptyPostData,
       kTrafficAnnotation, identity_manager_, signin::ConsentLevel::kSync);
 }
 

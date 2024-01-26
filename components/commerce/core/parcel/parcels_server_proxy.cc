@@ -11,6 +11,7 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -387,8 +388,9 @@ std::unique_ptr<EndpointFetcher> ParcelsServerProxy::CreateEndpointFetcher(
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
-      std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
-      traffic_annotation, identity_manager_, signin::ConsentLevel::kSignin);
+      std::vector<std::string>{kOAuthScope},
+      base::Milliseconds(kTimeoutMs.Get()), post_data, traffic_annotation,
+      identity_manager_, signin::ConsentLevel::kSignin);
 }
 
 void ParcelsServerProxy::ProcessGetParcelStatusResponse(

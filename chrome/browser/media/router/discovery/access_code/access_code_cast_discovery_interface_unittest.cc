@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
@@ -54,7 +55,7 @@ namespace media_router {
 namespace {
 
 const char kMockPostData[] = "mock_post_data";
-int64_t kMockTimeoutMs = 1000000;
+constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
 const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
@@ -193,7 +194,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     //     removed. See ConsentLevel::kSync documentation for details.
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
         kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
-        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeoutMs,
+        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeout,
         kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
 

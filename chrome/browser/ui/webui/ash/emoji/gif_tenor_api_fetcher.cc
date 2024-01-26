@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/common/channel_info.h"
@@ -43,7 +44,7 @@ constexpr char kMediaFilterName[] = "media_filter";
 constexpr char kMediaFilterValue[] = "gif,tinygif";
 
 constexpr char kPosName[] = "pos";
-const int64_t kTimeoutMs = 10000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(10000);
 
 std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -54,7 +55,7 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       /*url=*/url,
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kTimeoutMs,
+      /*timeout=*/kTimeout,
       /*post_data=*/"",
       /*headers=*/std::vector<std::string>(),
       /*annotation_tag=*/annotation_tag,

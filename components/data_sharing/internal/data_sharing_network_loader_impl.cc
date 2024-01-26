@@ -4,6 +4,7 @@
 
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -12,7 +13,7 @@ namespace data_sharing {
 
 namespace {
 
-const int64_t kTimeoutMs = 10000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(10000);
 const char kOauthConsumerName[] = "datasharing";
 const char kRequestContentType[] = "application/x-protobuf";
 
@@ -52,7 +53,7 @@ DataSharingNetworkLoaderImpl::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOauthConsumerName, url,
       net::HttpRequestHeaders::kPostMethod, kRequestContentType, scopes,
-      kTimeoutMs, post_data, annotation_tag, identity_manager_,
+      kTimeout, post_data, annotation_tag, identity_manager_,
       signin::ConsentLevel::kSignin);
 }
 
