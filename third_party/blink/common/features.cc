@@ -1192,6 +1192,16 @@ const base::FeatureParam<int> kLCPScriptObserverMaxUrlLength{
 const base::FeatureParam<int> kLCPScriptObserverMaxUrlCountPerOrigin{
     &kLCPScriptObserver, "lcpp_max_url_count_per_origin", 5};
 
+BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
+             "LCPPAutoPreconnectLcpOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<double> kLCPPAutoPreconnectFrequencyThreshold{
+    &kLCPPAutoPreconnectLcpOrigin, "lcpp_preconnect_frequency_threshold", 0.5};
+
+const base::FeatureParam<int> kkLCPPAutoPreconnectMaxPreconnectOriginsCount{
+    &kLCPPAutoPreconnectLcpOrigin, "lcpp_preconnect_max_origins", 2};
+
 BASE_FEATURE(kLCPPFontURLPredictor,
              "LCPPFontURLPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);

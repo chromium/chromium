@@ -682,6 +682,18 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPScriptObserverMaxUrlLength;
 
+// If enabled, LCP image origin is predicted and preconnected automatically.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPAutoPreconnectLcpOrigin);
+
+// Origins are automatically preconnected if frequencies are above this
+// threshold.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kLCPPAutoPreconnectFrequencyThreshold;
+
+// The maximum number of origins to be preconnected
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kkLCPPAutoPreconnectMaxPreconnectOriginsCount;
+
 // If enabled, fetched font URLs are observed to predict font usage in the
 // future navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);
