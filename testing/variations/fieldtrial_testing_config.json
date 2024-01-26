@@ -11196,6 +11196,21 @@
             ]
         }
     ],
+    "MigrateSyncingUserToSignedIn": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateSyncingUserToSignedIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "MiracleParameterForAndroid": [
         {
             "platforms": [
