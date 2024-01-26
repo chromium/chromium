@@ -129,6 +129,13 @@ public class ContextUtils {
                 });
     }
 
+    // For use by instrumentation runner only.
+    // TODO(agrieve): Make package-private
+    public static void initApplicationContextNoResetForTests(Context appContext) {
+        initJavaSideApplicationContext(appContext);
+        Holder.sSharedPreferences = fetchAppSharedPreferences();
+    }
+
     private static void initJavaSideApplicationContext(Context appContext) {
         assert appContext != null;
         // Guard against anyone trying to downcast.

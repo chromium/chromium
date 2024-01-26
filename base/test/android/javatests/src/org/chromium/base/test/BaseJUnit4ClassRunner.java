@@ -285,7 +285,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             return;
         }
 
-        ResettersForTesting.beforeClassHooksWillExecute();
         runPreClassHooks(getDescription().getTestClass());
         assert CommandLine.isInitialized();
 
@@ -294,7 +293,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         try {
             runPostClassHooks(getDescription().getTestClass());
         } finally {
-            ResettersForTesting.afterClassHooksDidExecute();
+            ResettersForTesting.onAfterClass();
         }
     }
 
@@ -305,13 +304,13 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         long start = SystemClock.uptimeMillis();
 
-        ResettersForTesting.beforeHooksWillExecute();
+        ResettersForTesting.setMethodMode();
         runPreTestHooks(method);
 
         super.runChild(method, notifier);
+        ResettersForTesting.onAfterMethod();
 
         runPostTestHooks(method);
-        ResettersForTesting.afterHooksDidExecute();
 
         Bundle b = new Bundle();
         b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - start);

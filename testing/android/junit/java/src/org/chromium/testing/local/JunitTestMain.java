@@ -11,7 +11,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +20,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -36,11 +34,6 @@ public final class JunitTestMain {
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
 
     private JunitTestMain() {}
-
-    /** ServiceLoader interface for adding RunListeners. */
-    public interface ExtraRunListenerProvider {
-        RunListener provideRunListener();
-    }
 
     /** Finds all test classes on the class path annotated with RunWith. */
     public static Class[] findClassesFromClasspath() {
@@ -129,11 +122,6 @@ public final class JunitTestMain {
         JsonLogger jsonLogger = new JsonLogger(new File(parser.mJsonOutput));
         core.addListener(new JsonListener(jsonLogger));
         Computer computer = new GtestComputer(gtestLogger);
-
-        for (ExtraRunListenerProvider listenerProvider :
-                ServiceLoader.load(ExtraRunListenerProvider.class)) {
-            core.addListener(listenerProvider.provideRunListener());
-        }
 
         Request testRequest =
                 Request.classes(computer, classes).filterWith(new ConfigFilter(jsonConfig));

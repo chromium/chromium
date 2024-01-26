@@ -63,13 +63,15 @@ public class BaseRobolectricTestRule implements TestRule {
                     testFailed = false;
                 } finally {
                     tearDown(testFailed);
+                    // We cannot guarantee that this Rule will be evaluated first, so never
+                    // call setMethodMode(), and reset class resetters after each method.
+                    ResettersForTesting.onAfterClass();
                 }
             }
         };
     }
 
     static void setUp(Method method) {
-        ResettersForTesting.beforeHooksWillExecute();
         UmaRecorderHolder.setUpNativeUmaRecorder(false);
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
@@ -96,12 +98,12 @@ public class BaseRobolectricTestRule implements TestRule {
         } finally {
             CommandLineFlags.tearDownMethod();
             CommandLineFlags.tearDownClass();
+            ResettersForTesting.onAfterMethod();
             ApplicationStatus.destroyForJUnitTests();
             PathUtils.resetForTesting();
             ThreadUtils.clearUiThreadForTesting();
             Locale.setDefault(ORIG_LOCALE);
             TimeZone.setDefault(ORIG_TIMEZONE);
-            ResettersForTesting.afterHooksDidExecute();
             // Run assertions only when the test has not already failed so as to not mask
             // failures. https://crbug.com/1466313
             if (testFailed) {
