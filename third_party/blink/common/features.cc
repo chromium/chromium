@@ -1857,6 +1857,12 @@ const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
         &kSharedStorageAPI,
         "SharedStorageMaxAllowedFencedFrameDepthForSelectURL", 1};
+// NOTE: To preserve user privacy, the
+// `kSharedStorageExposeDebugMessageForSettingsStatus` feature param MUST remain
+// false by default.
+const base::FeatureParam<bool>
+    kSharedStorageExposeDebugMessageForSettingsStatus = {
+        &kSharedStorageAPI, "ExposeDebugMessageForSettingsStatus", false};
 
 BASE_FEATURE(kSharedStorageSelectURLLimit,
              "SharedStorageSelectURLLimit",

@@ -888,6 +888,46 @@ void CheckOutput(
               top_frame_origin, context_origin));
       return;
     }
+    case (OutputKey::kIsSharedStorageAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in IsSharedStorageAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
+
+    case (OutputKey::kIsSharedStorageSelectURLAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in "
+          "IsSharedStorageSelectURLAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageSelectURLDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
   }
 }
 

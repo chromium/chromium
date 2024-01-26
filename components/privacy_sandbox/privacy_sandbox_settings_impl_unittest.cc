@@ -2144,4 +2144,203 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandbox3pcdExperimentTests,
                          PrivacySandbox3pcdExperimentTest,
                          testing::ValuesIn(kTestCases));
 
+namespace {
+
+const char* attestation_failed_template =
+    "Attestation check for Shared Storage on %s failed.\nReturned status %d; "
+    "see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* site_settings_template =
+    "Site access settings returned status %d for accessing origin "
+    "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* sandbox_restricted_template =
+    "Privacy Sandbox settings returned status %d; see "
+    "`PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+const char* select_url_template =
+    "M1 measurement settings returned status %d for accessing origin "
+    "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
+    "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
+    "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
+
+class PrivacySandboxSettingsSharedStorageDebugTest
+    : public PrivacySandboxSettingsM1Test {
+ public:
+  PrivacySandboxSettingsSharedStorageDebugTest() {
+    default_allow_attestations_feature_list_.InitAndEnableFeature(
+        kDefaultAllowPrivacySandboxAttestations);
+
+    // This test suite tests Privacy Sandbox Attestations related behaviors,
+    // turn off the setting that makes all APIs considered attested.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(false);
+  }
+
+ protected:
+  std::string actual_out_shared_storage_debug_message_;
+  std::string actual_out_select_url_debug_message_;
+
+ private:
+  base::test::ScopedFeatureList default_allow_attestations_feature_list_;
+};
+
+}  // namespace
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceEnabled) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when `sharedStorage`
+  // and `sharedStorage.selectURL()` are enabled.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  true},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kAllowed)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceDisabled) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kAllowed),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kApisDisabled),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when `sharedStorage`
+  // is enabled but `sharedStorage.selectURL()` is disabled.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, false}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{
+          {kIsSharedStorageAllowed, true},
+          {kIsSharedStorageSelectURLAllowed, false},
+          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {kIsSharedStorageSelectURLAllowedMetric,
+           static_cast<int>(Status::kApisDisabled)},
+          {kIsSharedStorageAllowedDebugMessage,
+           &expected_out_shared_storage_debug_message},
+          {kIsSharedStorageSelectURLAllowedDebugMessage,
+           &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
+       ApisAreOffForRestrictedAccounts) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      sandbox_restricted_template, static_cast<int>(Status::kRestricted));
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kRestricted),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received for a restricted
+  // account.
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1FledgeEnabledUserPrefValue,
+                                   kIsRestrictedAccount},
+                 true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  false},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kRestricted)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
+       SiteDataDefaultBlockExceptionApplies) {
+  std::string expected_out_shared_storage_debug_message = base::StringPrintf(
+      site_settings_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message = base::StringPrintf(
+      select_url_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      "https://embedded.com", "https://top-frame.com");
+
+  // Confirm that the expected debug messages are received when site settings
+  // block exception applies.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true},
+                {kSiteDataUserDefault, CONTENT_SETTING_BLOCK}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_},
+          {kOutSharedStorageSelectURLDebugMessage,
+           &actual_out_select_url_debug_message_}},
+      TestOutput{{MultipleOutputKeys{kIsSharedStorageAllowed,
+                                     kIsSharedStorageSelectURLAllowed},
+                  false},
+                 {MultipleOutputKeys{kIsSharedStorageAllowedMetric,
+                                     kIsSharedStorageSelectURLAllowedMetric},
+                  static_cast<int>(Status::kSiteDataAccessBlocked)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message},
+                 {kIsSharedStorageSelectURLAllowedDebugMessage,
+                  &expected_out_select_url_debug_message}});
+}
+
+TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
+  std::string expected_out_shared_storage_debug_message =
+      base::StringPrintf(attestation_failed_template, "https://embedded.com",
+                         static_cast<int>(Status::kAttestationFailed));
+
+  // Confirm that the expected debug message is received when attestation fails
+  // due to no enrollments.
+  RunTestCase(
+      TestState{{kM1FledgeEnabledUserPrefValue, true},
+                {kAttestationsMap, PrivacySandboxAttestationsMap{}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAccessingOrigin, url::Origin::Create(GURL("https://embedded.com"))},
+          {kOutSharedStorageDebugMessage,
+           &actual_out_shared_storage_debug_message_}},
+      TestOutput{{kIsSharedStorageAllowed, false},
+                 {kIsSharedStorageAllowedMetric,
+                  static_cast<int>(Status::kAttestationFailed)},
+                 {kIsSharedStorageAllowedDebugMessage,
+                  &expected_out_shared_storage_debug_message}});
+}
+
 }  // namespace privacy_sandbox

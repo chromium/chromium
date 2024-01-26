@@ -86,10 +86,12 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr,
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin) const override;
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;

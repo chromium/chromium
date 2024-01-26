@@ -127,7 +127,8 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
 
   bool IsSharedStorageAllowedBySiteSettings(
       NavigationOrDocumentHandle* navigation_or_document_handle,
-      const url::Origin& request_origin);
+      const url::Origin& request_origin,
+      std::string* out_debug_message = nullptr);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
   raw_ptr<StoragePartitionImpl> storage_partition_;

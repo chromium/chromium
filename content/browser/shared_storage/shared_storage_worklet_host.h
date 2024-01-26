@@ -219,8 +219,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const std::optional<std::string>& context_id,
       const std::optional<url::Origin>& aggregation_coordinator_origin);
 
-  bool IsSharedStorageAllowed();
-  bool IsSharedStorageSelectURLAllowed();
+  bool IsSharedStorageAllowed(std::string* out_debug_message = nullptr);
+  bool IsSharedStorageSelectURLAllowed(
+      std::string* out_debug_message = nullptr);
 
   // RAII helper object for talking to `SharedStorageWorkletDevToolsManager`.
   std::unique_ptr<ScopedDevToolsHandle> devtools_handle_;

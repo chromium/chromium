@@ -1220,6 +1220,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // main frame has fenced frame depth 1, etc).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL;
+// If enabled, sends additional details in the error message for the
+// rejected promise when shared storage is disabled, for local troubleshooting
+// and use in testing.
+//
+// NOTE: To preserve user privacy, this feature param MUST remain false by
+// default.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSharedStorageExposeDebugMessageForSettingsStatus;
 
 // If enabled, limits the number of times per origin per pageload that
 // `sharedStorage.selectURL()` is allowed to be invoked.
