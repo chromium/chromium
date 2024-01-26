@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -197,6 +198,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
               KioskLaunchStateToString(state));
   }
 
+  void CancelAppLaunch() { controller_->HandleAccelerator(kAppLaunchBailout); }
+
  private:
   void SetDeviceEnterpriseManaged() {
     cros_settings_test_helper().InstallAttributes()->SetCloudManaged(
@@ -240,6 +243,16 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 };
+
+TEST_F(KioskLaunchControllerTest,
+       ReceivingCallbacksAfterCleanupShouldNotCrash) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  CancelAppLaunch();
+  task_environment()->RunUntilIdle();
+
+  SetOnline(false);
+  // We should not crash
+}
 
 TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
