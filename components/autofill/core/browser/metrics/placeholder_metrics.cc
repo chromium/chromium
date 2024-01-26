@@ -157,6 +157,28 @@ void LogPreFilledFieldClassifications(
       may_use_prefilled_placeholder.has_value()
           ? AutofillPreFilledFieldClassifications::kClassified
           : AutofillPreFilledFieldClassifications::kNotClassified);
+
+  if (may_use_prefilled_placeholder.has_value()) {
+    const std::string name = base::StrCat(
+        {"Autofill.PreFilledFieldClassificationsQuality.", form_type_name});
+    AutofillPreFilledFieldClassificationsQuality sample =
+        AutofillPreFilledFieldClassificationsQuality::
+            kMeaningfullyPreFilledValueChanged;
+    if (*initial_value_changed && *may_use_prefilled_placeholder) {
+      sample = AutofillPreFilledFieldClassificationsQuality::
+          kPlaceholderValueChanged;
+    } else if (!*initial_value_changed && *may_use_prefilled_placeholder) {
+      sample = AutofillPreFilledFieldClassificationsQuality::
+          kPlaceholderValueNotChanged;
+    } else if (!*initial_value_changed && !*may_use_prefilled_placeholder) {
+      sample = AutofillPreFilledFieldClassificationsQuality::
+          kMeaningfullyPreFilledValueNotChanged;
+    }
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Autofill.PreFilledFieldClassificationsQuality.", form_type_name}),
+        sample);
+  }
 }
 
 }  // namespace autofill::autofill_metrics

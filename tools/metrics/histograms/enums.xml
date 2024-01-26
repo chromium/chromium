@@ -1185,6 +1185,13 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="No placeholder classification"/>
 </enum>
 
+<enum name="AutofillPreFilledFieldClassificationsQuality">
+  <int value="0" label="Placeholder, value not changed"/>
+  <int value="1" label="Placeholder, value changed"/>
+  <int value="2" label="Meaningfully pre-filled, value not changed"/>
+  <int value="3" label="Meaningfully pre-filled, value changed"/>
+</enum>
+
 <enum name="AutofillPreFilledFieldStatus">
   <int value="0" label="Pre-filled on page load"/>
   <int value="1" label="Empty on page load"/>

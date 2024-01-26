@@ -142,6 +142,67 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldClassifications) {
                        1)));
 }
 
+TEST_F(PlaceholderMetricsTest,
+       EmitsUmaAutofillPreFilledFieldClassificationsQuality) {
+  placeholders_features_.InitWithFeatures(
+      {features::kAutofillOverwritePlaceholdersOnly,
+       features::kAutofillSkipPreFilledFields},
+      {});
+  test::FormDescription form_description = {
+      .fields = {
+          {.role = ADDRESS_HOME_CITY, .heuristic_type = ADDRESS_HOME_CITY},
+          {.role = NAME_FIRST,
+           .heuristic_type = NAME_FIRST,
+           .value = u"kPlaceholderValueNotChanged"},
+          {.role = NAME_LAST,
+           .heuristic_type = NAME_LAST,
+           .value = u"kPlaceholderValueChanged"},
+          {.role = ADDRESS_HOME_LINE1,
+           .heuristic_type = ADDRESS_HOME_LINE1,
+           .value = u"kMeaningfullyPreFilledValueChanged"},
+          {.role = ADDRESS_HOME_COUNTRY,
+           .heuristic_type = ADDRESS_HOME_COUNTRY,
+           .value = u"kMeaningfullyPreFilledValueNotChanged"}}};
+  FormData form = test::GetFormData(form_description);
+
+  // Simulate page load.
+  autofill_manager().AddSeenForm(form,
+                                 test::GetHeuristicTypes(form_description),
+                                 test::GetServerTypes(form_description),
+                                 /*preserve_values_in_form_structure=*/true);
+  // Simluate interacting with the form.
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  // Get cached form and modify fields.
+  FormStructure* cached_form;
+  AutofillField* cached_triggering_field;
+  ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
+      form, form.fields[0], &cached_form, &cached_triggering_field));
+  cached_form->field(1)->set_may_use_prefilled_placeholder(true);
+  cached_form->field(2)->set_may_use_prefilled_placeholder(true);
+  cached_form->field(3)->set_may_use_prefilled_placeholder(false);
+  cached_form->field(4)->set_may_use_prefilled_placeholder(false);
+  form.fields[2].value = u"changed";
+  form.fields[3].value = u"changed";
+  SubmitForm(form);
+
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Autofill.PreFilledFieldClassificationsQuality.Address"),
+      BucketsAre(base::Bucket(AutofillPreFilledFieldClassificationsQuality::
+                                  kPlaceholderValueNotChanged,
+                              1),
+                 base::Bucket(AutofillPreFilledFieldClassificationsQuality::
+                                  kPlaceholderValueChanged,
+                              1),
+                 base::Bucket(AutofillPreFilledFieldClassificationsQuality::
+                                  kMeaningfullyPreFilledValueNotChanged,
+                              1),
+                 base::Bucket(AutofillPreFilledFieldClassificationsQuality::
+                                  kMeaningfullyPreFilledValueChanged,
+                              1)));
+}
+
 class PlaceholderMetricsValueStatusTest : public PlaceholderMetricsTest {
  public:
   void SetUp() override {

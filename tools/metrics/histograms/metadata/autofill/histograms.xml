@@ -3564,6 +3564,19 @@ chromium-metrics-reviews@google.com.
   <token key="FormType" variants="Autofill.Ablation.FormType"/>
 </histogram>
 
+<histogram name="Autofill.PreFilledFieldClassificationsQuality.{FormType}"
+    enum="AutofillPreFilledFieldClassificationsQuality"
+    expires_after="2024-07-23">
+  <owner>bwolfgang@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the quality of a placeholder classification. The metric is emitted
+    on form submission and only if there was a placeholder prediction for the
+    field.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.PreFilledFields.ByFieldType"
     enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2024-06-10">
   <owner>bwolfgang@google.com</owner>
