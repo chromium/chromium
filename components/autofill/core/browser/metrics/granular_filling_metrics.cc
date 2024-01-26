@@ -47,6 +47,8 @@ AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
       return AutofillFieldByFieldFillingTypes::kCreditCardExpiryMonth;
     case ADDRESS_HOME_CITY:
       return AutofillFieldByFieldFillingTypes::kCity;
+    case COMPANY_NAME:
+      return AutofillFieldByFieldFillingTypes::kCompany;
     default:
       NOTREACHED_NORETURN();
   }

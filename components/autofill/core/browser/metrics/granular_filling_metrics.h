@@ -51,7 +51,8 @@ enum class AutofillFieldByFieldFillingTypes {
   kCreditCardExpiryYear = 13,
   kCreditCardExpiryMonth = 14,
   kCity = 15,
-  kMaxValue = kCity
+  kCompany = 16,
+  kMaxValue = kCompany
 };
 
 // This metric is only relevant for granular filling, i.e. when the edit dialog
