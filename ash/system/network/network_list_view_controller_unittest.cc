@@ -483,10 +483,6 @@ INSTANTIATE_TEST_SUITE_P(All, NetworkListViewControllerTest, testing::Bool());
 TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
 
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     0);
-
   auto properties =
       chromeos::network_config::mojom::DeviceStateProperties::New();
   properties->type = NetworkType::kTether;
@@ -500,20 +496,8 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
 
   if (IsInstantHotspotRebrandEnabled()) {
     ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-    histogram_tester.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kTetherHostsSection, 1);
-    histogram_tester.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kMobileSection, 0);
   } else {
     ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
-    histogram_tester.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kTetherHostsSection, 0);
-    histogram_tester.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kMobileSection, 1);
     return;
   }
 
@@ -525,11 +509,6 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
 
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
   ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     1);
 
   // Tether device is prohibited.
   properties->type = NetworkType::kTether;
@@ -537,11 +516,6 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   cros_network()->SetDeviceProperties(properties.Clone());
   EXPECT_THAT(GetMobileSubHeader(), NotNull());
   EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     1);
   // Tether device is uninitialized but is primary user.
   properties->device_state = DeviceStateType::kUninitialized;
   cros_network()->SetDeviceProperties(properties.Clone());
@@ -549,19 +523,12 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
   EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     2);
 
   // Simulate login as secondary user.
   LoginAsSecondaryUser();
   cros_network()->ClearNetworksAndDevices();
 
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
 
   // Add tether networks
   cros_network()->AddNetworkAndDevice(
@@ -570,26 +537,16 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
 
   ASSERT_THAT(GetMobileSubHeader(), IsNull());
   ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     3);
 
   // Disable tether and ensure that the section is not shown.
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
   ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kTetherHostsSection,
-                                     3);
 }
 
 TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 0);
 
   auto properties =
       chromeos::network_config::mojom::DeviceStateProperties::New();
@@ -598,16 +555,12 @@ TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   cros_network()->SetDeviceProperties(properties.Clone());
 
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
 
   // Clear device list and check if Mobile subheader is shown with just
   // tether device.
   cros_network()->ClearNetworksAndDevices();
 
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 1);
 
   if (IsInstantHotspotRebrandEnabled()) {
     return;
@@ -619,46 +572,34 @@ TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
           kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
 
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 2);
 
   // Tether device is prohibited.
   properties->type = NetworkType::kTether;
   properties->device_state = DeviceStateType::kProhibited;
   cros_network()->SetDeviceProperties(properties.Clone());
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 2);
 
   // Tether device is uninitialized but is primary user.
   properties->device_state = DeviceStateType::kUninitialized;
   cros_network()->SetDeviceProperties(properties.Clone());
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 3);
 
   // Simulate login as secondary user.
   LoginAsSecondaryUser();
   cros_network()->ClearNetworksAndDevices();
 
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 3);
 
   // Add tether networks
   cros_network()->AddNetworkAndDevice(
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kMobileSection, 4);
 }
 
 TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
   EXPECT_THAT(GetWifiSubHeader(), IsNull());
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kWifiSection, 0);
 
   // Add an enabled wifi device.
   cros_network()->AddNetworkAndDevice(
@@ -667,8 +608,6 @@ TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
 
   ASSERT_THAT(GetWifiSubHeader(), NotNull());
   CheckWifiToggleButtonStatus(/*toggled_on=*/true);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kWifiSection, 1);
 
   // Disable wifi device.
   auto properties =
@@ -679,8 +618,6 @@ TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
 
   ASSERT_THAT(GetWifiSubHeader(), NotNull());
   CheckWifiToggleButtonStatus(/*toggled_on=*/false);
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kWifiSection, 1);
 }
 
 TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
@@ -862,16 +799,11 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
 
 TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   std::vector<NetworkStatePropertiesPtr> networks;
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kEthernetSection, 0);
 
   cros_network()->AddNetworkAndDevice(
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           kEthernetName, NetworkType::kEthernet,
           ConnectionStateType::kNotConnected));
-
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kEthernetSection, 1);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/1,
                            /*wifi_network_count=*/0,
@@ -898,12 +830,6 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           kEthernetName2, NetworkType::kEthernet,
           ConnectionStateType::kNotConnected));
-
-  // Metrics is only recorded the first time ethernet section is shown. Here a
-  // new ethernet network was added but the section was already being shown,
-  // so no new metric would be recorded.
-  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
-                                     DetailedViewSection::kEthernetSection, 1);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/2,
                            /*wifi_network_count=*/0,

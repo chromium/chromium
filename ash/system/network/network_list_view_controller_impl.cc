@@ -232,7 +232,6 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 
   if (ShouldMobileDataSectionBeShown()) {
     if (!mobile_header_view_) {
-      RecordDetailedViewSection(DetailedViewSection::kMobileSection);
       mobile_header_view_ =
           network_detailed_network_view()->AddMobileSectionHeader();
 
@@ -275,7 +274,6 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
   if (features::IsInstantHotspotRebrandEnabled()) {
     if (ShouldTetherHostsSectionBeShown()) {
       if (!tether_hosts_header_view_) {
-        RecordDetailedViewSection(DetailedViewSection::kTetherHostsSection);
         tether_hosts_header_view_ =
             network_detailed_network_view()->AddTetherHostsSectionHeader();
       }
@@ -689,7 +687,6 @@ void NetworkListViewControllerImpl::UpdateTetherHostsSection() {
 
 void NetworkListViewControllerImpl::UpdateWifiSection() {
   if (!wifi_header_view_) {
-    RecordDetailedViewSection(DetailedViewSection::kWifiSection);
     wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
 
     // WiFi toggle state is set here to avoid toggle animating on/off when
@@ -895,10 +892,6 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
   NetworkIdToViewMap id_to_view_map;
   NetworkListNetworkItemView* network_view = nullptr;
 
-  // This value is used to determine whether at least one network of `type`
-  // already existed prior to this method.
-  bool has_reordered_a_network = false;
-
   for (const auto& network : networks) {
     if (!NetworkTypeMatchesType(network->type, type)) {
       continue;
@@ -909,7 +902,6 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     if (it == previous_views->end()) {
       network_view = network_detailed_network_view()->AddNetworkListItem(type);
     } else {
-      has_reordered_a_network = true;
       network_view = it->second;
       previous_views->erase(it);
     }
@@ -919,14 +911,6 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     network_detailed_network_view()->GetNetworkList(type)->ReorderChildView(
         network_view, index);
     network_view->SetEnabled(!IsNetworkDisabled(network));
-
-    // Only emit ethernet metric each time we show Ethernet section
-    // for the first time. We use `has_reordered_a_network` to determine
-    // if Ethernet networks already exist in network detailed list.
-    if (NetworkTypeMatchesType(network->type, NetworkType::kEthernet) &&
-        !has_reordered_a_network) {
-      RecordDetailedViewSection(DetailedViewSection::kEthernetSection);
-    }
 
     // Increment `index` since this position was taken by `network_view`.
     index++;

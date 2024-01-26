@@ -804,14 +804,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Side"/>
 </enum>
 
-<enum name="DetailedViewSection">
-  <int value="0" label="WiFi section shown"/>
-  <int value="1" label="Mobile section shown"/>
-  <int value="2" label="Ethernet section shown"/>
-  <int value="3" label="Detailed view shown"/>
-  <int value="4" label="Tether Hosts section shown"/>
-</enum>
-
 <enum name="DeviceSettingsStaticShortcutAction">
   <int value="0" label="Disable"/>
   <int value="1" label="Copy"/>
@@ -1128,13 +1120,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="9" label="Backspace"/>
   <int value="10" label="Escape"/>
   <int value="11" label="Assistant"/>
-</enum>
-
-<enum name="NetworkRowClickedAction">
-  <int value="0" label="Connect to Network"/>
-  <int value="1" label="Open Network settings page"/>
-  <int value="2" label="Open SIM unlock dialog"/>
-  <int value="3" label="Open portal signin"/>
 </enum>
 
 <enum name="OwnerKeyUmaEvent">

@@ -111,10 +111,6 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
     // Wait for network state and device change events to be handled.
     base::RunLoop().RunUntilIdle();
 
-    histogram_tester_.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kDetailedSection, 0);
-
     detailed_view_delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
 
@@ -123,10 +119,6 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
             std::make_unique<NetworkDetailedNetworkViewImpl>(
                 detailed_view_delegate_.get(),
                 &fake_network_detailed_network_delagte_);
-
-    histogram_tester_.ExpectBucketCount(
-        "ChromeOS.SystemTray.Network.SectionShown",
-        DetailedViewSection::kDetailedSection, 1);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

@@ -91,9 +91,7 @@ NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
     : NetworkDetailedView(detailed_view_delegate,
                           delegate,
                           NetworkDetailedViewListType::LIST_TYPE_NETWORK),
-      NetworkDetailedNetworkView(delegate) {
-  RecordDetailedViewSection(DetailedViewSection::kDetailedSection);
-}
+      NetworkDetailedNetworkView(delegate) {}
 
 NetworkDetailedNetworkViewImpl::~NetworkDetailedNetworkViewImpl() = default;
 
