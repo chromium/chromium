@@ -301,8 +301,7 @@ export class SettingsAddressEditDialogElement extends
           this.address.metadata.source === AddressSource.ACCOUNT;
     }
 
-    return this.accountInfo !== undefined &&
-        this.accountInfo.isEligibleForAddressAccountStorage;
+    return !!this.accountInfo?.isEligibleForAddressAccountStorage;
   }
 
   private getAccountAddressSourceNotice_(): string|undefined {
