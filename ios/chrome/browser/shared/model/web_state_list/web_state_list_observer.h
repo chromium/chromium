@@ -61,27 +61,25 @@ class WebStateListChange {
 };
 
 // Represents a change that corresponds to updating the active state or the
-// pinned state of a selected WebState.
+// pinned state of a given WebState.
 class WebStateListChangeStatusOnly final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kStatusOnly;
 
-  explicit WebStateListChangeStatusOnly(
-      raw_ptr<web::WebState> selected_web_state);
+  explicit WebStateListChangeStatusOnly(raw_ptr<web::WebState> web_state);
   ~WebStateListChangeStatusOnly() final = default;
 
   Type type() const final;
 
-  // The WebState that is updated. The selected WebState updates the active
-  // state or the pinned state, but the position of it isn't updated in
-  // WebStateList.
-  raw_ptr<web::WebState> selected_web_state() const {
-    CHECK(selected_web_state_);
-    return selected_web_state_;
+  // The WebState that is updated. Its active state or pinned state could have
+  // been updated, but not its position in WebStateList.
+  raw_ptr<web::WebState> web_state() const {
+    CHECK(web_state_);
+    return web_state_;
   }
 
  private:
-  raw_ptr<web::WebState> selected_web_state_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 // Represents a change that corresponds to detaching one WebState from
@@ -129,8 +127,7 @@ class WebStateListChangeMove final : public WebStateListChange {
   Type type() const final;
 
   // The WebState that is moved from the position of `moved_from_index` in
-  // WebStateListChangeMove to the position of `index` in
-  // WebStateListStatus.
+  // WebStateListChangeMove to the position of `index` in WebStateListStatus.
   raw_ptr<web::WebState> moved_web_state() const {
     CHECK(moved_web_state_);
     return moved_web_state_;
@@ -197,7 +194,7 @@ class WebStateListChangeInsert final : public WebStateListChange {
   raw_ptr<web::WebState> inserted_web_state_;
 };
 
-// Represents a change on pinned state/activation.
+// Represents what changed during a WebStateListChange for a given WebState.
 struct WebStateListStatus {
   // The index to be changed. A WebState is no longer in WebStateList at the
   // `index` position when a WebState is detached.
@@ -226,8 +223,8 @@ class WebStateListObserver : public base::CheckedObserver {
 
   ~WebStateListObserver() override;
 
-  // Invoked before the specified WebState is updated. Is is currently used to
-  // notify the event before a WebState is detached from WebStateList. So the
+  // Invoked before the specified WebStateList is updated. Is is currently used
+  // to notify the event before a WebState is detached from WebStateList. So the
   // type of `change` is always `WebStateListChangeDetach`.
   virtual void WebStateListWillChange(
       WebStateList* web_state_list,
