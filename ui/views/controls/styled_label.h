@@ -178,7 +178,9 @@ class VIEWS_EXPORT StyledLabel : public View {
   void SizeToFit(int fixed_width);
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize() const final;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   int GetHeightForWidth(int w) const override;
   void Layout() override;
   void PreferredSizeChanged() override;
@@ -247,6 +249,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   absl::optional<ui::ColorId> default_enabled_color_id_;
 
   absl::optional<int> line_height_;
+  int fixed_width_ = 0;
 
   // Temporarily owns the custom views until they've been been placed into the
   // StyledLabel's child list. This list also holds the custom views during
