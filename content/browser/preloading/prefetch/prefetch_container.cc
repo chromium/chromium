@@ -1146,6 +1146,7 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
 }
 
 void PrefetchContainer::OnCookiesChanged() {
+  CHECK_NE(GetPrefetchStatus(), PrefetchStatus::kPrefetchNotUsedCookiesChanged);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
   UpdateServingPageMetrics();
   CancelStreamingURLLoaderIfNotServing();
