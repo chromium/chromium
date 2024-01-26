@@ -20,17 +20,16 @@ namespace screen_ai {
 
 class ScreenAIInstallState {
  public:
+  // TODO(crbug.com/1520424): Remove `kFailed` and `kReady` when all use cases
+  // updated.
   enum class State {
     // Component does not exist on device.
     kNotDownloaded,
     // Component download is in progress.
     kDownloading,
-    // Either component download or initialization failed. Component load and
-    // initialization may fail due to different OS or malware protection
-    // restrictions, however this is expected to be quite rare.
-    // Note that if library load and initialization crashes, the Failed state
-    // may never be set.
+    // Component download failed.
     kFailed,
+    kDownloadFailed = kFailed,
     // Component is downloaded but not loaded yet.
     kDownloaded,
     // Component is initialized successfully by at least one profile.

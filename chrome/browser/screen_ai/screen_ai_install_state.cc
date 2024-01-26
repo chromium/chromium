@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/check_is_test.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -22,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
@@ -194,9 +193,12 @@ void ScreenAIInstallState::AddObserver(
 }
 
 void ScreenAIInstallState::DownloadComponent() {
-  // TODO(crbug.com/1520424): Do not download the component and set status to
-  // failure if both `kScreenAIMainContentExtractionEnabled` and
-  // `kScreenAIOCREnabled` are disabled.
+  if (!features::IsScreenAIOCREnabled() &&
+      !features::IsScreenAIMainContentExtractionEnabled()) {
+    SetState(State::kDownloadFailed);
+    return;
+  }
+
   if (MayTryDownload()) {
     DownloadComponentInternal();
   }
@@ -227,21 +229,13 @@ void ScreenAIInstallState::SetComponentFolder(
 }
 
 void ScreenAIInstallState::SetState(State state) {
-  // TODO(crbug.com/1508404): Remove after crash root cause is found.
-  if ((state == State::kDownloaded || state == State::kReady) &&
-      !IsComponentAvailable()) {
-    base::debug::Alias(&state);
-    base::debug::DumpWithoutCrashing();
-    state = State::kFailed;
-  }
-
   if (state == state_) {
     // Failed and ready state can be repeated as they come from different
     // profiles. Downloading can be repeated in ChromeOS tests that call
     // LoginManagerTest::AddUser() and reset UserSessionInitializer.
     // TODO(crbug.com/1443341): While the case is highly unexpected, add more
     // control logic if state is changed from failed to ready or vice versa.
-    DCHECK(state == State::kReady || state == State::kFailed ||
+    DCHECK(state == State::kReady || state == State::kDownloadFailed ||
            state == State::kDownloading);
     return;
   }
@@ -270,7 +264,7 @@ void ScreenAIInstallState::SetComponentReadyForTesting() {
 bool ScreenAIInstallState::MayTryDownload() {
   switch (state_) {
     case State::kNotDownloaded:
-    case State::kFailed:
+    case State::kDownloadFailed:
       return true;
 
     case State::kDownloading:

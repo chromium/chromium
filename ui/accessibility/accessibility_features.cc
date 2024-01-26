@@ -282,9 +282,10 @@ BASE_FEATURE(kPdfOcr,
 );
 
 bool IsPdfOcrEnabled() {
-  // TODO(crbug.com/1520424): Apply `IsScreenAIOCREnabled` in
-  // `ScreenAIInstallState` before setting the service state to ready and remove
-  // it from this function.
+  // TODO(crbug.com/1520424): Remove `IsScreenAIOCREnabled` after
+  // `PdfOcrController` is updated to respect ready state from
+  // `ScreenAIServiceRouter` instead of the deprecated one from
+  // `ScreenAISInstallState`.
   return base::FeatureList::IsEnabled(::features::kPdfOcr) &&
          IsScreenAIOCREnabled();
 }
@@ -328,11 +329,7 @@ BASE_FEATURE(kReadAnythingWithScreen2x,
              "ReadAnythingWithScreen2x",
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithScreen2xEnabled() {
-  // TODO(crbug.com/1520424): Apply `IsScreenAIMainContentExtractionEnabled` in
-  // `ScreenAIInstallState` before setting the service state to ready and remove
-  // it from this function.
-  return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x) &&
-         IsScreenAIMainContentExtractionEnabled();
+  return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x);
 }
 
 BASE_FEATURE(kReadAnythingWithAlgorithm,

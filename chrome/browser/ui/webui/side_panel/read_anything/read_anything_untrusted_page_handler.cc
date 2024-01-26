@@ -123,15 +123,13 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-        screen_ai::ScreenAIInstallState::State::kReady) {
-      // Notify that the screen ai service is already ready so we can bind to
-      // the content extractor.
-      page_->ScreenAIServiceReady();
-    } else if (!component_ready_observer_.IsObserving()) {
-      component_ready_observer_.Observe(
-          screen_ai::ScreenAIInstallState::GetInstance());
-    }
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+        browser_->profile())
+        ->GetServiceStateAsync(
+            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+            base::BindOnce(
+                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
+                weak_factory_.GetWeakPtr()));
   }
 #endif
   OnActiveWebContentsChanged();
@@ -354,19 +352,10 @@ void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
 ///////////////////////////////////////////////////////////////////////////////
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void ReadAnythingUntrustedPageHandler::StateChanged(
-    screen_ai::ScreenAIInstallState::State state) {
+void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
+    bool successful) {
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
-  // If Screen AI library is downloaded but not initialized yet, ensure it is
-  // loadable and initializes without any problems.
-  if (state == screen_ai::ScreenAIInstallState::State::kDownloaded &&
-      browser_) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-        browser_->profile())
-        ->InitializeMainContentExtractionIfNeeded();
-    return;
-  }
-  if (state == screen_ai::ScreenAIInstallState::State::kReady) {
+  if (successful) {
     page_->ScreenAIServiceReady();
   }
 }

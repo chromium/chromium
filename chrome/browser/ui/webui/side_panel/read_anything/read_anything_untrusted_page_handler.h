@@ -24,10 +24,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#endif
-
 class ReadAnythingUntrustedPageHandler;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,9 +68,6 @@ class ReadAnythingUntrustedPageHandler
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
       public ReadAnythingSidePanelController::Observer,
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      public screen_ai::ScreenAIInstallState::Observer,
-#endif
       public TabStripModelObserver {
  public:
   ReadAnythingUntrustedPageHandler(
@@ -204,14 +197,7 @@ class ReadAnythingUntrustedPageHandler
       ax_action_handler_observer_{this};
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // screen_ai::ScreenAIInstallState::Observer:
-  void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
-
-  // Observes the install state of ScreenAI. When ScreenAI is ready, notifies
-  // the WebUI.
-  base::ScopedObservation<screen_ai::ScreenAIInstallState,
-                          screen_ai::ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
+  void OnScreenAIServiceInitialized(bool successful);
 #endif
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
