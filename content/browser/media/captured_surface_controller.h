@@ -27,6 +27,11 @@ class CONTENT_EXPORT CapturedSurfaceController {
   using CapturedSurfaceControlResult =
       ::blink::mojom::CapturedSurfaceControlResult;
 
+  // Wheel deltas are clamped to this arbitrary,  reasonable value.
+  // We clamp rather than report an error because "reasonable" is not
+  // well-defined as of the time being, let alone in an interoperable way.
+  inline static constexpr int32_t kMaxWheelDeltaMagnitude = 1000000;
+
   static std::unique_ptr<CapturedSurfaceController> CreateForTesting(
       GlobalRenderFrameHostId capturer_rfh_id,
       WebContentsMediaCaptureId captured_wc_id,
