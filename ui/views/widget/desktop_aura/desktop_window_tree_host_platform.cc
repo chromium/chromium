@@ -131,7 +131,8 @@ ui::PlatformWindowShadowType GetPlatformWindowShadowType(
 
 ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     const Widget::InitParams& params,
-    bool requires_accelerated_widget) {
+    bool requires_accelerated_widget,
+    float device_scale_factor) {
   ui::PlatformWindowInitProperties properties;
   properties.type =
       GetPlatformWindowType(params.type, requires_accelerated_widget);
@@ -170,6 +171,9 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     }
   }
   properties.inhibit_keyboard_shortcuts = params.inhibit_keyboard_shortcuts;
+
+  properties.frame_insets_px =
+      gfx::ScaleToCeiledInsets(params.frame_insets, device_scale_factor);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -272,8 +276,8 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
   const bool requires_accelerated_widget = false;
 #endif
   ui::PlatformWindowInitProperties properties =
-      ConvertWidgetInitParamsToInitProperties(params,
-                                              requires_accelerated_widget);
+      ConvertWidgetInitParamsToInitProperties(
+          params, requires_accelerated_widget, device_scale_factor());
   AddAdditionalInitProperties(params, &properties);
 
 #if BUILDFLAG(IS_CHROMEOS)

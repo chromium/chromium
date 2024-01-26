@@ -141,6 +141,11 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
                                        : gfx::NativeWindow();
   params.bounds = init_params.bounds;
 
+#if BUILDFLAG(IS_OZONE)
+  params.frame_insets =
+      submenu_->GetScrollViewContainer()->outside_border_insets();
+#endif
+
 #if defined(USE_AURA)
   params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
                                                init_params.owned_window_anchor);
