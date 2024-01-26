@@ -145,7 +145,7 @@ class BrowserAutofillManager : public AutofillManager {
       const std::u16string& cvc,
       const AutofillTriggerDetails& trigger_details);
 
-  // Records filling information and routes the filling back to the driver.
+  // Routes calls from external components to FillOrPreviewFieldImpl.
   // Virtual for testing.
   // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
@@ -515,6 +515,16 @@ class BrowserAutofillManager : public AutofillManager {
                                   FormData form,
                                   FormStructure& form_structure,
                                   const FormFieldData& trigger_field);
+
+  // Records filling information if possible and routes back to the renderer.
+  void FillOrPreviewFieldImpl(mojom::ActionPersistence action_persistence,
+                              mojom::TextReplacement text_replacement,
+                              const FormData& form,
+                              const FormFieldData& field,
+                              FormStructure* form_structure,
+                              AutofillField* autofill_field,
+                              const std::u16string& value,
+                              PopupItemId popup_item_id);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.

@@ -317,11 +317,10 @@ class AutofillManager
   // corresponding to |form| and |field|.  This might have the side-effect of
   // updating the cache.  Returns false if the |form| is not autofillable, or if
   // it is not already present in the cache and the cache is full.
-  [[nodiscard]] bool GetCachedFormAndField(
-      const FormData& form,
-      const FormFieldData& field,
-      FormStructure** form_structure,
-      AutofillField** autofill_field) const;
+  bool GetCachedFormAndField(const FormData& form,
+                             const FormFieldData& field,
+                             FormStructure** form_structure,
+                             AutofillField** autofill_field) const;
 
   // Returns nullptr if no cached form structure is found with a matching
   // |form_id|. Runs in logarithmic time.

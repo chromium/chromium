@@ -1417,28 +1417,11 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormFieldData& field,
     const std::u16string& value,
     PopupItemId popup_item_id) {
-  if (AutofillField* autofill_field = GetAutofillField(form, field);
-      autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
-      (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
-       popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
-    // TODO(crbug.com/1345089): Only use AutofillField.
-    const FormFieldData* const filled_field = &field;
-    form_autofill_history_.AddFormFillEntry(
-        base::make_span(&filled_field, 1u),
-        base::make_span(&autofill_field, 1u),
-        GetFillingProductFromPopupItemId(popup_item_id),
-        /*is_refill=*/false);
-    autofill_field->is_autofilled = true;
-    autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-        .fill_event_id = GetNextFillEventId(),
-        .had_value_before_filling = ToOptionalBoolean(!field.value.empty()),
-        .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-        .was_autofilled_before_security_policy = ToOptionalBoolean(true),
-        .had_value_after_filling = ToOptionalBoolean(true),
-        .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
-  }
-  driver().ApplyFieldAction(action_persistence, text_replacement,
-                            field.global_id(), value);
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  FillOrPreviewFieldImpl(action_persistence, text_replacement, form, field,
+                         form_structure, autofill_field, value, popup_item_id);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -2404,6 +2387,38 @@ FillingProduct BrowserAutofillManager::UndoAutofillImpl(
     form_autofill_history_.EraseFormFillEntry(std::move(operation));
   }
   return filling_product;
+}
+
+void BrowserAutofillManager::FillOrPreviewFieldImpl(
+    mojom::ActionPersistence action_persistence,
+    mojom::TextReplacement text_replacement,
+    const FormData& form,
+    const FormFieldData& field,
+    FormStructure* form_structure,
+    AutofillField* autofill_field,
+    const std::u16string& value,
+    PopupItemId popup_item_id) {
+  if (autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
+      (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
+       popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
+    // TODO(crbug.com/1345089): Only use AutofillField.
+    const FormFieldData* const filled_field = &field;
+    form_autofill_history_.AddFormFillEntry(
+        base::make_span(&filled_field, 1u),
+        base::make_span(&autofill_field, 1u),
+        GetFillingProductFromPopupItemId(popup_item_id),
+        /*is_refill=*/false);
+    autofill_field->is_autofilled = true;
+    autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+        .fill_event_id = GetNextFillEventId(),
+        .had_value_before_filling = ToOptionalBoolean(!field.value.empty()),
+        .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+        .was_autofilled_before_security_policy = ToOptionalBoolean(true),
+        .had_value_after_filling = ToOptionalBoolean(true),
+        .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
+  }
+  driver().ApplyFieldAction(action_persistence, text_replacement,
+                            field.global_id(), value);
 }
 
 void BrowserAutofillManager::FillOrPreviewDataModelForm(
