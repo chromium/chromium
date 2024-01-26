@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
@@ -30,6 +31,10 @@ Section::Section(size_t limit,
   for (const auto& group : groups_) {
     absl::optional<omnibox::GroupConfig_RenderType> last_render_type;
     for (const auto& [group_id, _] : group.group_id_limits_and_counts()) {
+      // Ignore the `GroupId` if it is not present in the group configs.
+      if (!base::Contains(group_configs, group_id)) {
+        continue;
+      }
       const auto& group_config = group_configs[group_id];
 
       DCHECK(last_side_type.value_or(group_config.side_type()) ==
@@ -172,43 +177,57 @@ void AndroidWebZpsSection::InitFromMatches(ACMatches& matches) {
 DesktopNTPZpsSection::DesktopNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(8,
-                 {{8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                  {8, omnibox::GROUP_TRENDS}},
+                 {
+                     {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                     {8, omnibox::GROUP_TRENDS},
+                 },
                  group_configs) {}
 
 DesktopSecondaryNTPZpsSection::DesktopSecondaryNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(3,
-                 {{3, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS}},
+                 {
+                     {3, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS},
+                 },
                  group_configs) {}
 
 DesktopSRPZpsSection::DesktopSRPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(8,
-                 {{8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                  {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST}},
+                 {
+                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                     {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
                  group_configs) {}
 
 DesktopWebZpsSection::DesktopWebZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(8,
-                 {{8, omnibox::GROUP_VISITED_DOC_RELATED},
-                  {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST}},
+                 {
+                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                     {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
                  group_configs) {}
 
 DesktopNonZpsSection::DesktopNonZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(10,
-              {{1,
-                {{omnibox::GROUP_STARTER_PACK, {1}},
-                 {omnibox::GROUP_SEARCH, {1}},
-                 {omnibox::GROUP_OTHER_NAVS, {1}}},
-                /*is_default=*/true},
-               {9, omnibox::GROUP_STARTER_PACK},
-               {9,
-                {{omnibox::GROUP_SEARCH, {9}},
-                 {omnibox::GROUP_HISTORY_CLUSTER, {1}}}},
-               {7, omnibox::GROUP_OTHER_NAVS}},
+              {
+                  {1,
+                   {
+                       {omnibox::GROUP_STARTER_PACK, {1}},
+                       {omnibox::GROUP_SEARCH, {1}},
+                       {omnibox::GROUP_OTHER_NAVS, {1}},
+                   },
+                   /*is_default=*/true},
+                  {9, omnibox::GROUP_STARTER_PACK},
+                  {9,
+                   {
+                       {omnibox::GROUP_SEARCH, {9}},
+                       {omnibox::GROUP_HISTORY_CLUSTER, {1}},
+                   }},
+                  {7, omnibox::GROUP_OTHER_NAVS},
+              },
               group_configs) {}
 
 void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
@@ -248,9 +267,11 @@ IOSNTPZpsSection::IOSNTPZpsSection(size_t max_trending_queries,
                                    omnibox::GroupConfigMap& group_configs)
     : ZpsSection(
           max_trending_queries + max_psuggest_queries + 1,
-          {{1, omnibox::GROUP_MOBILE_CLIPBOARD},
-           {max_psuggest_queries, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-           {max_trending_queries, omnibox::GROUP_TRENDS}},
+          {
+              {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+              {max_psuggest_queries, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+              {max_trending_queries, omnibox::GROUP_TRENDS},
+          },
           group_configs) {}
 
 IOSSRPZpsSection::IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs)
