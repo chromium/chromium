@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,7 +24,7 @@
 
 @implementation HistorySyncPopupCoordinator {
   // Authentication service.
-  AuthenticationService* _authenticationService;
+  raw_ptr<AuthenticationService> _authenticationService;
   // Coordinator to display the tangible sync view.
   HistorySyncCoordinator* _historySyncCoordinator;
   // Navigation controller created for the popup.
@@ -205,7 +206,7 @@
       stringWithFormat:
           @"<%@: %p, authenticationService: %p, historySyncCoordinator: %@, "
           @"presented: %@, accessPoint: %d>",
-          self.class.description, self, _authenticationService,
+          self.class.description, self, _authenticationService.get(),
           _historySyncCoordinator,
           ViewControllerPresentationStatusDescription(_navigationController),
           static_cast<int>(_accessPoint)];
