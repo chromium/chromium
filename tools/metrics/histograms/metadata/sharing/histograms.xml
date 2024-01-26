@@ -232,17 +232,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallPhoneNumberValid" enum="BooleanValid"
-    expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records if a received phone number is valid. Invalid numbers might suggest
-    that the remote device tried to send malicious data. Logged when handling a
-    Click to Call message on Android received from a Chrome desktop instance.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
     expires_after="2023-03-05">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
