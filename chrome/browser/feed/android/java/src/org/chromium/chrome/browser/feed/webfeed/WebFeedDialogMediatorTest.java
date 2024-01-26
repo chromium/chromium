@@ -44,9 +44,7 @@ public final class WebFeedDialogMediatorTest {
         protected void addDialogView(PropertyModel model) {}
 
         @Override
-        protected boolean removeDialogView(PropertyModel model) {
-            return false;
-        }
+        protected void removeDialogView(PropertyModel model) {}
     }
 
     @Before

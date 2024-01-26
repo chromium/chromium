@@ -43,8 +43,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
-import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.ui.base.TestActivity;
@@ -77,7 +75,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
-    private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
 
     private int mTopControlsContentOffset;
 
@@ -102,8 +99,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                         mBrowserControlsVisibilityManager,
                         mControlContainer,
                         mSpyControlContainer.toolbarLayout,
-                        TEST_TAB_STRIP_HEIGHT,
-                        mTabObscuringHandler);
+                        TEST_TAB_STRIP_HEIGHT);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);
 
@@ -203,34 +199,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void hideTabStripWhileTabObscured() {
-        TabObscuringHandler.Token token = mTabObscuringHandler.obscure(Target.TAB_CONTENT);
-        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
-        Assert.assertEquals(
-                "Height request should be blocked after tab obscured.",
-                NOTHING_OBSERVED,
-                mObserver.heightRequested);
-
-        // Url focus animation finished to unblock the transition
-        mTabObscuringHandler.unobscure(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(
-                "Height request should go through after tab unobscured.",
-                0,
-                mObserver.heightRequested);
-    }
-
-    @Test
-    public void hideTabStripWhileTabAndToolbarObscured() {
-        mTabObscuringHandler.obscure(Target.ALL_TABS_AND_TOOLBAR);
-        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
-        Assert.assertEquals(
-                "Height request should go through when tab and toolbar are obscured.",
-                0,
-                mObserver.heightRequested);
-    }
-
-    @Test
     @Config(qualifiers = "w320dp")
     public void showTabStrip() {
         settleTransitionDuringInitForNarrowWindow();
@@ -288,38 +256,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(
                 "Height request should go through after the url bar focus.",
-                TEST_TAB_STRIP_HEIGHT,
-                mObserver.heightRequested);
-    }
-
-    @Test
-    @Config(qualifiers = "w320dp")
-    public void showTabStripWhileTabObscured() {
-        settleTransitionDuringInitForNarrowWindow();
-        TabObscuringHandler.Token token = mTabObscuringHandler.obscure(Target.TAB_CONTENT);
-        setDeviceWidthDp(600);
-        Assert.assertEquals(
-                "Height request should be blocked after tab obscured.",
-                NOTHING_OBSERVED,
-                mObserver.heightRequested);
-
-        // Url focus animation finished to unblock the transition
-        mTabObscuringHandler.unobscure(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(
-                "Height request should go through after the tab unobscured.",
-                TEST_TAB_STRIP_HEIGHT,
-                mObserver.heightRequested);
-    }
-
-    @Test
-    @Config(qualifiers = "w320dp")
-    public void showTabStripWhileTabAndToolbarObscured() {
-        settleTransitionDuringInitForNarrowWindow();
-        mTabObscuringHandler.obscure(Target.ALL_TABS_AND_TOOLBAR);
-        setDeviceWidthDp(600);
-        Assert.assertEquals(
-                "Height request should go through if both the tab and toolbar are obscured.",
                 TEST_TAB_STRIP_HEIGHT,
                 mObserver.heightRequested);
     }

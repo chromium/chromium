@@ -61,7 +61,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void addDialogView(PropertyModel model) {
-        int[][] styles = {
+        int styles[][] = {
             {
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
@@ -128,7 +128,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected boolean removeDialogView(PropertyModel model) {
+    protected void removeDialogView(PropertyModel model) {
         if (mModelChangeProcessor != null) {
             mModelChangeProcessor.destroy();
             mModelChangeProcessor = null;
@@ -138,7 +138,6 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mDialog.dismiss();
             mDialog = null;
         }
-        return false;
     }
 
     @VisibleForTesting

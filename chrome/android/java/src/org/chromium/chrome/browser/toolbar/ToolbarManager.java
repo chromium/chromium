@@ -1397,8 +1397,7 @@ public class ToolbarManager
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
                         !ReturnToChromeUtil.moveDownLogo(),
-                        mFullscreenManager,
-                        mTabObscuringHandler);
+                        mFullscreenManager);
 
         mHomepageStateListener =
                 () -> {
