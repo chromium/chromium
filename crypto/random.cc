@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/rand_util.h"
 
 namespace crypto {
@@ -19,6 +21,12 @@ void RandBytes(void *bytes, size_t length) {
 
 void RandBytes(base::span<uint8_t> bytes) {
   RandBytes(bytes.data(), bytes.size());
+}
+
+std::vector<uint8_t> RandBytesAsVector(size_t length) {
+  std::vector<uint8_t> result(length);
+  RandBytes(result);
+  return result;
 }
 
 }  // namespace crypto

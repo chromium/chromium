@@ -27,5 +27,10 @@ bool IsTrivial(const std::string& bytes) {
 TEST(RandBytes, RandBytes) {
   std::string bytes(16, '\0');
   crypto::RandBytes(base::WriteInto(&bytes, bytes.size()), bytes.size());
-  EXPECT_TRUE(!IsTrivial(bytes));
+  EXPECT_FALSE(IsTrivial(bytes));
+}
+
+TEST(RandBytes, RandBytesAsVector) {
+  auto vector = crypto::RandBytesAsVector(16);
+  EXPECT_FALSE(IsTrivial(std::string(vector.begin(), vector.end())));
 }
