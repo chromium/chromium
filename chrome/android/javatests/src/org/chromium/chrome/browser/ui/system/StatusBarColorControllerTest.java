@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -27,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -311,6 +313,51 @@ public class StatusBarColorControllerTest {
                 statusBarColor.get().intValue());
     }
 
+    @Test
+    @LargeTest
+    @Feature({"StatusBar"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    public void testFocusAndScrollColors() throws Exception {
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final StatusBarColorController statusBarColorController =
+                sActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getStatusBarColorController();
+        sActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+
+        mOmniboxUtils.requestFocus();
+        final @ColorInt int focusedColor =
+                ChromeColors.getSurfaceColor(
+                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        waitForStatusBarColor(activity, focusedColor);
+
+        statusBarColorController.onSuggestionDropdownScroll();
+        final @ColorInt int scrolledColor =
+                ChromeColors.getSurfaceColor(activity, R.dimen.toolbar_text_box_elevation);
+        waitForStatusBarColor(activity, scrolledColor);
+
+        statusBarColorController.onSuggestionDropdownOverscrolledToTop();
+        waitForStatusBarColor(activity, focusedColor);
+
+        TabModelSelector tabModelSelector = activity.getTabModelSelectorSupplier().get();
+        ThreadUtils.runOnUiThread(() -> tabModelSelector.selectModel(/* incognito= */ true));
+        sActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+
+        mOmniboxUtils.requestFocus();
+        final @ColorInt int focusedIncognitoColor =
+                ContextCompat.getColor(activity, R.color.omnibox_dropdown_bg_incognito);
+        waitForStatusBarColor(activity, focusedIncognitoColor);
+
+        statusBarColorController.onSuggestionDropdownScroll();
+        final @ColorInt int scrolledIncognitoColor =
+                ContextCompat.getColor(activity, R.color.default_bg_color_dark_elev_2_baseline);
+        waitForStatusBarColor(activity, scrolledIncognitoColor);
+
+        statusBarColorController.onSuggestionDropdownOverscrolledToTop();
+        waitForStatusBarColor(activity, focusedIncognitoColor);
+    }
+
     /** Test that the theme color is cleared when the Omnibox gains focus. */
     @Test
     @LargeTest
@@ -318,10 +365,9 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedFocusedColor =
+        final @ColorInt int expectedFocusedColor =
                 ChromeColors.getSurfaceColor(
-                        activity,
-                        org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
         String pageWithBrandColorUrl =
                 sActivityTestRule
@@ -351,8 +397,7 @@ public class StatusBarColorControllerTest {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedFocusedColor =
                 ChromeColors.getSurfaceColor(
-                        activity,
-                        org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
         String pageWithBrandColorUrl =
                 sActivityTestRule

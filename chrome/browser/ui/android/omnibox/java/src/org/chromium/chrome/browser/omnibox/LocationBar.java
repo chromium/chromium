@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -96,6 +97,14 @@ public interface LocationBar {
 
     /** Returns the UrlBarData currently in use by the URL bar inside this location bar. */
     UrlBarData getUrlBarData();
+
+    /** Adds an observer for suggestions scroll events. */
+    default void addOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {}
+
+    /** Removes an observer for suggestions scroll events. */
+    default void removeOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {}
 
     /** Destroys the LocationBar. */
     void destroy();

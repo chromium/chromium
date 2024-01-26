@@ -481,4 +481,16 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             listener.onSuggestionDropdownOverscrolledToTop();
         }
     }
+
+    /** Adds an observer for suggestions scroll events. */
+    public void addOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {
+        mScrollListenerList.addObserver(listener);
+    }
+
+    /** Removes an observer for suggestions scroll events. */
+    public void removeOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {
+        mScrollListenerList.removeObserver(listener);
+    }
 }
