@@ -898,4 +898,8 @@ public class TabListCoordinator
 
         return mMediator.getIndexForTabWithRelatedTabs(tab);
     }
+
+    void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        mMediator.showQuickDeleteAnimation(onAnimationEnd, mRecyclerView);
+    }
 }

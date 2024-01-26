@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -43,13 +44,13 @@ public class QuickDeleteController {
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
      *
-     * @param context            The associated {@link Context}.
-     * @param delegate           A {@link QuickDeleteDelegate} to perform the quick delete.
+     * @param context The associated {@link Context}.
+     * @param delegate A {@link QuickDeleteDelegate} to perform the quick delete.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
-     * @param snackbarManager    A {@link SnackbarManager} to show the quick delete snackbar.
-     * @param layoutManager      {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
-     *                           history disambiguation notice.
+     * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
+     * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
+     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
+     *     history disambiguation notice.
      */
     public QuickDeleteController(
             @NonNull Context context,
@@ -105,6 +106,13 @@ public class QuickDeleteController {
         return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
     }
 
+    /**
+     * @return True, if quick delete animation feature flag is enabled, false otherwise
+     */
+    public static boolean isQuickDeleteAnimationEnabled() {
+        return ChromeFeatureList.sQuickDeleteAndroidAnimation.isEnabled();
+    }
+
     /** A method called when the user confirms or cancels the dialog. */
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
@@ -112,8 +120,8 @@ public class QuickDeleteController {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
-                mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
-                mDelegate.performQuickDelete(() -> onQuickDeleteFinished(timePeriod), timePeriod);
+                mDelegate.performQuickDelete(
+                        () -> onBrowsingDataDeletionFinished(timePeriod), timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -127,15 +135,42 @@ public class QuickDeleteController {
         destroy();
     }
 
-    private void onQuickDeleteFinished(@TimePeriod int timePeriod) {
-        navigateToTabSwitcher();
+    private void onBrowsingDataDeletionFinished(@TimePeriod int timePeriod) {
+        navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod));
+    }
+
+    private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
+        if (isQuickDeleteAnimationEnabled()) {
+            mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod));
+        } else {
+            showPostDeleteFeedback(timePeriod);
+        }
+    }
+
+    private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
+        mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
         triggerHapticFeedback();
         showSnackbar(timePeriod);
     }
 
     /** A method to navigate to tab switcher. */
-    private void navigateToTabSwitcher() {
-        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) return;
+    private void navigateToTabSwitcher(Runnable onNavigationFinished) {
+        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+            onNavigationFinished.run();
+            return;
+        }
+
+        mLayoutManager.addObserver(
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            onNavigationFinished.run();
+                            mLayoutManager.removeObserver(this);
+                        }
+                    }
+                });
+
         mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ true);
     }
 

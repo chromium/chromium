@@ -604,6 +604,11 @@ public class TabSwitcherCoordinator
         mTabListCoordinator.runAnimationOnNextLayout(runnable);
     }
 
+    @Override
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd);
+    }
+
     private TabSwitcherMessageManager getMessageManager() {
         return mMessageManager;
     }

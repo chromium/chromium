@@ -77,4 +77,11 @@ abstract class QuickDeleteDelegate {
     SettingsLauncher getSettingsLauncher() {
         return null;
     }
+
+    /**
+     * Show the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     */
+    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd) {}
 }

@@ -70,4 +70,9 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
         mTabSwitcherPane.setTabSwitcherRecyclerViewPosition(position);
     }
+
+    @Override
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        mTabSwitcherPane.showQuickDeleteAnimation(onAnimationEnd);
+    }
 }

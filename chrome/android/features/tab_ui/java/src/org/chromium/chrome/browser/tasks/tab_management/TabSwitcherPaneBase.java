@@ -345,6 +345,17 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         coordinator.setTabSwitcherRecyclerViewPosition(position);
     }
 
+    /** Show the Quick Delete animation on the tab list . */
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) {
+            onAnimationEnd.run();
+            return;
+        }
+        coordinator.showQuickDeleteAnimation(onAnimationEnd);
+    }
+
     /**
      * Request to show all the tabs in the pane. Subclasses should override this method to invoke
      * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.

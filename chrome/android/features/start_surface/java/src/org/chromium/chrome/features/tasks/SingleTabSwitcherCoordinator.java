@@ -263,6 +263,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     @Override
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
+    @Override
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        assert false : "should not reach here";
+    }
+
     /**
      * @see SingleTabSwitcherOnNtpMediator#setVisibility.
      */

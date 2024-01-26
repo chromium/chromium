@@ -240,4 +240,11 @@ public interface TabSwitcher {
 
     /** Set the tab switcher's current RecyclerViewPosition. */
     void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
+
+    /**
+     * Show the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     */
+    void showQuickDeleteAnimation(Runnable onAnimationEnd);
 }

@@ -454,4 +454,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     DialogController getTabGridDialogControllerForTesting() {
         return mDialogControllerSupplier.get();
     }
+
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd);
+    }
 }

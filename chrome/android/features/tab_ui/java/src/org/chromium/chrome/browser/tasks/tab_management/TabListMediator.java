@@ -11,11 +11,14 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -2168,5 +2172,37 @@ class TabListMediator {
             return mModel.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX;
         }
         return mModel.lastIndexForMessageItemFromType(itemIdentifier) != TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Prepare and run the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param recyclerView The {@link TabListRecyclerView} that is showing the tab list UI.
+     */
+    public void showQuickDeleteAnimation(
+            @NonNull Runnable onAnimationEnd, @NonNull TabListRecyclerView recyclerView) {
+        recyclerView.setBlockTouchInput(true);
+        Drawable originalForeground = recyclerView.getForeground();
+
+        int tabGridHeight = recyclerView.getHeight();
+        QuickDeleteAnimationGradientDrawable gradientDrawable =
+                QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
+                        mContext, tabGridHeight);
+
+        Animator wipeAnimation = gradientDrawable.createWipeAnimator(tabGridHeight);
+
+        wipeAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        recyclerView.setBlockTouchInput(false);
+                        recyclerView.setForeground(originalForeground);
+                        onAnimationEnd.run();
+                    }
+                });
+
+        recyclerView.setForeground(gradientDrawable);
+        wipeAnimation.start();
     }
 }
