@@ -349,14 +349,9 @@ int CurrentTimeInt64(sqlite3_vfs* vfs, sqlite3_int64* now) {
 
 }  // namespace
 
-sqlite3_vfs* VFSWrapper() {
-  static constexpr char kVFSName[] = "VFSWrapper";
-
-  // Return existing version if already registered.
-  {
-    sqlite3_vfs* vfs = sqlite3_vfs_find(kVFSName);
-    if (vfs)
-      return vfs;
+void EnsureVfsWrapper() {
+  if (sqlite3_vfs_find(kVfsWrapperName)) {
+    return;
   }
 
   // Get the default VFS on all platforms except Fuchsia.
@@ -367,12 +362,14 @@ sqlite3_vfs* VFSWrapper() {
       nullptr;
 #endif
   sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(kBaseVfsName);
+  CHECK(wrapped_vfs);
 
-  // Give up if there is no VFS implementation for the current platform.
-  if (!wrapped_vfs) {
-    NOTREACHED();
-    return nullptr;
-  }
+  // We only work with the VFS implementations listed below. If you're trying to
+  // use this code with any other VFS, you're not in a good place.
+  std::string_view vfs_name(wrapped_vfs->zName);
+  CHECK(vfs_name == "unix" || vfs_name == "win32" || vfs_name == "unix-none" ||
+        vfs_name == "storage-service")
+      << "Wrapping unexpected VFS " << vfs_name;
 
   std::unique_ptr<sqlite3_vfs, std::function<void(sqlite3_vfs*)>> wrapper_vfs(
       static_cast<sqlite3_vfs*>(sqlite3_malloc(sizeof(sqlite3_vfs))),
@@ -395,7 +392,7 @@ sqlite3_vfs* VFSWrapper() {
 
   wrapper_vfs->mxPathname = wrapped_vfs->mxPathname;
   wrapper_vfs->pNext = nullptr;  // Field used by SQLite.
-  wrapper_vfs->zName = kVFSName;
+  wrapper_vfs->zName = kVfsWrapperName;
 
   // Keep a reference to the wrapped vfs for use in methods.
   wrapper_vfs->pAppData = wrapped_vfs;
@@ -440,12 +437,10 @@ sqlite3_vfs* VFSWrapper() {
 
   // The methods above are in version 3 of sqlite_vfs.
 
-  if (SQLITE_OK == sqlite3_vfs_register(wrapper_vfs.get(), 0)) {
+  if (SQLITE_OK == sqlite3_vfs_register(wrapper_vfs.get(), /*makeDflt=*/1)) {
     ANNOTATE_LEAKING_OBJECT_PTR(wrapper_vfs.get());
     wrapper_vfs.release();
   }
-
-  return sqlite3_vfs_find(kVFSName);
 }
 
 }  // namespace sql
