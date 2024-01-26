@@ -494,6 +494,15 @@
           'shards': 1,
         },
       },
+      'fuchsia-x64-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'linux-blink-animation-use-time-delta': {
         'args': [
           '--debug',
@@ -811,6 +820,15 @@
         ],
       },
       'fuchsia-x64-cast-receiver-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'fuchsia-x64-rel': {
         'args': [
           '--platform=fuchsia',
           '--jobs=1',
@@ -2039,6 +2057,13 @@
         # lower.
         'ci_only': True,
       },
+      'fuchsia-arm64-rel': {
+        # Temporarily only run this on CI due to resource and naming
+        # constraints.
+        # TODO(crbug.com/1371630): Remove this when resource requirements are
+        # lower.
+        'ci_only': True,
+      },
       'fuchsia-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter',
@@ -2052,6 +2077,16 @@
         # Temporarily only run this on CI due to resource requirements.
         # TODO(crbug.com/1374125): Remove this once resources are available.
         'ci_only': True,
+        'swarming': {
+          'shards': 41,
+        },
+        'args': [
+          # TODO(crbug.com/1406693): Remove this when the kernal panic in
+          # fuchsia has been resolved.
+          '--test-arg=--test-launcher-jobs=1',
+        ],
+      },
+      'fuchsia-x64-rel': {
         'swarming': {
           'shards': 41,
         },
@@ -3472,6 +3507,7 @@
     'remove_from': [
       # TODO(crbug.com/1372213): Remove these once tests are stable.
       'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
   },
   'model_validation_tests MODEL_VALIDATION_BASE': {
@@ -3903,6 +3939,7 @@
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
       'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -4015,6 +4052,7 @@
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
       'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
   },
   'services_unittests': {

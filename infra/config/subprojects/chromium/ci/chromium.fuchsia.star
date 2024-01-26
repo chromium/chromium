@@ -115,6 +115,52 @@ ci.builder(
 )
 
 ci.builder(
+    name = "fuchsia-arm64-rel",
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_arm64",
+                "fuchsia_arm64_host",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+            "arm64_host",
+        ],
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "release",
+            short_name = "arm64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|ci|arm64",
+            short_name = "rel",
+        ),
+    ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
+ci.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -159,7 +205,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-x64-cast-receiver-dbg",
+    name = "fuchsia-x64-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -180,11 +226,10 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "debug_static_builder",
+            "debug_builder",
             "reclient",
             "fuchsia",
             "compile_only",
-            "cast_receiver_size_optimized",
         ],
     ),
     console_view_entry = [
@@ -197,6 +242,49 @@ ci.builder(
             console_view = "sheriff.fuchsia",
             category = "gardener|ci|x64",
             short_name = "dbg",
+        ),
+    ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
+ci.builder(
+    name = "fuchsia-x64-rel",
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "release",
+            short_name = "x64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|ci|x64",
+            short_name = "rel",
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",

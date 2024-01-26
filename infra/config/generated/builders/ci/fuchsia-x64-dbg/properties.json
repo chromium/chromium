@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/fuchsia-compile-x64-dbg/gn-args.json"
+        "infra/config/generated/builders/ci/fuchsia-x64-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -42,15 +42,16 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "fuchsia-compile-x64-dbg",
+          "group": "tryserver.chromium.fuchsia"
+        }
+      ]
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
-  },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
+    "instance": "rbe-chromium-trusted",
     "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
@@ -62,7 +63,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.fuchsia",
-  "cq": "path-based",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.fuchsia",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }
