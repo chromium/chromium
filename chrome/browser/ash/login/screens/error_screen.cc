@@ -191,9 +191,7 @@ void ErrorScreen::ShowConnectingIndicator(bool show) {
 }
 
 void ErrorScreen::SetIsPersistentError(bool is_persistent) {
-  if (view_) {
-    view_->SetIsPersistentError(is_persistent);
-  }
+  is_persistent_ = is_persistent;
 }
 
 base::CallbackListSubscription ErrorScreen::RegisterConnectRequestCallback(
@@ -262,7 +260,9 @@ void ErrorScreen::ShowImpl() {
     return;
   }
 
-  view_->Show();
+  const bool is_closeable =
+      LoginDisplayHost::default_host()->HasUserPods() && !is_persistent_;
+  view_->ShowScreenWithParam(is_closeable);
   LOG(WARNING) << "Network error screen message is shown";
   NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
