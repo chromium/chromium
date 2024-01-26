@@ -254,6 +254,17 @@ void UserScriptsRegisterFunction::OnUserScriptFilesValidated(
     return;
   }
 
+  // We cannot proceed if the extension is uninstalled or unloaded in the middle
+  // of validating its script files.
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
+  if (!extension() ||
+      !registry->enabled_extensions().Contains(extension_id())) {
+    // Note: a Respond() is not needed if the system is shutting down or if the
+    // extension is no longer enabled.
+    Release();  // Matches the `AddRef()` in `Run()`.
+    return;
+  }
+
   auto error = std::move(result.second);
   auto scripts = std::move(result.first);
 
@@ -465,6 +476,17 @@ void UserScriptsUpdateFunction::OnUserScriptFilesValidated(
   // We cannot proceed if the `browser_context` is not valid as the
   // `ExtensionSystem` will not exist.
   if (!browser_context()) {
+    Release();  // Matches the `AddRef()` in `Run()`.
+    return;
+  }
+
+  // We cannot proceed if the extension is uninstalled or unloaded in the middle
+  // of validating its script files.
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
+  if (!extension() ||
+      !registry->enabled_extensions().Contains(extension_id())) {
+    // Note: a Respond() is not needed if the system is shutting down or if the
+    // extension is no longer enabled.
     Release();  // Matches the `AddRef()` in `Run()`.
     return;
   }
