@@ -248,8 +248,34 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   bool IsPdf() { return model_->is_pdf(); }
   ui::AXTreeID GetPDFWebContents() { return model_->GetPDFWebContents(); }
 
+  void InitAXPosition(const ui::AXNodeID id) {
+    model_->InitAXPositionWithNode(id);
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
+    return model_->GetNextValidPositionFromCurrentPosition(
+        ReadAnythingAppModel::ReadAloudCurrentGranularity());
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
+      ReadAnythingAppModel::ReadAloudCurrentGranularity granularity) {
+    return model_->GetNextValidPositionFromCurrentPosition(granularity);
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes() {
+    return model_->GetNextNodes(160);
+  }
+
   size_t GetNextSentence(const std::u16string& text, size_t max_text_length) {
     return model_->GetNextSentence(text, max_text_length);
+  }
+
+  int GetNextTextStartIndex(ui::AXNodeID id) {
+    return model_->GetNextTextStartIndex(id);
+  }
+
+  int GetNextTextEndIndex(ui::AXNodeID id) {
+    return model_->GetNextTextEndIndex(id);
   }
 
   ui::AXTreeID tree_id_;
@@ -1578,4 +1604,201 @@ TEST_F(
   size_t index = GetNextSentence(sentence, 12);
   EXPECT_TRUE(index < sentence.length());
   EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+
+  // Getting the next node position shouldn't update the current AXPosition.
+  new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNonTextNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData empty_node;
+  empty_node.id = 3;
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 4;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+  update.nodes = {static_text1, empty_node, static_text2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, empty_node.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNonDistilledNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetName(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  // Don't distill the node with id 3.
+  ProcessDisplayNodes({static_text1.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNodeWithHTMLTag) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
+  std::u16string sentence1 = u"This is a sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetNameChecked(sentence1);
+  ui::AXNodeData empty_node1;
+  empty_node1.id = 3;
+  ui::AXNodeData empty_node2;
+  empty_node2.id = 4;
+  update.nodes = {static_text, empty_node1, empty_node2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text.id, empty_node1.id, empty_node2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_TRUE(new_position->IsNullPosition());
+}
+
+TEST_F(
+    ReadAnythingAppModelTest,
+    GetNextValidPosition_AfterGetNextNodesButBeforeGetNextText_UsesCurrentGranularity) {
+  std::u16string sentence1 = u"But from up here. The ";
+  std::u16string sentence2 = u"world ";
+  std::u16string sentence3 =
+      u"looks so small. And suddenly life seems so clear. And from up here. "
+      u"You coast past it all. The obstacles just disappear.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      GetNextNodes();
+  // Expect that current_granularity contains static_text1
+  // Expect that the indices aren't returned correctly
+  // Expect that GetNextValidPosition fails without inserted the granularity.
+  // The first segment was returned correctly.
+  EXPECT_EQ((int)current_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(current_granularity.node_ids, static_text1.id));
+  EXPECT_EQ(GetNextTextStartIndex(static_text1.id), -1);
+  EXPECT_EQ(GetNextTextEndIndex(static_text1.id), -1);
+
+  // Get the next position without using the current granularity. This
+  // simulates getting the next node position from within GetNextNode if
+  // the current granularity hasn't yet been added to the list processed
+  // granularities. This should return the ID for static_text1, even though
+  // it's already been used because the current granularity isn't being used.
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text1.id);
+
+  // Now get the next position using the correct current granularity. Thi
+  // simulates calling GetNextNodePosition from within GetNextNodes before
+  // the nodes have been added to the list of processed granularities. This
+  // should correctly return the next node in the tree.
+  new_position = GetNextNodePosition(current_granularity);
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
 }

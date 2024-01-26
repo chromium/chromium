@@ -1091,6 +1091,295 @@ int ReadAnythingAppModel::GetNextSentence(const std::u16string& text,
   return word_ends;
 }
 
+void ReadAnythingAppModel::InitAXPositionWithNode(
+    const ui::AXNodeID starting_node_id) {
+  ui::AXNode* ax_node = GetAXNode(starting_node_id);
+
+  // If instance is Null or Empty, create the next AxPosition
+  if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
+    ax_position_ =
+        ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
+    current_text_index_ = 0;
+    processed_granularity_index_ = -1;
+    processed_granularities_on_current_page_.clear();
+  }
+}
+
+std::vector<ui::AXNodeID> ReadAnythingAppModel::GetNextText(
+    int max_text_length) {
+  bool was_previously_processed =
+      processed_granularity_index_ <
+      processed_granularities_on_current_page_.size() - 1;
+
+  // If we've previously processed the triples at this location, return the
+  // previously processed node information. Otherwise, get this information
+  // GetNextNodes.
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      (was_previously_processed) ? processed_granularities_on_current_page_
+                                       [processed_granularity_index_ + 1]
+                                 : GetNextNodes(max_text_length);
+
+  // If the list of nodes is empty, don't adjust the processed nodes
+  // information.
+  if (current_granularity.node_ids.size() == 0) {
+    return current_granularity.node_ids;
+  }
+
+  if (!was_previously_processed) {
+    processed_granularities_on_current_page_.push_back(current_granularity);
+  }
+  processed_granularity_index_++;
+
+  return current_granularity.node_ids;
+}
+
+// TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
+// nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
+// AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
+ReadAnythingAppModel::ReadAloudCurrentGranularity
+ReadAnythingAppModel::GetNextNodes(int max_text_length) {
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      ReadAnythingAppModel::ReadAloudCurrentGranularity();
+
+  // Make sure we're adequately returning at the end of content.
+  if (!ax_position_ || ax_position_->AtEndOfAXTree() ||
+      ax_position_->IsNullPosition()) {
+    return current_granularity;
+  }
+
+  std::u16string current_text;
+
+  // Loop through the tree in order to group nodes together into the same
+  // granularity segment until there are no more pieces that can be added
+  // to the current segment or we've reached the end of the tree.
+  // e.g. if the following two nodes are next to one another in the tree:
+  //  AXNode: id=1, text = "This is a "
+  //  AXNode: id=2, text = "link. "
+  // both AXNodes should be added to the current granularity, as the
+  // combined text across the two nodes forms a complete sentence with sentence
+  // granularity.
+  // This allows text to be spoken smoothly across nodes with broken sentences,
+  // such as links and formatted text.
+  // TODO(crbug.com/1474951): Investigate how much of this can be pulled into
+  // AXPosition to simplify Read Aloud-specific code and allow improvements
+  // to be used by other places where AXPosition is used.
+  while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
+    ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+    std::u16string text = anchor_node->GetTextContentUTF16();
+    std::u16string text_substr = text.substr(current_text_index_);
+    int prev_index = current_text_index_;
+    // Gets the starting index for the next sentence in the current node.
+    int next_sentence_index =
+        GetNextSentence(text_substr, max_text_length) + prev_index;
+    // If our current index within the current node is greater than that node's
+    // text, look at the next node. If the starting index of the next sentence
+    // in the node is the same the current index within the node, this means
+    // that we've reached the end of all possible sentences within the current
+    // node, and should move to the next node.
+    if ((size_t)current_text_index_ >= text.size() ||
+        (current_text_index_ == next_sentence_index)) {
+      // Move the AXPosition to the next node.
+      ax_position_ =
+          GetNextValidPositionFromCurrentPosition(current_granularity);
+      // Reset the current text index within the current node since we just
+      // moved to a new node.
+      current_text_index_ = 0;
+      // If we've reached the end of the content, go ahead and return the
+      // current list of nodes because there are no more nodes to look through.
+      if (ax_position_->IsNullPosition() || ax_position_->AtEndOfAXTree() ||
+          !ax_position_->GetAnchor()) {
+        return current_granularity;
+      }
+
+      // If the position is now at the start of a paragraph and we already have
+      // nodes to return, return the current list of nodes so that we don't
+      // cross paragraph boundaries with text.
+      if (ax_position_->AtStartOfParagraph() &&
+          current_granularity.node_ids.size() > 0) {
+        return current_granularity;
+      }
+
+      std::u16string base_text =
+          GetNodeFromCurrentPosition()->GetTextContentUTF16();
+
+      // Look at the text of the items we've already added to the
+      // current sentence (current_text) combined with the text of the next
+      // node (base_text).
+      const std::u16string& combined_text = current_text + base_text;
+      // Get the index of the next sentence if we're looking at the combined
+      // previous and current node text.
+      int combined_sentence_index =
+          GetNextSentence(combined_text, max_text_length);
+      // If the combined_sentence_index is the same as the current_text length,
+      // the new node should not be considered part of the current sentence.
+      // If these values differ, add the current node's text to the list of
+      // nodes in the current sentence.
+      // Consider these two examples:
+      // Example 1:
+      //  current text: Hello
+      //  current node's text: , how are you?
+      //    The current text length is 5, but the index of the next sentence of
+      //    the combined text is 19, so the current node should be added to
+      //    the current sentence.
+      // Example 2:
+      //  current text: Hello.
+      //  current node: Goodbye.
+      //    The current text length is 6, and the next sentence index of
+      //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
+      //    be added to the current sentence.
+      if ((int)current_text.length() != combined_sentence_index) {
+        anchor_node = GetNodeFromCurrentPosition();
+        // Calculate the new sentence index.
+        int index_in_new_node = combined_sentence_index - current_text.length();
+        // Add the current node to the list of nodes to be returned, with a
+        // text range from 0 to the start of the next sentence
+        // (index_in_new_node);
+        ReadAnythingAppModel::ReadAloudTextSegment segment;
+        segment.id = anchor_node->id();
+        segment.text_start = 0;
+        segment.text_end = index_in_new_node;
+        current_granularity.AddSegment(segment);
+        current_text +=
+            anchor_node->GetTextContentUTF16().substr(0, index_in_new_node);
+        current_text_index_ = index_in_new_node;
+        if (current_text_index_ != (int)base_text.length()) {
+          // If we're in the middle of the node, there's no need to attempt
+          // to find another segment, as we're at the end of the current
+          // segment.
+          return current_granularity;
+        }
+        continue;
+      } else if (current_granularity.node_ids.size() > 0) {
+        // If nothing has been added to the list of current nodes, we should
+        // look at the next sentence within the current node. However, if
+        // there have already been nodes added to the list of nodes to return
+        // and we determine that the next node shouldn't be added to the
+        // current sentence, we've completed the current sentence, so we can
+        // return the current list.
+        return current_granularity;
+      }
+    }
+
+    // Add the next granularity piece within the current node.
+    anchor_node = GetNodeFromCurrentPosition();
+    text = anchor_node->GetTextContentUTF16();
+    prev_index = current_text_index_;
+    text_substr = text.substr(current_text_index_);
+    // Find the next sentence within the current node.
+    int new_current_text_index =
+        GetNextSentence(text_substr, max_text_length) + prev_index;
+    // If adding the next piece of the sentence from the current node doesn't
+    // make the returned text too long, add it to the list of nodes.
+    if ((current_text.length() + new_current_text_index - prev_index) <
+        (size_t)max_text_length) {
+      int start_index = current_text_index_;
+      current_text_index_ = new_current_text_index;
+      // Add the current node to the list of nodes to be returned, with a
+      // text range from the starting index (the end of the previous piece of
+      // the sentence) to the start of the next sentence.
+      ReadAnythingAppModel::ReadAloudTextSegment segment;
+      segment.id = anchor_node->id();
+      segment.text_start = start_index;
+      segment.text_end = new_current_text_index;
+      current_granularity.AddSegment(segment);
+      current_text += anchor_node->GetTextContentUTF16().substr(
+          start_index, current_text_index_ - start_index);
+    } else {
+      // If adding the next segment to the list of nodes is greater than the
+      // maximum text length, return the current nodes.
+      // TODO(crbug.com/1474951): Find a better way of segmenting granularities
+      // that are too long.
+      return current_granularity;
+    }
+
+    // After adding the most recent granularity segment, if we're not at the
+    //  end of the node, the current nodes can be returned, as we know there's
+    // no further segments remaining.
+    if ((size_t)current_text_index_ != text.length()) {
+      return current_granularity;
+    }
+  }
+  return current_granularity;
+}
+
+// Returns either the node or the lowest platform ancestor of the node, if it's
+// a leaf.
+ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() {
+  if (ax_position_->GetAnchor()->IsChildOfLeaf()) {
+    return ax_position_->GetAnchor()->GetLowestPlatformAncestor();
+  }
+
+  return ax_position_->GetAnchor();
+}
+
+// Gets the next valid position from our current position within AXPosition
+// AXPosition returns nodes that aren't supported by Reading Mode, so we
+// need to have a bit of extra logic to ensure we're only passing along valid
+// nodes.
+// Some of the checks here right now are probably unneeded.
+ui::AXNodePosition::AXPositionInstance
+ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
+    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity) {
+  ui::AXNodePosition::AXPositionInstance new_position =
+      ui::AXNodePosition::CreateNullPosition();
+
+  ui::AXMovementOptions movement_options(
+      ui::AXBoundaryBehavior::kCrossBoundary,
+      ui::AXBoundaryDetection::kDontCheckInitialPosition);
+
+  new_position = ax_position_->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kSentenceStart,
+      ax::mojom::MoveDirection::kForward, movement_options);
+
+  if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
+      !new_position->GetAnchor()) {
+    return new_position;
+  }
+
+  bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
+  // If the node is a leaf, use the parent node instead.
+  ui::AXNode* anchor_node =
+      is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
+              : new_position->GetAnchor();
+  bool was_previously_spoken =
+      NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
+  bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+  const std::set<ui::AXNodeID>* node_ids = selection_node_ids().empty()
+                                               ? &display_node_ids()
+                                               : &selection_node_ids();
+  bool contains_node = base::Contains(*node_ids, anchor_node->id());
+
+  while (was_previously_spoken || !is_text_node || !contains_node) {
+    ui::AXNodePosition::AXPositionInstance possible_new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+    anchor_node = possible_new_position->GetAnchor();
+    if (!anchor_node) {
+      if (was_previously_spoken) {
+        // If the previous position we were looking at was previously spoken,
+        // go ahead and return the null position to avoid duplicate nodes
+        // being added.
+        return possible_new_position;
+      }
+      return new_position;
+    }
+
+    new_position =
+        new_position->CreateNextSentenceStartPosition(movement_options);
+
+    is_leaf = anchor_node->IsChildOfLeaf();
+    if (is_leaf) {
+      anchor_node = anchor_node->GetLowestPlatformAncestor();
+    }
+    was_previously_spoken =
+        NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
+    is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+    contains_node = base::Contains(*node_ids, anchor_node->id());
+  }
+
+  return new_position;
+}
+
 int ReadAnythingAppModel::GetNextTextStartIndex(ui::AXNodeID node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
@@ -1160,13 +1449,8 @@ bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
 }
 
 void ReadAnythingAppModel::ClearReadAloudState() {
+  ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
+  current_text_index_ = 0;
   processed_granularity_index_ = -1;
   processed_granularities_on_current_page_.clear();
-}
-void ReadAnythingAppModel::AddGranularity(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity granularity) {
-  if (!InPreviousState()) {
-    processed_granularities_on_current_page_.push_back(granularity);
-  }
-  processed_granularity_index_++;
 }

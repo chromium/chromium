@@ -112,15 +112,6 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
 #endif
 
-  // Returns the next valid AXNodePosition.
-  ui::AXNodePosition::AXPositionInstance
-  GetNextValidPositionFromCurrentPosition(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
-
-  // Uses the current AXNodePosition to return the next node that should be
-  // spoken by Read Aloud.
-  ui::AXNode* GetNodeFromCurrentPosition();
-
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -232,10 +223,6 @@ class ReadAnythingAppController
   // should be referenced within the node.
   std::vector<ui::AXNodeID> GetNextText(int max_text_length);
 
-  // Helper method for GetNextText.
-  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes(
-      int max_text_length);
-
   // Returns a list of triples representing the previous nodes that should be
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
   // the AXNodeID, the starting text index, and the ending text index. This
@@ -294,12 +281,6 @@ class ReadAnythingAppController
       page_handler_factory_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
-
-  // TODO(crbug.com/1474951): Move Read Aloud state to Read Anything App Model.
-  // Read Aloud state
-  ui::AXNodePosition::AXPositionInstance ax_position_;
-  // The current text index within the given node.
-  int current_text_index_ = 0;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
