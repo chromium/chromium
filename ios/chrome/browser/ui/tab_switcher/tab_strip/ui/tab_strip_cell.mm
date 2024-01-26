@@ -224,16 +224,7 @@ UIImage* DefaultFavicon() {
     _trailingSeparatorGradientView.hidden = YES;
   }
 
-  UIColor* backgroundColor = selected
-                                 ? [UIColor colorNamed:kPrimaryBackgroundColor]
-                                 : [UIColor colorNamed:kGrey200Color];
-
-  // Update colors.
-  self.contentView.backgroundColor = backgroundColor;
-  _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
-                                    : [UIColor colorNamed:kGrey500Color];
-  [_titleGradientView setStartColor:[backgroundColor colorWithAlphaComponent:0]
-                           endColor:backgroundColor];
+  [self updateColors];
 
   // Make the selected cell on top of other cells.
   self.layer.zPosition = selected ? kSelectedZIndex : 0;
@@ -277,6 +268,13 @@ UIImage* DefaultFavicon() {
   _titleLabel.text = nil;
   self.selected = NO;
   [self setFaviconImage:nil];
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self updateColors];
 }
 
 #pragma mark - Private
@@ -329,6 +327,23 @@ UIImage* DefaultFavicon() {
   }
 
   _decorationLayersUpdated = YES;
+}
+
+// Updates view colors.
+- (void)updateColors {
+  UIColor* backgroundColor = self.selected
+                                 ? [UIColor colorNamed:kPrimaryBackgroundColor]
+                                 : [UIColor colorNamed:kGrey200Color];
+  // Needed to correctly update the `_titleGradientView` colors in incognito.
+  backgroundColor =
+      [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
+
+  self.contentView.backgroundColor = backgroundColor;
+  _faviconView.tintColor = self.selected
+                               ? [UIColor colorNamed:kCloseButtonColor]
+                               : [UIColor colorNamed:kGrey500Color];
+  [_titleGradientView setStartColor:[backgroundColor colorWithAlphaComponent:0]
+                           endColor:backgroundColor];
 }
 
 // Hides the close button view if the cell is collapsed.
