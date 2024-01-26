@@ -206,11 +206,11 @@
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/commerce/core/mojom/shopping_list.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -1299,8 +1299,8 @@ void PopulateChromeWebUIFrameBinders(
       map);
 
   RegisterWebUIControllerInterfaceBinder<
-      shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI,
-      ShoppingInsightsSidePanelUI>(map);
+      shopping_service::mojom::ShoppingServiceHandlerFactory,
+      BookmarksSidePanelUI, ShoppingInsightsSidePanelUI>(map);
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceControlsSidePanel)) {

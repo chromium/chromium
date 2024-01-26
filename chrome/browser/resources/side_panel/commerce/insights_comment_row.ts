@@ -5,8 +5,8 @@
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import type {ShoppingServiceApiProxy} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,8 +30,7 @@ export class InsightsCommentRow extends PolymerElement {
     };
   }
 
-  private shoppingApi_: ShoppingServiceApiProxy =
-      ShoppingServiceApiProxyImpl.getInstance();
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private showFeedback_() {
     this.shoppingApi_.showFeedback();

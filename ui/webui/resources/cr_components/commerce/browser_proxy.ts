@@ -5,12 +5,12 @@
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from '../shopping_list.mojom-webui.js';
-import {PageCallbackRouter, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from './shopping_service.mojom-webui.js';
+import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
-let instance: ShoppingServiceApiProxy|null = null;
+let instance: BrowserProxy|null = null;
 
-export interface ShoppingServiceApiProxy {
+export interface BrowserProxy {
   getAllPriceTrackedBookmarkProductInfo():
       Promise<{productInfos: BookmarkProductInfo[]}>;
   getAllShoppingBookmarkProductInfo():
@@ -32,17 +32,17 @@ export interface ShoppingServiceApiProxy {
   getCallbackRouter(): PageCallbackRouter;
 }
 
-export class ShoppingServiceApiProxyImpl implements ShoppingServiceApiProxy {
-  handler: ShoppingListHandlerRemote;
+export class BrowserProxyImpl implements BrowserProxy {
+  handler: ShoppingServiceHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
   constructor() {
     this.callbackRouter = new PageCallbackRouter();
 
-    this.handler = new ShoppingListHandlerRemote();
+    this.handler = new ShoppingServiceHandlerRemote();
 
-    const factory = ShoppingListHandlerFactory.getRemote();
-    factory.createShoppingListHandler(
+    const factory = ShoppingServiceHandlerFactory.getRemote();
+    factory.createShoppingServiceHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
@@ -111,11 +111,11 @@ export class ShoppingServiceApiProxyImpl implements ShoppingServiceApiProxy {
     return this.callbackRouter;
   }
 
-  static getInstance(): ShoppingServiceApiProxy {
-    return instance || (instance = new ShoppingServiceApiProxyImpl());
+  static getInstance(): BrowserProxy {
+    return instance || (instance = new BrowserProxyImpl());
   }
 
-  static setInstance(obj: ShoppingServiceApiProxy) {
+  static setInstance(obj: BrowserProxy) {
     instance = obj;
   }
 }

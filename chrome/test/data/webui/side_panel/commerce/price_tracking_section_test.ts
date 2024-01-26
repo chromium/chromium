@@ -4,11 +4,11 @@
 
 import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {BookmarkProductInfo, PageCallbackRouter, PageRemote, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
-import {ShoppingServiceApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {BookmarkProductInfo, PageCallbackRouter, PageRemote, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,7 +18,7 @@ suite('PriceTrackingSectionTest', () => {
   let priceTrackingSection: PriceTrackingSection;
   let callbackRouter: PageCallbackRouter;
   let callbackRouterRemote: PageRemote;
-  const shoppingServiceApi = TestMock.fromClass(ShoppingServiceApiProxyImpl);
+  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   let metrics: MetricsTracker;
 
   const productInfo: ProductInfo = {
@@ -99,7 +99,7 @@ suite('PriceTrackingSectionTest', () => {
 
     callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-    ShoppingServiceApiProxyImpl.setInstance(shoppingServiceApi);
+    BrowserProxyImpl.setInstance(shoppingServiceApi);
 
     priceTrackingSection = document.createElement('price-tracking-section');
     priceTrackingSection.productInfo = productInfo;

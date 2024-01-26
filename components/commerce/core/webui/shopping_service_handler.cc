@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 
 #include <memory>
 #include <vector>
@@ -31,11 +31,11 @@
 namespace commerce {
 namespace {
 
-shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
+shopping_service::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
     bookmarks::BookmarkModel& model,
     const bookmarks::BookmarkNode* node,
     const std::string& locale) {
-  auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
+  auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
   bookmark_info->bookmark_id = node->id();
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -43,7 +43,7 @@ shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
   const power_bookmarks::ShoppingSpecifics specifics =
       meta->shopping_specifics();
 
-  bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+  bookmark_info->info = shopping_service::mojom::ProductInfo::New();
   bookmark_info->info->title = specifics.title();
   bookmark_info->info->domain = base::UTF16ToUTF8(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -81,10 +81,10 @@ shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
   return bookmark_info;
 }
 
-shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
+shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
     const absl::optional<PriceInsightsInfo>& info,
     const std::string& locale) {
-  auto insights_info = shopping_list::mojom::PriceInsightsInfo::New();
+  auto insights_info = shopping_service::mojom::PriceInsightsInfo::New();
 
   if (!info.has_value()) {
     return insights_info;
@@ -118,19 +118,21 @@ shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
     insights_info->jackpot = info->jackpot_url.value();
   }
 
-  shopping_list::mojom::PriceInsightsInfo::PriceBucket bucket;
+  shopping_service::mojom::PriceInsightsInfo::PriceBucket bucket;
   switch (info->price_bucket) {
     case PriceBucket::kUnknown:
-      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kUnknown;
+      bucket =
+          shopping_service::mojom::PriceInsightsInfo::PriceBucket::kUnknown;
       break;
     case PriceBucket::kLowPrice:
-      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kLow;
+      bucket = shopping_service::mojom::PriceInsightsInfo::PriceBucket::kLow;
       break;
     case PriceBucket::kTypicalPrice:
-      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kTypical;
+      bucket =
+          shopping_service::mojom::PriceInsightsInfo::PriceBucket::kTypical;
       break;
     case PriceBucket::kHighPrice:
-      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kHigh;
+      bucket = shopping_service::mojom::PriceInsightsInfo::PriceBucket::kHigh;
       break;
   }
   insights_info->bucket = bucket;
@@ -138,7 +140,7 @@ shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
   insights_info->has_multiple_catalogs = info->has_multiple_catalogs;
 
   for (auto history_price : info->catalog_history_prices) {
-    auto point = shopping_list::mojom::PricePoint::New();
+    auto point = shopping_service::mojom::PricePoint::New();
     point->date = std::get<0>(history_price);
 
     auto price =
@@ -157,12 +159,13 @@ shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
 
 }  // namespace
 
-using shopping_list::mojom::BookmarkProductInfo;
-using shopping_list::mojom::BookmarkProductInfoPtr;
+using shopping_service::mojom::BookmarkProductInfo;
+using shopping_service::mojom::BookmarkProductInfoPtr;
 
-ShoppingListHandler::ShoppingListHandler(
-    mojo::PendingRemote<shopping_list::mojom::Page> remote_page,
-    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
+ShoppingServiceHandler::ShoppingServiceHandler(
+    mojo::PendingRemote<shopping_service::mojom::Page> remote_page,
+    mojo::PendingReceiver<
+        shopping_service::mojom::ShoppingServiceHandler> receiver,
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
     PrefService* prefs,
@@ -184,12 +187,12 @@ ShoppingListHandler::ShoppingListHandler(
   shopping_service_->ScheduleSavedProductUpdate();
 }
 
-ShoppingListHandler::~ShoppingListHandler() = default;
+ShoppingServiceHandler::~ShoppingServiceHandler() = default;
 
-void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
+void ShoppingServiceHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
   shopping_service_->WaitForReady(base::BindOnce(
-      [](base::WeakPtr<ShoppingListHandler> handler,
+      [](base::WeakPtr<ShoppingServiceHandler> handler,
          GetAllPriceTrackedBookmarkProductInfoCallback callback,
          ShoppingService* service) {
         if (!service || !service->IsShoppingListEligible() ||
@@ -201,13 +204,14 @@ void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
         }
 
         service->GetAllPriceTrackedBookmarks(
-            base::BindOnce(&ShoppingListHandler::OnFetchPriceTrackedBookmarks,
-                           handler, std::move(callback)));
+            base::BindOnce(
+                &ShoppingServiceHandler::OnFetchPriceTrackedBookmarks,
+                    handler, std::move(callback)));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingListHandler::OnFetchPriceTrackedBookmarks(
+void ShoppingServiceHandler::OnFetchPriceTrackedBookmarks(
     GetAllPriceTrackedBookmarkProductInfoCallback callback,
     std::vector<const bookmarks::BookmarkNode*> bookmarks) {
   std::vector<BookmarkProductInfoPtr> info_list =
@@ -221,10 +225,10 @@ void ShoppingListHandler::OnFetchPriceTrackedBookmarks(
   std::move(callback).Run(std::move(info_list));
 }
 
-void ShoppingListHandler::GetAllShoppingBookmarkProductInfo(
+void ShoppingServiceHandler::GetAllShoppingBookmarkProductInfo(
     GetAllShoppingBookmarkProductInfoCallback callback) {
   shopping_service_->WaitForReady(base::BindOnce(
-      [](base::WeakPtr<ShoppingListHandler> handler,
+      [](base::WeakPtr<ShoppingServiceHandler> handler,
          GetAllShoppingBookmarkProductInfoCallback callback,
          ShoppingService* service) {
         if (!service || !service->IsShoppingListEligible() ||
@@ -244,32 +248,33 @@ void ShoppingListHandler::GetAllShoppingBookmarkProductInfo(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {
+void ShoppingServiceHandler::TrackPriceForBookmark(int64_t bookmark_id) {
   commerce::SetPriceTrackingStateForBookmark(
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), true,
-      base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
+      base::BindOnce(&ShoppingServiceHandler::onPriceTrackResult,
                      weak_ptr_factory_.GetWeakPtr(), bookmark_id,
                      bookmark_model_, true));
 }
 
-void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
+void ShoppingServiceHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
   commerce::SetPriceTrackingStateForBookmark(
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), false,
-      base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
+      base::BindOnce(&ShoppingServiceHandler::onPriceTrackResult,
                      weak_ptr_factory_.GetWeakPtr(), bookmark_id,
                      bookmark_model_, false));
 }
 
-void ShoppingListHandler::OnSubscribe(const CommerceSubscription& subscription,
-                                      bool succeeded) {
+void ShoppingServiceHandler::OnSubscribe(
+    const CommerceSubscription& subscription,
+    bool succeeded) {
   if (succeeded) {
     HandleSubscriptionChange(subscription, true);
   }
 }
 
-void ShoppingListHandler::OnUnsubscribe(
+void ShoppingServiceHandler::OnUnsubscribe(
     const CommerceSubscription& subscription,
     bool succeeded) {
   if (succeeded) {
@@ -277,9 +282,9 @@ void ShoppingListHandler::OnUnsubscribe(
   }
 }
 
-void ShoppingListHandler::BookmarkModelChanged() {}
+void ShoppingServiceHandler::BookmarkModelChanged() {}
 
-void ShoppingListHandler::BookmarkNodeMoved(
+void ShoppingServiceHandler::BookmarkNodeMoved(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* old_parent,
     size_t old_index,
@@ -299,7 +304,7 @@ void ShoppingListHandler::BookmarkNodeMoved(
       BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
 }
 
-void ShoppingListHandler::HandleSubscriptionChange(
+void ShoppingServiceHandler::HandleSubscriptionChange(
     const CommerceSubscription& sub,
     bool is_tracking) {
   if (sub.id_type != IdentifierType::kProductClusterId) {
@@ -318,8 +323,8 @@ void ShoppingListHandler::HandleSubscriptionChange(
   // TODO(crbug.com/1462668): Update mojo call to pass cluster ID and make
   // BookmarkProductInfo a nullable parameter.
   if (!bookmarks.size()) {
-    auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
-    bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+    auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
+    bookmark_info->info = shopping_service::mojom::ProductInfo::New();
     bookmark_info->info->cluster_id = cluster_id;
     remote_page_->PriceUntrackedForBookmark(std::move(bookmark_info));
     return;
@@ -334,7 +339,8 @@ void ShoppingListHandler::HandleSubscriptionChange(
   }
 }
 
-std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
+std::vector<BookmarkProductInfoPtr>
+ShoppingServiceHandler::BookmarkListToMojoList(
     bookmarks::BookmarkModel& model,
     const std::vector<const bookmarks::BookmarkNode*>& bookmarks,
     const std::string& locale) {
@@ -347,7 +353,7 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
   return info_list;
 }
 
-void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
+void ShoppingServiceHandler::onPriceTrackResult(int64_t bookmark_id,
                                              bookmarks::BookmarkModel* model,
                                              bool is_tracking,
                                              bool success) {
@@ -373,33 +379,33 @@ void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
       BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_), is_tracking);
 }
 
-void ShoppingListHandler::GetProductInfoForCurrentUrl(
+void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback) {
   if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
       !delegate_->GetCurrentTabUrl().has_value()) {
-    std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+    std::move(callback).Run(shopping_service::mojom::ProductInfo::New());
     return;
   }
 
   shopping_service_->GetProductInfoForUrl(
       delegate_->GetCurrentTabUrl().value(),
-      base::BindOnce(&ShoppingListHandler::OnFetchProductInfoForCurrentUrl,
+      base::BindOnce(&ShoppingServiceHandler::OnFetchProductInfoForCurrentUrl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingListHandler::IsShoppingListEligible(
+void ShoppingServiceHandler::IsShoppingListEligible(
     IsShoppingListEligibleCallback callback) {
   std::move(callback).Run(shopping_service_->IsShoppingListEligible());
 }
 
-void ShoppingListHandler::GetShoppingCollectionBookmarkFolderId(
+void ShoppingServiceHandler::GetShoppingCollectionBookmarkFolderId(
     GetShoppingCollectionBookmarkFolderIdCallback callback) {
   const bookmarks::BookmarkNode* collection =
       commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_);
   std::move(callback).Run(collection ? collection->id() : -1);
 }
 
-void ShoppingListHandler::GetPriceTrackingStatusForCurrentUrl(
+void ShoppingServiceHandler::GetPriceTrackingStatusForCurrentUrl(
     GetPriceTrackingStatusForCurrentUrlCallback callback) {
   // The URL may or may not have a bookmark associated with it. Prioritize
   // accessing the product info for the URL before looking at an existing
@@ -407,7 +413,7 @@ void ShoppingListHandler::GetPriceTrackingStatusForCurrentUrl(
   shopping_service_->GetProductInfoForUrl(
       delegate_->GetCurrentTabUrl().value(),
       base::BindOnce(
-          [](base::WeakPtr<ShoppingListHandler> handler,
+          [](base::WeakPtr<ShoppingServiceHandler> handler,
              GetPriceTrackingStatusForCurrentUrlCallback callback,
              const GURL& url, const absl::optional<const ProductInfo>& info) {
             if (!info.has_value() || !info->product_cluster_id.has_value() ||
@@ -433,7 +439,7 @@ void ShoppingListHandler::GetPriceTrackingStatusForCurrentUrl(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
+void ShoppingServiceHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
   if (track) {
     // If the product on the page isn't already tracked, create a bookmark for
     // it and start tracking.
@@ -445,7 +451,7 @@ void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
     // attempting to access the bookmark.
 
     base::OnceCallback<void(uint64_t)> unsubscribe = base::BindOnce(
-        [](base::WeakPtr<ShoppingListHandler> handler, uint64_t id) {
+        [](base::WeakPtr<ShoppingServiceHandler> handler, uint64_t id) {
           if (!handler) {
             return;
           }
@@ -459,7 +465,7 @@ void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
     shopping_service_->GetProductInfoForUrl(
         delegate_->GetCurrentTabUrl().value(),
         base::BindOnce(
-            [](base::WeakPtr<ShoppingListHandler> handler,
+            [](base::WeakPtr<ShoppingServiceHandler> handler,
                base::OnceCallback<void(uint64_t)> unsubscribe, const GURL& url,
                const absl::optional<const ProductInfo>& info) {
               if (!handler) {
@@ -484,7 +490,7 @@ void ShoppingListHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
   }
 }
 
-void ShoppingListHandler::GetParentBookmarkFolderNameForCurrentUrl(
+void ShoppingServiceHandler::GetParentBookmarkFolderNameForCurrentUrl(
     GetParentBookmarkFolderNameForCurrentUrlCallback callback) {
   const GURL current_url = delegate_->GetCurrentTabUrl().value();
   std::move(callback).Run(
@@ -492,58 +498,58 @@ void ShoppingListHandler::GetParentBookmarkFolderNameForCurrentUrl(
           .value_or(base::EmptyString16()));
 }
 
-void ShoppingListHandler::ShowBookmarkEditorForCurrentUrl() {
+void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
   delegate_->ShowBookmarkEditorForCurrentUrl();
 }
 
-void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
+void ShoppingServiceHandler::OnFetchProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback,
     const GURL& url,
     const absl::optional<const ProductInfo>& info) {
   std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
 }
 
-void ShoppingListHandler::GetPriceInsightsInfoForCurrentUrl(
+void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback) {
   if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
       !delegate_->GetCurrentTabUrl().has_value()) {
-    std::move(callback).Run(shopping_list::mojom::PriceInsightsInfo::New());
+    std::move(callback).Run(shopping_service::mojom::PriceInsightsInfo::New());
     return;
   }
 
   shopping_service_->GetPriceInsightsInfoForUrl(
       delegate_->GetCurrentTabUrl().value(),
       base::BindOnce(
-          &ShoppingListHandler::OnFetchPriceInsightsInfoForCurrentUrl,
+          &ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingListHandler::OnFetchPriceInsightsInfoForCurrentUrl(
+void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback,
     const GURL& url,
     const absl::optional<PriceInsightsInfo>& info) {
   std::move(callback).Run(PriceInsightsInfoToMojoObject(info, locale_));
 }
 
-void ShoppingListHandler::ShowInsightsSidePanelUI() {
+void ShoppingServiceHandler::ShowInsightsSidePanelUI() {
   if (delegate_) {
     delegate_->ShowInsightsSidePanelUI();
   }
 }
 
-void ShoppingListHandler::OnGetPriceTrackingStatusForCurrentUrl(
+void ShoppingServiceHandler::OnGetPriceTrackingStatusForCurrentUrl(
     GetPriceTrackingStatusForCurrentUrlCallback callback,
     bool tracked) {
   std::move(callback).Run(tracked);
 }
 
-void ShoppingListHandler::OpenUrlInNewTab(const GURL& url) {
+void ShoppingServiceHandler::OpenUrlInNewTab(const GURL& url) {
   if (delegate_) {
     delegate_->OpenUrlInNewTab(url);
   }
 }
 
-void ShoppingListHandler::ShowFeedback() {
+void ShoppingServiceHandler::ShowFeedback() {
   if (delegate_) {
     delegate_->ShowFeedback();
   }

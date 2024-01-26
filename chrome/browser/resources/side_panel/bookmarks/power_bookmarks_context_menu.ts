@@ -9,8 +9,8 @@ import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
-import type {ShoppingServiceApiProxy} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {ShoppingServiceApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -66,8 +66,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: ShoppingServiceApiProxy =
-      ShoppingServiceApiProxyImpl.getInstance();
+  private shoppingServiceApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private bookmarks_: chrome.bookmarks.BookmarkTreeNode[] = [];
   private priceTracked_: boolean;
   private priceTrackingEligible_: boolean;

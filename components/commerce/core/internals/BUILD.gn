@@ -30,5 +30,6 @@ source_set("internals") {
     "../webui",
     "./mojom:mojo_bindings",
     "./resources",
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
 }

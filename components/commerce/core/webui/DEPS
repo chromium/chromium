@@ -3,4 +3,5 @@ include_rules = [
   "+content/public/test",
   "+components/feature_engagement/public",
   "+components/feature_engagement/test",
+  "+ui/webui/resources/cr_components/commerce",
 ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_LIST_HANDLER_H_
-#define COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_LIST_HANDLER_H_
+#ifndef COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_SERVICE_HANDLER_H_
+#define COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_SERVICE_HANDLER_H_
 
 #include <string>
 #include <vector>
@@ -13,12 +13,12 @@
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 class PrefService;
 
@@ -35,11 +35,10 @@ class ShoppingService;
 struct PriceInsightsInfo;
 struct ProductInfo;
 
-// TODO(b:283833590): Rename this class since it serves for all shopping
-// features now.
-class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
-                            public SubscriptionsObserver,
-                            public bookmarks::BaseBookmarkModelObserver {
+class ShoppingServiceHandler :
+        public shopping_service::mojom::ShoppingServiceHandler,
+        public SubscriptionsObserver,
+        public bookmarks::BaseBookmarkModelObserver {
  public:
   // Handles platform specific tasks.
   class Delegate {
@@ -63,20 +62,21 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
     virtual void ShowFeedback() = 0;
   };
 
-  ShoppingListHandler(
-      mojo::PendingRemote<shopping_list::mojom::Page> page,
-      mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
+  ShoppingServiceHandler(
+      mojo::PendingRemote<shopping_service::mojom::Page> page,
+      mojo::PendingReceiver<
+            shopping_service::mojom::ShoppingServiceHandler> receiver,
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
       const std::string& locale,
       std::unique_ptr<Delegate> delegate);
-  ShoppingListHandler(const ShoppingListHandler&) = delete;
-  ShoppingListHandler& operator=(const ShoppingListHandler&) = delete;
-  ~ShoppingListHandler() override;
+  ShoppingServiceHandler(const ShoppingServiceHandler&) = delete;
+  ShoppingServiceHandler& operator=(const ShoppingServiceHandler&) = delete;
+  ~ShoppingServiceHandler() override;
 
-  // shopping_list::mojom::ShoppingListHandler:
+  // shopping_service::mojom::ShoppingServiceHandler:
   void GetAllPriceTrackedBookmarkProductInfo(
       GetAllPriceTrackedBookmarkProductInfoCallback callback) override;
   void GetAllShoppingBookmarkProductInfo(
@@ -114,7 +114,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
-  static std::vector<shopping_list::mojom::BookmarkProductInfoPtr>
+  static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
       bookmarks::BookmarkModel& model,
       const std::vector<const bookmarks::BookmarkNode*>& bookmarks,
@@ -146,8 +146,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       GetPriceTrackingStatusForCurrentUrlCallback callback,
       bool tracked);
 
-  mojo::Remote<shopping_list::mojom::Page> remote_page_;
-  mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
+  mojo::Remote<shopping_service::mojom::Page> remote_page_;
+  mojo::Receiver<shopping_service::mojom::ShoppingServiceHandler> receiver_;
   // The bookmark model, shopping service and tracker will outlive this
   // implementation since it is a keyed service bound to the browser context
   // (which in turn has the same lifecycle as the browser). The web UI that
@@ -165,9 +165,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
                           bookmarks::BookmarkModelObserver>
       scoped_bookmark_model_observation_{this};
 
-  base::WeakPtrFactory<ShoppingListHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ShoppingServiceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce
 
-#endif  // COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_LIST_HANDLER_H_
+#endif  // COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_SERVICE_HANDLER_H_
