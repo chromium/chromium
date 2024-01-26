@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] AudioWorklet module fetches with a "audioworklet" Request.destination
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+
