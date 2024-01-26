@@ -127,6 +127,10 @@ import org.chromium.url.GURL;
     // EmptyBottomSheetObserver overridden methods follow:
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
+        // Swipe to dismiss should record cancel metrics.
+        if (reason == StateChangeReason.SWIPE) {
+            mBridge.onCanceled();
+        }
         this.onPromptDismissed();
     }
 

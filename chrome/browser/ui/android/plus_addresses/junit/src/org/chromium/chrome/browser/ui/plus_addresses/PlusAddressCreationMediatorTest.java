@@ -135,6 +135,14 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
+    public void testOnSheetClosed_callsBridgeOnCanceled_whenSwipeToDismiss() {
+        mMediator.onSheetClosed(StateChangeReason.SWIPE);
+
+        verify(mBridge).onCanceled();
+        verify(mBridge).onPromptDismissed();
+    }
+
+    @Test
     public void testOnStartedShowing_hidesContent_whenNotBrowsing() {
         mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
 
