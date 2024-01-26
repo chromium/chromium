@@ -30,10 +30,10 @@ XRRenderState::XRRenderState(bool immersive) : immersive_(immersive) {
 
 void XRRenderState::Update(const XRRenderStateInit* init) {
   if (init->hasDepthNear()) {
-    depth_near_ = init->depthNear();
+    depth_near_ = std::max(0.0, init->depthNear());
   }
   if (init->hasDepthFar()) {
-    depth_far_ = init->depthFar();
+    depth_far_ = std::max(0.0, init->depthFar());
   }
   if (init->hasBaseLayer()) {
     base_layer_ = init->baseLayer();
