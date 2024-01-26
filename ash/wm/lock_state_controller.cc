@@ -89,6 +89,18 @@ constexpr base::TimeDelta kPostLockFailTimeout =
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
+// Records the given `duration` to the given `pref_name` so it can be recorded
+// as an UMA metric on the next startup.
+void SavePineScreenshotDuration(PrefService* local_state,
+                                const std::string& pref_name,
+                                base::TimeDelta duration) {
+  if (!local_state) {
+    return;
+  }
+
+  local_state->SetTimeDelta(pref_name, duration);
+}
+
 // Encodes and saves the given `image` to `file_path`.
 void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
   CHECK(!base::CurrentUIThread::IsSet());
@@ -118,13 +130,6 @@ void MaybeAppendTestCallback(Callback& callback,
         base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                            std::move(for_test_callback)));
   }
-}
-
-void PostHighPriorityBlockingTask(base::OnceClosure task) {
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::HIGHEST,
-                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                             std::move(task));
 }
 
 }  // namespace
@@ -177,6 +182,10 @@ LockStateController::~LockStateController() {
 void LockStateController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLoginShutdownTimestampPrefName,
                              base::Time());
+  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotTakenDuration,
+                                  base::TimeDelta());
+  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotEncodeAndSaveDuration,
+                                  base::TimeDelta());
 }
 
 void LockStateController::AddObserver(LockStateObserver* observer) {
@@ -699,7 +708,10 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
     auto delete_image_cb =
         base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
     MaybeAppendTestCallback(delete_image_cb, pine_image_callback_for_test_);
-    PostHighPriorityBlockingTask(std::move(delete_image_cb));
+    base::ThreadPool::PostTask(FROM_HERE,
+                               {base::MayBlock(), base::TaskPriority::HIGHEST,
+                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                               std::move(delete_image_cb));
 
     StartShutdownProcess(with_pre_animation);
     return;
@@ -710,7 +722,7 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
       active_desk, /*source_rect=*/gfx::Rect(active_desk->bounds().size()),
       base::BindOnce(&LockStateController::OnPineImageTaken,
                      weak_ptr_factory_.GetWeakPtr(), with_pre_animation,
-                     file_path));
+                     file_path, base::TimeTicks::Now()));
 }
 
 void LockStateController::StartShutdownProcess(bool with_pre_animation) {
@@ -728,13 +740,33 @@ void LockStateController::StartShutdownProcess(bool with_pre_animation) {
 
 void LockStateController::OnPineImageTaken(bool with_pre_animation,
                                            const base::FilePath& file_path,
+                                           base::TimeTicks start_time,
                                            gfx::Image pine_image) {
-  auto save_image_cb =
-      base::BindOnce(&EncodeAndSavePineImage, file_path, std::move(pine_image));
-  MaybeAppendTestCallback(save_image_cb, pine_image_callback_for_test_);
-  PostHighPriorityBlockingTask(std::move(save_image_cb));
+  SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
+                             base::TimeTicks::Now() - start_time);
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::HIGHEST,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&EncodeAndSavePineImage, file_path, std::move(pine_image)),
+      base::BindOnce(&LockStateController::OnPineImageSaved,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 
   StartShutdownProcess(with_pre_animation);
+}
+
+void LockStateController::OnPineImageSaved(base::TimeTicks start_time) {
+  SavePineScreenshotDuration(local_state_,
+                             prefs::kPineScreenshotEncodeAndSaveDuration,
+                             // This duration includes the time waiting for the
+                             // `ThreadPool` to start running the task, also the
+                             // time that the UI thread waits to get the reply
+                             // from the `ThreadPool`.
+                             base::TimeTicks::Now() - start_time);
+  if (pine_image_callback_for_test_) {
+    std::move(pine_image_callback_for_test_).Run();
+  }
 }
 
 }  // namespace ash

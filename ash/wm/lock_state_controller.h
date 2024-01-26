@@ -198,7 +198,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // taken. Note: `gfx::Image` is cheap to pass by value.
   void OnPineImageTaken(bool with_pre_animation,
                         const base::FilePath& file_path,
+                        base::TimeTicks start_time,
                         gfx::Image pine_image);
+
+  // Callback invoked when the pine image was encoded and saved.
+  void OnPineImageSaved(base::TimeTicks start_time);
 
   std::unique_ptr<SessionStateAnimator> animator_;
 
