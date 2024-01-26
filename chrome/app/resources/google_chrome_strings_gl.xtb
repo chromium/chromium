@@ -85,7 +85,7 @@
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2401189691232800402">Sistema Chrome OS</translation>
+<translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chrome estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2424440923901031101">Esta extensión infrinxe a política de Chrome Web Store e podería non ser segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
@@ -102,7 +102,7 @@
 <translation id="2597976513418770460">Obtén os datos do navegador Chrome de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Produciuse un erro ao almacenar na memoria caché o instalador descargado. Código de erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
@@ -346,7 +346,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
-<translation id="6933858244219479645">Sistema Chrome OS</translation>
+<translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>

@@ -217,7 +217,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
 <translation id="2172688499998841696">Le descrizioni delle immagini sono disattivate</translation>
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
-<translation id="2173302385160625112">Controlla la connessione a Internet</translation>
+<translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="218608176142494674">Condivisione</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
@@ -892,7 +892,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="569435661099256888">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
-<translation id="5698878456427040674">Controlla se l'account selezionato è supportato.</translation>
+<translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
 <translation id="570347048394355941">Passa alla scheda</translation>
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5726692708398506830">Ingrandisci i contenuti della pagina</translation>
@@ -1518,7 +1518,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8683039184091909753">immagine</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
-<translation id="8712637175834984815">Fatto</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8723453889042591629">Traduci rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>

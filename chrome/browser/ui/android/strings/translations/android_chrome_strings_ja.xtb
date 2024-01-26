@@ -633,7 +633,7 @@
 <translation id="4355272626458588338">重要なページは、ブックマークに追加しておくとすぐにアクセスできます</translation>
 <translation id="4369735607080757018">広告効果を測定するため、測定の対象となる広告が表示された時刻など、限定的な種類のデータが関係するウェブサイト間で共有されます</translation>
 <translation id="4378154925671717803">電話</translation>
-<translation id="4380055775103003110">この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="438319986296050901">カードのみ共有</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
 <translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
@@ -1015,7 +1015,7 @@
 <translation id="6342069812937806050">たった今</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}}</translation>
 <translation id="6345878117466430440">既読にする</translation>
-<translation id="6356893102071098867">正しいアカウントを選択していることを確認する</translation>
+<translation id="6356893102071098867">正しいアカウントを選択していることを確認してください</translation>
 <translation id="6357653805084533597">この QR コードが表示されているデバイスに、このスマートフォンを使用してログインできます。</translation>
 <translation id="6363990818884053551">同期を開始するには、本人確認を行ってください</translation>
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
@@ -1148,7 +1148,7 @@
 <translation id="6908998565271542516">ウェブサイトを承認するかどうかを決定するオプション（最大の高さで表示）</translation>
 <translation id="6909589135458168665">ページをプリロードする</translation>
 <translation id="6910211073230771657">削除済み</translation>
-<translation id="6918398787259831832">この問題がまだ解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細をご覧ください<ph name="END_LINK" />。</translation>
+<translation id="6918398787259831832">問題が解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -1185,7 +1185,7 @@
 <translation id="7138678301420049075">その他</translation>
 <translation id="7140829094791862589">手動で並べ替え</translation>
 <translation id="7146622961999026732">以下のサイトやアプリは重要な可能性があります。</translation>
-<translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細をご覧ください<ph name="END_LINK" />。</translation>
+<translation id="7148400116894863598">詳細は <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> としてログインしています。設定を開きます。</translation>
 <translation id="7173114856073700355">設定を開く</translation>
@@ -1213,7 +1213,7 @@
 <translation id="7276100255011548441">Chrome では、4 週間以上経過したトピックは自動削除されます。閲覧を続けていると、トピックがリストに再度表示される場合もあります。ウェブサイトと共有したくないトピックはブロックできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="7284878711178835966">入力を始めると、アドレスバーや検索ボックスの内容が既定の検索エンジンに送信されます</translation>
 <translation id="7286703216224610554">リアクションのみ共有</translation>
-<translation id="7289303553784750393">オンラインであるにもかかわらず、この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="7289303553784750393">オンラインであるにもかかわらず問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="7290209999329137901">名前の変更はできません</translation>
 <translation id="7291910923717764901">このページの画像の説明が追加されました</translation>
 <translation id="7293429513719260019">言語を選択</translation>
@@ -1222,7 +1222,7 @@
 <translation id="7304873321153398381">オフラインです。Chrome でパスワードを確認できません。</translation>
 <translation id="7313094438430838513">トラッキングから保護します</translation>
 <translation id="7313188324932846546">タップして同期を設定する</translation>
-<translation id="7324354302972299151">「トラッキング拒否」リクエストを送信する</translation>
+<translation id="7324354302972299151">「Do Not Track」リクエストを送信する</translation>
 <translation id="7332075081379534664">ログインが完了しました</translation>
 <translation id="7333232495927792353">同期すると、最も関連性の高いコンテンツを表示できます</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>

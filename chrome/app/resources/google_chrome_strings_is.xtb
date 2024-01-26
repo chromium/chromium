@@ -85,7 +85,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="234869673307233423">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
 <translation id="235650106824528204">Stjórnandi vinnuprófíla getur fjarlægt öll Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
-<translation id="2401189691232800402">ChromeOS kerfi</translation>
+<translation id="2401189691232800402">ChromeOS-kerfi</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Ein eða fleiri Chrome-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chrome-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tækjum}}</translation>
 <translation id="2424440923901031101">Þessi viðbót brýtur gegn reglum Vefverslunar Chrome og kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
 <translation id="2467438592969358367">Google Chrome vill flytja út aðgangsorðin þín. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
@@ -346,7 +346,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="683440813066116847">Regla á innleið til að láta Google Chrome Canary leyfa mDNS-umferð.</translation>
 <translation id="6881299373831449287">Uppfærir Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta forrit</translation>
-<translation id="6933858244219479645">ChromeOS kerfi</translation>
+<translation id="6933858244219479645">ChromeOS-kerfi</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
