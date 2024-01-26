@@ -23,15 +23,15 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.download.DirectoryOption;
-import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
-import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
+import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 
@@ -50,6 +50,8 @@ public class DownloadLocationCustomView extends ScrollView
     private CheckBox mDontShowAgain;
     private @DownloadLocationDialogType int mDialogType;
     private long mTotalBytes;
+    private Callback<Boolean> mOnClickedCallback;
+    private DownloadLocationHelper mDownloadLocationHelper;
 
     public DownloadLocationCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -70,10 +72,16 @@ public class DownloadLocationCustomView extends ScrollView
         mDontShowAgain = findViewById(R.id.show_again_checkbox);
     }
 
-    void initialize(@DownloadLocationDialogType int dialogType, long totalBytes) {
+    void initialize(
+            @DownloadLocationDialogType int dialogType,
+            long totalBytes,
+            Callback<Boolean> onClickedCallback,
+            DownloadLocationHelper downloadLocationHelper) {
         // TODO(xingliu): Remove this function, currently used by smart suggestion.
         mDialogType = dialogType;
         mTotalBytes = totalBytes;
+        mOnClickedCallback = onClickedCallback;
+        mDownloadLocationHelper = downloadLocationHelper;
         mDirectoryAdapter.update();
     }
 
@@ -114,8 +122,7 @@ public class DownloadLocationCustomView extends ScrollView
     // CompoundButton.OnCheckedChangeListener implementation.
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        DownloadDialogBridge.setPromptForDownloadAndroid(
-                isChecked ? DownloadPromptStatus.DONT_SHOW : DownloadPromptStatus.SHOW_PREFERENCE);
+        mOnClickedCallback.onResult(isChecked);
     }
 
     // Helper methods available to DownloadDialogBridge.
@@ -235,4 +242,9 @@ public class DownloadLocationCustomView extends ScrollView
 
     @Override
     public void onDirectorySelectionChanged() {}
+
+    @Override
+    public DownloadLocationHelper getDownloadLocationHelper() {
+        return mDownloadLocationHelper;
+    }
 }

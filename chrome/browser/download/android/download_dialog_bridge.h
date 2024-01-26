@@ -15,6 +15,8 @@
 #include "net/base/network_change_notifier.h"
 #include "ui/gfx/native_widget_types.h"
 
+class Profile;
+
 // Contains all the user selection from download dialogs.
 struct DownloadDialogResult {
   DownloadDialogResult();
@@ -47,7 +49,7 @@ class DownloadDialogBridge {
       net::NetworkChangeNotifier::ConnectionType connection_type,
       DownloadLocationDialogType dialog_type,
       const base::FilePath& suggested_path,
-      bool is_incognito,
+      Profile* profile,
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,

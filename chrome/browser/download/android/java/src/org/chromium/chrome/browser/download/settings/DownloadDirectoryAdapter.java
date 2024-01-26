@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
-import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
@@ -40,6 +39,18 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
         /** Called after the user selected another download directory option. */
         void onDirectorySelectionChanged();
+
+        /** Get the helper to access and update the default download directory. */
+        DownloadLocationHelper getDownloadLocationHelper();
+    }
+
+    /** Allows accessing and updating the default download directory information. */
+    public interface DownloadLocationHelper {
+        /** Get the current default download directory. */
+        String getDownloadDefaultDirectory();
+
+        /** Update the default download directory. */
+        void setDownloadAndSaveFileDefaultDirectory(String directory);
     }
 
     public static int NO_SELECTED_ITEM_ID = -1;
@@ -55,7 +66,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     private List<DirectoryOption> mAdditionalOptions = new ArrayList<>();
     private List<DirectoryOption> mErrorOptions = new ArrayList<>();
 
-    public DownloadDirectoryAdapter(@NonNull Context context, Delegate delegate) {
+    public DownloadDirectoryAdapter(@NonNull Context context, @NonNull Delegate delegate) {
         super(context, android.R.layout.simple_spinner_item);
 
         mContext = context;
@@ -168,7 +179,8 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
         int selectedId = NO_SELECTED_ITEM_ID;
 
-        String defaultLocation = DownloadDialogBridge.getDownloadDefaultDirectory();
+        String defaultLocation =
+                mDelegate.getDownloadLocationHelper().getDownloadDefaultDirectory();
         for (int i = 0; i < getCount(); i++) {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
@@ -192,7 +204,9 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
             if (option.availableSpace > 0) {
-                DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(option.location);
+                mDelegate
+                        .getDownloadLocationHelper()
+                        .setDownloadAndSaveFileDefaultDirectory(option.location);
                 mSelectedPosition = i;
                 return i;
             }
@@ -211,7 +225,8 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     public int useSuggestedItemId(long totalBytes) {
         double maxSpaceLeft = 0;
         int suggestedId = NO_SELECTED_ITEM_ID;
-        String defaultLocation = DownloadDialogBridge.getDownloadDefaultDirectory();
+        String defaultLocation =
+                mDelegate.getDownloadLocationHelper().getDownloadDefaultDirectory();
 
         for (int i = 0; i < getCount(); i++) {
             DirectoryOption option = (DirectoryOption) getItem(i);
@@ -293,7 +308,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         notifyDataSetChanged();
 
         // Update higher app level UI logic.
-        if (mDelegate != null) mDelegate.onDirectoryOptionsUpdated();
+        mDelegate.onDirectoryOptionsUpdated();
     }
 
     private void adjustErrorDirectoryOption() {

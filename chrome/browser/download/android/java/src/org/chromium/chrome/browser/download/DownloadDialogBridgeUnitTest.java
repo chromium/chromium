@@ -31,7 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
-import org.chromium.components.prefs.PrefService;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,14 +41,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
     private static final int FAKE_NATIVE_HOLDER = 1;
-    private static final long START_TIME = 1000;
     private static final long TOTAL_BYTES = 100;
     private static final @ConnectionType int CONNECTION_TYPE = ConnectionType.CONNECTION_3G;
     private static final @DownloadLocationDialogType int LOCATION_DIALOG_TYPE =
             DownloadLocationDialogType.DEFAULT;
-    private static final @DownloadLocationDialogType int LOCATION_DIALOG_ERROR_TYPE =
-            DownloadLocationDialogType.NAME_CONFLICT;
-    private static final Boolean isIncognito = false;
 
     private static final String SUGGESTED_PATH = "sdcard/download.txt";
     private static final String NEW_SUGGESTED_PATH = "sdcard/new_download.txt";
@@ -67,7 +63,7 @@ public class DownloadDialogBridgeUnitTest {
 
     @Mock DownloadLocationDialogCoordinator mLocationDialog;
 
-    @Mock private PrefService mPrefService;
+    @Mock Profile mProfile;
 
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
@@ -78,7 +74,6 @@ public class DownloadDialogBridgeUnitTest {
         mJniMocker.mock(DownloadDialogBridgeJni.TEST_HOOKS, mNativeMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mBridge = new DownloadDialogBridge(FAKE_NATIVE_HOLDER, mLocationDialog);
-        mBridge.setPrefServiceForTesting(mPrefService);
     }
 
     @After
@@ -91,12 +86,11 @@ public class DownloadDialogBridgeUnitTest {
         mBridge.showDialog(
                 mActivity,
                 mModalDialogManager,
-                mPrefService,
                 TOTAL_BYTES,
                 CONNECTION_TYPE,
                 LOCATION_DIALOG_TYPE,
                 SUGGESTED_PATH,
-                isIncognito);
+                mProfile);
     }
 
     private void locationDialogWillReturn(String newPath) {
@@ -107,12 +101,7 @@ public class DownloadDialogBridgeUnitTest {
                         })
                 .when(mLocationDialog)
                 .showDialog(
-                        any(),
-                        any(),
-                        eq(TOTAL_BYTES),
-                        anyInt(),
-                        eq(SUGGESTED_PATH),
-                        eq(isIncognito));
+                        any(), any(), eq(TOTAL_BYTES), anyInt(), eq(SUGGESTED_PATH), eq(mProfile));
     }
 
     @Test
@@ -129,7 +118,7 @@ public class DownloadDialogBridgeUnitTest {
                         eq(TOTAL_BYTES),
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
-                        eq(isIncognito));
+                        eq(mProfile));
 
         showDialog();
         verify(mLocationDialog)
@@ -139,7 +128,7 @@ public class DownloadDialogBridgeUnitTest {
                         eq(TOTAL_BYTES),
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
-                        eq(isIncognito));
+                        eq(mProfile));
         verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH));
     }
 
@@ -163,7 +152,7 @@ public class DownloadDialogBridgeUnitTest {
                         eq(TOTAL_BYTES),
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
-                        eq(isIncognito));
+                        eq(mProfile));
 
         showDialog();
         verify(mNativeMock).onCanceled(anyLong(), any());

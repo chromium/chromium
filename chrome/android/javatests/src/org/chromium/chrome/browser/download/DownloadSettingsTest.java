@@ -77,13 +77,18 @@ public class DownloadSettingsTest {
 
     private void waitForPolicyReady() {
         // Policy data from the annotation needs to be populated before the setting UI is opened.
-        CriteriaHelper.pollUiThread(() -> DownloadDialogBridge.isLocationDialogManaged());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        DownloadDialogBridge.isLocationDialogManaged(
+                                Profile.getLastUsedRegularProfile()));
     }
 
     private void verifyLocationPromptPolicy(boolean promptForDownload) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(DownloadDialogBridge.isLocationDialogManaged());
+                    Assert.assertTrue(
+                            DownloadDialogBridge.isLocationDialogManaged(
+                                    Profile.getLastUsedRegularProfile()));
                     Assert.assertTrue(
                             getPrefService().isManagedPreference(Pref.PROMPT_FOR_DOWNLOAD));
                     DownloadSettings downloadSettings = mSettingsActivityTestRule.getFragment();

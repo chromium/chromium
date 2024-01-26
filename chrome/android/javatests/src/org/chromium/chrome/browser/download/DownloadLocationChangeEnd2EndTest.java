@@ -189,7 +189,12 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
                 () -> {
                     Assert.assertEquals(
                             DownloadPromptStatus.SHOW_INITIAL,
-                            DownloadDialogBridge.getPromptForDownloadAndroid());
+                            DownloadDialogBridge.getPromptForDownloadAndroid(
+                                    mDownloadTestRule
+                                            .getActivity()
+                                            .getProfileProviderSupplier()
+                                            .get()
+                                            .getOriginalProfile()));
 
                     simulateDownloadDirectories(hasSDCard);
 
@@ -233,7 +238,13 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     private void promptDownloadLocationDialog(@DownloadPromptStatus int promptStatus) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    DownloadDialogBridge.setPromptForDownloadAndroid(promptStatus);
+                    DownloadDialogBridge.setPromptForDownloadAndroid(
+                            mDownloadTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile(),
+                            promptStatus);
                 });
     }
 }
