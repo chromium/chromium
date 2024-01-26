@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
@@ -124,6 +125,7 @@ import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
@@ -187,6 +189,7 @@ import org.chromium.chrome.browser.tabmodel.ChromeTabCreator.OverviewNtpCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -259,10 +262,11 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
- * are accessible via a chrome specific tab switching UI.
+ * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
+ * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent> {
+public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent>
+        implements MismatchedIndicesHandler {
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
@@ -303,6 +307,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
     private static final String SOURCE_ACTIVITY_REFERRER_OS = "android-app://android";
+
+    private static final long BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS = 1000;
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
@@ -2363,6 +2369,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getProfileProviderSupplier(),
                         this,
                         mNextTabPolicySupplier,
+                        this,
                         mWindowId);
         if (!tabModelWasCreated) {
             finishAndRemoveTask();
@@ -3851,6 +3858,39 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
         shortcutManager.reportShortcutUsed(
                 isIncognito ? "new-incognito-tab-shortcut" : "new-tab-shortcut");
+    }
+
+    @Override
+    public boolean handleMismatchedIndices(Activity preLaunchedActivity) {
+        if (!ChromeFeatureList.sTabWindowManagerIndexReassignmentOnMismatch.isEnabled()
+                || !(preLaunchedActivity instanceof ChromeTabbedActivity preLaunchedTabbedActivity)
+                || !preLaunchedActivity.isFinishing()) {
+            return false;
+        }
+
+        // Destroy the TabPersistentStore instance maintained by the finishing activity. Save the
+        // tab state first to align with the current flow of execution when the store is destroyed.
+        var tabModelOrchestrator =
+                preLaunchedTabbedActivity.getTabModelOrchestratorSupplier().get();
+        // If the two activities launched within a short span, simply destroy the persistent store
+        // instance of the finishing activity, assuming no changes have been made to the tab state
+        // during this time.
+        // TODO (crbug.com/1520923): Add a histogram to track the time difference to possibly refine
+        // the threshold value, and also make this Finch configurable.
+        long onCreateTimeDelta =
+                Math.abs(
+                        preLaunchedTabbedActivity.getOnCreateTimestampMs()
+                                - this.getOnCreateTimestampMs());
+        boolean shouldSaveState =
+                preLaunchedTabbedActivity.getLifecycleDispatcher().getCurrentActivityState()
+                        < ActivityState.STOPPED_WITH_NATIVE;
+        if (shouldSaveState
+                && onCreateTimeDelta > BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS) {
+            // Save state only if #onStopWithNative() that invokes this, has not run yet.
+            tabModelOrchestrator.getTabPersistentStore().saveState();
+        }
+        tabModelOrchestrator.destroyTabPersistentStore();
+        return true;
     }
 
     public MultiInstanceManager getMultiInstanceMangerForTesting() {

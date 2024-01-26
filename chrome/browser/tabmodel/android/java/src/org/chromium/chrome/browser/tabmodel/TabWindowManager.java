@@ -32,6 +32,11 @@ public interface TabWindowManager {
     // ChromeTabbedActivity.
     public static final int MAX_SELECTORS_S = 5;
 
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_NAME =
+            "Android.MultiWindowMode.AssertIndicesMatch";
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
+    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
+
     /**
      * @return The maximum number of simultaneous TabModelSelector instances in this Application.
      */
@@ -45,6 +50,7 @@ public interface TabWindowManager {
      * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
+     * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
      * @param index The index of the requested {@link TabModelSelector}. Not guaranteed to be the
      *     index of the {@link TabModelSelector} returned.
      * @return {@link Pair} of the index and the {@link TabModelSelector} assigned to that index, or
@@ -55,6 +61,7 @@ public interface TabWindowManager {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            MismatchedIndicesHandler mismatchedIndicesHandler,
             int index);
 
     /**

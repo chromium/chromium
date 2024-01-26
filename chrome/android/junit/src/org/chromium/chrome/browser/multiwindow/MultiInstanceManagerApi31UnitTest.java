@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -184,6 +185,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+
+    private final MismatchedIndicesHandler mMismatchedIndicesHandler = preLaunchedActivity -> false;
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
@@ -466,7 +469,12 @@ public class MultiInstanceManagerApi31UnitTest {
         Pair<Integer, TabModelSelector> pair =
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
-                                mActivityTask57, mProfileProviderSupplier, null, null, index);
+                                mActivityTask57,
+                                mProfileProviderSupplier,
+                                null,
+                                null,
+                                mMismatchedIndicesHandler,
+                                index);
         int instanceId = pair.first;
         assertEquals(0, instanceId);
     }
@@ -492,7 +500,12 @@ public class MultiInstanceManagerApi31UnitTest {
         Pair<Integer, TabModelSelector> pair =
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
-                                mActivityTask57, mProfileProviderSupplier, null, null, index);
+                                mActivityTask57,
+                                mProfileProviderSupplier,
+                                null,
+                                null,
+                                mMismatchedIndicesHandler,
+                                index);
         int instanceId = pair.first;
 
         // This is the "wrong" id, exercising code path where flag is disabled.
@@ -931,7 +944,13 @@ public class MultiInstanceManagerApi31UnitTest {
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =
                 TabWindowManagerSingleton.getInstance()
-                        .requestSelector(activity, mProfileProviderSupplier, null, null, index);
+                        .requestSelector(
+                                activity,
+                                mProfileProviderSupplier,
+                                null,
+                                null,
+                                mMismatchedIndicesHandler,
+                                index);
         if (pair == null) return INVALID_INSTANCE_ID;
 
         int instanceId = pair.first;

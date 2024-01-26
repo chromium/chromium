@@ -53,6 +53,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -281,5 +282,48 @@ public class ChromeTabbedActivityTest {
                     Criteria.checkThat(tabModel.getCount(), Matchers.is(2));
                 });
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ON_MISMATCH)
+    public void testHandleMismatchedIndices() throws ExecutionException {
+        // Launch 2 new ChromeTabbedActivity intents back to back. Set FLAG_ACTIVITY_MULTIPLE_TASK
+        // to ensure that new activities are created. Note that generally our logs indicate
+        // FLAG_ACTIVITY_MULTIPLE_TASK is not set on incoming intents, however, this is generally
+        // the only way to get two ChromeTabbedActivity's in a non-error case.
+        Intent intent1 = new Intent(Intent.ACTION_MAIN);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent1.setClass(mActivity, ChromeTabbedActivity.class);
+
+        Intent intent2 = new Intent(Intent.ACTION_MAIN);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent2.setClass(mActivity, ChromeTabbedActivity.class);
+
+        // Create the activities, trigger finish() on activity1 and allow activity2 to handle this
+        // finishing activity.
+        ChromeTabbedActivity activity1 =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mActivity.getApplicationContext().startActivity(intent1));
+
+        ChromeTabbedActivity activity2 =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mActivity.getApplicationContext().startActivity(intent2));
+        activity1.finish();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> activity2.handleMismatchedIndices(activity1));
+        Assert.assertTrue(
+                "Boolean |mTabPersistentStoreDestroyedEarly| should be true.",
+                activity1
+                        .getTabModelOrchestratorSupplier()
+                        .get()
+                        .getTabPersistentStoreDestroyedEarlyForTesting());
     }
 }

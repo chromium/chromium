@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataJni;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -98,6 +99,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ChromeTabCreator mChromeTabCreator;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock private TabContentManager mTabContentManager;
     @Mock private Profile mProfile;
     @Mock private ProfileProvider mProfileProvider;
@@ -133,6 +135,7 @@ public class TabPersistentStoreIntegrationTest {
                 profileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
                 0);
         mTabModelSelector = mOrchestrator.getTabModelSelector();
         mTabPersistentStore = mOrchestrator.getTabPersistentStore();

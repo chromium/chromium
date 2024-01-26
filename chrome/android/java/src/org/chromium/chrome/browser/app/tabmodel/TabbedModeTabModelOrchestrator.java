@@ -13,6 +13,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -47,6 +48,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
@@ -61,6 +63,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                                 profileProviderSupplier,
                                 tabCreatorManager,
                                 nextTabPolicySupplier,
+                                mismatchedIndicesHandler,
                                 selectorIndex);
         if (selectorAssignment == null) {
             mTabModelSelector = null;

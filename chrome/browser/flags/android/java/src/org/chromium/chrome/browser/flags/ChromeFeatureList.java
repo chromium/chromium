@@ -460,6 +460,8 @@ public abstract class ChromeFeatureList {
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
     public static final String TAB_STATE_FLATBUFFER = "TabStateFlatBuffer";
+    public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ON_MISMATCH =
+            "TabWindowManagerIndexReassignmentOnMismatch";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
     public static final String TANGIBLE_SYNC = "TangibleSync";
@@ -623,6 +625,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStripGroupIndicators =
             newCachedFlag(TAB_STRIP_GROUP_INDICATORS, false);
     public static final CachedFlag sTabToGTSAnimation = newCachedFlag(TAB_TO_GTS_ANIMATION, true);
+    public static final CachedFlag sTabWindowManagerIndexReassignmentOnMismatch =
+            newCachedFlag(TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ON_MISMATCH, true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
@@ -708,6 +712,7 @@ public abstract class ChromeFeatureList {
                     sTabStripStartupRefactoring,
                     sTabletToolbarReordering,
                     sTabToGTSAnimation,
+                    sTabWindowManagerIndexReassignmentOnMismatch,
                     sTabWindowManagerReportIndicesMismatch,
                     sToolbarUseHardwareBitmapDraw,
                     sUseChimeAndroidSdk,

@@ -1073,6 +1073,7 @@ public class TabPersistentStoreTest {
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,
+                                                    preLaunchedActivity -> false,
                                                     0)
                                             .second;
                         });
