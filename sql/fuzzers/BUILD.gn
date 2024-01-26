@@ -5,21 +5,18 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-# TODO(https://crbug.com/1385500): Make built-in recovery work on Fuchsia.
-if (!is_fuchsia) {
-  fuzzer_test("sql_built_in_recovery_lpm_fuzzer") {
-    sources = [ "built_in_recovery_lpm_fuzzer.cc" ]
-    deps = [
-      ":sql_disk_corruption_proto",
-      "//base",
-      "//base/test:test_support",
-      "//sql",
-      "//third_party/libprotobuf-mutator",
-      "//third_party/sqlite:sql_query_proto_to_string",
-    ]
+fuzzer_test("sql_built_in_recovery_lpm_fuzzer") {
+  sources = [ "built_in_recovery_lpm_fuzzer.cc" ]
+  deps = [
+    ":sql_disk_corruption_proto",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/sqlite:sql_query_proto_to_string",
+  ]
 
-    dict = "//third_party/sqlite/fuzz/sql.dict"
-  }
+  dict = "//third_party/sqlite/fuzz/sql.dict"
 }
 
 fuzzable_proto_library("sql_disk_corruption_proto") {

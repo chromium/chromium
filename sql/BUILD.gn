@@ -152,21 +152,18 @@ fuzzer_test("sql_recovery_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1385500): Make built-in recovery work on Fuchsia.
-if (!is_fuchsia) {
-  fuzzer_test("sql_built_in_recovery_fuzzer") {
-    sources = [ "built_in_recovery_fuzzer.cc" ]
-    deps = [
-      ":sql",
-      "//base",
-      "//base/test:test_support",
-    ]
+fuzzer_test("sql_built_in_recovery_fuzzer") {
+  sources = [ "built_in_recovery_fuzzer.cc" ]
+  deps = [
+    ":sql",
+    "//base",
+    "//base/test:test_support",
+  ]
 
-    libfuzzer_options = [ "rss_limit_mb=4096" ]
-  }
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
+}
 
-  group("fuzzers") {
-    testonly = true
-    deps = [ "//sql/fuzzers:sql_built_in_recovery_lpm_fuzzer" ]
-  }
+group("fuzzers") {
+  testonly = true
+  deps = [ "//sql/fuzzers:sql_built_in_recovery_lpm_fuzzer" ]
 }
