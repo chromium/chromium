@@ -191,19 +191,15 @@ NSString* const kCredentialProviderPromoAccessibilityId =
 // Sets the layout of the alertScreen view when the promo will be
 // shown without the animation view (half-screen promo).
 - (void)layoutAlertScreenForPromoWithoutAnimation {
-  if (@available(iOS 15, *)) {
-    self.alertScreen.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        self.alertScreen.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kPreferredCornerRadius;
-  } else {
-    self.alertScreen.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
+  self.alertScreen.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.alertScreen.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kPreferredCornerRadius;
 }
 
 // Configures the animation view and its constraints.
