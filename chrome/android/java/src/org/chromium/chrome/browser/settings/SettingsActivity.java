@@ -311,7 +311,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         (sheet) -> {},
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
-                        () -> sheetContainer);
+                        () -> sheetContainer,
+                        () -> 0);
 
         mBottomSheetControllerSupplier.set(mBottomSheetController);
     }

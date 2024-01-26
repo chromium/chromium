@@ -446,7 +446,8 @@ public class CreatorCoordinator
                         (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
-                        () -> mBottomSheetContainer);
+                        () -> mBottomSheetContainer,
+                        () -> 0);
     }
 
     private void setUpToolbarListener() {

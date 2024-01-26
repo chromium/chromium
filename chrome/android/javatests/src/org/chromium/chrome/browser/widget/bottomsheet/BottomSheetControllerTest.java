@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import android.graphics.Rect;
 import android.view.MotionEvent;
@@ -19,12 +20,16 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -44,8 +49,10 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -60,6 +67,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -95,9 +103,11 @@ public class BottomSheetControllerTest {
     private TestBottomSheetContent mBackInterceptingContent;
     private ScrimCoordinator mScrimCoordinator;
     private int mSuppressionToken;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         mActivity = sActivityTestRule.getActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -129,6 +139,9 @@ public class BottomSheetControllerTest {
                     mPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
+                    mActivity
+                            .getEdgeToEdgeControllerSupplierForTesting()
+                            .set(mEdgeToEdgeController);
                 });
     }
 
@@ -162,6 +175,30 @@ public class BottomSheetControllerTest {
                 "The bottom sheet is showing incorrect content.",
                 mLowPriorityContent,
                 mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    public void testShowWithBottomInset() {
+        requestContentInSheet(mLowPriorityContent, true);
+        View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
+        float transYWithoutBottomInset = bottomSheet.getTranslationY();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetController.hideContent(mLowPriorityContent, false);
+                });
+
+        doReturn(100).when(mEdgeToEdgeController).getBottomInset();
+
+        requestContentInSheet(mLowPriorityContent, true);
+        float transYWithBottomInset = bottomSheet.getTranslationY();
+
+        Assert.assertEquals(
+                "The translate is not adjusted for the extra content when it is expanded to edge.",
+                transYWithoutBottomInset,
+                transYWithBottomInset + ViewUtils.dpToPx(mActivity, 100),
+                MathUtils.EPSILON);
     }
 
     @Test

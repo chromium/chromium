@@ -1756,7 +1756,12 @@ public class RootUiCoordinator
                         sheetInitializedCallback,
                         mActivity.getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
-                        () -> mActivity.findViewById(R.id.sheet_container));
+                        () -> mActivity.findViewById(R.id.sheet_container),
+                        () -> {
+                            return mEdgeToEdgeControllerSupplier.get() == null
+                                    ? 0
+                                    : mEdgeToEdgeControllerSupplier.get().getBottomInset();
+                        });
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable) ->
                         ChromePureJavaExceptionReporter.reportJavaException((Throwable) throwable));
