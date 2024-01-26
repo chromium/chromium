@@ -793,7 +793,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
 
   return ExternalCanvasResource::Create(
       resource, viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
-      resource_provider, cc::PaintFlags::FilterQuality::kLow,
+      resource_provider, filter_quality_,
       /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
 
@@ -813,7 +813,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   return ExternalCanvasResource::Create(
       out_resource, std::move(out_release_callback),
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
-      cc::PaintFlags::FilterQuality::kLow,
+      filter_quality_,
       /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
 
