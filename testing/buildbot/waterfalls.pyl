@@ -4685,6 +4685,16 @@
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
       },
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'browser_config': 'release',
+        'os_type': 'win',
+        'mixins': [
+          "win11_qualcomm_adreno_690_stable",
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
     },
   },
   {
