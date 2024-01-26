@@ -5607,12 +5607,12 @@
   {
     "name": "ntp-journeys-module-suggestion-chip-header",
     "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-journeys-module-text-only",
     "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-middle-slot-promo-dismissal",
@@ -5637,7 +5637,7 @@
   {
     "name": "ntp-modules-redesigned",
     "owners": [ "mahmadi@chromium.org", "tiborg@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-photos-module",
