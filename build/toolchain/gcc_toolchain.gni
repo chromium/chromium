@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/sysroot.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
@@ -30,8 +31,11 @@ declare_args() {
       (target_os == "android" || target_os == "win")
 
   # Use -MD instead of -MMD for compiler commands. This is useful for tracking
-  # the comprehensive set of dependencies.
-  system_headers_in_deps = false
+  # the comprehensive set of dependencies.  It's also required when building
+  # without the sysroot so that updates to system header files trigger a
+  # rebuild (when using the sysroot, the CR_SYSROOT_KEY define takes care of
+  # this already).
+  system_headers_in_deps = !use_sysroot
 }
 
 # When the arg is set via args.gn, it applies to all toolchains. In order to not
