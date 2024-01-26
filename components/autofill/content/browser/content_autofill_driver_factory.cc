@@ -60,7 +60,7 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
     ContentAutofillClient* client)
-    : content::WebContentsObserver(web_contents), client_(client) {}
+    : content::WebContentsObserver(web_contents), client_(*client) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
   for (Observer& observer : observers_) {
@@ -100,7 +100,7 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
       }
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
-      client()->InitAgent(/*pass_key=*/{}, driver->GetAutofillAgent());
+      client().InitAgent(/*pass_key=*/{}, driver->GetAutofillAgent());
     } else {
       driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);
@@ -167,8 +167,8 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   // exists (not in Android Webview), and the AutofillOfferManager exists (not
   // in Incognito windows), notifies the navigation event.
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      client()->GetAutofillOfferManager()) {
-    client()->GetAutofillOfferManager()->OnDidNavigateFrame(client());
+      client().GetAutofillOfferManager()) {
+    client().GetAutofillOfferManager()->OnDidNavigateFrame(client());
   }
 
   // When IsServedFromBackForwardCache or IsPrerendererdPageActivation, the form

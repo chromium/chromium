@@ -40,8 +40,6 @@ class ContentAutofillDriverFactoryTestApi {
   void AddObserverAtIndex(ContentAutofillDriverFactory::Observer* observer,
                           size_t index);
 
-  void set_client(ContentAutofillClient* client) { factory_->client_ = client; }
-
  private:
   const raw_ref<ContentAutofillDriverFactory> factory_;
 };

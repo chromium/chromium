@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver_router.h"
@@ -86,7 +86,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  ContentAutofillClient* client() { return client_; }
+  ContentAutofillClient& client() { return *client_; }
 
   AutofillDriverRouter& router() { return router_; }
 
@@ -105,7 +105,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
-  raw_ptr<ContentAutofillClient> client_;
+  const raw_ref<ContentAutofillClient> client_;
 
   // Routes events between different ContentAutofillDrivers.
   // Must be destroyed after |driver_map_|'s elements.
