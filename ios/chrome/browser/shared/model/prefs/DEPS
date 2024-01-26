@@ -12,6 +12,7 @@ include_rules = [
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
   "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
   "+ios/chrome/browser/photos/model/photos_policy.h",
+  "+ios/chrome/browser/web/model/annotations/annotations_util.h",
 ]
 
 specific_include_rules = {

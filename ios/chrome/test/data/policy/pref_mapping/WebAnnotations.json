@@ -1,0 +1,89 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebAnnotations": {
+            "default": "enabled",
+            "addresses": "disabled"
+          }
+        },
+        "prefs": {
+          "ios.web_annotations_policy": {
+            "value": {
+              "default": "enabled",
+              "addresses": "disabled"
+            }
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAnnotations": {}
+        },
+        "prefs": {
+          "ios.web_annotations_policy": {
+            "value": {}
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAnnotations": {
+            "default": "enabled",
+            "addresses": "default",
+            "calendar": "default",
+            "email": "default",
+            "package": "default",
+            "phonenumbers": "default",
+            "units": "default"
+          }
+        },
+        "prefs": {
+          "ios.web_annotations_policy": {
+            "value": {
+              "default": "enabled",
+              "addresses": "default",
+              "calendar": "default",
+              "email": "default",
+              "package": "default",
+              "phonenumbers": "default",
+              "units": "default"
+            }
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAnnotations": {
+            "default": "enabled",
+            "addresses": "default",
+            "calendar": "default",
+            "email": "default",
+            "foo": "bar",
+            "package": "default",
+            "phonenumbers": "default",
+            "units": "default"
+          }
+        },
+        "prefs": {
+          "ios.web_annotations_policy": {
+            "value": {
+              "default": "enabled",
+              "addresses": "default",
+              "calendar": "default",
+              "email": "default",
+              "foo": "bar",
+              "package": "default",
+              "phonenumbers": "default",
+              "units": "default"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

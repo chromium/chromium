@@ -1201,6 +1201,7 @@ policies:
   1200: F11KeyModifier
   1201: F12KeyModifier
   1202: VirtualKeyboardSmartVisibilityEnabled
+  1203: WebAnnotations
 atomic_groups:
   1: Homepage
   2: RemoteAccess
