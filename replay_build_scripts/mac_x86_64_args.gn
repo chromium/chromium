@@ -6,3 +6,4 @@ use_allocator = "none"
 use_allocator_shim = false
 use_system_xcode = false
 mac_sdk_official_version = "13.0"
+target_cpu="x64"
