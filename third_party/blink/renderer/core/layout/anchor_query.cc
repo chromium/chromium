@@ -509,6 +509,16 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
       container_converter_.ToPhysical(reference->rect));
 }
 
+absl::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
+    bool is_y_axis,
+    LayoutUnit available_size) {
+  SetAxis(is_y_axis, /* is_right_or_bottom */ false, available_size);
+  // Parameter `percentage` is unused for any non-percentage anchor value.
+  const double dummy_percentage = 0;
+  return EvaluateAnchor(*AnchorSpecifierValue::Default(),
+                        CSSAnchorValue::kCenter, dummy_percentage);
+}
+
 void LogicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);

@@ -118,13 +118,15 @@ class AbsoluteUtilsTest : public RenderingTest {
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), container_writing_direction,
-        self_writing_direction, &anchor_evaluator);
+        node.Style(), space.AvailableSize(), LogicalAlignment(),
+        container_writing_direction, self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
-            node, space.AvailableSize(), insets, static_position,
+            node, space.AvailableSize(), LogicalAlignment(), insets,
+            static_position, LogicalAnchorCenterPosition(),
             container_writing_direction, node.Style().GetWritingDirection());
-    ComputeOofInlineDimensions(node, node.Style(), space, imcb, border_padding,
+    ComputeOofInlineDimensions(node, node.Style(), space, imcb,
+                               LogicalAlignment(), border_padding,
                                absl::nullopt, container_writing_direction,
                                /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
@@ -157,14 +159,16 @@ class AbsoluteUtilsTest : public RenderingTest {
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), container_writing_direction,
-        self_writing_direction, &anchor_evaluator);
+        node.Style(), space.AvailableSize(), LogicalAlignment(),
+        container_writing_direction, self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
-            node, space.AvailableSize(), insets, static_position,
+            node, space.AvailableSize(), LogicalAlignment(), insets,
+            static_position, LogicalAnchorCenterPosition(),
             container_writing_direction, node.Style().GetWritingDirection());
-    ComputeOofBlockDimensions(node, node.Style(), space, imcb, border_padding,
-                              absl::nullopt, container_writing_direction,
+    ComputeOofBlockDimensions(node, node.Style(), space, imcb,
+                              LogicalAlignment(), border_padding, absl::nullopt,
+                              container_writing_direction,
                               /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);

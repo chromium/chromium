@@ -328,6 +328,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // property, or nullopt if there's no such element.
   absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
+  // Returns the offset `anchor-center` aligns to in the current physical axis,
+  // or nullopt if there's no default anchor.
+  absl::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(
+      bool is_y_axis,
+      LayoutUnit available_size);
+
   bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
 
  private:

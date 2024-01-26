@@ -267,8 +267,7 @@ std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
       (FirstStart() == InsetAreaRegion::kCenter &&
        FirstEnd() == InsetAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    // TODO(crbug.com/1469728): Should be kAnchorCenter when supported.
-    align = align_reverse = ItemPosition::kNormal;
+    align = align_reverse = ItemPosition::kAnchorCenter;
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -281,8 +280,7 @@ std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
       (SecondStart() == InsetAreaRegion::kCenter &&
        SecondEnd() == InsetAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
-    // TODO(crbug.com/1469728): Should be kAnchorCenter when supported.
-    justify = justify_reverse = ItemPosition::kNormal;
+    justify = justify_reverse = ItemPosition::kAnchorCenter;
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
