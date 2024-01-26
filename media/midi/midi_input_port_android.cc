@@ -22,13 +22,13 @@ MidiInputPortAndroid::~MidiInputPortAndroid() {
 }
 
 bool MidiInputPortAndroid::Open() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_MidiInputPortAndroid_open(env, raw_port_,
                                         reinterpret_cast<jlong>(this));
 }
 
 void MidiInputPortAndroid::Close() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_MidiInputPortAndroid_close(env, raw_port_);
 }
 

@@ -125,7 +125,7 @@ RootBeginFrameSourceWebView::RootBeginFrameSourceWebView()
                           60.0f,
                           /*requires_align_with_java=*/true),
       j_object_(Java_RootBeginFrameSourceWebView_Constructor(
-          base::android::AttachCurrentThread(),
+          jni_zero::AttachCurrentThread(),
           reinterpret_cast<jlong>(this))) {
   ObserveBeginFrameSource(&begin_frame_source_);
 }

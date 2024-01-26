@@ -13,11 +13,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/snapshot/snapshot.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 using ui::WindowAndroid;
 
 namespace chrome {

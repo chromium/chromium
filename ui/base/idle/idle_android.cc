@@ -11,9 +11,9 @@
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/ui_base_jni_headers/IdleDetector_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 namespace ui {
 

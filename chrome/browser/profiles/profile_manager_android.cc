@@ -15,7 +15,7 @@ ProfileManagerAndroid::~ProfileManagerAndroid() = default;
 
 void ProfileManagerAndroid::OnProfileAdded(Profile* profile) {
   Java_ProfileManager_onProfileAdded(
-      base::android::AttachCurrentThread(),
+      jni_zero::AttachCurrentThread(),
       ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 

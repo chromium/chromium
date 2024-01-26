@@ -13,7 +13,7 @@ namespace base {
 namespace android {
 
 bool WriteJavaHeapDumpToPath(base::StringPiece filePath) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_JavaHeapDumpGenerator_generateHprof(
       env, base::android::ConvertUTF8ToJavaString(env, filePath));
 }

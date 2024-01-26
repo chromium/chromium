@@ -22,20 +22,20 @@ class JniDelegateImpl : public JniDelegate {
 
   void Create(ui::WindowAndroid* window_android) override {
     java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
-        base::android::AttachCurrentThread(),
+        jni_zero::AttachCurrentThread(),
         reinterpret_cast<intptr_t>(bridge_.get()),
         window_android->GetJavaObject()));
   }
 
   void Show(const std::string& origin) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_NoPasskeysBottomSheetBridge_show(
         env, java_object_, base::android::ConvertUTF8ToJavaString(env, origin));
   }
 
   void Dismiss() override {
-    Java_NoPasskeysBottomSheetBridge_dismiss(
-        base::android::AttachCurrentThread(), java_object_);
+    Java_NoPasskeysBottomSheetBridge_dismiss(jni_zero::AttachCurrentThread(),
+                                             java_object_);
   }
 
  private:

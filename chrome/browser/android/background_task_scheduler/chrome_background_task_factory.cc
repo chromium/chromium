@@ -19,7 +19,7 @@
 
 // static
 void ChromeBackgroundTaskFactory::SetAsDefault() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ChromeBackgroundTaskFactory_setAsDefault(env);
 }
 

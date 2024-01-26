@@ -9,9 +9,9 @@
 #include "components/prefs/android/jni_headers/PrefService_jni.h"
 #include "components/prefs/pref_service.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 PrefServiceAndroid::PrefServiceAndroid(PrefService* pref_service)
     : pref_service_(pref_service) {}

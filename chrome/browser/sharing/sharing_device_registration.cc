@@ -302,7 +302,7 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
 
 bool SharingDeviceRegistration::IsClickToCallSupported() const {
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_SharingJNIBridge_isTelephonySupported(env);
 #else
   return false;

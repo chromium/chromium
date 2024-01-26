@@ -18,12 +18,12 @@ MidiOutputPortAndroid::~MidiOutputPortAndroid() {
 }
 
 bool MidiOutputPortAndroid::Open() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_MidiOutputPortAndroid_open(env, raw_port_);
 }
 
 void MidiOutputPortAndroid::Close() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_MidiOutputPortAndroid_close(env, raw_port_);
 }
 
@@ -32,7 +32,7 @@ void MidiOutputPortAndroid::Send(const std::vector<uint8_t>& data) {
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> data_to_pass =
       base::android::ToJavaByteArray(env, data);
 

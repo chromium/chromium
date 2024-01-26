@@ -20,7 +20,7 @@ const base::TimeDelta kOnStartTaskDelay = base::Seconds(2);
 }  // namespace
 
 BackgroundTaskUpdateScheduler::BackgroundTaskUpdateScheduler() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   j_update_scheduler_.Reset(Java_UpdateScheduler_getInstance(env));
   Java_UpdateScheduler_setNativeScheduler(env, j_update_scheduler_,
                                           reinterpret_cast<intptr_t>(this));
@@ -36,12 +36,12 @@ void BackgroundTaskUpdateScheduler::Schedule(
   user_task_ = user_task;
   on_stop_ = on_stop;
   Java_UpdateScheduler_schedule(
-      base::android::AttachCurrentThread(), j_update_scheduler_,
+      jni_zero::AttachCurrentThread(), j_update_scheduler_,
       initial_delay.InMilliseconds(), delay.InMilliseconds());
 }
 
 void BackgroundTaskUpdateScheduler::Stop() {
-  Java_UpdateScheduler_cancelTask(base::android::AttachCurrentThread(),
+  Java_UpdateScheduler_cancelTask(jni_zero::AttachCurrentThread(),
                                   j_update_scheduler_);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -66,7 +66,7 @@ void BackgroundTaskUpdateScheduler::OnStopTask(
 }
 
 void BackgroundTaskUpdateScheduler::OnStartTaskDelayed() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (!user_task_) {
     LOG(WARNING) << "No components registered to update";
     Java_UpdateScheduler_finishTask(env, j_update_scheduler_,

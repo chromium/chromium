@@ -184,7 +184,7 @@ std::string AccountsToString(
 
 AccountTrackerService::AccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
       signin::Java_AccountTrackerService_Constructor(
           env, reinterpret_cast<intptr_t>(this));
@@ -195,7 +195,7 @@ AccountTrackerService::AccountTrackerService() {
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   signin::Java_AccountTrackerService_destroy(env, java_ref_);
 #endif
   pref_service_ = nullptr;

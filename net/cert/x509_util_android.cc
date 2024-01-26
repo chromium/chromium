@@ -5,7 +5,7 @@
 #include "net/cert/cert_database.h"
 #include "net/net_jni_headers/X509Util_jni.h"
 
-using base::android::JavaParamRef;
+using jni_zero::JavaParamRef;
 
 namespace net {
 

@@ -467,7 +467,7 @@ ScopedJavaLocalRef<jobject> CreateJavaImageLine(
 }  // namespace
 
 ScopedJavaLocalRef<jobject> SuggestionAnswer::CreateJavaObject() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_SuggestionAnswer_createSuggestionAnswer(
       env, static_cast<int>(type_), CreateJavaImageLine(env, &first_line_),
       CreateJavaImageLine(env, &second_line_));

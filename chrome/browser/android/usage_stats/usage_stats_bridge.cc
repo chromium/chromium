@@ -21,13 +21,13 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
-using base::android::AttachCurrentThread;
 using base::android::JavaArrayOfByteArrayToStringVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaArrayOfStrings;
+using jni_zero::AttachCurrentThread;
 
 namespace usage_stats {
 

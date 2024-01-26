@@ -113,7 +113,7 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
   static MultipleUserProfilesState multiple_user_profiles_state =
       static_cast<MultipleUserProfilesState>(
           Java_ChromeSessionState_getMultipleUserProfilesState(
-              base::android::AttachCurrentThread()));
+              jni_zero::AttachCurrentThread()));
   return multiple_user_profiles_state;
 }
 
