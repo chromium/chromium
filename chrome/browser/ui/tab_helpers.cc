@@ -177,6 +177,8 @@
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
+#include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -549,6 +551,12 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   PolicyAuditorBridge::CreateForWebContents(web_contents);
   PluginObserverAndroid::CreateForWebContents(web_contents);
+
+  if (base::FeatureList::IsEnabled(
+          payments::facilitated::kEnablePixDetection)) {
+    payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
+        CreateForWebContents(web_contents);
+  }
 #else  // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {
     webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
