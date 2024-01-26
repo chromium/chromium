@@ -263,6 +263,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/new_tab_url/DseNewTabUrlManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateControllerTest.java",
   "junit/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolderTest.java",
+  "junit/src/org/chromium/chrome/browser/notifications/NotificationSuspenderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/FeedPositionUtilUnitTest.java",

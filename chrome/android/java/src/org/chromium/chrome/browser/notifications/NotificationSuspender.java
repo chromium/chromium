@@ -5,14 +5,12 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
-import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
@@ -21,6 +19,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -39,13 +39,20 @@ import java.util.stream.Collectors;
 public class NotificationSuspender {
     private final Profile mProfile;
     private final Context mContext;
-    private final NotificationManager mNotificationManager;
+    private final NotificationManagerProxy mNotificationManager;
 
     public NotificationSuspender(Profile profile) {
+        this(
+                profile,
+                ContextUtils.getApplicationContext(),
+                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+    }
+
+    public NotificationSuspender(
+            Profile profile, Context context, NotificationManagerProxy notificationManager) {
         mProfile = profile;
-        mContext = ContextUtils.getApplicationContext();
-        mNotificationManager =
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mContext = context;
+        mNotificationManager = notificationManager;
     }
 
     /**
@@ -179,7 +186,8 @@ public class NotificationSuspender {
             return notifications;
         }
 
-        for (StatusBarNotification notification : mNotificationManager.getActiveNotifications()) {
+        for (NotificationManagerProxy.StatusBarNotificationProxy notification :
+                mNotificationManager.getActiveNotifications()) {
             if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
             String tag = notification.getTag();
             String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);

@@ -58,4 +58,22 @@ public interface NotificationManagerProxy {
 
     @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannelGroup(String groupId);
+
+    /**
+     * A proxy for Android's StatusBarNotification.
+     *
+     * <p>Instead of returning real StatusBarNotification instances through getActiveNotifications()
+     * below, we need this layer of indirection, as the constructor for creating real
+     * StatusBarNotification instances is deprecated for non-sytem apps, making life hard for the
+     * MockNotificationManagerProxy implementation.
+     */
+    interface StatusBarNotificationProxy {
+        int getId();
+
+        String getTag();
+
+        Notification getNotification();
+    }
+
+    List<? extends StatusBarNotificationProxy> getActiveNotifications();
 }
