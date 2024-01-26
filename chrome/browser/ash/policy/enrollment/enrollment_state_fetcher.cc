@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -88,6 +89,9 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
           },
           [](AutoEnrollmentSystemClockSyncError) {
             return kUMASuffixConnectionError;
+          },
+          [](AutoEnrollmentStateKeysRetrievalError) {
+            return kUMASuffixStateKeysRetrievalError;
           },
           [](const AutoEnrollmentDMServerError& error) {
             return error.network_error.has_value() ? kUMASuffixConnectionError
@@ -530,8 +534,8 @@ class StateKeys {
   StateKeys(const StateKeys&) = delete;
   StateKeys& operator=(const StateKeys&) = delete;
 
-  using CompletionCallback =
-      base::OnceCallback<void(std::optional<std::string>)>;
+  using CompletionCallback = base::OnceCallback<void(
+      base::expected<std::string, ServerBackedStateKeysBroker::ErrorType>)>;
 
   // This will try up to `kMaxAttempts` times to obtain the state keys.  If
   // successful, it will return the current state key by calling the completion
@@ -549,13 +553,15 @@ class StateKeys {
   void OnStateKeysRetrieved(ServerBackedStateKeysBroker* state_key_broker,
                             CompletionCallback completion_callback,
                             const std::vector<std::string>& state_keys) {
-    if (state_keys.empty() || state_keys[0].empty()) {
-      if (attempts_ >= kMaxAttempts) {
-        return std::move(completion_callback).Run(std::nullopt);
-      }
-      return Retrieve(state_key_broker, std::move(completion_callback));
+    const auto error_type = state_key_broker->error_type();
+    if (error_type == ServerBackedStateKeysBroker::ErrorType::kNoError) {
+      CHECK(!state_keys.empty());  // This is guaranteed by the broker.
+      return std::move(completion_callback).Run(state_keys.front());
     }
-    return std::move(completion_callback).Run(state_keys[0]);
+    if (attempts_ >= kMaxAttempts) {
+      return std::move(completion_callback).Run(base::unexpected(error_type));
+    }
+    return Retrieve(state_key_broker, std::move(completion_callback));
   }
 
   int attempts_ = 0;
@@ -1001,12 +1007,36 @@ class EnrollmentStateFetcherImpl::Sequence {
                                         weak_factory_.GetWeakPtr()));
   }
 
-  void OnStateKeysRetrieved(std::optional<std::string> state_key) {
-    ReportStepDurationAndResetTimer(kUMASuffixStateKeyRetrieval);
-    base::UmaHistogramBoolean(kUMAStateDeterminationStateKeysRetrieved,
-                              state_key.has_value());
-    LOG_IF(WARNING, !state_key) << "Failed to obtain state keys";
-    context_.state_key = state_key;
+  void OnStateKeysRetrieved(
+      base::expected<std::string, ServerBackedStateKeysBroker::ErrorType>
+          state_key) {
+    ReportStepDurationAndResetTimer(kUMASuffixStateKeysRetrieval);
+    base::UmaHistogramEnumeration(
+        kUMAStateDeterminationStateKeysRetrievalErrorType,
+        state_key.error_or(ServerBackedStateKeysBroker::ErrorType::kNoError));
+    if (state_key.has_value()) {
+      context_.state_key = state_key.value();
+    } else {
+      switch (state_key.error()) {
+        case ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers:
+          // Missing identifiers is typically a permanent error, hence we
+          // proceed to attempt ZTE with just serial number and brand code.
+          LOG(WARNING)
+              << "Failed to obtain state keys due to missing identifiers";
+          context_.state_key.reset();
+          break;
+        case ServerBackedStateKeysBroker::ErrorType::kCommunicationError:
+        case ServerBackedStateKeysBroker::ErrorType::kInvalidResponse:
+          LOG(ERROR) << "Failed to obtain state keys. Error: "
+                     << static_cast<int>(state_key.error());
+          // These errors are typically transient, hence we block here to
+          // enforce a retry and avoid potential FRE escapes.
+          return ReportResult(
+              base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
+        case ServerBackedStateKeysBroker::ErrorType::kNoError:
+          NOTREACHED();
+      }
+    }
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,
                                             weak_factory_.GetWeakPtr()));
   }

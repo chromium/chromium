@@ -2318,6 +2318,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GetUserInfoError"/>
 </enum>
 
+<enum name="StateKeysRetrievalErrorType">
+  <int value="0" label="No error"/>
+  <int value="1" label="Invalid response"/>
+  <int value="2" label="Communication error"/>
+  <int value="3" label="Missing identifiers"/>
+</enum>
+
 <enum name="SystemFeature">
   <summary>System Features to be disabled by a policy.</summary>
   <int value="0" label="Unknown"/>

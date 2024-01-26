@@ -195,6 +195,9 @@ constexpr policy::AutoEnrollmentState kAutoEnrollmentServerError =
     base::unexpected(policy::AutoEnrollmentDMServerError{
         .dm_error = policy::DM_STATUS_TEMPORARY_UNAVAILABLE});
 
+constexpr policy::AutoEnrollmentState kAutoEnrollmentStateKeysRetrievalError =
+    base::unexpected(policy::AutoEnrollmentStateKeysRetrievalError{});
+
 // Matches on the mode parameter of an EnrollmentConfig object.
 MATCHER_P(EnrollmentModeMatches, mode, "") {
   return arg.mode == mode;
@@ -1599,6 +1602,24 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, NoEnrollment) {
   EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kForcedReEnrollmentExplicitlyRequired,
             auto_enrollment_controller()->auto_enrollment_check_type());
+}
+
+// Tests that when EnrollmentStateFetcher reports state keys retrieval error, we
+// show an error on enrollment check screen and that it is not possible to enter
+// guest mode.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest,
+                       BlockedByCommunicationErrorOnStateKeysRetrieval) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  fetcher_factory.ReportEnrollmentState(kAutoEnrollmentStateKeysRetrievalError);
+
+  CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+  EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
+            GetErrorScreen()->GetParentScreen());
+  test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
 }
 
 // Tests that when EnrollmentStateFetcher reports kServerError, we show an error

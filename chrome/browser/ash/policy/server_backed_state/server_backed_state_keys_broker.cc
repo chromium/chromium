@@ -99,4 +99,9 @@ void ServerBackedStateKeysBroker::StoreStateKeys(
       wait_interval);
 }
 
+ServerBackedStateKeysBroker::ErrorType ServerBackedStateKeysBroker::error_type()
+    const {
+  return error_type_;
+}
+
 }  // namespace policy
