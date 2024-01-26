@@ -89,7 +89,6 @@ public class WebApkServiceConnectionManagerTest {
     public void tearDown() {
         mConnectionManager.disconnectAll(RuntimeEnvironment.application);
         mTestExecutor.runPendingTasks();
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     /**

@@ -74,7 +74,6 @@ public class WebApkIdentityServiceClientTest {
     @After
     public void tearDown() {
         WebApkIdentityServiceClient.disconnectAll(RuntimeEnvironment.application);
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     /**

@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -750,11 +749,6 @@ public class WebApkUpdateManagerUnitTest {
         storage.updateDidLastWebApkUpdateRequestSucceed(true);
 
         ChromeBackgroundTaskFactory.setAsDefault();
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     /**

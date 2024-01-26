@@ -187,11 +187,6 @@ public class PostTask {
         ResettersForTesting.register(() -> sPrenativeThreadPoolExecutorForTesting = null);
     }
 
-    /** Clears an override set by setPrenativeThreadPoolExecutorOverrideForTesting. */
-    public static void resetPrenativeThreadPoolExecutorForTesting() {
-        sPrenativeThreadPoolExecutorForTesting = null;
-    }
-
     /**
      * @return The current Executor that PrenativeThreadPool tasks should run on.
      */
@@ -266,7 +261,7 @@ public class PostTask {
             }
             sTestIterationForTesting++;
         }
-        resetPrenativeThreadPoolExecutorForTesting();
+        sPrenativeThreadPoolExecutorForTesting = null;
         if (taskCount > 0) {
             Log.w(TAG, "%d background task(s) existed after test finished.", taskCount);
         }

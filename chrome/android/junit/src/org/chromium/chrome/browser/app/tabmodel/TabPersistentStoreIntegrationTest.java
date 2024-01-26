@@ -146,8 +146,6 @@ public class TabPersistentStoreIntegrationTest {
 
     @After
     public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
-
         // TabbedModeTabModelOrchestrator gets a new TabModelSelector from TabWindowManagerSingleton
         // for every test case, so TabWindowManagerSingleton has to be reset to avoid running out of
         // assignment slots.
