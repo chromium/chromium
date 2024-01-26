@@ -1,0 +1,102 @@
+<style include="cr-shared-style cr-actionable-row-style iron-flex action-link cros-color-overrides">
+  :host {
+    --cr-icon-button-margin-end: 20px;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  :host([elide-label]),
+  :host([elide-label]) #outerRow,
+  :host([elide-label]) #outerRow > div.flex {
+    min-width: 0;
+  }
+
+  :host([elide-label]) .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--cr-section-two-line-min-height);
+    width: 100%;
+  }
+
+  #outerRow[noSubLabel] {
+    min-height: var(--cr-section-min-height);
+  }
+
+  #icon {
+    margin-inline-end: var(--cr-icon-button-margin-end);
+  }
+
+  #labelWrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+  }
+
+  #labelWrapper,
+  ::slotted([slot='more-actions']) {
+    margin-inline-end: 20px !important;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
+
+  /* Style #learn-more or other links that can appear within
+     #sub-label-text-with-link. */
+  a {
+    color: var(--cr-link-color);
+  }
+</style>
+<div id="outerRow" noSubLabel$="[[!subLabel]]">
+  <template is="dom-if" if="[[icon]]">
+    <span id="icon" aria-hidden="true">
+      <iron-icon slot="icon" icon="[[icon]]">
+      </iron-icon>
+    </span>
+  </template>
+  <div class="flex" id="labelWrapper" hidden$="[[!label]]">
+    <div class="label" aria-hidden="[[!ariaShowLabel]]">[[label]]</div>
+    <div class="cr-secondary-text label" id="sub-label">
+      <template is="dom-if" if="[[subLabelIcon]]">
+        <span id="sub-label-icon" aria-hidden="true">
+          <iron-icon slot="icon" icon="[[subLabelIcon]]">
+          </iron-icon>
+        </span>
+      </template>
+      <span id="sub-label-text" aria-hidden="[[!ariaShowSublabel]]">
+        [[subLabel]]
+      </span>
+      <template is="dom-if" if="[[learnMoreUrl]]">
+        <a id="learn-more" href="[[learnMoreUrl]]" target="_blank"
+            aria-labelledby$="[[getLearnMoreAriaLabelledBy_(learnMoreAriaLabel)]]"
+            aria-description="$i18n{opensInNewTab}"
+            on-click="onLearnMoreClick_">
+          $i18n{learnMore}
+        </a>
+        <span id="learn-more-aria-label" aria-hidden="true" hidden>
+          [[learnMoreAriaLabel]]
+        </span>
+      </template>
+      <template is="dom-if" if="[[subLabelWithLink]]">
+        <div id="sub-label-text-with-link"
+            inner-h-t-m-l="[[getSubLabelWithLinkContent_(subLabelWithLink)]]"
+            on-click="onSubLabelTextWithLinkClick_">
+        </div>
+      </template>
+    </div>
+  </div>
+  <slot name="more-actions"></slot>
+  <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]">
+    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+    </cr-policy-pref-indicator>
+  </template>
+  <cr-toggle id="control" checked="{{checked}}"
+      on-change="onChange_"
+      aria-label$="[[getAriaLabel_(label, ariaLabel)]]"
+      aria-describedby="sub-label-text"
+      disabled="[[controlDisabled(disabled, pref)]]">
+  </cr-toggle>
+</div>

@@ -10,8 +10,8 @@
 import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '/shared/settings/controls/settings_toggle_button.js';
-import '/shared/settings/controls/controlled_button.js';
+import '../controls/settings_toggle_button.js';
+import '../controls/controlled_button.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 

@@ -20,12 +20,10 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
-// <if expr="chromeos_ash">
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import './secure_dns_dialog.js';
 
-// </if>
-
+import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -36,7 +34,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page_browser_proxy.js';
 import {getTemplate} from './secure_dns.html.js';
 import {SecureDnsInputElement} from './secure_dns_input.js';
 
@@ -122,7 +119,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
        */
       secureDnsInputValue_: String,
 
-      // <if expr="chromeos_ash">
       showDisableDnsDialog_: {
         type: Boolean,
         value: false,
@@ -135,7 +131,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         },
         readOnly: true,
       },
-      // </if>
     };
   }
 
@@ -147,12 +142,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
-  // <if expr="chromeos_ash">
   private showDisableDnsDialog_: boolean;
   private isRevampWayfindingEnabled_: boolean;
-  // </if>
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // Fetch the options for the dropdown menu before configuring the setting
@@ -171,11 +164,9 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));
 
-      // <if expr="chromeos_ash">
       this.addEventListener(
           'dns-settings-invalid-custom-to-off-mode',
           () => this.onSecureDnsPrefChangedToFalse_());
-      // </if>
     });
   }
 
@@ -183,7 +174,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Update the UI representation to match the underlying host resolver
    * configuration.
    */
-  private onSecureDnsPrefsChanged_(setting: SecureDnsSetting) {
+  private onSecureDnsPrefsChanged_(setting: SecureDnsSetting): void {
     switch (setting.mode) {
       case SecureDnsMode.SECURE:
       case SecureDnsMode.AUTOMATIC:
@@ -200,19 +191,17 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     this.updateManagementView_(setting);
   }
 
-  // <if expr="chromeos_ash">
-  private onSecureDnsPrefChangedToFalse_() {
+  private onSecureDnsPrefChangedToFalse_(): void {
     this.set('secureDnsToggle_.value', false);
     this.showSecureDnsOptions_ = false;
   }
-  // </if>
 
   /**
    * Updates the underlying secure DNS mode pref based on the new toggle
    * selection (and the underlying select menu if the toggle has just been
    * turned on).
    */
-  private onToggleChanged_() {
+  private onToggleChanged_(): void {
     this.showSecureDnsOptions_ = this.secureDnsToggle_.value;
 
     if (!this.secureDnsToggle_.value) {
@@ -231,16 +220,14 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     }
   }
 
-  // <if expr="chromeos_ash">
   /**
    * Only gets called when the user wants to turn on the toggle from ChromeOS
    * Settings.
    */
-  private turnOnDnsToggle_() {
+  private turnOnDnsToggle_(): void {
     this.set('secureDnsToggle_.value', true);
     this.onToggleChanged_();
   }
-  //</if>
 
   /**
    * Helper method for updating the underlying secure DNS prefs based on the
@@ -248,7 +235,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * param should only be specified when the underlying prefs are being updated
    * after a custom entry has been validated.
    */
-  private updateDnsPrefs_(mode: SecureDnsMode, templates: string = '') {
+  private updateDnsPrefs_(mode: SecureDnsMode, templates: string = ''): void {
     switch (mode) {
       case SecureDnsMode.SECURE:
         // If going to secure mode, set the templates pref first to prevent the
@@ -285,7 +272,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Updates the underlying secure DNS templates pref based on the selected
    * resolver and displays the corresponding privacy policy.
    */
-  private onDropdownSelectionChanged_() {
+  private onDropdownSelectionChanged_(): void {
     switch (this.$.resolverSelect.value) {
       case SecureDnsResolverType.AUTOMATIC:
         this.updateDnsPrefs_(SecureDnsMode.AUTOMATIC);
@@ -308,7 +295,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Updates the setting to communicate the type of management, if any. The
    * setting is always collapsed if there is any management.
    */
-  private updateManagementView_(setting: SecureDnsSetting) {
+  private updateManagementView_(setting: SecureDnsSetting): void {
     if (this.prefs === undefined) {
       return;
     }
@@ -326,7 +313,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // template URI for display in which the identifiers are shown in plain
     // text.
     let secureDescription = loadTimeData.getString('secureDnsDescription');
-    // <if expr="chromeos_ash">
     if (this.isRevampWayfindingEnabled_) {
       secureDescription =
           loadTimeData.getString('secureDnsOsSettingsDescription');
@@ -337,7 +323,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           loadTimeData.getString('secureDnsWithIdentifiersDescription'),
           setting.configForDisplay);
     }
-    // </if>
 
     if (this.getPref('dns_over_https.mode').enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
@@ -380,7 +365,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   /**
    * Updates the UI to match the provided configuration parameters.
    */
-  private updateConfigRepresentation_(mode: SecureDnsMode, template: string) {
+  private updateConfigRepresentation_(mode: SecureDnsMode, template: string):
+      void {
     let hideCustomEntry = true;
     let selectValue = '';
     let privacyPolicy = '';
@@ -424,7 +410,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * otherwise hides it.
    * @param policy The privacy policy URL.
    */
-  private updatePrivacyPolicyLine_(policy: string) {
+  private updatePrivacyPolicyLine_(policy: string): void {
     // If the selected item is the custom resolver option, hide the privacy
     // policy line.
     if (!policy) {
@@ -444,7 +430,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Updates the underlying prefs if a custom entry was determined to be valid.
    */
   private onSecureDnsInputEvaluated_(
-      event: CustomEvent<{text: string, isValid: boolean}>) {
+      event: CustomEvent<{text: string, isValid: boolean}>): void {
     if (event.detail.isValid) {
       this.updateDnsPrefs_(SecureDnsMode.SECURE, event.detail.text);
     }
@@ -463,7 +449,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     return undefined;
   }
 
-  // <if expr="chromeos_ash">
   private onDnsToggleClick_(): void {
     const secureDnsToggle =
         this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -491,7 +476,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
 
     this.showDisableDnsDialog_ = false;
   }
-  // </if>
 }
 
 declare global {

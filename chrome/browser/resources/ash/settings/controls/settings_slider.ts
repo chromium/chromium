@@ -10,17 +10,14 @@
  */
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
-// <if expr='chromeos_ash'>
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
 
-import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {getTemplate} from './settings_slider.html.js';
 
 export interface SettingsSliderElement {
@@ -116,13 +113,13 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
 
   override ariaDisabled: string;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.loaded_ = true;
   }
 
-  override focus() {
+  override focus(): void {
     this.$.slider.focus();
   }
 
@@ -138,7 +135,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
    * Sets the |pref.value| property to the value corresponding to the knob
    * position after a user action.
    */
-  private onSliderChanged_() {
+  private onSliderChanged_(): void {
     if (!this.loaded_) {
       return;
     }
@@ -168,7 +165,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
    * being dragged, this instead forces |pref.value| back to the current
    * position.
    */
-  private valueChanged_() {
+  private valueChanged_(): void {
     if (this.pref === undefined || !this.loaded_ || this.$.slider.dragging ||
         this.$.slider.updatingFromKey) {
       return;

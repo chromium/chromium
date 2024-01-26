@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/shared/settings/controls/controlled_radio_button.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_dropdown_menu.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
-import type {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {getDiscardTimerOptions} from './discard_timer_options.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';

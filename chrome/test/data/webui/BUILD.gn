@@ -221,6 +221,7 @@ source_set("interactive_ui_tests") {
   if (is_chromeos_ash) {
     sources += [
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
+      "settings/chromeos/os_settings_focus_test.cc",
     ]
   }
 

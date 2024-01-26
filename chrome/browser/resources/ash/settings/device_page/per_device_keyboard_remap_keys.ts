@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
+import '../controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
 import './fkey_row.js';
 import './keyboard_remap_modifier_key_row.js';

@@ -21,9 +21,9 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 // </if>
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '/shared/settings/controls/controlled_radio_button.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -34,7 +34,6 @@ import './edit_dictionary_page.js';
 
 // </if>
 
-import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -43,6 +42,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {FocusConfig} from '../focus_config.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';

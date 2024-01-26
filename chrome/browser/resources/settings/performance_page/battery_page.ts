@@ -5,19 +5,19 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '/shared/settings/controls/controlled_radio_button.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import type {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
-import type {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ControlledRadioButtonElement} from '../controls/controlled_radio_button.js';
+import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './battery_page.html.js';

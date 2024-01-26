@@ -1,0 +1,46 @@
+<style include="cr-radio-button-style cros-color-overrides">
+  :host([disabled]) {
+    opacity: 1;
+  }
+
+  /* Disc and label should be transluscent, but not the policy indicator. */
+  :host([disabled]) .disc-wrapper,
+  :host([disabled]) #labelWrapper {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-start: var(--cr-controlled-by-spacing);
+    /* Enable pointer events for the indicator so :hover works. Disable
+     * clicks/taps via onIndicatorClick_ so outer on-tap doesn't trigger. */
+    pointer-events: all;
+  }
+</style>
+
+<div
+    aria-checked$="[[getAriaChecked_(checked)]]"
+    aria-describedby="slotted-content"
+    aria-disabled$="[[getAriaDisabled_(disabled)]]"
+    aria-labelledby="label"
+    class="disc-wrapper"
+    id="button"
+    role="radio"
+    tabindex$="[[buttonTabIndex_]]"
+    on-keydown="onInputKeydown_">
+  <div class="disc-border"></div>
+  <div class="disc"></div>
+  <div id="overlay"></div>
+</div>
+
+<div id="labelWrapper" part="labelWrapper">
+  <span id="label" hidden$="[[!label]]">[[label]]</span>
+  <span id="slotted-content">
+    <slot></slot>
+  </span>
+</div>
+
+<template is="dom-if" if="[[showIndicator_(disabled, name, pref.*)]]">
+  <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorClick_"
+      icon-aria-label="[[label]]">
+  </cr-policy-pref-indicator>
+</template>

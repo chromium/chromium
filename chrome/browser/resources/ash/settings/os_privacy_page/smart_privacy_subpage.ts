@@ -9,8 +9,8 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/controls/settings_slider.js';
+import '../controls/extension_controlled_indicator.js';
+import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';

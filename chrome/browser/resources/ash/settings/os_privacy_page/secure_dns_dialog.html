@@ -1,0 +1,30 @@
+<style include="settings-shared">
+  #secureDnsDialogDescription {
+    padding-top: 10px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 370px;
+  }
+</style>
+
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+    $i18n{secureDnsDialogTitle}
+  </div>
+  <div slot="body">
+    <div id="secureDnsDialogDescription">
+      $i18n{secureDnsDialogBody}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelButtonClicked_">
+      $i18n{secureDnsDialogCancel}
+    </cr-button>
+    <cr-button id="disableButton" class="action-button"
+        on-click="onDisableClicked_">
+      $i18n{secureDnsDialogTurnOff}
+    </cr-button>
+  </div>
+</cr-dialog>

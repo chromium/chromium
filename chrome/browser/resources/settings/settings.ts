@@ -4,11 +4,8 @@
 
 import './settings_ui/settings_ui.js';
 
-export {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from '/shared/settings/controls/extension_controlled_indicator.js';
 export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from '/shared/settings/controls/settings_boolean_control_mixin.js';
-export {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
-export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
@@ -34,6 +31,9 @@ export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_w
 export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {SettingsAboutPageElement} from './about_page/about_page.js';
+export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
+export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
+export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 // clang-format off
 // <if expr="_google_chrome">
 export {ABOUT_PAGE_PRIVACY_POLICY_URL} from './about_page/about_page.js';

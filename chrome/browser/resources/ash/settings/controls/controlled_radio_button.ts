@@ -5,19 +5,17 @@
 import '//resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-// <if expr='chromeos_ash'>
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import {CrRadioButtonMixin} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
 import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
-import {PrefControlMixin} from './pref_control_mixin.js';
 
 const ControlledRadioButtonElementBase =
     PaperRippleMixin(CrRadioButtonMixin(PrefControlMixin(PolymerElement)));
@@ -39,13 +37,13 @@ export class ControlledRadioButtonElement extends
   }
 
   // Overridden from CrRadioButtonMixin
-  override getPaperRipple() {
+  override getPaperRipple(): PaperRippleElement {
     return this.getRipple();
   }
 
   // Overridden from PaperRippleMixin
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
+  override _createRipple(): PaperRippleElement {
     this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
     const ripple = super._createRipple();
     ripple.id = 'ink';
@@ -54,7 +52,7 @@ export class ControlledRadioButtonElement extends
     return ripple;
   }
 
-  private updateDisabled_() {
+  private updateDisabled_(): void {
     this.disabled =
         this.pref!.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
@@ -68,7 +66,7 @@ export class ControlledRadioButtonElement extends
     return this.name === prefToString(this.pref);
   }
 
-  private onIndicatorClick_(e: Event) {
+  private onIndicatorClick_(e: Event): void {
     // Disallow <controlled-radio-button on-click="..."> when disabled.
     e.preventDefault();
     e.stopPropagation();
