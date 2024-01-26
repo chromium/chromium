@@ -24,13 +24,17 @@ struct CursorData;
 namespace wm {
 
 // Returns the cursor data corresponding to `type` and the rest of the
-// parameters. It will load the cursor resource and then scale the bitmap and
-// hotspot to match `scale`.
+// parameters. If `target_cursor_size_in_px` presents, it will load the cursor
+// resource and scale the bitmap and hotspot to match
+// `target_cursor_size_in_px`, if not it will load the cursor resource and
+// scale the bitmap and hotspot to match `scale`. The bitmap and hotspot are
+// both in physical pixels.
 COMPONENT_EXPORT(UI_WM)
 absl::optional<ui::CursorData> GetCursorData(
     ui::mojom::CursorType type,
     ui::CursorSize size,
     float scale,
+    absl::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation);
 
 // Scale and rotate the cursor's bitmap and hotpoint.
@@ -43,14 +47,16 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
                                            gfx::Point* hotpoint_in_out);
 
 // Returns data about the cursor `type`. The IDR will be placed in `resource_id`
-// and the hotspot in `point`. Returns false if resource data for `type` isn't
+// and the hotspot in `point`. If `is_animated` is true it means the resource
+// should be animated. Returns false if resource data for `type` isn't
 // available.
 COMPONENT_EXPORT(UI_WM)
 bool GetCursorDataFor(ui::CursorSize cursor_size,
                       ui::mojom::CursorType type,
                       float scale_factor,
                       int* resource_id,
-                      gfx::Point* point);
+                      gfx::Point* point,
+                      bool* is_animated);
 
 }  // namespace wm
 

@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -97,36 +98,28 @@ SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
   return recolored;
 }
 
-std::vector<gfx::ImageSkia> GetCursorImages(ui::CursorSize cursor_size,
-                                            ui::mojom::CursorType type,
-                                            float scale_factor,
-                                            gfx::Point& out_hotspot) {
+std::vector<gfx::ImageSkia> GetCursorImages(
+    ui::CursorSize cursor_size,
+    ui::mojom::CursorType type,
+    int target_cursor_size_in_dip,
+    float dsf,
+    gfx::Point* out_hotspot_in_physical_pixels) {
   std::vector<gfx::ImageSkia> images;
-  int resource_id;
-  if (!wm::GetCursorDataFor(cursor_size, type, scale_factor, &resource_id,
-                            &out_hotspot)) {
+  // Rotation is handled in viz (for aura::Window based cursor)
+  // or fast ink canvas (for fast ink based cursor), so don't do any
+  // rotation here.
+  absl::optional<ui::CursorData> cursor_data = wm::GetCursorData(
+      type, cursor_size, dsf,
+      cursor_size == ui::CursorSize::kLarge
+          ? std::make_optional(target_cursor_size_in_dip * dsf)
+          : absl::nullopt,
+      display::Display::ROTATE_0);
+  if (!cursor_data) {
     return images;
   }
-  gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  const int frame_height = image->height();
-  // Assume frame width equals to frame height.
-  const int frame_width = frame_height;
-  const int total_width = image->width();
-  const int frame_count = total_width / frame_width;
-
-  if (frame_count == 1) {
-    images.push_back(*image);
-  } else if (frame_count > 1) {
-    // For animated cursor, the input image is a sesquence of frames which
-    // needs to be cut into a list of images.
-    images.resize(frame_count);
-    for (int frame = 0; frame < frame_count; ++frame) {
-      const int x_offset = frame_width * frame;
-      gfx::ImageSkia cropped = gfx::ImageSkiaOperations::CreateTiledImage(
-          *image, x_offset, 0, frame_width, frame_height);
-      images[frame] = std::move(cropped);
-    }
+  *out_hotspot_in_physical_pixels = cursor_data->hotspot;
+  for (const auto& bitmap : cursor_data->bitmaps) {
+    images.push_back(gfx::ImageSkia::CreateFromBitmap(bitmap, dsf));
   }
   return images;
 }
@@ -536,19 +529,22 @@ void CursorWindowController::UpdateCursorImage() {
     return;
   }
 
-  float cursor_scale;
   std::vector<gfx::ImageSkia> images;
   gfx::Point hot_point_in_physical_pixels;
+
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
+    // Custom cursor.
     SkBitmap bitmap = cursor_.custom_bitmap();
     gfx::Point hotspot = cursor_.custom_hotspot();
     if (bitmap.isNull()) {
       return;
     }
-    cursor_scale = cursor_.image_scale_factor();
+    float cursor_scale = cursor_.image_scale_factor();
 
     // Custom cursor's bitmap is already rotated. Revert the rotation because
     // software cursor's rotation is handled by viz.
+    // TODO(b/320398214): Custom cursor's scaling and rotation
+    // should be handled in ash.
     const display::Display::Rotation inverted_rotation =
         static_cast<display::Display::Rotation>(
             (4 - static_cast<int>(display_.rotation())) % 4);
@@ -556,39 +552,39 @@ void CursorWindowController::UpdateCursorImage() {
                                               &hotspot);
     images.push_back(gfx::ImageSkia::CreateFromBitmap(bitmap, cursor_scale));
     hot_point_in_physical_pixels = hotspot;
-  } else {
-    // Do not use the device scale factor, as the cursor will be scaled
-    // by compositor. HW cursor will not be scaled by display zoom, so the
-    // physical size will be inconsistent.
-    cursor_scale = ui::GetScaleForResourceScaleFactor(
-        ui::GetSupportedResourceScaleFactorForRescale(
-            display_.device_scale_factor()));
 
-    images = GetCursorImages(cursor_size_, cursor_.type(), cursor_scale,
-                             hot_point_in_physical_pixels);
+    // Use `gfx::ToFlooredPoint` as `ImageSkiaRep::GetWidth` is implemented as
+    // `return static_cast<int>(pixel_width() / scale());`.
+    hot_point_ = gfx::ToFlooredPoint(
+        gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
+
+    // Rescale cursor size. This is used with the combination of accessibility
+    // large cursor. We don't need to care about the case where cursor
+    // compositing is disabled as we always use cursor compositing if
+    // accessibility large cursor is enabled.
+    if (cursor_size_ == ui::CursorSize::kLarge &&
+        large_cursor_size_in_dip_ != images[0].size().height()) {
+      const float rescale = static_cast<float>(large_cursor_size_in_dip_) /
+                            static_cast<float>(images[0].size().height());
+      hot_point_ = gfx::ScaleToCeiledPoint(hot_point_, rescale);
+      for (size_t i = 0; i < images.size(); ++i) {
+        images[i] = gfx::ImageSkiaOperations::CreateResizedImage(
+            images[i], skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+            gfx::ScaleToCeiledSize(images[i].size(), rescale));
+      }
+    }
+  } else {
+    // Standard cursor.
+    const float dsf = display_.device_scale_factor();
+
+    images =
+        GetCursorImages(cursor_size_, cursor_.type(), large_cursor_size_in_dip_,
+                        dsf, &hot_point_in_physical_pixels);
     if (images.empty()) {
       return;
     }
-  }
-  // Use `gfx::ToFlooredPoint` as `ImageSkiaRep::GetWidth` is implemented as
-  // `return static_cast<int>(pixel_width() / scale());`.
-  hot_point_ = gfx::ToFlooredPoint(
-      gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
-
-  // Rescale cursor size. This is used with the combination of accessibility
-  // large cursor. We don't need to care about the case where cursor
-  // compositing is disabled as we always use cursor compositing if
-  // accessibility large cursor is enabled.
-  if (cursor_size_ == ui::CursorSize::kLarge &&
-      large_cursor_size_in_dip_ != images[0].size().width()) {
-    const float rescale = static_cast<float>(large_cursor_size_in_dip_) /
-                          static_cast<float>(images[0].size().width());
-    hot_point_ = gfx::ScaleToCeiledPoint(hot_point_, rescale);
-    for (size_t i = 0; i < images.size(); ++i) {
-      images[i] = gfx::ImageSkiaOperations::CreateResizedImage(
-          images[i], skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-          gfx::ScaleToCeiledSize(images[i].size(), rescale));
-    }
+    hot_point_ = gfx::ToFlooredPoint(
+        gfx::ConvertPointToDips(hot_point_in_physical_pixels, dsf));
   }
 
   if (cursor_color_ != kDefaultCursorColor) {
