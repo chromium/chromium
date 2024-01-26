@@ -2603,6 +2603,8 @@ static_library("ui") {
       "ash/birch/birch_keyed_service.h",
       "ash/birch/birch_keyed_service_factory.cc",
       "ash/birch/birch_keyed_service_factory.h",
+      "ash/birch/birch_recent_tabs_provider.cc",
+      "ash/birch/birch_recent_tabs_provider.h",
       "ash/browser_data_migration_error_dialog.cc",
       "ash/browser_data_migration_error_dialog.h",
       "ash/calendar/calendar_client_impl.cc",

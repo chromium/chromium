@@ -35,4 +35,26 @@ std::string BirchFileItem::ToString() const {
   return ss.str();
 }
 
+BirchTabItem::BirchTabItem(const std::string& title,
+                           const GURL& url,
+                           const base::Time& timestamp,
+                           const GURL& favicon_url,
+                           const std::string& session_name)
+    : BirchItem(title),
+      url(url),
+      timestamp(timestamp),
+      favicon_url(favicon_url),
+      session_name(session_name) {}
+
+BirchTabItem::BirchTabItem(BirchTabItem&&) = default;
+
+BirchTabItem::~BirchTabItem() = default;
+
+std::string BirchTabItem::ToString() const {
+  std::stringstream ss;
+  ss << "title: " << title << ", url:" << url << ", timestamp:" << timestamp
+     << ", favicon_url:" << favicon_url << ", session_name:" << session_name;
+  return ss.str();
+}
+
 }  // namespace ash

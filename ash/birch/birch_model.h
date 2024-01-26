@@ -40,15 +40,23 @@ class ASH_EXPORT BirchModel {
 
   void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
 
+  void SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items);
+
   void SetClient(BirchClient* client) { birch_client_ = client; }
 
   const std::vector<BirchFileItem>& GetFileSuggestItemsForTest() const {
     return file_suggest_items_;
   }
+  const std::vector<BirchTabItem>& GetTabsForTest() const {
+    return recent_tab_items_;
+  }
 
  private:
   // A type-specific list of items for all file suggestion items.
   std::vector<BirchFileItem> file_suggest_items_;
+
+  // A type-specific list of items for all tab items.
+  std::vector<BirchTabItem> recent_tab_items_;
 
   raw_ptr<BirchClient> birch_client_ = nullptr;
 

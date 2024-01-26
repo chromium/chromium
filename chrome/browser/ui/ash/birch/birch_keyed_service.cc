@@ -12,12 +12,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_client_impl.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
 
 namespace ash {
 
 BirchKeyedService::BirchKeyedService(Profile* profile)
     : file_suggest_provider_(
-          std::make_unique<BirchFileSuggestProvider>(profile)) {
+          std::make_unique<BirchFileSuggestProvider>(profile)),
+      recent_tabs_provider_(
+          std::make_unique<BirchRecentTabsProvider>(profile)) {
   birch_client_impl_ = std::make_unique<BirchClientImpl>(profile);
   Shell::Get()->birch_model()->SetClient(birch_client_impl_.get());
 }
@@ -28,6 +31,7 @@ BirchKeyedService::~BirchKeyedService() {
 
 void BirchKeyedService::RequestBirchDataFetch() {
   // TODO(b/305093932): Begin data fetching requests.
+  recent_tabs_provider_->GetRecentTabs();
 }
 
 }  // namespace ash

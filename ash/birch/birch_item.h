@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -38,6 +39,28 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
 
   const base::FilePath file_path;
   const std::optional<base::Time> timestamp;
+
+  // Intended for debugging.
+  std::string ToString() const;
+};
+
+// A birch item which contains tab and session information.
+struct ASH_EXPORT BirchTabItem : public BirchItem {
+  BirchTabItem(const std::string& title,
+               const GURL& url,
+               const base::Time& timestamp,
+               const GURL& favicon_url,
+               const std::string& session_name);
+  BirchTabItem(BirchTabItem&&);
+  BirchTabItem(const BirchTabItem&);
+  BirchTabItem& operator=(const BirchTabItem&);
+  bool operator==(const BirchTabItem& rhs) const = default;
+  ~BirchTabItem();
+
+  const GURL url;
+  const base::Time timestamp;
+  const GURL favicon_url;
+  const std::string session_name;
 
   // Intended for debugging.
   std::string ToString() const;
