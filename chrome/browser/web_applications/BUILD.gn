@@ -577,10 +577,10 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    "isolated_web_apps/test/isolated_web_app_builder.cc",
-    "isolated_web_apps/test/isolated_web_app_builder.h",
     "isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.cc",
     "isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h",
+    "isolated_web_apps/test/test_signed_web_bundle_builder.cc",
+    "isolated_web_apps/test/test_signed_web_bundle_builder.h",
     "test/debug_info_printer.cc",
     "test/debug_info_printer.h",
     "test/external_app_registration_waiter.cc",
