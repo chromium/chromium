@@ -23316,6 +23316,7 @@ from previous Chrome versions.
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
+  <int value="1283455082" label="DeskProfiles:disabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
@@ -24477,6 +24478,7 @@ from previous Chrome versions.
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
   <int value="1816816375" label="MediaAppHandlesAudio:disabled"/>
   <int value="1816843861" label="ServiceWorkerServicification:enabled"/>
+  <int value="1816939624" label="DeskProfiles:enabled"/>
   <int value="1817312143" label="num-raster-threads"/>
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>

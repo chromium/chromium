@@ -11107,6 +11107,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kEnableBookmarkFoldersForAccountStorage)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"desk-profiles", flag_descriptions::kDeskProfilesName,
+     flag_descriptions::kDeskProfilesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kDeskProfiles)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

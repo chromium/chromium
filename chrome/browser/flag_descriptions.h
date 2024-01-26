@@ -3445,6 +3445,9 @@ extern const char kCameraAppAutoQRDetectionDescription[];
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 
+extern const char kDeskProfilesName[];
+extern const char kDeskProfilesDescription[];
+
 extern const char kDisableCameraFrameRotationAtSourceName[];
 extern const char kDisableCameraFrameRotationAtSourceDescription[];
 

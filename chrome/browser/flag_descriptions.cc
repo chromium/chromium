@@ -5980,6 +5980,10 @@ const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";
 
+const char kDeskProfilesName[] = "Desk profiles";
+const char kDeskProfilesDescription[] =
+    "Enable association of lacros profiles with desks.";
+
 const char kDisableCameraFrameRotationAtSourceName[] =
     "Disable camera frame rotation at source";
 const char kDisableCameraFrameRotationAtSourceDescription[] =
