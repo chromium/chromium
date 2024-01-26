@@ -157,7 +157,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Ready) {
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0]->guid());
+  EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NotReady) {
@@ -217,8 +217,8 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Deduplicated) {
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(2u, devices.size());
-  EXPECT_EQ(device_info_4->guid(), devices[0]->guid());
-  EXPECT_EQ(device_info_2->guid(), devices[1]->guid());
+  EXPECT_EQ(device_info_4->guid(), devices[0].guid());
+  EXPECT_EQ(device_info_2->guid(), devices[1].guid());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_DeviceNaming) {
@@ -252,16 +252,16 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_DeviceNaming) {
   ASSERT_EQ(4u, devices.size());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_4.get()).short_name,
-      devices[0]->client_name());
+      devices[0].client_name());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_3.get()).full_name,
-      devices[1]->client_name());
+      devices[1].client_name());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_2.get()).full_name,
-      devices[2]->client_name());
+      devices[2].client_name());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_1.get()).short_name,
-      devices[3]->client_name());
+      devices[3].client_name());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
@@ -277,7 +277,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
   task_environment_.FastForwardBy(kSharingDeviceExpiration +
                                   base::Milliseconds(1));
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       device_source->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
 
@@ -293,7 +293,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   fake_device_info_tracker_.Add(device_info.get());
 
   // Requires shared clipboard feature.
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       device_source->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
 
@@ -310,7 +310,7 @@ TEST_F(SharingDeviceSourceSyncTest,
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0]->guid());
+  EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
@@ -347,14 +347,14 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(2u, devices.size());
-  EXPECT_EQ(device_info_4->guid(), devices[0]->guid());
+  EXPECT_EQ(device_info_4->guid(), devices[0].guid());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_4.get()).short_name,
-      devices[0]->client_name());
-  EXPECT_EQ(device_info_2->guid(), devices[1]->guid());
+      devices[0].client_name());
+  EXPECT_EQ(device_info_2->guid(), devices[1].guid());
   EXPECT_EQ(
       send_tab_to_self::GetSharingDeviceNames(device_info_2.get()).short_name,
-      devices[1]->client_name());
+      devices[1].client_name());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NoChannel) {
@@ -382,7 +382,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0]->guid());
+  EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
@@ -397,5 +397,5 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0]->guid());
+  EXPECT_EQ(device_info->guid(), devices[0].guid());
 }

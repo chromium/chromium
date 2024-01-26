@@ -58,13 +58,13 @@ constexpr char kActivityForOpeningArcImeSettingsPage[] =
 // Size of device icons in DIPs.
 constexpr int kDeviceIconSize = 16;
 
-using IntentPickerResponseWithDevices = base::OnceCallback<void(
-    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
-    apps::IntentPickerBubbleType intent_picker_type,
-    const std::string& launch_name,
-    apps::PickerEntryType entry_type,
-    apps::IntentPickerCloseReason close_reason,
-    bool should_persist)>;
+using IntentPickerResponseWithDevices =
+    base::OnceCallback<void(std::vector<SharingTargetDeviceInfo> devices,
+                            apps::IntentPickerBubbleType intent_picker_type,
+                            const std::string& launch_name,
+                            apps::PickerEntryType entry_type,
+                            apps::IntentPickerCloseReason close_reason,
+                            bool should_persist)>;
 
 // Creates an icon for a specific |device_form_factor|.
 ui::ImageModel CreateDeviceIcon(
@@ -79,16 +79,16 @@ ui::ImageModel CreateDeviceIcon(
 // Adds |devices| to |picker_entries| and returns the new list. The devices are
 // added to the beginning of the list.
 std::vector<apps::IntentPickerAppInfo> AddDevices(
-    const std::vector<std::unique_ptr<SharingTargetDeviceInfo>>& devices,
+    const std::vector<SharingTargetDeviceInfo>& devices,
     std::vector<apps::IntentPickerAppInfo> picker_entries) {
   DCHECK(!devices.empty());
 
   // First add all devices to the list.
   std::vector<apps::IntentPickerAppInfo> all_entries;
-  for (const auto& device : devices) {
+  for (const SharingTargetDeviceInfo& device : devices) {
     all_entries.emplace_back(apps::PickerEntryType::kDevice,
-                             CreateDeviceIcon(device->form_factor()),
-                             device->guid(), device->client_name());
+                             CreateDeviceIcon(device.form_factor()),
+                             device.guid(), device.client_name());
   }
 
   // Append the previous list by moving its elements.
@@ -120,7 +120,7 @@ bool MaybeAddDevicesAndShowPicker(
 
   auto bubble_type = apps::IntentPickerBubbleType::kExternalProtocol;
   ClickToCallUiController* controller = nullptr;
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   if (ShouldOfferClickToCallForURL(web_contents->GetBrowserContext(), url)) {
     bubble_type = apps::IntentPickerBubbleType::kClickToCall;
@@ -371,11 +371,10 @@ bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlag(
   return true;
 }
 
-void HandleDeviceSelection(
-    WebContents* web_contents,
-    const std::vector<std::unique_ptr<SharingTargetDeviceInfo>>& devices,
-    const std::string& device_guid,
-    const GURL& url) {
+void HandleDeviceSelection(WebContents* web_contents,
+                           const std::vector<SharingTargetDeviceInfo>& devices,
+                           const std::string& device_guid,
+                           const GURL& url) {
   if (!web_contents) {
     return;
   }
@@ -383,10 +382,10 @@ void HandleDeviceSelection(
   const auto it =
       base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
   DCHECK(it != devices.end());
-  auto* device = it->get();
+  const SharingTargetDeviceInfo& device = *it;
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
-      ->OnDeviceSelected(url.GetContent(), *device,
+      ->OnDeviceSelected(url.GetContent(), device,
                          SharingClickToCallEntryPoint::kLeftClickLink);
 }
 
@@ -481,7 +480,7 @@ void OnIntentPickerClosed(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
+    std::vector<SharingTargetDeviceInfo> devices,
     apps::IntentPickerBubbleType intent_picker_type,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
@@ -817,7 +816,7 @@ void OnIntentPickerClosedForTesting(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
+    std::vector<SharingTargetDeviceInfo> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,

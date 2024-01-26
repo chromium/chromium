@@ -63,7 +63,7 @@ SharingService::~SharingService() {
     sync_service_->RemoveObserver(this);
 }
 
-std::unique_ptr<SharingTargetDeviceInfo> SharingService::GetDeviceByGuid(
+std::optional<SharingTargetDeviceInfo> SharingService::GetDeviceByGuid(
     const std::string& guid) const {
   return device_source_->GetDeviceByGuid(guid);
 }

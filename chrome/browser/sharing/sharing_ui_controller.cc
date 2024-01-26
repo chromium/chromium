@@ -136,8 +136,7 @@ void SharingUiController::UpdateAndShowDialog(
                               initiating_origin));
 }
 
-std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-SharingUiController::GetDevices() const {
+std::vector<SharingTargetDeviceInfo> SharingUiController::GetDevices() const {
   return sharing_service_->GetDeviceCandidates(GetRequiredFeature());
 }
 

@@ -73,7 +73,7 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
   raw_ptr<ClickToCallUiController> controller_ = nullptr;
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices_;
+  std::vector<SharingTargetDeviceInfo> devices_;
 
   SubMenuDelegate sub_menu_delegate_{this};
 

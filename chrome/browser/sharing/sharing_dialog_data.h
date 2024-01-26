@@ -41,7 +41,7 @@ struct SharingDialogData {
   SharingDialogType type = SharingDialogType::kErrorDialog;
   SharingFeatureName prefix = SharingFeatureName::kUnknown;
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
   std::vector<SharingApp> apps;
 
   std::u16string title;

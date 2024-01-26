@@ -72,11 +72,10 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
         phone_number);
   }
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> CreateFakeDevices(
-      int count) {
-    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> CreateFakeDevices(int count) {
+    std::vector<SharingTargetDeviceInfo> devices;
     for (int i = 0; i < count; i++) {
-      devices.emplace_back(std::make_unique<SharingTargetDeviceInfo>(
+      devices.emplace_back(SharingTargetDeviceInfo(
           base::StrCat({"guid", base::NumberToString(i)}), "name",
           SharingDevicePlatform::kUnknown,
           /*pulse_interval=*/base::TimeDelta(),
@@ -122,7 +121,7 @@ TEST_F(ClickToCallContextMenuObserverTest, NoDevices_DoNotShowMenu) {
 
 TEST_F(ClickToCallContextMenuObserverTest, SingleDevice_ShowMenu) {
   auto devices = CreateFakeDevices(1);
-  auto guid = devices[0]->guid();
+  auto guid = devices[0].guid();
 
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -149,8 +148,9 @@ TEST_F(ClickToCallContextMenuObserverTest, MultipleDevices_ShowMenu) {
   constexpr int device_count = 3;
   auto devices = CreateFakeDevices(device_count);
   std::vector<std::string> guids;
-  for (auto& device : devices)
-    guids.push_back(device->guid());
+  for (const SharingTargetDeviceInfo& device : devices) {
+    guids.push_back(device.guid());
+  }
 
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -191,8 +191,9 @@ TEST_F(ClickToCallContextMenuObserverTest,
   int device_count = kMaxDevicesShown + 1;
   auto devices = CreateFakeDevices(device_count);
   std::vector<std::string> guids;
-  for (auto& device : devices)
-    guids.push_back(device->guid());
+  for (const SharingTargetDeviceInfo& device : devices) {
+    guids.push_back(device.guid());
+  }
 
   EXPECT_CALL(*service(), GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));

@@ -44,14 +44,14 @@ const char kDeviceName[] = "other_name";
 const char kAuthorizedEntity[] = "authorized_entity";
 constexpr base::TimeDelta kTimeout = base::Seconds(15);
 
-std::unique_ptr<SharingTargetDeviceInfo> CreateFakeSharingTargetDeviceInfo(
+SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
     const std::string& guid,
     const std::string& client_name) {
-  return std::make_unique<SharingTargetDeviceInfo>(
-      guid, client_name, SharingDevicePlatform::kUnknown,
-      /*pulse_interval=*/base::TimeDelta(),
-      syncer::DeviceInfo::FormFactor::kUnknown,
-      /*last_updated_timestamp=*/base::Time());
+  return SharingTargetDeviceInfo(guid, client_name,
+                                 SharingDevicePlatform::kUnknown,
+                                 /*pulse_interval=*/base::TimeDelta(),
+                                 syncer::DeviceInfo::FormFactor::kUnknown,
+                                 /*last_updated_timestamp=*/base::Time());
 }
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
@@ -242,11 +242,9 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
       .WillOnce(
           [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature)
-              -> std::vector<std::unique_ptr<SharingTargetDeviceInfo>> {
-            return {};
-          });
+              -> std::vector<SharingTargetDeviceInfo> { return {}; });
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
   EXPECT_TRUE(candidates.empty());
@@ -254,15 +252,16 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
 
 TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
   EXPECT_CALL(*device_source_, GetDeviceCandidates(::testing::_))
-      .WillOnce([](sync_pb::SharingSpecificFields::EnabledFeatures
-                       required_feature) {
-        std::vector<std::unique_ptr<SharingTargetDeviceInfo>> device_candidates;
-        device_candidates.push_back(CreateFakeSharingTargetDeviceInfo(
-            base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName));
-        return device_candidates;
-      });
+      .WillOnce(
+          [](sync_pb::SharingSpecificFields::EnabledFeatures required_feature) {
+            std::vector<SharingTargetDeviceInfo> device_candidates;
+            device_candidates.push_back(CreateFakeSharingTargetDeviceInfo(
+                base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                kDeviceName));
+            return device_candidates;
+          });
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
+  std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
 
@@ -270,9 +269,8 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 }
 
 TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
-  std::unique_ptr<SharingTargetDeviceInfo> device_info =
-      CreateFakeSharingTargetDeviceInfo(
-          base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName);
+  SharingTargetDeviceInfo device_info = CreateFakeSharingTargetDeviceInfo(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName);
 
   chrome_browser_sharing::ResponseMessage expected_response_message;
 
@@ -295,7 +293,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
       .WillByDefault(testing::Invoke(run_callback));
 
   GetSharingService()->SendMessageToDevice(
-      *device_info.get(), kTimeout, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeout, chrome_browser_sharing::SharingMessage(),
       base::BindOnce(&SharingServiceTest::OnMessageSent,
                      base::Unretained(this)));
 
@@ -519,12 +517,13 @@ TEST_F(SharingServiceTest, GetDeviceByGuid) {
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
       .WillOnce([](const std::string& guid)
-                    -> std::unique_ptr<SharingTargetDeviceInfo> {
+                    -> std::optional<SharingTargetDeviceInfo> {
         return CreateFakeSharingTargetDeviceInfo(guid, "Dell Computer sno one");
       });
 
-  std::unique_ptr<SharingTargetDeviceInfo> device_info =
+  std::optional<SharingTargetDeviceInfo> device_info =
       GetSharingService()->GetDeviceByGuid(guid);
+  ASSERT_TRUE(device_info.has_value());
   EXPECT_EQ("Dell Computer sno one", device_info->client_name());
 }
 

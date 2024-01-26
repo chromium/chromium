@@ -49,14 +49,14 @@ url::Origin GetOriginForURL(const std::string url) {
   return url::Origin::Create(GURL(url));
 }
 
-std::unique_ptr<SharingTargetDeviceInfo> CreateFakeSharingTargetDeviceInfo(
+SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
     const std::string& guid,
     const std::string& client_name) {
-  return std::make_unique<SharingTargetDeviceInfo>(
-      guid, client_name, SharingDevicePlatform::kUnknown,
-      /*pulse_interval=*/base::TimeDelta(),
-      syncer::DeviceInfo::FormFactor::kUnknown,
-      /*last_updated_timestamp=*/base::Time());
+  return SharingTargetDeviceInfo(guid, client_name,
+                                 SharingDevicePlatform::kUnknown,
+                                 /*pulse_interval=*/base::TimeDelta(),
+                                 syncer::DeviceInfo::FormFactor::kUnknown,
+                                 /*last_updated_timestamp=*/base::Time());
 }
 
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
@@ -68,7 +68,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
@@ -101,7 +101,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -146,7 +146,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -185,7 +185,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid-abc", "name"));
 
@@ -286,7 +286,7 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
@@ -331,7 +331,7 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
   devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 

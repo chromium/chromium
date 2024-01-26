@@ -69,8 +69,8 @@ TEST_F(SharedClipboardMessageHandlerTest, NotificationWithoutDeviceName) {
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce([](const std::string& guid)
-                      -> std::unique_ptr<SharingTargetDeviceInfo> {
-          return nullptr;
+                      -> std::optional<SharingTargetDeviceInfo> {
+          return std::nullopt;
         });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);
@@ -90,7 +90,7 @@ TEST_F(SharedClipboardMessageHandlerTest,
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce([](const std::string& guid) {
-          return std::make_unique<SharingTargetDeviceInfo>(
+          return SharingTargetDeviceInfo(
               base::Uuid::GenerateRandomV4().AsLowercaseString(),
               kDeviceNameInDeviceInfo, SharingDevicePlatform::kUnknown,
               /*pulse_interval=*/base::TimeDelta(),
@@ -115,8 +115,8 @@ TEST_F(SharedClipboardMessageHandlerTest,
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce([](const std::string& guid)
-                      -> std::unique_ptr<SharingTargetDeviceInfo> {
-          return nullptr;
+                      -> std::optional<SharingTargetDeviceInfo> {
+          return std::nullopt;
         });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);

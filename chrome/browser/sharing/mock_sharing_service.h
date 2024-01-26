@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SHARING_MOCK_SHARING_SERVICE_H_
 #define CHROME_BROWSER_SHARING_MOCK_SHARING_SERVICE_H_
 
+#include <optional>
+
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
@@ -22,7 +24,7 @@ class MockSharingService : public SharingService {
 
   MOCK_CONST_METHOD1(
       GetDeviceCandidates,
-      std::vector<std::unique_ptr<SharingTargetDeviceInfo>>(
+      std::vector<SharingTargetDeviceInfo>(
           sync_pb::SharingSpecificFields::EnabledFeatures required_feature));
 
   MOCK_METHOD4(
@@ -34,7 +36,7 @@ class MockSharingService : public SharingService {
 
   MOCK_CONST_METHOD1(
       GetDeviceByGuid,
-      std::unique_ptr<SharingTargetDeviceInfo>(const std::string& guid));
+      std::optional<SharingTargetDeviceInfo>(const std::string& guid));
 
   MOCK_METHOD2(
       RegisterSharingHandler,

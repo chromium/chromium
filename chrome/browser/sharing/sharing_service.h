@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,9 +44,7 @@ enum class SharingDeviceRegistrationResult;
 // sharing messages to other devices.
 class SharingService : public KeyedService, public syncer::SyncServiceObserver {
  public:
-  // TODO(b/5173408): Avoid unique_ptr and lean on move semantics.
-  using SharingDeviceList =
-      std::vector<std::unique_ptr<SharingTargetDeviceInfo>>;
+  using SharingDeviceList = std::vector<SharingTargetDeviceInfo>;
   using NotificationActionCallback =
       base::RepeatingCallback<void(std::optional<int> button, bool closed)>;
 
@@ -73,8 +72,8 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   SharingService& operator=(const SharingService&) = delete;
   ~SharingService() override;
 
-  // Returns the device matching |guid|, or nullptr if no match was found.
-  virtual std::unique_ptr<SharingTargetDeviceInfo> GetDeviceByGuid(
+  // Returns the device matching |guid| or nullopt if no match was found.
+  virtual std::optional<SharingTargetDeviceInfo> GetDeviceByGuid(
       const std::string& guid) const;
 
   // Returns a list of devices that is available to receive messages.

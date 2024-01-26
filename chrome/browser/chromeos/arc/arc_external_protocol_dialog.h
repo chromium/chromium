@@ -81,7 +81,7 @@ void OnIntentPickerClosedForTesting(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
+    std::vector<SharingTargetDeviceInfo> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,

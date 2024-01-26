@@ -85,7 +85,7 @@ class SharingUiController {
   void UpdateAndShowDialog(const std::optional<url::Origin>& initiating_origin);
 
   // Gets the current list of devices that support the required feature.
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> GetDevices() const;
+  std::vector<SharingTargetDeviceInfo> GetDevices() const;
 
   bool HasSendFailed() const;
 

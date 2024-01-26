@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_MOCK_SHARING_DEVICE_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,13 +23,12 @@ class MockSharingDeviceSource : public SharingDeviceSource {
 
   MOCK_METHOD0(IsReady, bool());
 
-  MOCK_METHOD1(
-      GetDeviceByGuid,
-      std::unique_ptr<SharingTargetDeviceInfo>(const std::string& guid));
+  MOCK_METHOD1(GetDeviceByGuid,
+               std::optional<SharingTargetDeviceInfo>(const std::string& guid));
 
   MOCK_METHOD1(
       GetDeviceCandidates,
-      std::vector<std::unique_ptr<SharingTargetDeviceInfo>>(
+      std::vector<SharingTargetDeviceInfo>(
           sync_pb::SharingSpecificFields::EnabledFeatures required_feature));
 
   void MaybeRunReadyCallbacksForTesting() { MaybeRunReadyCallbacks(); }

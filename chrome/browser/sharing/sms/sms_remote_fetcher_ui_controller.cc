@@ -144,15 +144,15 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
 
   // Sends to the first device that has the capability enabled. User cannot
   // select device because the site sends out the SMS asynchronously.
-  const std::unique_ptr<SharingTargetDeviceInfo>& device = devices.front();
-  last_device_name_ = device->client_name();
+  const SharingTargetDeviceInfo& device = devices.front();
+  last_device_name_ = device.client_name();
   chrome_browser_sharing::SharingMessage request;
 
   for (const url::Origin& origin : origin_list)
     request.mutable_sms_fetch_request()->add_origins(origin.Serialize());
 
   return SendMessageToDevice(
-      *device.get(), blink::kWebOTPRequestTimeout, std::move(request),
+      device, blink::kWebOTPRequestTimeout, std::move(request),
       base::BindOnce(&SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
