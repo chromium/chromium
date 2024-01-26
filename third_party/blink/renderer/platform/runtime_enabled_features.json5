@@ -1197,6 +1197,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5064894363992064
+      name: "CSSViewTransitionClass",
+      status: "test"
+    },
+    {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
       status: "stable",

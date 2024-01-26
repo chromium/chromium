@@ -2244,6 +2244,21 @@ AtomicString StyleBuilderConverter::ConvertViewTransitionName(
   return AtomicString();
 }
 
+Vector<AtomicString> StyleBuilderConverter::ConvertViewTransitionClass(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  Vector<AtomicString> result;
+  if (auto* id = DynamicTo<CSSIdentifierValue>(value);
+      id && id->GetValueID() == CSSValueID::kNone) {
+    return result;
+  }
+  for (const Member<const CSSValue>& class_name : To<CSSValueList>(value)) {
+    result.push_back(To<CSSCustomIdentValue>(*class_name).Value());
+  }
+  CHECK(!result.empty());
+  return result;
+}
+
 StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
                                                     const CSSValue& value,
                                                     bool for_visited_link) {

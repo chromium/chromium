@@ -5449,6 +5449,18 @@
       runtime_flag: "ScrollTimeline",
     },
     {
+      name: "view-transition-class",
+      field_group: "*",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      converter: "ConvertViewTransitionClass",
+      type_name: "Vector<AtomicString>",
+      default_value: "Vector<AtomicString, 0>()",
+      field_template: "external",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSViewTransitionClass",
+    },
+    {
       name: "view-transition-name",
       field_group: "*",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],

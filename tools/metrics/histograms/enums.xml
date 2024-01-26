@@ -26188,6 +26188,7 @@ Called by update_use_counter_css.py.-->
   <int value="779" label="mask-position"/>
   <int value="780" label="mask-mode"/>
   <int value="781" label="inset-area"/>
+  <int value="782" label="view-transition-class"/>
 </enum>
 
 <enum name="MediaEncryptionType">

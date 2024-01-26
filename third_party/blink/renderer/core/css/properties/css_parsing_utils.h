@@ -604,9 +604,10 @@ CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange& range) {
   return CSSIdentifierValue::Create(range.ConsumeIncludingWhitespace().Id());
 }
 
-// ConsumeCommaSeparatedList takes a callback function to call on each item in
-// the list, followed by the arguments to pass to this callback.
-// The first argument to the callback must be the CSSParserTokenRange
+// ConsumeCommaSeparatedList and ConsumeSpaceSeparatedList take a callback
+// function to call on each item in the list, followed by the arguments to pass
+// to this callback.  The first argument to the callback must be the
+// CSSParserTokenRange
 template <typename Func, typename... Args>
 CSSValueList* ConsumeCommaSeparatedList(Func callback,
                                         CSSParserTokenRange& range,
@@ -619,6 +620,22 @@ CSSValueList* ConsumeCommaSeparatedList(Func callback,
     }
     list->Append(*value);
   } while (ConsumeCommaIncludingWhitespace(range));
+  DCHECK(list->length());
+  return list;
+}
+
+template <typename Func, typename... Args>
+CSSValueList* ConsumeSpaceSeparatedList(Func callback,
+                                        CSSParserTokenRange& range,
+                                        Args&&... args) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  do {
+    CSSValue* value = callback(range, std::forward<Args>(args)...);
+    if (!value) {
+      return nullptr;
+    }
+    list->Append(*value);
+  } while (!range.AtEnd());
   DCHECK(list->length());
   return list;
 }
