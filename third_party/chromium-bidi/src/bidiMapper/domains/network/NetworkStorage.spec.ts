@@ -114,7 +114,7 @@ describe('NetworkStorage', () => {
       );
     });
 
-    it('is idempotent', () => {
+    it('is unique', () => {
       const intercept1 = networkStorage.addIntercept({
         urlPatterns: [
           {
@@ -136,10 +136,10 @@ describe('NetworkStorage', () => {
 
       expect(intercept1).to.match(UUID_REGEX);
       expect(intercept2).to.match(UUID_REGEX);
-      expect(intercept1).to.be.equal(intercept2);
+      expect(intercept1).to.not.be.equal(intercept2);
 
       expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
-        1
+        2
       );
     });
   });

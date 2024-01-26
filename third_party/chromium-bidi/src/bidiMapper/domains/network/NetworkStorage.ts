@@ -22,6 +22,11 @@ import {uuidv4} from '../../../utils/uuid.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 
+interface NetworkInterception {
+  urlPatterns: Network.UrlPattern[];
+  phases: Network.AddInterceptParameters['phases'];
+}
+
 export interface BlockedRequest {
   // intercept request id; form: 'interception-job-1.0'
   request: Protocol.Fetch.RequestId;
@@ -38,13 +43,7 @@ export class NetworkStorage {
   readonly #requestMap = new Map<Network.Request, NetworkRequest>();
 
   /** A map from intercept ID to track active network intercepts. */
-  readonly #interceptMap = new Map<
-    Network.Intercept,
-    {
-      urlPatterns: Network.UrlPattern[];
-      phases: Network.AddInterceptParameters['phases'];
-    }
-  >();
+  readonly #interceptMap = new Map<Network.Intercept, NetworkInterception>();
 
   /** A map from network request ID to track actively blocked requests. */
   readonly #blockedRequestMap = new Map<Network.Request, BlockedRequest>();
@@ -63,23 +62,7 @@ export class NetworkStorage {
    *
    * @return The intercept ID.
    */
-  addIntercept(value: {
-    urlPatterns: Network.UrlPattern[];
-    phases: Network.AddInterceptParameters['phases'];
-  }): Network.Intercept {
-    // Check if the given intercept entry already exists.
-    for (const [
-      interceptId,
-      {urlPatterns, phases},
-    ] of this.#interceptMap.entries()) {
-      if (
-        JSON.stringify(value.urlPatterns) === JSON.stringify(urlPatterns) &&
-        JSON.stringify(value.phases) === JSON.stringify(phases)
-      ) {
-        return interceptId;
-      }
-    }
-
+  addIntercept(value: NetworkInterception): Network.Intercept {
     const interceptId: Network.Intercept = uuidv4();
     this.#interceptMap.set(interceptId, value);
 
