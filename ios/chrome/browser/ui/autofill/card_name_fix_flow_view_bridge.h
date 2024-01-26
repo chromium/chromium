@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
@@ -53,7 +54,7 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
 
  private:
   // The controller `this` queries for logic and state.
-  CardNameFixFlowController* controller_;  // weak
+  raw_ptr<CardNameFixFlowController> controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* presenting_view_controller_;

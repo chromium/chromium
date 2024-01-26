@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/strings/grit/components_strings.h"
@@ -71,7 +72,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   UIBarButtonItem* _confirmButton;
   // Owns `self`. A value of nullptr means the view controller is dismissed or
   // about to be dismissed.
-  autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
+  raw_ptr<autofill::CardUnmaskPromptViewBridge> _bridge;  // weak
   // Model of the CVC input cell.
   TableViewTextEditItem* _CVCInputItem;
   // Model of the footer.
