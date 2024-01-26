@@ -590,7 +590,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.$.textarea.transitionToEditable();
     if (this.partialResponse_) {
       this.animator_.transitionFromPartialToCompleteResult();
-    } else {
+    } else if (this.hasSuccessfulResponse_()) {
       this.animator_.transitionFromLoadingToCompleteResult(loadingHeight);
     }
     this.partialResponse_ = undefined;
