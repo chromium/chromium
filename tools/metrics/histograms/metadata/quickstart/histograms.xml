@@ -60,6 +60,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.ChallengeBytes.FetchResult" enum="BooleanSuccess"
+    expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall success / failure result of fetching challenge bytes
+    from Gaia. These challenge bytes are later used to generate a FIDO assertion
+    and a Remote Attestation certificate. Recorded when we get a response from
+    Gaia (or the request times out).
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
     enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>

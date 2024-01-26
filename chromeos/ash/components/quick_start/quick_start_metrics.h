@@ -11,6 +11,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
 
+class GoogleServiceAuthError;
+
 namespace ash::quick_start {
 
 class QuickStartMetrics {
@@ -227,6 +229,16 @@ class QuickStartMetrics {
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
+
+  // Records the start of an attempt to fetch challenge bytes from Gaia.
+  // Challenge bytes are later used to generate a Remote Attestation certificate
+  // and a FIDO assertion.
+  void RecordChallengeBytesRequested();
+
+  // Records the end of an attempt to fetch challenge bytes from Gaia.
+  // `status` is the overall status of the fetch. It is set to
+  // `GoogleServiceAuthError::State::NONE` if the request was successful.
+  void RecordChallengeBytesRequestEnded(const GoogleServiceAuthError& status);
 
   void RecordAttestationCertificateRequested();
 

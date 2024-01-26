@@ -121,6 +121,8 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
+constexpr const char kChallengeBytesFetchResultHistogramName[] =
+    "QuickStart.ChallengeBytes.FetchResult";
 constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
 constexpr const char kAttestationCertificateFetchResultHistogramName[] =
@@ -293,6 +295,44 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
     test_factory_.AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(), /*content=*/"{}",
         net::HTTP_BAD_REQUEST);
+  }
+
+  // Set a request interceptor for challenge bytes - that validates the incoming
+  // request, and responds with valid challenge bytes if the request is valid,
+  // or with an error otherwise.
+  void SetupChallengeBytesRequestInterceptor() {
+    SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          if (request.url != GURL(kGetChallengeDataUrl)) {
+            return;
+          }
+
+          if (!request.request_body || !request.request_body->elements() ||
+              request.request_body->elements()->empty()) {
+            SimulateBadRequest(kGetChallengeDataUrl);
+            return;
+          }
+
+          std::optional<base::Value> request_body =
+              base::JSONReader::Read(request.request_body->elements()
+                                         ->at(0)
+                                         .As<network::DataElementBytes>()
+                                         .AsStringPiece());
+          if (!request_body || !request_body->is_dict()) {
+            SimulateBadRequest(kGetChallengeDataUrl);
+            return;
+          }
+
+          const base::Value::Dict& request_dict = request_body->GetDict();
+          const std::string* target_device_type =
+              request_dict.FindString(kTargetDeviceType);
+          if (!target_device_type || *target_device_type != kChromeOS) {
+            SimulateBadRequest(kGetChallengeDataUrl);
+            return;
+          }
+
+          AddFakeResponse(kGetChallengeDataUrl, kFakeChallengeDataResponse);
+        }));
   }
 
   // Set an `EXPECT`ation that expects a remote attestation request, and
@@ -472,7 +512,17 @@ TEST_F(SecondDeviceAuthBrokerTest,
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       FetchChallengeBytesReturnsAnErrorForMalformedResponse) {
+       FetchChallengeBytesLogsMetricsForAuthErrors) {
+  base::HistogramTester histogram_tester;
+  SimulateAuthError(kGetChallengeDataUrl);
+
+  auto challenge_bytes = FetchChallengeBytes();
+  histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
+                                     /*sample=*/false, 1);
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchChallengeBytesReturnsAnErrorForMalformedResponses) {
   AddFakeResponse(kGetChallengeDataUrl, "");
   EXPECT_THAT(FetchChallengeBytes(),
               ErrorIs(Property(&GoogleServiceAuthError::state,
@@ -497,45 +547,33 @@ TEST_F(SecondDeviceAuthBrokerTest,
                                Eq(State::UNEXPECTED_SERVICE_RESPONSE))));
 }
 
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchChallengeBytesLogsMetricsForMalformedResponses) {
+  std::vector<std::string> malformed_responses{
+      "", "{}", "{\"challengeData\": \"\"}",
+      kInvalidBase64ChallengeDataResponse};
+  for (auto&& response : malformed_responses) {
+    base::HistogramTester histogram_tester;
+    AddFakeResponse(kGetChallengeDataUrl, response);
+    auto challenge_bytes = FetchChallengeBytes();
+    histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
+                                       /*sample=*/false, 1);
+  }
+}
+
 TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
-  // Set an interceptor that checks the validity of the incoming request for
-  // challenge bytes.
-  SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        if (request.url != GURL(kGetChallengeDataUrl)) {
-          return;
-        }
-
-        if (!request.request_body || !request.request_body->elements() ||
-            request.request_body->elements()->empty()) {
-          SimulateBadRequest(kGetChallengeDataUrl);
-          return;
-        }
-
-        std::optional<base::Value> request_body =
-            base::JSONReader::Read(request.request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
-        if (!request_body || !request_body->is_dict()) {
-          SimulateBadRequest(kGetChallengeDataUrl);
-          return;
-        }
-
-        const base::Value::Dict& request_dict = request_body->GetDict();
-        const std::string* target_device_type =
-            request_dict.FindString(kTargetDeviceType);
-        if (!target_device_type || *target_device_type != kChromeOS) {
-          SimulateBadRequest(kGetChallengeDataUrl);
-          return;
-        }
-
-        AddFakeResponse(kGetChallengeDataUrl, kFakeChallengeDataResponse);
-      }));
-
+  SetupChallengeBytesRequestInterceptor();
   EXPECT_THAT(FetchChallengeBytes(),
               ValueIs(Property(&Base64UrlString::value,
                                Property(&std::string::size, Gt(0UL)))));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesLogsMetricsForSuccess) {
+  base::HistogramTester histogram_tester;
+  SetupChallengeBytesRequestInterceptor();
+  auto challenge_bytes = FetchChallengeBytes();
+  histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
+                                     /*sample=*/true, 1);
 }
 
 TEST_F(

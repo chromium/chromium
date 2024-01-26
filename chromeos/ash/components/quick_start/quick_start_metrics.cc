@@ -9,11 +9,14 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace ash::quick_start {
 
 namespace {
 
+constexpr const char kChallengeBytesFetchResultHistogramName[] =
+    "QuickStart.ChallengeBytes.FetchResult";
 constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
 constexpr const char kAttestationCertificateFetchResultHistogramName[] =
@@ -154,6 +157,17 @@ void QuickStartMetrics::RecordWifiTransferResult(
 // static
 void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
   base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
+}
+
+void QuickStartMetrics::RecordChallengeBytesRequested() {
+  // TODO(b/322293969): Add timer metrics.
+}
+
+void QuickStartMetrics::RecordChallengeBytesRequestEnded(
+    const GoogleServiceAuthError& status) {
+  const bool is_success = status.state() == GoogleServiceAuthError::State::NONE;
+  base::UmaHistogramBoolean(kChallengeBytesFetchResultHistogramName,
+                            /*sample=*/is_success);
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {

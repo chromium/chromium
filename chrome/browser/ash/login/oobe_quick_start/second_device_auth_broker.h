@@ -205,6 +205,17 @@ class SecondDeviceAuthBroker {
       std::unique_ptr<EndpointResponse> unparsed_response,
       data_decoder::DataDecoder::ValueOrError response);
 
+  // Internal helper methods to respond to `challenge_callback`.
+  void HandleFetchChallengeBytesErrorResponse(
+      SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+      std::unique_ptr<EndpointResponse> response);
+  void RunChallengeBytesCallbackWithError(
+      SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+      const GoogleServiceAuthError& error);
+  void RunChallengeBytesCallback(
+      SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+      const Base64UrlString& challenge);
+
   // Must be between 0 (exclusive) and 64 (inclusive) characters.
   const std::string device_id_;
 
