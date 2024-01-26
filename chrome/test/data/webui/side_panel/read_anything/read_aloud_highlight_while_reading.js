@@ -63,7 +63,7 @@
   readAnythingApp.resetPreviousHighlight();
 
   // Second sentence is highlighted and first is before it
-  readAnythingApp.playNextMessage();
+  readAnythingApp.highlightAndPlayNextMessage();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       sentence2);
