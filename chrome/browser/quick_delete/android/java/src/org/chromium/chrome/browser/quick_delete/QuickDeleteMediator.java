@@ -64,10 +64,10 @@ class QuickDeleteMediator
     /**
      * Called when the domain count and last visited domain are fetched from local history.
      *
-     * @param lastVisitedDomain The synced last visited domain on all devices in the last 15
-     *                          minutes.
-     * @param domainCount The number of synced unique domains visited on all devices in the
-     *                    last 15 minutes.
+     * @param lastVisitedDomain The synced last visited domain on all devices within the selected
+     *     time period.
+     * @param domainCount The number of synced unique domains visited on all devices within the
+     *     selected time period.
      */
     @Override
     public void onLastVisitedDomainAndUniqueDomainCountReady(

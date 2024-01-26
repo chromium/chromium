@@ -78,8 +78,8 @@ class QuickDeleteTabsFilter {
     }
 
     /**
-     * A method to close tabs which were either created or had a navigation committed, in the
-     * last 15 minutes.
+     * A method to close tabs which were either created or had a navigation committed, within the
+     * time period.
      */
     void closeTabsFilteredForQuickDelete(@TimePeriod int timePeriod) {
         List<Tab> mTabs = getListOfTabsToBeClosed(timePeriod);
