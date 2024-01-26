@@ -785,12 +785,18 @@ void DisplayConfigurator::ForceInitialConfigure() {
 void DisplayConfigurator::SetColorTemperatureAdjustment(
     int64_t display_id,
     const ColorTemperatureAdjustment& cta) {
+  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_)) {
+    return;
+  }
   native_display_delegate_->SetColorTemperatureAdjustment(display_id, cta);
 }
 
 void DisplayConfigurator::SetColorCalibration(
     int64_t display_id,
     const ColorCalibration& calibration) {
+  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_)) {
+    return;
+  }
   native_display_delegate_->SetColorCalibration(display_id, calibration);
 }
 
