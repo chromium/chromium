@@ -246,16 +246,21 @@ void ChannelPosix::WaitForWriteOnIOThreadNoLock() {
 void ChannelPosix::ShutDownOnIOThread() {
   base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
-  read_watcher_.reset();
-  write_watcher_.reset();
-  if (leak_handle_) {
-    std::ignore = socket_.release();
-  } else {
-    socket_.reset();
-  }
+  {
+    base::AutoLock lock(write_lock_);
+    reject_writes_ = true;
+    read_watcher_.reset();
+    write_watcher_.reset();
+    if (leak_handle_) {
+      std::ignore = socket_.release();
+    } else {
+      socket_.reset();
+    }
 #if BUILDFLAG(IS_IOS)
-  fds_to_close_.clear();
+    base::AutoLock fd_lock(fds_to_close_lock_);
+    fds_to_close_.clear();
 #endif
+  }
 
   // May destroy the |this| if it was the last reference.
   self_ = nullptr;
