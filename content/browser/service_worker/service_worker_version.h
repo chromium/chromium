@@ -836,6 +836,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest,
                            WarmUpAndStartServiceWorker);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest, WarmUpWorkerTwice);
 
   // Contains timeout info for InflightRequest.
   struct InflightRequestTimeoutInfo {
@@ -1251,6 +1252,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   ServiceWorkerPingController ping_controller_;
 
   bool stop_when_devtools_detached_ = false;
+
+  bool is_stopping_warmed_up_worker_ = false;
 
   // This is the set of features that were used up until installation of this
   // version completed, or used during the lifetime of |this|.

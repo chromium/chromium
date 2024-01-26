@@ -1493,6 +1493,11 @@ void ServiceWorkerVersion::OnStopping() {
       "Script", script_url_.spec(), "Version Status",
       VersionStatusToString(status_));
 
+  // If the service worker is warming up or warmed up, Such workers
+  // don't need to be restarted in `OnStoppedInternal()`.
+  is_stopping_warmed_up_worker_ =
+      embedded_worker_->pause_initializing_global_scope();
+
   // Endpoint isn't available after calling EmbeddedWorkerInstance::Stop().
   // This needs to be set here without waiting until the worker is actually
   // stopped because subsequent StartWorker() may read the flag to decide
@@ -2739,6 +2744,10 @@ void ServiceWorkerVersion::OnStoppedInternal(
     // This worker unexpectedly stopped because start failed.  Attempting to
     // restart on start failure could cause an endless loop of start attempts,
     // so don't try to restart now.
+    should_restart = false;
+  } else if (is_stopping_warmed_up_worker_) {
+    // This worker is stopped while warmed-up or warming-up. Such workers don't
+    // need to restart.
     should_restart = false;
   }
 

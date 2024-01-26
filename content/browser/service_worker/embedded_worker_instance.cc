@@ -492,8 +492,6 @@ void EmbeddedWorkerInstance::Stop() {
   // stopped.
   inflight_start_info_.reset();
 
-  pause_initializing_global_scope_ = false;
-
   // Don't send the StopWorker message if the StartWorker message hasn't
   // been sent.
   if (status_ == blink::EmbeddedWorkerStatus::kStarting &&
