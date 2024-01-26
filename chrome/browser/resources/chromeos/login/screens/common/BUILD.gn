@@ -23,7 +23,6 @@ js_type_check("closure_compile_local") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":consolidated_consent",
     ":error_message",
     ":offline_ad_login",
     ":signin_fatal_error",
@@ -32,31 +31,6 @@ js_type_check("closure_compile_local") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("consolidated_consent") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
-  deps = [
-    "../..:display_manager",
-    "../../components:display_manager_types",
-    "../../components:oobe_select",
-    "../../components:oobe_types",
-    "../../components:web_view_helper",
-    "../../components:web_view_loader",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-}
 
 js_library("offline_ad_login") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js" ]
@@ -84,6 +58,7 @@ js_library("signin_fatal_error") {
     "../../components:display_manager_types",
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",

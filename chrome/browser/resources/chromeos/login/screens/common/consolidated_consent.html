@@ -69,10 +69,10 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="retryButton" on-click="onRetryClick_"
+    <oobe-text-button id="retryButton" on-click="onRetryClick"
         text-key="consolidatedConsentRetry"></oobe-text-button>
     <oobe-text-button id="doneButton" class="focus-on-show"
-        on-click="onErrorDoneClick_" text-key="consolidatedConsentDone">
+        on-click="onErrorDoneClick" text-key="consolidatedConsentDone">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -89,12 +89,12 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical">
     <webview id="consolidatedConsentGoogleEulaWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onGoogleEulaContentLoad_">
+        on-contentload="onGoogleEulaContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="googleEulaOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="consolidatedConsentOK"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -111,12 +111,12 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical">
     <webview id="consolidatedConsentCrosEulaWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onCrosEulaContentLoad_">
+        on-contentload="onCrosEulaContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="crosEulaOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="consolidatedConsentOK"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -132,12 +132,12 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical">
     <webview id="consolidatedConsentArcTosWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onArcTosContentLoad_">
+        on-contentload="onArcTosContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="arcTosOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="consolidatedConsentOK"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -153,12 +153,12 @@ found in the LICENSE file.
   <div slot="content" class="flex layout vertical">
     <webview id="consolidatedConsentPrivacyPolicyWebview" role="document"
         class="oobe-tos-webview tos-webview"
-        on-contentload="onPrivacyPolicyContentLoad_">
+        on-contentload="onPrivacyPolicyContentLoad">
     </webview>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="privacyOkButton"
-        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick"
         text-key="consolidatedConsentOK"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -169,82 +169,82 @@ found in the LICENSE file.
     read-more>
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
-    [[getTitle_(locale, isTosHidden_, isChildAccount_)]]
+    [[getTitle(locale, isTosHidden, isChildAccount)]]
   </h1>
   <div id="subtitle" slot="subtitle">
-    <div inner-h-t-m-l="[[getSubtitleArcEnabled_(locale)]]"
-        hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+    <div inner-h-t-m-l="[[getSubtitleArcEnabled(locale)]]"
+        hidden="[[!shouldShowArcTos(isTosHidden, isArcEnabled)]]">
     </div>
-    <div hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+    <div hidden="[[shouldShowArcTos(isTosHidden, isArcEnabled)]]">
       [[i18nDynamic(locale, 'consolidatedConsentSubheaderArcDisabled')]]
     </div>
   </div>
   <div id="loadedContent" slot="content">
-    <div hidden="[[isTosHidden_]]">
+    <div hidden="[[isTosHidden]]">
       <div id="termsDescriptionTitle">
         [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
       </div>
       <div id="termsDescriptionArcEnabled"
-          inner-h-t-m-l="[[getTermsDescriptionArcEnabled_(locale)]]"
-          hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+          inner-h-t-m-l="[[getTermsDescriptionArcEnabled(locale)]]"
+          hidden="[[!shouldShowArcTos(isTosHidden, isArcEnabled)]]">
       </div>
       <div id="termsDescriptionArcDisabled"
-          inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
-          hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+          inner-h-t-m-l="[[getTermsDescriptionArcDisabled(locale)]]"
+          hidden="[[shouldShowArcTos(isTosHidden, isArcEnabled)]]">
       </div>
     </div>
 
     <!-- Usage stats toggle row -->
     <div id="usageStats" class="layout horizontal center oobe-optin-row"
-        hidden="[[usageOptinHidden_]]">
+        hidden="[[usageOptinHidden]]">
       <div class="oobe-optin-content flex">
         <span id="usageTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
         </span>
         [[i18nDynamic(locale, 'consolidatedConsentUsageOptIn')]]
-        <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
+        <a id="usageLearnMore" on-click="onUsageLearnMoreClick"
             class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale,
                         'consolidatedConsentUsageOptInLearnMoreLink')]]
         </a>
       </div>
       <iron-icon class="managed-icon" icon="oobe-32:enterprise"
-          hidden="[[!usageManaged_]]"></iron-icon>
+          hidden="[[!usageManaged]]"></iron-icon>
       <cr-toggle id="usageOptin" checked="{{usageChecked}}"
-          disabled="[[usageManaged_]]" aria-describedby="usageTitle">
+          disabled="[[usageManaged]]" aria-describedby="usageTitle">
       </cr-toggle>
     </div>
 
     <!-- Backup toggle row -->
     <div id="backup" class="layout horizontal center oobe-optin-row"
-        hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
+        hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]">
       <div class="oobe-optin-content flex">
         <span id="backupTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentBackupOptInTitle')]]
         </span>
-        <span hidden="[[isChildAccount_]]">
+        <span hidden="[[isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentBackupOptIn')]]
         </span>
-        <span hidden="[[!isChildAccount_]]">
+        <span hidden="[[!isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentBackupOptInChild')]]
         </span>
-        <a id="backupLearnMore" on-click="onBackupLearnMoreClick_"
+        <a id="backupLearnMore" on-click="onBackupLearnMoreClick"
             class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale,
                         'consolidatedConsenttBackupOptInLearnMoreLink')]]
         </a>
       </div>
       <iron-icon class="managed-icon" icon="oobe-32:enterprise"
-          hidden="[[!backupManaged_]]">
+          hidden="[[!backupManaged]]">
       </iron-icon>
       <cr-toggle id="backupOptIn" checked="{{backupChecked}}"
-          disabled="[[backupManaged_]]" aria-describedby="backupTitle">
+          disabled="[[backupManaged]]" aria-describedby="backupTitle">
       </cr-toggle>
     </div>
 
     <!-- Recovery toggle row -->
     <div id="recovery" class="layout horizontal center oobe-optin-row"
-        hidden="[[!recoveryVisible_]]">
+        hidden="[[!recoveryVisible]]">
       <div class="oobe-optin-content flex">
         <span id="recoveryTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentRecoveryOptInTitle')]]
@@ -260,42 +260,42 @@ found in the LICENSE file.
 
     <!-- Location services toggle row -->
     <div id="location" class="layout horizontal center oobe-optin-row"
-        hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
+        hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]">
       <div class="oobe-optin-content flex">
         <span id="locationTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentLocationOptInTitle')]]
         </span>
-        <span hidden="[[isChildAccount_]]">
+        <span hidden="[[isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentLocationOptIn')]]
         </span>
-        <span hidden="[[!isChildAccount_]]">
+        <span hidden="[[!isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentLocationOptInChild')]]
         </span>
-        <a id="locationLearnMore" on-click="onLocationLearnMoreClick_"
+        <a id="locationLearnMore" on-click="onLocationLearnMoreClick"
             class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale,
                         'consolidatedConsenttLocationOptInLearnMoreLink')]]
         </a>
       </div>
       <iron-icon class="managed-icon" icon="oobe-32:enterprise"
-          hidden="[[!locationManaged_]]">
+          hidden="[[!locationManaged]]">
       </iron-icon>
       <cr-toggle id="locationOptIn" checked="{{locationChecked}}"
-          disabled="[[locationManaged_]]" aria-describedby="locationTitle">
+          disabled="[[locationManaged]]" aria-describedby="locationTitle">
       </cr-toggle>
     </div>
-    <div id="footer" hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]"
+    <div id="footer" hidden="[[isArcOptInsHidden(isArcEnabled, isDemo)]]"
         class="oobe-optin-row">
       <span id="footerText">
-        <span hidden="[[isChildAccount_]]">
+        <span hidden="[[isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentFooter')]]
         </span>
-        <span hidden="[[!isChildAccount_]]">
+        <span hidden="[[!isChildAccount]]">
           [[i18nDynamic(locale, 'consolidatedConsentFooterChild')]]
         </span>
       </span>
       <a id="footerLearnMore"
-          on-click="onFooterLearnMoreClick_"
+          on-click="onFooterLearnMoreClick"
           class="oobe-local-link" is="action-link"
           aria-describedby="footerText">
         [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
@@ -303,11 +303,11 @@ found in the LICENSE file.
     </div>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="backButton" hidden="[[!isDemo_]]"
-        on-click="onBack_"></oobe-back-button>
+    <oobe-back-button id="backButton" hidden="[[!isDemo]]"
+        on-click="onBack"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick_"
+    <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick"
         class="focus-on-show"
         text-key="consolidatedConsentAcceptAndContinue">
     </oobe-next-button>
@@ -318,8 +318,8 @@ found in the LICENSE file.
   <div slot="content">
     <span
         inner-h-t-m-l=
-            "[[getUsageLearnMoreText_(locale, isChildAccount_,
-                                      isArcEnabled_, isDemo_)]]">
+            "[[getUsageLearnMoreText(locale, isChildAccount,
+                                     isArcEnabled, isDemo)]]">
     </span>
   </div>
 </oobe-modal-dialog>
@@ -327,7 +327,7 @@ found in the LICENSE file.
 <oobe-modal-dialog id="backupLearnMorePopUp">
   <div slot="content">
     <span inner-h-t-m-l=
-        "[[getBackupLearnMoreText_(locale, isChildAccount_)]]">
+        "[[getBackupLearnMoreText(locale, isChildAccount)]]">
     </span>
   </div>
 </oobe-modal-dialog>
@@ -335,8 +335,8 @@ found in the LICENSE file.
 <oobe-modal-dialog id="locationLearnMorePopUp">
   <div slot="content">
     <span
-        inner-h-t-m-l="[[getLocationLearnMoreText_(locale,
-                                                    isChildAccount_)]]">
+        inner-h-t-m-l="[[getLocationLearnMoreText(locale,
+                                                  isChildAccount)]]">
     </span>
   </div>
 </oobe-modal-dialog>
