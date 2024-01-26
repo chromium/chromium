@@ -5974,7 +5974,7 @@
             ]
         }
     ],
-    "DevToolsConsoleInsights": [
+    "DevToolsConsoleInsightsDogfood": [
         {
             "platforms": [
                 "chromeos",
@@ -5985,7 +5985,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "DevToolsConsoleInsights_Enabled_Dogfood",
                     "enable_features": [
                         "DevToolsConsoleInsights"
                     ]
