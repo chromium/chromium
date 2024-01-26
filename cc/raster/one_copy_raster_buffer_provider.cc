@@ -28,7 +28,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -82,7 +81,6 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     const ResourcePool::InUsePoolResource& in_use_resource,
     OneCopyGpuBacking* backing,
     uint64_t previous_content_id)
@@ -148,14 +146,12 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     int max_copy_texture_chromium_size,
     bool use_partial_raster,
     int max_staging_buffer_usage_in_bytes,
     const RasterCapabilities& raster_caps)
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       max_bytes_per_copy_operation_(
           max_copy_texture_chromium_size
               ? std::min(kMaxBytesPerCopyOperation,
@@ -196,8 +192,8 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
       static_cast<OneCopyGpuBacking*>(resource.gpu_backing());
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
-  return std::make_unique<RasterBufferImpl>(
-      this, gpu_memory_buffer_manager_, resource, backing, previous_content_id);
+  return std::make_unique<RasterBufferImpl>(this, resource, backing,
+                                            previous_content_id);
 }
 
 void OneCopyRasterBufferProvider::Flush() {
@@ -343,8 +339,6 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   }
   DCHECK(!playback_rect.IsEmpty())
       << "Why are we rastering a tile that's not dirty?";
-
-  CHECK(!staging_buffer->gpu_memory_buffer);
 
   // Allocate mappable SharedImage if necessary.
   if (!staging_buffer->client_shared_image) {

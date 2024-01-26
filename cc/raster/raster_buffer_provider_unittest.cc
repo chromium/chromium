@@ -48,7 +48,6 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -192,8 +191,7 @@ class RasterBufferProviderTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
-            &gpu_memory_buffer_manager_, kMaxBytesPerCopyOperation, false,
-            kMaxStagingBuffers, raster_caps);
+            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers, raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
@@ -369,7 +367,6 @@ class RasterBufferProviderTest
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<TileTaskManager> tile_task_manager_;
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;
-  viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   SynchronousTaskGraphRunner task_graph_runner_;
   UniqueNotifier all_tile_tasks_finished_;
   int timeout_seconds_;
