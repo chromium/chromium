@@ -430,7 +430,13 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
+// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_GetDevices DISABLED_GetDevices
+#else
+#define MAYBE_GetDevices GetDevices
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -451,7 +457,13 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
+// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RequestDevice DISABLED_RequestDevice
+#else
+#define MAYBE_RequestDevice RequestDevice
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
