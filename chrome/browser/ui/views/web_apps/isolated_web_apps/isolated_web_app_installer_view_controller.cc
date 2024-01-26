@@ -258,6 +258,15 @@ void IsolatedWebAppInstallerViewController::SetViewForTesting(
   view_ = view;
 }
 
+views::Widget* IsolatedWebAppInstallerViewController::GetWidgetForTesting() {
+  return widget_;
+}
+
+views::Widget*
+IsolatedWebAppInstallerViewController::GetChildWidgetForTesting() {
+  return view_->GetChildWidgetForTesting();
+}
+
 void IsolatedWebAppInstallerViewController::Show() {
   CHECK(is_initialized_) << "Show() is being called before initialized.";
   CHECK(!view_) << "Show() should not be called twice";
@@ -272,16 +281,16 @@ void IsolatedWebAppInstallerViewController::Show() {
   OnStepChanged();
   OnChildDialogChanged();
 
-  views::Widget* widget =
+  widget_ =
       views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
                                                 /*context=*/nullptr,
                                                 /*parent=*/nullptr);
 
   CHECK(!window_);
-  window_ = widget->GetNativeWindow();
+  window_ = widget_->GetNativeWindow();
   AddOrUpdateWindowToShelf();
 
-  widget->Show();
+  widget_->Show();
 }
 
 void IsolatedWebAppInstallerViewController::FocusWindow() {
@@ -349,6 +358,7 @@ void IsolatedWebAppInstallerViewController::OnComplete() {
 
   view_ = nullptr;
   dialog_delegate_ = nullptr;
+  widget_ = nullptr;
   std::move(completion_callback_).Run();
 }
 

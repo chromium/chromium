@@ -6954,6 +6954,8 @@ static_library("test_support") {
       "views/payments/test_chrome_payment_request_delegate.h",
       "views/payments/test_secure_payment_confirmation_payment_request_delegate.cc",
       "views/payments/test_secure_payment_confirmation_payment_request_delegate.h",
+      "views/web_apps/isolated_web_apps/fake_pref_observer.cc",
+      "views/web_apps/isolated_web_apps/fake_pref_observer.h",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.cc",
       "views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h",
       "views/webauthn/authenticator_request_dialog_view_test_api.cc",

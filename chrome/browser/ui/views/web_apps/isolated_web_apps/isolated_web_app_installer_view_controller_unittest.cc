@@ -159,6 +159,7 @@ class MockView : public IsolatedWebAppInstallerView {
               ShowDialog,
               (const IsolatedWebAppInstallerModel::Dialog& dialog),
               (override));
+  MOCK_METHOD(views::Widget*, GetChildWidgetForTesting, (), (override));
 };
 
 // Fake pref observer that mimics the behavior of an actual observer. i.e.

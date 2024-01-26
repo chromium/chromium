@@ -2808,6 +2808,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/user_education/browser_user_education_service_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
+      "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_browsertest.cc",
       "../browser/ui/views/web_apps/protocol_handler_launch_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_detailed_install_dialog_browsertest.cc",

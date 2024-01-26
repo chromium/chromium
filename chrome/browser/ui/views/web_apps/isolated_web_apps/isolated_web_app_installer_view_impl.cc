@@ -555,6 +555,10 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
+views::Widget* IsolatedWebAppInstallerViewImpl::GetChildWidgetForTesting() {
+  return child_widget_;
+}
+
 void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
     int title,
     const ui::DialogModelLabel& subtitle,
@@ -571,7 +575,11 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       .DisableCloseOnDeactivate()
       .AddCancelButton(base::BindOnce(
           &IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled,
-          base::Unretained(this)));
+          base::Unretained(this)))
+      .SetDialogDestroyingCallback(base::BindOnce(
+          &IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying,
+          weak_ptr_factory_.GetWeakPtr()));
+
   if (ok_label.has_value()) {
     dialog_model_builder.AddOkButton(
         base::BindOnce(&IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted,
@@ -608,7 +616,10 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       // `bubble` is initialized, at which point it must still be alive.
       base::Unretained(bubble.get()), std::move(header)));
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  child_widget_ = widget;
+  widget->Show();
 }
 
 void IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted() {
@@ -625,6 +636,10 @@ void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
   for (views::View* child : children()) {
     child->SetVisible(child == view);
   }
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying() {
+  child_widget_ = nullptr;
 }
 
 BEGIN_METADATA(IsolatedWebAppInstallerViewImpl)
