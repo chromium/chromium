@@ -74,7 +74,7 @@ suite('<os-settings-edit-dictionary-page>', () => {
     settingsPrefs.initialize(settingsPrivate);
 
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
+    languageSettingsPrivate.setSettingsPrefsForTesting(settingsPrefs);
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.setLanguageSettingsPrivate(

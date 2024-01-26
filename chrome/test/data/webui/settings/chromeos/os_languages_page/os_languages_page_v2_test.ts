@@ -65,7 +65,7 @@ suite('<os-settings-languages-page-v2>', () => {
     // Sets up fake languageSettingsPrivate API.
     languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
         unknown as FakeLanguageSettingsPrivate;
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
+    languageSettingsPrivate.setSettingsPrefsForTesting(settingsPrefs);
 
     // Instantiates the data model with data bindings for prefs.
     settingsLanguages = document.createElement('settings-languages');
