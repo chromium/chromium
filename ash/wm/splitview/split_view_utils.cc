@@ -9,12 +9,14 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -23,6 +25,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
@@ -205,6 +208,38 @@ void AppendUIModeToHistogram(std::string& histogram_name) {
   histogram_name.append(display::Screen::GetScreen()->InTabletMode()
                             ? ".TabletMode"
                             : ".ClamshellMode");
+}
+
+// Returns true if there is another window snapped to the opposite side of
+// `window` and we can't start partial overview.
+bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
+  const auto windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  const auto snap_type = WindowState::Get(window)->GetStateType();
+  const auto opposite_snap_type = window_util::GetOppositeSnapType(window);
+  for (aura::Window* top_window : base::Reversed(windows)) {
+    if (top_window == window) {
+      // Skip `window` itself.
+      continue;
+    }
+    auto* top_window_state = WindowState::Get(top_window);
+    if (top_window_state->IsFloated()) {
+      // Skip any floated windows that are on top of the snapped windows.
+      continue;
+    }
+    if (!top_window_state->IsSnapped()) {
+      // Otherwise if `top_window` is not snapped, return false.
+      return false;
+    }
+    if (top_window_state->GetStateType() == snap_type) {
+      // Skip any windows that are snapped to the *same* side as `window`.
+      continue;
+    }
+    // Else `top_window` is snapped to the opposite side of `window`.
+    CHECK_EQ(top_window_state->GetStateType(), opposite_snap_type);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -800,6 +835,53 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
   gfx::Rect snapped_window_bounds_in_screen;
   snapped_window_bounds_in_screen.SetByBounds(left, top, right, bottom);
   return snapped_window_bounds_in_screen;
+}
+
+bool CanStartSplitViewOverviewSessionInClamshell(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source) {
+  if (IsInOverviewSession() && WindowState::Get(window)->IsSnapped()) {
+    return !RootWindowController::ForWindow(window)
+                ->split_view_overview_session();
+  }
+
+  if (!OverviewController::Get()->CanEnterOverview()) {
+    return false;
+  }
+
+  // TODO(sophiewen): Associated the `if` with the settings pref check.
+  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return false;
+  }
+
+  switch (snap_action_source) {
+    case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+    case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+    case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+    case WindowSnapActionSource::kTest:
+      // We only start partial overview for the above snap sources.
+      break;
+    default:
+      return false;
+  }
+
+  // We shouldn't start `SplitViewOverviewSession` if the given `window` belongs
+  // to a snap group.
+  // TODO(michelefan): Revisit and see if this check can be removed.
+  auto* snap_group_controller = SnapGroupController::Get();
+  if (snap_group_controller &&
+      snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+    return false;
+  }
+
+  // If `SnapGroups` is not enabled and the topmost window (excluding
+  // `window` itself) is snapped on the opposite side, don't start partial
+  // overview.
+  if (!snap_group_controller && IsAnotherWindowSnappedOppositeOf(window)) {
+    return false;
+  }
+
+  return !IsInOverviewSession();
 }
 
 bool IsSnapGroupEnabledInClamshellMode() {
