@@ -577,6 +577,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
 
     driver = chromedriver.ChromeDriver(server_url, server_pid,
                                        chrome_binary=_CHROME_BINARY,
+                                       http_timeout=_HTTP_TIMEOUT,
                                        browser_name=browser_name,
                                        android_package=android_package,
                                        android_activity=android_activity,
@@ -6235,6 +6236,7 @@ class ChromeDriverLogTest(ChromeDriverBaseTest):
       driver = chromedriver.ChromeDriver(
           chromedriver_server.GetUrl(), chromedriver_server.GetPid(),
           chrome_binary=_CHROME_BINARY,
+          http_timeout=_HTTP_TIMEOUT,
           experimental_options={ self.UNEXPECTED_CHROMEOPTION_CAP : 1 })
       driver.Quit()
     except chromedriver.ChromeDriverException as e:
@@ -6463,6 +6465,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
                                            _CHROMEDRIVER_SERVER_PID,
                                            chrome_binary=f.name,
+                                           http_timeout=_HTTP_TIMEOUT,
                                            chrome_switches=switches,
                                            test_name=self.id())
         # The constructor above must throw an exception.
@@ -6503,6 +6506,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
                                            _CHROMEDRIVER_SERVER_PID,
                                            chrome_binary = f.name,
+                                           http_timeout=_HTTP_TIMEOUT,
                                            chrome_switches = switches,
                                            experimental_options =
                                               experimental_options,
@@ -6519,6 +6523,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
           _CHROMEDRIVER_SERVER_URL,
           _CHROMEDRIVER_SERVER_PID,
           chrome_binary=os.path.join(temp_dir, 'this_file_should_not_exist'),
+          http_timeout=_HTTP_TIMEOUT,
           test_name=self.id())
       # The constructor above must throw an exception.
       # Therefore normally this code should be unreachable.
@@ -7447,6 +7452,7 @@ class CustomBidiMapperTest(ChromeDriverBaseTest):
     driver = chromedriver.ChromeDriver(server_url=chromedriver_server.GetUrl(),
                                      server_pid=chromedriver_server.GetPid(),
                                      chrome_binary=_CHROME_BINARY,
+                                     http_timeout=_HTTP_TIMEOUT,
                                      test_name=self.id(),
                                      web_socket_url=True,
                                      browser_name=_BROWSER_NAME,
@@ -7908,6 +7914,18 @@ if __name__ == '__main__':
       default=None,
       help='Browser specific test subset selector. Inferred from the path '
            'to the binary if possible. Otherwise defaults to chrome')
+  # One can run ChromeDriver under a debugger and attach the tests to the
+  # running instance. Another instance of ChromeDriver server will be started
+  # by the tests but they won't communicate with it. The child processes spawned
+  # by the remote ChromeDriver service won't be cleaned up properly. Don't use
+  # this flag in production!
+  parser.add_argument(
+      '--remote-chromedriver-port',
+      type=int,
+      default=None,
+      help='Attach tests to the running instance of ChromeDriver server. '
+           'This parameter is intended for debugging purposes only. Don\'t '
+           'use it in production as it does not clean up resources properly')
 
   ##############################################################################
   # Note for other Chromium based browsers!!!
@@ -7945,6 +7963,11 @@ if __name__ == '__main__':
   global _CHROMEDRIVER_BINARY
   _CHROMEDRIVER_BINARY = util.GetAbsolutePathOfUserPath(options.chromedriver)
 
+  global _HTTP_TIMEOUT
+  _HTTP_TIMEOUT = None
+  if options.remote_chromedriver_port is not None:
+    _HTTP_TIMEOUT = 10 * 3600 # 10 hours
+
   if (options.android_package and
       options.android_package not in _ANDROID_NEGATIVE_FILTER):
     parser.error('Invalid --android-package')
@@ -7954,9 +7977,12 @@ if __name__ == '__main__':
     additional_args.append('--disable-build-check')
 
   global chromedriver_server
-  chromedriver_server = server.Server(_CHROMEDRIVER_BINARY, options.log_path,
-                                      replayable=options.replayable,
-                                      additional_args=additional_args)
+  chromedriver_server = server.Server(
+      _CHROMEDRIVER_BINARY,
+      options.log_path,
+      replayable=options.replayable,
+      remote_chromedriver_port=options.remote_chromedriver_port,
+      additional_args=additional_args)
 
   global _CHROMEDRIVER_SERVER_PID
   _CHROMEDRIVER_SERVER_PID = chromedriver_server.GetPid()

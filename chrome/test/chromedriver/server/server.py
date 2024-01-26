@@ -16,7 +16,8 @@ class Server(object):
 
   def __init__(self, exe_path, log_path=None, verbose=True,
                replayable=False, devtools_replay_path=None,
-               bidi_mapper_path=None, additional_args=None):
+               bidi_mapper_path=None, remote_chromedriver_port=None,
+               additional_args=None):
     """Starts the ChromeDriver server and waits for it to be ready.
 
     Args:
@@ -60,7 +61,9 @@ class Server(object):
     self._pid = self._process.pid
     self._host = '127.0.0.1'
     self._port = port
-    self._url = 'http://%s:%d' % (self._host, port)
+    if remote_chromedriver_port is not None:
+      self._port = remote_chromedriver_port
+    self._url = 'http://%s:%d' % (self._host, self._port)
     if self._process is None:
       raise RuntimeError('ChromeDriver server cannot be started')
 
