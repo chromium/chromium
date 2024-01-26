@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -91,6 +92,11 @@ void DlpFilesTestWithMounts::SetUp() {
   task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   event_storage_->SetTaskRunnerForTesting(task_runner_);
 
+  // Reporting test environment needs to be created before the browser
+  // creation is completed.
+  reporting_test_enviroment_ =
+      reporting::ReportingClient::TestEnvironment::CreateWithStorageModule();
+
   reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
       reporting_manager_.get(), events_,
@@ -135,6 +141,8 @@ void DlpFilesTestWithMounts::TearDown() {
   files_controller_.reset();
   DlpFilesTestBase::TearDown();
   reporting_manager_.reset();
+
+  reporting_test_enviroment_.reset();
 
   if (chromeos::DlpClient::Get()) {
     chromeos::DlpClient::Shutdown();

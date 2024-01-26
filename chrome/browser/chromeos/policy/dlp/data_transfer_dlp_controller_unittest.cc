@@ -20,6 +20,8 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +29,7 @@
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -147,26 +150,33 @@ class DataTransferDlpControllerTest
     // Initialize `testing_profile_` and dependant class members here as it
     // depends on Lacros being properly initialized.
     testing_profile_ = TestingProfile::Builder().Build();
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            base::MakeRefCounted<::reporting::test::TestStorageModule>());
     rules_manager_ = std::make_unique<::testing::NiceMock<MockDlpRulesManager>>(
         testing_profile_.get());
     dlp_controller_ =
         std::make_unique<::testing::StrictMock<MockDlpController>>(
             *rules_manager_);
 
+    // In tests Manager can only be created after TestEnvironment.
+    reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
     data_controls::SetReportQueueForReportingManager(
-        &reporting_manager_, events_,
+        reporting_manager_.get(), events_,
         base::ThreadPool::CreateSequencedTaskRunner({}));
     ON_CALL(*rules_manager_, GetReportingManager)
-        .WillByDefault(::testing::Return(&reporting_manager_));
+        .WillByDefault(::testing::Return(reporting_manager_.get()));
   }
 
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
+      test_reporting_;
   std::unique_ptr<::testing::NiceMock<MockDlpRulesManager>> rules_manager_;
   std::unique_ptr<::testing::StrictMock<MockDlpController>> dlp_controller_;
   base::HistogramTester histogram_tester_;
-  data_controls::DlpReportingManager reporting_manager_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService lacros_service_;

@@ -34,10 +34,10 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 // In order to utilize the ReportQueueProvider the EncryptedReportingPipeline
 // feature must be turned on using --enable-features=EncryptedReportingPipeline.
 //
-// ReportQueueProvider is a singleton which can be accessed through
-// |ReportQueueProvider::GetInstance|. This static method must be implemented
-// for a specific configuration - Chrome (for ChromeOS and for other OSes),
-// other ChromeOS executables.
+// `ReportQueueProvider` must be created for a specific configuration - Chrome
+// (for ChromeOS and for other OSes), other ChromeOS executables. It is then
+// registered and can be accessed through static method
+// `ReportQueueProvider::GetInstance()`.
 //
 // Example Usage:
 // void SendMessage(google::protobuf::ImportantMessage important_message,
@@ -82,6 +82,12 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 // }
 class ReportQueueProvider {
  public:
+  // `ReportQueueProvider` and its descendants need to be destructed on
+  // sequenced task runners; to facilitate that the following flavor of smart
+  // pointer is declared.
+  template <typename T>
+  using SmartPtr = std::unique_ptr<T, base::OnTaskRunnerDeleter>;
+
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
 
   // The response will come back utilizing the ReportQueueProvider's thread. It
@@ -110,9 +116,9 @@ class ReportQueueProvider {
   virtual ~ReportQueueProvider();
 
   // Asynchronously creates a queue based on the configuration. In the process
-  // singleton ReportQueueProvider is potentially created and retrieved
-  // internally, and then started to initialize (if initialization fails,
-  // |CreateQueue| will return with error, but next attempt may succeed).
+  // `ReportQueueProvider` is expected to exist and could still be initializing
+  // (if initialization fails, `CreateQueue` will return with error, but next
+  // attempt may succeed).
   // Returns with the callback handing ownership to the caller (unless there is
   // an error, and then it gets the error status).
   static void CreateQueue(std::unique_ptr<ReportQueueConfiguration> config,
@@ -124,9 +130,8 @@ class ReportQueueProvider {
   static StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
   CreateSpeculativeQueue(std::unique_ptr<ReportQueueConfiguration> config);
 
-  // Instantiates ReportQueueProvider singleton based on the overall process
-  // state and will refer to StorageModuleInterface and optional Uploader
-  // accordingly.
+  // Retrieves current `ReportQueueProvider` instance (created before and
+  // referring to `StorageModuleInterface` and optional `Uploader`).
   static ReportQueueProvider* GetInstance();
 
   static bool IsEncryptedReportingPipelineEnabled();

@@ -162,10 +162,6 @@ class DlpContentManagerAshTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    test_reporting_ =
-        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
-            base::MakeRefCounted<::reporting::test::TestStorageModule>());
-
     ASSERT_TRUE(profile_manager_.SetUp());
     LoginFakeUser();
 
@@ -216,7 +212,9 @@ class DlpContentManagerAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
-      test_reporting_;
+      test_reporting_ = ::reporting::ReportingClient::TestEnvironment::
+          CreateWithStorageModule(
+              base::MakeRefCounted<::reporting::test::TestStorageModule>());
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;

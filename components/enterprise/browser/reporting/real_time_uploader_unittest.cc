@@ -38,6 +38,11 @@ class RealTimeUploaderTest : public ::testing::Test {
   RealTimeUploaderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void SetUp() override {
+    helper_ =
+        std::make_unique<reporting::test::ReportQueueProviderTestHelper>();
+  }
+
   std::unique_ptr<ExtensionsWorkflowEvent> CreateReportAndGetSerializedString(
       const std::string& id,
       std::string* serialized_string) {
@@ -50,15 +55,14 @@ class RealTimeUploaderTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<RealTimeUploader> uploader_;
-  reporting::MockReportQueueProvider mock_queue_provider_;
+  std::unique_ptr<reporting::test::ReportQueueProviderTestHelper> helper_;
   base::MockCallback<RealTimeUploader::EnqueueCallback> mock_enqueue_callback_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(RealTimeUploaderTest, UploadReport) {
-  mock_queue_provider_.ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
-  reporting::report_queue_provider_test_helper::SetForTesting(
-      &mock_queue_provider_);
+  helper_->mock_provider()
+      ->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
 
   uploader_ = RealTimeUploader::Create(
       kDMToken, reporting::Destination::EXTENSIONS_WORKFLOW, kPriority);

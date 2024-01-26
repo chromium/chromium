@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
@@ -123,6 +124,11 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   ~HttpsLatencyEventsTest() override = default;
 
   void SetUp() override {
+    // Reporting test environment needs to be created before other
+    // initializations.
+    reporting_test_enviroment_ =
+        reporting::ReportingClient::TestEnvironment::CreateWithStorageModule();
+
     ::ash::LoginState::Initialize();
     ::ash::DebugDaemonClient::InitializeFake();
     ::ash::cros_healthd::FakeCrosHealthd::Initialize();
@@ -165,6 +171,8 @@ class HttpsLatencyEventsTest : public ::testing::Test {
     ::ash::cros_healthd::FakeCrosHealthd::Shutdown();
     ::ash::DebugDaemonClient::Shutdown();
     ::ash::LoginState::Shutdown();
+
+    reporting_test_enviroment_.reset();
   }
 
   void EnableDeviceNetworkStatusPolicy() {
@@ -179,6 +187,9 @@ class HttpsLatencyEventsTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<reporting::ReportingClient::TestEnvironment>
+      reporting_test_enviroment_;
+
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
