@@ -20,6 +20,21 @@ namespace content {
 
 class WebAppSystemMediaControls;
 
+// Used to fire telemetry about instanced PWA controls usage.
+// This enum is used to back a histogram. Do not remove or reorder members.
+enum class WebAppSystemMediaControlsEvent {
+  kPwaPlayingMedia = 0,
+  kPwaSmcNext = 1,
+  kPwaSmcPrevious = 2,
+  kPwaSmcPlay = 3,
+  kPwaSmcPause = 4,
+  kPwaSmcPlayPause = 5,
+  kPwaSmcStop = 6,
+  kPwaSmcSeek = 7,
+  kPwaSmcSeekTo = 8,
+  kMaxValue = kPwaSmcSeekTo,
+};
+
 // A simple observer interface for tests to be notified when events are
 // received by the WebAppSystemmediaControlsManager.
 class WebAppSystemMediaControlsManagerObserver {

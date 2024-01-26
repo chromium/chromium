@@ -4,6 +4,7 @@
 
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
@@ -135,6 +136,12 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   // At this point, we know this web contents is for a dPWA.
   // See if controls already exists for this request id.
   existing_controls = GetControlsForRequestId(request_id);
+
+  // It's also the right time to fire telemetry that a PWA session is playing
+  // audio since we know it's not a browser.
+  base::UmaHistogramEnumeration(
+      "WebApp.Media.SystemMediaControls",
+      WebAppSystemMediaControlsEvent::kPwaPlayingMedia);
 
   // if the controls don't exist, we need to make an SMC and the
   // controls object.
