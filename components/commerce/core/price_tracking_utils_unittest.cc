@@ -553,8 +553,6 @@ TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentName) {
 // Ensure the utility to get the shopping collection knows when to create or
 // simply lookup the folder. The folder's UUID should be deterministic.
 TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
-  test_features_.InitAndEnableFeature(kShoppingCollection);
-
   const base::Uuid collection_uuid =
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
 
@@ -585,8 +583,6 @@ TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
 }
 
 TEST_F(PriceTrackingUtilsTest, GetShoppingCollection_InvalidParams) {
-  test_features_.InitAndDisableFeature(kShoppingCollection);
-
   const bookmarks::BookmarkNode* collection =
       GetShoppingCollectionBookmarkFolder(nullptr);
 

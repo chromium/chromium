@@ -80,13 +80,8 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
   GURL url;
   std::u16string title;
   if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
-    const bookmarks::BookmarkNode* parent = bookmark_model_->other_node();
-
-    // Automatically add the bookmark to the shopping collection if enabled.
-    if (base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
-      parent =
-          commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
-    }
+    const bookmarks::BookmarkNode* parent =
+        commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
 
     return bookmark_model_->AddNewURL(parent, parent->children().size(), title,
                                       url);

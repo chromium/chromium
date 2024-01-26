@@ -286,10 +286,6 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
 class BookmarkBubbleViewShoppingCollectionTest
     : public BookmarkBubbleViewTestBase {
  public:
-  BookmarkBubbleViewShoppingCollectionTest() {
-    test_features_.InitAndEnableFeature(commerce::kShoppingCollection);
-  }
-
   void SetUp() override {
     BookmarkBubbleViewTestBase::SetUp();
 

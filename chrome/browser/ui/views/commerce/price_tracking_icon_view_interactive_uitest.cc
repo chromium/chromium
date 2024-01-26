@@ -69,7 +69,7 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     test_features_.InitWithFeatures(
         {commerce::kCommerceAllowChipExpansion, commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
-        {commerce::kPriceInsights, commerce::kShoppingCollection});
+        {});
   }
 
   void SetUp() override {

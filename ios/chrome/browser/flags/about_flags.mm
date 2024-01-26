@@ -1177,10 +1177,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-    {"shopping-collection",
-     commerce::flag_descriptions::kShoppingCollectionName,
-     commerce::flag_descriptions::kShoppingCollectionDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingCollection)},
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},

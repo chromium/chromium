@@ -42,8 +42,6 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 class BookmarkBubbleViewInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    test_features_.InitWithFeatures({commerce::kShoppingCollection}, {});
-
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
@@ -58,9 +56,6 @@ class BookmarkBubbleViewInteractiveTest : public InteractiveBrowserTest {
 
     InteractiveBrowserTest::SetUpOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
