@@ -40,7 +40,7 @@ base::Value::Dict ConstructExternalDataReference(const std::string& url,
   const std::string hash = crypto::SHA256HashString(data);
   base::Value::Dict metadata;
   metadata.Set(kUrlKey, url);
-  metadata.Set(kHashKey, base::HexEncode(hash.c_str(), hash.size()));
+  metadata.Set(kHashKey, base::HexEncode(hash));
   return metadata;
 }
 

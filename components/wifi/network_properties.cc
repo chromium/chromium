@@ -59,7 +59,7 @@ base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
     if (!bssid.empty())
       wifi.Set(onc::wifi::kBSSID, bssid);
     wifi.Set(onc::wifi::kSSID, ssid);
-    wifi.Set(onc::wifi::kHexSSID, base::HexEncode(ssid.c_str(), ssid.size()));
+    wifi.Set(onc::wifi::kHexSSID, base::HexEncode(ssid));
   }
   value.Set(onc::network_type::kWiFi, std::move(wifi));
 

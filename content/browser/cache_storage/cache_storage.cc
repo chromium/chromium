@@ -62,9 +62,7 @@ namespace {
 
 std::string HexedHash(const std::string& value) {
   std::string value_hash = base::SHA1HashString(value);
-  std::string valued_hexed_hash = base::ToLowerASCII(
-      base::HexEncode(value_hash.c_str(), value_hash.length()));
-  return valued_hexed_hash;
+  return base::ToLowerASCII(base::HexEncode(value_hash));
 }
 
 void SizeRetrievedFromAllCaches(std::unique_ptr<int64_t> accumulator,

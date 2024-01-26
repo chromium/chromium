@@ -70,8 +70,7 @@ std::string GetStringFromDictionary(const base::Value::Dict& dict,
 }  // namespace
 
 void SetSSID(const std::string& ssid, base::Value::Dict* properties) {
-  std::string hex_ssid = base::HexEncode(ssid.c_str(), ssid.size());
-  properties->Set(shill::kWifiHexSsid, hex_ssid);
+  properties->Set(shill::kWifiHexSsid, base::HexEncode(ssid));
 }
 
 std::string GetSSIDFromProperties(const base::Value::Dict& properties,

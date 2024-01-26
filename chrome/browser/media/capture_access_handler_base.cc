@@ -326,7 +326,7 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string hash = base::SHA1HashString(extension->id());
-  std::string hex_hash = base::HexEncode(hash.c_str(), hash.length());
+  std::string hex_hash = base::HexEncode(hash);
 
   // crbug.com/446688
   return hex_hash == "4F25792AF1AA7483936DE29C07806F203C7170A0" ||

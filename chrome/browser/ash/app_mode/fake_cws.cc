@@ -250,7 +250,7 @@ void FakeCWS::SetUpdateCrx(const std::string& app_id,
   }
 
   const std::string sha256 = crypto::SHA256HashString(crx_content);
-  const std::string sha256_hex = base::HexEncode(sha256.c_str(), sha256.size());
+  const std::string sha256_hex = base::HexEncode(sha256);
 
   id_to_update_check_content_map_[app_id] =
       base::BindRepeating(&ApplyHasUpdateTemplate, app_id, crx_download_url,

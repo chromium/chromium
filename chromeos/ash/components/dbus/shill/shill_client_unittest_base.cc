@@ -311,8 +311,7 @@ base::Value::Dict ShillClientUnittestBase::CreateExampleServiceProperties() {
   properties.Set(shill::kModeProperty, base::Value(shill::kModeManaged));
   properties.Set(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   const std::string ssid = "testssid";
-  properties.Set(shill::kWifiHexSsid,
-                 base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
+  properties.Set(shill::kWifiHexSsid, base::Value(base::HexEncode(ssid)));
   properties.Set(shill::kSecurityClassProperty,
                  base::Value(shill::kSecurityClassPsk));
   return properties;

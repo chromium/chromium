@@ -181,7 +181,7 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ComputeHashes(
     root_dir.AppendRelativePath(full_path, &relative_path);
 
     std::string hash = crypto::SHA256HashString(file_contents);
-    std::string hex_encode = base::HexEncode(hash.c_str(), hash.size());
+    std::string hex_encode = base::HexEncode(hash);
 
     extension_data.Set(
         relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
