@@ -117,6 +117,22 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
     ]
   }
+
+  robolectric_library("data_sharing_junit_tests") {
+    sources = [ "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImplTest.java" ]
+
+    deps = [
+      ":internal_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:gurl_java",
+    ]
+  }
 }
 
 source_set("test_support") {

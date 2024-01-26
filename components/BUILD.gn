@@ -1211,6 +1211,7 @@ if (is_android) {
       "//components/commerce/core/android:junit_tests",
       "//components/content_capture/android/junit:components_content_capture_junit_tests",
       "//components/crash/android:junit",
+      "//components/data_sharing/internal:data_sharing_junit_tests",
       "//components/download/network:junit",
       "//components/embedder_support/android:components_embedder_support_junit_tests",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
