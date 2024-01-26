@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -365,6 +366,28 @@ public class IncognitoReauthCoordinatorFactoryTest {
                     coordinator
                             .getClass()
                             .isAssignableFrom(FullScreenIncognitoReauthCoordinator.class));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testAreDependenciesReadyFor() {
+        if (mIsTabbedActivity) {
+            // The TabSwitcherCustomViewManager is set.
+            assertTrue(
+                    mIncognitoReauthCoordinatorFactory.areDependenciesReadyFor(
+                            /* showFullScreen= */ true));
+            assertTrue(
+                    mIncognitoReauthCoordinatorFactory.areDependenciesReadyFor(
+                            /* showFullScreen= */ false));
+        } else {
+            // The TabSwitcherCustomViewManager is not set.
+            assertTrue(
+                    mIncognitoReauthCoordinatorFactory.areDependenciesReadyFor(
+                            /* showFullScreen= */ true));
+            assertFalse(
+                    mIncognitoReauthCoordinatorFactory.areDependenciesReadyFor(
+                            /* showFullScreen= */ false));
         }
     }
 }

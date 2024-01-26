@@ -147,10 +147,10 @@ public class IncognitoReauthControllerImpl
                 }
             };
 
-    // The {@link CallbackController} to populate the |mLayoutStateProvider| when it becomes
-    // available.
-    private final CallbackController mLayoutStateProviderCallbackController =
-            new CallbackController();
+    /**
+     * The {@link CallbackController} for any callbacks that may run after the class is destroyed.
+     */
+    private final CallbackController mCallbackController = new CallbackController();
 
     private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final @NonNull TabModelSelector mTabModelSelector;
@@ -231,12 +231,19 @@ public class IncognitoReauthControllerImpl
         mIsIncognitoReauthPendingOnRestoreSupplier = incognitoReauthPendingOnRestoreSupplier;
 
         layoutStateProviderOneshotSupplier.onAvailable(
-                mLayoutStateProviderCallbackController.makeCancelable(
+                mCallbackController.makeCancelable(
                         layoutStateProvider -> {
                             mLayoutStateProvider = layoutStateProvider;
                             mLayoutStateProvider.addObserver(mLayoutStateObserver);
                             showDialogIfRequired();
                         }));
+        incognitoReauthCoordinatorFactory
+                .getTabSwitcherCustomViewManagerSupplier()
+                .onAvailable(
+                        mCallbackController.makeCancelable(
+                                ignored -> {
+                                    showDialogIfRequired();
+                                }));
 
         mTabModelSelector.setIncognitoReauthDialogDelegate(this);
         mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
@@ -266,7 +273,7 @@ public class IncognitoReauthControllerImpl
         mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mProfileObservableSupplier.removeObserver(mProfileSupplierCallback);
-        mLayoutStateProviderCallbackController.destroy();
+        mCallbackController.destroy();
         mIncognitoReauthCoordinatorFactory.destroy();
         mOnBackPressedInFullScreenReauthCallback.setEnabled(false);
 
@@ -375,6 +382,9 @@ public class IncognitoReauthControllerImpl
         boolean showFullScreen =
                 !mIsTabbedActivity
                         || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        if (!mIncognitoReauthCoordinatorFactory.areDependenciesReadyFor(showFullScreen)) {
+            return;
+        }
         mIncognitoReauthCoordinator =
                 mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
                         mIncognitoReauthCallback,
