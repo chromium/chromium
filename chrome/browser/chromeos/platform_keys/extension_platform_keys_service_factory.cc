@@ -44,8 +44,9 @@ class DefaultSelectDelegate
               content::BrowserContext* context) override {
     CHECK(web_contents);
     const extensions::Extension* const extension =
-        extensions::ExtensionRegistry::Get(context)->GetExtensionById(
-            extension_id, extensions::ExtensionRegistry::ENABLED);
+        extensions::ExtensionRegistry::Get(context)
+            ->enabled_extensions()
+            .GetByID(extension_id);
     if (!extension) {
       std::move(callback).Run(nullptr /* no certificate selected */);
       return;
