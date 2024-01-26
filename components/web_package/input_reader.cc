@@ -21,7 +21,7 @@ std::optional<base::span<const uint8_t>> InputReader::ReadBytes(size_t n) {
   if (buf_.size() < n) {
     return std::nullopt;
   }
-  auto result = buf_.subspan(0, n);
+  auto result = buf_.first(n);
   Advance(n);
   return result;
 }

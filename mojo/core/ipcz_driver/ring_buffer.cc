@@ -136,7 +136,7 @@ RingBuffer::SplitBytes RingBuffer::MapRange(
       std::min(range.size, capacity() - range.offset);
   return {
       mapping().bytes().subspan(range.offset).first(first_chunk_size),
-      mapping().bytes().subspan(0, range.size - first_chunk_size),
+      mapping().bytes().first(range.size - first_chunk_size),
   };
 }
 

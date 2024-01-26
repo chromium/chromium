@@ -224,7 +224,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
   if (!is_final) {
     // Split into data and a hash.
     base::span<const char> hash = record.subspan(record_size_);
-    record = record.subspan(0, record_size_);
+    record = record.first(record_size_);
 
     // Save the next proof.
     CHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), hash.size());

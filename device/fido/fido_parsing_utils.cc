@@ -70,7 +70,7 @@ std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
   chunks.reserve(num_chunks);
   while (!span.empty()) {
     const size_t chunk_size = std::min(span.size(), max_chunk_size);
-    chunks.emplace_back(span.subspan(0, chunk_size));
+    chunks.emplace_back(span.first(chunk_size));
     span = span.subspan(chunk_size);
   }
 

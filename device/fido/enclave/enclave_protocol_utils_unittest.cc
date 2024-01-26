@@ -134,7 +134,7 @@ sync_pb::WebauthnCredentialSpecifics PasskeyEntity() {
 
 enclave::ClientSignature FakeSigningCallback(
     base::span<const uint8_t> to_be_signed) {
-  EXPECT_EQ(fido_parsing_utils::Materialize(to_be_signed.subspan(0, 32)),
+  EXPECT_EQ(fido_parsing_utils::Materialize(to_be_signed.first(32)),
             fido_parsing_utils::Materialize(kHandshakeHash));
 
   enclave::ClientSignature ret;

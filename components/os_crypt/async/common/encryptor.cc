@@ -103,7 +103,7 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
       aead.Init(key_);
 
       // The nonce is at the start of the ciphertext and must be removed.
-      auto nonce = ciphertext.subspan(0, kNonceLength);
+      auto nonce = ciphertext.first(kNonceLength);
       auto data = ciphertext.subspan(kNonceLength);
 
       return aead.Open(data, nonce, /*additional_data=*/{});

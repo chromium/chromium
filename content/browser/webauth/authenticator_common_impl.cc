@@ -469,7 +469,7 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
   auto prf_values = blink::mojom::PRFValues::New();
   DCHECK(results.size() == 32 || results.size() == 64);
   prf_values->first =
-      device::fido_parsing_utils::Materialize(results.subspan(0, 32));
+      device::fido_parsing_utils::Materialize(results.first(32));
   if (results.size() == 64) {
     prf_values->second =
         device::fido_parsing_utils::Materialize(results.subspan(32, 32));

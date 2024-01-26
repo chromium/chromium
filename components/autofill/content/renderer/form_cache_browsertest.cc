@@ -713,8 +713,7 @@ TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
                                     &std::vector<FormFieldData>::empty,
                                     &FormData::fields));
   EXPECT_TRUE(base::ranges::none_of(
-      base::make_span(forms.updated_forms)
-          .subspan(0, kMaxExtractableChildFrames),
+      base::make_span(forms.updated_forms).first(kMaxExtractableChildFrames),
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
   EXPECT_TRUE(base::ranges::all_of(
       base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
