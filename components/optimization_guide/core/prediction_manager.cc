@@ -763,33 +763,31 @@ void PredictionManager::LoadPredictionModels(
     const base::flat_set<proto::OptimizationTarget>& optimization_targets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (switches::IsModelOverridePresent()) {
-    for (proto::OptimizationTarget optimization_target : optimization_targets) {
+  const bool has_overrides = switches::IsModelOverridePresent();
+  for (proto::OptimizationTarget optimization_target : optimization_targets) {
+    // Give preference to any overrides given on the command line.
+    if (has_overrides) {
       base::FilePath base_model_dir =
           GetBaseModelDirForDownload(optimization_target);
-      BuildPredictionModelFromCommandLineForOptimizationTarget(
-          optimization_target, base_model_dir,
-          base::BindOnce(&PredictionManager::OnPredictionModelOverrideLoaded,
-                         ui_weak_ptr_factory_.GetWeakPtr(),
-                         optimization_target));
-    }
-    return;
-  }
-
-  if (features::IsInstallWideModelStoreEnabled()) {
-    for (const auto optimization_target : optimization_targets) {
-      if (!prediction_model_store_->HasModel(optimization_target,
-                                             model_cache_key_)) {
-        RecordModelAvailableAtRegistration(optimization_target, false);
+      if (BuildPredictionModelFromCommandLineForOptimizationTarget(
+              optimization_target, base_model_dir,
+              base::BindOnce(
+                  &PredictionManager::OnPredictionModelOverrideLoaded,
+                  ui_weak_ptr_factory_.GetWeakPtr(), optimization_target))) {
         continue;
       }
-      prediction_model_store_->LoadModel(
-          optimization_target, model_cache_key_,
-          base::BindOnce(&PredictionManager::OnLoadPredictionModel,
-                         ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
-                         /*record_availability_metrics=*/true));
     }
-    return;
+
+    if (!prediction_model_store_->HasModel(optimization_target,
+                                           model_cache_key_)) {
+      RecordModelAvailableAtRegistration(optimization_target, false);
+      continue;
+    }
+    prediction_model_store_->LoadModel(
+        optimization_target, model_cache_key_,
+        base::BindOnce(&PredictionManager::OnLoadPredictionModel,
+                       ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                       /*record_availability_metrics=*/true));
   }
 }
 
