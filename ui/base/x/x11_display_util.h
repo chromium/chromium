@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
-#include "ui/linux/linux_ui.h"
+#include "ui/display/types/display_config.h"
 
 namespace ui {
 
@@ -22,7 +22,7 @@ std::vector<display::Display> GetFallbackDisplayList(
 // the X server.
 COMPONENT_EXPORT(UI_BASE_X)
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
-    const DisplayConfig& display_config,
+    const display::DisplayConfig& display_config,
     size_t* primary_display_index_out);
 
 // Returns the refresh interval of the primary display. If there is no connected

@@ -156,7 +156,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // recalculated.
   void UpdateDeviceScaleFactor();
 
-  ui::DisplayConfig GetDisplayConfig() const;
+  display::DisplayConfig GetDisplayConfig() const;
 
   std::unique_ptr<GtkUiPlatform> platform_;
 

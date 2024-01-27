@@ -964,8 +964,8 @@ void GtkUi::TrackMonitor(GdkMonitor* monitor) {
                                connect("notify::scale-factor")};
 }
 
-ui::DisplayConfig GtkUi::GetDisplayConfig() const {
-  ui::DisplayConfig config;
+display::DisplayConfig GtkUi::GetDisplayConfig() const {
+  display::DisplayConfig config;
   if (display::Display::HasForceDeviceScaleFactor()) {
     config.primary_scale = display::Display::GetForcedDeviceScaleFactor();
     return config;

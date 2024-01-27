@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "base/bits.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
@@ -213,7 +214,7 @@ std::vector<uint8_t> GetEdidProperty(
 }
 
 float GetDisplayScale(const gfx::Rect& bounds,
-                      const DisplayConfig& display_config) {
+                      const display::DisplayConfig& display_config) {
   constexpr auto kMaxDist = std::make_pair(INT_MAX, INT_MAX);
   auto min_dist_scale = std::make_pair(kMaxDist, display_config.primary_scale);
   for (const auto& geometry : display_config.display_geometries) {
@@ -291,7 +292,7 @@ std::vector<display::Display> GetFallbackDisplayList(
 }
 
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
-    const DisplayConfig& display_config,
+    const display::DisplayConfig& display_config,
     size_t* primary_display_index_out) {
   DCHECK(primary_display_index_out);
   const float primary_scale = display_config.primary_scale;
@@ -513,8 +514,8 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
   constexpr base::TimeDelta kDefaultInterval = base::Seconds(1. / 60);
 
   size_t primary_display_index = 0;
-  auto displays =
-      BuildDisplaysFromXRandRInfo(DisplayConfig(), &primary_display_index);
+  auto displays = BuildDisplaysFromXRandRInfo(display::DisplayConfig(),
+                                              &primary_display_index);
   CHECK_LT(primary_display_index, displays.size());
 
   // TODO(crbug.com/726842): It might make sense here to pick the output that
