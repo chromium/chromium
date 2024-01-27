@@ -2607,6 +2607,30 @@ TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
       compose::ComposeInnerTextNodeOffset::kNoOffsetFound, 1);
 }
 
+TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {
+  ShowDialogAndBindMojo();
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            // a no op.
+          })));
+
+  page_handler()->Compose("a user typed this", false);
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_TRUE(result->compose_state->has_pending_request);
+
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived, 1);
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.

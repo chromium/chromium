@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Session implicitly closed, often by web contents destruction"/>
   <int value="3" label="New session with selected text opened"/>
+  <int value="4" label="Session was closed while waiting for a response"/>
 </enum>
 
 <enum name="ComposeSessionEventTypes">
