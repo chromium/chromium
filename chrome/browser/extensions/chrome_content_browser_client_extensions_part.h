@@ -39,6 +39,8 @@ using BinderRegistry = BinderRegistryWithArgs<>;
 
 namespace extensions {
 
+BASE_DECLARE_FEATURE(kStopUsingRenderProcessHostPrivilege);
+
 // Implements the extensions portion of ChromeContentBrowserClient.
 class ChromeContentBrowserClientExtensionsPart
     : public ChromeContentBrowserClientParts {
