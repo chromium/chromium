@@ -31,6 +31,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -181,7 +183,6 @@ public class CustomTabMinimizationManager
             mMinimized = mActivity.enterPictureInPictureMode(builder.build());
             recordMinimizeSuccess(/* success= */ true);
         } catch (NullPointerException e) {
-            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
                 String msg = "NullPointerException";
                 incrementExceptionImpressionAndReport(TASK_DISPLAY_AREA_NPE_STR, msg, e);
@@ -189,7 +190,6 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         } catch (IllegalStateException e) {
-            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg = "Device doesn't support picture-in-picture mode.";
                 incrementExceptionImpressionAndReport(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
@@ -202,7 +202,6 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         } catch (IllegalArgumentException e) {
-            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
                 String msg = "IllegalArgumentException";
                 incrementExceptionImpressionAndReport(ROOT_TASK_IAE_STR, msg, e);
@@ -210,7 +209,11 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         }
-        if (!mMinimized) return;
+        if (!mMinimized) {
+            recordMinimizeSuccess(/* success= */ false);
+            Toast.makeText(mActivity, R.string.minimize_failure_toast, Toast.LENGTH_SHORT).show();
+            return;
+        }
         recordMinimizeSuccessAfterException();
 
         maybeSaveLastMinimizeDelegate();
