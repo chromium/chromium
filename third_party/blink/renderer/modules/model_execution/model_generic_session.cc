@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink-forward.h"
@@ -22,6 +23,41 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+// TODO(crbug.com/1520700): update this to different DOMException once the list
+// finalized.
+const char* ConvertModelStreamingResponseErrorToString(
+    mojom::blink::ModelStreamingResponseStatus error) {
+  switch (error) {
+    case mojom::blink::ModelStreamingResponseStatus::kErrorUnknown:
+      return "Unknown error.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorInvalidRequest:
+      return "The request was invalid.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorRequestThrottled:
+      return "The request was throttled.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorPermissionDenied:
+      return "User permission errors such as not signed-in or not allowed to "
+             "execute model.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorGenericFailure:
+      return "Other generic failures.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorRetryableError:
+      return "Retryable error occurred in server.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorNonRetryableError:
+      return "Non-retryable error occurred in server.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
+      return "Unsupported.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorFiltered:
+      return "Bad response.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorDisabled:
+      return "Response was disabled.";
+    case mojom::blink::ModelStreamingResponseStatus::kErrorCancelled:
+      return "The request was cancelled.";
+    case mojom::blink::ModelStreamingResponseStatus::kOngoing:
+    case mojom::blink::ModelStreamingResponseStatus::kComplete:
+      NOTREACHED();
+      return "";
+  }
+}
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
@@ -42,17 +78,14 @@ class ModelGenericSession::Responder final
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
     switch (status) {
-      case mojom::blink::ModelStreamingResponseStatus::kOngoing: {
+      case mojom::blink::ModelStreamingResponseStatus::kOngoing:
         response_ = text;
         break;
-      }
-      case mojom::blink::ModelStreamingResponseStatus::kComplete: {
+      case mojom::blink::ModelStreamingResponseStatus::kComplete:
         resolver_->Resolve(response_);
         break;
-      }
-      case mojom::blink::ModelStreamingResponseStatus::kError: {
-        resolver_->Reject();
-      }
+      default:
+        resolver_->Reject(ConvertModelStreamingResponseErrorToString(status));
     }
   }
 
@@ -98,16 +131,15 @@ class ModelGenericSession::StreamingResponder final
         Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
         break;
       }
-      case mojom::blink::ModelStreamingResponseStatus::kComplete: {
+      case mojom::blink::ModelStreamingResponseStatus::kComplete:
         Controller()->Close();
         break;
-      }
-      case mojom::blink::ModelStreamingResponseStatus::kError: {
+      default:
         // TODO(crbug.com/1520700): raise the proper exception based on the spec
         // after the prototype phase.
         Controller()->Error(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotReadableError, "Model execution error"));
-      }
+            DOMExceptionCode::kNotReadableError,
+            ConvertModelStreamingResponseErrorToString(status)));
     }
   }
 
