@@ -114,9 +114,19 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
   // cleanup work has finished.
-  task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OpenXrRenderLoop::StopRuntime, base::Unretained(this)));
+  // If we're called as a result of the OpenXrApiWrapper being destroyed, we may
+  // not have a task_runner anymore. Note that this appears to predominantly be
+  // the case on Android, where the task_runner() is destroyed before
+  // `StopRuntime` is called (which can lead to us being called), as Windows
+  // appears to stop/destroy the task runner after calling `StopRuntime`.
+  // Our `StopRuntime` method itself is resilient to multiple/re-entrant calls,
+  // so simply validate the task runner rather than something more involved to
+  // prevent that.
+  if (task_runner()) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OpenXrRenderLoop::StopRuntime, base::Unretained(this)));
+  }
 }
 
 void OpenXrRenderLoop::GetFrameData(
@@ -800,9 +810,6 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
 }
 
 void OpenXrRenderLoop::StopRuntime() {
-  // Has to reset input_helper_ before reset openxr_. If we destroy openxr_
-  // first, input_helper_destructor will try to call the actual openxr runtime
-  // rather than the mock in tests.
   openxr_ = nullptr;
   // Need to destroy the graphics binding *after* the OpenXrApiWrapper, which
   // depends on it; but *before* the texture helper on which it depends.
