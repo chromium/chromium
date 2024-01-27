@@ -187,7 +187,9 @@ crbug.com/1417314 [ Win ] http/tests/inspector-protocol/network/is-same-site.js 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
 # These tests are intentionally SLOW because of throttled loading.
-crbug.com/73609 http/tests/media/video-play-stall.html [ Slow ]
+crbug.com/73609 [ Debug Linux ] http/tests/media/video-play-stall.html [ Slow ]
+crbug.com/73609 [ Debug Mac ] http/tests/media/video-play-stall.html [ Slow ]
+crbug.com/73609 [ Release ] http/tests/media/video-play-stall.html [ Slow ]
 crbug.com/73609 [ Release ] http/tests/media/video-preload-metadata.html [ Slow ]
 crbug.com/869829 http/tests/media/video-cancel-load.html [ Slow ]
 crbug.com/870259 http/tests/media/video-throttled-load-metadata.html [ Slow ]
@@ -309,7 +311,7 @@ crbug.com/726075 [ Mac ] css3/filters/effect-reference-zoom-hw.html [ Slow ]
 # Slow oopr canvas tests
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-image.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
+crbug.com/1081534 [ Debug Mac13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
 crbug.com/1152496 [ Debug Mac13-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/1152496 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/1152496 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
@@ -328,9 +330,8 @@ crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-t
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac12 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
-crbug.com/1081534 [ Mac12-arm64 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac13 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
-crbug.com/1081534 [ Debug Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
+crbug.com/1081534 [ Debug Mac13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
 crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
@@ -1348,7 +1349,12 @@ crbug.com/1404951 [ Mac11 Release ] external/wpt/credential-management/fedcm-ifr
 crbug.com/1404951 [ Mac12 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Mac13 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Release Win ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
-crbug.com/1494119 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Debug Mac13-arm64 ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Linux ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Mac11 Release ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Mac12 Release ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Mac13 ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
+crbug.com/1494119 [ Win ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
 crbug.com/1489239 virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
@@ -1358,7 +1364,13 @@ crbug.com/1423483 [ Mac12 ] external/wpt/css/css-color/parsing/color-computed-hs
 crbug.com/1423483 [ Release Win ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
 
 # Slow because of too many cycles of waiting for layout and paint
-crbug.com/1310326 http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Debug Mac13-arm64 ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Linux ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Mac11 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Mac12 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Mac12-arm64 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Mac13 ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/1310326 [ Release Win ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
 
 crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Slow ]
 
@@ -1418,14 +1430,22 @@ crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-conte
 crbug.com/1484710 virtual/fenced-frame-mparch/external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-public [ Slow ]
 
 # Gardener 2023-10-26
-crbug.com/1496281 external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
+crbug.com/1496281 [ Debug Linux ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
+crbug.com/1496281 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
+crbug.com/1496281 [ Release ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
 
 # Waits for media to be sent over loopback PeerConnections, which can take time to set up.
 crbug.com/1502781 fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Slow ]
 
 # These tests wait to ensure that an animation frame timing was *not* reported, which requires long timeouts and retries.
-crbug.com/1507152 external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
-crbug.com/1507152 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Mac13 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Win11-arm64 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Release ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Mac13 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Debug Win11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 [ Release ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
 crbug.com/1462683 external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
 crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
 
