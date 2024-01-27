@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
-<title>CSS Scrollbars: scrollbar-color on root correctly interacts with ::-webkit-scrollbar-corner</title>
+<title>CSS Scrollbars: scrollbar-color on root correctly interacts with ::-webkit-scrollbar-corner on body</title>
 <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-<link rel="match" href="scrollbar-color-009-ref.html" />
+<link rel="match" href="scrollbar-color-010-ref.html" />
+<link rel="mismatch" href="scrollbar-color-010-mis-ref.html" />
 <link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/" />
 <style>
   :root {
@@ -13,7 +14,7 @@
     overflow: scroll;
   }
 
-  ::-webkit-scrollbar-corner {
+  body::-webkit-scrollbar-corner {
     background-color: purple;
   }
 </style>

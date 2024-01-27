@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_params_user_context_invalid_value[]
+  webdriver.bidi.error.UnknownErrorException: unknown error (browserContextId)
+[FAIL] test_params_user_context_invalid_value[unknown]
+  webdriver.bidi.error.UnknownErrorException: unknown error (browserContextId)
+Harness: the test ran to completion.
