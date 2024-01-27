@@ -7,9 +7,11 @@
 #include <stdint.h>
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -1313,6 +1315,20 @@ bool OpenXrApiWrapper::GetStageParameters(
       local_from_stage_location.pose.position.z;
 
   local_from_stage = gfx::Transform::Compose(local_from_stage_decomp);
+
+  // TODO(https://crbug.com/1522245): Check for crash dumps.
+  std::array<float, 16> transform_data;
+  local_from_stage.GetColMajorF(transform_data.data());
+  bool contains_nan = base::ranges::any_of(
+      transform_data, [](const float f) { return std::isnan(f); });
+
+  if (contains_nan) {
+    // It's unclear if this could be tripping on every frame, but reporting once
+    // per day per user (the default throttling) should be sufficient for future
+    // investigation.
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
   return true;
 }
 

@@ -105,6 +105,7 @@ _CONFIG = [
             'base::Milliseconds',
             'base::Minutes',
             'base::Nanoseconds',
+            'base::NotFatalUntil',
             'base::OptionalFromPtr',
             'base::OptionalToPtr',
             'base::Overloaded',
