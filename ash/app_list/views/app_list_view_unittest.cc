@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -641,8 +642,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   void ClearSearchResults() { GetSearchModel()->results()->DeleteAll(); }
 
-  void AddSearchResultWithTitleAndScore(const base::StringPiece& title,
-                                        double score) {
+  void AddSearchResultWithTitleAndScore(std::string_view title, double score) {
     std::unique_ptr<TestSearchResult> result =
         std::make_unique<TestSearchResult>();
     result->set_display_type(ash::SearchResultDisplayType::kList);

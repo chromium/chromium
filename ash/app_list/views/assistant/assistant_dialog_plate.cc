@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/assistant/assistant_dialog_plate.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/assistant/model/assistant_interaction_model.h"
@@ -144,7 +145,7 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
       if (delegate_->IsTabletMode())
         HideKeyboardIfEnabled();
 
-      const base::StringPiece16& trimmed_text = base::TrimWhitespace(
+      std::u16string_view trimmed_text = base::TrimWhitespace(
           textfield_->GetText(), base::TrimPositions::TRIM_ALL);
 
       // Only non-empty trimmed text is consider a valid contents commit.
