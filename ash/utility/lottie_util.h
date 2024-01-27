@@ -5,8 +5,9 @@
 #ifndef ASH_UTILITY_LOTTIE_UTIL_H_
 #define ASH_UTILITY_LOTTIE_UTIL_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
-#include "base/strings/string_piece.h"
 
 namespace ash {
 
@@ -20,10 +21,10 @@ namespace ash {
 //
 // Note this convention is the standard for all ash animations, but it is not a
 // generic Lottie file standard.
-inline constexpr base::StringPiece kLottieCustomizableIdPrefix = "_CrOS";
+inline constexpr std::string_view kLottieCustomizableIdPrefix = "_CrOS";
 
 // Simple convenience function that checks the |id| for the prefix above.
-ASH_EXPORT bool IsCustomizableLottieId(base::StringPiece id);
+ASH_EXPORT bool IsCustomizableLottieId(std::string_view id);
 
 }  // namespace ash
 
