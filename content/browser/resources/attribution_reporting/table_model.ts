@@ -23,6 +23,10 @@ export abstract class TableModel<T> {
 
   abstract getRows(): T[];
 
+  empty(): boolean {
+    return this.getRows().length === 0;
+  }
+
   notifyRowsChanged() {
     this.rowsChangedListeners.forEach(f => f());
   }

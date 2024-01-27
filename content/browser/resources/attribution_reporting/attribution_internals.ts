@@ -612,6 +612,13 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     tr.classList.toggle('send-error', report.sendFailed);
   }
 
+  override empty() {
+    return this.sentOrDroppedReports.length === 0 &&
+        this.storedReports.length === 0 &&
+        (!this.showDebugReportsCheckbox.checked ||
+         this.debugReports.length === 0);
+  }
+
   override getRows() {
     let rows = this.sentOrDroppedReports.concat(this.storedReports);
     if (this.showDebugReportsCheckbox.checked) {
@@ -1207,7 +1214,7 @@ class AttributionInternals implements ObserverInterface {
 
 function installUnreadIndicator(model: TableModel<any>, tab: HTMLElement) {
   model.rowsChangedListeners.add(() => {
-    if (!tab.hasAttribute('selected')) {
+    if (!tab.hasAttribute('selected') && !model.empty()) {
       tab.classList.add('unread');
     }
   });
