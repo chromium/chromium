@@ -203,6 +203,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   GURL GetRequestingOrigin() const;
   GURL GetEmbeddingOrigin() const;
 
+  void RecordMetricsOnEnteringFullscreen();
+
   // The origin of the specific frame requesting fullscreen, which may not match
   // the exclusive_access_tab()'s origin, if an embedded frame made the request.
   GURL requesting_origin_;

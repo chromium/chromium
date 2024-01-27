@@ -119,6 +119,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time a
     web page enters fullscreen via the Fullscreen API.
+
+    Canary/Dev data from December 2023 - January 2024 may be inaccurate due to a
+    bug.
   </summary>
 </histogram>
 
@@ -133,6 +136,9 @@ chromium-metrics-reviews@google.com.
     Note that even when keyboard lock has been requested, it doesn't get
     activated when entering fullscreen through the browser UI. The Fullscreen
     API must (also) be called.
+
+    Canary/Dev data from December 2023 - January 2024 may be inaccurate due to a
+    bug.
   </summary>
 </histogram>
 
