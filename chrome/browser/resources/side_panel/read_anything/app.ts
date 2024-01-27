@@ -660,7 +660,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
 
     // TODO(crbug.com/1474951): Add word callbacks for word highlighting.
-    this.speakMessage(message);
+
+    const voice = this.getSpeechSynthesisVoice();
+    if (!voice) {
+      // TODO(crbug.com/1474951): Handle when no voices are available.
+      return;
+    }
+
+    message.voice = voice;
+
+    const utteranceSettings = this.defaultUtteranceSettings();
+    message.lang = utteranceSettings.lang;
+    message.volume = utteranceSettings.volume;
+    message.pitch = utteranceSettings.pitch;
+    message.rate = utteranceSettings.rate;
+
+    this.speechStarted = true;
+    this.synth.speak(message);
   }
 
   private extractTextOf(axNodeIds: number[]): string {
@@ -707,25 +723,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const newElement: Node = this.highlightCurrentText_(start, end, element);
       this.domNodeToAxNodeIdMap_.set(newElement, nodeId);
     }
-  }
-
-  speakMessage(message: SpeechSynthesisUtterance) {
-    const voice = this.getSpeechSynthesisVoice();
-    if (!voice) {
-      // TODO(crbug.com/1474951): Handle when no voices are available.
-      return;
-    }
-
-    message.voice = voice;
-
-    const utteranceSettings = this.defaultUtteranceSettings();
-    message.lang = utteranceSettings.lang;
-    message.volume = utteranceSettings.volume;
-    message.pitch = utteranceSettings.pitch;
-    message.rate = utteranceSettings.rate;
-
-    this.speechStarted = true;
-    this.synth.speak(message);
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {
