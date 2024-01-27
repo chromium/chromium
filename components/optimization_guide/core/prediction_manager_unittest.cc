@@ -552,10 +552,7 @@ class PredictionManagerTest : public PredictionManagerTestBase {
         features::kRemoteOptimizationGuideFetching,
         features::kOptimizationGuideModelDownloading,
     };
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.emplace_back(
-        features::kOptimizationGuideInstallWideModelStore);
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   proto::PredictionModel CreatePredictionModelForModelStore(

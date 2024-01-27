@@ -416,8 +416,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
         FilePathToString(store_add_file_path));
   }
 
-  if (features::IsInstallWideModelStoreEnabled() &&
-      !WriteModelInfoProtoToFile(model.model_info(), model_info_path)) {
+  if (!WriteModelInfoProtoToFile(model.model_info(), model_info_path)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoSaving);
     return std::nullopt;

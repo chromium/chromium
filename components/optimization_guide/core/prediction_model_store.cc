@@ -164,7 +164,6 @@ PredictionModelStore* PredictionModelStore::GetInstance() {
 PredictionModelStore::PredictionModelStore()
     : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  DCHECK(optimization_guide::features::IsInstallWideModelStoreEnabled());
 }
 
 PredictionModelStore::~PredictionModelStore() = default;

@@ -459,9 +459,6 @@ void PredictionManager::OnModelsFetched(
 void PredictionManager::UpdateModelMetadata(
     const proto::PredictionModel& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!features::IsInstallWideModelStoreEnabled()) {
-    return;
-  }
 
   // Model update is needed when download URL is set, which indicates the model
   // has changed.
@@ -492,9 +489,6 @@ bool PredictionManager::ShouldDownloadNewModel(
   // No download needed if URL is not set.
   if (model.model().download_url().empty()) {
     return false;
-  }
-  if (!features::IsInstallWideModelStoreEnabled()) {
-    return true;
   }
   // Though the server set the download URL indicating the model is old or does
   // not exist in client, the same version model could exist in the store, if
@@ -719,10 +713,7 @@ void PredictionManager::OnPredictionModelsStored() {
 void PredictionManager::MaybeInitializeModelDownloads(
     download::BackgroundDownloadService* background_download_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (features::IsInstallWideModelStoreEnabled()) {
-    init_time_ = base::TimeTicks::Now();
-  }
+  init_time_ = base::TimeTicks::Now();
 
   // Create the download manager here if we are allowed to.
   if (features::IsModelDownloadingEnabled() && !off_the_record_ &&
@@ -829,14 +820,11 @@ void PredictionManager::OnProcessLoadedModel(
 void PredictionManager::RemoveModelFromStore(
     proto::OptimizationTarget optimization_target,
     PredictionModelStoreModelRemovalReason model_removal_reason) {
-  if (features::IsInstallWideModelStoreEnabled()) {
-    if (prediction_model_store_->HasModel(optimization_target,
-                                          model_cache_key_)) {
-      prediction_model_store_->RemoveModel(
-          optimization_target, model_cache_key_, model_removal_reason);
-      NotifyObserversOfNewModel(optimization_target, std::nullopt);
-    }
-    return;
+  if (prediction_model_store_->HasModel(optimization_target,
+                                        model_cache_key_)) {
+    prediction_model_store_->RemoveModel(optimization_target, model_cache_key_,
+                                         model_removal_reason);
+    NotifyObserversOfNewModel(optimization_target, std::nullopt);
   }
 }
 
@@ -916,11 +904,8 @@ void PredictionManager::SetClockForTesting(const base::Clock* clock) {
 
 base::FilePath PredictionManager::GetBaseModelDirForDownload(
     proto::OptimizationTarget optimization_target) {
-  return features::IsInstallWideModelStoreEnabled()
-             ? prediction_model_store_->GetBaseModelDirForModelCacheKey(
-                   optimization_target, model_cache_key_)
-             : models_dir_path_.AppendASCII(
-                   base::Uuid::GenerateRandomV4().AsLowercaseString());
+  return prediction_model_store_->GetBaseModelDirForModelCacheKey(
+      optimization_target, model_cache_key_);
 }
 
 void PredictionManager::OverrideTargetModelForTesting(

@@ -74,8 +74,6 @@ BASE_DECLARE_FEATURE(kRemotePageMetadata);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
@@ -319,12 +317,6 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta PredictionModelFetchInterval();
 
-// Returns whether to enable fetching the model again when a new optimization
-// target observer registration happens, after the initial model fetch is
-// completed.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsPredictionModelNewRegistrationFetchEnabled();
-
 // Returns the time to wait for starting a model fetch when a new optimization
 // target observer registration happens, after the initial model fetch is
 // completed.
@@ -457,11 +449,6 @@ bool TFLiteXNNPACKDelegateEnabled();
 // Whether to check the pref for whether a previous component version failed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldCheckFailedComponentVersionPref();
-
-// Returns whether the feature for new model store that is tied with Chrome
-// installation and shares the models across user profiles, is enabled.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsInstallWideModelStoreEnabled();
 
 // Whether to persist salient image metadata for each visit.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

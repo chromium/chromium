@@ -53,8 +53,7 @@ class PredictionModelStoreTest : public testing::Test {
   PredictionModelStoreTest() {
     feature_list_.InitWithFeatures(
         {features::kRemoteOptimizationGuideFetching,
-         features::kOptimizationGuideModelDownloading,
-         features::kOptimizationGuideInstallWideModelStore},
+         features::kOptimizationGuideModelDownloading},
         {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDebugLoggingEnabled);

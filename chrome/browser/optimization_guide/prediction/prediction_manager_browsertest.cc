@@ -316,8 +316,6 @@ class PredictionManagerBrowserTest : public testing::WithParamInterface<bool>,
         {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "8000"}}},
-        {optimization_guide::features::kOptimizationGuideInstallWideModelStore,
-         {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -449,8 +447,6 @@ class PredictionManagerModelDownloadingBrowserTest
         {features::kOptimizationTargetPrediction, {}},
         {features::kOptimizationGuideModelDownloading,
          {{"unrestricted_model_downloading", "true"}}},
-        {optimization_guide::features::kOptimizationGuideInstallWideModelStore,
-         {}},
     };
     if (ShouldEnableModelStoreUseRelativePath()) {
       enabled_features.emplace_back(features::kModelStoreUseRelativePath,

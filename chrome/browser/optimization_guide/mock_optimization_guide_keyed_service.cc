@@ -23,15 +23,13 @@ void MockOptimizationGuideKeyedService::Initialize(
 
 // static
 void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
-  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-    // Create and initialize the install-wide model store.
-    base::FilePath model_downloads_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
-    model_downloads_dir = model_downloads_dir.Append(
-        optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-    optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-        TestingBrowserProcess::GetGlobal()->local_state(), model_downloads_dir);
-  }
+  // Create and initialize the install-wide model store.
+  base::FilePath model_downloads_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
+  model_downloads_dir = model_downloads_dir.Append(
+      optimization_guide::kOptimizationGuideModelStoreDirPrefix);
+  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
+      TestingBrowserProcess::GetGlobal()->local_state(), model_downloads_dir);
 }
 
 // static
@@ -42,11 +40,9 @@ void MockOptimizationGuideKeyedService::TearDown() {
 
 // static
 void MockOptimizationGuideKeyedService::ResetForTesting() {
-  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-    // Reinitialize the store, so that tests do not use state from the
-    // previous test.
-    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
-  }
+  // Reinitialize the store, so that tests do not use state from the
+  // previous test.
+  optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
 }
 
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()

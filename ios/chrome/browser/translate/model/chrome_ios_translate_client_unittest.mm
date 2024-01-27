@@ -40,9 +40,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     PlatformTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
-    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      OptimizationGuideServiceFactory::InitializePredictionModelStore();
-    }
+    OptimizationGuideServiceFactory::InitializePredictionModelStore();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
@@ -64,13 +62,9 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   }
 
   void TearDown() override {
-    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      // Reinitialize the store, so that tests do not use state from the
-      // previous test.
-      optimization_guide::PredictionModelStore::GetInstance()
-          ->ResetForTesting();
-    }
-
+    // Reinitialize the store, so that tests do not use state from the
+    // previous test.
+    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
     PlatformTest::TearDown();
   }
 
