@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
 namespace {
@@ -1601,13 +1602,13 @@ void RecordStructuredDiscoveryNotificationShown(
   int tx_power = GetTxPower(bt_device);
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
-  metrics::structured::events::v2::fast_pair::DiscoveryNotificationShown()
-      .SetProtocol(static_cast<int>(device.protocol()))
-      .SetModelId(model_id)
-      .SetFastPairVersion(version)
-      .SetRSSI(rssi)
-      .SetTxPower(tx_power)
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      metrics::structured::events::v2::fast_pair::DiscoveryNotificationShown()
+          .SetProtocol(static_cast<int>(device.protocol()))
+          .SetModelId(model_id)
+          .SetFastPairVersion(version)
+          .SetRSSI(rssi)
+          .SetTxPower(tx_power)));
 }
 
 void RecordStructuredPairingStarted(const Device& device,
@@ -1626,13 +1627,13 @@ void RecordStructuredPairingStarted(const Device& device,
   int tx_power = GetTxPower(bt_device);
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
-  metrics::structured::events::v2::fast_pair::PairingStart()
-      .SetProtocol(static_cast<int>(device.protocol()))
-      .SetModelId(model_id)
-      .SetFastPairVersion(version)
-      .SetRSSI(rssi)
-      .SetTxPower(tx_power)
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(metrics::structured::events::v2::fast_pair::PairingStart()
+                    .SetProtocol(static_cast<int>(device.protocol()))
+                    .SetModelId(model_id)
+                    .SetFastPairVersion(version)
+                    .SetRSSI(rssi)
+                    .SetTxPower(tx_power)));
 }
 
 void RecordStructuredPairingComplete(const Device& device,
@@ -1651,13 +1652,13 @@ void RecordStructuredPairingComplete(const Device& device,
   int tx_power = GetTxPower(bt_device);
   CD_LOG(VERBOSE, Feature::FP)
       << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
-  metrics::structured::events::v2::fast_pair::PairingComplete()
-      .SetProtocol(static_cast<int>(device.protocol()))
-      .SetModelId(model_id)
-      .SetFastPairVersion(version)
-      .SetRSSI(rssi)
-      .SetTxPower(tx_power)
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(metrics::structured::events::v2::fast_pair::PairingComplete()
+                    .SetProtocol(static_cast<int>(device.protocol()))
+                    .SetModelId(model_id)
+                    .SetFastPairVersion(version)
+                    .SetRSSI(rssi)
+                    .SetTxPower(tx_power)));
 }
 
 void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
@@ -1671,12 +1672,12 @@ void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
     return;
   }
   int version = ConvertFastPairVersionToInt(device.version());
-  metrics::structured::events::v2::fast_pair::PairFailure()
-      .SetProtocol(static_cast<int>(device.protocol()))
-      .SetModelId(model_id)
-      .SetReason(static_cast<int>(failure))
-      .SetFastPairVersion(version)
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(metrics::structured::events::v2::fast_pair::PairFailure()
+                    .SetProtocol(static_cast<int>(device.protocol()))
+                    .SetModelId(model_id)
+                    .SetReason(static_cast<int>(failure))
+                    .SetFastPairVersion(version)));
 }
 
 }  // namespace quick_pair
