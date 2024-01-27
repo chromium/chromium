@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
@@ -58,6 +57,8 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -2021,7 +2022,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
-  base::LRUCache<WebGLProgram*, GLuint> program_completion_queries_;
+
+  // Support for KHR_parallel_shader_compile.
+  //
+  // TODO(crbug.com/1474141): once a HeapLinkedHashMap is available,
+  // convert these two fields to use that instead.
+  HeapVector<Member<WebGLProgram>> program_completion_query_list_;
+  HeapHashMap<Member<WebGLProgram>, GLuint> program_completion_query_map_;
 
   int number_of_user_allocated_multisampled_renderbuffers_;
 
