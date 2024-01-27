@@ -1368,6 +1368,30 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
   RunSettingsTest("os_privacy_page/privacy_hub_geolocation_subpage_test.js");
 }
 
+class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrivacyTestPrivacyHubV0Enabled() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHubV0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+using OsPrivacyPagePrivacyHubSubpage = OSSettingsPrivacyTestPrivacyHubV0Enabled;
+
+IN_PROC_BROWSER_TEST_F(OsPrivacyPagePrivacyHubSubpage, AllBuilds) {
+  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
+          "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(OsPrivacyPagePrivacyHubSubpage, OfficialBuild) {
+  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
+          "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsInput) {
   RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
           "runMochaSuite('SettingsSecureDnsInput')");

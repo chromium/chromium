@@ -50,11 +50,6 @@ var OSSettingsBrowserTest = class extends PolymerTest {
    }
  ],
  [
-   'OsPrivacyPagePrivacyHubSubpage',
-   'os_privacy_page/privacy_hub_subpage_test.js',
-   {enabled: ['ash::features::kCrosPrivacyHubV0']},
- ],
- [
    'OsSettingsSearchBox',
    'os_settings_search_box/os_settings_search_box_test.js'
  ],
@@ -102,18 +97,6 @@ function registerTest(testName, module, featureList) {
     GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
     TEST_F(className, 'OfficialBuild' || 'All', () => {
       mocha.grep('AboutPageTest_OfficialBuild').run();
-    });
-    GEN('#endif');
-  } else if (testName === 'OsPrivacyPagePrivacyHubSubpage') {
-    // PrivacyHubSubpage has a test suite that can only succeed on official
-    // builds where the is_chrome_branded build flag is enabled.
-    TEST_F(className, 'AllBuilds' || 'All', () => {
-      mocha.grep('/^(?!<os-settings-privacy-page> OfficialBuild).*$/').run();
-    });
-
-    GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-    TEST_F(className, 'OfficialBuild' || 'All', () => {
-      mocha.grep('<os-settings-privacy-page> OfficialBuild').run();
     });
     GEN('#endif');
   } else if (testName === 'OsSettingsSearchBox') {
