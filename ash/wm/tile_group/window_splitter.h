@@ -11,7 +11,9 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/velocity_tracker/velocity_tracker.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -58,8 +60,22 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   struct SplitWindowInfo {
     gfx::Rect topmost_window_bounds;
     gfx::Rect dragged_window_bounds;
-    SplitRegion split_region;
+    SplitRegion split_region = SplitRegion::kNone;
+
+    bool operator==(const SplitWindowInfo&) const;
   };
+
+  // The default inset region of a window that could trigger window splitting.
+  static constexpr gfx::Insets kBaseTriggerMargins = gfx::Insets::VH(35, 45);
+
+  // Amount of time the cursor has to dwell to activate the window splitting
+  // phantom window.
+  static constexpr base::TimeDelta kDwellActivationDuration =
+      base::Milliseconds(380);
+
+  // Max cursor movement velocity threshold, which if exceeded will reset window
+  // splitting activation.
+  static constexpr double kDwellMaxVelocityPixelsPerSec = 70.0;
 
   // Calculates window bounds and other info resulting from window splitting.
   // `topmost_window` is the window to be split.
@@ -95,7 +111,16 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   }
 
  private:
+  // Callback to show the phantom window with precondition checking.
+  // The `initial_topmost_window` is the topmost window when the dwell timer
+  // started.
+  void ShowPhantomWindowCallback(aura::Window* initial_topmost_window);
+
+  // Shows the phantom window.
   void ShowPhantomWindow(const gfx::Rect& bounds);
+
+  // Whether the window can be split upon completing drag.
+  bool CanSplitWindow() const { return !!phantom_window_controller_; }
 
   void MaybeClearDraggedWindow();
 
@@ -103,13 +128,20 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   DragType GetDragType() const;
 
+  void UpdateCursorLocation(const gfx::PointF& location_in_screen);
+
+  double GetCursorVelocitySquared() const;
+
   // The window being dragged.
   raw_ptr<aura::Window> dragged_window_ = nullptr;
 
-  // Whether the window can be split upon completing drag.
-  bool can_split_window_ = false;
+  raw_ptr<aura::Window> last_topmost_window_ = nullptr;
 
-  // Whether the user actually moved enough to be considered a drag.
+  gfx::PointF last_location_in_screen_;
+
+  SplitWindowInfo last_split_window_info_;
+
+  // Whether the cursor actually moved enough to be considered a drag.
   bool is_drag_updated_ = false;
 
   // Whether the drag operation was completed successfully (instead of e.g.
@@ -127,6 +159,14 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   // Time ticks when the drag action started.
   const base::TimeTicks drag_start_time_;
+
+  // Timer for activating phantom window.
+  base::OneShotTimer dwell_activation_timer_;
+
+  // Tracks cursor velocity.
+  ui::VelocityTracker velocity_tracker_;
+
+  base::WeakPtrFactory<WindowSplitter> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -15,22 +15,33 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
+#include "ui/events/velocity_tracker/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
+#include "ui/events/velocity_tracker/velocity_tracker.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ash {
+
+namespace {
 
 using DragType = WindowSplitter::DragType;
 using SplitRegion = WindowSplitter::SplitRegion;
 using SplitWindowInfo = WindowSplitter::SplitWindowInfo;
 
-constexpr gfx::Insets kBaseTriggerMargins = gfx::Insets::VH(25, 45);
+// Squared velocity value of the dwell max velocity, for calculations.
+constexpr double kDwellMaxVelocitySquaredPixelsPerSec =
+    WindowSplitter::kDwellMaxVelocityPixelsPerSec *
+    WindowSplitter::kDwellMaxVelocityPixelsPerSec;
 
 // Returns true if `split_region` is a splittable region.
 bool IsRegionSplittable(SplitRegion split_region) {
@@ -76,8 +87,8 @@ aura::Window* GetTopmostWindow(aura::Window* dragged_window,
 gfx::Insets GetTriggerMargins(const gfx::Rect& bounds) {
   // TODO(b/293614784): Tune margin calculation.
   return gfx::Insets::VH(
-      std::min(bounds.height() / 5, kBaseTriggerMargins.top()),
-      std::min(bounds.width() / 5, kBaseTriggerMargins.left()));
+      std::min(bounds.height() / 5, WindowSplitter::kBaseTriggerMargins.top()),
+      std::min(bounds.width() / 5, WindowSplitter::kBaseTriggerMargins.left()));
 }
 
 // `screen_location` must be within `window`'s bounds.
@@ -167,6 +178,10 @@ void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
       display::Screen::GetScreen()->GetDisplayMatching(screen_bounds));
 }
 
+}  // namespace
+
+bool SplitWindowInfo::operator==(const SplitWindowInfo&) const = default;
+
 std::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
     aura::Window* topmost_window,
     aura::Window* dragged_window,
@@ -205,7 +220,8 @@ std::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
 
 WindowSplitter::WindowSplitter(aura::Window* dragged_window)
     : dragged_window_(dragged_window),
-      drag_start_time_(base::TimeTicks::Now()) {
+      drag_start_time_(base::TimeTicks::Now()),
+      velocity_tracker_(ui::VelocityTracker::Strategy::STRATEGY_DEFAULT) {
   dragged_window_->AddObserver(this);
 }
 
@@ -216,28 +232,55 @@ WindowSplitter::~WindowSplitter() {
 void WindowSplitter::UpdateDrag(const gfx::PointF& location_in_screen,
                                 bool can_split) {
   is_drag_updated_ = true;
+  last_location_in_screen_ = location_in_screen;
+
+  // Must update cursor location every time, so the velocity is more accurate.
+  UpdateCursorLocation(location_in_screen);
+
   if (!can_split || !dragged_window_) {
     Disengage();
     return;
   }
 
-  if (auto* topmost_window =
-          GetTopmostWindow(dragged_window_, location_in_screen)) {
-    if (auto split_bounds = MaybeSplitWindow(topmost_window, dragged_window_,
-                                             location_in_screen)) {
-      // TODO(b/306237420): Support dwell delay to not activate right away.
-      can_split_window_ = true;
-      ShowPhantomWindow(split_bounds->dragged_window_bounds);
-      return;
-    }
+  if (GetCursorVelocitySquared() > kDwellMaxVelocitySquaredPixelsPerSec) {
+    Disengage();
+    return;
   }
+
+  auto* topmost_window = GetTopmostWindow(dragged_window_, location_in_screen);
+  if (!topmost_window) {
+    Disengage();
+    return;
+  }
+
+  const auto split_bounds =
+      MaybeSplitWindow(topmost_window, dragged_window_, location_in_screen);
+  if (!split_bounds) {
+    Disengage();
+    return;
+  }
+
   // TODO(b/306237420): Support cancellation after dwell delay.
-  Disengage();
+
+  // Triggered means the timer to show the phantom window has started or the
+  // phantom window is already showing.
+  const bool triggered =
+      dwell_activation_timer_.IsRunning() || CanSplitWindow();
+  if (!triggered || topmost_window != last_topmost_window_ ||
+      *split_bounds != last_split_window_info_) {
+    Disengage();
+    dwell_activation_timer_.Start(
+        FROM_HERE, kDwellActivationDuration,
+        base::BindOnce(&WindowSplitter::ShowPhantomWindowCallback,
+                       weak_ptr_factory_.GetWeakPtr(), topmost_window));
+    last_topmost_window_ = topmost_window;
+    last_split_window_info_ = *split_bounds;
+  }
 }
 
 void WindowSplitter::CompleteDrag(const gfx::PointF& last_location_in_screen) {
   is_drag_completed_ = true;
-  if (!can_split_window_ || !dragged_window_) {
+  if (!CanSplitWindow() || !dragged_window_) {
     return;
   }
 
@@ -253,12 +296,37 @@ void WindowSplitter::CompleteDrag(const gfx::PointF& last_location_in_screen) {
 }
 
 void WindowSplitter::Disengage() {
-  can_split_window_ = false;
   phantom_window_controller_.reset();
+  dwell_activation_timer_.Stop();
+  last_topmost_window_ = nullptr;
+  last_split_window_info_ = SplitWindowInfo();
+  // Don't clear velocity_tracker_, since it needs historical cursor positions
+  // to be accurate.
 }
 
 void WindowSplitter::OnWindowDestroying(aura::Window* window) {
   MaybeClearDraggedWindow();
+}
+
+void WindowSplitter::ShowPhantomWindowCallback(
+    aura::Window* initial_topmost_window) {
+  if (!dragged_window_) {
+    return;
+  }
+
+  // Make sure the cursor is still over the expected topmost window, since the
+  // initial topmost window may have been moved/resized, closed, or occluded.
+  if (auto* topmost_window =
+          GetTopmostWindow(dragged_window_, last_location_in_screen_)) {
+    if (topmost_window != initial_topmost_window) {
+      return;
+    }
+    // Recalculate phantom window bounds, since topmost window may have resized.
+    if (auto split_bounds = MaybeSplitWindow(topmost_window, dragged_window_,
+                                             last_location_in_screen_)) {
+      ShowPhantomWindow(split_bounds->dragged_window_bounds);
+    }
+  }
 }
 
 void WindowSplitter::ShowPhantomWindow(const gfx::Rect& bounds) {
@@ -317,6 +385,25 @@ DragType WindowSplitter::GetDragType() const {
   }
   return IsRegionSplittable(completed_split_region_) ? DragType::kSplit
                                                      : DragType::kNoSplit;
+}
+
+void WindowSplitter::UpdateCursorLocation(
+    const gfx::PointF& location_in_screen) {
+  const ui::MotionEventGeneric event(
+      ui::MotionEvent::Action::MOVE, base::TimeTicks::Now(),
+      ui::PointerProperties(location_in_screen.x(), location_in_screen.y(),
+                            /*touch_major=*/0));
+  velocity_tracker_.AddMovement(event);
+}
+
+double WindowSplitter::GetCursorVelocitySquared() const {
+  gfx::Vector2dF velocity_vector;
+  float dx, dy;
+  if (velocity_tracker_.GetVelocity(/*id=*/0, &dx, &dy)) {
+    velocity_vector.set_x(dx);
+    velocity_vector.set_y(dy);
+  }
+  return velocity_vector.LengthSquared();
 }
 
 }  // namespace ash
