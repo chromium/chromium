@@ -4600,15 +4600,7 @@ void AXNodeObject::AddChildrenImpl() {
   }
 
   CHECK(NeedsToUpdateChildren());
-
-  if (!CanHaveChildren()) {
-    // TODO(crbug.com/1407397): Make sure this is no longer firing then
-    // transform this block to CHECK(CanHaveChildren());
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Should not reach AddChildren() if CanHaveChildren() is false.\n"
-        << ToString(true, true);
-    return;
-  }
+  CHECK(CanHaveChildren());
 
   if (ShouldLoadInlineTextBoxes() && HasLayoutText(this)) {
     AddInlineTextBoxChildren();
