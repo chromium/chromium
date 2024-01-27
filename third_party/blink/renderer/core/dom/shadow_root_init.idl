@@ -13,4 +13,5 @@ dictionary ShadowRootInit {
     SlotAssignmentMode slotAssignment;
     [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
     [RuntimeEnabled=ElementGetHTML] boolean serializable;
+    [RuntimeEnabled=ShadowRootClonable] boolean clonable;
 };

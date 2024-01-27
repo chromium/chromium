@@ -52,6 +52,10 @@ interface ShadowRoot : DocumentFragment {
     // serialized by getHTML({includeShadowRoots:true}).
     [RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 
+    // The clonable attribute controls whether the shadow root will be
+    // cloned by DOM cloning operations.
+    [RuntimeEnabled=ShadowRootClonable] readonly attribute boolean clonable;
+
     // Scoped element creation APIs
     // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries#scoped-element-creation-apis
     [

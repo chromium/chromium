@@ -3469,6 +3469,11 @@
       status: "stable",
     },
     {
+      // See crbug.com/1510466: this is the shadow root clonable implementation.
+      name: "ShadowRootClonable",
+      status: "experimental",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,

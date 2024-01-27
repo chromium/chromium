@@ -668,7 +668,6 @@ Node* Element::Clone(Document& factory,
                      ContainerNode* append_to,
                      ExceptionState& append_exception_state) const {
   if (!data.Has(CloneOption::kIncludeDescendants)) {
-    CHECK(!data.Has(CloneOption::kIncludeShadowRoots));
     Element* copy = &CloneWithoutChildren(data, &factory);
     if (append_to) {
       append_to->AppendChild(copy, append_exception_state);
@@ -677,12 +676,11 @@ Node* Element::Clone(Document& factory,
   }
   Element* copy =
       &CloneWithChildren(data, &factory, append_to, append_exception_state);
-  // 7. If node is a shadow host and the clone shadows flag is set, run these
-  // steps:
-  if (data.Has(CloneOption::kIncludeShadowRoots)) {
-    auto* shadow_root = GetShadowRoot();
-    if (shadow_root && (shadow_root->GetType() == ShadowRootType::kOpen ||
-                        shadow_root->GetType() == ShadowRootType::kClosed)) {
+  // 7. If node is a shadow host whose shadow root’s clonable is true:
+  auto* shadow_root = GetShadowRoot();
+  if (shadow_root && shadow_root->clonable()) {
+    if (shadow_root->GetType() == ShadowRootType::kOpen ||
+        shadow_root->GetType() == ShadowRootType::kClosed) {
       // 7.1 Run attach a shadow root with shadow host equal to copy, mode equal
       // to node’s shadow root’s mode, and delegates focus equal to node’s
       // shadow root’s delegates focus.
@@ -693,7 +691,9 @@ Node* Element::Clone(Document& factory,
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
-          shadow_root->serializable());
+          shadow_root->serializable(),
+          /*clonable*/ true);
+
       // 7.2 If node’s shadow root’s "is declarative shadow root" is true, then
       // set copy’s shadow root’s "is declarative shadow root" property to true.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
@@ -5343,6 +5343,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     UseCounter::Count(GetDocument(),
                       WebFeature::kElementAttachSerializableShadow);
   }
+  bool clonable = shadow_root_init_dict->getClonableOr(false);
 
   auto focus_delegation = (shadow_root_init_dict->hasDelegatesFocus() &&
                            shadow_root_init_dict->delegatesFocus())
@@ -5380,8 +5381,9 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     }
   }
 
-  ShadowRoot& shadow_root = AttachShadowRootInternal(
-      type, focus_delegation, slot_assignment, registry, serializable);
+  ShadowRoot& shadow_root =
+      AttachShadowRootInternal(type, focus_delegation, slot_assignment,
+                               registry, serializable, clonable);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -5413,9 +5415,11 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 
   // TODO(crbug.com/1521128): Declarative shadow roots should set the registry
   // argument here.
+  // Declarative shadow roots are clonable by default.
+  bool clonable = true;
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment,
-                               /*registry*/ nullptr, serializable);
+                               /*registry*/ nullptr, serializable, clonable);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -5436,7 +5440,8 @@ ShadowRoot& Element::AttachShadowRootInternal(
     FocusDelegation focus_delegation,
     SlotAssignmentMode slot_assignment_mode,
     CustomElementRegistry* registry,
-    bool serializable) {
+    bool serializable,
+    bool clonable) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
@@ -5467,6 +5472,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
   shadow_root.SetRegistry(registry);
   shadow_root.setSerializable(serializable);
+  shadow_root.setClonable(clonable);
 
   // 7. If this’s custom element state is "precustomized" or "custom", then set
   // shadow’s available to element internals to true.

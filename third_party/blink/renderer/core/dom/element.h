@@ -740,14 +740,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                        FocusDelegation,
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
-                                       bool serializable);
+                                       bool serializable,
+                                       bool clonable);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
   ShadowRoot& AttachShadowRootForTesting(ShadowRootType type) {
     return AttachShadowRootInternal(type, FocusDelegation::kNone,
                                     SlotAssignmentMode::kNamed,
                                     /*registry*/ nullptr,
-                                    /*serializable*/ false);
+                                    /*serializable*/ false,
+                                    /*clonable*/ false);
   }
 
   // Returns the shadow root attached to this element if it is a shadow host.

@@ -23,7 +23,6 @@ namespace blink {
 
 enum class CloneOption {
   kIncludeDescendants,
-  kIncludeShadowRoots,
   kPreserveDOMParts,
 
   // For `CloneOptionSet`.

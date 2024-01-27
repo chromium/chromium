@@ -70,8 +70,7 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
       slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
-      has_focusgroup_attribute_on_descendant_(false),
-      unused_(0) {}
+      has_focusgroup_attribute_on_descendant_(false) {}
 
 ShadowRoot::~ShadowRoot() = default;
 

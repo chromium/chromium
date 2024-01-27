@@ -98,6 +98,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool serializable() const { return serializable_; }
   void setSerializable(bool serializable) { serializable_ = serializable; }
 
+  bool clonable() const { return clonable_; }
+  void setClonable(bool clonable) { clonable_ = clonable; }
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -218,7 +221,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned available_to_element_internals_ : 1;
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
   unsigned serializable_ : 1;
-  unsigned unused_ : 6;
+  unsigned clonable_ : 1;
 };
 
 inline bool Node::IsInUserAgentShadowRoot() const {
