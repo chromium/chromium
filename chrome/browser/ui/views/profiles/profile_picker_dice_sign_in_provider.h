@@ -119,6 +119,8 @@ class ProfilePickerDiceSignInProvider
 
   void OnSignInContentsFreedUp();
 
+  void CleanupContents();
+
   GURL BuildSigninURL() const;
 
   // The sync confirmation screen is triggered by the `DiceTabHelper`. This can
