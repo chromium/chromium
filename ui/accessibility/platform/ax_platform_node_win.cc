@@ -1089,6 +1089,9 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"textbox"};
 
     case ax::mojom::Role::kLabelText:
+          return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"description"};
+
     case ax::mojom::Role::kLegend:
       return {UIALocalizationStrategy::kSupply, UIA_TextControlTypeId,
               L"description"};
@@ -7529,7 +7532,6 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kFooterAsNonLandmark:
       case ax::mojom::Role::kHeader:
       case ax::mojom::Role::kHeaderAsNonLandmark:
-      case ax::mojom::Role::kLabelText:
       case ax::mojom::Role::kListBoxOption:
       case ax::mojom::Role::kListItem:
       // Treat the root of a MathML tree as content/control so that it is seen
