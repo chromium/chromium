@@ -16,11 +16,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -988,8 +990,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
+#if !BUILDFLAG(IS_ANDROID)
 
 class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
  public:
@@ -1036,7 +1037,56 @@ TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
-        // BUILDFLAG(CHROME_FOR_TESTING)
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
+ public:
+  SearchEngineChoiceServiceWithVariationsTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  }
+
+  PrefService& pref_service() { return pref_service_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+// Tests that the country falls back to `country_codes::GetCurrentCountryID()`
+// when the variations country is not available.
+TEST_F(SearchEngineChoiceServiceWithVariationsTest, NoVariationsCountry) {
+  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSearchEngineChoiceCountry));
+  SearchEngineChoiceService search_engine_choice_service(
+      pref_service(), country_codes::kCountryIDUnknown);
+
+  EXPECT_EQ(search_engine_choice_service.GetCountryId(),
+            country_codes::GetCurrentCountryID());
+}
+
+// Tests that the country is read from the variations service when available.
+TEST_F(SearchEngineChoiceServiceWithVariationsTest, WithVariationsCountry) {
+  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSearchEngineChoiceCountry));
+
+  int variation_country_id = country_codes::CountryStringToCountryID("FR");
+  if (country_codes::GetCurrentCountryCode() == "FR") {
+    // Make sure to use a country different from the current one.
+    variation_country_id = country_codes::CountryStringToCountryID("DE");
+  }
+
+  SearchEngineChoiceService search_engine_choice_service(pref_service(),
+                                                         variation_country_id);
+
+  EXPECT_EQ(variation_country_id, search_engine_choice_service.GetCountryId());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 }  // namespace search_engines
