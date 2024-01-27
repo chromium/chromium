@@ -373,7 +373,7 @@
 <translation id="2895084600668778673">عرض جميع بيانات الملء التلقائي</translation>
 <translation id="2898963176829412617">مجلد جديد...</translation>
 <translation id="2902684821701498619">إضافة إلى قائمة القراءة</translation>
-<translation id="2905479111267140204">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور مستخدَمة لحساب آخر يمكن أن تعرّضك لمشاكل أمنية.</translation>
+<translation id="2905479111267140204">لديك كلمات مرور يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> مستخدَمة لحساب آخر ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2920866371965792875">للاطّلاع على التحديثات في هذا الموقع الإلكتروني، يُرجى النقر هنا.</translation>
 <translation id="2921219216347069551">تتعذر مشاركة الصفحة</translation>
@@ -788,7 +788,7 @@
 <translation id="5173088371991956744">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
 <translation id="5173493422621051500">استخدام لوحة المفاتيح</translation>
 <translation id="5176312250994681348">الاحتفاظ بكلمة المرور الأخيرة</translation>
-<translation id="5177141896043341906">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور ضعيفة يمكن أن تعرّضك لمشاكل أمنية.</translation>
+<translation id="5177141896043341906">لديك كلمات مرور ضعيفة يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5186185447130319458">خاص</translation>
 <translation id="5186634140793586141">إدارة المواضيع وعمليات البحث التي تهمّك</translation>
@@ -1088,7 +1088,7 @@
 <translation id="6643016212128521049">محو</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
-<translation id="6647480763136463714">‏وقت إجراء آخر عملية تحقُّق: ‎<ph name="TIME" /></translation>
+<translation id="6647480763136463714">‏أجريت آخر تحقّق ‎<ph name="TIME" /></translation>
 <translation id="6656103420185847513">تعديل مجلد</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6668619169535738264">تعديل الإشارة المرجعية</translation>

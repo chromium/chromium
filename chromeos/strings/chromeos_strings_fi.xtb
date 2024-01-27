@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">kerro</translation>
 <translation id="1145018782460575098">Ulkoisten laitteiden laiteohjelmistojen päivityksiä koskeva ikkuna on auki. <ph name="NUM_UPDATES" /> päivitystä saatavilla.</translation>
 <translation id="1145516343487477149">Etsi ohjeartikkeleita ja vastauksia yleisiin Chromebook-kysymyksiin</translation>
 <translation id="1154390310959620237">Voit valita vain viisi pikanäppäintä. Poista pikanäppäin, jotta voit lisätä uuden.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
+<translation id="1371650399987522809">Palaute taustakuvasta, joka hyödyntää Googlen tekoälyä</translation>
 <translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1561927818299383735">taustavalon väri</translation>
 <translation id="1565038567006703504">Päivitys ei onnistu: <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">jaa</translation>
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
 <translation id="160633243685262989">Esikatselukuva</translation>
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
+<translation id="1615576200479539465">Luodaan kuvia…</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1626590945318984973">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman toiminto‑ ja <ph name="META_KEY" />-näppäimiä.</translation>
 <translation id="1639239467298939599">Ladataan</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="2880569433548999039">Pilvien kulku ‑näytönsäästäjä</translation>
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
+<translation id="2938573842839598578">Laske likimääräinen tulos: <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" /> <ph name="CONVERSION_RATE" />:lla</translation>
 <translation id="2940811910881150316">Laitetta ei voi testata. Avaa kansi uudelleen testaamista varten.</translation>
 <translation id="2941112035454246133">Matala</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-päivitys</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
+<translation id="3547264467365135390">Kaava</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
 <translation id="3569407787324516067">Näytönsäästäjä</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7180865173735832675">Muokkaa</translation>
 <translation id="7184043045742675738">Muokkaa painiketta klikkaamalla mitä tahansa näppäintä. Sijoita näppäin uudelleen hiirellä tai nuolinäppäimillä.</translation>
+<translation id="7206979415662233817">Käyttöehdot</translation>
 <translation id="7212547870105584639">Muuta verkon APN-asetuksia. APN:t luovat yhteyden mobiiliverkkon ja internetin välille. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ulkoisten laitteiden ohjelmapäivitykset</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">näppäimistön väri</translation>
 <translation id="7317831949569936035">Kouluun rekisteröinti</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Sinun on oltava vähintään 18-vuotias ja hyväksyä, että AI-taustakuvien käyttöön sovelletaan <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googlen käyttöehtoja<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ja <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generatiivisen tekoälyn lisäkäyttöehtoja<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Voit luoda taustakuvia tekoälyn avulla vain henkilökohtaiseen ja ei-kaupalliseen käyttöön. Kun saat taustakuvaa koskevia ohjeita, teksti lähetetään Googlen tekoälypalvelimille taustakuvaehdotusten luomista varten <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; katso tulos Google Haussa painamalla Haku ja Välilyönti.</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7353413232959255829">Hakutulos <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Siirry pikakomentoon painamalla Enter.</translation>

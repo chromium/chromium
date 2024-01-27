@@ -163,6 +163,7 @@
 <translation id="1847795903283049083">Можете също да преглеждате и управлявате тези елементи в отметките си, списъка си за четене или Мениджър на пароли.</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">Показва този елемент</translation>
 <translation id="1882901927376062252">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="1883255238294161206">Свиване на списъка</translation>
@@ -181,6 +182,7 @@
 <translation id="1956138802718275401">Достъп до паролите от началния екран</translation>
 <translation id="1959441496380398824">Докоснете и задръжте дата.</translation>
 <translation id="1959679933317802873">Изчаква се съдържание</translation>
+<translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> сподели с вас парола за <ph name="WEBSITE" /></translation>
 <translation id="1967461193809857427">{count,plural, =1{Да се продължи ли от раздела, в който сте прекъснали на устройството си с Android?}other{Да се продължи ли от разделите, в които сте прекъснали на устройството си с Android?}}</translation>
 <translation id="1972325230031091483">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, на която се намирате в момента</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
@@ -215,6 +217,7 @@
 <translation id="2139502497535990641">Да се включат ли известията за цени?</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
+<translation id="2147127444698817042">Налице само за iPhone</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
@@ -227,6 +230,7 @@
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2252674110805316998">Търсене в мрежата</translation>
+<translation id="2252749852083403809">Файлът се запазва в Диск за <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Можете да запазите отметката си в профила си в Google ({email}).}other{Можете да запазите отметките си в профила си в Google ({email}).}}</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
@@ -388,6 +392,7 @@
 <translation id="2982481275546140226">Изчистване на данните</translation>
 <translation id="298306318844797842">Добавяне на начин на плащане…</translation>
 <translation id="2989805286512600854">Отваряне в нов раздел</translation>
+<translation id="300455800299409273">Скриване на опцията „Продължаване с този раздел“</translation>
 <translation id="3010025794097054078">Пазете се от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="3010171936431626919">Покажете ми как</translation>
 <translation id="3020183492814296499">Клавишни комбинации</translation>
@@ -535,6 +540,7 @@
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3832419617903252251">Паролата е запазена само на това устройство</translation>
 <translation id="3835964409414434850">Към следващия раздел</translation>
+<translation id="383781833195845844">Продължаване с този раздел</translation>
 <translation id="3838691874161539578">Проверете запазените си пароли, за да подобрите сигурността си и да бъдете по-защитени онлайн</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
@@ -753,6 +759,7 @@
 <translation id="4958444002117714549">Разгъване на списъка</translation>
 <translation id="4971735654804503942">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения. Предупреждава ви за разкрити пароли. За да действа, до Google трябва да се изпращат данни за сърфирането.</translation>
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
+<translation id="4989065233040279145">Изберете къде да се запази <ph name="FILENAME" /></translation>
 <translation id="4996567535980789550">Включете синхронизирането, за да управлявате съдържанието, което виждате</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5016420433031926653">Изпращане до <ph name="USER_EMAIL" /></translation>
@@ -878,6 +885,7 @@
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Потвърдете, че това сте вие, за да използвате и запазвате паролите в профила си в Google.</translation>
 <translation id="5684761169742812828">Тази парола бе разкрита при нарушение на сигурността на данните в интернет. Ако нямате време да я промените сега, Google препоръчва да запазите това предупреждение, за да ви послужи като напомняне по-късно.</translation>
+<translation id="5694848685995373177">Файлът е запазен в Диск за <ph name="USER_EMAIL" />.</translation>
 <translation id="5701270923492462699">Достъпът до камерата е разрешен</translation>
 <translation id="5702108177581350218">Когато споделите копие на потребителското име и паролата си, членът на семейството ви може да ги използва посредством Google Мениджър на пароли.</translation>
 <translation id="5704908597376970822">Влизането в профила не е възможно.</translation>
@@ -1216,6 +1224,7 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> непрочетени статии.</translation>
 <translation id="7412027924265291969">Напред</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
+<translation id="7418640008860669073">Запазване във…</translation>
 <translation id="7425346204213733349">Промените в отметките, историята, паролите и другите ви настройки вече няма да се синхронизират с профила ви в Google. Съществуващите ви данни обаче ще продължат да се съхраняват в него.</translation>
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
@@ -1234,6 +1243,7 @@
 <translation id="750149195207506638">Отметките са скрити</translation>
 <translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
+<translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">За да заключите разделите си в режим „инкогнито“, настройте Touch ID, Face ID или код за достъп.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7524055474074101597">Осъществявайте достъп до паролите си и други данни във всички приложения.</translation>
@@ -1247,6 +1257,7 @@
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7561196759112975576">Винаги</translation>
+<translation id="7564917801238348224">ЗАПАЗВАНЕ...</translation>
 <translation id="7582857256643797524">Тази настройка е активирана на устройството ви</translation>
 <translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>
@@ -1413,6 +1424,7 @@
 <translation id="8428045167754449968">Град/селище</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
+<translation id="8430694217306051839">Изберете къде да се запази <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8449347986464073209">Изтриване и излизане от профила</translation>
 <translation id="8459333855531264009">Не е сигурно</translation>

@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Версия на приложението</translation>
 <translation id="1428770807407000502">Да се изключи ли синхронизирането?</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1435593198351412143">Автоматично отваряне на PDF файловете</translation>
 <translation id="1436784010935106834">Премахнато</translation>
 <translation id="1437543266176261764">Изпълнява се в(ъв) <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Организирайте проследяваните от вас продукти в „Отметки“</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">Не забавя осезаемо браузъра или устройството ви.</translation>
 <translation id="2900528713135656174">Създайте събитие</translation>
 <translation id="2901411048554510387">Показват се предложения за <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Изтеглените PDF файлове се отварят автоматично с един от визуализаторите на PDF на устройството ви</translation>
 <translation id="2904414404539560095">Списъкът с устройства, с които да се сподели даден раздел, е отворен на пълната височина.</translation>
 <translation id="2908243544703713905">Непрочетените материали са готови</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -894,9 +896,11 @@
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="5814749351757353073">Получавайте актуална информация от любимите си сайтове</translation>
 <translation id="5822875253699806474">За да се връщате бързо към посетените от вас сайтове, синхронизирайте разделите и историята си</translation>
+<translation id="5829586821381540080">Запазено в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Споделяне на връзката</translation>
 <translation id="5839058148541733625">Динозавърът в Chrome</translation>
+<translation id="5848257610304005265">Да се отвори ли PDF файлът чрез <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">на пауза</translation>
 <translation id="5855546874025048181">Прецизиране: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Нещо се обърка. Проследяваните цени не се актуализираха.</translation>
@@ -1379,6 +1383,7 @@
 <translation id="8127542551745560481">Редактиране на началната страница</translation>
 <translation id="8130309322784422030">Съхранената ви информация за вход може да не е актуална</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
+<translation id="8135406045838672858">Изтеглените PDF файлове се отварят автоматично чрез <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Няма да е нужно да помните тази парола. Тя ще бъде запазена в Google Мениджър на пароли.</translation>
 <translation id="8186512483418048923">Остават <ph name="FILES" /> файла</translation>
 <translation id="8190358571722158785">Остава 1 ден</translation>

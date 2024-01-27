@@ -404,7 +404,7 @@
 <translation id="3081338492074632642">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090455602619185166">Вход в управляемый аккаунт</translation>
-<translation id="309710370695886264">У вас есть повторяющийся пароль. Измените его, чтобы обезопасить себя.</translation>
+<translation id="309710370695886264">У вас есть повторяющийся пароль. Устраните проблему.</translation>
 <translation id="3112556859945124369">Отметить…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">История и другие данные</translation>
@@ -658,7 +658,7 @@
 <translation id="4527660062930312477">Это управляемый аккаунт</translation>
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} сохраненная подсказка автозаполнения показана над клавиатурой.}one{{count} сохраненная подсказка автозаполнения показана над клавиатурой.}few{{count} сохраненные подсказки автозаполнения показаны над клавиатурой.}many{{count} сохраненных подсказок автозаполнения показано над клавиатурой.}other{{count} сохраненной подсказки автозаполнения показано над клавиатурой.}}</translation>
-<translation id="4540780316273593836">Ошибка</translation>
+<translation id="4540780316273593836">Произошла ошибка.</translation>
 <translation id="4550040941166547650">Только на этом устройстве</translation>
 <translation id="4564893319561643483">Скрыть карточку "<ph name="TITLE" />"</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Закрыть {COUNT} неактивную вкладку?}one{Закрыть {COUNT} неактивную вкладку?}few{Закрыть {COUNT} неактивные вкладки?}many{Закрыть {COUNT} неактивных вкладок?}other{Закрыть {COUNT} неактивной вкладки?}}</translation>
@@ -1086,7 +1086,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Чтобы предсказать ваши дальнейшие запросы, URL посещенных вами страниц отправляются в Google.</translation>
-<translation id="6647480763136463714">Последний запуск: <ph name="TIME" /></translation>
+<translation id="6647480763136463714"><ph name="TIME" /></translation>
 <translation id="6656103420185847513">Редактировать папку</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6668619169535738264">Изменить закладку</translation>
@@ -1158,7 +1158,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7006788746334555276">Настройки контента</translation>
-<translation id="7016070607649558507">У вас есть простой пароль. Измените его, чтобы обезопасить себя.</translation>
+<translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="704692552158601232">Приложение браузера по умолчанию</translation>
 <translation id="7062545763355031412">Принять и переключиться</translation>
@@ -1307,7 +1307,7 @@
 <translation id="7866993391592926595">Если вы скроете эту карточку, отслеживание заказов прекратится, а все данные будут удалены</translation>
 <translation id="7870750252270996949">Поиск по изображению из буфера</translation>
 <translation id="7879275349003161544">Показать скачанные файлы</translation>
-<translation id="7883882164760409935">У вас есть повторяющиеся пароли.</translation>
+<translation id="7883882164760409935">У вас есть повторяющиеся пароли</translation>
 <translation id="7884694604461143138">Поиск в истории (совпадений: <ph name="COUNT" />)</translation>
 <translation id="7887174313503389866">Узнайте об основных настройках конфиденциальности и безопасности. Больше информации вы найдете в соответствующих разделах.</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
@@ -1434,7 +1434,7 @@
 <translation id="8533670235862049797">Включен</translation>
 <translation id="8534481786647257214">Опубликовано в Google+.</translation>
 <translation id="8548878600947630424">Найти на странице…</translation>
-<translation id="854938212724803178">У вас есть раскрытый пароль. Измените его, чтобы обезопасить себя.</translation>
+<translation id="854938212724803178">У вас есть раскрытый пароль. Устраните проблему.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Вы закрыли {count} предупреждение.}one{Вы закрыли {count} предупреждение.}few{Вы закрыли {count} предупреждения.}many{Вы закрыли {count} предупреждений.}other{Вы закрыли {count} предупреждения.}}</translation>
 <translation id="8560253818350321773">Сначала показывать самые часто используемые элементы</translation>
 <translation id="8569721750632860947">Какой URL добавить в список для чтения?</translation>

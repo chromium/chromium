@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">умножена по</translation>
 <translation id="1145018782460575098">Отворен е прозорецът за актуализиране на фърмуера на външни устройства. Налице са <ph name="NUM_UPDATES" /> актуализации.</translation>
 <translation id="1145516343487477149">Намерете помощни статии и отговори на често задавани въпроси за Chromebook</translation>
 <translation id="1154390310959620237">Можете да персонализирате само 5 клавишни комбинации. Изтрийте някоя, за да добавите нова.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1367951781824006909">Избор на файл</translation>
+<translation id="1371650399987522809">Отзиви за тапет, базиран на AI на Google</translation>
 <translation id="1387854245479784695">Това е обобщена стойност за всички ядра</translation>
 <translation id="1394661041439318933">Нивото на батерията на калъфа е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1561927818299383735">цвят на фоновото осветление</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> не може да се актуализира</translation>
+<translation id="1566493343215789965">разделена на</translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Задаване като тапет</translation>
 <translation id="1578784163189013834">Избиране на фон за скрийнсейвъра</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Изображенията се генерират...</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
 <translation id="2880569433548999039">Скрийнсейвър с облаци</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
+<translation id="2938573842839598578">За приблизителен резултат стойността за <ph name="CATEGORY_TEXT" /> трябва да бъде <ph name="OPERATOR_TEXT" /> <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Устройството не може да бъде тествано. За целта отворете капака.</translation>
 <translation id="2941112035454246133">Нисък</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локална самоличност (по избор)</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
 <translation id="3569407787324516067">Скрийнсейвър</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7184043045742675738">Кликнете върху който и да е клавиш, за да персонализирате бутона. Преместете клавиша с мишката или клавишите със стрелки.</translation>
+<translation id="7206979415662233817">Общи условия</translation>
 <translation id="7212547870105584639">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">цвят на клавиатурата</translation>
 <translation id="7317831949569936035">Регистриране в учебно заведение</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Трябва да сте навършили 18 години и да приемете, че използването на тапети от AI от ваша страна е предмет на <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Общите условия на Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Допълнителните общи условия за генеративния AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Можете да създавате тапети с AI само за лична употреба с нетърговска цел. Когато получавате помощ за създаването на тапет, до сървърите за AI на Google се изпраща текст с цел генериране на съответните предложения, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Декларацията ни за поверителност<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7353413232959255829">Резултат от търсенето <ph name="LIST_POSITION" /> от <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Натиснете Enter, за да навигирате към прекия път.</translation>
