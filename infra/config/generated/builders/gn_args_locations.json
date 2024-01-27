@@ -525,7 +525,9 @@
     "Win Builder (dbg)": "ci/Win Builder (dbg)/gn-args.json",
     "Win x64 Builder": "ci/Win x64 Builder/gn-args.json",
     "Win x64 Builder (dbg)": "ci/Win x64 Builder (dbg)/gn-args.json",
-    "Windows deterministic": "ci/Windows deterministic/gn-args.json"
+    "Windows deterministic": "ci/Windows deterministic/gn-args.json",
+    "win-arm64-dbg": "ci/win-arm64-dbg/gn-args.json",
+    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
@@ -940,6 +942,8 @@
     "gpu-fyi-try-win11-qualcomm-rel-64": "try/gpu-fyi-try-win11-qualcomm-rel-64/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "win-annotator-rel": "try/win-annotator-rel/gn-args.json",
+    "win-arm64-dbg": "try/win-arm64-dbg/gn-args.json",
+    "win-arm64-rel": "try/win-arm64-rel/gn-args.json",
     "win-asan": "try/win-asan/gn-args.json",
     "win-celab-try-rel": "try/win-celab-try-rel/gn-args.json",
     "win-clobber-rel": "try/win-clobber-rel/gn-args.json",

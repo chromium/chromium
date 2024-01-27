@@ -6166,6 +6166,39 @@
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
+      'win-arm64-dbg': {
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
+      'win-arm64-rel': {
+        'additional_compile_targets': [
+          'chrome',
+          'chromedriver_group',
+        ],
+      },
+      'win11-arm64-dbg-tests': {
+        'mixins': [
+          # Only run selected test suites on CQ.
+          'ci_only',
+          'win-arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+          'isolated_scripts': 'chromium_win_dbg_isolated_scripts',
+        },
+      },
+      'win11-arm64-rel-tests': {
+        'mixins': [
+          # Only run selected test suites on CQ.
+          'ci_only',
+          'win-arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
+        },
+      },
     },
   },
   {
@@ -6519,7 +6552,7 @@
           'chromedriver_group',
         ],
         'mixins': [
-          'win_arm64',
+          'chrome-win-arm64',
           'isolate_profile_data',
         ],
         'test_suites': {

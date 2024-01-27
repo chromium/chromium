@@ -1648,7 +1648,7 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "win_arm64",
+    name = "chrome-win-arm64",
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1664,6 +1664,16 @@ targets.mixin(
         # The slowest test is expected to run >9 hours.
         expiration_sec = 64800,  # 18 hours
         hard_timeout_sec = 43200,  # 12 hours
+    ),
+)
+
+targets.mixin(
+    name = "win-arm64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Windows-11",
+        },
     ),
 )
 
