@@ -9,6 +9,8 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.core.view.WindowInsetsCompat;
+
 import org.hamcrest.Matchers;
 
 import org.chromium.base.BuildInfo;
@@ -33,7 +35,25 @@ public class FullscreenTestUtils {
      */
     public static void togglePersistentFullscreenAndAssert(
             final Tab tab, final boolean state, Activity activity) {
-        togglePersistentFullscreenAndAssert(tab, state, activity, false, false);
+        togglePersistentFullscreenAndAssert(tab, state, activity, false);
+    }
+
+    /**
+     * Toggles persistent fullscreen for the tab and waits for the fullscreen flag to be set and the
+     * tab to enter persistent fullscreen state.
+     *
+     * @param tab The {@link Tab} to toggle fullscreen on.
+     * @param state Whether the tab should be set to fullscreen.
+     * @param activity The {@link Activity} owning the tab.
+     * @param isFullscreenInsetsApiMigrationEnabled Whether the new fullscreen APIs are being used.
+     */
+    public static void togglePersistentFullscreenAndAssert(
+            final Tab tab,
+            final boolean state,
+            Activity activity,
+            boolean isFullscreenInsetsApiMigrationEnabled) {
+        togglePersistentFullscreenAndAssert(
+                tab, state, activity, false, false, isFullscreenInsetsApiMigrationEnabled);
     }
 
     /**
@@ -52,13 +72,39 @@ public class FullscreenTestUtils {
             Activity activity,
             boolean prefersNavigationBar,
             boolean prefersStatusBar) {
+        togglePersistentFullscreenAndAssert(
+                tab, state, activity, prefersNavigationBar, prefersStatusBar, false);
+    }
+
+    /**
+     * Toggles persistent fullscreen for the tab and waits for the fullscreen flag to be set and the
+     * tab to enter persistent fullscreen state.
+     *
+     * @param tab The {@link Tab} to toggle fullscreen on.
+     * @param state Whether the tab should be set to fullscreen.
+     * @param activity The {@link Activity} owning the tab.
+     * @param prefersNavigationBar Whether navigation bar should be shown when in fullscreen.
+     * @param prefersStatusBar Whether status bar should be shown when in fullscreen.
+     * @param isFullscreenInsetsApiMigrationEnabled Whether the new fullscreen APIs are being used.
+     */
+    public static void togglePersistentFullscreenAndAssert(
+            final Tab tab,
+            final boolean state,
+            Activity activity,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            boolean isFullscreenInsetsApiMigrationEnabled) {
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
         FullscreenTestUtils.togglePersistentFullscreen(
                 delegate, state, prefersNavigationBar, prefersStatusBar);
         // In order for the status bar to be displayed, the fullscreen flag must not be set.
         // If we are entering fullscreen, then we expect the fullscreen flag state to match
         // negated |prefersStatusBar|:
-        FullscreenTestUtils.waitForFullscreenFlag(tab, state && !prefersStatusBar, activity);
+        if (isFullscreenInsetsApiMigrationEnabled) {
+            FullscreenTestUtils.waitForFullscreen(tab, state && !prefersStatusBar);
+        } else {
+            FullscreenTestUtils.waitForFullscreenFlag(tab, state && !prefersStatusBar, activity);
+        }
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, state);
     }
 
@@ -120,6 +166,18 @@ public class FullscreenTestUtils {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
+    public static void waitForFullscreen(final Tab tab, final boolean state) {
+        CriteriaHelper.pollUiThread(
+                () -> isFullscreenSet(tab, state), 6000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    public static void waitForHideNavigation(final Tab tab, final boolean state) {
+        CriteriaHelper.pollUiThread(
+                () -> isHideNavigationSet(tab, state),
+                6000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
     /**
      * Waits for the specified {@link Tab} to enter fullscreen. mode
      *
@@ -136,6 +194,20 @@ public class FullscreenTestUtils {
 
     private static boolean isFlagSet(int flags, int flag) {
         return (flags & flag) == flag;
+    }
+
+    private static boolean isFullscreenSet(final Tab tab, final boolean state) {
+        View view = tab.getContentView();
+        WindowInsetsCompat windowInsets =
+                WindowInsetsCompat.toWindowInsetsCompat(view.getRootWindowInsets(), view);
+        return !windowInsets.isVisible(WindowInsetsCompat.Type.statusBars()) == state;
+    }
+
+    private static boolean isHideNavigationSet(final Tab tab, final boolean state) {
+        View view = tab.getContentView();
+        WindowInsetsCompat windowInsets =
+                WindowInsetsCompat.toWindowInsetsCompat(view.getRootWindowInsets(), view);
+        return !windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) == state;
     }
 
     private static boolean isFullscreenFlagSet(

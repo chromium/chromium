@@ -555,6 +555,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION, false);
     public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
             newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
+    public static final CachedFlag sFullscreenInsetsApiMigration =
+            newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sGridTabSwitcherAndroidAnimations =
             newCachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
@@ -669,6 +671,7 @@ public abstract class ChromeFeatureList {
                     sFeedLoadingPlaceholder,
                     sFriendlierSafeBrowsingSettingsEnhancedProtection,
                     sFriendlierSafeBrowsingSettingsStandardProtection,
+                    sFullscreenInsetsApiMigration,
                     sGridTabSwitcherAndroidAnimations,
                     sIncognitoReauthenticationForAndroid,
                     sInstantStart,
