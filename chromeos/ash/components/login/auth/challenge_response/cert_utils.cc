@@ -5,9 +5,9 @@
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -19,7 +19,7 @@ namespace {
 
 bool GetSubjectPublicKeyInfo(const net::X509Certificate& certificate,
                              std::string* spki_der) {
-  base::StringPiece spki_der_piece;
+  std::string_view spki_der_piece;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer()),
           &spki_der_piece)) {
