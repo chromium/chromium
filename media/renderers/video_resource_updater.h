@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
-#include "media/video/half_float_maker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -215,8 +214,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   bool WriteYUVPixelsPerPlaneToPerTexture(scoped_refptr<VideoFrame> video_frame,
                                           HardwarePlaneResource* plane_resource,
                                           size_t bits_per_channel,
-                                          size_t plane_index,
-                                          HalfFloatMaker* half_float_maker);
+                                          size_t plane_index);
 
   // Get resources ready to be appended into DrawQuads. This is always used for
   // software compositing. This is also used for GPU compositing when the input
