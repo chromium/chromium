@@ -16,6 +16,8 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -499,9 +501,8 @@ std::string SampleVector::GetAsciiHeader(StringPiece histogram_name,
                                          int32_t flags) const {
   Count sample_count = TotalCount();
   std::string output;
-  StringAppendF(&output, "Histogram: %.*s recorded %d samples",
-                static_cast<int>(histogram_name.size()), histogram_name.data(),
-                sample_count);
+  StrAppend(&output, {"Histogram: ", histogram_name, " recorded ",
+                      NumberToString(sample_count), " samples"});
   if (sample_count == 0) {
     DCHECK_EQ(sum(), 0);
   } else {
