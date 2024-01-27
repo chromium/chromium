@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_client.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
@@ -64,8 +65,8 @@ PlusAddressService::PlusAddressService(
   }
 }
 
-bool PlusAddressService::SupportsPlusAddresses(url::Origin origin,
-                                               bool is_off_the_record) {
+bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
+                                               bool is_off_the_record) const {
   // First, check prerequisites (the feature enabled, etc.).
   if (!is_enabled()) {
     return false;
@@ -87,14 +88,14 @@ bool PlusAddressService::SupportsPlusAddresses(url::Origin origin,
 }
 
 std::optional<std::string> PlusAddressService::GetPlusAddress(
-    url::Origin origin) {
+    const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(origin);
   return profile ? std::make_optional(profile->plus_address) : std::nullopt;
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
-    url::Origin origin) {
+    const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
   auto it = plus_address_by_site_.find(etld_plus_one);
@@ -117,7 +118,8 @@ void PlusAddressService::SavePlusAddress(url::Origin origin,
   plus_addresses_.insert(plus_address);
 }
 
-bool PlusAddressService::IsPlusAddress(std::string potential_plus_address) {
+bool PlusAddressService::IsPlusAddress(
+    const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_addresses_.contains(potential_plus_address);
 }
@@ -179,7 +181,7 @@ void PlusAddressService::ConfirmPlusAddress(
           base::Unretained(this), origin, std::move(on_completed)));
 }
 
-std::u16string PlusAddressService::GetCreateSuggestionLabel() {
+std::u16string PlusAddressService::GetCreateSuggestionLabel() const {
   // TODO(crbug.com/1467623): once ready, use standard
   // `l10n_util::GetStringUTF16` instead of using feature params.
   return base::UTF8ToUTF16(
@@ -297,6 +299,11 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
 
   return origin.scheme() == url::kHttpsScheme ||
          origin.scheme() == url::kHttpScheme;
+}
+
+void PlusAddressService::RecordAutofillSuggestionEvent(
+    SuggestionEvent suggestion_event) {
+  PlusAddressMetrics::RecordAutofillSuggestionEvent(suggestion_event);
 }
 
 }  // namespace plus_addresses

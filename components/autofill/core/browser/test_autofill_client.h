@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
@@ -56,7 +57,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
@@ -150,8 +150,8 @@ class TestAutofillClientTemplate : public T {
     return GetMockIbanAccessManager();
   }
 
-  plus_addresses::PlusAddressService* GetPlusAddressService() override {
-    return test_plus_address_service_;
+  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override {
+    return plus_address_delegate_.get();
   }
 
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
@@ -728,9 +728,9 @@ class TestAutofillClientTemplate : public T {
     test_shared_loader_factory_ = url_loader_factory;
   }
 
-  void set_plus_address_service(
-      plus_addresses::PlusAddressService* plus_address_service) {
-    test_plus_address_service_ = plus_address_service;
+  void set_plus_address_delegate(
+      std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate) {
+    plus_address_delegate_ = std::move(plus_address_delegate);
   }
 
   GURL form_origin() { return form_origin_; }
@@ -741,8 +741,7 @@ class TestAutofillClientTemplate : public T {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
-  raw_ptr<plus_addresses::PlusAddressService> test_plus_address_service_ =
-      nullptr;
+  std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -60,7 +61,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -73,6 +73,7 @@ using base::UTF8ToUTF16;
 using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
 using ::testing::_;
+using ::testing::NiceMock;
 
 constexpr char kLocale[] = "en_US";
 
@@ -935,11 +936,13 @@ TEST_F(FormDataImporterTest, PlusAddressesExcluded) {
 
   // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
   // `autofill_client_` to use it.
-  plus_addresses::PlusAddressService plus_address_service;
-  plus_address_service.SavePlusAddress(
-      url::Origin::Create(GURL("https://mattwashere.example")),
-      kDummyPlusAddress);
-  autofill_client_->set_plus_address_service(&plus_address_service);
+  auto plus_address_delegate =
+      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+  ON_CALL(*plus_address_delegate, IsPlusAddress)
+      .WillByDefault([&kDummyPlusAddress](const std::string& address) {
+        return address == kDummyPlusAddress;
+      });
+  autofill_client_->set_plus_address_delegate(std::move(plus_address_delegate));
 
   // Next, make a form with the `kDummyPlusAddress` filled in, which should be
   // excluded from imports.

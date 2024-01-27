@@ -6,9 +6,12 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_H_
 
 #include <optional>
+#include <set>
+#include <string>
 #include <unordered_set>
 
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -30,6 +33,7 @@ namespace plus_addresses {
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
 class PlusAddressService : public KeyedService,
+                           public autofill::AutofillPlusAddressDelegate,
                            public signin::IdentityManager::Observer {
  public:
   // Used to simplify testing in cases where calls depending on external classes
@@ -46,6 +50,8 @@ class PlusAddressService : public KeyedService,
                      PrefService* pref_service,
                      PlusAddressClient plus_address_client);
 
+  // autofill::AutofillPlusAddressDelegate:
+
   // Returns `true` when plus addresses are supported. This includes checks that
   // the `kPlusAddressesEnabled` base::Feature is enabled, that there's a
   // signed-in user, the ability to talk to the server, and that off-the-record
@@ -53,19 +59,28 @@ class PlusAddressService : public KeyedService,
   // Virtual to allow overriding the behavior in tests. This allows external
   // tests (e.g., those in autofill that depend on this class) to substitute
   // their own behavior.
-  virtual bool SupportsPlusAddresses(url::Origin origin,
-                                     bool is_off_the_record);
+  bool SupportsPlusAddresses(const url::Origin& origin,
+                             bool is_off_the_record) const override;
+
   // Get a plus address, if one exists, for the passed-in origin. Note that all
   // plus address activity is scoped to eTLD+1. This class owns the conversion
   // of `origin` to its eTLD+1 form.
-  std::optional<std::string> GetPlusAddress(url::Origin origin);
-  // Same as above, but packages the plus address along with its eTLD+1.
-  std::optional<PlusProfile> GetPlusProfile(url::Origin origin);
+  std::optional<std::string> GetPlusAddress(
+      const url::Origin& origin) const override;
+
+  // Checks whether the passed-in string is a known plus address.
+  bool IsPlusAddress(const std::string& potential_plus_address) const override;
+
+  std::u16string GetCreateSuggestionLabel() const override;
+
+  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+
+  // Same as `GetPlusAddress`, but packages the plus address along with its
+  // eTLD+1.
+  absl::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
   // Save a plus address for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);
-  // Check whether the passed-in string is a known plus address.
-  bool IsPlusAddress(std::string potential_plus_address);
 
   // Asks the PlusAddressClient to reserve a plus address for use on `origin`,
   // and returns the plus address via `on_completed`.
@@ -81,11 +96,6 @@ class PlusAddressService : public KeyedService,
   virtual void ConfirmPlusAddress(const url::Origin& origin,
                                   const std::string& plus_address,
                                   PlusAddressRequestCallback on_completed);
-
-  // The label for an autofill suggestion offering to create a new plus address.
-  // While only debatably relevant to this class, this function allows for
-  // further decoupling of PlusAddress generation and autofill.
-  std::u16string GetCreateSuggestionLabel();
 
   // Used for displaying the user's email address in the UI modal.
   // virtual to allow mocking in tests that don't want to do identity setup.

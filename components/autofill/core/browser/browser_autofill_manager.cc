@@ -57,6 +57,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -113,8 +114,6 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/plus_addresses/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -858,8 +857,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     }
   }
 
-  plus_addresses::PlusAddressService* plus_address_service =
-      client().GetPlusAddressService();
+  AutofillPlusAddressDelegate* plus_address_delegate =
+      client().GetPlusAddressDelegate();
 
   FormData form_for_autocomplete = submitted_form->ToFormData();
   int num_fields_where_context_menu_was_shown = 0;
@@ -870,12 +869,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       // saved.
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
-    if (plus_address_service &&
-        plus_address_service->IsPlusAddress(
+    if (plus_address_delegate &&
+        plus_address_delegate->IsPlusAddress(
             base::UTF16ToUTF8(submitted_form->field(i)->value))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
-      // Note that the feature is experimental, and `plus_address_service` will
-      // be null if the feature is not enabled (it's disabled by default).
+      // Note that the feature is experimental, and `plus_address_delegate`
+      // will be null if the feature is not enabled (it's disabled by default).
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
 
@@ -3926,24 +3925,24 @@ bool BrowserAutofillManager::ShouldUploadUkm(
 
 std::optional<Suggestion>
 BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
-  plus_addresses::PlusAddressService* plus_address_service =
-      client().GetPlusAddressService();
-  if (!plus_address_service ||
-      !plus_address_service->SupportsPlusAddresses(
+  AutofillPlusAddressDelegate* plus_address_delegate =
+      client().GetPlusAddressDelegate();
+  if (!plus_address_delegate ||
+      !plus_address_delegate->SupportsPlusAddresses(
           client().GetLastCommittedPrimaryMainFrameOrigin(),
           client().IsOffTheRecord())) {
     return std::nullopt;
   }
   std::optional<std::string> maybe_address =
-      plus_address_service->GetPlusAddress(
+      plus_address_delegate->GetPlusAddress(
           client().GetLastCommittedPrimaryMainFrameOrigin());
   if (maybe_address == std::nullopt) {
     Suggestion create_plus_address_suggestion(
-        plus_address_service->GetCreateSuggestionLabel());
+        plus_address_delegate->GetCreateSuggestionLabel());
     create_plus_address_suggestion.popup_item_id =
         PopupItemId::kCreateNewPlusAddress;
-    plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-        plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
+    plus_address_delegate->RecordAutofillSuggestionEvent(
+        AutofillPlusAddressDelegate::SuggestionEvent::
             kCreateNewPlusAddressSuggested);
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
     return create_plus_address_suggestion;
@@ -3952,8 +3951,8 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
       base::UTF8ToUTF16(maybe_address.value()));
   existing_plus_address_suggestion.popup_item_id =
       PopupItemId::kFillExistingPlusAddress;
-  plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-      plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
+  plus_address_delegate->RecordAutofillSuggestionEvent(
+      AutofillPlusAddressDelegate::SuggestionEvent::
           kExistingPlusAddressSuggested);
   existing_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
   return existing_plus_address_suggestion;

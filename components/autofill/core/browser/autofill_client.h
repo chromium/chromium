@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -33,7 +34,6 @@
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
@@ -46,10 +46,6 @@
 #include "url/origin.h"
 
 class PrefService;
-
-namespace plus_addresses {
-class PlusAddressService;
-}
 
 namespace signin {
 class IdentityManager;
@@ -431,18 +427,17 @@ class AutofillClient {
   // Gets the IbanAccessManager instance associated with the client.
   virtual IbanAccessManager* GetIbanAccessManager();
 
-  // When the enterprise plus address feature is supported, gets the
-  // KeyedService that manages that data.
-  virtual plus_addresses::PlusAddressService* GetPlusAddressService();
-
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
 
+  // Returns the `AutofillPlusAddressDelegate` associated with the profile of
+  // the window of this tab.
+  virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
+
   // Orchestrates UI for enterprise plus address creation; no-op except on
   // supported platforms.
-  virtual void OfferPlusAddressCreation(
-      const url::Origin& main_frame_origin,
-      plus_addresses::PlusAddressCallback callback);
+  virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                        PlusAddressCallback callback);
 
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).

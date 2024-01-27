@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -49,6 +50,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -81,8 +83,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/plus_addresses/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -142,9 +142,6 @@ using upload_contents_matchers::ObservedSubmissionIs;
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
 Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
-
-const std::string_view kPlusAddressSuggestionMetric =
-    "Autofill.PlusAddresses.Suggestion.Events";
 
 bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
   // Splitting card name and last four logic does not apply to iOS because the
@@ -390,16 +387,6 @@ std::string MakeGuid(size_t last_digit) {
 
 std::string kElvisProfileGuid = MakeGuid(1);
 
-// Used to control the plus addressing feature, such that it is deterministic
-// and does not trigger any UI elements.
-class MockPlusAddressService : public plus_addresses::PlusAddressService {
- public:
-  MOCK_METHOD(bool,
-              SupportsPlusAddresses,
-              (url::Origin, bool is_off_the_record),
-              (override));
-};
-
 class MockCreditCardAccessManager : public CreditCardAccessManager {
  public:
   MockCreditCardAccessManager(AutofillDriver* driver,
@@ -446,10 +433,6 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
               ((const std::map<std::string, std::string>&)),
-              (override));
-  MOCK_METHOD(plus_addresses::PlusAddressService*,
-              GetPlusAddressService,
-              (),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
@@ -10108,12 +10091,15 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginWorksOnlyOnFilledField) {
 // This is true even if the PlusAddressService had existing data for the current
 // domain.
 TEST_F(BrowserAutofillManagerTest, NoPlusAddressSuggestionsByDefault) {
-  plus_addresses::PlusAddressService plus_address_service;
-  plus_address_service.SavePlusAddress(
-      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
-      "plus+plus@plus.plus");
-  ON_CALL(autofill_client_, GetPlusAddressService)
-      .WillByDefault(Return(&plus_address_service));
+  auto plus_address_delegate =
+      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+  ON_CALL(*plus_address_delegate, SupportsPlusAddresses)
+      .WillByDefault(Return(false));
+  ON_CALL(*plus_address_delegate, GetPlusAddress)
+      .WillByDefault(
+          Return(std::make_optional<std::string>("plus_plus@plus.plus")));
+  autofill_client_.set_plus_address_delegate(std::move(plus_address_delegate));
+
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -10872,19 +10858,24 @@ class BrowserAutofillManagerPlusAddressTest
  protected:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-    mock_plus_address_service_ =
-        std::make_unique<NiceMock<MockPlusAddressService>>();
-    ON_CALL(*mock_plus_address_service_, SupportsPlusAddresses)
+    auto plus_address_delegate =
+        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+    ON_CALL(*plus_address_delegate, SupportsPlusAddresses)
         .WillByDefault(Return(true));
-    ON_CALL(autofill_client_, GetPlusAddressService)
-        .WillByDefault(Return(mock_plus_address_service_.get()));
+    autofill_client_.set_plus_address_delegate(
+        std::move(plus_address_delegate));
   }
-  std::unique_ptr<NiceMock<MockPlusAddressService>> mock_plus_address_service_;
-  base::HistogramTester histogram_tester_;
+
+  MockAutofillPlusAddressDelegate& plus_address_delegate() {
+    return static_cast<MockAutofillPlusAddressDelegate&>(
+        *autofill_client_.GetPlusAddressDelegate());
+  }
 };
 
 // Ensure that plus address options aren't shown unexpectedly.
 TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
+  EXPECT_CALL(plus_address_delegate(), RecordAutofillSuggestionEvent).Times(0);
+
   // Set up our form data.
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
@@ -10892,7 +10883,6 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
-
   FormsSeen({form});
 
   // Check that suggestions are made for the field that has the autocomplete
@@ -10914,16 +10904,18 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   // address options.
   GetAutofillSuggestions(form, form.fields[1]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
-  histogram_tester_.ExpectTotalCount(kPlusAddressSuggestionMetric, 0);
 }
 
 // Ensure that existing plus addresses are offered.
 TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
-  plus_addresses::PlusAddressService* plus_address_service =
-      autofill_client_.GetPlusAddressService();
-  plus_address_service->SavePlusAddress(
-      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
-      "plus+plus@plus.plus");
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  AutofillPlusAddressDelegate::SuggestionEvent::
+                      kExistingPlusAddressSuggested));
+  ON_CALL(plus_address_delegate(), GetPlusAddress)
+      .WillByDefault(
+          Return(std::make_optional<std::string>("plus+plus@plus.plus")));
+
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -10945,20 +10937,20 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
                   PopupItemId::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
-      BucketsAre(base::Bucket(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressSuggested,
-          1)));
 }
 
 // Ensure that email fields without existing plus addresses for the domain, but
 // with the feature enabled, still offer creation of a new plus address.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
-  plus_addresses::PlusAddressService* plus_address_service =
-      autofill_client_.GetPlusAddressService();
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  AutofillPlusAddressDelegate::SuggestionEvent::
+                      kCreateNewPlusAddressSuggested));
+  ON_CALL(plus_address_delegate(), GetPlusAddress)
+      .WillByDefault(Return(std::optional<std::string>()));
+  ON_CALL(plus_address_delegate(), GetCreateSuggestionLabel)
+      .WillByDefault(Return(u"Create plus address"));
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -10973,22 +10965,14 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion(
-           base::UTF16ToUTF8(plus_address_service->GetCreateSuggestionLabel()),
-           "", Suggestion::Icon::kPlusAddress,
-           PopupItemId::kCreateNewPlusAddress),
+      {Suggestion("Create plus address", "", Suggestion::Icon::kPlusAddress,
+                  PopupItemId::kCreateNewPlusAddress),
        Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressSuggestionMetric),
-              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressAutofillSuggestionEvent::
-                                              kCreateNewPlusAddressSuggested,
-                                      1)));
 }
 
 // Test that plus address inputs are forced to !should_autocomplete
@@ -10996,12 +10980,10 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        DontSavePlusAddressInAutocompleteHistory) {
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
-  // Save a dummy plus address so that the service is aware of it.
-  plus_addresses::PlusAddressService* plus_address_service =
-      autofill_client_.GetPlusAddressService();
-  plus_address_service->SavePlusAddress(
-      autofill_client_.GetLastCommittedPrimaryMainFrameOrigin(),
-      kDummyPlusAddress);
+  ON_CALL(plus_address_delegate(), IsPlusAddress)
+      .WillByDefault([&](const std::string& address) {
+        return address == kDummyPlusAddress;
+      });
   FormData form_seen_by_autocomplete;
   EXPECT_CALL(single_field_form_fill_router(),
               OnWillSubmitForm(_, _, /*is_autocomplete_enabled=*/true))

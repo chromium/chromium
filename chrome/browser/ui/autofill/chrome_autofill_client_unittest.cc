@@ -227,10 +227,10 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
 // tests; this test is intended to ensure the default state does not behave
 // unexpectedly.
 TEST_F(ChromeAutofillClientTest,
-       PlusAddressesDefaultFeatureStateMeansNullPlusAddressService) {
+       PlusAddressDefaultFeatureStateMeansNullPlusAddressService) {
   PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
-  EXPECT_EQ(client()->GetPlusAddressService(), nullptr);
+  EXPECT_EQ(client()->GetPlusAddressDelegate(), nullptr);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
@@ -41,13 +42,13 @@ class PlusAddressRequestError {
 };
 
 // Only used by Autofill.
-typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
-typedef std::unordered_map<std::string, std::string> PlusAddressMap;
-typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;
+using autofill::PlusAddressCallback;
+using PlusAddressMap = std::unordered_map<std::string, std::string>;
+using PlusAddressMapCallback = base::OnceCallback<void(const PlusAddressMap&)>;
 // Holds either a PlusProfile or an error that prevented us from getting it.
-typedef base::expected<PlusProfile, PlusAddressRequestError> PlusProfileOrError;
-typedef base::OnceCallback<void(const PlusProfileOrError&)>
-    PlusAddressRequestCallback;
+using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
+using PlusAddressRequestCallback =
+    base::OnceCallback<void(const PlusProfileOrError&)>;
 
 // Defined for use in metrics and to share code for certain network-requests.
 enum class PlusAddressNetworkRequestType {

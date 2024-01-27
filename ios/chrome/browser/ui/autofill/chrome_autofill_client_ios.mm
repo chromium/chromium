@@ -15,6 +15,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
@@ -455,14 +456,13 @@ void ChromeAutofillClientIOS::ShowAutofillPopup(
   [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
 }
 
-plus_addresses::PlusAddressService*
-ChromeAutofillClientIOS::GetPlusAddressService() {
+AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
   return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
 }
 
 void ChromeAutofillClientIOS::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
-    plus_addresses::PlusAddressCallback callback) {
+    PlusAddressCallback callback) {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
   bottomSheetTabHelper->ShowPlusAddressesBottomSheet(main_frame_origin,

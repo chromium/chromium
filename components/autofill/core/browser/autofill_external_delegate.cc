@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -43,7 +44,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -663,19 +663,25 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kFillExistingPlusAddress:
-      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen);
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        plus_address_delegate->RecordAutofillSuggestionEvent(
+            AutofillPlusAddressDelegate::SuggestionEvent::
+                kExistingPlusAddressChosen);
+      }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           PopupItemId::kFillExistingPlusAddress);
       break;
     case PopupItemId::kCreateNewPlusAddress: {
-      plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen);
-      plus_addresses::PlusAddressCallback callback = base::BindOnce(
+      if (AutofillPlusAddressDelegate* plus_address_delegate =
+              manager_->client().GetPlusAddressDelegate()) {
+        plus_address_delegate->RecordAutofillSuggestionEvent(
+            AutofillPlusAddressDelegate::SuggestionEvent::
+                kCreateNewPlusAddressChosen);
+      }
+      PlusAddressCallback callback = base::BindOnce(
           [](base::WeakPtr<AutofillExternalDelegate> delegate,
              const FormData& form, const FormFieldData& field,
              const std::string& plus_address) {

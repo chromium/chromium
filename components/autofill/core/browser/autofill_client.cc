@@ -9,13 +9,13 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/version_info/channel.h"
 
 namespace autofill {
@@ -78,14 +78,13 @@ AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }
 
-plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
+AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
   return nullptr;
 }
 
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
-    plus_addresses::PlusAddressCallback callback) {
-}
+    PlusAddressCallback callback) {}
 
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -29,7 +30,6 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -111,11 +111,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
-  plus_addresses::PlusAddressService* GetPlusAddressService() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
-  void OfferPlusAddressCreation(
-      const url::Origin& main_frame_origin,
-      plus_addresses::PlusAddressCallback callback) override;
+  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
+  void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                PlusAddressCallback callback) override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;

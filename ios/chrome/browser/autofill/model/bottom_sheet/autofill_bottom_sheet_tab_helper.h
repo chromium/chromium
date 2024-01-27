@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/plus_addresses/plus_address_types.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

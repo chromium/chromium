@@ -68,6 +68,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -303,8 +304,7 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #endif
 }
 
-plus_addresses::PlusAddressService*
-ChromeAutofillClient::GetPlusAddressService() {
+AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
   // The `PlusAddressServiceFactory` should also ensure the service is not
   // created without the feature enabled, but being defensive here to avoid
   // surprises.
@@ -317,7 +317,7 @@ ChromeAutofillClient::GetPlusAddressService() {
 
 void ChromeAutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
-    plus_addresses::PlusAddressCallback callback) {
+    PlusAddressCallback callback) {
   // The controller is owned by `web_contents()` (via `WebContentsUserData`).
   plus_addresses::PlusAddressCreationController* controller =
       plus_addresses::PlusAddressCreationController::GetOrCreate(

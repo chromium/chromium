@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
@@ -36,6 +37,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
+#include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -53,9 +55,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/plus_addresses/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,9 +88,6 @@ using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
-
-constexpr std::string_view kPlusAddressSuggestionMetric =
-    "Autofill.PlusAddresses.Suggestion.Events";
 
 // Creates a field by field filling suggestion.
 // `guid` is used to set `Suggestion::payload` as
@@ -197,13 +193,9 @@ class MockAutofillClient : public TestAutofillClient {
               OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
               (override));
-  MOCK_METHOD(plus_addresses::PlusAddressService*,
-              GetPlusAddressService,
-              (),
-              (override));
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
-              (const url::Origin&, plus_addresses::PlusAddressCallback),
+              (const url::Origin&, PlusAddressCallback),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
@@ -303,6 +295,8 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void SetUp() override {
     client().set_personal_data_manager(
         std::make_unique<MockPersonalDataManager>());
+    client().set_plus_address_delegate(
+        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
     auto mock_browser_autofill_manager =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
@@ -363,6 +357,10 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   MockPersonalDataManager& pdm() {
     return *static_cast<MockPersonalDataManager*>(
         client().GetPersonalDataManager());
+  }
+  MockAutofillPlusAddressDelegate& plus_address_delegate() {
+    return static_cast<MockAutofillPlusAddressDelegate&>(
+        *client().GetPlusAddressDelegate());
   }
   MockCreditCardAccessManager& cc_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
@@ -1935,6 +1933,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  MockAutofillPlusAddressDelegate::SuggestionEvent::
+                      kExistingPlusAddressChosen));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1943,12 +1945,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
                          PopupItemId::kFillExistingPlusAddress));
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kPlusAddressSuggestionMetric),
-      BucketsAre(base::Bucket(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen,
-          1)));
 }
 
 // Mock out the new plus address creation flow, and ensure that its completion
@@ -1975,11 +1971,15 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  MockAutofillPlusAddressDelegate::SuggestionEvent::
+                      kCreateNewPlusAddressChosen));
+
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.
   EXPECT_CALL(client(), OfferPlusAddressCreation)
-      .WillOnce([&](const url::Origin& origin,
-                    plus_addresses::PlusAddressCallback callback) {
+      .WillOnce([&](const url::Origin& origin, PlusAddressCallback callback) {
         std::move(callback).Run(
             base::UTF16ToUTF8(kMockPlusAddressForCreationCallback));
       });
@@ -1994,12 +1994,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  PopupItemId::kCreateNewPlusAddress));
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kPlusAddressSuggestionMetric),
-      BucketsAre(base::Bucket(
-          plus_addresses::PlusAddressMetrics::
-              PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen,
-          1)));
 }
 
 // Tests that accepting a Compose suggestion returns a callback that, when run,

@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -53,7 +54,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/plus_addresses/plus_address_service.h"
 
 namespace autofill {
 
@@ -469,8 +469,8 @@ FormDataImporter::GetAddressObservedFieldValues(
     bool& has_invalid_field_types,
     bool& has_multiple_distinct_email_addresses,
     bool& has_address_related_fields) const {
-  plus_addresses::PlusAddressService* plus_address_service =
-      client_->GetPlusAddressService();
+  AutofillPlusAddressDelegate* plus_address_delegate =
+      client_->GetPlusAddressDelegate();
   base::flat_map<FieldType, std::u16string> observed_field_values;
 
   // Tracks if subsequent phone number fields should be ignored,
@@ -497,8 +497,8 @@ FormDataImporter::GetAddressObservedFieldValues(
 
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
-    if (plus_address_service &&
-        plus_address_service->IsPlusAddress(base::UTF16ToUTF8(value))) {
+    if (plus_address_delegate &&
+        plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value))) {
       continue;
     }
 
