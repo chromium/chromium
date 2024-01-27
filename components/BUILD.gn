@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//components/compose/features.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -814,6 +815,10 @@ test("components_unittests") {
       "//components/user_notes/browser:unit_tests",
       "//components/user_notes/storage:unit_tests",
     ]
+  }
+
+  if (enable_compose) {
+    deps += [ "//components/compose/core/browser:unit_tests" ]
   }
 
   # Only supported on cast-enabled platforms.

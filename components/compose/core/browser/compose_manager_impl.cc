@@ -65,6 +65,8 @@ void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
                                      UiEntryPoint entry_point) {
   if (entry_point == UiEntryPoint::kContextMenu) {
     client_->getPageUkmTracker()->MenuItemClicked();
+    compose::LogComposeContextMenuCtr(
+        compose::ComposeContextMenuCtrEvent::kMenuItemClicked);
   }
   driver.ExtractForm(
       form_id,
@@ -106,10 +108,6 @@ void ComposeManagerImpl::OpenComposeWithFormFieldData(
     const autofill::FormFieldData& trigger_field,
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
-  if (ui_entry_point == UiEntryPoint::kContextMenu) {
-    compose::LogComposeContextMenuCtr(
-        compose::ComposeContextMenuCtrEvent::kComposeOpened);
-  }
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
                              popup_screen_location, std::move(callback));
 }

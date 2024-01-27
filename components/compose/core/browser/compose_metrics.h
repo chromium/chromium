@@ -37,6 +37,7 @@ extern const char kComposeFirstRunSessionDialogShownCount[];
 extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
+extern const char kComposeContextMenuCtr[];
 extern const char kOpenComposeDialogResult[];
 
 // Enum for calculating the CTR of the Compose context menu item.
@@ -46,8 +47,8 @@ extern const char kOpenComposeDialogResult[];
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeContextMenuCtrEvent {
   kMenuItemDisplayed = 0,
-  kComposeOpened = 1,
-  kMaxValue = kComposeOpened,
+  kMenuItemClicked = 1,
+  kMaxValue = kMenuItemClicked,
 };
 
 // Keep in sync with ComposeRequestReason in
