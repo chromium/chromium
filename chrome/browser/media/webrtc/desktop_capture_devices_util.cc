@@ -23,6 +23,7 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "content/public/common/content_features.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/capture_handle.mojom.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
@@ -159,7 +160,7 @@ DesktopMediaIDToDisplayMediaInformation(
       cursor = media::mojom::CursorCaptureType::MOTION;
       capture_handle = CreateCaptureHandle(capturer, capturer_origin, media_id);
       if (base::FeatureList::IsEnabled(
-              blink::features::kCapturedSurfaceControl)) {
+              features::kCapturedSurfaceControlKillswitch)) {
         zoom_level = GetZoomLevel(capturer, media_id).value_or(zoom_level);
       }
       break;

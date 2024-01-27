@@ -158,6 +158,14 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This killswitch is distinct from the OT.
+// It allows us to remotely disable the feature, and get it to stop working even
+// on sites that are in possession of a valid token. When that happens, all API
+// calls gated by the killswitch will fail graceully.
+BASE_FEATURE(kCapturedSurfaceControlKillswitch,
+             "CapturedSurfaceControlKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This serves as an overall kill switch to kill CdmStorageDatabase. If
 // disabled, which it is by default, no operations will be routed through the
 // CdmStorage* path, even in the migration code that lives in MediaLicense* code
