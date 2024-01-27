@@ -117,7 +117,7 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
 
  private:
   // Create |VideoFrame| by exporting the dmabuf backing the buffer.
-  scoped_refptr<VideoFrame> CreateVideoFrame(uint32_t index);
+  scoped_refptr<VideoFrame> CreateVideoFrame(const Buffer& buffer);
 
   std::string Description() override;
 

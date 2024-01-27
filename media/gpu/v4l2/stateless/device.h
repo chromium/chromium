@@ -162,7 +162,7 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
   // Wrap the buffer that was allocated from the driver so that it can be
   // passed on to other consumers.
-  std::vector<base::ScopedFD> ExportAsDMABUF(int index, uint32_t num_planes);
+  std::vector<base::ScopedFD> ExportAsDMABUF(const Buffer& buffer);
 
   // Enqueue a buffer allocated through |RequestBuffers| with the driver for
   // processing.

@@ -300,7 +300,7 @@ bool OutputQueue::NegotiateFormat() {
   return false;
 }
 
-scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(uint32_t index) {
+scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(const Buffer& buffer) {
   const VideoPixelFormat video_format =
       buffer_format_.fourcc.ToVideoPixelFormat();
   const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
@@ -310,28 +310,32 @@ scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(uint32_t index) {
     return nullptr;
   }
 
-  if (buffer_format_.NumPlanes() > num_color_planes) {
-    DVLOGF(1) << "Number of planes for the format ("
-              << buffer_format_.NumPlanes()
+  if (buffer.PlaneCount() > num_color_planes) {
+    DVLOGF(1) << "Number of planes for the format (" << buffer.PlaneCount()
               << ") should not be larger than number of color planes("
               << num_color_planes << ") for format "
               << VideoPixelFormatToString(video_format);
     return nullptr;
   }
 
+  // TODO(b/322521142): Stride is needed for the layout, but |buffer| does not
+  // contain that information. It only contains the length of a plane.
+  // |buffer_format_| does contain that information, but it currently doesn't
+  // have the correct |image_size|. |image_size| is being computed incorrectly
+  // for MT2T.
   std::vector<ColorPlaneLayout> color_planes;
-  for (const auto& plane : buffer_format_.planes) {
-    color_planes.emplace_back(plane.stride, 0u, plane.image_size);
+  for (uint32_t i = 0; i < num_color_planes; ++i) {
+    color_planes.emplace_back(buffer_format_.planes[i].stride, 0u,
+                              buffer.PlaneLength(i));
   }
 
-  // This code has been developed for exclusively for MM21. For other formats
-  // such as NV12 and YUV420 there would be color plane duplications, or
+  // This code has been developed for exclusively for MM21 and MT2T. For other
+  // formats such as NV12 and YUV420 there would be color plane duplications, or
   // a VideoFrameLayout::CreateWithPlanes.
-  CHECK_EQ(static_cast<size_t>(buffer_format_.NumPlanes()), num_color_planes);
-  CHECK_EQ(buffer_format_.NumPlanes(), 2u);
+  CHECK_EQ(buffer.PlaneCount(), buffer_format_.NumPlanes());
+  CHECK_EQ(buffer.PlaneCount(), 2u);
 
-  std::vector<base::ScopedFD> dmabuf_fds =
-      device_->ExportAsDMABUF(index, buffer_format_.NumPlanes());
+  std::vector<base::ScopedFD> dmabuf_fds = device_->ExportAsDMABUF(buffer);
   if (dmabuf_fds.empty()) {
     DVLOGF(1) << "Failed to get DMABUFs of V4L2 buffer";
     return nullptr;
@@ -372,8 +376,8 @@ bool OutputQueue::PrepareBuffers(size_t num_buffers) {
 
   // VideoFrames are used to display the decoded buffers. They wrap the
   // underlying DMABUF by referencing the index of the V4L2 buffers;
-  for (uint32_t index = 0; index < buffers_.size(); ++index) {
-    auto video_frame = CreateVideoFrame(index);
+  for (const auto& buffer : buffers_) {
+    auto video_frame = CreateVideoFrame(buffer);
     if (!video_frame) {
       return false;
     }
