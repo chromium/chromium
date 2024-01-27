@@ -88,6 +88,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       override;
   void SetWebContentsURL(const GURL& url) override;
   void SetUserAgent(const std::string& user_agent) override;
+  void SetTitle(const std::string& title) override;
 
  protected:
   // This is the uniform underlying type for both
@@ -259,6 +260,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // If present, the accessibility tree for the document needed to
   // export a tagged (accessible) PDF.
   ui::AXTreeUpdate accessibility_tree_;
+
+  // The title of the document.
+  std::string title_;
 };
 
 }  // namespace printing

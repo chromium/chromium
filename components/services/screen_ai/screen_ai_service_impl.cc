@@ -32,7 +32,7 @@ namespace screen_ai {
 namespace {
 
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
-    const absl::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
+    const std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
     const gfx::Rect& image_rect) {
   if (!annotation_proto) {
     VLOG(0) << "Screen AI library could not process snapshot or no OCR data.";
@@ -283,7 +283,7 @@ void ScreenAIService::ExtractSemanticLayout(
     ExtractSemanticLayoutCallback callback) {
   DCHECK(screen_ai_annotator_client_.is_bound());
 
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
       library_->ExtractLayout(image);
 
   // The original caller is always replied to, and an AXTreeIDUnknown is sent to
@@ -313,7 +313,7 @@ void ScreenAIService::ExtractSemanticLayout(
   screen_ai_annotator_client_->HandleAXTreeUpdate(update);
 }
 
-absl::optional<chrome_screen_ai::VisualAnnotation>
+std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
                                             bool a11y_tree_request) {
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -358,7 +358,7 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
       PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/false);
 
   if (annotation_proto) {
@@ -372,7 +372,7 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
 void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
-  absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
+  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
       PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/true);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
@@ -397,7 +397,7 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
   std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  absl::optional<std::vector<int32_t>> content_node_ids =
+  std::optional<std::vector<int32_t>> content_node_ids =
       library_->ExtractMainContent(serialized_snapshot);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 

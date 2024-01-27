@@ -26,15 +26,14 @@ EventForwarder::EventForwarder(ViewAndroid* view) : view_(view) {}
 
 EventForwarder::~EventForwarder() {
   if (!java_obj_.is_null()) {
-    Java_EventForwarder_destroy(base::android::AttachCurrentThread(),
-                                java_obj_);
+    Java_EventForwarder_destroy(jni_zero::AttachCurrentThread(), java_obj_);
     java_obj_.Reset();
   }
 }
 
 ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
   if (java_obj_.is_null()) {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     java_obj_.Reset(
         Java_EventForwarder_create(env, reinterpret_cast<intptr_t>(this),
                                    switches::IsTouchDragDropEnabled()));

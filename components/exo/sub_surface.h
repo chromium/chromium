@@ -6,13 +6,13 @@
 #define COMPONENTS_EXO_SUB_SURFACE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -51,7 +51,7 @@ class SubSurface : public SurfaceDelegate,
   void SetPosition(const gfx::PointF& position);
 
   // This schedules a clip rect to be applied when drawing this sub-surface.
-  void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
+  void SetClipRect(const std::optional<gfx::RectF>& clip_rect);
 
   // This schedules a matrix transform to be applied when drawing this
   // sub-surface.

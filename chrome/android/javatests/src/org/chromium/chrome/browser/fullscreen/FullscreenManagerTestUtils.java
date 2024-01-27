@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -46,7 +47,9 @@ public class FullscreenManagerTestUtils {
         float dragStartY = browserControlsHeight * 3;
         float dragEndY = dragStartY - browserControlsHeight * 2;
         int expectedPosition = -browserControlsHeight;
-        if (show) {
+
+        // The top back button toolbar will still be shown on automotive, even in fullscreen mode.
+        if (show && !BuildInfo.getInstance().isAutomotive) {
             expectedPosition = 0;
             float tempDragStartY = dragStartY;
             dragStartY = dragEndY;

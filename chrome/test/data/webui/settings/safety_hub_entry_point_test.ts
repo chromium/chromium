@@ -5,7 +5,8 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsSafetyHubEntryPointElement, SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsSafetyHubEntryPointElement} from 'chrome://settings/lazy_load.js';
+import {SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

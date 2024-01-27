@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/android/autofill/autofill_progress_dialog_view_android.h"
+
 #include <jni.h>
 #include <stddef.h>
-#include "chrome/browser/android/resource_mapper.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "chrome/browser/ui/android/autofill/autofill_progress_dialog_view_android.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -28,15 +31,6 @@ AutofillProgressDialogViewAndroid::AutofillProgressDialogViewAndroid(
 
 AutofillProgressDialogViewAndroid::~AutofillProgressDialogViewAndroid() =
     default;
-
-// static
-AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
-    AutofillProgressDialogController* controller) {
-  AutofillProgressDialogViewAndroid* dialog_view =
-      new AutofillProgressDialogViewAndroid(controller);
-  dialog_view->ShowDialog();
-  return dialog_view;
-}
 
 void AutofillProgressDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing,
@@ -74,13 +68,15 @@ void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
     controller_->OnDismissed(/*is_canceled_by_user=*/true);
     controller_ = nullptr;
   }
+  // Must delete itself when the view is dismissed to avoid memory leak as this
+  // class is not owned by other autofill components.
   delete this;
 }
 
-void AutofillProgressDialogViewAndroid::ShowDialog() {
+void AutofillProgressDialogViewAndroid::ShowDialog(
+    content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ui::ViewAndroid* view_android =
-      controller_->GetWebContents()->GetNativeView();
+  ui::ViewAndroid* view_android = web_contents->GetNativeView();
   DCHECK(view_android);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
   if (!window_android)
@@ -105,6 +101,15 @@ void AutofillProgressDialogViewAndroid::ShowConfirmation(
     Java_AutofillProgressDialogBridge_showConfirmation(
         env, java_object_, ConvertUTF16ToJavaString(env, confirmation_message));
   }
+}
+
+AutofillProgressDialogView* CreateAndShowProgressDialog(
+    AutofillProgressDialogController* controller,
+    content::WebContents* web_contents) {
+  AutofillProgressDialogViewAndroid* dialog_view =
+      new AutofillProgressDialogViewAndroid(controller);
+  dialog_view->ShowDialog(web_contents);
+  return dialog_view;
 }
 
 }  // namespace autofill

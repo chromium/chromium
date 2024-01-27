@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -70,7 +71,6 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -575,7 +575,7 @@ void PageInfo::UpdatePermissions() {
 void PageInfo::OnSitePermissionChanged(
     ContentSettingsType type,
     ContentSetting setting,
-    absl::optional<url::Origin> requesting_origin,
+    std::optional<url::Origin> requesting_origin,
     bool is_one_time) {
   ContentSettingChangedViaPageInfo(type);
 
@@ -622,7 +622,7 @@ void PageInfo::OnSitePermissionChanged(
     // Retrieve latest permission action for the current origin and the current
     // content settings type. Note that these values are only kept in memory and
     // not persisted across browser sessions.
-    absl::optional<permissions::PermissionActionTime> entry =
+    std::optional<permissions::PermissionActionTime> entry =
         permissions::PermissionsClient::Get()
             ->GetOriginKeyedPermissionActionService(
                 web_contents_->GetBrowserContext())
@@ -1208,7 +1208,7 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
           url::Origin::Create(site_url_), permission_info.requesting_origin);
     } else if (permission_info.type ==
                ContentSettingsType::FEDERATED_IDENTITY_API) {
-      absl::optional<content::PermissionResult> embargo_result =
+      std::optional<content::PermissionResult> embargo_result =
           delegate_->GetPermissionDecisionAutoblocker()->GetEmbargoResult(
               site_url_, permission_info.type);
       if (embargo_result) {

@@ -371,7 +371,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     URLLoaderFactoryType type,
     std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
@@ -425,10 +425,6 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     }
   }
 
-  auto proxied_receiver = std::move(*factory_receiver);
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote;
-  *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
-
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data;
   const bool is_navigation = (type == URLLoaderFactoryType::kNavigation);
   if (is_navigation) {
@@ -460,9 +456,9 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       frame ? frame->GetRoutingID() : MSG_ROUTING_NONE,
       frame ? frame->GetRenderViewHost()->GetRoutingID() : MSG_ROUTING_NONE,
       &request_id_generator_, std::move(navigation_ui_data),
-      std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
-      std::move(target_factory_remote), std::move(header_client_receiver),
-      proxies_.get(), type, std::move(navigation_response_task_runner));
+      std::move(navigation_id), ukm_source_id, factory_builder,
+      std::move(header_client_receiver), proxies_.get(), type,
+      std::move(navigation_response_task_runner));
   return true;
 }
 

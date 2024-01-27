@@ -78,7 +78,7 @@ TEST_F(DummyModelProviderFactoryImplTest, ProviderCreated) {
   provider->ExecuteModelWithInput(
       {1, 2.5}, base::BindOnce(
                     [](base::OnceClosure quit,
-                       const absl::optional<ModelProvider::Response>& output) {
+                       const std::optional<ModelProvider::Response>& output) {
                       EXPECT_FALSE(output);
                       std::move(quit).Run();
                     },

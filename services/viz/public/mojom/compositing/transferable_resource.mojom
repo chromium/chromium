@@ -33,5 +33,6 @@ struct TransferableResource {
   bool wants_promotion_hint;
   gfx.mojom.ColorSpace color_space;
   gfx.mojom.HDRMetadata hdr_metadata;
+  bool needs_detiling;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
 };

@@ -5,6 +5,36 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
 #import "base/time/time.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+using tips_notifications::NotificationType;
+
+// Holds the l10n string ids for tips notification content.
+struct ContentIDs {
+  int title;
+  int body;
+};
+
+// Returns the ContentIDs for the given `type`.
+ContentIDs ContentIDsForType(NotificationType type) {
+  switch (type) {
+    case NotificationType::kDefaultBrowser:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
+    case NotificationType::kWhatsNew:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_BODY};
+    case NotificationType::kSignin:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
+  }
+}
+
+}  // namespace
 
 namespace tips_notifications {
 
@@ -41,9 +71,9 @@ UNNotificationRequest* Request(NotificationType type) {
 UNNotificationContent* ContentForType(NotificationType type) {
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
-  // TODO(crbug.com/1517919): Add the real notification content.
-  content.title = @"Tips Notification";
-  content.body = @"This notification was triggered by an elapsed time trigger.";
+  ContentIDs content_ids = ContentIDsForType(type);
+  content.title = l10n_util::GetNSString(content_ids.title);
+  content.body = l10n_util::GetNSString(content_ids.body);
   content.userInfo = UserInfoForType(type);
   return content;
 }

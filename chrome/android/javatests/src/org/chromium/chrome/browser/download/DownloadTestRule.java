@@ -264,6 +264,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadDialogBridge.setPromptForDownloadAndroid(
+                            getActivity().getProfileProviderSupplier().get().getOriginalProfile(),
                             DownloadPromptStatus.DONT_SHOW);
                 });
 

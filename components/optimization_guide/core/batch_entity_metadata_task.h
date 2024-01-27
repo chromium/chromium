@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BATCH_ENTITY_METADATA_TASK_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BATCH_ENTITY_METADATA_TASK_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -12,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -46,7 +47,7 @@ class BatchEntityMetadataTask {
   // Callback invoked when metadata for |entity_id| has been retrieved.
   void OnEntityMetadataRetrieved(
       const std::string& entity_id,
-      const absl::optional<EntityMetadata>& entity_metadata);
+      const std::optional<EntityMetadata>& entity_metadata);
 
   // Callback invoked when metadata for all entries in |entity_ids_| have been
   // retrieved.

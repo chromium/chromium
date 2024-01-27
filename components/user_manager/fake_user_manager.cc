@@ -269,8 +269,8 @@ std::u16string FakeUserManager::GetUserDisplayName(
   return std::u16string();
 }
 
-absl::optional<std::string> FakeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : absl::nullopt;
+std::optional<std::string> FakeUserManager::GetOwnerEmail() {
+  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeUserManager::IsCurrentUserOwner() const {

@@ -53,7 +53,7 @@ BeforeFallbackUrl BeforeFallbackUrl::Parse(
 
   CHECK_EQ(input.size(), kEncodedSizeInBytes);
 
-  const auto magic_string = input.subspan(0, sizeof(kSignedExchangeMagic));
+  const auto magic_string = input.first(sizeof(kSignedExchangeMagic));
   const auto encoded_fallback_url_length_field = input.subspan(
       sizeof(kSignedExchangeMagic), kFallbackUrlLengthFieldSizeInBytes);
 

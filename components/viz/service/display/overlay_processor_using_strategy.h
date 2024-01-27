@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -82,14 +82,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       // |OverlayProcessorOzone|.
       override;
 
-  // This function takes a pointer to the absl::optional instance so the
+  // This function takes a pointer to the std::optional instance so the
   // instance can be reset. When overlay strategy covers the entire output
   // surface, we no longer need the output surface as a separate overlay. This
   // is also used by SurfaceControl to adjust rotation.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   OverlayProcessorUsingStrategy();
 

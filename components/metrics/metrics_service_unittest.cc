@@ -1416,7 +1416,7 @@ TEST_P(MetricsServiceTestWithFeatures, EnablementObserverNotification) {
                              GetLocalState());
   service.InitializeMetricsRecordingState();
 
-  absl::optional<bool> enabled;
+  std::optional<bool> enabled;
   auto observer = [&enabled](bool notification) { enabled = notification; };
 
   auto subscription =

@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_SALT_DATABASE_H_
 #define COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_SALT_DATABASE_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 class StorageKey;
@@ -41,9 +42,9 @@ class MediaDeviceSaltDatabase {
   // inserted salt; otherwise, the new salt will be a random salt.
   // If there is a database error or if `storage_key` is not serializable,
   // nullopt is returned.
-  absl::optional<std::string> GetOrInsertSalt(
+  std::optional<std::string> GetOrInsertSalt(
       const blink::StorageKey& storage_key,
-      absl::optional<std::string> candidate_salt = absl::nullopt);
+      std::optional<std::string> candidate_salt = std::nullopt);
 
   // Deletes entries in the given time range whose storage keys match the given
   // `matcher`. If `matcher` is null, all keys are assumed to match.

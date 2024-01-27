@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Verify that promise tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict'
+
+promise_test((t) => {
+  return new Promise((resolve, reject) => {
+    const initialId = scheduler.taskId;
+    const request = new XMLHttpRequest();
+    request.onload = t.step_func(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("XHR is not a descendant");
+      }
+    });
+    request.open("GET", "/resources/blank.html");
+    request.send();
+  });
+}, "An XMLHttpRequest load event is a descendant of the requesting task");
+
+promise_test((t) => {
+  return new Promise((resolve, reject) => {
+    const initialId = scheduler.taskId;
+    const request = new XMLHttpRequest();
+    request.onreadystatechange= t.step_func(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      } catch {
+        reject("XHR readystatechange is not a descendant");
+      }
+      if (request.readyState === XMLHttpRequest.DONE) {
+        resolve();
+      }
+    });
+    request.open("GET", "/resources/blank.html");
+    request.send();
+  });
+}, "XMLHttpRequest readystatechange events are descendants of the requesting task");
+
+promise_test((t) => {
+  return new Promise((resolve, reject) => {
+    let request;
+    let id1;
+    let id2;
+
+    scheduler.postTask(() => {
+      id1 = scheduler.taskId;
+      request = new XMLHttpRequest();
+      request.onload = t.step_func(() => {
+        try {
+          assert_equals(scheduler.isAncestor(id1), "not ancestor");
+          assert_equals(scheduler.isAncestor(id2), "ancestor");
+          resolve();
+        } catch {
+          reject("XHR is not a descendant of the correct task");
+        }
+      });
+      request.open("GET", "/resources/blank.html");
+    });
+
+    scheduler.postTask(() => {
+      id2 = scheduler.taskId;
+      request.send();
+    });
+  });
+}, "XMLHttpRequest load event is an ancestor of send()");
+
+promise_test((t) => {
+  return new Promise((resolve, reject) => {
+    let request;
+    let id1;
+    let id2;
+
+    scheduler.postTask(() => {
+      id1 = scheduler.taskId;
+      request = new XMLHttpRequest();
+      request.open("GET", "/resources/blank.html");
+
+      // This runs after the send() call below.
+      scheduler.postTask(() => {
+        request.open("GET", "/resources/blank.html");
+        request.onload = t.step_func(() => {
+          try {
+            assert_equals(scheduler.isAncestor(id1), "ancestor");
+            assert_equals(scheduler.isAncestor(id2), "not ancestor");
+            resolve();
+          } catch {
+            reject("XHR is not a descendant of the correct task");
+          }
+        });
+        request.send();
+      });
+    });
+
+    scheduler.postTask(() => {
+      id2 = scheduler.taskId;
+      request.send();
+    });
+  });
+}, "XMLHttpRequest load event is an ancestor of send() when reusing the object");
+
+</script>

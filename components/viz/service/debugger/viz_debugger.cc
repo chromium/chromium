@@ -383,7 +383,7 @@ void VizDebugger::FilterDebugStream(base::Value::Dict json) {
       return (filter_str ? filter_str->GetString() : std::string());
     };
 
-    absl::optional<bool> enabled = filter.FindBool("enabled");
+    std::optional<bool> enabled = filter.FindBool("enabled");
     new_filters_.emplace_back(check_str(file), check_str(func), check_str(anno),
                               active->GetBool(), enabled.value_or(true));
   }

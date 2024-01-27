@@ -12,9 +12,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_scheduler_slider/settings_scheduler_slider.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_dropdown_menu.js';
+import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 

@@ -17,7 +17,7 @@
 
 namespace syncer {
 
-// Matcher for absl::optional<ModelError>: verifies that it contains no error.
+// Matcher for std::optional<ModelError>: verifies that it contains no error.
 MATCHER(NoModelError, "") {
   if (arg.has_value()) {
     *result_listener << "which represents error: " << arg->ToString();

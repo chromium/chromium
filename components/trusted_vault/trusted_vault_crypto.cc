@@ -18,7 +18,7 @@ const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
 
 }  // namespace
 
-absl::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
+std::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
     const SecureBoxPrivateKey& private_key,
     base::span<const uint8_t> wrapped_key) {
   return private_key.Decrypt(

@@ -12,11 +12,11 @@
 
 namespace feature_engagement {
 
-absl::optional<GroupConfig> GetClientSideGroupConfig(
+std::optional<GroupConfig> GetClientSideGroupConfig(
     const base::Feature* group) {
 #if BUILDFLAG(IS_IOS)
   if (kiOSFullscreenPromosGroup.name == group->name) {
-    absl::optional<GroupConfig> config = GroupConfig();
+    std::optional<GroupConfig> config = GroupConfig();
     config->valid = true;
     config->session_rate = Comparator(EQUAL, 0);
     // Only show a fullscreen promo once every two days.
@@ -29,7 +29,7 @@ absl::optional<GroupConfig> GetClientSideGroupConfig(
   }
 
   if (kiOSDefaultBrowserPromosGroup.name == group->name) {
-    absl::optional<GroupConfig> config = GroupConfig();
+    std::optional<GroupConfig> config = GroupConfig();
     config->valid = true;
     config->session_rate = Comparator(EQUAL, 0);
     // Default browser promos should be at least 14 days apart.
@@ -53,7 +53,7 @@ absl::optional<GroupConfig> GetClientSideGroupConfig(
   if (kIPHDummyGroup.name == group->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.
-    absl::optional<GroupConfig> config = GroupConfig();
+    std::optional<GroupConfig> config = GroupConfig();
     config->valid = true;
     config->session_rate = Comparator(LESS_THAN, 0);
     config->trigger =
@@ -61,7 +61,7 @@ absl::optional<GroupConfig> GetClientSideGroupConfig(
     return config;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace feature_engagement

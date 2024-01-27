@@ -489,10 +489,10 @@ void ShellSurface::InitializeWindowState(ash::WindowState* window_state) {
   MaybeMakeTransient();
 }
 
-absl::optional<gfx::Rect> ShellSurface::GetWidgetBounds() const {
+std::optional<gfx::Rect> ShellSurface::GetWidgetBounds() const {
   // Defer if configure requests are pending.
   if (!pending_configs_.empty() || scoped_configure_)
-    return absl::nullopt;
+    return std::nullopt;
 
   gfx::Rect new_widget_bounds = GetWidgetBoundsFromVisibleBounds();
 

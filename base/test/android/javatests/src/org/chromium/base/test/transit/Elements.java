@@ -6,10 +6,14 @@ package org.chromium.base.test.transit;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.DoesNotExistAnymoreCondition;
+import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
+import org.chromium.base.test.transit.ViewConditions.MatchedViewProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +64,18 @@ public class Elements {
          * the ConditionalState is FINISHED.
          */
         public Builder declareView(Matcher<View> viewMatcher) {
-            declareView(viewMatcher, /* owned= */ true);
+            declareViewInternal(viewMatcher, /* owned= */ true, /* gate= */ null);
+            return this;
+        }
+
+        /**
+         * Declare as an element a single view that matches |viewMatcher| which will be gone after
+         * the ConditionalState is FINISHED.
+         *
+         * <p>The element is only expected if |gate| returns true.
+         */
+        public Builder declareViewIf(Matcher<View> viewMatcher, Condition gate) {
+            declareViewInternal(viewMatcher, /* owned= */ true, gate);
             return this;
         }
 
@@ -69,12 +84,24 @@ public class Elements {
          * be gone after the ConditionalState is FINISHED.
          */
         public Builder declareUnownedView(Matcher<View> viewMatcher) {
-            declareView(viewMatcher, /* owned= */ false);
+            declareViewInternal(viewMatcher, /* owned= */ false, /* gate= */ null);
             return this;
         }
 
-        private Builder declareView(Matcher<View> viewMatcher, boolean owned) {
-            mViewElements.add(new ViewElement(viewMatcher, owned));
+        /**
+         * Declare as an element a single view that matches |viewMatcher| which will not necessarily
+         * be gone after the ConditionalState is FINISHED.
+         *
+         * <p>The element is only expected if |gate| returns true.
+         */
+        public Builder declareUnownedViewIf(Matcher<View> viewMatcher, Condition gate) {
+            declareViewInternal(viewMatcher, /* owned= */ false, gate);
+            return this;
+        }
+
+        private Builder declareViewInternal(
+                Matcher<View> viewMatcher, boolean owned, @Nullable Condition gate) {
+            mViewElements.add(new ViewElement(viewMatcher, owned, gate));
             return this;
         }
 
@@ -102,13 +129,24 @@ public class Elements {
             ArrayList<Condition> exitConditions = new ArrayList<>();
 
             for (ViewElement viewElement : mViewElements) {
-                DisplayedCondition displayedCondition =
-                        new DisplayedCondition(viewElement.mViewMatcher);
-                enterConditions.add(displayedCondition);
+                MatchedViewProvider matchedViewProvider;
+                if (viewElement.mGate != null) {
+                    GatedDisplayedCondition gatedDisplayedCondition =
+                            new GatedDisplayedCondition(
+                                    viewElement.mViewMatcher, viewElement.mGate);
+                    enterConditions.add(gatedDisplayedCondition);
+                    matchedViewProvider = gatedDisplayedCondition;
+                } else {
+                    DisplayedCondition displayedCondition =
+                            new DisplayedCondition(viewElement.mViewMatcher);
+                    enterConditions.add(displayedCondition);
+                    matchedViewProvider = displayedCondition;
+                }
+
                 if (viewElement.mOwned) {
                     exitConditions.add(
                             new DoesNotExistAnymoreCondition(
-                                    viewElement.mViewMatcher, displayedCondition));
+                                    viewElement.mViewMatcher, matchedViewProvider));
                 }
             }
 
@@ -122,10 +160,12 @@ public class Elements {
     private static class ViewElement {
         private final Matcher<View> mViewMatcher;
         private final boolean mOwned;
+        private final @Nullable Condition mGate;
 
-        public ViewElement(Matcher<View> viewMatcher, boolean owned) {
+        public ViewElement(Matcher<View> viewMatcher, boolean owned, @Nullable Condition gate) {
             mViewMatcher = viewMatcher;
             mOwned = owned;
+            mGate = gate;
         }
     }
 }

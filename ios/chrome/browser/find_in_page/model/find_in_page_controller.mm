@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/i18n/number_formatting.h"
+#import "base/memory/raw_ptr.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
@@ -33,11 +34,11 @@ NSString* gSearchTerm;
 
 @implementation FindInPageController {
   // Object that manages searches and match traversals.
-  web::FindInPageManager* _findInPageManager;
+  raw_ptr<web::FindInPageManager> _findInPageManager;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 
   // Bridge to observe FindInPageManager from Objective-C.
   std::unique_ptr<web::FindInPageManagerDelegateBridge>

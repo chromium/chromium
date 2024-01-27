@@ -86,8 +86,15 @@ void SpareRenderProcessHostManager::DeferredWarmupSpareRenderProcessHost(
   deferred_warmup_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(
-          &SpareRenderProcessHostManager::WarmupSpareRenderProcessHost,
-          base::Unretained(this), browser_context));
+          [](SpareRenderProcessHostManager* self,
+             base::WeakPtr<BrowserContext> browser_context) {
+            // The browser context might have been destroyed when the timer
+            // fires.
+            if (browser_context) {
+              self->WarmupSpareRenderProcessHost(browser_context.get());
+            }
+          },
+          base::Unretained(this), browser_context->GetWeakPtr()));
 }
 
 RenderProcessHost*

@@ -61,7 +61,7 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
-  void ClearAuthError(const absl::optional<CoreAccountId>& account_id) override;
+  void ClearAuthError(const std::optional<CoreAccountId>& account_id) override;
   GoogleServiceAuthError BackOffError() const override;
   void ResetBackOffEntry() override;
 

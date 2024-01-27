@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/android/shortcut_info.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -11,7 +12,6 @@
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"

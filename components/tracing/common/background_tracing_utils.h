@@ -70,7 +70,7 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-absl::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)

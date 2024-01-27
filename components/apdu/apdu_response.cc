@@ -11,11 +11,11 @@
 namespace apdu {
 
 // static
-absl::optional<ApduResponse> ApduResponse::CreateFromMessage(
+std::optional<ApduResponse> ApduResponse::CreateFromMessage(
     base::span<const uint8_t> data) {
   // Invalid message size, data is appended by status byte.
   if (data.size() < 2)
-    return absl::nullopt;
+    return std::nullopt;
 
   uint16_t status_bytes = data[data.size() - 2] << 8;
   status_bytes |= data[data.size() - 1];

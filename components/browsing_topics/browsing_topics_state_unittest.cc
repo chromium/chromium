@@ -206,7 +206,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   task_environment_->RunUntilIdle();
 
   // Successful topics calculation at `kTime1`.
-  absl::optional<EpochTopics> maybe_removed_epoch_1 =
+  std::optional<EpochTopics> maybe_removed_epoch_1 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime1, /*from_manually_triggered_calculation=*/false));
 
@@ -216,7 +216,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_1.has_value());
 
   // Successful topics calculation at `kTime2`.
-  absl::optional<EpochTopics> maybe_removed_epoch_2 =
+  std::optional<EpochTopics> maybe_removed_epoch_2 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime2, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 2u);
@@ -227,7 +227,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_2.has_value());
 
   // Failed topics calculation.
-  absl::optional<EpochTopics> maybe_removed_epoch_3 =
+  std::optional<EpochTopics> maybe_removed_epoch_3 =
       state.AddEpoch(EpochTopics(kTime3));
   EXPECT_EQ(state.epochs().size(), 3u);
   EXPECT_FALSE(state.epochs()[0].empty());
@@ -239,7 +239,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_3.has_value());
 
   // Successful topics calculation at `kTime4`.
-  absl::optional<EpochTopics> maybe_removed_epoch_4 =
+  std::optional<EpochTopics> maybe_removed_epoch_4 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime4, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);
@@ -254,7 +254,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
 
   // Successful topics calculation at `kTime5`. When this epoch is added, the
   // first one should be evicted.
-  absl::optional<EpochTopics> maybe_removed_epoch_5 =
+  std::optional<EpochTopics> maybe_removed_epoch_5 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime5, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);

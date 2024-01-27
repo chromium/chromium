@@ -212,9 +212,8 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
           .SetID(extension_misc::kODFSExtensionId)
           .Build();
   extension_service()->AddExtension(extension.get());
-  ASSERT_TRUE(extension_registry()->GetExtensionById(
-      extension_misc::kODFSExtensionId,
-      extensions::ExtensionRegistry::IncludeFlag::ENABLED));
+  ASSERT_TRUE(extension_registry()->enabled_extensions().Contains(
+      extension_misc::kODFSExtensionId));
 
   SetOneDriveMount(ToString(Mount::kDisallowed));
   ASSERT_FALSE(extension_registry()->GetExtensionById(
@@ -231,9 +230,8 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
           .SetID(extension_misc::kODFSExtensionId)
           .Build();
   extension_service()->AddExtension(extension.get());
-  ASSERT_TRUE(extension_registry()->GetExtensionById(
-      extension_misc::kODFSExtensionId,
-      extensions::ExtensionRegistry::IncludeFlag::ENABLED));
+  ASSERT_TRUE(extension_registry()->enabled_extensions().Contains(
+      extension_misc::kODFSExtensionId));
 
   SetOneDriveMount(ToString(Mount::kDisallowed));
   ASSERT_TRUE(extension_registry()->GetExtensionById(

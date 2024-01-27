@@ -140,7 +140,7 @@ class AutocompleteResultTest : public testing::Test {
     AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
 
     // Suggestion Group ID for this suggestion
-    absl::optional<omnibox::GroupId> suggestion_group_id;
+    std::optional<omnibox::GroupId> suggestion_group_id;
 
     // Inline autocompletion.
     std::string inline_autocompletion;
@@ -3098,7 +3098,7 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
           omnibox::ActionInfo info;
           info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
           match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-              std::move(info), absl::nullopt));
+              std::move(info), std::nullopt));
         } else {
           match.actions.push_back(
               base::MakeRefCounted<FakeOmniboxAction>(action_id));

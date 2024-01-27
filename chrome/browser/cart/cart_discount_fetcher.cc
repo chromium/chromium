@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,7 +33,7 @@ const char kClientDataHeader[] = "X-Client-Data";
 
 const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
-const int64_t kTimeoutMs = 30000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(30000);
 
 const char kCartDiscountFetcherEndpointParam[] =
     "CartDiscountFetcherEndpointParam";
@@ -450,9 +451,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
 
   return std::make_unique<EndpointFetcher>(
       GURL(kDiscountFetcherServerConfigEndpoint.Get()), kPostMethod,
-      kContentType, kTimeoutMs,
-      generatePostData(proto_pairs, base::Time::Now()), headers,
-      cors_exempt_headers, traffic_annotation,
+      kContentType, kTimeout, generatePostData(proto_pairs, base::Time::Now()),
+      headers, cors_exempt_headers, traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       is_oauth_fetch);
 }

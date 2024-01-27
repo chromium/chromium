@@ -32,7 +32,7 @@ class MediapipeTextModelExecutor
   ~MediapipeTextModelExecutor() override;
 
   // TFLiteModelExecutor:
-  absl::optional<std::vector<Category>> Execute(
+  std::optional<std::vector<Category>> Execute(
       TextClassifier* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;

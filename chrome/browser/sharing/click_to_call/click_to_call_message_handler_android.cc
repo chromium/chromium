@@ -47,7 +47,7 @@ void ClickToCallMessageHandler::OnMessage(
 
 void ClickToCallMessageHandler::HandlePhoneNumber(
     const std::string& phone_number) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ClickToCallMessageHandler_handleMessage(
       env, base::android::ConvertUTF8ToJavaString(env, phone_number));
 }

@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -29,7 +30,6 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -156,7 +156,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
 
-  absl::optional<base::Value> value_result =
+  std::optional<base::Value> value_result =
       base::JSONReader::Read(test_storage_module()->record().data());
   ASSERT_TRUE(value_result.has_value());
   EXPECT_EQ(value_result.value().GetDict(), test_dict);

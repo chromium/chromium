@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ShoppingServiceApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {BookmarkProductInfo, PageCallbackRouter, PageRemote, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {BookmarkProductInfo, PageCallbackRouter, PageRemote, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestShoppingServiceApiProxy extends TestBrowserProxy implements
-    ShoppingServiceApiProxy {
+export class TestBrowserProxy extends BaseTestBrowserProxy implements
+    BrowserProxy {
   callbackRouter: PageCallbackRouter;
   callbackRouterRemote: PageRemote;
   private products_: BookmarkProductInfo[] = [];

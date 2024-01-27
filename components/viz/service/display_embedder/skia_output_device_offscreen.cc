@@ -70,7 +70,7 @@ bool SkiaOutputDeviceOffscreen::Reshape(const SkImageInfo& image_info,
 }
 
 void SkiaOutputDeviceOffscreen::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   // Reshape should have been called first.

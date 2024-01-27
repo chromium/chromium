@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/x/x11_display_util.h"
+#include "ui/display/types/display_config.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -86,7 +87,7 @@ void XDisplayManager::SetDisplayList(std::vector<display::Display> displays,
 // 1.3.
 void XDisplayManager::FetchDisplayList() {
   std::vector<display::Display> displays;
-  DisplayConfig empty_display_config{
+  display::DisplayConfig empty_display_config{
       display::Display::HasForceDeviceScaleFactor()
           ? display::Display::GetForcedDeviceScaleFactor()
           : 1.0f};

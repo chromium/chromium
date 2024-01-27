@@ -39,14 +39,6 @@ COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
 
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
  public:
-  // Constructor that specifies whether the SyntheticTrialRegistry should use
-  // an allowlist for external experiments. Some embedders such as WebLayer
-  // do not run as Chrome and do not use the allowlist.
-  // Note: The allowlist is enabled only if |kExternalExperimentAllowlist| is
-  // also enabled, even if the parameter value is true. The default constructor
-  // defaults to the feature state.
-  explicit SyntheticTrialRegistry(bool enable_external_experiment_allowlist);
-
   SyntheticTrialRegistry();
   ~SyntheticTrialRegistry();
 
@@ -148,8 +140,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
       const std::vector<SyntheticTrialGroup>& trials_updated,
       const std::vector<SyntheticTrialGroup>& trials_removed);
 
-  // Whether the allowlist is enabled. Some configurations, like WebLayer
-  // do not use the allowlist.
+  // Whether the allowlist is enabled. This is set to the feature state of
+  // |kExternalExperimentAllowlist| at instantiation.
   bool enable_external_experiment_allowlist_ = true;
 
   // Field trial groups that map to Chrome configuration states.

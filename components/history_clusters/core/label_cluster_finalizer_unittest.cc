@@ -82,8 +82,8 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
-    EXPECT_EQ(cluster.raw_label, absl::nullopt);
-    EXPECT_EQ(cluster.label, absl::nullopt);
+    EXPECT_EQ(cluster.raw_label, std::nullopt);
+    EXPECT_EQ(cluster.label, std::nullopt);
     EXPECT_EQ(cluster.label_source, LabelSource::kUnknown);
   }
 

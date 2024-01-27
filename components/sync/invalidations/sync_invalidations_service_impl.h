@@ -6,13 +6,13 @@
 #define COMPONENTS_SYNC_INVALIDATIONS_SYNC_INVALIDATIONS_SERVICE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gcm {
 class GCMDriver;
@@ -44,10 +44,10 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   void StopListeningPermanently() override;
   void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) override;
-  absl::optional<std::string> GetFCMRegistrationToken() const override;
+  std::optional<std::string> GetFCMRegistrationToken() const override;
   void SetInterestedDataTypesHandler(
       InterestedDataTypesHandler* handler) override;
-  absl::optional<ModelTypeSet> GetInterestedDataTypes() const override;
+  std::optional<ModelTypeSet> GetInterestedDataTypes() const override;
   void SetInterestedDataTypes(const ModelTypeSet& data_types) override;
   void SetCommittedAdditionalInterestedDataTypesCallback(
       InterestedDataTypesAppliedCallback callback) override;
@@ -63,7 +63,7 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
 
   std::unique_ptr<FCMHandler> fcm_handler_;
   raw_ptr<InterestedDataTypesHandler> interested_data_types_handler_ = nullptr;
-  absl::optional<ModelTypeSet> interested_data_types_;
+  std::optional<ModelTypeSet> interested_data_types_;
 };
 
 }  // namespace syncer

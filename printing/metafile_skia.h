@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
@@ -130,6 +131,8 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
     generate_document_outline_ = generate_document_outline;
   }
 
+  void set_title(std::string title) { title_ = std::move(title); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, FrameContent);
   FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, GetPageBounds);
@@ -152,6 +155,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   ui::AXTreeUpdate accessibility_tree_;
   GeneratePdfDocumentOutline generate_document_outline_ =
       GeneratePdfDocumentOutline::kNone;
+  std::string title_;
 };
 
 }  // namespace printing

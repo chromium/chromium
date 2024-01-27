@@ -43,7 +43,7 @@ TEST(feedstore_util_test, MaybeUpdateSessionId) {
   SetSessionId(metadata, Token1(), kExpiryTime1);
 
   // Updating the token with nullopt is a NOP.
-  MaybeUpdateSessionId(metadata, absl::nullopt);
+  MaybeUpdateSessionId(metadata, std::nullopt);
   EXPECT_EQ(Token1(), metadata.session_id().token());
 
   // Updating the token with the same value is a NOP.

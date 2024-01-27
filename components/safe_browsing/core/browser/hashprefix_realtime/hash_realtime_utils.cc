@@ -80,21 +80,21 @@ bool IsHashRealTimeLookupEligibleInSession() {
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
 bool IsHashRealTimeLookupEligibleInSessionAndLocation(
-    absl::optional<std::string> stored_permanent_country) {
+    std::optional<std::string> stored_permanent_country) {
   return IsHashRealTimeLookupEligibleInSession() &&
          (!stored_permanent_country.has_value() ||
           !base::Contains(GetExcludedCountries(),
                           stored_permanent_country.value()));
 }
-absl::optional<std::string> GetCountryCode(
+std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service) {
   return variations_service ? variations_service->GetStoredPermanentCountry()
-                            : absl::optional<std::string>();
+                            : std::optional<std::string>();
 }
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
-    absl::optional<std::string> stored_permanent_country,
+    std::optional<std::string> stored_permanent_country,
     bool log_usage_histograms) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for

@@ -145,13 +145,12 @@ class PendingProfiles {
   std::vector<std::string> serialized_profiles_ GUARDED_BY(lock_);
 };
 
-absl::optional<int32_t> FindHashNameIndexInProfile(
-    const SampledProfile& profile,
-    const uint64_t name_hash) {
+std::optional<int32_t> FindHashNameIndexInProfile(const SampledProfile& profile,
+                                                  const uint64_t name_hash) {
   const auto& name_hashes = profile.call_stack_profile().metadata_name_hash();
   const auto loc = base::ranges::find(name_hashes, name_hash);
   if (loc == name_hashes.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return loc - name_hashes.begin();
 }
@@ -163,9 +162,9 @@ void RemoveTempLCPMetadata(SampledProfile& profile) {
   const uint64_t document_token_name_hash =
       base::HashMetricName("Internal.LargestContentfulPaint.DocumentToken");
 
-  absl::optional<int32_t> navigation_start_name_hash_index =
+  std::optional<int32_t> navigation_start_name_hash_index =
       FindHashNameIndexInProfile(profile, nav_start_name_hash);
-  absl::optional<int32_t> document_token_name_hash_index =
+  std::optional<int32_t> document_token_name_hash_index =
       FindHashNameIndexInProfile(profile, document_token_name_hash);
 
   // Remove profile_metadata items.

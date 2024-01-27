@@ -609,6 +609,9 @@ void OffscreenCanvas::SetFilterQualityInResource(
   SetFilterQuality(filter_quality);
   if (ResourceProvider())
     GetOrCreateResourceProvider()->SetFilterQuality(filter_quality);
+  if (context_ && (IsWebGL() || IsWebGPU())) {
+    context_->SetFilterQuality(filter_quality);
+  }
 }
 
 bool OffscreenCanvas::PushFrameIfNeeded() {
@@ -666,10 +669,10 @@ void OffscreenCanvas::NotifyGpuContextLost() {
 void OffscreenCanvas::CheckForGpuContextLost() {
   // If the GPU has crashed, it is necessary to notify the OffscreenCanvas so
   // the context can be recovered.
-  if (ResourceProvider() && ResourceProvider()->IsAccelerated() &&
+  if (!context_lost() && ResourceProvider() &&
+      ResourceProvider()->IsAccelerated() &&
       ResourceProvider()->IsGpuContextLost()) {
     set_context_lost(true);
-    ReplaceResourceProvider(nullptr);
     NotifyGpuContextLost();
   }
 }

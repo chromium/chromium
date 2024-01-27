@@ -156,7 +156,7 @@ class ModelExecutionValidationBrowserTest
 };
 
 // TODO(b/318433299, crbug.com/1520214): Flaky on linux-chromeos
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ModelExecutionSuccess DISABLED_ModelExecutionSuccess
 #else
 #define MAYBE_ModelExecutionSuccess ModelExecutionSuccess

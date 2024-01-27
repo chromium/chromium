@@ -206,6 +206,7 @@ static_library("core") {
     "optimization_guide_decision.h",
     "optimization_guide_logger.cc",
     "optimization_guide_logger.h",
+    "optimization_guide_model_executor.cc",
     "optimization_guide_model_executor.h",
     "optimization_guide_model_provider.h",
     "optimization_guide_navigation_data.cc",

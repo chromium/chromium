@@ -61,7 +61,7 @@ class FakeFormFetcher : public FormFetcher {
   std::unique_ptr<FormFetcher> Clone() override;
   std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
-  absl::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {

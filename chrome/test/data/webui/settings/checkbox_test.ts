@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsCheckboxElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** @fileoverview Suite of tests for settings-checkbox. */

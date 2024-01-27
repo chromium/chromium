@@ -36,15 +36,15 @@ PageContext::PageContext(PageContext&& other) = default;
 PageContext& PageContext::operator=(PageContext&& other) = default;
 
 // static
-absl::optional<PageContext> PageContext::FromWebContents(
+std::optional<PageContext> PageContext::FromWebContents(
     content::WebContents* contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* tab_helper = PerformanceManagerTabHelper::FromWebContents(contents);
   if (!tab_helper) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   PageNodeImpl* node_impl = tab_helper->primary_page_node();
   CHECK(node_impl);
@@ -74,10 +74,10 @@ PageContext PageContext::FromPageNode(const PageNode* node) {
 }
 
 // static
-absl::optional<PageContext> PageContext::FromWeakPageNode(
+std::optional<PageContext> PageContext::FromWeakPageNode(
     base::WeakPtr<PageNode> node) {
   if (!node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return FromPageNode(node.get());
 }

@@ -198,10 +198,10 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
       bool expected_is_available,
       SafeBrowsingJavaValidationResult expected_validation_result,
       int expected_lookup_result,
-      absl::optional<int> expected_threat_type,
-      absl::optional<int> expected_threat_attribute,
-      absl::optional<int> expected_threat_attribute_count,
-      absl::optional<int> expected_response_status) {
+      std::optional<int> expected_threat_type,
+      std::optional<int> expected_threat_attribute,
+      std::optional<int> expected_threat_attribute_count,
+      std::optional<int> expected_response_status) {
     histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta",
         /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
@@ -332,7 +332,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Safe) {
       static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
       /*expected_threat_type=*/
       static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(
@@ -362,7 +362,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
       /*expected_threat_type=*/
       static_cast<int>(SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(
@@ -469,10 +469,10 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
       /*expected_lookup_result=*/
       static_cast<int>(SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT),
-      /*expected_threat_type=*/absl::nullopt,
-      /*expected_threat_attribute=*/absl::nullopt,
-      /*expected_threat_attribute_count=*/absl::nullopt,
-      /*expected_response_status=*/absl::nullopt);
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {
@@ -507,7 +507,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_Safe) {
       static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
       /*expected_threat_type=*/
       static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
@@ -533,7 +533,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
       static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
       /*expected_threat_type=*/
       static_cast<int>(SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
@@ -560,10 +560,10 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_validation_result=*/
       SafeBrowsingJavaValidationResult::INVALID_LOOKUP_RESULT,
       /*expected_lookup_result=*/invalid_lookup_result,
-      /*expected_threat_type=*/absl::nullopt,
-      /*expected_threat_attribute=*/absl::nullopt,
-      /*expected_threat_attribute_count=*/absl::nullopt,
-      /*expected_response_status=*/absl::nullopt);
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -588,7 +588,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_lookup_result=*/
       static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
       /*expected_threat_type=*/invalid_threat_type,
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
@@ -653,7 +653,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_threat_type=*/
       static_cast<int>(
           SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/invalid_response_status);
 }
@@ -678,10 +678,10 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
       /*expected_lookup_result=*/
       static_cast<int>(SafeBrowsingApiLookupResult::FAILURE),
-      /*expected_threat_type=*/absl::nullopt,
-      /*expected_threat_attribute=*/absl::nullopt,
-      /*expected_threat_attribute_count=*/absl::nullopt,
-      /*expected_response_status=*/absl::nullopt);
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -747,7 +747,7 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_threat_type=*/
       static_cast<int>(
           SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION),
-      /*expected_threat_attribute=*/absl::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(

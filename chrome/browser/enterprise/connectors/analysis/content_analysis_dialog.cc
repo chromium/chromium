@@ -411,11 +411,17 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     contents_layout_->AddChildView(CreateSideIcon());
 
     // Add the message.
-    message_ = contents_layout_->AddChildView(std::make_unique<views::Label>());
+    message_ =
+        contents_layout_->AddChildView(std::make_unique<views::StyledLabel>());
     message_->SetText(GetDialogMessage());
     message_->SetLineHeight(kLineHeight);
-    message_->SetMultiLine(true);
-    message_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+
+    // Calculate the width of the side icon column with insets and padding.
+    int side_icon_column_width = kMessageAndIconRowLeadingPadding +
+                                 kSideImageInsets.width() + kSideImageSize +
+                                 kSideIconBetweenChildSpacing;
+    message_->SizeToFit(fixed_width() - side_icon_column_width -
+                        kMessageAndIconRowTrailingPadding);
     message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     if (!is_pending())
@@ -1055,7 +1061,7 @@ views::Throbber* ContentAnalysisDialog::GetSideIconSpinnerForTesting() const {
   return side_icon_spinner_;
 }
 
-views::Label* ContentAnalysisDialog::GetMessageForTesting() const {
+views::StyledLabel* ContentAnalysisDialog::GetMessageForTesting() const {
   return message_;
 }
 

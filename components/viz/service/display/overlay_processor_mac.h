@@ -62,11 +62,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
 
   // For Mac, if we successfully generated a candidate list for CALayerOverlay,
   // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the absl::optional instance so the instance can be reset.
+  // to the std::optional instance so the instance can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   void AdjustOutputSurfaceOverlay(
-      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   gfx::CALayerResult GetCALayerErrorCode() const override;
 

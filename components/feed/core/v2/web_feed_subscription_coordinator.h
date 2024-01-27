@@ -196,8 +196,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       bool subscribing,
       WebFeedInFlightChangeStrategy strategy,
       feedwire::webfeed::WebFeedChangeReason change_reason,
-      absl::optional<WebFeedPageInformation> page_information,
-      absl::optional<feedstore::WebFeedInfo> info);
+      std::optional<WebFeedPageInformation> page_information,
+      std::optional<feedstore::WebFeedInfo> info);
   const WebFeedInFlightChange* FindInflightChange(
       const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info) const;

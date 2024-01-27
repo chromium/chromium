@@ -351,7 +351,7 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
   return false;
 }
 
-absl::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
+std::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_->GetPassphraseType();
 }

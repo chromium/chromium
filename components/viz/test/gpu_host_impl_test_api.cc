@@ -26,9 +26,8 @@ gpu::GpuFeatureInfo GpuHostImplTestApi::HookDelegateBase::GetGpuFeatureInfo()
 void GpuHostImplTestApi::HookDelegateBase::DidInitialize(
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-    const absl::optional<gpu::GpuFeatureInfo>&
-        gpu_feature_info_for_hardware_gpu,
+    const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+    const std::optional<gpu::GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   original_delegate_->DidInitialize(
       gpu_info, gpu_feature_info, gpu_info_for_hardware_gpu,

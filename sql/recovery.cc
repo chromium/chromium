@@ -49,13 +49,7 @@ constexpr char kMainDatabaseName[] = "main";
 
 // static
 bool BuiltInRecovery::IsSupported() {
-  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
-  // Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-  return false;
-#else
   return base::FeatureList::IsEnabled(features::kUseBuiltInRecoveryIfSupported);
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 // static
@@ -63,6 +57,10 @@ bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
                                             int extended_error) {
   return BuiltInRecovery::IsSupported() && database && database->is_open() &&
          !database->DbPath(InternalApiToken()).empty() &&
+#if BUILDFLAG(IS_FUCHSIA)
+         // Recovering WAL databases is not supported on Fuchsia.
+         !database->UseWALMode() &&
+#endif  // BUILDFLAG(IS_FUCHSIA)
          IsErrorCatastrophic(extended_error);
 }
 

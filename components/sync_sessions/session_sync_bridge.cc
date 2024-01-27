@@ -135,7 +135,7 @@ SessionSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(!syncing_);
@@ -179,7 +179,7 @@ void SessionSyncBridge::StartLocalSessionEventHandler() {
   notify_foreign_session_updated_cb_.Run();
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SessionSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -261,7 +261,7 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
     notify_foreign_session_updated_cb_.Run();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SessionSyncBridge::GetData(StorageKeyList storage_keys,
@@ -374,7 +374,7 @@ void SessionSyncBridge::OnSyncStarting(
 }
 
 void SessionSyncBridge::OnStoreInitialized(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<SessionStore> store,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK(!syncing_);

@@ -5,6 +5,7 @@
 #include "components/media_router/browser/android/media_router_android.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -316,7 +316,7 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
 
 void MediaRouterAndroid::OnRouteClosed(
     const MediaRoute::Id& route_id,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   RemoveRoute(route_id);
   // TODO(crbug.com/882690): When the sending context is destroyed, tell MRP to
   // clean up the connection.
@@ -375,7 +375,7 @@ void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
     base::OnceCallback<void(mojom::RouteRequestResultCode,
-                            absl::optional<mojom::MediaRouteProviderId>)>
+                            std::optional<mojom::MediaRouteProviderId>)>
         callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
   if (!request)

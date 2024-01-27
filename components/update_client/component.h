@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -60,10 +60,9 @@ class Component {
                 int extra_code1);
 
   // Called by the UpdateEngine when an update check for this component is done.
-  void SetUpdateCheckResult(
-      const absl::optional<ProtocolParser::Result>& result,
-      ErrorCategory error_category,
-      int error);
+  void SetUpdateCheckResult(const std::optional<ProtocolParser::Result>& result,
+                            ErrorCategory error_category,
+                            int error);
 
   // Called by the UpdateEngine when a component enters a wait for throttling
   // purposes.
@@ -85,7 +84,7 @@ class Component {
 
   std::string id() const { return id_; }
 
-  const absl::optional<CrxComponent>& crx_component() const {
+  const std::optional<CrxComponent>& crx_component() const {
     return crx_component_;
   }
   void set_crx_component(const CrxComponent& crx_component) {
@@ -317,7 +316,7 @@ class Component {
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
                          int extra_code1,
-                         absl::optional<CrxInstaller::Result> installer_result);
+                         std::optional<CrxInstaller::Result> installer_result);
   };
 
   class StateUpdating : public State {
@@ -335,7 +334,7 @@ class Component {
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
                          int extra_code1,
-                         absl::optional<CrxInstaller::Result> installer_result);
+                         std::optional<CrxInstaller::Result> installer_result);
   };
 
   class StateUpdated : public State {
@@ -412,7 +411,7 @@ class Component {
   SEQUENCE_CHECKER(sequence_checker_);
 
   const std::string id_;
-  absl::optional<CrxComponent> crx_component_;
+  std::optional<CrxComponent> crx_component_;
 
   // The status of the updatecheck response.
   std::string status_;
@@ -471,7 +470,7 @@ class Component {
   ErrorCategory error_category_ = ErrorCategory::kNone;
   int error_code_ = 0;
   int extra_code1_ = 0;
-  absl::optional<CrxInstaller::Result> installer_result_;
+  std::optional<CrxInstaller::Result> installer_result_;
   ErrorCategory diff_error_category_ = ErrorCategory::kNone;
   int diff_error_code_ = 0;
   int diff_extra_code1_ = 0;
@@ -481,7 +480,7 @@ class Component {
   std::map<std::string, std::string> custom_attrs_;
 
   // Contains the optional install parameters from the update response.
-  absl::optional<CrxInstaller::InstallParams> install_params_;
+  std::optional<CrxInstaller::InstallParams> install_params_;
 
   // Contains the events which are therefore serialized in the requests.
   std::vector<base::Value::Dict> events_;

@@ -91,8 +91,36 @@
        {}
       ]
      ],
+     "aria-owns-inside-map.html": [
+      "10da915c4798450a63e5f48c3fa4ac1f7c386c97",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aria-owns-new-cycle.html": [
+      "fbf0aade1afed6d396ce75d76f6ed189a6894165",
+      [
+       null,
+       {}
+      ]
+     ],
      "aria-owns-overlapping.html": [
       "e98ad6fb76ee8a140948955b5292d389d3596ed4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aria-owns-owned-becomes-aria-hidden.html": [
+      "824ae3e1419e9516513983cf4adbeecbe3449653",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aria-owns-owner-becomes-aria-hidden.html": [
+      "e80bc8a426d154c091fa50b8eb017897eff3f999",
       [
        null,
        {}
@@ -79704,7 +79732,7 @@
       ]
      ],
      "background-attachment-fixed-block-002.html": [
-      "8b5c5e80427866c7a1ce8f73e118fb2f897b583c",
+      "7936b027c6e5be321595fcee24db69a706629715",
       [
        null,
        [
@@ -79730,7 +79758,7 @@
       ]
      ],
      "background-attachment-fixed-inline-002.html": [
-      "b624a68060127cf065f36858a06cd5f07bedeb87",
+      "9447b9d9b75c59c86c36622ba57c8a6af4c3978e",
       [
        null,
        [
@@ -80024,7 +80052,7 @@
       ]
      },
      "background-attachment-local-block-002.html": [
-      "ce19e360428eb334be58ba275db7c3ba4a590d9e",
+      "edaabd175e98fdd90efee93424b544ed077fd52b",
       [
        null,
        [
@@ -80066,7 +80094,7 @@
       ]
      ],
      "background-attachment-local-inline-002.html": [
-      "8b877f9a14cceadcccbea9299d95914545c234e1",
+      "0ba846eebadaf29b4ffb98b7d5529bfa2187cb2c",
       [
        null,
        [
@@ -177017,79 +177045,103 @@
        {}
       ]
      ],
-     "scrollbar-color-006.html": [
-      "6a369299434c8eda080716274854df9e1b00f237",
+     "scrollbar-color-006.tentative.html": [
+      "11f0de750bfc9cbc0644e5abbfb829d07fca0275",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-006-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-006-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
-     "scrollbar-color-007.html": [
-      "876dd70af72b18a30fea22431d009016fb15bd83",
+     "scrollbar-color-007.tentative.html": [
+      "75358fdf68b7393465920d966ab88c66038f4ce3",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-007-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-007-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
-     "scrollbar-color-008.html": [
-      "8241fe06459e1bec8725bc58351107b20ff892a2",
+     "scrollbar-color-008.tentative.html": [
+      "576193814ccc21954de9fa0fab4b4b4e79b66fd2",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-008-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-008-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
-     "scrollbar-color-009.html": [
-      "d11d2641bff98d8c69e95842797ddad130352ef9",
+     "scrollbar-color-009.tentative.html": [
+      "312bbc731b7cae87b5cc7e847edc49f8b5aeb7cb",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-009-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-009-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
-     "scrollbar-color-010.html": [
-      "9b379eabd14317467fe4df38409dc69c15aac750",
+     "scrollbar-color-010.tentative.html": [
+      "9f560613e06bf198c0d519e9f8ca916403ffc0a8",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-010-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-010-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-011.html": [
-      "90b6c45cdecb5dcdccc6e1f32adba39e31d2e9b3",
+      "3df5f843e7f4db563c0c8a0b94a09fbc1bb5ff0e",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-011-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-011-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -177109,91 +177161,119 @@
       ]
      ],
      "scrollbar-color-dynamic-1.html": [
-      "0b4820c7b7ef2cb72df4e46de18c7b0c0f9c6bbb",
+      "9a03bcddc4bcdcf354b784d049f0fcc8f4140b29",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-1-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-1-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-2.html": [
-      "4adce84f246a8e48168cc330baed775b49bb8dcf",
+      "f2faeb392182fc600364e28c748b2c408745858f",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-2-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-2-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-3.html": [
-      "0bb72a68e4ac57210311e0c3fa2d8ac91aac8862",
+      "91bc4692ae1718ca2b4cf331bb5049390e833c08",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-3-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-3-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-4.html": [
-      "e8cd6e1e7c60a73a2ddc4ba94c35be9fde9e3376",
+      "c2a5a8b84445f67846c2305638a48899b8315d39",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-4-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-4-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-5.html": [
-      "2faa28caac0785e2b39e649d3b9e4baf666ac57e",
+      "42648850b467a686818750dffa4fd2043587a9f0",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-5-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-5-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-6.html": [
-      "85791297529ac2166ad52afcddb05d3e84618f6b",
+      "63b1e369426a2a1ea580bb5e4a457fb5c04ee1f0",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-6-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-6-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-color-dynamic-7.html": [
-      "894db93d6a1a6f08db6a3006a4d356cb19f6c25d",
+      "71bb93fb7263d9c3741c5e611961bdd1849c24c3",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-color-dynamic-7-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-color-dynamic-7-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -177252,26 +177332,34 @@
       ]
      ],
      "scrollbar-width-paint-001.html": [
-      "3621a65b39ed7d9e3b0afea4e1770427b31534de",
+      "320af264644e36c21caa92e0ff7e467612c5a752",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-width-paint-001-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-width-paint-001-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "scrollbar-width-paint-002.html": [
-      "1b3965032b0c98f8cf001a6b98562d36f34f2fbd",
+      "a163aef37f2d7ac38d8fa71efb533ffa0c33c70a",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-width-paint-002-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-width-paint-002-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -177291,13 +177379,17 @@
       ]
      ],
      "scrollbar-width-paint-004.html": [
-      "5b9c9c36bc7fe5246fe1746a148f3defb627ce15",
+      "6f5b4d300cefad7845be8382fc82f222888f5360",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-width-paint-004-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-width-paint-004-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -177317,13 +177409,17 @@
       ]
      ],
      "scrollbar-width-paint-006.html": [
-      "42dbbd959d41bb3c2e22fc3742927cac25e4fe1b",
+      "2273575950c449e0ed6724db3bd2e39541509e6a",
       [
        null,
        [
         [
          "/css/css-scrollbars/scrollbar-width-paint-006-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/scrollbar-width-paint-006-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -177356,26 +177452,34 @@
       ]
      ],
      "viewport-scrollbar-body.html": [
-      "a1b3aee871a918dc4e3f92e669d6631c0944cd18",
+      "5afd103892e4bc2871598badfe0a1e62d1e333b6",
       [
        null,
        [
         [
          "/css/css-scrollbars/viewport-scrollbar-body-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/viewport-scrollbar-body-mis-ref.html",
+         "!="
         ]
        ],
        {}
       ]
      ],
      "viewport-scrollbar.html": [
-      "500da7a9f9584428f27624d1e877085c382c0429",
+      "aac43f12e45a748ffcff5b38f5aee3b6d7f6597d",
       [
        null,
        [
         [
          "/css/css-scrollbars/viewport-scrollbar-ref.html",
          "=="
+        ],
+        [
+         "/css/css-scrollbars/viewport-scrollbar-mis-ref.html",
+         "!="
         ]
        ],
        {}
@@ -294613,10 +294717,6 @@
      ]
     },
     "connect-src": {
-     "connect-src-json-import-allowed.sub-expected.txt": [
-      "f47adcd4ab6b9671fdc009f8a7ff5afef4084017",
-      []
-     ],
      "resources": {
       "simple-event-stream": [
        "bdd2d486c2679c36ba464892039ca6b89afeaed0",
@@ -296407,10 +296507,6 @@
      []
     ],
     "style-src": {
-     "import-style-allowed.sub-expected.txt": [
-      "f47adcd4ab6b9671fdc009f8a7ff5afef4084017",
-      []
-     ],
      "inline-style-allowed-while-cloning-objects.sub-expected.txt": [
       "0e1a82fd7d3ee53c2d1eeba31a0f011cf1ec61ca",
       []
@@ -323068,7 +323164,7 @@
       []
      ],
      "highlight-pseudo-computed-expected.txt": [
-      "7492c9f27941557b9b788e0652d3c34242d29d70",
+      "e30e888e6778bfe46c727c3bbe8db68d33b08969",
       []
      ],
      "painting": {
@@ -330451,24 +330547,48 @@
       "389cf34b716ea17620c6a1d750ac5406945bf9ba",
       []
      ],
+     "scrollbar-color-006-mis-ref.html": [
+      "2fc46863e67a4dc22b003b48bc157df776808783",
+      []
+     ],
      "scrollbar-color-006-ref.html": [
       "f1822b81844458c30e857599838cace6660ddbef",
+      []
+     ],
+     "scrollbar-color-007-mis-ref.html": [
+      "2fc46863e67a4dc22b003b48bc157df776808783",
       []
      ],
      "scrollbar-color-007-ref.html": [
       "f1822b81844458c30e857599838cace6660ddbef",
       []
      ],
+     "scrollbar-color-008-mis-ref.html": [
+      "2fc46863e67a4dc22b003b48bc157df776808783",
+      []
+     ],
      "scrollbar-color-008-ref.html": [
       "f1822b81844458c30e857599838cace6660ddbef",
+      []
+     ],
+     "scrollbar-color-009-mis-ref.html": [
+      "2b611afbe2157ce5fea6b6bc0bf6fc6e4a59d136",
       []
      ],
      "scrollbar-color-009-ref.html": [
       "890179a21c68bc7051c1db252fb7550468bb952e",
       []
      ],
+     "scrollbar-color-010-mis-ref.html": [
+      "2b611afbe2157ce5fea6b6bc0bf6fc6e4a59d136",
+      []
+     ],
      "scrollbar-color-010-ref.html": [
       "890179a21c68bc7051c1db252fb7550468bb952e",
+      []
+     ],
+     "scrollbar-color-011-mis-ref.html": [
+      "58626ef98200c61b0ded0de499907d7adaa4cdd5",
       []
      ],
      "scrollbar-color-011-ref.html": [
@@ -330479,28 +330599,56 @@
       "1effaf39223c5f6f26c6fce3456767197be06df0",
       []
      ],
+     "scrollbar-color-dynamic-1-mis-ref.html": [
+      "a37205392cf64637fc02c14bde22367176d88f7c",
+      []
+     ],
      "scrollbar-color-dynamic-1-ref.html": [
       "b431edf4240257aee7df076805baf93a7d19d1ae",
+      []
+     ],
+     "scrollbar-color-dynamic-2-mis-ref.html": [
+      "58b50991c70ea307ea081751398d9a2d39c0efca",
       []
      ],
      "scrollbar-color-dynamic-2-ref.html": [
       "94e5841ef296680dc58ed6eead85db956972fe12",
       []
      ],
+     "scrollbar-color-dynamic-3-mis-ref.html": [
+      "8624c0526c4cbfd78c1a55c7ba6b823b5f3710b7",
+      []
+     ],
      "scrollbar-color-dynamic-3-ref.html": [
       "3551f3bbaa6114a9def8449b760e69a14f2355d3",
+      []
+     ],
+     "scrollbar-color-dynamic-4-mis-ref.html": [
+      "4cf26154b922fb27a7a236632113b7d55c523b3c",
       []
      ],
      "scrollbar-color-dynamic-4-ref.html": [
       "b10df541489aa0b19372ca8a60dfb136365c57d7",
       []
      ],
+     "scrollbar-color-dynamic-5-mis-ref.html": [
+      "a37205392cf64637fc02c14bde22367176d88f7c",
+      []
+     ],
      "scrollbar-color-dynamic-5-ref.html": [
       "667d5b3be36f0b4e634c124a65c05a9666d544ae",
       []
      ],
+     "scrollbar-color-dynamic-6-mis-ref.html": [
+      "ed0790acde3058ddfc24c3c15e3d6ef603b3e1f2",
+      []
+     ],
      "scrollbar-color-dynamic-6-ref.html": [
       "d4c6a169817e916b758e818121bcdc7628a9a9ce",
+      []
+     ],
+     "scrollbar-color-dynamic-7-mis-ref.html": [
+      "a37205392cf64637fc02c14bde22367176d88f7c",
       []
      ],
      "scrollbar-color-dynamic-7-ref.html": [
@@ -330523,8 +330671,16 @@
       "045619823547041d72b8b6349ac67945c7540bb6",
       []
      ],
+     "scrollbar-width-paint-001-mis-ref.html": [
+      "5f7d95bc6f567b2737dc9b810d1a9e7bd2a5a908",
+      []
+     ],
      "scrollbar-width-paint-001-ref.html": [
       "42295b1fb9d7d7ef8622c729265e344117c65cc2",
+      []
+     ],
+     "scrollbar-width-paint-002-mis-ref.html": [
+      "dd3a8179080cc28a5bd1d71332d0f835c750121e",
       []
      ],
      "scrollbar-width-paint-002-ref.html": [
@@ -330535,12 +330691,20 @@
       "b7acab4a8f12ed88806db7ff67995508c4566780",
       []
      ],
+     "scrollbar-width-paint-004-mis-ref.html": [
+      "f4d7f263adf2d6d0eb7322da083607bd58b0a986",
+      []
+     ],
      "scrollbar-width-paint-004-ref.html": [
       "b2b2d7f2841c6fdf0593c57cb556f6bd58666667",
       []
      ],
      "scrollbar-width-paint-005-ref.html": [
       "e5c325b85423dda8d07b4a07ae0cd6f8199c9023",
+      []
+     ],
+     "scrollbar-width-paint-006-mis-ref.html": [
+      "c3f156a4217c5fc0249fa12961f2e17f11f5e554",
       []
      ],
      "scrollbar-width-paint-006-ref.html": [
@@ -330565,8 +330729,16 @@
       "a5b2de4f00f3abd19c74b08b80a027d09a7abcca",
       []
      ],
+     "viewport-scrollbar-body-mis-ref.html": [
+      "f3ad07fe56cefc7c87e38c479d88accbccce00c0",
+      []
+     ],
      "viewport-scrollbar-body-ref.html": [
       "4e07903e2ca1e5d0378845c8cc4754dc82b1ebf8",
+      []
+     ],
+     "viewport-scrollbar-mis-ref.html": [
+      "05babbd2ddbcf7dbaf5d789966e348ab232f1020",
       []
      ],
      "viewport-scrollbar-ref.html": [
@@ -344747,14 +344919,6 @@
       "3250801f64b5d6b4d430083bdc06c09aa0844370",
       []
      ],
-     "caretPositionFromPoint-expected.txt": [
-      "f1daa6a6e38d7d9db68384eca2bc4b562c5df2e6",
-      []
-     ],
-     "caretPositionFromPoint-with-transformation-expected.txt": [
-      "163fe2b71b3827c89cca8812a6aaafdc6a6d7709",
-      []
-     ],
      "cssom-getPropertyValue-common-checks-expected.txt": [
       "1102c06501b98a227fe29cbda09d3ae3ae41f9e2",
       []
@@ -345082,7 +345246,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "4741e3b18ab50dae894c0d38d1c08bcaff734bb8",
+      "3fdb9a14ca098917864b3f5b890d81c3816b797c",
       []
      ],
      "iframe.html": [
@@ -347407,7 +347571,7 @@
        []
       ],
       "parse-part-expected.txt": [
-       "5572d516e140525fe94f209b01b05f51ac4d1de7",
+       "38fa882ed293e36958083068e3fe47df753a73d0",
        []
       ],
       "parse-state-expected.txt": [
@@ -362256,7 +362420,7 @@
         []
        ],
        "layers.yaml": [
-        "3e26a670d8acf74136ffd217f63d2d2340477744",
+        "34f16ce51519f2e81bdd88cd6d3abed956d4de63",
         []
        ],
        "line-styles.yaml": [
@@ -371238,50 +371402,6 @@
         []
        ],
        "css-module": {
-        "charset-2-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "charset-bom-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "charset-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "cors-crossorigin-requests-expected.txt": [
-         "e59ee51879458bff07ad54b502ebd5b081c9da35",
-         []
-        ],
-        "credentials.sub-expected.txt": [
-         "26789c5995bc45d49d13d62653ea55c47ff6805d",
-         []
-        ],
-        "css-module-worker-test-expected.txt": [
-         "a37a10cf2944a60bfd811dd2bf44c5cc92e3c4b3",
-         []
-        ],
-        "import-css-module-basic-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "import-css-module-dynamic-expected.txt": [
-         "fa43ee85cc4c0927e9519a3349a9b68ba890b404",
-         []
-        ],
-        "integrity-expected.txt": [
-         "01f563ee9d7b6847e1e3bff8a7cef7e8e0779731",
-         []
-        ],
-        "referrer-policies.sub-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "relative-urls-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
         "resources": {
          "atImported.css": [
           "8629a846d14e60a3596e809b911622f6aecb5a04",
@@ -371722,22 +371842,6 @@
         ]
        },
        "import-attributes": {
-        "dynamic-import-with-attributes-argument.any-expected.txt": [
-         "2b9e60900dd5dd62144583e5f02d8559a88b5c15",
-         []
-        ],
-        "dynamic-import-with-attributes-argument.any.sharedworker-expected.txt": [
-         "2b9e60900dd5dd62144583e5f02d8559a88b5c15",
-         []
-        ],
-        "dynamic-import-with-attributes-argument.any.worker-expected.txt": [
-         "2b9e60900dd5dd62144583e5f02d8559a88b5c15",
-         []
-        ],
-        "empty-attributes-clause-expected.txt": [
-         "2fdbf1b1e987e3c1c2d52e128471f0bd673e10b1",
-         []
-        ],
         "empty-attributes-clause.js": [
          "98c45731796fba43ce1425ff165b14e80b9534aa",
          []
@@ -371752,10 +371856,6 @@
         ],
         "hello.js": [
          "2f348444606435700656725dbcd9a08e8e10775f",
-         []
-        ],
-        "invalid-type-attribute-error-expected.txt": [
-         "f0f947825332e24d29bd5c6ddd14e1b3c42267cf",
          []
         ],
         "invalid-type-attribute.js": [
@@ -371800,36 +371900,8 @@
          "07ba933e8608da70bb40645066226b8e95fb2267",
          []
         ],
-        "charset-2-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "charset-bom.any-expected.txt": [
-         "01035612f0f70a4341de85d7672e8ef021c47129",
-         []
-        ],
-        "charset-bom.any.sharedworker-expected.txt": [
-         "01035612f0f70a4341de85d7672e8ef021c47129",
-         []
-        ],
-        "charset-bom.any.worker-expected.txt": [
-         "01035612f0f70a4341de85d7672e8ef021c47129",
-         []
-        ],
-        "charset-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
-         []
-        ],
-        "cors-crossorigin-requests-expected.txt": [
-         "8b01f9e8e75c4feb0b0c1ad3df20ab967b215c60",
-         []
-        ],
         "credentials-iframe.sub.html": [
          "b89edf8d317959456ea7104319697aa097399a95",
-         []
-        ],
-        "credentials.sub-expected.txt": [
-         "9f5207e82d7771427a0f29429c2aa79750882239",
          []
         ],
         "cross-origin.py": [
@@ -371856,20 +371928,12 @@
          "c508d5366f70bba37fcc09d128b6537c4adb2c79",
          []
         ],
-        "integrity-expected.txt": [
-         "bf4e31b98349ca7d2b7b27ddda76b864a16e9bd8",
-         []
-        ],
         "integrity-matches.js": [
          "20459c17e3bb665ba8fa27d02520a35d862bdb4c",
          []
         ],
         "integrity-mismatches.js": [
          "0406dbcca5a99a4cec99ae6551f7546d9df8a872",
-         []
-        ],
-        "json-module-service-worker-test.https-expected.txt": [
-         "fd19b14db68da952fde751a137b6a24923bff6da",
          []
         ],
         "load-error-events.py": [
@@ -371880,24 +371944,8 @@
          "f834b2a4e8fab045a4b224caa485e0ee666f04c6",
          []
         ],
-        "non-object.any-expected.txt": [
-         "e3b36fede5d3d28c6f8ce178acc5704f1f4513d3",
-         []
-        ],
-        "non-object.any.sharedworker-expected.txt": [
-         "e3b36fede5d3d28c6f8ce178acc5704f1f4513d3",
-         []
-        ],
-        "non-object.any.worker-expected.txt": [
-         "e3b36fede5d3d28c6f8ce178acc5704f1f4513d3",
-         []
-        ],
         "null.json": [
          "19765bd501b636fce433540d9e6735f51d66151d",
-         []
-        ],
-        "parse-error-expected.txt": [
-         "1e891ee8c95f20fd03506f19344af5ae14d2fcc1",
          []
         ],
         "parse-error.json": [
@@ -371906,10 +371954,6 @@
         ],
         "referrer-checker.py": [
          "e9f0f1789ba18a73e49bae06fcaa5b0f8447350f",
-         []
-        ],
-        "referrer-policies.sub-expected.txt": [
-         "b3e291ed0b55f39562f68052694d310609828534",
          []
         ],
         "serviceworker-dynamic-import.js": [
@@ -382592,6 +382636,10 @@
       []
      ]
     },
+    "pointerevent_after_target_removed_mouse-expected.txt": [
+     "e11952ae249a02b0872a77ea7668f3b8b38e3fbc",
+     []
+    ],
     "pointerevent_lostpointercapture_remove_setcapture_node-expected.txt": [
      "2d3c1af839d52c9176d85201b92de9c970fffe15",
      []
@@ -389145,7 +389193,7 @@
          ]
         },
         "router-rules.js": [
-         "34a0e9653901041bdaeef3f9902b35dd945f00c7",
+         "792455dac3620727669a658e13c9f8d06afecdaa",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -390728,11 +390776,11 @@
       []
      ],
      "storage-access-beyond-cookies-iframe-iframe.html": [
-      "993d87d0d3a346aa410d662bdfd43379185a2a46",
+      "ffb419f7995ff46a6fdc6b6846b534fb1cef71ce",
       []
      ],
      "storage-access-beyond-cookies-iframe.sub.html": [
-      "3f486cc59a9ad5f4897f3a1c4e2ead51327d7da5",
+      "8c30973416e3e2793629d0a1816b7287fc498561",
       []
      ]
     }
@@ -396106,7 +396154,7 @@
       },
       "browsing_context": {
        "__init__.py": [
-        "e74de268093e1c39ae683dfe0eb08ad6ba2eceb3",
+        "7a3c9f61c4fdeb598aa2f816a9f1eb43935a9b33",
         []
        ],
        "activate": {
@@ -396322,7 +396370,7 @@
       },
       "network": {
        "__init__.py": [
-        "154606592c970635d8f2d48f148c3316b1a62a8b",
+        "ffbed8cb7b1e3743c46ddac4247fbf3d4eed262c",
         []
        ],
        "add_intercept": {
@@ -440263,6 +440311,34 @@
        {}
       ]
      ],
+     "anchor-center-htb-htb.html": [
+      "7012208044af1c3ce7bafdfddfedf4f0c103e2cd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-center-htb-vrl.html": [
+      "584424d306fb54fcd62302e61734c0da0dec8ac2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-center-vrl-htb.html": [
+      "c7ee2302626eb8fad64aaa54768b231f18b98dd3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-center-vrl-vrl.html": [
+      "d314dc7f2fc696d2baf661e29b65da22a1aad028",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-default-003.html": [
       "00c20324344d0d888aace7f5414ba7e5354af786",
       [
@@ -459942,35 +460018,35 @@
        {}
       ]
      ],
-     "scrollbar-color-001.html": [
+     "scrollbar-color-001.tentative.html": [
       "c056990934466f1804ca096ec7b8f3f5b8162646",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-color-002.html": [
+     "scrollbar-color-002.tentative.html": [
       "70bfa5586d98abe9aaa882e868d221f3812eda5b",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-color-003.html": [
+     "scrollbar-color-003.tentative.html": [
       "3fb42bedeafc4e0a98760d686935c5b9efd086fb",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-color-004.html": [
+     "scrollbar-color-004.tentative.html": [
       "5932cc5d4e1be0b9fb1d6f390e0e3bd2c27d51a4",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-color-005.html": [
+     "scrollbar-color-005.tentative.html": [
       "52d0027fba6e942fd1452402967e9fd09b5b8211",
       [
        null,
@@ -460047,49 +460123,49 @@
        {}
       ]
      ],
-     "scrollbar-width-010.html": [
+     "scrollbar-width-010.tentative.html": [
       "ea117030673bd022cb4e2d73795bb7586c90571c",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-011.html": [
+     "scrollbar-width-011.tentative.html": [
       "a5f60dc28b0cf9d09953b714e56bab8cbf7f8b67",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-012.html": [
+     "scrollbar-width-012.tentative.html": [
       "a685d6c05b8f941d3962ae349d350846e0e4f5ae",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-013.html": [
+     "scrollbar-width-013.tentative.html": [
       "f6460a4797a6cb377dd7df03340d734813604a25",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-014.html": [
+     "scrollbar-width-014.tentative.html": [
       "b3702015d520be60f0a9b4e2782c205fd487c8ef",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-015.html": [
+     "scrollbar-width-015.tentative.html": [
       "88a6af27bad259aceb69c3e1667097c70adece5b",
       [
        null,
        {}
       ]
      ],
-     "scrollbar-width-016.html": [
+     "scrollbar-width-016.tentative.html": [
       "7d64131743f18ab744246e034de8d540688178a7",
       [
        null,
@@ -471523,6 +471599,27 @@
         {}
        ]
       ],
+      "view-transition-class-computed.html": [
+       "74151c46da9936207af6a93ecbc9bef072fd3fa2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-transition-class-invalid.html": [
+       "9d41589bf2290026575e814e48ce7eea33c3864a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-transition-class-valid.html": [
+       "480f40ca161b9fb56ec405d54f6d5d81af8b9d25",
+       [
+        null,
+        {}
+       ]
+      ],
       "view-transition-name-computed.html": [
        "5b05667f749e0b9c1161aea91f7448eea5cd94e6",
        [
@@ -476960,7 +477057,7 @@
        ]
       ],
       "parse-part.html": [
-       "2fbec3670ce78281b1eb60f3b81fa6eba526f694",
+       "c166fd7765b1bfb36871b47ea08a55e03392292d",
        [
         null,
         {}
@@ -480015,6 +480112,15 @@
       ],
       "scrollend-event-fired-to-window.html": [
        "faacf7e572cf1aa0e3fedfb0cdd5c10344e14dff",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scrollend-event-fires-on-visual-viewport.html": [
+       "5e3af7966e7d6bb6888a9de6e2086f9f6a4442e1",
        [
         null,
         {
@@ -515023,7 +515129,7 @@
       ]
      ],
      "fetch.tentative.https.window.js": [
-      "dbc4f23f677c716ba439c508c42ee33f4b1b3233",
+      "606443dc14ddf9730654f58a0ddf577b0678195c",
       [
        "fetch/private-network-access/fetch.tentative.https.window.html?include=baseline",
        {
@@ -539547,6 +539653,13 @@
          {}
         ]
        ],
+       "2d.layer.malformed-operations.createPattern.html": [
+        "f927b96524d55fd430014b48256eff2c22ba6bb4",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.layer.malformed-operations.drawImage.html": [
         "8bcc89d38e5b154d1954686d6453b1a1c7dd7a16",
         [
@@ -550109,6 +550222,20 @@
         "b286b7a9e754b3bf71380cb260a408f42999ff60",
         [
          "html/canvas/offscreen/layers/2d.layer.malformed-operations-with-promises.createImageBitmap.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.createPattern.html": [
+        "a206e64ceba18df1e711de83bb7ce6629c3d5c73",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.malformed-operations.createPattern.worker.js": [
+        "bcb42cba87ef4a3eaaf14692ddd19d134dc644c8",
+        [
+         "html/canvas/offscreen/layers/2d.layer.malformed-operations.createPattern.worker.html",
          {}
         ]
        ],
@@ -604011,7 +604138,7 @@
      ]
     ],
     "pointerevent_after_target_removed.html": [
-     "f1970e72efdc7260f47586830208e91281e55ffa",
+     "7b2a4eeb800854bb7b09c7731c7043447ff1df79",
      [
       "pointerevents/pointerevent_after_target_removed.html?mouse",
       {
@@ -626828,7 +626955,7 @@
       ]
      ],
      "fetch-canvas-tainting-video-with-range-request.https.html": [
-      "28c3071804767b10a1bfe08ee6bc57855c274bcc",
+      "8fef9c34fa38eef0f6d84ad16226e3b964249948",
       [
        null,
        {}
@@ -628026,7 +628153,7 @@
      "tentative": {
       "static-router": {
        "static-router-invalid-rules.https.html": [
-        "ea7422ffd84ebda9b426fafdb5b9684f58ce4d5b",
+        "4ed4ad4b3c0698a0375b2dfb7843bc18a421e932",
         [
          null,
          {}
@@ -628040,7 +628167,7 @@
         ]
        ],
        "static-router-no-fetch-handler.https.html": [
-        "64678eea9d923ed32d7a7b646a9d78cf0f8cd620",
+        "2646414f1a4f01c94a40ab85e0ac559c5d6d2e19",
         [
          null,
          {}
@@ -628500,7 +628627,7 @@
       ]
      ],
      "gethtml.tentative.html": [
-      "5b517ba9f5cadd84b25d53ec2fc155e640c6d266",
+      "564caaa97e8a1aee1a62384a2fa133df61d5f5de",
       [
        null,
        {}
@@ -634507,6 +634634,24 @@
       }
      ]
     ],
+    "storage-access-beyond-cookies.cookies.tentative.sub.https.window.js": [
+     "c352ab2935540fb5d99a79ceceff4b90e781d263",
+     [
+      "storage-access-api/storage-access-beyond-cookies.cookies.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "storage-access-beyond-cookies.estimate.tentative.sub.https.window.js": [
      "2e9f6eed127898a21c890b6f6dfe588db9197852",
      [
@@ -634583,6 +634728,24 @@
      "83aa28c018e1a3e4fd0b5ffe794a2acb751de287",
      [
       "storage-access-api/storage-access-beyond-cookies.locks.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "storage-access-beyond-cookies.none.tentative.sub.https.window.js": [
+     "3715fdf39ed562a3946c9ed3406e9d81de57ea7a",
+     [
+      "storage-access-api/storage-access-beyond-cookies.none.tentative.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -686494,7 +686657,7 @@
      ]
     ],
     "render_state_update.https.html": [
-     "3801a42947a792cc2e5b625dd7fc1efa9ac8da35",
+     "d335f0fb694c269f640ac9a752c3dbf39774990b",
      [
       null,
       {}
@@ -707355,7 +707518,7 @@
          ]
         ],
         "invalid.py": [
-         "bad840172453ec1b1338be664d31875d57c7d197",
+         "de9d2963efb5309972a73a83f1635401c03a6606",
          [
           null,
           {}
@@ -707370,6 +707533,13 @@
         ],
         "type.py": [
          "55ce7b44282a86f195f874b10b4cab0e58f3cd37",
+         [
+          null,
+          {}
+         ]
+        ],
+        "user_context.py": [
+         "64ffb1f7d85b1202e8051acbce8d69955395316e",
          [
           null,
           {}

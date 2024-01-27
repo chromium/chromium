@@ -12,13 +12,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -48,7 +48,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const std::string& serialized_embedder_data,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,

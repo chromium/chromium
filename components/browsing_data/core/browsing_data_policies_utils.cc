@@ -127,7 +127,7 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
   return std::string();
 }
 
-absl::optional<PolicyDataType> NameToPolicyDataType(
+std::optional<PolicyDataType> NameToPolicyDataType(
     const std::string& type_name) {
   static constexpr auto kNameToDataType =
       base::MakeFixedFlatMap<std::string_view, PolicyDataType>({
@@ -149,7 +149,7 @@ absl::optional<PolicyDataType> NameToPolicyDataType(
 
   const auto* it = kNameToDataType.find(type_name);
   if (it == kNameToDataType.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

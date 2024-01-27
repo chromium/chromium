@@ -239,10 +239,10 @@ int InstallableEvaluator::GetMinimumIconSizeInPx() {
   return kMinimumPrimaryIconSizeInPx;
 }
 
-absl::optional<std::vector<InstallableStatusCode>>
+std::optional<std::vector<InstallableStatusCode>>
 InstallableEvaluator::CheckInstallability() const {
   if (criteria_ == InstallableCriteria::kDoNotCheck) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<InstallableStatusCode> errors;

@@ -121,7 +121,11 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest,
             ? std::vector<base::test::FeatureRef>{features::kSidePanelPinning,
                                                   features::kChromeRefresh2023}
             : std::vector<base::test::FeatureRef>{},
-        /*disabled_features=*/{});
+        /*disabled_features=*/GetParam()
+            ? std::vector<base::test::FeatureRef>{}
+            : std::vector<base::test::FeatureRef>{
+                  features::kChromeRefresh2023,
+                  features::kChromeRefreshSecondary2023});
   }
   RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
   RecentTabsSubMenuModelTest& operator=(const RecentTabsSubMenuModelTest&) =
@@ -885,14 +889,14 @@ TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
     if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
       EXPECT_THAT(base::span<const std::u16string>(
                       recent_tabs_builder.GetTabTitlesSortedByRecency())
-                      .subspan(0, 3),
+                      .first(3),
                   ElementsAre(model.GetLabelAt(6), model.GetLabelAt(9),
                               model.GetLabelAt(12)));
 
     } else {
       EXPECT_THAT(base::span<const std::u16string>(
                       recent_tabs_builder.GetTabTitlesSortedByRecency())
-                      .subspan(0, 3),
+                      .first(3),
                   ElementsAre(model.GetLabelAt(5), model.GetLabelAt(8),
                               model.GetLabelAt(11)));
     }
@@ -918,7 +922,7 @@ TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
     if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
       EXPECT_THAT(base::span<const std::u16string>(
                       recent_tabs_builder.GetTabTitlesSortedByRecency())
-                      .subspan(0, 4),
+                      .first(4),
                   ElementsAre(model.GetSubmenuModelAt(6)->GetLabelAt(0),
                               model.GetSubmenuModelAt(7)->GetLabelAt(0),
                               model.GetSubmenuModelAt(8)->GetLabelAt(0),
@@ -927,7 +931,7 @@ TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
     } else {
       EXPECT_THAT(base::span<const std::u16string>(
                       recent_tabs_builder.GetTabTitlesSortedByRecency())
-                      .subspan(0, 4),
+                      .first(4),
                   ElementsAre(model.GetSubmenuModelAt(5)->GetLabelAt(0),
                               model.GetSubmenuModelAt(6)->GetLabelAt(0),
                               model.GetSubmenuModelAt(7)->GetLabelAt(0),
@@ -973,7 +977,7 @@ TEST_P(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
 
     EXPECT_THAT(base::span<const std::u16string>(
                     recent_tabs_builder.GetTabTitlesSortedByRecency())
-                    .subspan(0, 4),
+                    .first(4),
                 ElementsAre(model.GetLabelAt(model.GetItemCount() - 4),
                             model.GetLabelAt(model.GetItemCount() - 3),
                             model.GetLabelAt(model.GetItemCount() - 2),
@@ -1001,7 +1005,7 @@ TEST_P(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
     EXPECT_THAT(
         base::span<const std::u16string>(
             recent_tabs_builder.GetTabTitlesSortedByRecency())
-            .subspan(0, 4),
+            .first(4),
         ElementsAre(
             model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(0),
             model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(1),

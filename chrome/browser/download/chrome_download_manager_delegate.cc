@@ -519,11 +519,10 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     DownloadDialogBridge::DialogCallback callback) {
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
-  bool is_incognito = profile_->IsOffTheRecord();
 
   download_dialog_bridge_->ShowDialog(
       native_window, total_bytes, connection_type, dialog_type, suggested_path,
-      is_incognito, std::move(callback));
+      profile_, std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(

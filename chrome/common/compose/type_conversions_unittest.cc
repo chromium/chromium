@@ -16,15 +16,19 @@ namespace {
 void TestErrorConversion(Error::ModelExecutionError modelError,
                          Status expectedStatus) {
   Status result = ComposeStatusFromOptimizationGuideResult(
-      base::unexpected(Error::FromModelExecutionError(modelError)));
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+          base::unexpected(Error::FromModelExecutionError(modelError)),
+          /*provided_by_on_device=*/false));
   EXPECT_EQ(expectedStatus, result);
 }
 }  // namespace
 
 TEST(ComposeTypeConversions, OptimizationGuideHasResult) {
   Status result = ComposeStatusFromOptimizationGuideResult(
-      optimization_guide::StreamingResponse{
-          .response = optimization_guide::proto::Any()});
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+          base::ok(optimization_guide::StreamingResponse{
+              .response = optimization_guide::proto::Any()}),
+          /*provided_by_on_device=*/false));
   ASSERT_EQ(Status::kOk, result);
 }
 

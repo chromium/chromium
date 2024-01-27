@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_COMMON_SERIALIZED_RECORDING_H_
 #define COMPONENTS_PAINT_PREVIEW_COMMON_SERIALIZED_RECORDING_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
@@ -12,7 +14,6 @@
 #include "components/paint_preview/common/serial_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkPicture;
@@ -109,7 +110,7 @@ class SerializedRecording {
   // subframes.
   //
   // This is not safe to call in the browser process.
-  absl::optional<SkpResult> Deserialize() &&;
+  std::optional<SkpResult> Deserialize() &&;
 
   // Deserialize into an |SkPicture|. |ctx| should contain entries for any
   // subframes that should be included in the output.
@@ -132,7 +133,7 @@ class SerializedRecording {
   RecordingPersistence persistence_;
 
   base::File file_;
-  absl::optional<mojo_base::BigBuffer> buffer_;
+  std::optional<mojo_base::BigBuffer> buffer_;
 };
 
 // Serialize and write |skp| to |file|.
@@ -146,7 +147,7 @@ class SerializedRecording {
 bool RecordToFile(base::File file,
                   sk_sp<const SkPicture> skp,
                   PaintPreviewTracker* tracker,
-                  absl::optional<size_t> max_capture_size,
+                  std::optional<size_t> max_capture_size,
                   size_t* serialized_size);
 
 // Serialize and write |recording| to a memory buffer.
@@ -157,10 +158,10 @@ bool RecordToFile(base::File file,
 // serialized output.
 //
 // Returns the memory buffer on success.
-absl::optional<mojo_base::BigBuffer> RecordToBuffer(
+std::optional<mojo_base::BigBuffer> RecordToBuffer(
     sk_sp<const SkPicture> skp,
     PaintPreviewTracker* tracker,
-    absl::optional<size_t> max_capture_size,
+    std::optional<size_t> max_capture_size,
     size_t* serialized_size);
 
 }  // namespace paint_preview

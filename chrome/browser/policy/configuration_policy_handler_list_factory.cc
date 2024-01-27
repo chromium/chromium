@@ -1595,6 +1595,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kF12KeyModifier,
     ash::prefs::kF12KeyModifier,
     base::Value::Type::INTEGER },
+  { key::kHomeAndEndKeysModifier,
+    ash::prefs::kHomeAndEndKeysModifier,
+    base::Value::Type::INTEGER },
+  { key::kDeleteKeyModifier,
+    ash::prefs::kDeleteKeyModifier,
+    base::Value::Type::INTEGER },
+  { key::kPageUpAndPageDownKeysModifier,
+    ash::prefs::kPageUpAndPageDownKeysModifier,
+    base::Value::Type::INTEGER },
+{ key::kInsertKeyModifier,
+    ash::prefs::kInsertKeyModifier,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

@@ -262,7 +262,7 @@ void OnDeviceClusteringBackend::RetrieveBatchEntityMetadata(
   if (!entity_metadata_provider_ || entity_ids.empty()) {
     OnBatchEntityMetadataRetrieved(
         /*completed_task=*/nullptr,
-        /*entity_metadata_start=*/absl::nullopt,
+        /*entity_metadata_start=*/std::nullopt,
         std::move(entity_retrieved_callback),
         /*entity_metadata_map=*/{});
     return;
@@ -286,7 +286,7 @@ void OnDeviceClusteringBackend::RetrieveBatchEntityMetadata(
 
 void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     optimization_guide::BatchEntityMetadataTask* completed_task,
-    absl::optional<base::TimeTicks> entity_metadata_start,
+    std::optional<base::TimeTicks> entity_metadata_start,
     EntityRetrievedCallback entity_retrieved_callback,
     const base::flat_map<std::string, optimization_guide::EntityMetadata>&
         entity_metadata_map) {

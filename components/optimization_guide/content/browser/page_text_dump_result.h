@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_TEXT_DUMP_RESULT_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_TEXT_DUMP_RESULT_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -40,12 +40,12 @@ class FrameTextDumpResult {
 
   // The text dump contents. Set only for completed instances. Note that
   // the string must be treated as untrusted data.
-  const absl::optional<std::u16string>& contents() const { return contents_; }
+  const std::optional<std::u16string>& contents() const { return contents_; }
 
   // The text dump contents, decoded to UTF-8 as a best effort. Set only for
   // completed instances. Note that the string must be treated as untrusted
   // data.
-  absl::optional<std::string> utf8_contents() const;
+  std::optional<std::string> utf8_contents() const;
 
   // The event at which the text dump is taken. Set for both preliminary and
   // completed instances.
@@ -105,7 +105,7 @@ class FrameTextDumpResult {
   FrameTextDumpResult();
 
   mojom::TextDumpEvent event_;
-  absl::optional<std::u16string> contents_;
+  std::optional<std::u16string> contents_;
   content::GlobalRenderFrameHostId rfh_id_;
   bool amp_frame_ = false;
   int unique_navigation_id_ = -1;
@@ -123,15 +123,15 @@ class PageTextDumpResult {
 
   // Returns the concatenation of all AMP frames. nullopt if no AMP frames are
   // present. Note that the string must be treated as untrusted data.
-  absl::optional<std::string> GetAMPTextContent() const;
+  std::optional<std::string> GetAMPTextContent() const;
 
   // Returns the concatenation of the mainframe. nullopt if not present.
   // Note that the string must be treated as untrusted data.
-  absl::optional<std::string> GetMainFrameTextContent() const;
+  std::optional<std::string> GetMainFrameTextContent() const;
 
   // Returns the concatenation of all frames, AMP or main. nullopt if |empty()|.
   // Note that the string must be treated as untrusted data.
-  absl::optional<std::string> GetAllFramesTextContent() const;
+  std::optional<std::string> GetAllFramesTextContent() const;
 
   bool empty() const { return frame_results_.empty(); }
 

@@ -14,13 +14,13 @@ using ::mediapipe::tasks::text::text_classifier::TextClassifierOptions;
 MediapipeTextModelExecutor::MediapipeTextModelExecutor() = default;
 MediapipeTextModelExecutor::~MediapipeTextModelExecutor() = default;
 
-absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
+std::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
     TextClassifier* execution_task,
     ExecutionStatus* out_status,
     const std::string& input) {
   if (input.empty()) {
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
-    return absl::nullopt;
+    return std::nullopt;
   }
   TRACE_EVENT2("browser", "MediapipeTextModelExecutor::Execute",
                "optimization_target",
@@ -33,12 +33,12 @@ absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
     *out_status = ExecutionStatus::kErrorCancelled;
     LOG(ERROR) << "MediaPipe Execution Cancelled: "
                << status_or_result.status();
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!status_or_result.ok()) {
     *out_status = ExecutionStatus::kErrorUnknown;
     LOG(ERROR) << "MediaPipe Execution Error: " << status_or_result.status();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CHECK_EQ(status_or_result->classifications.size(), 1U);

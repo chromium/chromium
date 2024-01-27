@@ -337,8 +337,8 @@ void CronetURLRequest::NetworkTasks::GetStatus(
 void CronetURLRequest::NetworkTasks::FollowDeferredRedirect() {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   url_request_->FollowDeferredRedirect(
-      absl::nullopt /* removed_request_headers */,
-      absl::nullopt /* modified_request_headers */);
+      std::nullopt /* removed_request_headers */,
+      std::nullopt /* modified_request_headers */);
 }
 
 void CronetURLRequest::NetworkTasks::ReadData(

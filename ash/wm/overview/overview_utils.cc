@@ -190,31 +190,21 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  gfx::Rect bounds;
-  gfx::Rect work_area =
+  const gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
+  gfx::Rect bounds = work_area;
   std::optional<SnapPosition> opposite_position;
 
   // We should show partial overview for the following use cases:
-  // 1. In tablet split view mode;
-  // 2. On one window snapped in clamshell mode with
-  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` enabled;
-  // 3. On one window snapped in clamshell in overview session.
-
-  // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
-  // reach here if overview is in session and there is no divider.
-  // TODO(b/296935443): Consolidate split view bounds calculations.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
-  if (!in_tablet_mode && !window_dragging_state) {
-    bounds = work_area;
-    if (auto* split_view_overview_session =
-            RootWindowController::ForWindow(target_root)
-                ->split_view_overview_session()) {
-      gfx::Rect target_bounds_in_screen(
-          split_view_overview_session->window()->GetTargetBounds());
-      wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
-      bounds.Subtract(target_bounds_in_screen);
-    }
+  // 1. In tablet split view mode with one window snapped.
+  // 2. In clamshell `SplitViewOverviewSession`.
+  if (auto* split_view_overview_session =
+          RootWindowController::ForWindow(target_root)
+              ->split_view_overview_session()) {
+    gfx::Rect target_bounds_in_screen(
+        split_view_overview_session->window()->GetTargetBounds());
+    wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
+    bounds.Subtract(target_bounds_in_screen);
   } else {
     switch (state) {
       case SplitViewController::State::kPrimarySnapped:
@@ -230,11 +220,10 @@ gfx::Rect GetGridBoundsInScreen(
         opposite_position = SnapPosition::kPrimary;
         break;
       case SplitViewController::State::kNoSnap:
-        bounds = work_area;
         break;
       case SplitViewController::State::kBothSnapped:
-        // When this function is called, SplitViewController should have already
-        // handled the state change.
+        // When this function is called, SplitViewController should have
+        // already handled the state change.
         NOTREACHED();
     }
   }
@@ -242,10 +231,10 @@ gfx::Rect GetGridBoundsInScreen(
   // Hotseat overlaps the work area / split view bounds when extended, but in
   // some cases we don't want its bounds in our calculations.
   if (account_for_hotseat && display::Screen::GetScreen()->InTabletMode()) {
-    Shelf* shelf = Shelf::ForWindow(target_root);
     const bool hotseat_extended =
-        shelf->shelf_layout_manager()->hotseat_state() ==
-        HotseatState::kExtended;
+        Shelf::ForWindow(target_root)
+            ->shelf_layout_manager()
+            ->hotseat_state() == HotseatState::kExtended;
     // When a window is dragged from the top of the screen, overview gets
     // entered immediately but the window does not get deactivated right away so
     // the hotseat state does not get updated until the window gets dragged a

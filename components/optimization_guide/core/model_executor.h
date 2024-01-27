@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTOR_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -13,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -41,7 +42,7 @@ class ModelExecutor {
   // If |model_inference_timeout| is nullopt a default value will be used,
   // controlled by the optimization guide.
   virtual void InitializeAndMoveToExecutionThread(
-      absl::optional<base::TimeDelta> model_inference_timeout,
+      std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;
@@ -65,7 +66,7 @@ class ModelExecutor {
   virtual void SetShouldPreloadModel(bool should_preload_model) = 0;
 
   using ExecutionCallback =
-      base::OnceCallback<void(const absl::optional<OutputType>&)>;
+      base::OnceCallback<void(const std::optional<OutputType>&)>;
   virtual void SendForExecution(ExecutionCallback callback_on_complete,
                                 base::TimeTicks start_time,
                                 InputType input) = 0;
@@ -79,14 +80,14 @@ class ModelExecutor {
   // It is guaranteed that the output passed to |BatchExecutionCallback| will
   // always be in the same order as the input vector.
   using BatchExecutionCallback =
-      base::OnceCallback<void(const std::vector<absl::optional<OutputType>>&)>;
+      base::OnceCallback<void(const std::vector<std::optional<OutputType>>&)>;
   virtual void SendForBatchExecution(
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
       ConstRefInputVector inputs) = 0;
 
   // Synchronous batch execution.
-  virtual std::vector<absl::optional<OutputType>> SendForBatchExecutionSync(
+  virtual std::vector<std::optional<OutputType>> SendForBatchExecutionSync(
       ConstRefInputVector inputs) = 0;
 
   // IMPORTANT: These WeakPointers must only be dereferenced on the

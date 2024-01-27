@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/confirm/confirm_infobar_banner_interaction_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
@@ -41,7 +42,7 @@ class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
  protected:
   ConfirmInfobarBannerInteractionHandler handler_;
   web::FakeWebState web_state_;
-  InfoBarIOS* infobar_;
+  raw_ptr<InfoBarIOS> infobar_;
 };
 
 // Tests MainButtonTapped() calls Accept() on the mock delegate.

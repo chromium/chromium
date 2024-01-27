@@ -35,7 +35,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/page_image_service/features.h"
 #include "components/page_image_service/image_service.h"
@@ -244,10 +244,10 @@ void BookmarksSidePanelUI::BindInterface(
 }
 
 void BookmarksSidePanelUI::BindInterface(
-    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
-        receiver) {
-  shopping_list_factory_receiver_.reset();
-  shopping_list_factory_receiver_.Bind(std::move(receiver));
+    mojo::PendingReceiver<
+        shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
+  shopping_service_factory_receiver_.reset();
+  shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
 void BookmarksSidePanelUI::BindInterface(
@@ -282,9 +282,10 @@ void BookmarksSidePanelUI::CreateBookmarksPageHandler(
       std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
 }
 
-void BookmarksSidePanelUI::CreateShoppingListHandler(
-    mojo::PendingRemote<shopping_list::mojom::Page> page,
-    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver) {
+void BookmarksSidePanelUI::CreateShoppingServiceHandler(
+    mojo::PendingRemote<shopping_service::mojom::Page> page,
+    mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
+        receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
@@ -292,13 +293,14 @@ void BookmarksSidePanelUI::CreateShoppingListHandler(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   feature_engagement::Tracker* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-  shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
-      std::move(page), std::move(receiver), bookmark_model, shopping_service,
-      profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale(),
-      nullptr);
+  shopping_service_handler_ =
+      std::make_unique<commerce::ShoppingServiceHandler>(
+          std::move(page), std::move(receiver), bookmark_model,
+          shopping_service, profile->GetPrefs(), tracker,
+          g_browser_process->GetApplicationLocale(), nullptr);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
-          bookmark_model, shopping_service, shopping_list_handler_.get());
+          bookmark_model, shopping_service, shopping_service_handler_.get());
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {

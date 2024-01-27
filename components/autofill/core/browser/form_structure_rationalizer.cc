@@ -488,8 +488,8 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // element.
   auto may_be_group = [](Group group) {
     DCHECK_GE(group.size(), 1u);
-    DCHECK(base::ranges::all_of(
-        group.subspan(0, group.size() - 1), [](const auto& f) {
+    DCHECK(
+        base::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
           return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
         }));
     size_t last = group.size() - 1;
@@ -509,7 +509,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // 2. there are at least 2 non-overflow fields.
   auto has_reasonable_length = [](Group group) {
     DCHECK(!group.empty());
-    DCHECK(base::ranges::all_of(group.subspan(0, group.size() - 1),
+    DCHECK(base::ranges::all_of(group.first(group.size() - 1),
                                 [group](const auto& f) {
                                   return f->max_length == group[0]->max_length;
                                 }));

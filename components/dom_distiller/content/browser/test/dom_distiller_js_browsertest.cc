@@ -160,13 +160,13 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   ASSERT_TRUE(result_.is_dict()) << "Result is not a dictionary: " << result_;
 
   const base::Value::Dict& dict = result_.GetDict();
-  absl::optional<bool> success = dict.FindBool("success");
+  std::optional<bool> success = dict.FindBool("success");
   ASSERT_TRUE(success.has_value());
-  absl::optional<int> num_tests = dict.FindInt("numTests");
+  std::optional<int> num_tests = dict.FindInt("numTests");
   ASSERT_TRUE(num_tests.has_value());
-  absl::optional<int> failed = dict.FindInt("failed");
+  std::optional<int> failed = dict.FindInt("failed");
   ASSERT_TRUE(failed.has_value());
-  absl::optional<int> skipped = dict.FindInt("skipped");
+  std::optional<int> skipped = dict.FindInt("skipped");
   ASSERT_TRUE(skipped.has_value());
 
   VLOG(0) << "Ran " << num_tests.value()

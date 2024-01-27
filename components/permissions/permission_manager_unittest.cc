@@ -212,7 +212,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   }
 
   bool IsPermissionOverridable(PermissionType permission,
-                               const absl::optional<url::Origin>& origin) {
+                               const std::optional<url::Origin>& origin) {
     return GetPermissionManager()->IsPermissionOverridable(permission, origin);
   }
 
@@ -261,7 +261,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
           *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     navigation->SetPermissionsPolicyHeader(
-        {{feature, parsed_origins, /*self_if_matches=*/absl::nullopt,
+        {{feature, parsed_origins, /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false}});
     navigation->Commit();
@@ -278,7 +278,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
           feature,
           std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }

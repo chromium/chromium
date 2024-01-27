@@ -127,7 +127,7 @@ FakeFormFetcher::GetProfileStoreBackendError() const {
   return profile_store_backend_error_;
 }
 
-absl::optional<PasswordStoreBackendError>
+std::optional<PasswordStoreBackendError>
 FakeFormFetcher::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
 }

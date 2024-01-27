@@ -6,12 +6,12 @@
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -46,22 +46,22 @@ class MetadataBatch;
 class ModelTypeStore : public ModelTypeStoreBase {
  public:
   using InitCallback =
-      base::OnceCallback<void(const absl::optional<ModelError>& error,
+      base::OnceCallback<void(const std::optional<ModelError>& error,
                               std::unique_ptr<ModelTypeStore> store)>;
   using CallbackWithResult =
-      base::OnceCallback<void(const absl::optional<ModelError>& error)>;
+      base::OnceCallback<void(const std::optional<ModelError>& error)>;
   using ReadDataCallback =
-      base::OnceCallback<void(const absl::optional<ModelError>& error,
+      base::OnceCallback<void(const std::optional<ModelError>& error,
                               std::unique_ptr<RecordList> data_records,
                               std::unique_ptr<IdList> missing_id_list)>;
   using ReadAllDataCallback =
-      base::OnceCallback<void(const absl::optional<ModelError>& error,
+      base::OnceCallback<void(const std::optional<ModelError>& error,
                               std::unique_ptr<RecordList> data_records)>;
   using ReadMetadataCallback =
-      base::OnceCallback<void(const absl::optional<ModelError>& error,
+      base::OnceCallback<void(const std::optional<ModelError>& error,
                               std::unique_ptr<MetadataBatch> metadata_batch)>;
   // Callback that runs on the backend sequence, see ReadAllDataAndPreprocess().
-  using PreprocessCallback = base::OnceCallback<absl::optional<ModelError>(
+  using PreprocessCallback = base::OnceCallback<std::optional<ModelError>(
       std::unique_ptr<RecordList> data_records)>;
 
   // Read operations return records either for all entries or only for ones

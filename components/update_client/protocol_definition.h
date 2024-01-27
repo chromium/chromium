@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client::protocol_request {
 
@@ -68,8 +68,8 @@ struct Updater {
   std::string version;
   bool is_machine = false;
   bool autoupdate_check_enabled = false;
-  absl::optional<int> last_started;
-  absl::optional<int> last_checked;
+  std::optional<int> last_started;
+  std::optional<int> last_checked;
   int update_policy = 0;
 };
 
@@ -107,11 +107,11 @@ struct Ping {
   ~Ping();
 
   // Preferred user count metrics ("ad" and "rd").
-  absl::optional<int> date_last_active;
-  absl::optional<int> date_last_roll_call;
+  std::optional<int> date_last_active;
+  std::optional<int> date_last_roll_call;
 
   // Legacy user count metrics ("a" and "r").
-  absl::optional<int> days_since_last_active_ping;
+  std::optional<int> days_since_last_active_ping;
   int days_since_last_roll_call = 0;
 
   std::string ping_freshness;
@@ -142,20 +142,20 @@ struct App {
 
   std::string release_channel;
 
-  absl::optional<bool> enabled;
-  absl::optional<std::vector<int>> disabled_reasons;
+  std::optional<bool> enabled;
+  std::optional<std::vector<int>> disabled_reasons;
 
   // Optional update check.
-  absl::optional<UpdateCheck> update_check;
+  std::optional<UpdateCheck> update_check;
 
   // Optional `data` elements.
   std::vector<Data> data;
 
   // Optional 'did run' ping.
-  absl::optional<Ping> ping;
+  std::optional<Ping> ping;
 
   // Progress/result pings.
-  absl::optional<std::vector<base::Value::Dict>> events;
+  std::optional<std::vector<base::Value::Dict>> events;
 };
 
 struct Request {
@@ -197,7 +197,7 @@ struct Request {
   std::string dlpref;
 
   // True if this machine is part of a managed enterprise domain.
-  absl::optional<bool> domain_joined;
+  std::optional<bool> domain_joined;
 
   base::flat_map<std::string, std::string> additional_attributes;
 
@@ -205,7 +205,7 @@ struct Request {
 
   OS os;
 
-  absl::optional<Updater> updater;
+  std::optional<Updater> updater;
 
   std::vector<App> apps;
 };

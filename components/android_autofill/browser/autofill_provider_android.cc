@@ -464,7 +464,7 @@ void AutofillProviderAndroid::OnFocusNoLongerOnForm(
     return;
   }
 
-  bridge_->OnFocusChanged(absl::nullopt);
+  bridge_->OnFocusChanged(std::nullopt);
 }
 
 void AutofillProviderAndroid::OnFocusOnFormField(

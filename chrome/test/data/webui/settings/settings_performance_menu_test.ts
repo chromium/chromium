@@ -5,7 +5,8 @@
 /** @fileoverview Runs tests for the settings performance menu item. */
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {pageVisibility, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
+import type {SettingsMenuElement} from 'chrome://settings/settings.js';
+import {pageVisibility, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsMenuPerformance', function() {

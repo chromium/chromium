@@ -292,6 +292,7 @@ bool AutoEnrollmentCheckScreen::IsBlockingError(
       base::Overloaded{
           [](policy::AutoEnrollmentSafeguardTimeoutError) { return true; },
           [](policy::AutoEnrollmentSystemClockSyncError) { return true; },
+          [](policy::AutoEnrollmentStateKeysRetrievalError) { return true; },
           [this](const policy::AutoEnrollmentDMServerError& error) {
             return error.network_error.has_value() ? true
                                                    : ShouldBlockOnServerError();

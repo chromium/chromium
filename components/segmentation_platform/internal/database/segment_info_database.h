@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SEGMENT_INFO_DATABASE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -40,10 +40,10 @@ class SegmentInfoDatabase {
   using MultipleSegmentInfoCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
   using SegmentInfoCallback =
-      base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
+      base::OnceCallback<void(std::optional<proto::SegmentInfo>)>;
   using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;
   using TrainingDataCallback =
-      base::OnceCallback<void(absl::optional<proto::TrainingData>)>;
+      base::OnceCallback<void(std::optional<proto::TrainingData>)>;
 
   explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database,
                                std::unique_ptr<SegmentInfoCache> cache);
@@ -93,7 +93,7 @@ class SegmentInfoDatabase {
   // TODO(shaktisahu): How does the client know if a segment is to be deleted?
   virtual void UpdateSegment(SegmentId segment_id,
                              ModelSource model_source,
-                             absl::optional<proto::SegmentInfo> segment_info,
+                             std::optional<proto::SegmentInfo> segment_info,
                              SuccessCallback callback);
 
   // Called to save or update metadata for multiple segments in a single
@@ -111,7 +111,7 @@ class SegmentInfoDatabase {
   // be deleted.
   virtual void SaveSegmentResult(SegmentId segment_id,
                                  ModelSource model_source,
-                                 absl::optional<proto::PredictionResult> result,
+                                 std::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
 
   // Called to write partial training data for a given segment and model source.

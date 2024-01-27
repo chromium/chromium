@@ -244,7 +244,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
   if (!dict.Find(kPreferRelatedApplications))
     return;
 
-  absl::optional<bool> prefer_related_applications =
+  std::optional<bool> prefer_related_applications =
       dict.FindBool(kPreferRelatedApplications);
   if (!prefer_related_applications.has_value()) {
     log.Warn(base::StringPrintf("The \"%s\" field should be a boolean.",
@@ -562,7 +562,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
       installation_info->sw_scope = *sw_scope;
     }
 
-    absl::optional<bool> use_cache =
+    std::optional<bool> use_cache =
         service_worker_dict->FindBool(kServiceWorkerUseCache);
     if (use_cache.has_value()) {
       installation_info->sw_use_cache = use_cache.value();

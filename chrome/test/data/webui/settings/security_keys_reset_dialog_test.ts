@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {ResetDialogPage, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl, SettingsSecurityKeysResetDialogElement} from 'chrome://settings/lazy_load.js';
+import type {SecurityKeysResetBrowserProxy, SettingsSecurityKeysResetDialogElement} from 'chrome://settings/lazy_load.js';
+import {ResetDialogPage, SecurityKeysResetBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertShown} from './security_keys_test_util.js';

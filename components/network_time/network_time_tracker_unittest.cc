@@ -382,7 +382,7 @@ TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
   base::Time out_network_time;
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
-  absl::optional<double> local, network;
+  std::optional<double> local, network;
   const base::Value::Dict& saved_prefs =
       pref_service_.GetDict(prefs::kNetworkTimeMapping);
   local = saved_prefs.FindDouble("local");

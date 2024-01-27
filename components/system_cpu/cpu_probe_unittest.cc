@@ -40,7 +40,7 @@ class CpuProbeTest : public testing::Test {
     run_loop.Run();
   }
 
-  void CollectorCallback(absl::optional<PressureSample> sample) {
+  void CollectorCallback(std::optional<PressureSample> sample) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (sample.has_value()) {
       samples_.push_back(sample->cpu_utilization);
@@ -118,7 +118,7 @@ TEST_F(CpuProbeTest, DestroyWhileSampling) {
   base::RunLoop run_loop;
   cpu_probe_->RequestSample(base::BindOnce(
       [](base::ScopedClosureRunner quit_closure_runner,
-         absl::optional<PressureSample>) {
+         std::optional<PressureSample>) {
         // `quit_closure_runner` will run the bound `quit_closure` when the
         // callback is destroyed. The callback function shouldn't actually
         // execute because the CpuProbe is destroyed before the RunLoop

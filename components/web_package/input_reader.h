@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_WEB_PACKAGE_INPUT_READER_H_
 #define COMPONENTS_WEB_PACKAGE_INPUT_READER_H_
 
+#include <optional>
+
 #include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -39,7 +40,7 @@ class InputReader {
   uint64_t CurrentOffset() const { return current_offset_; }
   size_t Size() const { return buf_.size(); }
 
-  absl::optional<uint8_t> ReadByte();
+  std::optional<uint8_t> ReadByte();
 
   template <typename T>
   bool ReadBigEndian(T* out) {
@@ -51,17 +52,17 @@ class InputReader {
     return true;
   }
 
-  absl::optional<base::span<const uint8_t>> ReadBytes(size_t n);
+  std::optional<base::span<const uint8_t>> ReadBytes(size_t n);
 
-  absl::optional<base::StringPiece> ReadString(size_t n);
+  std::optional<base::StringPiece> ReadString(size_t n);
 
   // Parses the type and argument of a CBOR item from the input head. If parsed
   // successfully and the type matches |expected_type|, returns the argument.
   // Otherwise returns nullopt.
-  absl::optional<uint64_t> ReadCBORHeader(CBORType expected_type);
+  std::optional<uint64_t> ReadCBORHeader(CBORType expected_type);
 
  private:
-  absl::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();
+  std::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();
 
   void Advance(size_t n);
 

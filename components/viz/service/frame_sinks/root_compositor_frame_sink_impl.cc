@@ -315,7 +315,7 @@ bool RootCompositorFrameSinkImpl::WillEvictSurface(
     quad_state->SetAll(gfx::Transform(), /*layer_rect=*/surface_rect,
                        /*visible_layer_rect=*/surface_rect,
                        /*filter_info=*/gfx::MaskFilterInfo(),
-                       /*clip=*/absl::nullopt,
+                       /*clip=*/std::nullopt,
                        /*contents_opaque=*/true, /*opacity_f=*/1.f,
                        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -539,7 +539,7 @@ void RootCompositorFrameSinkImpl::SetAutoNeedsBeginFrame() {
 void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   if (support_->last_activated_local_surface_id() != local_surface_id &&
       !support_->IsEvicted(local_surface_id)) {
@@ -567,7 +567,7 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
 void RootCompositorFrameSinkImpl::SubmitCompositorFrameSync(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     SubmitCompositorFrameSyncCallback callback) {
   NOTIMPLEMENTED();
@@ -788,7 +788,7 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
 }
 
 void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
-    absl::optional<base::TimeDelta> max_vrr_interval) {
+    std::optional<base::TimeDelta> max_vrr_interval) {
   if (synthetic_begin_frame_source_) {
     synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
   }

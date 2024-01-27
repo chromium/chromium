@@ -118,7 +118,7 @@ void SessionRestorationWebStateObserver::MarkDirty() {
   item_count_ = navigation_manager->GetItemCount();
   last_committed_item_index_ = navigation_manager->GetLastCommittedItemIndex();
 
-  callback_.Run(web_state_);
+  callback_.Run(web_state_.get());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SessionRestorationWebStateObserver)

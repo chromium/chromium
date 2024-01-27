@@ -5,7 +5,8 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import {CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';

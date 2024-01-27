@@ -23,26 +23,77 @@ class TrialTokensManifestTest : public ManifestTest {
   TrialTokensManifestTest() {}
 
  protected:
-  ManifestData CreateManifest(const std::string& trial_tokens) {
-    static constexpr char kManifest[] =
-        R"({
-             "name": "test",
-             "version": "1",
-             "manifest_version": 3,
-             "trial_tokens": %s
-           })";
-    base::Value manifest = base::test::ParseJson(
-        base::StringPrintf(kManifest, trial_tokens.c_str()));
-    return ManifestData(std::move(manifest).TakeDict());
+  // TODO(crbug.com/1484767): Add validation of trial token contents
+  // in TrialTokensHandler::Parse() and generate proper (signed) tokens
+  // to use here
+  // See this for a reference:
+  // third_party/blink/public/common/origin_trials/trial_token_validator.cc
+  static constexpr char kTestExtensionID[] = "id";
+  static constexpr char kValidToken1[] = "valid_token_1";
+  static constexpr char kValidToken2[] = "valid_token_2";
+  static constexpr char kValidToken3[] = "valid_token_3";
+
+  base::Value::Dict CreateManifest(const std::string& trial_tokens) {
+    return base::Value::Dict()
+        .Set("name", "test")
+        .Set("version", "1")
+        .Set("manifest_version", 3)
+        .Set("trial_tokens", base::test::ParseJson(trial_tokens));
   }
 
-  ManifestData CreateManifestNoTrialTokens() {
-    base::Value manifest = base::test::ParseJson(R"({
-             "name": "test",
-             "version": "1",
-             "manifest_version": 3
-           })");
-    return ManifestData(std::move(manifest).TakeDict());
+  base::Value::Dict CreateManifestNoTrialTokens() {
+    return base::Value::Dict()
+        .Set("name", "test")
+        .Set("version", "1")
+        .Set("manifest_version", 3);
+  }
+
+  scoped_refptr<Extension> LoadExtension(
+      const std::string& manifest_trial_tokens) {
+    std::string error;
+    base::FilePath test_data_dir = GetTestDataDir();
+    scoped_refptr<Extension> extension = Extension::Create(
+        test_data_dir.DirName(), mojom::ManifestLocation::kInternal,
+        CreateManifest(manifest_trial_tokens), extensions::Extension::NO_FLAGS,
+        kTestExtensionID, &error);
+
+    // 'trial_tokens' never results in installation failure
+    EXPECT_TRUE(error.empty());
+
+    return extension;
+  }
+
+  void RunTestCase(const std::string& manifest_trial_tokens,
+                   const std::set<std::string>* expected_trial_tokens,
+                   const std::vector<std::string>& expected_warnings) {
+    scoped_refptr<Extension> extension = LoadExtension(manifest_trial_tokens);
+
+    const std::set<std::string>* trial_tokens =
+        TrialTokens::GetTrialTokens(*extension.get());
+
+    EXPECT_EQ(trial_tokens == nullptr,
+              !TrialTokens::HasTrialTokens(*extension.get()));
+
+    if (expected_trial_tokens) {
+      ASSERT_TRUE(trial_tokens);
+      EXPECT_EQ(*expected_trial_tokens, *trial_tokens);
+    } else {
+      EXPECT_EQ(nullptr, trial_tokens);
+    }
+
+    std::vector<InstallWarning> expected_install_warnings;
+    expected_install_warnings.reserve(expected_warnings.size());
+    for (const std::string& warning : expected_warnings) {
+      expected_install_warnings.push_back(InstallWarning(warning));
+    }
+    EXPECT_EQ(expected_install_warnings, extension.get()->install_warnings());
+  }
+
+  void RunTestCase(const std::string& manifest_trial_tokens,
+                   const std::set<std::string>& expected_trial_tokens,
+                   const std::vector<std::string>& expected_warnings) {
+    RunTestCase(manifest_trial_tokens, &expected_trial_tokens,
+                expected_warnings);
   }
 
  private:
@@ -53,61 +104,79 @@ class TrialTokensManifestTest : public ManifestTest {
 
 TEST_F(TrialTokensManifestTest, InvalidTrialTokensList) {
   // Must be a non-empty list
-  LoadAndExpectError(CreateManifest("32"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
-  LoadAndExpectError(CreateManifest("true"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
-  LoadAndExpectError(CreateManifest(R"("not_a_valid_token_list")"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
-  LoadAndExpectError(CreateManifest("{}"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
-  LoadAndExpectError(CreateManifest(R"({"foo": false})"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
-  LoadAndExpectError(CreateManifest(R"([])"),
-                     manifest_errors::kInvalidTrialTokensNonEmptyList);
+  RunTestCase("32", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
+  RunTestCase("true", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
+  RunTestCase(R"("not_a_valid_token_list")", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
+  RunTestCase("{}", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
+  RunTestCase(R"({"foo": false})", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
+  RunTestCase(R"([])", nullptr,
+              {manifest_errors::kInvalidTrialTokensNonEmptyList});
 }
 
 TEST_F(TrialTokensManifestTest, InvalidTrialTokensValue) {
   // Every token must be a non-empty string
-  LoadAndExpectError(CreateManifest(R"([""])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"([32])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"([true])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"([["valid_token"]])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"(["valid_token", ""])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"(["valid_token", 32])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"(["valid_token", true])"),
-                     manifest_errors::kInvalidTrialTokensValue);
-  LoadAndExpectError(CreateManifest(R"(["valid_token", ["valid_token"]])"),
-                     manifest_errors::kInvalidTrialTokensValue);
+  RunTestCase(R"([""])", nullptr, {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(R"([32])", nullptr, {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(R"([true])", nullptr,
+              {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(base::StringPrintf(R"([["%s"]])", kValidToken1), nullptr,
+              {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(base::StringPrintf(R"(["%s", ""])", kValidToken1), {kValidToken1},
+              {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(base::StringPrintf(R"(["%s", 32])", kValidToken1), {kValidToken1},
+              {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(base::StringPrintf(R"(["%s", true])", kValidToken1),
+              {kValidToken1}, {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(
+      base::StringPrintf(R"(["%s", ["%s"]])", kValidToken1, kValidToken1),
+      {kValidToken1}, {manifest_errors::kInvalidTrialTokensValue});
+  RunTestCase(
+      base::StringPrintf(R"(["%s", "%s"])", kValidToken1, kValidToken1),
+      {kValidToken1},
+      {base::StringPrintf(manifest_errors::kInvalidTrialTokensValueDuplicate,
+                          kValidToken1)});
+  RunTestCase(
+      base::StringPrintf(R"(["%s", "%s", "%s", "%s", "%s"])", kValidToken1,
+                         kValidToken2, kValidToken2, kValidToken3,
+                         kValidToken1),
+      {kValidToken1, kValidToken2, kValidToken3},
+      {base::StringPrintf(manifest_errors::kInvalidTrialTokensValueDuplicate,
+                          kValidToken2),
+       base::StringPrintf(manifest_errors::kInvalidTrialTokensValueDuplicate,
+                          kValidToken1)});
 }
 
 TEST_F(TrialTokensManifestTest, NoTrialTokens) {
-  auto good = LoadAndExpectSuccess(CreateManifestNoTrialTokens());
+  scoped_refptr<Extension> good =
+      LoadAndExpectSuccess(ManifestData(CreateManifestNoTrialTokens()));
   EXPECT_FALSE(TrialTokens::HasTrialTokens(*good.get()));
   EXPECT_EQ(TrialTokens::GetTrialTokens(*good.get()), nullptr);
 }
 
 TEST_F(TrialTokensManifestTest, VerifyParse) {
-  auto good = LoadAndExpectSuccess(CreateManifest(R"(["valid_token"])"));
+  scoped_refptr<Extension> good = LoadAndExpectSuccess(ManifestData(
+      CreateManifest(base::StringPrintf(R"(["%s"])", kValidToken1))));
   EXPECT_TRUE(TrialTokens::HasTrialTokens(*good.get()));
 
-  auto* tokens = TrialTokens::GetTrialTokens(*good.get());
-  EXPECT_EQ(1u, tokens->size());
-  EXPECT_TRUE(tokens->contains("valid_token"));
+  const std::set<std::string>* tokens =
+      TrialTokens::GetTrialTokens(*good.get());
+  ASSERT_TRUE(tokens);
+  EXPECT_EQ(std::set({std::string(kValidToken1)}), *tokens);
 }
 
 // TODO(crbug.com/1484767): remove this test before launch to stable
 TEST_F(TrialTokensManifestTest, NotAvailableInStable) {
   ScopedCurrentChannel channel{version_info::Channel::STABLE};
 
-  auto good = LoadAndExpectSuccess(CreateManifest(R"(["valid_token"])"));
+  scoped_refptr<Extension> good = LoadAndExpectSuccess(ManifestData(
+      CreateManifest(base::StringPrintf(R"(["%s"])", kValidToken1))));
   EXPECT_FALSE(TrialTokens::HasTrialTokens(*good.get()));
+  EXPECT_EQ(TrialTokens::GetTrialTokens(*good.get()), nullptr);
 }
 
 }  // namespace extensions

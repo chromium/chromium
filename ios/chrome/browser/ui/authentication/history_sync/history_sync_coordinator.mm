@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -35,7 +36,7 @@
   // History view controller.
   HistorySyncViewController* _viewController;
   // Pref service.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // `YES` if coordinator used during the first run.
   BOOL _firstRun;
   // `YES` if the user's email should be shown in the footer text.

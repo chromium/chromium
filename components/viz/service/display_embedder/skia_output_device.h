@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -20,7 +21,6 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/swap_result.h"
@@ -142,7 +142,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // Presents the back buffer. Optional `update_rect` represents hint of the
   // rect that was updated in the back buffer. If not specified the whole buffer
   // is supposed to be updated.
-  virtual void Present(const absl::optional<gfx::Rect>& update_rect,
+  virtual void Present(const std::optional<gfx::Rect>& update_rect,
                        BufferPresentedCallback feedback,
                        OutputSurfaceFrame frame) = 0;
   virtual bool EnsureMinNumberOfBuffers(size_t n);
@@ -165,8 +165,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // primary plane will be on screen when SwapBuffers() or PostSubBuffer() is
   // called.
   virtual void SchedulePrimaryPlane(
-      const absl::optional<
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane);
+      const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+          plane);
 
   // Schedule overlays which will be on screen when SwapBuffers() or
   // PostSubBuffer() is called.
@@ -209,7 +209,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     uint64_t SwapId();
     const gpu::SwapBuffersCompleteParams& Complete(
         gfx::SwapCompletionResult result,
-        const absl::optional<gfx::Rect>& damage_area,
+        const std::optional<gfx::Rect>& damage_area,
         std::vector<gpu::Mailbox> released_overlays,
         const gpu::Mailbox& primary_plane_mailbox,
         int64_t swap_trace_id);
@@ -255,7 +255,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       gfx::SwapCompletionResult result,
       const gfx::Size& size,
       OutputSurfaceFrame frame,
-      const absl::optional<gfx::Rect>& damage_area = absl::nullopt,
+      const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 

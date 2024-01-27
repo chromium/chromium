@@ -169,7 +169,7 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdated(
     intent_filters_[filter.package_name()].push_back(std::move(filter));
 
   for (auto& observer : observer_list_)
-    observer.OnIntentFiltersUpdated(absl::nullopt);
+    observer.OnIntentFiltersUpdated(std::nullopt);
 }
 
 void ArcIntentHelperBridge::OnOpenDownloads() {

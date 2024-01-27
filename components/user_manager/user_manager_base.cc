@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
@@ -370,13 +370,13 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
 
 void UserManagerBase::RemoveUserFromListForRecreation(
     const AccountId& account_id) {
-  RemoveUserFromListImpl(account_id, /*reason=*/absl::nullopt,
+  RemoveUserFromListImpl(account_id, /*reason=*/std::nullopt,
                          /*trigger_cryptohome_removal=*/false);
 }
 
 void UserManagerBase::RemoveUserFromListImpl(
     const AccountId& account_id,
-    absl::optional<UserRemovalReason> reason,
+    std::optional<UserRemovalReason> reason,
     bool trigger_cryptohome_removal) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   if (reason.has_value()) {
@@ -556,19 +556,19 @@ void UserManagerBase::SaveUserType(const User* user) {
   local_state_->CommitPendingWrite();
 }
 
-absl::optional<std::string> UserManagerBase::GetOwnerEmail() {
+std::optional<std::string> UserManagerBase::GetOwnerEmail() {
   const base::Value::Dict& owner = local_state_->GetDict(kOwnerAccount);
-  absl::optional<int> type = owner.FindInt(kOwnerAccountType);
+  std::optional<int> type = owner.FindInt(kOwnerAccountType);
   if (!type.has_value() || (static_cast<OwnerAccountType>(type.value())) !=
                                OwnerAccountType::kGoogleEmail) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* email = owner.FindString(kOwnerAccountIdentity);
   // A valid email should not be empty, so return a nullopt if Chrome
   // accidentally saved an empty string.
   if (!email || email->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *email;
 }
@@ -936,7 +936,7 @@ void UserManagerBase::SetIsCurrentUserNew(bool is_new) {
 }
 
 void UserManagerBase::ResetOwnerId() {
-  owner_account_id_ = absl::nullopt;
+  owner_account_id_ = std::nullopt;
 }
 
 void UserManagerBase::SetOwnerId(const AccountId& owner_account_id) {
@@ -1216,7 +1216,7 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
   const base::Value::Dict& prefs_oauth_status =
       local_state_->GetDict(kUserOAuthTokenStatus);
 
-  absl::optional<int> oauth_token_status =
+  std::optional<int> oauth_token_status =
       prefs_oauth_status.FindInt(account_id.GetUserEmail());
   if (!oauth_token_status.has_value())
     return User::OAUTH_TOKEN_STATUS_UNKNOWN;

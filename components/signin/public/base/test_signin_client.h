@@ -23,8 +23,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 class PrefService;
@@ -117,11 +118,11 @@ class TestSigninClient : public SigninClient {
           event_source) override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
-  absl::optional<bool> IsInitialPrimaryAccountChild() const override;
+  std::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  std::optional<bool> IsInitialPrimaryAccountChild() const override;
 
   void SetInitialPrimaryAccountForTests(const account_manager::Account& account,
-                                        const absl::optional<bool>& is_child);
+                                        const std::optional<bool>& is_child);
   void RemoveAccount(const account_manager::AccountKey& account_key) override;
 
   void RemoveAllAccounts() override;
@@ -139,8 +140,8 @@ class TestSigninClient : public SigninClient {
   bool are_signin_cookies_allowed_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<account_manager::Account> initial_primary_account_;
-  absl::optional<bool> is_initial_primary_account_child_;
+  std::optional<account_manager::Account> initial_primary_account_;
+  std::optional<bool> is_initial_primary_account_child_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

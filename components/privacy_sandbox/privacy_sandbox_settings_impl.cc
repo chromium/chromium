@@ -523,7 +523,7 @@ void PrivacySandboxSettingsImpl::ClearFledgeJoiningAllowedSettings(
 
   std::vector<std::string> keys_to_remove;
   for (auto entry : pref_data) {
-    absl::optional<base::Time> created_time = base::ValueToTime(entry.second);
+    std::optional<base::Time> created_time = base::ValueToTime(entry.second);
     if (created_time.has_value() && start_time <= created_time &&
         created_time <= end_time) {
       keys_to_remove.push_back(entry.first);

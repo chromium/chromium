@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "components/media_message_center/media_notification_background.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -82,8 +83,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
   double artwork_max_width_pct_;
   bool audio_device_selector_visible_ = false;
 
-  absl::optional<SkColor> background_color_;
-  absl::optional<SkColor> foreground_color_;
+  std::optional<SkColor> background_color_;
+  std::optional<SkColor> foreground_color_;
 };
 
 }  // namespace media_message_center

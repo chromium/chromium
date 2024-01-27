@@ -60,15 +60,10 @@ class PredictionModelFetchTimerTestBase : public testing::Test {
   std::unique_ptr<PredictionModelFetchTimer> prediction_model_fetch_timer_;
 
   // Holds the last time the models were fetched.
-  absl::optional<base::Time> last_model_fetch_time_;
+  std::optional<base::Time> last_model_fetch_time_;
 };
 
 class PredictionModelFetchTimerTest : public PredictionModelFetchTimerTestBase {
- public:
-  PredictionModelFetchTimerTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kOptimizationGuideInstallWideModelStore);
-  }
 };
 
 TEST_F(PredictionModelFetchTimerTest, FirstModelFetch) {
@@ -85,7 +80,7 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchSuccess) {
   EXPECT_TRUE(last_model_fetch_time_);
   EXPECT_EQ(PredictionModelFetchTimer::kFirstFetch,
             GetPredictionModelFetchTimerState());
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
 
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
   prediction_model_fetch_timer_->NotifyModelFetchSuccess();
@@ -111,7 +106,7 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   EXPECT_TRUE(last_model_fetch_time_);
   EXPECT_EQ(PredictionModelFetchTimer::kFirstFetch,
             GetPredictionModelFetchTimerState());
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
 
   // Without updating the model fetch attempt, it will retry.
   prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
@@ -123,7 +118,7 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   EXPECT_TRUE(last_model_fetch_time_);
 
   // Without updating the model fetch success attempt, it will retry.
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
   prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
   EXPECT_EQ(features::PredictionModelFetchRetryDelay(),
@@ -134,7 +129,7 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
   EXPECT_TRUE(last_model_fetch_time_);
 
   // With model fetch attempt and success updated, it will be periodic fetch.
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
   prediction_model_fetch_timer_->NotifyModelFetchSuccess();
   prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
@@ -159,7 +154,7 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
 
   MoveClockTillFirstModelFetch();
   EXPECT_TRUE(last_model_fetch_time_);
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
 
   // Complete the first model fetch.
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
@@ -172,7 +167,7 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
                 ->GetCurrentDelay());
 
   // New model registrations will trigger the model fetch again.
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
   prediction_model_fetch_timer_->ScheduleFetchOnModelRegistration();
   EXPECT_EQ(PredictionModelFetchTimer::kNewRegistrationFetch,
             GetPredictionModelFetchTimerState());
@@ -187,50 +182,12 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
   MoveClockForwardBy(features::PredictionModelNewRegistrationFetchDelay() +
                      features::PredictionModelFetchRandomMaxDelay());
   EXPECT_TRUE(last_model_fetch_time_);
-  last_model_fetch_time_ = absl::nullopt;
+  last_model_fetch_time_ = std::nullopt;
 
   // Subsequently it will be periodic fetch.
   prediction_model_fetch_timer_->NotifyModelFetchAttempt();
   prediction_model_fetch_timer_->NotifyModelFetchSuccess();
   prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
-  EXPECT_EQ(PredictionModelFetchTimer::kPeriodicFetch,
-            GetPredictionModelFetchTimerState());
-  EXPECT_EQ(features::PredictionModelFetchInterval(),
-            prediction_model_fetch_timer_->GetFetchTimerForTesting()
-                ->GetCurrentDelay());
-}
-
-class PredictionModelFetchTimerInstallWideModelStoreDisabledTest
-    : public PredictionModelFetchTimerTestBase {
- public:
-  PredictionModelFetchTimerInstallWideModelStoreDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kOptimizationGuideInstallWideModelStore);
-  }
-};
-
-TEST_F(PredictionModelFetchTimerInstallWideModelStoreDisabledTest,
-       NewRegistrationFetchDisabledWithoutFeature) {
-  prediction_model_fetch_timer_->MaybeScheduleFirstModelFetch();
-  MoveClockTillFirstModelFetch();
-  EXPECT_TRUE(last_model_fetch_time_);
-  EXPECT_EQ(PredictionModelFetchTimer::kFirstFetch,
-            GetPredictionModelFetchTimerState());
-  last_model_fetch_time_ = absl::nullopt;
-
-  // Complete the first model fetch.
-  prediction_model_fetch_timer_->NotifyModelFetchAttempt();
-  prediction_model_fetch_timer_->NotifyModelFetchSuccess();
-  prediction_model_fetch_timer_->SchedulePeriodicModelsFetch();
-  EXPECT_EQ(PredictionModelFetchTimer::kPeriodicFetch,
-            GetPredictionModelFetchTimerState());
-  EXPECT_EQ(features::PredictionModelFetchInterval(),
-            prediction_model_fetch_timer_->GetFetchTimerForTesting()
-                ->GetCurrentDelay());
-
-  // New model registrations will not trigger the model fetch again.
-  last_model_fetch_time_ = absl::nullopt;
-  prediction_model_fetch_timer_->ScheduleFetchOnModelRegistration();
   EXPECT_EQ(PredictionModelFetchTimer::kPeriodicFetch,
             GetPredictionModelFetchTimerState());
   EXPECT_EQ(features::PredictionModelFetchInterval(),

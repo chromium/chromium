@@ -6,6 +6,7 @@
 #import <string>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"
@@ -95,7 +96,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
   TableViewTextHeaderFooterView* _footerView;
 
   // Owns `self`.
-  autofill::CardNameFixFlowViewBridge* _bridge;  // weak
+  raw_ptr<autofill::CardNameFixFlowViewBridge> _bridge;  // weak
 }
 
 @end

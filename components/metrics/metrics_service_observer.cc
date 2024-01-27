@@ -153,7 +153,7 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
 }
 
 void MetricsServiceObserver::OnLogType(
-    absl::optional<MetricsLog::LogType> log_type) {
+    std::optional<MetricsLog::LogType> log_type) {
   uma_log_type_ = log_type;
 }
 

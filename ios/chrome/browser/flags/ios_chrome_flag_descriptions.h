@@ -153,11 +153,6 @@ extern const char kSpotlightDonateNewIntentsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Title and description for the flag to enable deletion of undecryptable
-// passwords from Sync.
-extern const char kClearUndecryptablePasswordsOnSyncName[];
-extern const char kClearUndecryptablePasswordsOnSyncDescription[];
-
 // Title and description for the flag to enable the content notifications
 // feature.
 extern const char kContentPushNotificationsName[];
@@ -692,11 +687,6 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOneTapForMapsName[];
 extern const char kOneTapForMapsDescription[];
 
-// Title and description for the flag to enable using annotations manager to
-// fetch web page text used for language detection.
-extern const char kUseAnnotationsForLanguageDetectionName[];
-extern const char kUseAnnotationsForLanguageDetectionDescription[];
-
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];
@@ -790,11 +780,6 @@ extern const char kShareInWebContextMenuIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
-// Title and description for the flag to enable ignoring undecryptable passwords
-// in the password storage.
-extern const char kSkipUndecryptablePasswordsName[];
-extern const char kSkipUndecryptablePasswordsDescription[];
-
 // Title and description for the flag to index open tabs items in Spotlight.
 extern const char kSpotlightOpenTabsSourceName[];
 extern const char kSpotlightOpenTabsSourceDescription[];
@@ -806,6 +791,11 @@ extern const char kSpotlightReadingListSourceDescription[];
 // Title and description for the flag to enable the Start Surface.
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
+
+// Title and description for the flag to control if custom passphrase should be
+// remembered after sign-out.
+extern const char kSyncRememberCustomPassphraseAfterSignoutName[];
+extern const char kSyncRememberCustomPassphraseAfterSignoutDescription[];
 
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.

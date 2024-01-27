@@ -103,9 +103,7 @@ class PredictionManagerTestBase : public PlatformTest {
     PlatformTest::SetUp();
 
     InitializeFeatureList();
-    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      OptimizationGuideServiceFactory::InitializePredictionModelStore();
-    }
+    OptimizationGuideServiceFactory::InitializePredictionModelStore();
 
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         true);
@@ -163,12 +161,9 @@ class PredictionManagerTestBase : public PlatformTest {
   void TearDown() override {
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         false);
-    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      // Reinitialize the store, so that tests do not use state from the
-      // previous test.
-      optimization_guide::PredictionModelStore::GetInstance()
-          ->ResetForTesting();
-    }
+    // Reinitialize the store, so that tests do not use state from the
+    // previous test.
+    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
     PlatformTest::TearDown();
   }
 
@@ -293,8 +288,6 @@ class PredictionManagerTest : public PredictionManagerTestBase {
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "2000"}}},
         {optimization_guide::features::kOptimizationGuideModelDownloading, {}},
-        {optimization_guide::features::kOptimizationGuideInstallWideModelStore,
-         {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -438,8 +431,6 @@ class PredictionManagerModelDownloadingBrowserTest
          {{"fetch_startup_delay_ms", "2000"}}},
         {optimization_guide::features::kOptimizationGuideModelDownloading,
          {{"unrestricted_model_downloading", "true"}}},
-        {optimization_guide::features::kOptimizationGuideInstallWideModelStore,
-         {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }

@@ -1602,7 +1602,7 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
           last_interacted_.saved_state.has_value()) {
         // Should not access the frame because it is now detached. Instead, use
-        // |last_interacted_.saved_state|.
+        // `last_interacted_.saved_state`.
         FireHostSubmitEvents(last_interacted_.saved_state.value(),
                              /*known_success=*/true, source);
       }

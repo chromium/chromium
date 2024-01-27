@@ -119,7 +119,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts) {
       url2, ContentSettingsType::GEOLOCATION, false));
 
   // Verify all dismissals recorded above resulted in embargo.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url1, ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(PermissionStatus::DENIED, result->status);
   EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_DISMISSALS,
@@ -146,7 +146,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts) {
             result->source);
   result =
       autoblocker()->GetEmbargoResult(url1, ContentSettingsType::NOTIFICATIONS);
-  // If not under embargo, GetEmbargoResult() returns absl::nullopt.
+  // If not under embargo, GetEmbargoResult() returns std::nullopt.
   EXPECT_FALSE(result.has_value());
   // Verify |url2|'s embargo is still intact as well.
   result =
@@ -171,7 +171,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
       url, ContentSettingsType::GEOLOCATION, false));
 
   // Verify location is under embargo.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(PermissionStatus::DENIED, result->status);
   EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_DISMISSALS,
@@ -459,7 +459,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, CheckEmbargoStatus) {
   clock()->SetNow(base::Time::Now());
 
   // Check the default state.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::GEOLOCATION);
   EXPECT_FALSE(result.has_value());
 
@@ -573,7 +573,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, CheckEmbargoStartTime) {
   embargo_start_time =
       autoblocker()->GetEmbargoStartTime(url, ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(test_time, embargo_start_time);
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::GEOLOCATION);
   EXPECT_FALSE(result.has_value());
 
@@ -651,7 +651,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestDismissEmbargoBackoff) {
       url, ContentSettingsType::GEOLOCATION, false));
 
   // A request with < 3 prior dismisses should not be automatically blocked.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::GEOLOCATION);
   EXPECT_FALSE(result.has_value());
 
@@ -710,7 +710,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestIgnoreEmbargoBackoff) {
       url, ContentSettingsType::MIDI_SYSEX, false));
 
   // A request with < 4 prior ignores should not be automatically blocked.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::MIDI_SYSEX);
   EXPECT_FALSE(result.has_value());
 
@@ -761,7 +761,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestIgnoreEmbargoUsingQuietUi) {
   clock()->SetNow(base::Time::Now());
 
   // Check the default state.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::NOTIFICATIONS);
   EXPECT_FALSE(result.has_value());
 
@@ -794,7 +794,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestDismissEmbargoUsingQuietUi) {
   clock()->SetNow(base::Time::Now());
 
   // Check the default state.
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(url, ContentSettingsType::NOTIFICATIONS);
   EXPECT_FALSE(result.has_value());
 
@@ -827,7 +827,7 @@ void CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
   ASSERT_LT(base::Minutes(1), time_delta);
 
   clock->Advance(time_delta - base::Minutes(1));
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker->GetEmbargoResult(
           url, ContentSettingsType::FEDERATED_IDENTITY_API);
   EXPECT_EQ(PermissionStatus::DENIED, result->status);
@@ -850,7 +850,7 @@ void CheckFederatedIdentityAutoReauthnEmbargoLiftedAfterTimeElapsing(
   ASSERT_LT(base::Minutes(1), time_delta);
 
   clock->Advance(time_delta - base::Minutes(1));
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker->GetEmbargoResult(
           url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   EXPECT_EQ(PermissionStatus::DENIED, result->status);
@@ -869,7 +869,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
   GURL url("https://www.google.com");
   clock()->SetNow(base::Time::Now());
 
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(
           url, ContentSettingsType::FEDERATED_IDENTITY_API);
   EXPECT_FALSE(result.has_value());
@@ -922,7 +922,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
   GURL url("https://www.google.com");
   clock()->SetNow(base::Time::Now());
 
-  absl::optional<content::PermissionResult> result =
+  std::optional<content::PermissionResult> result =
       autoblocker()->GetEmbargoResult(
           url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
   EXPECT_FALSE(result.has_value());

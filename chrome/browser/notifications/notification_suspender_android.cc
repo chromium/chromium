@@ -19,12 +19,12 @@
 #include "ui/gfx/image/image.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::NotificationResourceData;
 using content::PlatformNotificationContext;
+using jni_zero::AttachCurrentThread;
 
 namespace {
 

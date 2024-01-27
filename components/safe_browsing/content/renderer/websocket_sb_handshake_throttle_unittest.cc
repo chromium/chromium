@@ -127,7 +127,7 @@ class FakeCallback {
 
   FakeCallback() : result_(RESULT_NOT_CALLED) {}
 
-  void OnCompletion(const absl::optional<blink::WebString>& message) {
+  void OnCompletion(const std::optional<blink::WebString>& message) {
     if (message) {
       result_ = RESULT_ERROR;
       message_ = *message;

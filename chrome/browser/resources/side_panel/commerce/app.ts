@@ -14,12 +14,12 @@ import '//resources/cr_elements/mwb_element_shared_style.css.js';
 import '//shopping-insights-side-panel.top-chrome/shared/sp_shared_style.css.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {PriceInsightsInfo, ProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ShoppingServiceApiProxy} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import {ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
-import type {PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 
 import {getTemplate} from './app.html.js';
 
@@ -57,8 +57,7 @@ export class ShoppingInsightsAppElement extends PolymerElement {
   priceInsightsInfo: PriceInsightsInfo;
   private isProductTrackable_: boolean;
   private isProductTracked_: boolean;
-  private shoppingApi_: ShoppingServiceApiProxy =
-      ShoppingServiceApiProxyImpl.getInstance();
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     super();

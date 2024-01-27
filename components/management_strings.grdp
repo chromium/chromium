@@ -141,8 +141,8 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_STATUS" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage
     </message>
-    <message name="IDS_MANAGEMENT_LOG_UPLOAD_ENABLED" desc="Message stating that administrators have access to system logs on user's device.">
-      Detailed system logs
+    <message name="IDS_MANAGEMENT_LOG_UPLOAD_ENABLED" desc="Message stating that administrators have access to system logs on user's device and provides a 'Learn more' link.">
+      Detailed system logs. <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a?p=remote-log"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA" desc="Message stating that administrators see device network interfaces.">
       Networking information such as addresses, interface configuration, and connection quality

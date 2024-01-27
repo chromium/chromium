@@ -113,7 +113,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        FeatureEnabled_ComponentReady_ErroneousPrimarySpec) {
   if (!GetParam()) {
-    GTEST_SKIP_("Reason: Test parameter instance N/A");
+    GTEST_SKIP() << "Reason: Test parameter instance N/A";
   }
 
   const std::string primary_pattern_spec = "[*]bar.com";
@@ -138,7 +138,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        FeatureEnabled_ComponentReady_ErroneousSecondarySpec) {
   if (!GetParam()) {
-    GTEST_SKIP_("Reason: Test parameter instance N/A");
+    GTEST_SKIP() << "Reason: Test parameter instance N/A";
   }
 
   const std::string primary_pattern_spec = "[*.]bar.com";
@@ -163,7 +163,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        FeatureEnabled_ComponentReady_FiresCallback) {
   if (!GetParam()) {
-    GTEST_SKIP_("Reason: Test parameter instance N/A");
+    GTEST_SKIP() << "Reason: Test parameter instance N/A";
   }
 
   const std::string primary_pattern_spec = "[*.]bar.com";
@@ -200,7 +200,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        FeatureDisabled_ComponentReady_DoesNotFireCallback) {
   if (GetParam()) {
-    GTEST_SKIP_("Reason: Test parameter instance N/A");
+    GTEST_SKIP() << "Reason: Test parameter instance N/A";
   }
 
   const std::string primary_pattern_spec = "[*.]bar.com";

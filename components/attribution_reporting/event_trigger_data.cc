@@ -62,7 +62,7 @@ EventTriggerData::EventTriggerData() = default;
 
 EventTriggerData::EventTriggerData(uint64_t data,
                                    int64_t priority,
-                                   absl::optional<uint64_t> dedup_key,
+                                   std::optional<uint64_t> dedup_key,
                                    FilterPair filters)
     : data(data),
       priority(priority),

@@ -6,11 +6,11 @@
 #define COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "components/live_caption/caption_bubble_session_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {

@@ -35,7 +35,7 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
       {
           "empty",
           R"json({})json",
-          ValueIs(AllOf(Field(&AggregatableDedupKey::dedup_key, absl::nullopt),
+          ValueIs(AllOf(Field(&AggregatableDedupKey::dedup_key, std::nullopt),
                         Field(&AggregatableDedupKey::filters, FilterPair()))),
       },
       {

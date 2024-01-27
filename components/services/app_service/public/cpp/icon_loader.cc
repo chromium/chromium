@@ -61,8 +61,8 @@ IconLoader::IconLoader() = default;
 
 IconLoader::~IconLoader() = default;
 
-absl::optional<IconKey> IconLoader::GetIconKey(const std::string& id) {
-  return absl::make_optional<IconKey>();
+std::optional<IconKey> IconLoader::GetIconKey(const std::string& id) {
+  return std::make_optional<IconKey>();
 }
 
 std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIcon(

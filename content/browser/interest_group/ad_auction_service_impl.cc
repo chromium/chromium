@@ -54,6 +54,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -586,8 +587,7 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   if (!trusted_url_loader_factory_ ||
       !trusted_url_loader_factory_.is_connected()) {
     trusted_url_loader_factory_.reset();
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
-        trusted_url_loader_factory_.BindNewPipeAndPassReceiver();
+    network::URLLoaderFactoryBuilder factory_builder;
 
     // TODO(mmenke): Should this have its own URLLoaderFactoryType? FLEDGE
     // requests are very different from subresource requests.
@@ -599,15 +599,16 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
         url::Origin(), /*navigation_id=*/std::nullopt,
         ukm::SourceIdObj::FromInt64(render_frame_host().GetPageUkmSourceId()),
-        &factory_receiver, /*header_client=*/nullptr,
+        factory_builder, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
         /*factory_override=*/nullptr,
         /*navigation_response_task_runner=*/nullptr);
 
-    render_frame_host()
-        .GetStoragePartition()
-        ->GetURLLoaderFactoryForBrowserProcess()
-        ->Clone(std::move(factory_receiver));
+    std::move(factory_builder)
+        .Finish(trusted_url_loader_factory_.BindNewPipeAndPassReceiver(),
+                render_frame_host()
+                    .GetStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess());
 
     mojo::Remote<network::mojom::URLLoaderFactory> shared_remote;
     trusted_url_loader_factory_->Clone(
@@ -929,17 +930,20 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();
   network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
-  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      loader_ptr, std::move(state.coordinator),
-      base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
-                     weak_ptr_factory_.GetWeakPtr(), state.request_id,
-                     std::move(loader)));
 
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
       /* generation_id=*/base::Uuid::GenerateRandomV4(),
       base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
                      weak_ptr_factory_.GetWeakPtr(), state.request_id));
+
+  // GetBiddingAndAuctionServerKey can call its callback synchronously, so we
+  // need to call it last in case it invalidates `state`.
+  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
+      loader_ptr, std::move(state.coordinator),
+      base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
+                     weak_ptr_factory_.GetWeakPtr(), state.request_id,
+                     std::move(loader)));
 }
 
 void AdAuctionServiceImpl::OnGotAuctionData(base::Uuid request_id,

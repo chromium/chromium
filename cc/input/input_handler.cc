@@ -234,6 +234,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // oopif.
   if (GetViewport().ShouldScroll(*CurrentlyScrollingNode())) {
     outer_viewport_consumed_delta_ = false;
+    inner_viewport_consumed_delta_ = false;
     if (!GetViewport().CanScroll(*CurrentlyScrollingNode(), *scroll_state)) {
       // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
       // as they create viewport nodes and want to bubble scroll if the
@@ -1023,6 +1024,9 @@ void InputHandler::ProcessCommitDeltas(
     commit_data->scroll_end_data.gesture_affects_outer_viewport_scroll =
         outer_viewport_consumed_delta_;
     outer_viewport_consumed_delta_ = false;
+    commit_data->scroll_end_data.gesture_affects_inner_viewport_scroll =
+        inner_viewport_consumed_delta_;
+    inner_viewport_consumed_delta_ = false;
   }
 }
 
@@ -1639,6 +1643,10 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
             std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
           outer_viewport_consumed_delta_ = true;
         }
+        if (std::abs(result.inner_viewport_scrolled_delta.x()) > kEpsilon ||
+            std::abs(result.inner_viewport_scrolled_delta.y()) > kEpsilon) {
+          inner_viewport_consumed_delta_ = true;
+        }
       } else {
         applied_delta = ComputeScrollDelta(scroll_node, delta);
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
@@ -1674,6 +1682,10 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       if (std::abs(result.outer_viewport_scrolled_delta.x()) > kEpsilon ||
           std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
         outer_viewport_consumed_delta_ = true;
+      }
+      if (std::abs(result.inner_viewport_scrolled_delta.x()) > kEpsilon ||
+          std::abs(result.inner_viewport_scrolled_delta.y()) > kEpsilon) {
+        inner_viewport_consumed_delta_ = true;
       }
     } else {
       applied_delta = ScrollSingleNode(scroll_node, delta, viewport_point,

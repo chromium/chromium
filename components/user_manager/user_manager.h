@@ -335,7 +335,7 @@ class USER_MANAGER_EXPORT UserManager {
   // only guest sessions or it's a managed device). This is a secondary / backup
   // mechanism to determine the owner user, prefer relying on device policies or
   // possession of the private key when possible.
-  virtual absl::optional<std::string> GetOwnerEmail() = 0;
+  virtual std::optional<std::string> GetOwnerEmail() = 0;
 
   // Records the identity of the owner user. In the current implementation
   // always stores the email.

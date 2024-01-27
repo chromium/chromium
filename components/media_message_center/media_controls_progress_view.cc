@@ -47,7 +47,7 @@ MediaControlsProgressView::MediaControlsProgressView(
   progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_->SetPreferredHeight(
       is_modern_notification_ ? kModernProgressBarHeight : kProgressBarHeight);
-  progress_bar_->SetPreferredCornerRadii(absl::nullopt);
+  progress_bar_->SetPreferredCornerRadii(std::nullopt);
 
   // Font list for text views.
   gfx::Font default_font;

@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 
+#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
@@ -11,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/kalman_predictor.h"
 #include "ui/base/prediction/least_squares_predictor.h"
 #include "ui/base/prediction/linear_predictor.h"

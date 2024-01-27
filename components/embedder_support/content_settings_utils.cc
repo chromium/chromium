@@ -81,7 +81,7 @@ bool AllowWorkerStorageAccess(
 content::AllowServiceWorkerResult AllowServiceWorker(
     const GURL& scope,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -129,7 +129,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 bool AllowSharedWorker(
     const GURL& worker_url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
     int render_process_id,

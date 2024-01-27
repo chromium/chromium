@@ -60,7 +60,7 @@ blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
     allow_origins.emplace_back(*blink::OriginWithPossibleWildcards::FromOrigin(
         url::Origin::Create(GURL(origin))));
   }
-  return {{feature, allow_origins, /*self_if_matches=*/absl::nullopt,
+  return {{feature, allow_origins, /*self_if_matches=*/std::nullopt,
            matches_all_origins,
            /*matches_opaque_src*/ false}};
 }
@@ -74,13 +74,13 @@ PermissionRequestManager* SetupRequestManager(
 struct PermissionsDelegationTestConfig {
   ContentSettingsType type;
   PermissionAction action;
-  absl::optional<blink::mojom::PermissionsPolicyFeature> feature_overriden;
+  std::optional<blink::mojom::PermissionsPolicyFeature> feature_overriden;
 
   bool matches_all_origins;
   std::vector<std::string> origins;
 
   // Expected resulting permissions policy configuration.
-  absl::optional<PermissionHeaderPolicyForUMA> expected_configuration;
+  std::optional<PermissionHeaderPolicyForUMA> expected_configuration;
 };
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -260,31 +260,31 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
 TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
   base::HistogramTester histograms;
 
-  const absl::optional<base::Version> empty_version;
+  const std::optional<base::Version> empty_version;
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(empty_version);
   histograms.ExpectBucketCount(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 0, 1);
 
-  const absl::optional<base::Version> valid_version =
+  const std::optional<base::Version> valid_version =
       base::Version({2020, 10, 11, 1234});
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_version);
   histograms.ExpectBucketCount(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 20201011, 1);
 
-  const absl::optional<base::Version> valid_old_version =
+  const std::optional<base::Version> valid_old_version =
       base::Version({2019, 10, 10, 1234});
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_old_version);
   histograms.ExpectBucketCount(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
 
-  const absl::optional<base::Version> valid_future_version =
+  const std::optional<base::Version> valid_future_version =
       base::Version({2021, 1, 1, 1234});
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
       valid_future_version);
   histograms.ExpectBucketCount(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 20210101, 1);
 
-  const absl::optional<base::Version> invalid_version =
+  const std::optional<base::Version> invalid_version =
       base::Version({2020, 10, 11});
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_version);
   histograms.ExpectBucketCount(
@@ -356,10 +356,10 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
       {request_owner->request()}, web_contents(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
-      /* ui_reason*/ absl::nullopt,
-      /*predicted_grant_likelihood*/ absl::nullopt,
-      /*prediction_decision_held_back*/ absl::nullopt,
-      /*ignored_reason*/ absl::nullopt, /*did_show_prompt*/ false,
+      /* ui_reason*/ std::nullopt,
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
       /*did_click_learn_more*/ false);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
@@ -520,7 +520,7 @@ TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
   content_settings::ContentSettingConstraints constraint(clock.Now());
   constraint.set_track_last_visit_for_autoexpiration(true);
 
-  absl::optional<uint32_t> days_since_revocation;
+  std::optional<uint32_t> days_since_revocation;
 
   // Permission has not yet been revoked, so shouldn't return a number of days
   // since revocation.
@@ -593,10 +593,10 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
       {request_owner->request()}, web_contents(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
-      /* ui_reason*/ absl::nullopt,
-      /*predicted_grant_likelihood*/ absl::nullopt,
-      /*prediction_decision_held_back*/ absl::nullopt,
-      /*ignored_reason*/ absl::nullopt, /*did_show_prompt*/ false,
+      /* ui_reason*/ std::nullopt,
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
       /*did_click_learn_more*/ false);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
@@ -645,7 +645,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ true,
             /*origins*/ {},
             PermissionHeaderPolicyForUMA::FEATURE_ALLOWLIST_IS_WILDCARD},
@@ -653,7 +653,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl)},
             PermissionHeaderPolicyForUMA::
@@ -661,7 +661,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             /*origins*/ {},
             PermissionHeaderPolicyForUMA::HEADER_NOT_PRESENT_OR_INVALID},
@@ -669,7 +669,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            absl::make_optional<blink::mojom::PermissionsPolicyFeature>(
+            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
                 blink::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl)},
@@ -678,7 +678,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             {std::string(kCrossOriginFrameUrl)},
             PermissionHeaderPolicyForUMA::
@@ -767,10 +767,10 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
       {request_owner->request()}, web_contents(), GetParam().action,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
-      /* ui_reason*/ absl::nullopt,
-      /*predicted_grant_likelihood*/ absl::nullopt,
-      /*prediction_decision_held_back*/ absl::nullopt,
-      /*ignored_reason*/ absl::nullopt, /*did_show_prompt*/ false,
+      /* ui_reason*/ std::nullopt,
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
       /*did_click_learn_more*/ false);
   if (feature.has_value()) {
@@ -793,7 +793,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ true,
             /*origins*/ {},
             PermissionHeaderPolicyForUMA::FEATURE_ALLOWLIST_IS_WILDCARD},
@@ -801,7 +801,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::DENIED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl),
              std::string(kCrossOriginFrameUrl2)},
@@ -810,7 +810,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             /*origins*/ {},
             PermissionHeaderPolicyForUMA::HEADER_NOT_PRESENT_OR_INVALID},
@@ -818,7 +818,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::GRANTED,
-            absl::make_optional<blink::mojom::PermissionsPolicyFeature>(
+            std::make_optional<blink::mojom::PermissionsPolicyFeature>(
                 blink::mojom::PermissionsPolicyFeature::kCamera),
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl)},
@@ -827,7 +827,7 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION,
             PermissionAction::DENIED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl)},
             PermissionHeaderPolicyForUMA::
@@ -835,10 +835,10 @@ INSTANTIATE_TEST_SUITE_P(
 
         PermissionsDelegationTestConfig{
             ContentSettingsType::ACCESSIBILITY_EVENTS, PermissionAction::DENIED,
-            /*feature_overriden*/ absl::nullopt,
+            /*feature_overriden*/ std::nullopt,
             /*matches_all_origins*/ true,
             /*origins*/ {},
-            /*expected_configuration*/ absl::nullopt}));
+            /*expected_configuration*/ std::nullopt}));
 
 class UkmRecorderPermissionUmaUtilTest
     : public content::RenderViewHostTestHarness {
@@ -859,7 +859,7 @@ class UkmRecorderPermissionUmaUtilTest
                         GetUkmSourceIdCallback callback) override {
       // Short circuit and return a null SourceId.
       if (!simulated_has_source_id_) {
-        std::move(callback).Run(absl::nullopt);
+        std::move(callback).Run(std::nullopt);
       } else {
         ukm::SourceId fake_source_id =
             ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);

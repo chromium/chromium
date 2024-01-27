@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PDF_BROWSER_FAKE_PDF_STREAM_DELEGATE_H_
 #define COMPONENTS_PDF_BROWSER_FAKE_PDF_STREAM_DELEGATE_H_
 
+#include <optional>
+
 #include "components/pdf/browser/pdf_stream_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace pdf {
 
@@ -22,15 +23,15 @@ class FakePdfStreamDelegate : public PdfStreamDelegate {
   ~FakePdfStreamDelegate() override;
 
   // `PdfStreamDelegate`:
-  absl::optional<GURL> MapToOriginalUrl(
+  std::optional<GURL> MapToOriginalUrl(
       content::NavigationHandle& navigation_handle) override;
-  absl::optional<StreamInfo> GetStreamInfo(
+  std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) override;
 
   void clear_stream_info() { stream_info_.reset(); }
 
  private:
-  absl::optional<StreamInfo> stream_info_;
+  std::optional<StreamInfo> stream_info_;
 };
 
 }  // namespace pdf

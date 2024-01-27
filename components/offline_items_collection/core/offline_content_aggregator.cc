@@ -130,7 +130,7 @@ void OfflineContentAggregator::GetItemById(const ContentId& id,
   auto it = providers_.find(id.name_space);
   if (it == providers_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -141,7 +141,7 @@ void OfflineContentAggregator::GetItemById(const ContentId& id,
 
 void OfflineContentAggregator::OnGetItemByIdDone(
     SingleItemCallback callback,
-    const absl::optional<OfflineItem>& item) {
+    const std::optional<OfflineItem>& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(item);
 }
@@ -250,7 +250,7 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
 
 void OfflineContentAggregator::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pending_providers_.empty()) {
     for (auto& offline_item : aggregated_items_) {

@@ -388,7 +388,7 @@ void ProfileImportProcess::AcceptWithoutEdits() {
 
 void ProfileImportProcess::AcceptWithEdits(AutofillProfile edited_profile) {
   SetUserDecision(UserDecision::kEditAccepted,
-                  absl::make_optional(edited_profile));
+                  std::make_optional(edited_profile));
 }
 
 void ProfileImportProcess::Declined() {

@@ -7,13 +7,13 @@ export async function checkStateTransition(options) {
         assert_equals(e.port.id, options.port.id);
         assert_equals(e.port.connection, options.finalconnection);
     };
-    const portPromise = new Promise(resolve => {
+    const portPromise = () => new Promise(resolve => {
         port.onstatechange = e => {
             checkHandler(e);
             resolve();
         };
     });
-    const accessPromise = new Promise(resolve => {
+    const accessPromise = () => new Promise(resolve => {
         access.onstatechange = e => {
             checkHandler(e);
             resolve();
@@ -21,18 +21,18 @@ export async function checkStateTransition(options) {
     });
     if (options.method == "setonmidimessage") {
         port.onmidimessage = function() {};
-        return Promise.all([portPromise, accessPromise]);
+        return Promise.all([portPromise(), accessPromise()]);
     }
     if (options.method == "addeventlistener") {
         port.addEventListener("midimessage", function() {});
-        return Promise.all([portPromise, accessPromise]);
+        return Promise.all([portPromise(), accessPromise()]);
     }
     if (options.method == "send") {
         port.send([]);
-        return Promise.all([portPromise, accessPromise]);
+        return Promise.all([portPromise(), accessPromise()]);
     }
 
-    // |method| is expected to be "open" or "close".
+    assert_in_array(options.method, ["open", "close"]);
     const p = await port[options.method]();
     assert_equals(p.id, options.port.id);
     assert_equals(p.connection, options.finalconnection);

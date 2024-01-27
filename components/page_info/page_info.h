@@ -201,7 +201,7 @@ class PageInfo : private content_settings::CookieControlsObserver {
     bool is_one_time = false;
     // Only set for settings that can have multiple permissions for different
     // embedded origins.
-    absl::optional<url::Origin> requesting_origin;
+    std::optional<url::Origin> requesting_origin;
     // When the permission was used.
     base::Time last_used;
     // Whether the permission is in use.
@@ -254,7 +254,7 @@ class PageInfo : private content_settings::CookieControlsObserver {
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type,
                                ContentSetting value,
-                               absl::optional<url::Origin> requesting_origin,
+                               std::optional<url::Origin> requesting_origin,
                                bool is_one_time);
 
   // This method is called whenever access to an object is revoked.
@@ -557,10 +557,10 @@ class PageInfo : private content_settings::CookieControlsObserver {
       CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   // The number of third-party sites blocked from accessing storage.
-  absl::optional<int> blocked_third_party_sites_count_;
+  std::optional<int> blocked_third_party_sites_count_;
 
   // The number of third-party sites allowed to access storage.
-  absl::optional<int> allowed_third_party_sites_count_;
+  std::optional<int> allowed_third_party_sites_count_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

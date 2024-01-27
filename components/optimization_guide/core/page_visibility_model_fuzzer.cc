@@ -54,7 +54,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string input(reinterpret_cast<const char*>(data), size);
   test.executor()->SendForExecution(
       base::BindOnce(
-          [](const absl::optional<std::vector<tflite::task::core::Category>>&
+          [](const std::optional<std::vector<tflite::task::core::Category>>&
                  output) {
             if (output && !had_successful_run) {
               had_successful_run = true;

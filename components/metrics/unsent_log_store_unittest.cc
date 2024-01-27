@@ -555,7 +555,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithUserId) {
   const uint64_t user_id = 12345L;
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  LogMetadata log_metadata(absl::nullopt, user_id, absl::nullopt);
+  LogMetadata log_metadata(std::nullopt, user_id, std::nullopt);
   unsent_log_store.StoreLog(foo_text, log_metadata,
                             MetricsLogsEventManager::CreateReason::kUnknown);
   unsent_log_store.StageNextLog();
@@ -580,7 +580,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithLargeUserId) {
   const uint64_t large_user_id = std::numeric_limits<uint64_t>::max();
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  LogMetadata log_metadata(absl::nullopt, large_user_id, absl::nullopt);
+  LogMetadata log_metadata(std::nullopt, large_user_id, std::nullopt);
   unsent_log_store.StoreLog(foo_text, log_metadata,
                             MetricsLogsEventManager::CreateReason::kUnknown);
   unsent_log_store.StageNextLog();
@@ -605,7 +605,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithOnlyAppKMLogSource) {
   const UkmLogSourceType log_source_type = UkmLogSourceType::APPKM_ONLY;
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
-  LogMetadata log_metadata(absl::nullopt, absl::nullopt, log_source_type);
+  LogMetadata log_metadata(std::nullopt, std::nullopt, log_source_type);
   unsent_log_store.StoreLog(foo_text, log_metadata,
                             MetricsLogsEventManager::CreateReason::kUnknown);
   unsent_log_store.StageNextLog();
@@ -653,7 +653,7 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   const char kNoSampleLog[] = "no sample log";
 
   LogMetadata log_metadata_with_oversize_sample(kOversizeLogSampleCount,
-                                                absl::nullopt, absl::nullopt);
+                                                std::nullopt, std::nullopt);
   unsent_log_store.StoreLog(oversize_log, log_metadata_with_oversize_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
@@ -661,14 +661,14 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   unsent_log_store.StoreLog(kNoSampleLog, log_metadata_with_no_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
-  LogMetadata log_metadata_foo_sample(kFooSampleCount, absl::nullopt,
-                                      absl::nullopt);
+  LogMetadata log_metadata_foo_sample(kFooSampleCount, std::nullopt,
+                                      std::nullopt);
   unsent_log_store.StoreLog(kFooText, log_metadata_foo_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 
   // The foobar_log will be staged first.
-  LogMetadata log_metadata_foo_bar_sample(kFooBarSampleCount, absl::nullopt,
-                                          absl::nullopt);
+  LogMetadata log_metadata_foo_bar_sample(kFooBarSampleCount, std::nullopt,
+                                          std::nullopt);
   unsent_log_store.StoreLog(foobar_log, log_metadata_foo_bar_sample,
                             MetricsLogsEventManager::CreateReason::kUnknown);
 

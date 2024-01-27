@@ -14,6 +14,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -50,7 +51,7 @@ using Pkcs11Operation = base::RepeatingCallback<CK_RV()>;
 // This is useful because the session could be closed e.g. because NSS could
 // have called C_CloseAllSessions.
 bool PerformWithRetries(ChapsSlotSession* chaps_session,
-                        base::StringPiece operation_name,
+                        std::string_view operation_name,
                         const Pkcs11Operation& operation) {
   const int kMaxAttempts = 5;
 

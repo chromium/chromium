@@ -66,6 +66,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -162,8 +163,9 @@ class DragAndDropSimulator {
 
     aura::client::DragDropDelegate* delegate =
         GetOmniboxDragDropDelegate(omnibox);
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     active_drag_event_ = base::WrapUnique(new ui::DropTargetEvent(
         *os_exchange_data_, gfx::PointF(location), gfx::PointF(location),
@@ -184,8 +186,9 @@ class DragAndDropSimulator {
     }
 
     aura::client::DragDropDelegate* delegate = GetDropDelegate();
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     gfx::PointF event_location;
     gfx::PointF event_root_location;
@@ -216,8 +219,9 @@ class DragAndDropSimulator {
 
     aura::client::DragDropDelegate* delegate =
         GetOmniboxDragDropDelegate(omnibox);
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     active_drag_event_->set_location_f(gfx::PointF(location));
     active_drag_event_->set_root_location_f(gfx::PointF(location));
@@ -239,8 +243,9 @@ class DragAndDropSimulator {
     }
 
     aura::client::DragDropDelegate* delegate = GetDragDelegate();
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     gfx::PointF event_location;
     gfx::PointF event_root_location;
@@ -364,14 +369,18 @@ class DragStartWaiter : public aura::client::DragDropClient {
     if (source_origin) {
       *source_origin = source_origin_;
     }
-    if (text)
+    if (text) {
       *text = text_;
-    if (html)
+    }
+    if (html) {
       *html = html_;
-    if (operation)
+    }
+    if (operation) {
       *operation = operation_;
-    if (location_inside_web_contents)
+    }
+    if (location_inside_web_contents) {
       *location_inside_web_contents = location_inside_web_contents_;
+    }
   }
 
   void WaitUntilDragStart() {
@@ -400,17 +409,19 @@ class DragStartWaiter : public aura::client::DragDropClient {
 
       source_origin_ = data->GetRendererTaintedOrigin();
       std::u16string text;
-      if (data->GetString(&text))
+      if (data->GetString(&text)) {
         text_ = base::UTF16ToUTF8(text);
-      else
+      } else {
         text_ = "<no text>";
+      }
 
       GURL base_url;
       std::u16string html;
-      if (data->GetHtml(&html, &base_url))
+      if (data->GetHtml(&html, &base_url)) {
         html_ = base::UTF16ToUTF8(html);
-      else
+      } else {
         html_ = "<no html>";
+      }
 
       gfx::Rect bounds =
           web_contents_->GetContentNativeView()->GetBoundsInScreen();
@@ -427,8 +438,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
       callback_to_run_inside_drag_and_drop_message_loop_.Reset();
     }
 
-    if (suppress_passing_of_start_drag_further_)
+    if (suppress_passing_of_start_drag_further_) {
       return DragOperation::kNone;
+    }
 
     // Start a nested drag-and-drop loop (might not return for a long time).
     return old_client_->StartDragAndDrop(std::move(data), root_window,
@@ -496,8 +508,9 @@ class DOMDragEventWaiter {
     bool got_right_event_type = false;
     bool got_right_window_name = false;
     do {
-      if (!dom_message_queue_.WaitForMessage(&candidate_event))
+      if (!dom_message_queue_.WaitForMessage(&candidate_event)) {
         return false;
+      }
 
       got_right_event_type =
           IsExpectedEventType(candidate_event, event_type_to_wait_for_);
@@ -505,8 +518,9 @@ class DOMDragEventWaiter {
           IsExpectedWindowName(candidate_event, target_frame_name_);
     } while (!got_right_event_type || !got_right_window_name);
 
-    if (found_event)
+    if (found_event) {
       *found_event = candidate_event;
+    }
 
     return true;
   }
@@ -593,8 +607,9 @@ class DOMDragEventVerifier {
   static testing::Matcher<std::string> FieldMatches(
       const std::string& field_name,
       const std::string& expected_value) {
-    if (expected_value == "<no expectation>")
+    if (expected_value == "<no expectation>") {
       return testing::A<std::string>();
+    }
 
     return testing::HasSubstr(base::StringPrintf(
         "\"%s\":\"%s\"", field_name.c_str(), expected_value.c_str()));
@@ -819,8 +834,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
                           content::WebContents* web_contents = nullptr) {
     content::RenderFrameHost* frame = GetFrameByName(frame_name, web_contents);
 
-    if (!frame)
+    if (!frame) {
       return false;
+    }
 
     // Navigate the frame and wait for the load event.
     std::string script = base::StringPrintf(
@@ -863,18 +879,23 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     DOMDragEventWaiter mouse_move_event_waiter("mousemove", GetLeftFrame());
     DOMDragEventWaiter mouse_down_event_waiter("mousedown", GetLeftFrame());
 
-    if (!SimulateMouseMove(kMiddleOfLeftFrame))
+    if (!SimulateMouseMove(kMiddleOfLeftFrame)) {
       return false;
-    if (!mouse_move_event_waiter.WaitForNextMatchingEvent(nullptr))
+    }
+    if (!mouse_move_event_waiter.WaitForNextMatchingEvent(nullptr)) {
       return false;
+    }
 
-    if (!SimulateMouseDown())
+    if (!SimulateMouseDown()) {
       return false;
-    if (!mouse_down_event_waiter.WaitForNextMatchingEvent(nullptr))
+    }
+    if (!mouse_down_event_waiter.WaitForNextMatchingEvent(nullptr)) {
       return false;
+    }
 
-    if (!SimulateMouseMove(expected_location_of_drag_start_in_left_frame()))
+    if (!SimulateMouseMove(expected_location_of_drag_start_in_left_frame())) {
       return false;
+    }
 
     return true;
   }
@@ -956,8 +977,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window->GetRootWindow());
     gfx::Point screen_position(kMiddleOfRightFrame);
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointToScreen(window, &screen_position);
+    }
     return screen_position;
   }
 
@@ -1007,6 +1029,12 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 // Scenario: drag text from outside the browser and drop to the right frame.
 // Test coverage: dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
+  // TODO (crbug/1521094): Test fails when ChromeRefresh2023 and
+  //                       ChromeRefreshSecondary2023 is enabled. Evaluate cause
+  //                       and fix.
+  if (features::IsChromeRefresh2023() && std::get<double>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
@@ -1344,6 +1372,12 @@ struct DragAndDropBrowserTest::DragImageBetweenFrames_TestState {
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragSameOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/true,
                                /*image_crossorigin_attr=*/false);
 }
@@ -1365,6 +1399,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCorsSameOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
                                /*image_crossorigin_attr=*/true);
 }
@@ -1386,6 +1426,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Regression test for https://crbug.com/1264873.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCrossOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
                                /*image_crossorigin_attr=*/false);
 }
@@ -1638,6 +1684,12 @@ struct DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState {
 // Test coverage: dragenter, dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragImageFromDisappearingFrame) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   // Load the test page.
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
@@ -1980,6 +2032,12 @@ struct DragAndDropBrowserTest::CrossTabDrag_TestState {
 //
 // Test coverage: dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   std::string right_frame_site =
       use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));

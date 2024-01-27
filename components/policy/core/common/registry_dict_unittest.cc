@@ -32,7 +32,7 @@ TEST(RegistryDictTest, SetAndGetValue) {
   EXPECT_EQ(int_value, *test_dict.GetValue("one"));
   EXPECT_EQ(string_value, *test_dict.GetValue("two"));
 
-  absl::optional<base::Value> one(test_dict.RemoveValue("one"));
+  std::optional<base::Value> one(test_dict.RemoveValue("one"));
   ASSERT_TRUE(one.has_value());
   EXPECT_EQ(1u, test_dict.values().size());
   EXPECT_EQ(int_value, one.value());
@@ -63,7 +63,7 @@ TEST(RegistryDictTest, CaseInsensitiveButPreservingValueNames) {
   EXPECT_EQ(1u, test_dict.values().size());
   EXPECT_EQ(string_value, *test_dict.GetValue("one"));
 
-  absl::optional<base::Value> removed_value(test_dict.RemoveValue("onE"));
+  std::optional<base::Value> removed_value(test_dict.RemoveValue("onE"));
   ASSERT_TRUE(removed_value.has_value());
   EXPECT_EQ(string_value, removed_value.value());
   EXPECT_TRUE(test_dict.values().empty());
@@ -226,7 +226,7 @@ TEST(RegistryDictTest, ConvertToJSON) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;
@@ -275,7 +275,7 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;
@@ -341,7 +341,7 @@ TEST(RegistryDictTest, PatternPropertySchema) {
       &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  absl::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
@@ -73,8 +74,8 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
  protected:
   web::FakeWebState web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
-  FakeTranslateInfoBarDelegate* delegate_ = nullptr;
-  InfoBarIOS* infobar_ = nullptr;
+  raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;
+  raw_ptr<InfoBarIOS> infobar_ = nullptr;
 };
 
 // Tests that the inserter adds a placeholder request when Translate begins.

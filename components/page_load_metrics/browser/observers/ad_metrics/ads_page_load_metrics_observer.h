@@ -300,7 +300,7 @@ class AdsPageLoadMetricsObserver
   // on the URL of this page. Incognito Profiles will cause this to be set to
   // true. Used as a cache to avoid checking the blocklist once the page is
   // blocklisted. Once blocklisted, a page load cannot be unblocklisted.
-  absl::optional<blocklist::BlocklistReason> heavy_ads_blocklist_reason_;
+  std::optional<blocklist::BlocklistReason> heavy_ads_blocklist_reason_;
 
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.

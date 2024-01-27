@@ -74,7 +74,7 @@ void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(
   DeviceAccountsSynchronizer* device_accounts_synchronizer =
       identity_mutator_->GetDeviceAccountsSynchronizer();
   DCHECK(device_accounts_synchronizer);
-  absl::optional<CoreAccountId> primary_account_id;
+  std::optional<CoreAccountId> primary_account_id;
   if (j_primary_account_id) {
     primary_account_id =
         ConvertFromJavaCoreAccountId(env, j_primary_account_id);
@@ -96,12 +96,12 @@ void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
         ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
   }
 
-  absl::optional<CoreAccountId> primary_account_id;
+  std::optional<CoreAccountId> primary_account_id;
   if (j_primary_account_id) {
     primary_account_id =
         ConvertFromJavaCoreAccountId(env, j_primary_account_id);
   } else {
-    primary_account_id = absl::nullopt;
+    primary_account_id = std::nullopt;
   }
 
   DeviceAccountsSynchronizer* device_accounts_synchronizer =

@@ -7,10 +7,13 @@ component("types") {
   sources = [
     "display_color_management.cc",
     "display_color_management.h",
+    "display_config.cc",
+    "display_config.h",
     "display_configuration_params.cc",
     "display_configuration_params.h",
     "display_constants.cc",
     "display_constants.h",
+    "display_geometry.h",
     "display_mode.cc",
     "display_mode.h",
     "display_snapshot.cc",
@@ -31,8 +34,8 @@ component("types") {
     "//base",
     "//skia",
     "//skia:skcms",
+    "//ui/gfx:buffer_types",
     "//ui/gfx:color_space",
-    "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
 }

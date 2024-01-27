@@ -1246,11 +1246,12 @@ class LocalDeviceInstrumentationTestRun(
     else:
       test_mtime = os.path.getmtime(test_apk_path)
 
-    try:
-      return instrumentation_test_instance.GetTestsFromPickle(
-          pickle_path, test_mtime)
-    except instrumentation_test_instance.TestListPickleException as e:
-      logging.info('Could not get tests from pickle: %s', e)
+    if not self._test_instance.wait_for_java_debugger:
+      try:
+        return instrumentation_test_instance.GetTestsFromPickle(
+            pickle_path, test_mtime)
+      except instrumentation_test_instance.TestListPickleException as e:
+        logging.info('Could not get tests from pickle: %s', e)
     logging.info('Getting tests by having %s list them.',
                  self._test_instance.junit4_runner_class)
     def list_tests(d):
@@ -1795,7 +1796,7 @@ def _SetLinkOnResults(results, full_test_name, link_name, link):
     full_test_name: A string containing the full name of the test, e.g.
         org.chromium.chrome.SomeTestClass#someTestMethod.
     link_name: A string containing the name of the link being set.
-    link: A string containing the lkink being set.
+    link: A string containing the link being set.
   """
   found_matching_test = _MatchingTestInResults(results, full_test_name)
   if not found_matching_test and _ShouldReportNoMatchingResult(full_test_name):

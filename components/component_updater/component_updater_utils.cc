@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_updater_utils.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,25 +15,24 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
-absl::optional<ComponentRegistration> GetComponent(
+std::optional<ComponentRegistration> GetComponent(
     const base::flat_map<std::string, ComponentRegistration>& components,
     const std::string& id) {
   const auto it = components.find(id);
   if (it != components.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
+std::vector<std::optional<ComponentRegistration>> GetCrxComponents(
     const base::flat_map<std::string, ComponentRegistration>&
         registered_components,
     const std::vector<std::string>& ids) {
-  std::vector<absl::optional<ComponentRegistration>> components;
+  std::vector<std::optional<ComponentRegistration>> components;
   for (const auto& id : ids) {
     components.push_back(GetComponent(registered_components, id));
   }

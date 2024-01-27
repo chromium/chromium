@@ -712,7 +712,8 @@ public class NotificationPlatformBridge {
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
         } else {
             appendSiteSettingsButton(

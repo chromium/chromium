@@ -623,8 +623,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
                                 &extension_cache_root_dir)) {
       ADD_FAILURE();
     }
-    return extension_cache_root_dir.Append(
-        base::HexEncode(account_id.c_str(), account_id.size()));
+    return extension_cache_root_dir.Append(base::HexEncode(account_id));
   }
 
   base::FilePath GetCacheCRXFilePath(const std::string& id,

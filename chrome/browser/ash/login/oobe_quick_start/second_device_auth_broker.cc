@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -79,8 +80,8 @@ constexpr char kTargetDeviceInfoKey[] = "targetDeviceInfo";
 constexpr char kCredentialDataKey[] = "credentialData";
 constexpr char kOauthTokenKey[] = "oauthToken";
 
-const int64_t kGetChallengeDataTimeoutInSeconds = 3 * 60;
-const int64_t kStartSessionTimeoutInSeconds = 3 * 60;
+constexpr base::TimeDelta kGetChallengeDataTimeout = base::Minutes(3);
+constexpr base::TimeDelta kStartSessionTimeout = base::Minutes(3);
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/json";
 
@@ -200,62 +201,6 @@ Base64UrlString GetChallengeBytesFromParsedResponse(
       Base64UrlTranscode(Base64String(*challenge_base64));
 
   return challenge ? *challenge : Base64UrlString();
-}
-
-void RunChallengeBytesCallback(
-    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
-    const Base64UrlString& challenge) {
-  if (challenge->empty()) {
-    std::move(challenge_callback)
-        .Run(base::unexpected(
-            GoogleServiceAuthError::FromUnexpectedServiceResponse(
-                "Could not parse response")));
-    return;
-  }
-
-  std::move(challenge_callback).Run(challenge);
-}
-
-void HandleFetchChallengeBytesErrorResponse(
-    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
-    std::unique_ptr<EndpointResponse> response) {
-  QS_LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
-                << response->http_status_code;
-  if (!response->error_type.has_value()) {
-    std::move(challenge_callback)
-        .Run(base::unexpected(
-            GoogleServiceAuthError::FromUnexpectedServiceResponse(
-                base::StringPrintf("An unknown error occurred. HTTP Status "
-                                   "of the response is: %d",
-                                   response->http_status_code))));
-    return;
-  }
-
-  switch (response->error_type.value()) {
-    case FetchErrorType::kAuthError:
-      std::move(challenge_callback)
-          .Run(base::unexpected(GoogleServiceAuthError::FromServiceError(
-              base::StringPrintf("An auth error occurred. HTTP status "
-                                 "of the response is: %d",
-                                 response->http_status_code))));
-      return;
-    case FetchErrorType::kNetError:
-      std::move(challenge_callback)
-          .Run(base::unexpected(
-              GoogleServiceAuthError::FromUnexpectedServiceResponse(
-                  base::StringPrintf("A network error occurred. HTTP status "
-                                     "of the response is: %d",
-                                     response->http_status_code))));
-      return;
-    case FetchErrorType::kResultParseError:
-      std::move(challenge_callback)
-          .Run(base::unexpected(
-              GoogleServiceAuthError::FromUnexpectedServiceResponse(
-                  base::StringPrintf("Error parsing response. HTTP status "
-                                     "of the response is: %d",
-                                     response->http_status_code))));
-      return;
-  }
 }
 
 void HandleAttestationNotAvailableError(
@@ -569,13 +514,14 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kGetChallengeDataApi),
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kGetChallengeDataTimeoutInSeconds * 1000,
+      /*timeout=*/kGetChallengeDataTimeout,
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
       /*annotation_tag=*/kChallengeDataAnnotation,
       /*is_stable_channel=*/chrome::GetChannel() ==
           version_info::Channel::STABLE);
 
+  metrics_.RecordChallengeBytesRequested();
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&SecondDeviceAuthBroker::OnChallengeBytesFetched,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -600,8 +546,9 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
   data_decoder::DataDecoder::ParseJsonIsolated(
       response->response,
       base::BindOnce(&GetChallengeBytesFromParsedResponse)
-          .Then(base::BindOnce(&RunChallengeBytesCallback,
-                               std::move(challenge_callback))));
+          .Then(base::BindOnce(
+              &SecondDeviceAuthBroker::RunChallengeBytesCallback,
+              weak_ptr_factory_.GetWeakPtr(), std::move(challenge_callback))));
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
@@ -626,7 +573,7 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kStartSessionApi),
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kStartSessionTimeoutInSeconds * 1000,
+      /*timeout=*/kStartSessionTimeout,
       /*post_data=*/
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),
@@ -813,6 +760,72 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
   HandleGaiaAuthenticationUnknownError(
       metrics_, std::move(auth_code_callback),
       SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse());
+}
+
+void SecondDeviceAuthBroker::HandleFetchChallengeBytesErrorResponse(
+    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+    std::unique_ptr<EndpointResponse> response) {
+  QS_LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
+                << response->http_status_code;
+  if (!response->error_type.has_value()) {
+    RunChallengeBytesCallbackWithError(
+        std::move(challenge_callback),
+        GoogleServiceAuthError::FromUnexpectedServiceResponse(
+            base::StringPrintf("An unknown error occurred. HTTP Status "
+                               "of the response is: %d",
+                               response->http_status_code)));
+    return;
+  }
+
+  switch (response->error_type.value()) {
+    case FetchErrorType::kAuthError:
+      RunChallengeBytesCallbackWithError(
+          std::move(challenge_callback),
+          GoogleServiceAuthError::FromServiceError(
+              base::StringPrintf("An auth error occurred. HTTP status "
+                                 "of the response is: %d",
+                                 response->http_status_code)));
+      return;
+    case FetchErrorType::kNetError:
+      RunChallengeBytesCallbackWithError(
+          std::move(challenge_callback),
+          GoogleServiceAuthError::FromUnexpectedServiceResponse(
+              base::StringPrintf("A network error occurred. HTTP status "
+                                 "of the response is: %d",
+                                 response->http_status_code)));
+      return;
+    case FetchErrorType::kResultParseError:
+      RunChallengeBytesCallbackWithError(
+          std::move(challenge_callback),
+          GoogleServiceAuthError::FromUnexpectedServiceResponse(
+              base::StringPrintf("Error parsing response. HTTP status "
+                                 "of the response is: %d",
+                                 response->http_status_code)));
+      return;
+  }
+}
+
+void SecondDeviceAuthBroker::RunChallengeBytesCallbackWithError(
+    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+    const GoogleServiceAuthError& error) {
+  metrics_.RecordChallengeBytesRequestEnded(error);
+  std::move(challenge_callback).Run(base::unexpected(error));
+}
+
+void SecondDeviceAuthBroker::RunChallengeBytesCallback(
+    SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
+    const Base64UrlString& challenge) {
+  if (challenge->empty()) {
+    RunChallengeBytesCallbackWithError(
+        std::move(challenge_callback),
+        GoogleServiceAuthError::FromUnexpectedServiceResponse(
+            "Could not parse response"));
+    return;
+  }
+
+  metrics_.RecordChallengeBytesRequestEnded(
+      GoogleServiceAuthError::AuthErrorNone());
+  std::move(challenge_callback).Run(challenge);
 }
 
 std::ostream& operator<<(

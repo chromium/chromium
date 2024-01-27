@@ -7,14 +7,17 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, Router, StatusAction, SyncBrowserProxyImpl, SyncPrefs} from 'chrome://settings/settings.js';
+import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
+import {Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes, SyncRoutes} from './sync_test_util.js';
+import type {SyncRoutes} from './sync_test_util.js';
+import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
 import {loadTimeData} from 'chrome://settings/settings.js';
 
 // clang-format on

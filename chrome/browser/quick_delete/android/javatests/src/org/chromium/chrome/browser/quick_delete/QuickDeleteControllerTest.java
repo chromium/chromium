@@ -359,6 +359,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1522255")
     public void testBrowsingDataDeletion_onClickedDelete() throws Exception {
         resetCookies();
         loadSiteDataUrl();

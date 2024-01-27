@@ -1674,6 +1674,19 @@
       },
     },
   },
+  'chrome_wpt_tests': {
+    'modifications': {
+      # make this experimental for now and reenable it once we switch to the new headless mode
+      'Linux Tests': {
+        'experiment_percentage': 100,
+      },
+      'linux-wpt-chromium-rel': {
+        'args': [
+          '--additional-driver-flag=--headless=new'
+        ],
+      },
+    },
+  },
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {
@@ -4769,6 +4782,7 @@
       # TODO(crbug.com/1280418): Re-enable once more of the Pixel 6 capacity
       # is deployed.
       'Android FYI Release (Pixel 6)',
+      'Android FYI Experimental Release (Pixel 6)',
       # Not enough CrOS hardware capacity to run both on anything other than
       # VMs. See https://crbug.com/1238070.
       'Lacros FYI x64 Release (Intel)',
@@ -4840,6 +4854,7 @@
       # TODO(crbug.com/1280418): Re-enable once more of the Pixel 6 capacity
       # is deployed.
       'Android FYI Release (Pixel 6)',
+      'Android FYI Experimental Release (Pixel 6)',
     ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other

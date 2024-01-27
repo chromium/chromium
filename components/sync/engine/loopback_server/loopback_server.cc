@@ -865,14 +865,14 @@ bool LoopbackServer::DeSerializeState(
   return true;
 }
 
-absl::optional<std::string> LoopbackServer::SerializeData() {
+std::optional<std::string> LoopbackServer::SerializeData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pb::LoopbackServerProto proto;
   SerializeState(&proto);
   std::string data;
   if (!proto.SerializeToString(&data)) {
     LOG(ERROR) << "Loopback sync proto could not be serialized";
-    return absl::nullopt;
+    return std::nullopt;
   }
   UMA_HISTOGRAM_MEMORY_KB(
       "Sync.Local.FileSizeKB",

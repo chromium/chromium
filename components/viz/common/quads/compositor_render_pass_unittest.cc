@@ -67,7 +67,7 @@ TEST(CompositorRenderPassTest,
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  absl::optional<gfx::RRectF> backdrop_filter_bounds(
+  std::optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kHDR;
   bool has_transparent_background = true;
@@ -86,7 +86,7 @@ TEST(CompositorRenderPassTest,
   // Stick a quad in the pass, this should not get copied.
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(), gfx::Rect(),
-                       gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                       gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                        /*contents_opaque=*/false, /*opacity_f=*/1,
                        SkBlendMode::kSrcOver, /*sorting_context=*/0,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -131,7 +131,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  absl::optional<gfx::RRectF> backdrop_filter_bounds(
+  std::optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
   bool has_transparent_background = true;
   bool cache_render_pass = false;
@@ -150,7 +150,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   // Two quads using one shared state.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();
   shared_state1->SetAll(gfx::Transform(), gfx::Rect(0, 0, 1, 1), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -168,7 +168,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   // And two quads using another shared state.
   SharedQuadState* shared_state2 = pass->CreateAndAppendSharedQuadState();
   shared_state2->SetAll(gfx::Transform(), gfx::Rect(0, 0, 2, 2), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -193,7 +193,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   contrib_filters.Append(cc::FilterOperation::CreateSepiaFilter(0.5));
   cc::FilterOperations contrib_backdrop_filters;
   contrib_backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(1));
-  absl::optional<gfx::RRectF> contrib_backdrop_filter_bounds(
+  std::optional<gfx::RRectF> contrib_backdrop_filter_bounds(
       {20, 30, 140, 150, 1, 2, 3, 4, 5, 6, 7, 8});
   bool contrib_has_transparent_background = true;
   bool contrib_cache_render_pass = false;
@@ -215,7 +215,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
       contrib->CreateAndAppendSharedQuadState();
   contrib_shared_state->SetAll(
       gfx::Transform(), gfx::Rect(0, 0, 2, 2), gfx::Rect(),
-      gfx::MaskFilterInfo(), /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+      gfx::MaskFilterInfo(), /*clip=*/std::nullopt, /*contents_opaque=*/false,
       /*opacity_f=*/1, SkBlendMode::kSrcOver, /*sorting_context=*/0,
       /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
@@ -253,7 +253,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  absl::optional<gfx::RRectF> backdrop_filter_bounds(
+  std::optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
   bool has_transparent_background = true;
   bool cache_render_pass = false;
@@ -271,7 +271,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   // A shared state with a quad.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();
   shared_state1->SetAll(gfx::Transform(), gfx::Rect(0, 0, 1, 1), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -284,7 +284,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   // A shared state with no quads, they were culled.
   SharedQuadState* shared_state2 = pass->CreateAndAppendSharedQuadState();
   shared_state2->SetAll(gfx::Transform(), gfx::Rect(0, 0, 2, 2), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -292,7 +292,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   // A second shared state with no quads.
   SharedQuadState* shared_state3 = pass->CreateAndAppendSharedQuadState();
   shared_state3->SetAll(gfx::Transform(), gfx::Rect(0, 0, 2, 2), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -300,7 +300,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   // A last shared state with a quad again.
   SharedQuadState* shared_state4 = pass->CreateAndAppendSharedQuadState();
   shared_state4->SetAll(gfx::Transform(), gfx::Rect(0, 0, 2, 2), gfx::Rect(),
-                        gfx::MaskFilterInfo(), /*clip=*/absl::nullopt,
+                        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
                         /*contents_opaque=*/false, /*opacity_f=*/1,
                         SkBlendMode::kSrcOver, /*sorting_context=*/0,
                         /*layer_id=*/0u, /*fast_rounded_corner=*/false);

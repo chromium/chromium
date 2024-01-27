@@ -2501,6 +2501,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
+    enum="PushNotificationSettingsAuthorizationStatus"
+    expires_after="2024-10-16">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <summary>
+    Logs the push notification iOS settings permission status the user's device
+    was previously in before the user updated their push notifications
+    permission status to enable push notifications. This histogram is logged
+    only when push notification permission status has changed and Chrome makes
+    an APNS device token request.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.PushNotification.NotificationAutorizationStatusChangedToDenied"
+    enum="PushNotificationSettingsAuthorizationStatus"
+    expires_after="2024-10-16">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <summary>
+    Logs the push notification iOS settings permission status the user's device
+    was previously in before the user updated their push notifications
+    permission status to disable push notifications. This histogram is logged
+    only when push notification permission status has changed and Chrome makes
+    an APNS device token request.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.NotificationSettingsAuthorizationStatus"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2024-10-11">

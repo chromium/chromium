@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -156,27 +156,27 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   Readiness readiness = Readiness::kUnknown;
 
   // The full name of the app. Will be used in most UIs.
-  absl::optional<std::string> name;
+  std::optional<std::string> name;
   // A shortened version of the app name. May omit branding (e.g.
   // "Google" prefixes) or rely on abbreviations (e.g. "YT Music"). If no
   // `short_name` is supplied, the `name` will be used instead.
   // The `short_name` may be used in UIs where space is limited and/or we want
   // to optimize for scannability.
-  absl::optional<std::string> short_name;
+  std::optional<std::string> short_name;
 
   // An optional, publisher-specific ID for this app, e.g. for Android apps,
   // this field contains the Android package name, and for web apps, it
   // contains the start URL.
-  absl::optional<std::string> publisher_id;
+  std::optional<std::string> publisher_id;
 
-  absl::optional<std::string> description;
-  absl::optional<std::string> version;
+  std::optional<std::string> description;
+  std::optional<std::string> version;
   std::vector<std::string> additional_search_terms;
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
 
-  absl::optional<base::Time> last_launch_time;
-  absl::optional<base::Time> install_time;
+  std::optional<base::Time> last_launch_time;
+  std::optional<base::Time> install_time;
 
   // This vector must be treated atomically, if there is a permission
   // change, the publisher must send through the entire list of permissions.
@@ -200,29 +200,29 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
-  absl::optional<bool> is_platform_app;
+  std::optional<bool> is_platform_app;
 
-  absl::optional<bool> recommendable;
-  absl::optional<bool> searchable;
-  absl::optional<bool> show_in_launcher;
-  absl::optional<bool> show_in_shelf;
-  absl::optional<bool> show_in_search;
-  absl::optional<bool> show_in_management;
+  std::optional<bool> recommendable;
+  std::optional<bool> searchable;
+  std::optional<bool> show_in_launcher;
+  std::optional<bool> show_in_shelf;
+  std::optional<bool> show_in_search;
+  std::optional<bool> show_in_management;
 
   // True if the app is able to handle intents and should be shown in intent
   // surfaces.
-  absl::optional<bool> handles_intents;
+  std::optional<bool> handles_intents;
 
   // Whether the app publisher allows the app to be uninstalled.
-  absl::optional<bool> allow_uninstall;
+  std::optional<bool> allow_uninstall;
 
   // Whether the app icon should add the notification badging.
-  absl::optional<bool> has_badge;
+  std::optional<bool> has_badge;
 
   // Paused apps cannot be launched, and any running apps that become paused
   // will be stopped. This is independent of whether or not the app is ready to
   // be launched (defined by the Readiness field).
-  absl::optional<bool> paused;
+  std::optional<bool> paused;
 
   // This vector stores all the intent filters defined in this app. Each
   // intent filter defines a matching criteria for whether an intent can
@@ -231,33 +231,33 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   // Whether the app can be free resized. If this is true, various resizing
   // operations will be restricted.
-  absl::optional<bool> resize_locked;
+  std::optional<bool> resize_locked;
 
   // Whether the app's display mode is in the browser or otherwise.
   WindowMode window_mode = WindowMode::kUnknown;
 
   // Whether the app runs on os login in a new window or not.
-  absl::optional<RunOnOsLogin> run_on_os_login;
+  std::optional<RunOnOsLogin> run_on_os_login;
 
   // Whether the app can be closed by the user.
-  absl::optional<bool> allow_close;
+  std::optional<bool> allow_close;
 
   // Storage space size for app and associated data.
-  absl::optional<uint64_t> app_size_in_bytes;
-  absl::optional<uint64_t> data_size_in_bytes;
+  std::optional<uint64_t> app_size_in_bytes;
+  std::optional<uint64_t> data_size_in_bytes;
 
   // App-specified supported locales.
   std::vector<std::string> supported_locales;
   // Currently selected locale, empty string means system language is used.
   // ARC-specific note: Based on Android implementation, `selected_locale`
   //  is not necessarily part of `supported_locales`.
-  absl::optional<std::string> selected_locale;
+  std::optional<std::string> selected_locale;
 
   // The extra information used by the app platform(e.g. ARC, GuestOS) for an
   // app. `extra` needs to be modified as a whole, and we can't only modify part
   // of `extra`. AppService doesn't use the fields saved in `extra`. App
   // publishers modify the content saved in `extra`.
-  absl::optional<base::Value::Dict> extra;
+  std::optional<base::Value::Dict> extra;
 
   // When adding new fields to the App type, the `Clone` function, the
   // `operator==` function, and the `AppUpdate` class should also be updated. If

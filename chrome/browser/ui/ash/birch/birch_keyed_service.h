@@ -15,6 +15,7 @@ namespace ash {
 
 class BirchClientImpl;
 class BirchFileSuggestProvider;
+class BirchRecentTabsProvider;
 
 // A keyed service which is used to manage data providers for the birch feature.
 // Fetched data will be sent to the `BirchModel` to be stored.
@@ -33,6 +34,8 @@ class BirchKeyedService : public KeyedService {
 
  private:
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
+
+  std::unique_ptr<BirchRecentTabsProvider> recent_tabs_provider_;
 
   std::unique_ptr<BirchClientImpl> birch_client_impl_;
 };

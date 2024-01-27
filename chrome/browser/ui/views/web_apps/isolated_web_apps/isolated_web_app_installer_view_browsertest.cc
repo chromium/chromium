@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/fake_pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -203,16 +204,6 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
   views::Widget::Widgets widgets_;
 };
 
-class FakeIsolatedWebAppsEnabledPrefObserver
-    : public IsolatedWebAppsEnabledPrefObserver {
- public:
-  void Start(PrefChangedCallback callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(callback, true));
-  }
-  void Reset() override {}
-};
-
 }  // namespace
 
 class IsolatedWebAppInstallerViewUiPixelTest
@@ -239,7 +230,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
     Profile* profile = browser()->profile();
     IsolatedWebAppInstallerViewController controller{
         profile, WebAppProvider::GetForWebApps(profile), &model,
-        std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>()};
+        std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true)};
 
     base::test::TestFuture<void> future;
     controller.Start(future.GetCallback(), base::DoNothing());

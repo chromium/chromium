@@ -117,8 +117,6 @@ class HitTestRequest {
   HitTestRequestType GetType() const { return request_type_; }
   const LayoutObject* GetStopNode() const { return stop_node_.Get(); }
 
-  // TODO(paint-dev): enforce that the callback doesn't invalidate rendering,
-  // similar to LocalFrameView::in_post_lifecycle_steps_.
   ListBasedHitTestBehavior RunHitNodeCb(const Node& node) const {
     DCHECK(hit_node_cb_);
     return hit_node_cb_->Run(node);

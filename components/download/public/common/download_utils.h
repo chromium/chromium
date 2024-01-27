@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/in_progress/download_entry.h"
@@ -18,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -79,7 +79,7 @@ CreateDownloadDBEntryFromItem(const DownloadItemImpl& item);
 // Helper function to convert DownloadDBEntry to DownloadEntry.
 // TODO(qinmin): remove this function after DownloadEntry is deprecated.
 COMPONENTS_DOWNLOAD_EXPORT std::unique_ptr<DownloadEntry>
-CreateDownloadEntryFromDownloadDBEntry(absl::optional<DownloadDBEntry> entry);
+CreateDownloadEntryFromDownloadDBEntry(std::optional<DownloadDBEntry> entry);
 
 COMPONENTS_DOWNLOAD_EXPORT uint64_t GetUniqueDownloadId();
 

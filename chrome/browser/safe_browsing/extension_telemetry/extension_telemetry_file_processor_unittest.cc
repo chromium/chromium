@@ -31,8 +31,7 @@ constexpr char kExtensionSubDirCSSFile1[] = "folder/css_file_1.css";
 constexpr char kExtensionSubDirCSSFile2[] = "folder/css_file_2.css";
 
 std::string HashContent(const std::string& content) {
-  std::string hash = crypto::SHA256HashString(content);
-  return base::HexEncode(hash.c_str(), hash.size());
+  return base::HexEncode(crypto::SHA256HashString(content));
 }
 
 void WriteExtensionFile(const base::FilePath& path,

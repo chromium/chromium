@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -596,7 +596,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
 }
 
 void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
-    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   if (!output_surface_plane || !output_surface_plane->has_value())
     return;
 

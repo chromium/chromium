@@ -596,7 +596,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
       formats[i] =
           GetGrBackendFormatForTexture(context->format(), /*plane_index=*/0,
                                        context->mailbox_holder().texture_target,
-                                       /*ycbcr_info=*/absl::nullopt,
+                                       /*ycbcr_info=*/std::nullopt,
                                        /*yuv_color_space=*/gfx::ColorSpace());
       // NOTE: We don't have promises for individual planes, but still need
       // format for fallback.
@@ -756,7 +756,7 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
-    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
     bool raw_draw_if_possible) {
   return std::make_unique<ImageContextImpl>(
@@ -1014,7 +1014,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), GL_TEXTURE_2D);
     image_context = std::make_unique<ImageContextImpl>(
         mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
-        /*ycbcr_info=*/absl::nullopt, std::move(color_space),
+        /*ycbcr_info=*/std::nullopt, std::move(color_space),
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {
@@ -1519,7 +1519,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     SharedImageFormat si_format,
     int plane_index,
     uint32_t gl_texture_target,
-    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     const gfx::ColorSpace& yuv_color_space) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {

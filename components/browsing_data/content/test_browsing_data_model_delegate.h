@@ -27,10 +27,10 @@ class TestBrowsingDataModelDelegate final : public BrowsingDataModel::Delegate {
   void RemoveDataKey(const BrowsingDataModel::DataKey& data_key,
                      BrowsingDataModel::StorageTypeSet storage_types,
                      base::OnceClosure callback) override;
-  absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
+  std::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
-  absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+  std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
   bool IsCookieDeletionDisabled(const GURL& url) override;

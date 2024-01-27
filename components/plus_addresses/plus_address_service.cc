@@ -86,20 +86,20 @@ bool PlusAddressService::SupportsPlusAddresses(url::Origin origin,
   return GetPlusAddress(origin).has_value();
 }
 
-absl::optional<std::string> PlusAddressService::GetPlusAddress(
+std::optional<std::string> PlusAddressService::GetPlusAddress(
     url::Origin origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<PlusProfile> profile = GetPlusProfile(origin);
-  return profile ? absl::make_optional(profile->plus_address) : absl::nullopt;
+  std::optional<PlusProfile> profile = GetPlusProfile(origin);
+  return profile ? std::make_optional(profile->plus_address) : std::nullopt;
 }
 
-absl::optional<PlusProfile> PlusAddressService::GetPlusProfile(
+std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
     url::Origin origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
   auto it = plus_address_by_site_.find(etld_plus_one);
   if (it == plus_address_by_site_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Assume that 'is_confirmed` = TRUE since this service only has a saved plus
   // address if it was successfully confirmed via the dialog or retrieved via
@@ -155,7 +155,7 @@ void PlusAddressService::ConfirmPlusAddress(
     return;
   }
   // Check the local mapping before attempting to confirm plus_address.
-  if (absl::optional<PlusProfile> stored_plus_profile = GetPlusProfile(origin);
+  if (std::optional<PlusProfile> stored_plus_profile = GetPlusProfile(origin);
       stored_plus_profile) {
     std::move(on_completed).Run(stored_plus_profile.value());
     return;
@@ -186,10 +186,10 @@ std::u16string PlusAddressService::GetCreateSuggestionLabel() {
       plus_addresses::kEnterprisePlusAddressSuggestionLabelOverride.Get());
 }
 
-absl::optional<std::string> PlusAddressService::GetPrimaryEmail() {
+std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // TODO(crbug.com/1467623): This is fine for prototyping, but eventually we
   // must also take `AccountInfo::CanHaveEmailAddressDisplayed` into account

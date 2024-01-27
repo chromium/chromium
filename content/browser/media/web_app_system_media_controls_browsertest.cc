@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/unguessable_token.h"
@@ -421,6 +422,95 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   // Pause 1, only 1 remains.
   media_keys_listener_manager_impl->OnPause(web_app1_system_media_controls);
   WaitForStop(web_app1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
+  base::HistogramTester histogram_tester;
+  Shell* web_app1 = CreateBrowser();
+  Shell* web_app2 = CreateBrowser();
+
+  // Navigate two shells to the page.
+  GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
+  EXPECT_TRUE(NavigateToURL(web_app1, http_url));
+  EXPECT_TRUE(NavigateToURL(web_app2, http_url));
+
+  // Start playback.
+  SetAlwaysAssumeWebAppForTesting();
+
+  // Load a video from web_app1.
+  StartPlaybackAndWait(web_app1, "long-video-loop");
+  base::UnguessableToken web_app1_request_id = WaitForWebAppAdded();
+  EXPECT_TRUE(web_app1_request_id);
+  EXPECT_TRUE(WaitForStartWatchingMediaKey());
+  system_media_controls::SystemMediaControls* web_app1_system_media_controls =
+      GetSystemMediaControlsForWebApp(web_app1_request_id);
+
+  // Load a video from web_app2.
+  StartPlaybackAndWait(web_app2, "long-video-loop");
+  base::UnguessableToken web_app2_request_id = WaitForWebAppAdded();
+  EXPECT_TRUE(WaitForStartWatchingMediaKey());
+  system_media_controls::SystemMediaControls* web_app2_system_media_controls =
+      GetSystemMediaControlsForWebApp(web_app2_request_id);
+
+  MediaKeysListenerManagerImpl* media_keys_listener_manager =
+      BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+
+  // Simulate a bunch of actions from SystemMediaTransportControls center.
+  {
+    media_keys_listener_manager->OnPause(web_app1_system_media_controls);
+    WaitForStop(web_app1);
+    media_keys_listener_manager->OnPlay(web_app1_system_media_controls);
+    WaitForStart(web_app1);
+    media_keys_listener_manager->OnPause(web_app2_system_media_controls);
+    WaitForStop(web_app2);
+    media_keys_listener_manager->OnPlay(web_app2_system_media_controls);
+    WaitForStart(web_app2);
+
+    FetchHistogramsFromChildProcesses();
+
+    // 4 starts hence 4 PwaPlayingMedia events.
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaPlayingMedia, 4);
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcPlay, 2);
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcPause, 2);
+  }
+
+  // Now just simulate some of the other ones. We can't do next/prev because
+  // those are disabled when there are no next or previous tracks. so just skip
+  // those.
+  {
+    media_keys_listener_manager->OnPlayPause(web_app1_system_media_controls);
+    media_keys_listener_manager->OnStop(web_app1_system_media_controls);
+    media_keys_listener_manager->OnSeek(web_app1_system_media_controls,
+                                        base::Seconds(2));
+    media_keys_listener_manager->OnSeekTo(web_app1_system_media_controls,
+                                          base::Seconds(2));
+
+    FetchHistogramsFromChildProcesses();
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcPlayPause, 1);
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcStop, 1);
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcSeek, 1);
+
+    histogram_tester.ExpectBucketCount(
+        "WebApp.Media.SystemMediaControls",
+        WebAppSystemMediaControlsEvent::kPwaSmcSeekTo, 1);
+  }
 }
 
 }  // namespace content

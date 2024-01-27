@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_RESULT_REPORTER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_RESULT_REPORTER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -65,7 +66,7 @@ class MlInstallResultReporter {
                     MlInstallUserResponse response);
 
  private:
-  void ReportResultInternal(absl::optional<WebappInstallSource> source,
+  void ReportResultInternal(std::optional<WebappInstallSource> source,
                             MlInstallResponse response);
 
   const base::WeakPtr<content::BrowserContext> browser_context_;
@@ -74,7 +75,7 @@ class MlInstallResultReporter {
   const GURL manifest_id_;
   bool ml_promotion_blocked_by_guardrail_;
   bool reported_ = false;
-  absl::optional<WebappInstallSource> install_source_attached_ = absl::nullopt;
+  std::optional<WebappInstallSource> install_source_attached_ = std::nullopt;
 };
 
 }  // namespace webapps

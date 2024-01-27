@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_COLLECTOR_IMPL_H_
 
 #include <cstdint>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 using proto::ModelSource;
@@ -60,7 +60,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       proto::SegmentId id,
       scoped_refptr<InputContext> input_context,
       DecisionType type,
-      absl::optional<ModelProvider::Request> inputs,
+      std::optional<ModelProvider::Request> inputs,
       bool decision_result_update_trigger = false) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
@@ -85,7 +85,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // training data from storage, collect output training data and upload all
   // training data.
   void OnObservationTrigger(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       TrainingRequestId request_id,
       const proto::SegmentInfo& segment_info,
       SuccessCallback callback);
@@ -94,11 +94,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list);
 
   void ReportForSegmentsInfoList(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
   void OnUmaUpdatedReportForSegmentInfo(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       const proto::SegmentInfo* segment);
 
   void OnGetSegmentInfoAtDecisionTime(
@@ -107,7 +107,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
       const proto::SegmentInfo& segment_info,
-      absl::optional<ModelProvider::Request> inputs);
+      std::optional<ModelProvider::Request> inputs);
 
   void OnGetTrainingTensorsAtDecisionTime(
       TrainingRequestId request_id,
@@ -118,13 +118,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const ModelProvider::Response& output_tensors);
 
   void OnGetStoredTrainingData(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       const proto::SegmentInfo& segment_info,
       SuccessCallback callback,
-      absl::optional<proto::TrainingData> input);
+      std::optional<proto::TrainingData> input);
 
   void OnGetOutputsOnObservationTrigger(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       const proto::SegmentInfo& segment_info,
       const ModelProvider::Request& cached_input_tensors,
       bool has_error,
@@ -132,7 +132,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const ModelProvider::Response& output_tensors);
 
   void OnGetTrainingTensors(
-      const absl::optional<ImmediateCollectionParam>& param,
+      const std::optional<ImmediateCollectionParam>& param,
       const proto::SegmentInfo& segment_info,
       bool has_error,
       const ModelProvider::Request& input_tensors,

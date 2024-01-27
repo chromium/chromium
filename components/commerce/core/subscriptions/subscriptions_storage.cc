@@ -15,7 +15,7 @@
 
 namespace commerce {
 
-absl::optional<CommerceSubscriptionProto> GetCommerceSubscriptionProto(
+std::optional<CommerceSubscriptionProto> GetCommerceSubscriptionProto(
     const CommerceSubscription& subscription) {
   SubscriptionTypeProto subscription_type = commerce_subscription_db::
       CommerceSubscriptionContentProto_SubscriptionType_TYPE_UNSPECIFIED;
@@ -40,7 +40,7 @@ absl::optional<CommerceSubscriptionProto> GetCommerceSubscriptionProto(
   if (!type_parse_succeeded || !id_type_parse_succeeded ||
       !management_type_parse_succeeded) {
     VLOG(1) << "Fail to get proto type";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string& key = GetStorageKeyForSubscription(subscription);

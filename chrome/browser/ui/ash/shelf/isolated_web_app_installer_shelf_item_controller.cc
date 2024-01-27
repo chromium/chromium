@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/window_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_context_menu.h"
@@ -16,14 +17,31 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/themed_vector_icon.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/native_theme/native_theme.h"
+
+namespace {
+constexpr int kPlaceholderIconDimension = 48;
+}  // namespace
 
 // static
 gfx::ImageSkia
 IsolatedWebAppInstallerShelfItemController::GetDefaultInstallerShelfIcon() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  // TODO(crbug.com/1515460): Replace the placeholder default icon.
-  return *rb.GetImageSkiaNamed(IDR_SETTINGS_LOGO_192);
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(
+          native_theme->GetColorProviderKey(nullptr));
+
+  ui::ImageModel placeholder_vector = ui::ImageModel::FromVectorIcon(
+      ash::kPlaceholderAppIcon, cros_tokens::kCrosSysPrimary,
+      kPlaceholderIconDimension);
+  return ui::ThemedVectorIcon(placeholder_vector.GetVectorIcon())
+      .GetImageSkia(color_provider);
 }
 
 IsolatedWebAppInstallerShelfItemController::

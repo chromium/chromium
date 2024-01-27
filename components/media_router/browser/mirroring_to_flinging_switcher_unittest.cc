@@ -68,7 +68,7 @@ class TestWebContentsPresentationManager
       const RouteRequestResult& result) override {}
 
  private:
-  absl::optional<content::PresentationRequest> default_presentation_request_;
+  std::optional<content::PresentationRequest> default_presentation_request_;
   base::WeakPtrFactory<TestWebContentsPresentationManager> weak_factory_{this};
 };
 

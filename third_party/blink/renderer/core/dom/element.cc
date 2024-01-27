@@ -3534,9 +3534,10 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
-  // We are both a size container and trying to compute position-fallback styles
-  // from layout. Our children should be the first opportunity to skip recalc.
-  if (style_recalc_context.is_position_fallback) {
+  // We are both a size container and trying to compute interleaved styles
+  // from out-of-flow layout. Our children should be the first opportunity to
+  // skip recalc.
+  if (style_recalc_context.is_interleaved_oof) {
     return false;
   }
 
@@ -3651,7 +3652,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  child_recalc_context.is_position_fallback = false;
+  child_recalc_context.is_interleaved_oof = false;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
@@ -5392,8 +5393,11 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
                                           ShadowRootType type,
                                           FocusDelegation focus_delegation,
-                                          SlotAssignmentMode slot_assignment) {
+                                          SlotAssignmentMode slot_assignment,
+                                          bool serializable) {
   CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
+  CHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() ||
+        !serializable);
 
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
@@ -5409,11 +5413,9 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 
   // TODO(crbug.com/1521128): Declarative shadow roots should set the registry
   // argument here.
-  // TODO(crbug.com/1517959): declarative shadow roots should support the
-  // `serializable` attribute here, by creating a serializable shadow root.
-  ShadowRoot& shadow_root = AttachShadowRootInternal(
-      type, focus_delegation, slot_assignment, /*registry*/ nullptr,
-      /*serializable*/ false);
+  ShadowRoot& shadow_root =
+      AttachShadowRootInternal(type, focus_delegation, slot_assignment,
+                               /*registry*/ nullptr, serializable);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -6964,13 +6966,12 @@ StyleScopeData* Element::GetStyleScopeData() const {
   return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
 }
 
-PositionFallbackData& Element::EnsurePositionFallbackData() {
-  return EnsureElementRareData().EnsurePositionFallbackData();
+OutOfFlowData& Element::EnsureOutOfFlowData() {
+  return EnsureElementRareData().EnsureOutOfFlowData();
 }
 
-PositionFallbackData* Element::GetPositionFallbackData() const {
-  return HasRareData() ? GetElementRareData()->GetPositionFallbackData()
-                       : nullptr;
+OutOfFlowData* Element::GetOutOfFlowData() const {
+  return HasRareData() ? GetElementRareData()->GetOutOfFlowData() : nullptr;
 }
 
 bool Element::SkippedContainerStyleRecalc() const {

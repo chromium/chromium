@@ -21,7 +21,6 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
@@ -96,15 +96,16 @@ void ShoppingInsightsSidePanelUI::BindInterface(
 }
 
 void ShoppingInsightsSidePanelUI::BindInterface(
-    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
-        receiver) {
-  shopping_list_factory_receiver_.reset();
-  shopping_list_factory_receiver_.Bind(std::move(receiver));
+    mojo::PendingReceiver<
+        shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
+  shopping_service_factory_receiver_.reset();
+  shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
-void ShoppingInsightsSidePanelUI::CreateShoppingListHandler(
-    mojo::PendingRemote<shopping_list::mojom::Page> page,
-    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver) {
+void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
+    mojo::PendingRemote<shopping_service::mojom::Page> page,
+    mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
+        receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
@@ -112,10 +113,12 @@ void ShoppingInsightsSidePanelUI::CreateShoppingListHandler(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   feature_engagement::Tracker* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
-  shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
-      std::move(page), std::move(receiver), bookmark_model, shopping_service,
-      profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale(),
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile));
+  shopping_service_handler_ =
+      std::make_unique<commerce::ShoppingServiceHandler>(
+          std::move(page), std::move(receiver), bookmark_model,
+          shopping_service, profile->GetPrefs(), tracker,
+          g_browser_process->GetApplicationLocale(),
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

@@ -154,7 +154,8 @@ public class BottomSheetObserverTest {
                                     sTestRule.getActivity().getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> rootView,
-                                    false);
+                                    false,
+                                    () -> 0);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);

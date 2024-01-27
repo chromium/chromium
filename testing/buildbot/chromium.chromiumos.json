@@ -848,8 +848,8 @@
           "--env-var",
           "LIBVA_DRIVER_NAME",
           "libfake",
-          "test-25fps.vp9",
-          "test-25fps.vp9.json",
+          "../../media/test/data/test-25fps.vp9",
+          "../../media/test/data/test-25fps.vp9.json",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "ci_only": true,
@@ -1175,7 +1175,7 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R123-15756.0.0",
+        "cros_img": "volteer-public/R123-15759.0.0",
         "cros_model": "voxel",
         "dut_pool": "chromium",
         "name": "chromeos_integration_tests VOLTEER_PUBLIC_LKGM",
@@ -1340,7 +1340,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R123-15756.0.0",
+        "cros_img": "volteer-public/R123-15759.0.0",
         "cros_model": "voxel",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
@@ -1384,7 +1384,7 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R123-15756.0.0",
+        "cros_img": "trogdor-public/R123-15759.0.0",
         "name": "chromeos_integration_tests TROGDOR_PUBLIC_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -1394,7 +1394,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R123-15756.0.0",
+        "cros_img": "trogdor-public/R123-15759.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -5284,9 +5284,9 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6266.0/test_ash_chrome"
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6267.0/test_ash_chrome"
         ],
-        "description": "Run with ash-chrome version 123.0.6266.0",
+        "description": "Run with ash-chrome version 123.0.6267.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5296,8 +5296,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v123.0.6266.0",
-              "revision": "version:123.0.6266.0"
+              "location": "lacros_version_skew_tests_v123.0.6267.0",
+              "revision": "version:123.0.6267.0"
             }
           ],
           "dimensions": {
@@ -5440,9 +5440,9 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6266.0/test_ash_chrome"
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v123.0.6267.0/test_ash_chrome"
         ],
-        "description": "Run with ash-chrome version 123.0.6266.0",
+        "description": "Run with ash-chrome version 123.0.6267.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5452,8 +5452,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v123.0.6266.0",
-              "revision": "version:123.0.6266.0"
+              "location": "lacros_version_skew_tests_v123.0.6267.0",
+              "revision": "version:123.0.6267.0"
             }
           ],
           "dimensions": {

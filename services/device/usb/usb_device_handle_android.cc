@@ -48,7 +48,7 @@ void UsbDeviceHandleAndroid::FinishClose() {
 }
 
 void UsbDeviceHandleAndroid::CloseConnection() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ChromeUsbConnection_close(env, j_object_);
   j_object_.Reset();
 }

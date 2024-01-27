@@ -101,7 +101,7 @@ bool SkiaOutputDeviceX11::Reshape(const SkImageInfo& image_info,
   return true;
 }
 
-void SkiaOutputDeviceX11::Present(const absl::optional<gfx::Rect>& update_rect,
+void SkiaOutputDeviceX11::Present(const std::optional<gfx::Rect>& update_rect,
                                   BufferPresentedCallback feedback,
                                   OutputSurfaceFrame frame) {
   gfx::Rect rect = update_rect.value_or(

@@ -185,6 +185,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
     &kCCTMinimized,
+    &kCCTMinimizedEnabledByDefault,
     &kCCTPageInsightsHub,
     &kCCTPageInsightsHubBetterScroll,
     &kCCTReportParallelRequestStatus,
@@ -245,18 +246,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
     &kReportParentalControlSitesChild,
-    &kRequestDesktopSiteDefaults,
-    &kRequestDesktopSiteDefaultsControl,
-    &kRequestDesktopSiteDefaultsControlCohort1,
-    &kRequestDesktopSiteDefaultsControlCohort2,
-    &kRequestDesktopSiteDefaultsControlCohort3,
-    &kRequestDesktopSiteDefaultsControlCohort4,
-    &kRequestDesktopSiteDefaultsEnabledCohort1,
-    &kRequestDesktopSiteDefaultsEnabledCohort2,
-    &kRequestDesktopSiteDefaultsEnabledCohort3,
-    &kRequestDesktopSiteDefaultsEnabledCohort4,
-    &kRequestDesktopSiteDefaultsDowngrade,
-    &kRequestDesktopSiteDefaultsLogging,
     &kSearchEnginesPromoV3,
     &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
@@ -276,6 +265,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStateFlatBuffer,
     &kTabStripStartupRefactoring,
     &kTabToGTSAnimation,
+    &kTabWindowManagerIndexReassignmentOnMismatch,
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -349,7 +339,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSeedAccountsRevamp,
     &switches::kTangibleSync,
     &syncer::kPassExplicitSyncPassphraseToGmsCore,
-    &syncer::kEnableBookmarkFoldersForAccountStorage,
     &syncer::kReplaceSyncPromosWithSignInPromos,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncDecoupleAddressPaymentSettings,
@@ -499,6 +488,10 @@ BASE_FEATURE(kCCTIntentFeatureOverrides,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTMinimized, "CCTMinimized", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTMinimizedEnabledByDefault,
+             "CCTMinimizedEnabledByDefault",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPageInsightsHub,
              "CCTPageInsightsHub",
@@ -750,54 +743,6 @@ BASE_FEATURE(kReportParentalControlSitesChild,
              "ReportParentalControlSitesChild",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRequestDesktopSiteDefaults,
-             "RequestDesktopSiteDefaults",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsControl,
-             "RequestDesktopSiteDefaultsControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort1,
-             "RequestDesktopSiteDefaultsControlCohort1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort2,
-             "RequestDesktopSiteDefaultsControlCohort2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort3,
-             "RequestDesktopSiteDefaultsControlCohort3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsControlCohort4,
-             "RequestDesktopSiteDefaultsControlCohort4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort1,
-             "RequestDesktopSiteDefaultsEnabledCohort1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort2,
-             "RequestDesktopSiteDefaultsEnabledCohort2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort3,
-             "RequestDesktopSiteDefaultsEnabledCohort3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsEnabledCohort4,
-             "RequestDesktopSiteDefaultsEnabledCohort4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsDowngrade,
-             "RequestDesktopSiteDefaultsDowngrade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteDefaultsLogging,
-             "RequestDesktopSiteDefaultsLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShowNtpAtStartupAndroid,
              "ShowNtpAtStartupAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -858,6 +803,10 @@ BASE_FEATURE(kTabStripStartupRefactoring,
 // low-end device behavior where this animation is disabled.
 BASE_FEATURE(kTabToGTSAnimation,
              "TabToGTSAnimation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabWindowManagerIndexReassignmentOnMismatch,
+             "TabWindowManagerIndexReassignmentOnMismatch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabWindowManagerReportIndicesMismatch,

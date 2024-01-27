@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ResetBrowserProxyImpl, Router, routes, SettingsResetProfileBannerElement} from 'chrome://settings/settings.js';
+import type {SettingsResetProfileBannerElement} from 'chrome://settings/settings.js';
+import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';

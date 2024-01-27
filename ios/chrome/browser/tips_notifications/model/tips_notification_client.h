@@ -7,8 +7,11 @@
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
+#import <optional>
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
+
+class Browser;
 
 namespace tips_notifications {
 enum class NotificationType;
@@ -46,6 +49,21 @@ class TipsNotificationClient : public PushNotificationClient {
 
   // Returns true if a notification of the given `type` should be sent.
   bool ShouldSendNotification(NotificationType type);
+
+  // Returns the first "foreground active" browser, if any.
+  Browser* GetSceneLevelForegroundActiveBrowser();
+
+  // Returns `true` if there is foreground active browser.
+  bool IsSceneLevelForegroundActive();
+
+  // Helpers to handle notification interactions.
+  void ShowDefaultBrowserPromo();
+  void ShowWhatsNew();
+
+  // When the user interacts with a Tips notification but there are no
+  // foreground scenes, this will store the notification type so it can
+  // be handled when there is a foreground scene.
+  std::optional<NotificationType> interacted_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_TIPS_NOTIFICATION_CLIENT_H_

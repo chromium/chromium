@@ -556,7 +556,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playNextGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    if (!this.playNextMessage()) {
+    if (!this.highlightAndPlayNextMessage()) {
       this.onSpeechFinished();
     }
   }
@@ -566,7 +566,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playPreviousGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    this.playPreviousMessage();
+    this.highlightAndPlayPreviousMessage();
   }
 
   playSpeech() {
@@ -600,36 +600,42 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // that this step can be skipped.
       if (axNode) {
         chrome.readingMode.initAXPositionWithNode(axNode);
-        this.playNextMessage();
+        this.highlightAndPlayNextMessage();
       }
     }
   }
 
-  playNextMessage(): boolean {
+  highlightAndPlayNextMessage(): boolean {
     const maxTextLength = this.maxSpeechLength;
 
     // getNextText returns a list of triples of AXNodeIds and start / end text
     // indices, represented as a double array.
     const nextTextIds: number[] = chrome.readingMode.getNextText(maxTextLength);
-    return this.playTextOf(nextTextIds);
+    return this.highlightAndPlayTextOf(nextTextIds);
   }
 
-  playPreviousMessage(): boolean {
+  highlightAndPlayPreviousMessage(): boolean {
     const previousTextIds: number[] = chrome.readingMode.getPreviousText();
-    return this.playTextOf(previousTextIds);
+    return this.highlightAndPlayTextOf(previousTextIds);
   }
 
-  // Play text of these axNodeIds. When finished, call playNextMessage()
-  // to read the following text.
+  // Play text of these axNodeIds. When finished, call
+  // highlightAndPlayNextMessage() to read the following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  private playTextOf(axNodeIds: number[]): boolean {
+  private highlightAndPlayTextOf(axNodeIds: number[]): boolean {
     const utteranceText = this.extractTextOf(axNodeIds);
     // Return if the utterance is empty or null.
     if (!utteranceText) {
       return false;
     }
 
+    this.playText(utteranceText);
+    this.highlightNodes(axNodeIds);
+    return true;
+  }
+
+  private playText(utteranceText: string) {
     const message = new SpeechSynthesisUtterance(utteranceText);
 
     message.onerror = (error) => {
@@ -648,16 +654,29 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.resetPreviousHighlight();
 
       // Continue speaking with the next block of text.
-      if (!this.playNextMessage()) {
+      if (!this.highlightAndPlayNextMessage()) {
         this.onSpeechFinished();
       }
     };
 
     // TODO(crbug.com/1474951): Add word callbacks for word highlighting.
 
-    this.highlightNodes(axNodeIds);
-    this.speakMessage(message);
-    return true;
+    const voice = this.getSpeechSynthesisVoice();
+    if (!voice) {
+      // TODO(crbug.com/1474951): Handle when no voices are available.
+      return;
+    }
+
+    message.voice = voice;
+
+    const utteranceSettings = this.defaultUtteranceSettings();
+    message.lang = utteranceSettings.lang;
+    message.volume = utteranceSettings.volume;
+    message.pitch = utteranceSettings.pitch;
+    message.rate = utteranceSettings.rate;
+
+    this.speechStarted = true;
+    this.synth.speak(message);
   }
 
   private extractTextOf(axNodeIds: number[]): string {
@@ -704,25 +723,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const newElement: Node = this.highlightCurrentText_(start, end, element);
       this.domNodeToAxNodeIdMap_.set(newElement, nodeId);
     }
-  }
-
-  speakMessage(message: SpeechSynthesisUtterance) {
-    const voice = this.getSpeechSynthesisVoice();
-    if (!voice) {
-      // TODO(crbug.com/1474951): Handle when no voices are available.
-      return;
-    }
-
-    message.voice = voice;
-
-    const utteranceSettings = this.defaultUtteranceSettings();
-    message.lang = utteranceSettings.lang;
-    message.volume = utteranceSettings.volume;
-    message.pitch = utteranceSettings.pitch;
-    message.rate = utteranceSettings.rate;
-
-    this.speechStarted = true;
-    this.synth.speak(message);
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {

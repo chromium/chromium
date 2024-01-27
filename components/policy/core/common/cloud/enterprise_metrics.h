@@ -438,8 +438,8 @@ inline constexpr char kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode[] =
 inline constexpr char
     kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode[] =
     "Enterprise.StateDetermination.PsmRlweQueryRequest.NetworkErrorCode";
-inline constexpr char kUMAStateDeterminationStateKeysRetrieved[] =
-    "Enterprise.StateDetermination.StateKeysRetrieved";
+inline constexpr char kUMAStateDeterminationStateKeysRetrievalErrorType[] =
+    "Enterprise.StateDetermination.StateKeys.RetrievalErrorType";
 inline constexpr char kUMAStateDeterminationStateRequestDmStatusCode[] =
     "Enterprise.StateDetermination.StateRequest.DmStatusCode";
 inline constexpr char kUMAStateDeterminationStateRequestNetworkErrorCode[] =
@@ -457,6 +457,8 @@ inline constexpr char kUMAStateDeterminationTotalDuration[] =
 
 // Suffixes added to kUMAStateDeterminationTotalDurationByState.
 inline constexpr char kUMASuffixConnectionError[] = ".ConnectionError";
+inline constexpr char kUMASuffixStateKeysRetrievalError[] =
+    ".StateKeysRetrievalError";
 inline constexpr char kUMASuffixDisabled[] = ".Disabled";
 inline constexpr char kUMASuffixEnrollment[] = ".Enrollment";
 inline constexpr char kUMASuffixNoEnrollment[] = ".NoEnrollment";
@@ -466,7 +468,7 @@ inline constexpr char kUMASuffixServerError[] = ".ServerError";
 inline constexpr char kUMASuffixOPRFRequest[] = ".OPRFRequest";
 inline constexpr char kUMASuffixOwnershipCheck[] = ".OwnershipCheck";
 inline constexpr char kUMASuffixQueryRequest[] = ".QueryRequest";
-inline constexpr char kUMASuffixStateKeyRetrieval[] = ".StateKeyRetrieval";
+inline constexpr char kUMASuffixStateKeysRetrieval[] = ".StateKeysRetrieval";
 inline constexpr char kUMASuffixStateRequest[] = ".StateRequest";
 inline constexpr char kUMASuffixSystemClockSync[] = ".SystemClockSync";
 

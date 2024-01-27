@@ -878,7 +878,7 @@ class OverlayTest : public testing::Test {
   std::unique_ptr<SkiaOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
-  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+  std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
@@ -4696,7 +4696,7 @@ void AddQuad(gfx::Rect quad_rect,
       /*quad_to_target_transform=*/quad_to_target_transform, quad_rect,
       /*visible_layer_rect=*/quad_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/absl::nullopt,
+      /*clip_rect=*/std::nullopt,
       /*are contents opaque=*/true,
       /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,

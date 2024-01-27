@@ -407,17 +407,8 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during specific card unmasking flows, for example VCN unmasking. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
-      Verifying payment method
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE" desc="Title for the confirmation dialog that occurs upon a successful card unmask.">
-      Payment method verified
-    </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
       Verify it's you
-    </message>
-    <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during server IBAN unmasking flows. The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
-      Filling IBAN
     </message>
   </if>
   <if expr="is_ios">
@@ -517,8 +508,17 @@
   <message name="IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASK_PROGRESS_BAR_MESSAGE" desc="Loading message displayed after selecting/tapping a credit card entry in Autofill, before possibly showing the user any other verification steps.">
     Securely verifying your payment details...
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during specific card unmasking flows, for example VCN unmasking. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Verifying payment method
+  </message>
+  <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during server IBAN unmasking flows. The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Filling IBAN
+  </message>
   <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_BAR_MESSAGE" desc="The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
     Loading...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE" desc="Title for the confirmation dialog that occurs upon a successful card unmask.">
+    Payment method verified
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL" desc="Button that allows the user to cancel the card unmasking process.">
     Cancel

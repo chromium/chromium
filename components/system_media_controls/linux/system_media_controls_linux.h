@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYSTEM_MEDIA_CONTROLS_LINUX_SYSTEM_MEDIA_CONTROLS_LINUX_H_
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_LINUX_SYSTEM_MEDIA_CONTROLS_LINUX_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "components/system_media_controls/system_media_controls.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DbusProperties;
 
@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
       std::pair<base::FilePath, base::SequenceBound<base::ScopedTempFile>>
           thumbnail);
 
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
   base::RepeatingTimer position_update_timer_;
   bool playing_ = false;
 

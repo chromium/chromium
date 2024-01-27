@@ -65,8 +65,7 @@ MATCHER_P(IsInputContextWithArgs,
 
 MATCHER(TrainingLabelEmpty, "no training labels present") {
   return testing::ExplainMatchResult(
-      testing::Field(&TrainingLabels::output_metric,
-                     testing::Eq(absl::nullopt)),
+      testing::Field(&TrainingLabels::output_metric, testing::Eq(std::nullopt)),
       arg, result_listener);
 }
 

@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -125,7 +125,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
 
     owned_cache_ = std::make_unique<ResourceCache>(
         temp_dir_.GetPath(), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /* max_cache_size */ absl::nullopt);
+        /* max_cache_size */ std::nullopt);
     cache_ = owned_cache_.get();
   }
 

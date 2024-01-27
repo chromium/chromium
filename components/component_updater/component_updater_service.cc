@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using CrxInstaller = update_client::CrxInstaller;
@@ -296,7 +296,7 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
   return crx;
 }
 
-absl::optional<ComponentRegistration> CrxUpdateService::GetComponent(
+std::optional<ComponentRegistration> CrxUpdateService::GetComponent(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::GetComponent(components_, id);
@@ -437,14 +437,14 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
 
 void CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids,
-    base::OnceCallback<void(const std::vector<absl::optional<CrxComponent>>&)>
+    base::OnceCallback<void(const std::vector<std::optional<CrxComponent>>&)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<absl::optional<CrxComponent>> crxs;
-  for (absl::optional<ComponentRegistration> item :
+  std::vector<std::optional<CrxComponent>> crxs;
+  for (std::optional<ComponentRegistration> item :
        component_updater::GetCrxComponents(components_, ids)) {
-    crxs.push_back(item ? absl::optional<CrxComponent>{ToCrxComponent(*item)}
-                        : absl::nullopt);
+    crxs.push_back(item ? std::optional<CrxComponent>{ToCrxComponent(*item)}
+                        : std::nullopt);
   }
   std::move(callback).Run(crxs);
 }

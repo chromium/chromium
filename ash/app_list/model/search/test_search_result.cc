@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <vector>
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 #include "ash/app_list/model/search/test_search_result.h"
 
@@ -48,6 +50,18 @@ void TestSearchResult::SetCategory(
 void TestSearchResult::SetSystemInfoAnswerCardData(
     const ash::SystemInfoAnswerCardData& system_info_data) {
   SearchResult::set_system_info_answer_card_data(system_info_data);
+}
+
+void TestSearchResult::SetIconAndBadgeIcon() {
+  const int icon_size = 28;
+  const int badge_icon_size = 14;
+  const SearchResultIconInfo test_icon_info(
+      ui::ImageModel::FromImageSkia(
+          gfx::test::CreateImageSkia(icon_size, SK_ColorRED)),
+      icon_size, SearchResultIconShape::kCircle);
+  SearchResult::SetIcon(test_icon_info);
+  SearchResult::SetBadgeIcon(ui::ImageModel::FromImageSkia(
+      gfx::test::CreateImageSkia(badge_icon_size, SK_ColorCYAN)));
 }
 
 }  // namespace ash

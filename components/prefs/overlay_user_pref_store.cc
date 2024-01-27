@@ -97,7 +97,7 @@ base::Value::Dict OverlayUserPrefStore::GetValues() const {
   // overwritten by the content of |persistent_user_pref_store_| (the persistent
   // store).
   for (const auto& key : persistent_names_set_) {
-    absl::optional<base::Value> out_value =
+    std::optional<base::Value> out_value =
         persistent_values.ExtractByDottedPath(key);
     if (out_value.has_value()) {
       values.SetByDottedPath(key, std::move(*out_value));

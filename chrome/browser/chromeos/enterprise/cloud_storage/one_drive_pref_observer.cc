@@ -127,9 +127,8 @@ void OneDrivePrefObserver::OnMicrosoftOneDriveAccountRestrictionsPrefChanged() {
 void OneDrivePrefObserver::MaybeUninstallOdfsExtension(Mount mount) {
   if (cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(profile_) ||
       !CHECK_DEREF(extensions::ExtensionRegistry::Get(profile_))
-           .GetExtensionById(
-               extension_misc::kODFSExtensionId,
-               extensions::ExtensionRegistry::IncludeFlag::ENABLED)) {
+           .enabled_extensions()
+           .GetByID(extension_misc::kODFSExtensionId)) {
     return;
   }
   CHECK_DEREF(extensions::ExtensionSystem::Get(profile_)->extension_service())

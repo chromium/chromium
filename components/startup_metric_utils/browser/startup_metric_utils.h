@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 
-#include "base/component_export.h"
-#include "components/startup_metric_utils/common/startup_metric_utils.h"
+#include <optional>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 
 // Utility functions to support metric collection for browser-process-specific
 // startup. Timings should use TimeTicks whenever possible.
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 #if BUILDFLAG(IS_WIN)
   // Returns the hard fault count of the current process, or nullopt if it can't
   // be determined.
-  absl::optional<uint32_t> GetHardFaultCountForCurrentProcess();
+  std::optional<uint32_t> GetHardFaultCountForCurrentProcess();
 #endif
 
   void RecordMessageLoopStartTicks(base::TimeTicks ticks);

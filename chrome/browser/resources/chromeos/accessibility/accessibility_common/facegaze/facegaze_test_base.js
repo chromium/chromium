@@ -123,24 +123,31 @@ class MockFaceLandmarkerResult {
 
 /** Base class for FaceGaze tests JavaScript tests. */
 FaceGazeTestBase = class extends E2ETestBase {
+  constructor() {
+    super();
+    this.overrideIntervalFunctions_ = true;
+  }
+
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
-    this.intervalCallbacks_ = {};
-    this.nextCallbackId_ = 1;
+    if (this.overrideIntervalFunctions_) {
+      this.intervalCallbacks_ = {};
+      this.nextCallbackId_ = 1;
 
-    window.setInterval = (callback, timeout) => {
-      const id = this.nextCallbackId_;
-      this.nextCallbackId_++;
-      this.intervalCallbacks_[id] = callback;
-      return id;
-    };
-    window.clearInterval = (id) => {
-      delete this.intervalCallbacks_[id];
-    };
+      window.setInterval = (callback, timeout) => {
+        const id = this.nextCallbackId_;
+        this.nextCallbackId_++;
+        this.intervalCallbacks_[id] = callback;
+        return id;
+      };
+      window.clearInterval = (id) => {
+        delete this.intervalCallbacks_[id];
+      };
+    }
 
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
     const module =

@@ -127,7 +127,7 @@ OverviewController* OverviewController::Get() {
   return g_instance;
 }
 
-bool OverviewController::StartOverview(OverviewStartAction action,
+bool OverviewController::StartOverview(OverviewStartAction start_action,
                                        OverviewEnterExitType type) {
   // No need to start overview if overview is currently active.
   if (InOverviewSession())
@@ -137,11 +137,11 @@ bool OverviewController::StartOverview(OverviewStartAction action,
     return false;
 
   ToggleOverview(type);
-  RecordOverviewStartAction(action);
+  RecordOverviewStartAction(start_action);
   return true;
 }
 
-bool OverviewController::EndOverview(OverviewEndAction action,
+bool OverviewController::EndOverview(OverviewEndAction end_action,
                                      OverviewEnterExitType type) {
   // No need to end overview if overview is already ended.
   if (!InOverviewSession())
@@ -150,9 +150,9 @@ bool OverviewController::EndOverview(OverviewEndAction action,
   if (!CanEndOverview(type))
     return false;
 
-  overview_session_->set_overview_end_action(action);
+  overview_session_->set_overview_end_action(end_action);
   ToggleOverview(type);
-  RecordOverviewEndAction(action);
+  RecordOverviewEndAction(end_action);
 
   // If there is an undo toast active and the toast was created when ChromeVox
   // was enabled, then we need to close the toast when overview closes.

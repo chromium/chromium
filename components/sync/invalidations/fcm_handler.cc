@@ -59,7 +59,7 @@ void FCMHandler::StopListening() {
   // DidRetrieveToken() won't be called.
   if (IsListening()) {
     gcm_driver_->RemoveAppHandler(app_id_);
-    fcm_registration_token_ = absl::nullopt;
+    fcm_registration_token_ = std::nullopt;
     token_validation_timer_.AbandonAndStop();
     last_received_messages_.clear();
   }
@@ -77,7 +77,7 @@ void FCMHandler::StopListeningPermanently() {
   StopListening();
 }
 
-const absl::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
+const std::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_registration_token_;
 }

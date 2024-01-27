@@ -45,6 +45,7 @@ build_webui_tests("build") {
     "find_shortcut_mixin_test.ts",
     "i18n_mixin_test.ts",
     "list_property_update_mixin_test.ts",
+    "localized_link_test.ts",
     "store_client_test.ts",
     "web_ui_listener_mixin_test.ts",
   ]

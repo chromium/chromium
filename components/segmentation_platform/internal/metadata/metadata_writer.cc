@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+
 #include <cstddef>
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -11,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -207,7 +208,7 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
     const char* const* class_labels,
     size_t class_labels_length,
     int top_k_outputs,
-    absl::optional<float> threshold) {
+    std::optional<float> threshold) {
   proto::Predictor::MultiClassClassifier* multi_class_classifier =
       metadata_->mutable_output_config()
           ->mutable_predictor()

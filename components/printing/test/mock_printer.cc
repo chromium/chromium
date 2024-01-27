@@ -132,7 +132,7 @@ void MockPrinter::GeneratePageImages(
   bool success = chrome_pdf::GetPDFDocInfo(pdf_buffer, &page_count, nullptr);
   ASSERT_TRUE(success);
   for (int page_index = 0; page_index < page_count; page_index++) {
-    absl::optional<gfx::SizeF> page_size =
+    std::optional<gfx::SizeF> page_size =
         chrome_pdf::GetPDFPageSizeByIndex(pdf_buffer, page_index);
     ASSERT_TRUE(page_size);
     gfx::Size size = gfx::ToCeiledSize(*page_size);

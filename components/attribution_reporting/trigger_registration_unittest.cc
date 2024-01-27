@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/trigger_registration.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -77,7 +77,7 @@ TEST(TriggerRegistrationTest, Parse) {
           R"json({})json",
           ValueIs(AllOf(
               Field(&TriggerRegistration::filters, FilterPair()),
-              Field(&TriggerRegistration::debug_key, absl::nullopt),
+              Field(&TriggerRegistration::debug_key, std::nullopt),
               Field(&TriggerRegistration::aggregatable_dedup_keys, IsEmpty()),
               Field(&TriggerRegistration::event_triggers, IsEmpty()),
               Field(&TriggerRegistration::aggregatable_trigger_data, IsEmpty()),
@@ -85,7 +85,7 @@ TEST(TriggerRegistrationTest, Parse) {
                     AggregatableValues()),
               Field(&TriggerRegistration::debug_reporting, false),
               Field(&TriggerRegistration::aggregation_coordinator_origin,
-                    absl::nullopt),
+                    std::nullopt),
               Field(&TriggerRegistration::aggregatable_trigger_config,
                     AggregatableTriggerConfig()))),
       },
@@ -126,22 +126,21 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5"})json",
-          ValueIs(Field(&TriggerRegistration::debug_key, absl::nullopt)),
+          ValueIs(Field(&TriggerRegistration::debug_key, std::nullopt)),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5})json",
-          ValueIs(Field(&TriggerRegistration::debug_key, absl::nullopt)),
+          ValueIs(Field(&TriggerRegistration::debug_key, std::nullopt)),
       },
       {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
-          ValueIs(
-              Field(&TriggerRegistration::event_triggers,
-                    ElementsAre(EventTriggerData(),
-                                EventTriggerData(/*data=*/5, /*priority=*/0,
-                                                 /*dedup_key=*/absl::nullopt,
-                                                 FilterPair())))),
+          ValueIs(Field(&TriggerRegistration::event_triggers,
+                        ElementsAre(EventTriggerData(),
+                                    EventTriggerData(/*data=*/5, /*priority=*/0,
+                                                     /*dedup_key=*/std::nullopt,
+                                                     FilterPair())))),
       },
       {
           "event_triggers_wrong_type",

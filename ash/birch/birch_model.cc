@@ -32,6 +32,19 @@ void BirchModel::SetFileSuggestItems(
   }
 }
 
+void BirchModel::SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items) {
+  // Return early if there are no changes to the tab items.
+  if (recent_tab_items == recent_tab_items_) {
+    return;
+  }
+
+  recent_tab_items_ = std::move(recent_tab_items);
+
+  for (auto& observer : observers_) {
+    observer.OnItemsChanged();
+  }
+}
+
 void BirchModel::RequestBirchDataFetch() {
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {

@@ -440,6 +440,9 @@ inline constexpr char kLensCameraAssistedSearchPolicyAllowed[] =
 inline constexpr char kNTPLensEntryPointNewBadgeShownCount[] =
     "ios.ntp_lens_new_badge_shown_count";
 
+// Dict preference indicating what web annotation type is enabled by policy.
+inline constexpr char kWebAnnotationsPolicy[] = "ios.web_annotations_policy";
+
 // A boolean specifying whether Web Inspector support is enabled.
 inline constexpr char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
 
@@ -477,6 +480,11 @@ inline constexpr char kSigninWebSignDismissalCount[] =
 inline constexpr char kIosUserZoomMultipliers[] = "ios.user_zoom_multipliers";
 
 inline constexpr char kPrintingEnabled[] = "printing.enabled";
+
+// An integer that stores the authorization state push notification permissions
+// are in on a user's device.
+inline constexpr char kPushNotificationAuthorizationStatus[] =
+    "ios.push_notifications.authorization_status";
 
 // Bool used for the incognito biometric authentication setting.
 inline constexpr char kIncognitoAuthenticationSetting[] =

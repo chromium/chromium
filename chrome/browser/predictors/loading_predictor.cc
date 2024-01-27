@@ -203,6 +203,29 @@ bool LoadingPredictor::PrepareForPageLoad(
     AddInitialUrlToPreconnectPrediction(url, &prediction);
   }
 
+  // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/1518996)
+  // Preconnect to LCPP predicted LCP origins in all platforms including those
+  // without optimization guide.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPPAutoPreconnectLcpOrigin)) {
+    std::optional<LcppData> lcpp_data =
+        resource_prefetch_predictor()->GetLcppData(url);
+    if (lcpp_data) {
+      auto network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(url::Origin::Create(url)));
+      size_t count = 0;
+      for (const GURL& preconnect_origin :
+           PredictPreconnectableOrigins(*lcpp_data)) {
+        prediction.requests.emplace_back(url::Origin::Create(preconnect_origin),
+                                         1, network_anonymization_key);
+        ++count;
+      }
+      base::UmaHistogramCounts10000("Blink.LCPP.PreconnectPredictionCount",
+                                    count);
+    }
+  }
+
   // LCPP: set fonts to be prefetched to prefetch_requests.
   // TODO(crbug.com/1493768): make prefetch work for platforms without the
   // optimization guide.

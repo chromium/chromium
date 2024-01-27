@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/splitview/auto_snap_controller.h"
+#include <optional>
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -17,9 +18,42 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
+#include "base/notreached.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
+
+namespace {
+
+// Returns the snap ratio for the given `window` to be auto-snapped on the
+// opposite position of the screen.
+std::optional<float> CalculateAutoSnapRatio(
+    SplitViewController* split_view_controller,
+    aura::Window* window) {
+  if (Shell::Get()->IsInTabletMode()) {
+    return split_view_controller->ComputeAutoSnapRatio(window);
+  }
+
+  if (auto* split_view_overview_session =
+          RootWindowController::ForWindow(window)
+              ->split_view_overview_session();
+      split_view_overview_session &&
+      split_view_overview_session->window() != window) {
+    if (!WindowState::Get(window)->CanSnap()) {
+      return std::nullopt;
+    }
+
+    const float snap_ratio =
+        1.f - WindowState::Get(split_view_overview_session->window())
+                  ->snap_ratio()
+                  .value_or(chromeos::kDefaultSnapRatio);
+    return std::make_optional<float>(snap_ratio);
+  }
+
+  return std::nullopt;
+}
+
+}  // namespace
 
 AutoSnapController::AutoSnapController(aura::Window* root_window)
     : root_window_(root_window) {
@@ -119,38 +153,33 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   }
 
   WindowState* window_state = WindowState::Get(window);
+  auto* split_view_controller = SplitViewController::Get(window);
 
+  const std::optional<float> snap_ratio =
+      CalculateAutoSnapRatio(split_view_controller, window);
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(window)
               ->split_view_overview_session();
       window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
       split_view_overview_session &&
       split_view_overview_session->window() != window) {
-    if (!window_state->CanSnap()) {
+    if (!snap_ratio) {
       // TODO(b/302212206): Consider showing a toast if the window can't snap.
       return false;
     }
-    // If `IsSnapGroupEnabledInClamshellMode()` is true, snap via
-    // `WindowState::OnWMEvent()` instead of
-    // `SplitViewController::SnapWindow()`.
-    // Snap to the opposite side of `split_view_overview_session->window()`.
-    const float snap_ratio =
-        1.f - WindowState::Get(split_view_overview_session->window())
-                  ->snap_ratio()
-                  .value_or(chromeos::kDefaultSnapRatio);
+
     const WindowSnapWMEvent event(
         split_view_overview_session->GetWindowStateType() ==
                 chromeos::WindowStateType::kPrimarySnapped
             ? WM_EVENT_SNAP_SECONDARY
             : WM_EVENT_SNAP_PRIMARY,
-        snap_ratio, WindowSnapActionSource::kAutoSnapInSplitView);
+        *snap_ratio, WindowSnapActionSource::kAutoSnapInSplitView);
     window_state->OnWMEvent(&event);
     OverviewController::Get()->EndOverview(
         OverviewEndAction::kWindowActivating);
     return true;
   }
 
-  auto* split_view_controller = SplitViewController::Get(window);
   if (!split_view_controller->InSplitViewMode()) {
     // A window may be activated during mid-drag, during which split view is not
     // active yet.
@@ -220,9 +249,6 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
     }
     return false;
   }
-
-  std::optional<float> snap_ratio =
-      split_view_controller->ComputeSnapRatio(window);
 
   // If it's a user positionable window but can't be snapped, end split view
   // mode and show the cannot snap toast.

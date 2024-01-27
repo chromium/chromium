@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Password required</translation>
 <translation id="1156303062776767266">You're viewing a local or shared file</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> unexpectedly closed the connection.</translation>
-<translation id="115926840831309955">Check your CVC and try again or update the expiry date</translation>
 <translation id="1161325031994447685">Reconnecting to Wi-Fi</translation>
 <translation id="11635448457105324">Manage addresses button, activate to add and manage addresses in Chrome settings</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -2036,7 +2035,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4989809363548539747">This plug-in is not supported</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">Unmute</translation>
-<translation id="4995216769782533993">Confirm the security code to share your card details with this site</translation>
 <translation id="4995474875135717171">Modified:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage Site Search and your default search engine</translation>
 <translation id="4998950033665438990">Single face</translation>

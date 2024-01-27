@@ -56,6 +56,10 @@ if (is_win) {
   import("//build/config/win/manifest.gni")
 }
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
+# TODO(jam): remove is_fuchsia below
+
 declare_args() {
   # You can set the variable 'use_official_enterprise_connectors_api_keys' to
   # true to use the Google-internal file containing official API keys
@@ -143,8 +147,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service_factory.h",
     "accessibility/accessibility_state_utils.cc",
     "accessibility/accessibility_state_utils.h",
-    "accessibility/accessibility_ui.cc",
-    "accessibility/accessibility_ui.h",
     "accessibility/page_colors.cc",
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",

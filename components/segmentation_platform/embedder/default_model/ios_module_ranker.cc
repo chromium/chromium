@@ -293,7 +293,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   if (inputs.size() !=
       kUMAFeatures.size() + kIosModuleInputContextKeys.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

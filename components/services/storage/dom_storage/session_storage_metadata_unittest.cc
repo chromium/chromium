@@ -60,7 +60,7 @@ class SessionStorageMetadataTest : public testing::Test {
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageMetadataTest",
+        std::nullopt, "SessionStorageMetadataTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
     loop.Run();
@@ -508,7 +508,7 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   leveldb::Status s = db()->Get(options, leveldb::Slice("version"), &db_value);
   EXPECT_TRUE(s.IsNotFound());
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks;
-  EXPECT_TRUE(metadata.ParseDatabaseVersion(absl::nullopt, &migration_tasks));
+  EXPECT_TRUE(metadata.ParseDatabaseVersion(std::nullopt, &migration_tasks));
   EXPECT_FALSE(migration_tasks.empty());
   EXPECT_EQ(1ul, migration_tasks.size());
 

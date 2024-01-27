@@ -83,7 +83,7 @@ class PluginResponseWriterTest : public testing::Test {
         .WillByDefault(
             [this](network::mojom::URLResponseHeadPtr head,
                    mojo::ScopedDataPipeConsumerHandle body,
-                   absl::optional<mojo_base::BigBuffer> cached_metadata) {
+                   std::optional<mojo_base::BigBuffer> cached_metadata) {
               body_drainer_ = std::make_unique<BodyDrainer>(std::move(body));
             });
   }
@@ -144,7 +144,7 @@ TEST_F(PluginResponseWriterTest, Start) {
     EXPECT_CALL(mock_client_, OnReceiveResponse)
         .WillOnce([this](network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body,
-                         absl::optional<mojo_base::BigBuffer> cached_metadata) {
+                         std::optional<mojo_base::BigBuffer> cached_metadata) {
           EXPECT_EQ(200, head->headers->response_code());
           EXPECT_EQ("text/html", head->mime_type);
           body_drainer_ = std::make_unique<BodyDrainer>(std::move(body));

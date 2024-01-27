@@ -448,7 +448,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
 
 ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    absl::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::SessionModel> session_model) const {
   ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
@@ -835,15 +835,15 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
   }
 }
 
-absl::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
+std::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    absl::optional<ContentSetting> setting_to_match) {
-  absl::optional<base::TimeDelta> delta_to_nearest_expiration = absl::nullopt;
+    std::optional<ContentSetting> setting_to_match) {
+  std::optional<base::TimeDelta> delta_to_nearest_expiration = std::nullopt;
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
-    absl::optional<base::TimeDelta> delta_to_expiration =
+    std::optional<base::TimeDelta> delta_to_expiration =
         provider->RenewContentSetting(
             primary_url, secondary_url, type, setting_to_match,
             content_settings::PartitionKey::WipGetDefault());
@@ -941,7 +941,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
     bool incognito,
-    absl::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       provider->GetRuleIterator(
           content_type, incognito,

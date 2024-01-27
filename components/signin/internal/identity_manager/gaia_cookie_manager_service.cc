@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -46,7 +47,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace {
@@ -247,7 +247,7 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::TimeoutForTests() {
 
 void GaiaCookieManagerService::ExternalCcResultFetcher::
     OnGetCheckConnectionInfoSuccess(const std::string& data) {
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value || !value->is_list()) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(false);
@@ -477,7 +477,7 @@ void GaiaCookieManagerService::InitCookieListener() {
   // NOTE: |cookie_manager| can be nullptr when TestSigninClient is used in
   // testing contexts.
   if (cookie_manager) {
-    absl::optional<std::string> cookie_name;
+    std::optional<std::string> cookie_name;
     if (!base::FeatureList::IsEnabled(
             kGaiaCookieManagerServiceMonitorsAllDeletions)) {
       cookie_name = GaiaConstants::kGaiaSigninCookieName;
@@ -569,7 +569,7 @@ void GaiaCookieManagerService::ForceOnCookieChangeProcessing() {
           "." + google_url.host(), "/", base::Time(), base::Time(),
           base::Time(), true /* secure */, false /* httponly */,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          absl::nullopt /* cookie_partition_key */);
+          std::nullopt /* cookie_partition_key */);
   OnCookieChange(
       net::CookieChangeInfo(*cookie, net::CookieAccessResult(),
                             net::CookieChangeCause::UNKNOWN_DELETION));

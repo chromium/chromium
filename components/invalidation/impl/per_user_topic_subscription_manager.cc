@@ -607,12 +607,12 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
   }
 }
 
-absl::optional<Topic>
+std::optional<Topic>
 PerUserTopicSubscriptionManager::LookupSubscribedPublicTopicByPrivateTopic(
     const std::string& private_topic) const {
   auto it = private_topic_to_topic_.find(private_topic);
   if (it == private_topic_to_topic_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

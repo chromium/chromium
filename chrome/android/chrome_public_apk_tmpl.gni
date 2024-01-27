@@ -501,6 +501,7 @@ template("chrome_common_apk_or_module_tmpl") {
       "//third_party/androidx:androidx_window_extensions_core_core_java",
       "//third_party/androidx:androidx_window_sidecar_sidecar_java",
       "//third_party/androidx:androidx_window_window_java_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_atomicfu_jvm_java",
     ]
     if (defined(invoker.assert_no_deps)) {
       assert_no_deps += invoker.assert_no_deps

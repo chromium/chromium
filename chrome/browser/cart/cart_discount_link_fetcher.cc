@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
@@ -22,7 +23,7 @@ const char kContentType[] = "application/json; charset=UTF-8";
 
 const char kFetchDiscountLinkEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounted";
-const int64_t kTimeoutMs = 30000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(30000);
 }  // namespace
 
 CartDiscountLinkFetcher::~CartDiscountLinkFetcher() = default;
@@ -75,7 +76,7 @@ std::unique_ptr<EndpointFetcher> CartDiscountLinkFetcher::CreateEndpointFetcher(
 
   std::string post_data = GeneratePostData(std::move(cart_content_proto));
   return std::make_unique<EndpointFetcher>(
-      GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeoutMs,
+      GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeout,
       post_data, empty_header, empty_header, traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       false);

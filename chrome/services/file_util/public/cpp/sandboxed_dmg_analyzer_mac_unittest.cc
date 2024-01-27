@@ -127,8 +127,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {
                                  arch64.mach_header().c_str()));
 
       const std::string& sha256_bytes = binary.digests().sha256();
-      std::string actual_sha256 =
-          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      std::string actual_sha256 = base::HexEncode(sha256_bytes);
       EXPECT_EQ(
           "E462FF752FF9D84E34D843E5D46E2012ADCBD48540A8473FB794B286A389B945",
           actual_sha256);
@@ -143,8 +142,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {
                 *reinterpret_cast<const uint32_t*>(arch.mach_header().c_str()));
 
       const std::string& sha256_bytes = binary.digests().sha256();
-      std::string actual_sha256 =
-          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      std::string actual_sha256 = base::HexEncode(sha256_bytes);
       EXPECT_EQ(
           "2012CE4987B0FA4A5D285DF7E810560E841CFAB3054BC19E1AAB345F862A6C4E",
           actual_sha256);
@@ -204,8 +202,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMGNoPartitionName) {
                                  arch64.mach_header().c_str()));
 
       const std::string& sha256_bytes = binary.digests().sha256();
-      std::string actual_sha256 =
-          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      std::string actual_sha256 = base::HexEncode(sha256_bytes);
       EXPECT_EQ(
           "E462FF752FF9D84E34D843E5D46E2012ADCBD48540A8473FB794B286A389B945",
           actual_sha256);
@@ -220,8 +217,7 @@ TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMGNoPartitionName) {
                 *reinterpret_cast<const uint32_t*>(arch.mach_header().c_str()));
 
       const std::string& sha256_bytes = binary.digests().sha256();
-      std::string actual_sha256 =
-          base::HexEncode(sha256_bytes.c_str(), sha256_bytes.size());
+      std::string actual_sha256 = base::HexEncode(sha256_bytes);
       EXPECT_EQ(
           "2012CE4987B0FA4A5D285DF7E810560E841CFAB3054BC19E1AAB345F862A6C4E",
           actual_sha256);

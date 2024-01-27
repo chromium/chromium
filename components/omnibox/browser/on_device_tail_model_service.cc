@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/on_device_tail_model_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -21,7 +22,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_tail_suggest_model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -102,7 +102,7 @@ OnDeviceTailModelService::OnDeviceTailModelService(
   model_provider_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      /* model_metadata= */ absl::nullopt, this);
+      /* model_metadata= */ std::nullopt, this);
 
   if (base::GetFieldTrialParamByFeatureAsBool(omnibox::kOnDeviceTailModel,
                                               "UnloadExecutorOnIdle", false)) {
@@ -144,10 +144,10 @@ void OnDeviceTailModelService::OnModelUpdated(
     return;
   }
 
-  const absl::optional<optimization_guide::proto::Any>& metadata =
+  const std::optional<optimization_guide::proto::Any>& metadata =
       model_info->GetModelMetadata();
-  absl::optional<optimization_guide::proto::OnDeviceTailSuggestModelMetadata>
-      tail_model_metadata = absl::nullopt;
+  std::optional<optimization_guide::proto::OnDeviceTailSuggestModelMetadata>
+      tail_model_metadata = std::nullopt;
   if (metadata.has_value()) {
     tail_model_metadata = optimization_guide::ParsedAnyMetadata<
         optimization_guide::proto::OnDeviceTailSuggestModelMetadata>(

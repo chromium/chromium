@@ -4,13 +4,13 @@
 
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 
+#include <optional>
 #include <type_traits>
 #include <vector>
 
 #include "base/types/optional_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution::internal {
@@ -104,18 +104,18 @@ TEST(ResourceAttrTypeHelpersTest, GetAsOptionalSingleAlternative) {
 TEST(ResourceAttrTypeHelpersTest, GetAsOptionalManyAlternatives) {
   absl::variant<int, double> v;
   EXPECT_EQ(GetAsOptional<int>(v), 0);
-  EXPECT_EQ(GetAsOptional<double>(v), absl::nullopt);
+  EXPECT_EQ(GetAsOptional<double>(v), std::nullopt);
   v = 1;
   EXPECT_EQ(GetAsOptional<int>(v), 1);
-  EXPECT_EQ(GetAsOptional<double>(v), absl::nullopt);
+  EXPECT_EQ(GetAsOptional<double>(v), std::nullopt);
   v = 2.0;
-  EXPECT_EQ(GetAsOptional<int>(v), absl::nullopt);
+  EXPECT_EQ(GetAsOptional<int>(v), std::nullopt);
   EXPECT_EQ(GetAsOptional<double>(v), 2.0);
 }
 
 TEST(ResourceAttrTypeHelpersTest, GetAsOptionalWithMonostate) {
   absl::variant<absl::monostate, int> v;
-  EXPECT_EQ(GetAsOptional<int>(v), absl::nullopt);
+  EXPECT_EQ(GetAsOptional<int>(v), std::nullopt);
   v = 1;
   EXPECT_EQ(GetAsOptional<int>(v), 1);
 }

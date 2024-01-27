@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_SHORTCUT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/types/strong_alias.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -57,7 +57,7 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // - allow_removal: true
   std::string ToString() const;
   // Name of the shortcut.
-  absl::optional<std::string> name;
+  std::optional<std::string> name;
   // Shortcut creation source.
   ShortcutSource shortcut_source = ShortcutSource::kUnknown;
 
@@ -76,10 +76,10 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
 
   // Represents what icon should be loaded for this shortcut, icon key will
   // change if the icon has been updated from the publisher.
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
 
   // Whether the shortcut publisher allows the shortcut to be removed by user.
-  absl::optional<bool> allow_removal;
+  std::optional<bool> allow_removal;
 };
 
 // A view class to reduce the risk of lifetime issues by preventing

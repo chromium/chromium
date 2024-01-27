@@ -464,5 +464,5 @@ TEST_F(HistoryClustersProviderTest, Grouping_Ranking) {
 
   provider_->Start(input, false);
   ASSERT_EQ(provider_->matches().size(), 1u);
-  EXPECT_EQ(provider_->matches()[0].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(provider_->matches()[0].suggestion_group_id, std::nullopt);
 }

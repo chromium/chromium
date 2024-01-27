@@ -4584,7 +4584,8 @@ void AXNodeObject::AddOwnedChildren() {
 
   // Always include owned children.
   for (const auto& owned_child : owned_children) {
-    DCHECK(AXRelationCache::IsValidOwnedChild(owned_child))
+    DCHECK(owned_child->GetNode());
+    DCHECK(AXRelationCache::IsValidOwnedChild(*owned_child->GetNode()))
         << "This object is not allowed to be owned, but it is.\n"
         << owned_child->ToString(true, true);
     AddChildAndCheckIncluded(owned_child, true);
@@ -4599,15 +4600,7 @@ void AXNodeObject::AddChildrenImpl() {
   }
 
   CHECK(NeedsToUpdateChildren());
-
-  if (!CanHaveChildren()) {
-    // TODO(crbug.com/1407397): Make sure this is no longer firing then
-    // transform this block to CHECK(CanHaveChildren());
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Should not reach AddChildren() if CanHaveChildren() is false.\n"
-        << ToString(true, true);
-    return;
-  }
+  CHECK(CanHaveChildren());
 
   if (ShouldLoadInlineTextBoxes() && HasLayoutText(this)) {
     AddInlineTextBoxChildren();

@@ -92,7 +92,7 @@ void DeviceTierSegment::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != 3) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   float score = 0;

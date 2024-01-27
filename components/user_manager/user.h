@@ -350,7 +350,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   // True if the user is affiliated to the device.
-  absl::optional<bool> is_affiliated_;
+  std::optional<bool> is_affiliated_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>

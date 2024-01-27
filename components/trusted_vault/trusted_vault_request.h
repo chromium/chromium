@@ -6,6 +6,7 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -75,7 +75,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
       const CoreAccountId& account_id,
       HttpMethod http_method,
       const GURL& request_url,
-      const absl::optional<std::string>& serialized_request_proto,
+      const std::optional<std::string>& serialized_request_proto,
       base::TimeDelta max_retry_duration,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
@@ -111,7 +111,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   const CoreAccountId account_id_;
   const HttpMethod http_method_;
   const GURL request_url_;
-  const absl::optional<std::string> serialized_request_proto_;
+  const std::optional<std::string> serialized_request_proto_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
   const RecordFetchStatusCallback record_fetch_status_callback_;

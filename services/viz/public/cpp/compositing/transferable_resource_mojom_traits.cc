@@ -70,6 +70,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->id = id;
   out->is_software = data.is_software();
   out->is_overlay_candidate = data.is_overlay_candidate();
+  out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)
   out->is_backed_by_surface_texture = data.is_backed_by_surface_texture();

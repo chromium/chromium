@@ -19,6 +19,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImpl.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/MismatchedIndicesHandler.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",

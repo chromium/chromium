@@ -484,8 +484,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void CheckSignPermissions() {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(service_->browser_context_)
-            ->GetExtensionById(extension_id_,
-                               extensions::ExtensionRegistry::ENABLED);
+            ->enabled_extensions()
+            .GetByID(extension_id_);
     if (service_->IsUsingSigninProfile() && IsExtensionAllowlisted(extension)) {
       DoStep();
       return;

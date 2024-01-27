@@ -24,15 +24,15 @@ namespace {
 constexpr size_t kBytesPerMegabyte = 1024 * 1024;
 
 // Returns the model info parsed from |model_info_path|.
-absl::optional<proto::ModelInfo> ParseModelInfoFromFile(
+std::optional<proto::ModelInfo> ParseModelInfoFromFile(
     const base::FilePath& model_info_path) {
   std::string binary_model_info;
   if (!base::ReadFileToString(model_info_path, &binary_model_info))
-    return absl::nullopt;
+    return std::nullopt;
 
   proto::ModelInfo model_info;
   if (!model_info.ParseFromString(binary_model_info))
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(model_info.has_version());
   DCHECK(model_info.has_optimization_target());
@@ -164,7 +164,6 @@ PredictionModelStore* PredictionModelStore::GetInstance() {
 PredictionModelStore::PredictionModelStore()
     : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  DCHECK(optimization_guide::features::IsInstallWideModelStoreEnabled());
 }
 
 PredictionModelStore::~PredictionModelStore() = default;

@@ -267,8 +267,7 @@ void IOSChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   synthetic_trial_registry_ =
-      std::make_unique<variations::SyntheticTrialRegistry>(
-          IsExternalExperimentAllowlistEnabled());
+      std::make_unique<variations::SyntheticTrialRegistry>();
 
   synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
 

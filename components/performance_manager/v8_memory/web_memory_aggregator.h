@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_WEB_MEMORY_AGGREGATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_WEB_MEMORY_AGGREGATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "content/public/browser/browsing_instance_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -66,7 +66,7 @@ class WebMemoryAggregator {
   // to the list in |measurement|. Returns a pointer to the newly created entry.
   static mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
       mojom::WebMemoryAttribution::Scope scope,
-      absl::optional<std::string> url,
+      std::optional<std::string> url,
       mojom::WebMemoryMeasurement* measurement);
 
   // Sets the id and src attributes of |breakdown| using those stored in the

@@ -29,17 +29,10 @@
 namespace blink {
 
 namespace {
-
-String GetStyleSheetContents() {
+// TODO(crbug.com/1512214): Move Inline CSS to UA stylesheet
+String GetStyleSheetContentForShadowDOM() {
   return R"CSS(
-    body {
-      margin: 0
-    }
-    pre {
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-    .line-wrap-control {
+    .json-formatter-control {
       width: 100%;
       font-size: initial;
       font-family: monospace;
@@ -51,10 +44,29 @@ String GetStyleSheetContents() {
       align-items: center;
     }
     @media (prefers-color-scheme: dark) {
-    .line-wrap-control {
-      background-color: rgb(60, 60, 60);
+      .json-formatter-control {
+        background-color: rgb(60, 60, 60);
+      }
     }
   )CSS";
+}
+
+String GetStyleSheetContentForDocument() {
+  return R"(
+    body > pre {
+      padding-top: 20px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    .json-formatter-container {
+      position: fixed;
+      top: 0px;
+      width: 100%;
+    }
+    body {
+      margin: 0;
+    }
+  )";
 }
 
 }  // namespace
@@ -66,11 +78,11 @@ class PrettyPrintJSONListener : public NativeEventListener {
 
   void Invoke(ExecutionContext*, Event* event) override {
     DCHECK_EQ(event->type(), event_type_names::kChange);
-    JSONParseError opt_error{};
-    if (!parsed_json_value_) {
-      parsed_json_value_ = ParseJSON(pre_->textContent(), &opt_error);
+    if (!parsed_json_value_ &&
+        opt_error_.type == JSONParseErrorType::kNoError) {
+      parsed_json_value_ = ParseJSON(pre_->textContent(), &opt_error_);
     }
-    if (opt_error.type != JSONParseErrorType::kNoError) {
+    if (opt_error_.type != JSONParseErrorType::kNoError) {
       return;
     }
     if (checkbox_->Checked()) {
@@ -89,6 +101,7 @@ class PrettyPrintJSONListener : public NativeEventListener {
  private:
   Member<HTMLInputElement> checkbox_;
   Member<HTMLPreElement> pre_;
+  JSONParseError opt_error_{.type = JSONParseErrorType::kNoError};
   std::unique_ptr<JSONValue> parsed_json_value_;
 };
 
@@ -104,13 +117,12 @@ class JSONDocumentParser : public HTMLDocumentParser {
   }
 
  private:
-  void AppendBytes(const char* data, size_t length) override {
+  void Append(const String& input) override {
     CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     if (!document_initialized_) {
       CreateDocumentStructure();
     }
-    pre_->insertAdjacentText("beforeEnd", WTF::String::FromUTF8(data, length),
-                             ASSERT_NO_EXCEPTION);
+    pre_->insertAdjacentText("beforeEnd", input, ASSERT_NO_EXCEPTION);
   }
 
   void CreateDocumentStructure() {
@@ -128,17 +140,21 @@ class JSONDocumentParser : public HTMLDocumentParser {
     head->ParserAppendChild(meta);
     head->ParserAppendChild(meta_charset);
     html->ParserAppendChild(head);
+    auto* documentStyle =
+        MakeGarbageCollected<HTMLStyleElement>(*GetDocument());
+    documentStyle->setTextContent(GetStyleSheetContentForDocument());
+    head->ParserAppendChild(documentStyle);
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*GetDocument());
     html->ParserAppendChild(body);
-    body->setAttribute(html_names::kStyleAttr, AtomicString("margin: 0"));
     pre_ = MakeGarbageCollected<HTMLPreElement>(html_names::kPreTag,
                                                 *GetDocument());
+
     auto* label = MakeGarbageCollected<HTMLLabelElement>(*GetDocument());
     label->ParserAppendChild(Text::Create(
         *GetDocument(), WTF::AtomicString(Locale::DefaultLocale().QueryString(
                             IDS_PRETTY_PRINT_JSON))));
     label->setAttribute(html_names::kClassAttr,
-                        AtomicString("line-wrap-control"));
+                        AtomicString("json-formatter-control"));
     auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*GetDocument());
     checkbox->setAttribute(html_names::kTypeAttr, input_type_names::kCheckbox);
     checkbox->addEventListener(
@@ -157,13 +173,18 @@ class JSONDocumentParser : public HTMLDocumentParser {
     form->ParserAppendChild(label);
     HTMLStyleElement* style =
         MakeGarbageCollected<HTMLStyleElement>(*GetDocument());
-    style->setTextContent(GetStyleSheetContents());
+    style->setTextContent(GetStyleSheetContentForShadowDOM());
+    // See crbug.com/1485052: the div is fixed-positioned to maintain the
+    // DOM tree structure and avoid compatibility problems with extensions.
     auto* div = MakeGarbageCollected<HTMLDivElement>(*GetDocument());
+    div->setAttribute(html_names::kClassAttr,
+                      AtomicString("json-formatter-container"));
+
     ShadowRoot& shadow_root = div->EnsureUserAgentShadowRoot();
     shadow_root.ParserAppendChild(style);
     shadow_root.ParserAppendChild(form);
-    body->ParserAppendChild(div);
     body->ParserAppendChild(pre_);
+    body->ParserAppendChild(div);
     document_initialized_ = true;
   }
 

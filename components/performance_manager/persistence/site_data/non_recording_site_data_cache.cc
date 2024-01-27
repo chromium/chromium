@@ -64,7 +64,7 @@ std::vector<url::Origin> NonRecordingSiteDataCache::GetAllInMemoryOrigins() {
 void NonRecordingSiteDataCache::GetDataStoreSize(
     DataStoreSizeCallback on_have_data) {
   if (!data_cache_inspector_) {
-    std::move(on_have_data).Run(absl::nullopt, absl::nullopt);
+    std::move(on_have_data).Run(std::nullopt, std::nullopt);
     return;
   }
 

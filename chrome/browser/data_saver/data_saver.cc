@@ -25,7 +25,7 @@ std::optional<bool> g_cached_data_saver_setting;
 base::TimeTicks g_last_setting_check_time;
 
 bool IsDataSaverEnabledBlockingCall() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return datareduction::android::Java_DataSaverOSSetting_isDataSaverEnabled(
       env);
 }

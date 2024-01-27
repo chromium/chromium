@@ -30,14 +30,14 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     registered_model_metadata_.insert_or_assign(target, model_metadata);
   }
 
   bool DidRegisterForTarget(
       proto::OptimizationTarget target,
-      absl::optional<proto::Any>* out_model_metadata) const {
+      std::optional<proto::Any>* out_model_metadata) const {
     auto it = registered_model_metadata_.find(target);
     if (it == registered_model_metadata_.end())
       return false;
@@ -47,7 +47,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
   }
 
  private:
-  base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
+  base::flat_map<proto::OptimizationTarget, std::optional<proto::Any>>
       registered_model_metadata_;
 };
 
@@ -65,7 +65,7 @@ class FakePageEntitiesModelHandler : public PageEntitiesModelHandler {
       PageEntitiesMetadataModelExecutedCallback callback) override {
     auto it = entries_.find(text);
     std::move(callback).Run(
-        it != entries_.end() ? absl::make_optional(it->second) : absl::nullopt);
+        it != entries_.end() ? std::make_optional(it->second) : std::nullopt);
   }
 
   void GetMetadataForEntityId(
@@ -73,16 +73,16 @@ class FakePageEntitiesModelHandler : public PageEntitiesModelHandler {
       PageEntitiesModelEntityMetadataRetrievedCallback callback) override {
     auto it = entity_metadata_.find(entity_id);
     std::move(callback).Run(it != entity_metadata_.end()
-                                ? absl::make_optional(it->second)
-                                : absl::nullopt);
+                                ? std::make_optional(it->second)
+                                : std::nullopt);
   }
 
   void AddOnModelUpdatedCallback(base::OnceClosure callback) override {
     std::move(callback).Run();
   }
 
-  absl::optional<ModelInfo> GetModelInfo() const override {
-    return absl::nullopt;
+  std::optional<ModelInfo> GetModelInfo() const override {
+    return std::nullopt;
   }
 
  private:
@@ -167,16 +167,16 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
                                                        entity_metadata));
   }
 
-  absl::optional<EntityMetadata> GetMetadataForEntityId(
+  std::optional<EntityMetadata> GetMetadataForEntityId(
       const std::string& entity_id) {
-    absl::optional<EntityMetadata> entities_metadata;
+    std::optional<EntityMetadata> entities_metadata;
     base::RunLoop run_loop;
     model_manager()->GetMetadataForEntityId(
         entity_id,
         base::BindOnce(
             [](base::RunLoop* run_loop,
-               absl::optional<EntityMetadata>* out_entities_metadata,
-               const absl::optional<EntityMetadata>& entities_metadata) {
+               std::optional<EntityMetadata>* out_entities_metadata,
+               const std::optional<EntityMetadata>& entities_metadata) {
               *out_entities_metadata = entities_metadata;
               run_loop->Quit();
             },
@@ -267,13 +267,13 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageEntities) {
   ASSERT_EQ(result.size(), 2U);
 
   EXPECT_EQ(result[0].input(), "input1");
-  EXPECT_EQ(result[0].entities(), absl::make_optional(input1_entities));
-  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), std::make_optional(input1_entities));
+  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
   EXPECT_EQ(result[0].type(), AnnotationType::kPageEntities);
 
   EXPECT_EQ(result[1].input(), "input2");
-  EXPECT_EQ(result[1].entities(), absl::make_optional(input2_entities));
-  EXPECT_EQ(result[1].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[1].entities(), std::make_optional(input2_entities));
+  EXPECT_EQ(result[1].visibility_score(), std::nullopt);
   EXPECT_EQ(result[1].type(), AnnotationType::kPageEntities);
 }
 
@@ -316,8 +316,8 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), absl::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), std::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
@@ -363,8 +363,8 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), absl::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), std::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
@@ -430,13 +430,13 @@ TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   ASSERT_EQ(result1.size(), 1U);
   EXPECT_EQ(result1[0].input(), "input1");
   EXPECT_EQ(result1[0].type(), AnnotationType::kContentVisibility);
-  EXPECT_EQ(result1[0].entities(), absl::nullopt);
-  EXPECT_EQ(result1[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result1[0].entities(), std::nullopt);
+  EXPECT_EQ(result1[0].visibility_score(), std::nullopt);
   ASSERT_EQ(result2.size(), 1U);
   EXPECT_EQ(result2[0].input(), "input2");
   EXPECT_EQ(result2[0].type(), AnnotationType::kContentVisibility);
-  EXPECT_EQ(result2[0].entities(), absl::nullopt);
-  EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result2[0].entities(), std::nullopt);
+  EXPECT_EQ(result2[0].visibility_score(), std::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, TextEmbedding) {
@@ -483,9 +483,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, TextEmbedding) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), absl::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
-  EXPECT_EQ(result[0].embeddings(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), std::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
+  EXPECT_EQ(result[0].embeddings(), std::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, TextEmbeddingDisabled) {
@@ -531,9 +531,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, TextEmbeddingDisabled) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), absl::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
-  EXPECT_EQ(result[0].embeddings(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), std::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
+  EXPECT_EQ(result[0].embeddings(), std::nullopt);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {

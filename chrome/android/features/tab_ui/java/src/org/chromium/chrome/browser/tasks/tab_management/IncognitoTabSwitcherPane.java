@@ -61,7 +61,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     TabModelFilter incognitoTabModelFilter = mIncognitoTabModelFilterSupplier.get();
                     @Nullable
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-                    if (!isVisible()
+                    if (!getIsVisibleSupplier().get()
                             || coordinator == null
                             || !incognitoTabModelFilter.isCurrentlySelectedFilter()) {
                         return;
@@ -195,7 +195,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         if (coordinator == null) return false;
 
         boolean isNotVisibleOrSelected =
-                !isVisible() || !mIncognitoTabModelFilterSupplier.get().isCurrentlySelectedFilter();
+                !getIsVisibleSupplier().get()
+                        || !mIncognitoTabModelFilterSupplier.get().isCurrentlySelectedFilter();
         boolean incognitoReauthShowing =
                 mIncognitoReauthController != null
                         && mIncognitoReauthController.isIncognitoReauthPending();

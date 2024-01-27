@@ -319,12 +319,12 @@ constexpr auto kCommonSyncablePrefsAllowlist =
 
 }  // namespace
 
-absl::optional<SyncablePrefMetadata>
+std::optional<SyncablePrefMetadata>
 CommonSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {
   const auto* it = kCommonSyncablePrefsAllowlist.find(pref_name);
   if (it == kCommonSyncablePrefsAllowlist.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

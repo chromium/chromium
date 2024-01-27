@@ -46,7 +46,7 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
 // The conversion is used to ensure that the number of policy data types that
 // can be managed at any point in time is known and mapped to sync types that
 // need to be disabled if it is managed by policy.
-absl::optional<PolicyDataType> NameToPolicyDataType(const std::string& type);
+std::optional<PolicyDataType> NameToPolicyDataType(const std::string& type);
 
 }  // namespace browsing_data
 #endif  // COMPONENTS_BROWSING_DATA_CORE_BROWSING_DATA_POLICIES_UTILS_H_

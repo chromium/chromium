@@ -21,7 +21,7 @@ namespace {
 const char kDescriberName[] = "FrameNodeImpl";
 
 std::string IntersectsViewportToString(
-    absl::optional<bool> intersects_viewport) {
+    std::optional<bool> intersects_viewport) {
   if (!intersects_viewport.has_value()) {
     return "Nullopt";
   }

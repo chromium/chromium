@@ -33,7 +33,7 @@ struct ArrayTraits<base::span<T, Extent>> {
   static bool Resize(base::span<T>& input, size_t size) {
     if (size > input.size())
       return false;
-    input = input.subspan(0, size);
+    input = input.first(size);
     return true;
   }
 };

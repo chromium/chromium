@@ -127,6 +127,10 @@ TEST_F(DataControlsRulesServiceFeatureDisabledTest, NoVerdicts) {
                           /*source*/ google_url_endpoint(),
                           /*destination*/ empty_endpoint(),
                           /*metadata*/ {}));
+  ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetCopyToOSClipboardVerdict(
+                          /*source*/ google_url()));
 }
 
 TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
@@ -139,6 +143,10 @@ TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
                           /*source*/ google_url_endpoint(),
                           /*destination*/ empty_endpoint(),
                           /*metadata*/ {}));
+  ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetCopyToOSClipboardVerdict(
+                          /*source*/ google_url()));
 }
 
 TEST_F(DataControlsRulesServiceTest, SourceURL) {
@@ -167,6 +175,10 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ google_url_endpoint(),
                             /*metadata*/ {}));
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
   }
 
   {
@@ -194,6 +206,10 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ google_url_endpoint(),
                             /*metadata*/ {}));
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(profile())
+                          ->GetCopyToOSClipboardVerdict(
+                              /*source*/ google_url()));
   }
 
   {
@@ -233,6 +249,10 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ google_url_endpoint(),
                             /*metadata*/ {}));
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
   }
 }
 
@@ -259,6 +279,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                             /*source*/ google_url_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -283,6 +307,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                             /*source*/ google_url_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -317,6 +345,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationURL) {
                             /*source*/ google_url_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 }
 
@@ -342,6 +374,14 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ incognito_endpoint(),
                             /*metadata*/ {}));
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(incognito_profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -365,6 +405,14 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ incognito_endpoint(),
                             /*metadata*/ {}));
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(incognito_profile())
+                          ->GetCopyToOSClipboardVerdict(
+                              /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -399,6 +447,14 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                             /*source*/ empty_endpoint(),
                             /*destination*/ incognito_endpoint(),
                             /*metadata*/ {}));
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(incognito_profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 }
 
@@ -424,6 +480,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                             /*source*/ incognito_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -447,6 +507,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                             /*source*/ incognito_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 
   {
@@ -481,6 +545,10 @@ TEST_F(DataControlsRulesServiceTest, DestinationIncognito) {
                             /*source*/ incognito_endpoint(),
                             /*destination*/ empty_endpoint(),
                             /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
   }
 }
 

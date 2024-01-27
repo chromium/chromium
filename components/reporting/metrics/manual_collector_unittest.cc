@@ -124,7 +124,7 @@ TEST_F(ManualCollectorTest, InitiallyDisabled) {
 TEST_F(ManualCollectorTest, NoMetricData) {
   settings_->SetReportingEnabled(kEnableSettingPath, true);
 
-  sampler_->SetMetricData(absl::nullopt);
+  sampler_->SetMetricData(std::nullopt);
 
   ManualCollector collector(sampler_.get(), metric_report_queue_.get(),
                             settings_.get(), kEnableSettingPath,

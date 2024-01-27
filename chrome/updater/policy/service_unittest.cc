@@ -44,8 +44,13 @@ class FakePolicyManager : public PolicyManagerInterface {
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
+  void SetCloudPolicyOverridesPlatformPolicy(
+      bool cloud_policy_overrides_platform_policy) {
+    cloud_policy_overrides_platform_policy_ =
+        cloud_policy_overrides_platform_policy;
+  }
   std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override {
-    return std::nullopt;
+    return cloud_policy_overrides_platform_policy_;
   }
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override {
     return std::nullopt;
@@ -158,10 +163,11 @@ class FakePolicyManager : public PolicyManagerInterface {
  private:
   ~FakePolicyManager() override = default;
   bool has_active_device_policies_;
+  std::optional<bool> cloud_policy_overrides_platform_policy_;
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
-  std::optional<int> cache_size_limit_ = std::nullopt;
-  std::optional<int> cache_expiration_time_ = std::nullopt;
+  std::optional<int> cache_size_limit_;
+  std::optional<int> cache_expiration_time_;
   std::string download_preference_;
   std::string proxy_mode_;
   std::string proxy_server_;
@@ -177,6 +183,8 @@ TEST(PolicyService, DefaultPolicyValue) {
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "Default");
+
+  EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy());
 
   PolicyStatus<std::string> version_prefix =
       policy_service->GetTargetVersionPrefix("");
@@ -214,6 +222,7 @@ TEST(PolicyService, ValidatePolicyValues) {
 
     auto policy_service =
         base::MakeRefCounted<PolicyService>(std::move(managers));
+    EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy());
     EXPECT_FALSE(policy_service->GetDownloadPreference());
     EXPECT_FALSE(policy_service->GetProxyMode());
   }
@@ -221,6 +230,7 @@ TEST(PolicyService, ValidatePolicyValues) {
   {
     PolicyService::PolicyManagerVector managers;
     auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
+    manager->SetCloudPolicyOverridesPlatformPolicy(false);
     manager->SetDownloadPreference("cacheable");
     manager->SetProxyMode("auto_detect");
     managers.push_back(std::move(manager));
@@ -228,6 +238,8 @@ TEST(PolicyService, ValidatePolicyValues) {
 
     auto policy_service =
         base::MakeRefCounted<PolicyService>(std::move(managers));
+    EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
+    EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
     EXPECT_TRUE(policy_service->GetDownloadPreference());
     EXPECT_EQ(policy_service->GetDownloadPreference().policy(), "cacheable");
     EXPECT_TRUE(policy_service->GetProxyMode());
@@ -237,6 +249,7 @@ TEST(PolicyService, ValidatePolicyValues) {
 
 TEST(PolicyService, SinglePolicyManager) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "test_source");
+  manager->SetCloudPolicyOverridesPlatformPolicy(true);
   manager->SetChannel("app1", "test_channel");
   manager->SetUpdatePolicy("app2", 3);
   PolicyService::PolicyManagerVector managers;
@@ -245,6 +258,8 @@ TEST(PolicyService, SinglePolicyManager) {
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "test_source");
 
+  EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
+  EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
   PolicyStatus<std::string> app1_channel =
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(app1_channel);
@@ -272,6 +287,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   PolicyService::PolicyManagerVector managers;
 
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
+  manager->SetCloudPolicyOverridesPlatformPolicy(false);
   UpdatesSuppressedTimes updates_suppressed_times;
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
@@ -311,6 +327,8 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(policy_service->source(),
             "group_policy;device_management;imaginary;Default");
 
+  EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
+  EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
   EXPECT_EQ(policy_service->GetPackageCacheSizeLimitMBytes()
                 .effective_policy()
                 .value()
@@ -389,6 +407,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
 
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
             "{\n"
+            "  CloudPolicyOverridesPlatformPolicy = 0 (group_policy)\n"
             "  LastCheckPeriod = 270 (Default)\n"
             "  UpdatesSuppressed = "
             "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
@@ -415,6 +434,10 @@ TEST(PolicyService, MultiplePolicyManagers) {
       policy_service->GetAllPolicies(),
       base::Value(
           base::Value::Dict()
+              .Set("CloudPolicyOverridesPlatformPolicy",
+                   base::Value::Dict()
+                       .Set("value", false)
+                       .Set("source", "group_policy"))
               .Set("LastCheckPeriod", base::Value::Dict()
                                           .Set("value", 270)
                                           .Set("source", "Default"))

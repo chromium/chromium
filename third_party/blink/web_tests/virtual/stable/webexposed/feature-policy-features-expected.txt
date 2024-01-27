@@ -49,6 +49,7 @@ payment
 picture-in-picture
 private-state-token-issuance
 private-state-token-redemption
+publickey-credentials-create
 publickey-credentials-get
 screen-wake-lock
 serial

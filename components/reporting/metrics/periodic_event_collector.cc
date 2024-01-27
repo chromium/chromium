@@ -56,14 +56,14 @@ void PeriodicEventCollector::SetReportingEnabled(bool is_enabled) {
 
 void PeriodicEventCollector::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   if (!metric_data.has_value()) {
     return;
   }
 
   metric_data->set_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
-  absl::optional<MetricEventType> event =
+  std::optional<MetricEventType> event =
       event_detector_->DetectEvent(last_collected_data_, metric_data.value());
   last_collected_data_ = std::move(metric_data.value());
 

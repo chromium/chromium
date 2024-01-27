@@ -221,7 +221,7 @@ void TabRevisitTracker::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
 
   if (live_state_data->IsActiveTab()) {
     tab_states_[tab_handle].state = State::kActive;
-    tab_states_[tab_handle].last_active_time = absl::nullopt;
+    tab_states_[tab_handle].last_active_time = std::nullopt;
   } else {
     tab_states_[tab_handle].state = State::kBackground;
     // Set the last active time to now, since it's used to measure time

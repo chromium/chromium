@@ -225,14 +225,14 @@ class MockCastMessageHandler : public CastMessageHandler {
                const std::string&,
                base::TimeDelta,
                const std::vector<std::string>&,
-               const absl::optional<base::Value>&,
+               const std::optional<base::Value>&,
                LaunchSessionCallback callback),
               (override));
   MOCK_METHOD(void,
               StopSession,
               (int channel_id,
                const std::string& session_id,
-               const absl::optional<std::string>& client_id,
+               const std::optional<std::string>& client_id,
                ResultCallback callback),
               (override));
   MOCK_METHOD(Result,
@@ -243,7 +243,7 @@ class MockCastMessageHandler : public CastMessageHandler {
               SendCastMessage,
               (int channel_id, const CastMessage& message),
               (override));
-  MOCK_METHOD(absl::optional<int>,
+  MOCK_METHOD(std::optional<int>,
               SendMediaRequest,
               (int channel_id,
                const base::Value::Dict& body,

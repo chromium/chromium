@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,8 +30,8 @@ import org.chromium.chrome.test.transit.BasePageStation;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
+import org.chromium.chrome.test.transit.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.TabSwitcherActionMenuFacility;
-import org.chromium.chrome.test.transit.TabSwitcherStation;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
@@ -42,6 +43,10 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
+@DoNotBatch(
+        reason =
+                "Example for Public Transit tests. TabSwitcherActionMenuBatchedPTTest is the"
+                        + " batched example.")
 public class TabSwitcherActionMenuPTTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -56,10 +61,11 @@ public class TabSwitcherActionMenuPTTest {
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        TabSwitcherStation tabSwitcherStation = actionMenu.selectCloseTab(TabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
 
         assertEquals(0, getCurrentTabModel().getCount());
-        assertFinalDestination(tabSwitcherStation);
+        assertFinalDestination(tabSwitcher);
     }
 
     @Test
@@ -113,7 +119,8 @@ public class TabSwitcherActionMenuPTTest {
 
         // Close first regular tab opened.
         actionMenu = page.openTabSwitcherActionMenu();
-        TabSwitcherStation tabSwitcher = actionMenu.selectCloseTab(TabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
 
         // Only the incognito tab should still remain.
         assertEquals(0, regularTabModel.getCount());

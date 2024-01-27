@@ -201,9 +201,9 @@ class TestTrackerAvailabilityModel : public AvailabilityModel {
 
   void SetIsReady(bool ready) { ready_ = ready; }
 
-  absl::optional<uint32_t> GetAvailability(
+  std::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  private:

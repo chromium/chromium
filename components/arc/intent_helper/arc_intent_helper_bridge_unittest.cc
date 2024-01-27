@@ -190,7 +190,7 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
 
   {
     // Observer should be called when an intent filter is updated.
-    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(absl::nullopt)));
+    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(std::nullopt)));
     instance_->OnIntentFiltersUpdated(/*filters=*/std::vector<IntentFilter>());
     testing::Mock::VerifyAndClearExpectations(&observer);
   }

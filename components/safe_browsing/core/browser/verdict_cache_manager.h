@@ -229,14 +229,14 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   static void ResetHasArtificialCachedUrlForTesting();
 
   // Number of verdict stored for this profile for password on focus pings.
-  absl::optional<size_t> stored_verdict_count_password_on_focus_;
+  std::optional<size_t> stored_verdict_count_password_on_focus_;
 
   // Number of verdict stored for this profile for protected password entry
   // pings.
-  absl::optional<size_t> stored_verdict_count_password_entry_;
+  std::optional<size_t> stored_verdict_count_password_entry_;
 
   // Number of verdict stored for this profile for real time url check pings.
-  absl::optional<size_t> stored_verdict_count_real_time_url_check_;
+  std::optional<size_t> stored_verdict_count_real_time_url_check_;
 
   // A map of page load tokens, keyed by the hostname.
   base::flat_map<std::string, ChromeUserPopulation::PageLoadToken>

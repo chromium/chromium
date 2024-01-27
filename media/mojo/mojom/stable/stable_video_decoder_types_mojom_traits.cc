@@ -1652,6 +1652,7 @@ bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
   output->read_lock_fences_enabled = true;
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
+  output->needs_detiling = input.needs_detiling();
   output->power_efficient = true;
 
   if (output->hw_protected && !output->protected_video) {

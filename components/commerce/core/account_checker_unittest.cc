@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/account_checker.h"
+
+#include <optional>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -11,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/commerce/core/account_checker.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
@@ -30,14 +33,13 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::InSequence;
 
 namespace {
 
-const int64_t kTimeoutMs = 10000;
+constexpr base::TimeDelta kTimeout = base::Milliseconds(10000);
 const char kPostData[] = "{\"preferences\":{\"price_track_email\":true}}";
 
 }  // namespace
@@ -66,7 +68,7 @@ class SpyAccountChecker : public AccountChecker {
                const std::string& http_method,
                const std::string& content_type,
                const std::vector<std::string>& scopes,
-               int64_t timeout_ms,
+               const base::TimeDelta& timeout,
                const std::string& post_data,
                const net::NetworkTrafficAnnotationTag& annotation_tag),
               (override));
@@ -130,7 +132,7 @@ TEST_F(AccountCheckerTest,
   const char waa_oauth_scope[] = "https://www.googleapis.com/auth/chromesync";
   const char waa_content_type[] = "application/json; charset=UTF-8";
   const char waa_get_method[] = "GET";
-  const int64_t waa_timeout_ms = 30000;
+  constexpr base::TimeDelta waa_timeout = base::Milliseconds(30000);
   const char waa_post_data[] = "";
 
   // ReplaceSyncPromosWithSignInPromos is disabled, so signing in should not
@@ -139,7 +141,7 @@ TEST_F(AccountCheckerTest,
               CreateEndpointFetcher(waa_oauth_name, GURL(waa_query_url),
                                     waa_get_method, waa_content_type,
                                     std::vector<std::string>{waa_oauth_scope},
-                                    waa_timeout_ms, waa_post_data, _))
+                                    waa_timeout, waa_post_data, _))
       .Times(0);
 
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
@@ -155,7 +157,7 @@ TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
                 CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
                                       kGetHttpMethod, kContentType,
                                       std::vector<std::string>{kOAuthScope},
-                                      kTimeoutMs, kEmptyPostData, _));
+                                      kTimeout, kEmptyPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
@@ -176,7 +178,7 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
                 CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
                                       kPostHttpMethod, kContentType,
                                       std::vector<std::string>{kOAuthScope},
-                                      kTimeoutMs, kPostData, _));
+                                      kTimeout, kPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));

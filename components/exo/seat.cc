@@ -132,7 +132,7 @@ void Seat::StartDrag(DataSource* source,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
   gfx::Point cursor_location = aura::Env::GetInstance()->GetLastPointerPoint(
-      event_source, origin->window(), /*fallback=*/absl::nullopt);
+      event_source, origin->window(), /*fallback=*/std::nullopt);
   // DragDropOperation manages its own lifetime.
   drag_drop_operation_ = DragDropOperation::Create(
       data_exchange_delegate_.get(), source, origin, icon,

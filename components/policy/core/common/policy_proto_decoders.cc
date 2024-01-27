@@ -244,7 +244,7 @@ bool ParseComponentPolicy(base::Value::Dict json_dict,
     }
 
     base::Value::Dict& description_dict = description.GetDict();
-    absl::optional<base::Value> value = description_dict.Extract(kValue);
+    std::optional<base::Value> value = description_dict.Extract(kValue);
     if (!value.has_value()) {
       *error = base::StrCat(
           {"The JSON blob dictionary value doesn't contain the required ",

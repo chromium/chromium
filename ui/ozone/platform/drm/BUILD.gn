@@ -125,6 +125,7 @@ source_set("gbm") {
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//skia:skcms",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_SHOPPING_UI_HANDLER_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 
 class ShoppingInsightsSidePanelUI;
 
@@ -19,7 +19,7 @@ class Profile;
 
 namespace commerce {
 
-class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
+class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
  public:
   ShoppingUiHandlerDelegate(ShoppingInsightsSidePanelUI* insights_side_panel_ui,
                             Profile* profile);

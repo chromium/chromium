@@ -306,7 +306,7 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
 }
 
 void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
-    const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+    const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
   if (plane) {
     DCHECK(!capabilities_.renderer_allocates_images);
@@ -480,7 +480,7 @@ void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
 }
 
 void SkiaOutputDeviceBufferQueue::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
@@ -606,7 +606,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       image ? image->skia_representation()->mailbox() : gpu::Mailbox();
   auto release_fence = result.release_fence.Clone();
   FinishSwapBuffers(std::move(result), size, std::move(frame),
-                    /*damage_area=*/absl::nullopt, std::move(released_overlays),
+                    /*damage_area=*/std::nullopt, std::move(released_overlays),
                     mailbox);
   PageFlipComplete(image.get(), std::move(release_fence));
 

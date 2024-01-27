@@ -81,9 +81,9 @@ class CapturableFrameSink {
   // Returns the capture region information associated with the given
   // `sub_target`, which includes the subsection of the render pass that should
   // be capture, as well as information about the root render pass. Will return
-  // absl::nullopt if either of the render pass subrect or the compositor frame
+  // std::nullopt if either of the render pass subrect or the compositor frame
   // size are empty.
-  virtual absl::optional<RegionProperties> GetRequestRegionProperties(
+  virtual std::optional<RegionProperties> GetRequestRegionProperties(
       const VideoCaptureSubTarget& sub_target) const = 0;
 
   // Called when a video capture client starts or stops capturing.

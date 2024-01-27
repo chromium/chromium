@@ -97,7 +97,7 @@ void RemoveObserver(content::WebContents* web_contents,
   }
 }
 
-absl::optional<DistillabilityResult> GetLatestResult(
+std::optional<DistillabilityResult> GetLatestResult(
     content::WebContents* web_contents) {
   CHECK(web_contents);
   DistillabilityDriver::CreateForWebContents(web_contents);

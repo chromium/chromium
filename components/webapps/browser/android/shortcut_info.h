@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -159,8 +159,8 @@ struct ShortcutInfo {
   blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kBrowser;
   device::mojom::ScreenOrientationLockType orientation =
       device::mojom::ScreenOrientationLockType::DEFAULT;
-  absl::optional<SkColor> theme_color;
-  absl::optional<SkColor> background_color;
+  std::optional<SkColor> theme_color;
+  std::optional<SkColor> background_color;
   int ideal_splash_image_size_in_px = 0;
   int minimum_splash_image_size_in_px = 0;
   GURL best_primary_icon_url;
@@ -169,9 +169,9 @@ struct ShortcutInfo {
   bool is_splash_image_maskable = false;
   std::vector<std::string> icon_urls;
   std::vector<GURL> screenshot_urls;
-  absl::optional<ShareTarget> share_target;
-  absl::optional<SkColor> dark_theme_color;
-  absl::optional<SkColor> dark_background_color;
+  std::optional<ShareTarget> share_target;
+  std::optional<SkColor> dark_theme_color;
+  std::optional<SkColor> dark_background_color;
 
   // Id specified in the manifest.
   GURL manifest_id;

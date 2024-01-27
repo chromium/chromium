@@ -827,9 +827,15 @@ void PersistentMemoryAllocator::MakeIterable(Reference ref) {
   volatile BlockHeader* block = GetBlock(ref, 0, 0, false, false);
   if (!block)  // invalid reference
     return;
-  if (block->next.load(std::memory_order_acquire) != 0)  // Already iterable.
+
+  Reference empty_ref = 0;
+  if (!block->next.compare_exchange_strong(
+          /*expected=*/empty_ref, /*desired=*/kReferenceQueue,
+          /*success=*/std::memory_order_acq_rel,
+          /*failure=*/std::memory_order_acquire)) {
+    // Already iterable (or another thread is currently making this iterable).
     return;
-  block->next.store(kReferenceQueue, std::memory_order_release);  // New tail.
+  }
 
   // Try to add this block to the tail of the queue. May take multiple tries.
   // If so, tail will be automatically updated with a more recent value during

@@ -114,7 +114,7 @@ TEST_F(NtpFeedContentFetcherTest, FetchFollowingFeedArticles) {
   ntp_feed_content_fetcher_->FetchFollowingFeedArticles(callback.Get());
 
   EXPECT_EQ(kEmail, feed_network_->last_account_info.email);
-  absl::optional<feedwire::Request> sent_request =
+  std::optional<feedwire::Request> sent_request =
       feed_network_->GetApiRequestSent<WebFeedListContentsDiscoverApi>();
   ASSERT_TRUE(sent_request.has_value());
   // TODO(https://crbug.com/1328951): Add a Chrome Desktop client type.

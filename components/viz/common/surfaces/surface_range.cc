@@ -13,7 +13,7 @@ namespace viz {
 
 SurfaceRange::SurfaceRange() = default;
 
-SurfaceRange::SurfaceRange(const absl::optional<SurfaceId>& start,
+SurfaceRange::SurfaceRange(const std::optional<SurfaceId>& start,
                            const SurfaceId& end)
     : start_(start), end_(end) {}
 

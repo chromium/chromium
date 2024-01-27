@@ -1,5 +1,12 @@
 'use strict';
 
+let indexedDBForTest = indexedDB;
+
+// Used to make the rest of the utilities operate on a non-default IDB instance.
+function setIndexedDBForTest(idb) {
+  indexedDBForTest = idb;
+}
+
 // Returns an IndexedDB database name that is unique to the test case.
 function databaseName(testCase) {
   return 'db' + self.location.pathname + '-' + testCase.name;
@@ -45,7 +52,7 @@ function migrateNamedDatabase(
   // the versionchange transaction auto-commits before the Promise's then
   // callback gets called.
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(databaseName, newVersion);
+    const request = indexedDBForTest.open(databaseName, newVersion);
     request.onupgradeneeded = testCase.step_func(event => {
       const database = event.target.result;
       const transaction = event.target.transaction;
@@ -115,7 +122,7 @@ function createDatabase(testCase, setupCallback) {
 // Returns a promise that resolves to an IndexedDB database. The caller must
 // close the database.
 function createNamedDatabase(testCase, databaseName, setupCallback) {
-  const request = indexedDB.deleteDatabase(databaseName);
+  const request = indexedDBForTest.deleteDatabase(databaseName);
   const eventWatcher = requestWatcher(testCase, request);
 
   return eventWatcher.wait_for('success').then(event =>
@@ -139,7 +146,7 @@ function openDatabase(testCase, version) {
 // Returns a promise that resolves to an IndexedDB database. The caller must
 // close the database.
 function openNamedDatabase(testCase, databaseName, version) {
-  const request = indexedDB.open(databaseName, version);
+  const request = indexedDBForTest.open(databaseName, version);
   const eventWatcher = requestWatcher(testCase, request);
   return eventWatcher.wait_for('success').then(event => event.target.result);
 }

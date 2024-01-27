@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
@@ -1291,12 +1291,12 @@ TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
   EXPECT_EQ(matches[6].relevance, matches[1].relevance);
 
   // Expect cluster matches to not have grouping.
-  EXPECT_EQ(matches[0].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[1].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[2].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[3].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[4].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[5].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[6].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(matches[0].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[1].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[2].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[3].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[4].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[5].suggestion_group_id, std::nullopt);
+  EXPECT_EQ(matches[6].suggestion_group_id, std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_IOS)

@@ -14,6 +14,7 @@
 #include "base/base_switches.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/profiler.h"
@@ -343,10 +344,10 @@ class ChildThreadImpl::IOThreadState
   }
 #endif
 
-  // Make sure this isn't inlined so it shows up in stack traces, and also make
-  // the function body unique by adding a log line, so it doesn't get merged
-  // with other functions by link time optimizations (ICF).
-  NOINLINE void CrashHungProcess() override {
+  // Make sure this isn't inlined, tail-called, or folded by ICF so it always
+  // shows up in stack traces.
+  NOT_TAIL_CALLED NOINLINE void CrashHungProcess() override {
+    NO_CODE_FOLDING();
     LOG(FATAL) << "Crashing because hung";
   }
 

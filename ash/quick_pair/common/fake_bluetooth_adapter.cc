@@ -12,17 +12,14 @@ const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
 
 namespace ash::quick_pair {
 
-void FakeBluetoothAdapter::NotifyPoweredChanged(bool powered) {
-  device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
-}
-
 void FakeBluetoothAdapter::SetBluetoothIsPowered(bool powered) {
   is_bluetooth_powered_ = powered;
-  NotifyPoweredChanged(powered);
+  device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
 }
 
 void FakeBluetoothAdapter::SetBluetoothIsPresent(bool present) {
   is_bluetooth_present_ = present;
+  device::BluetoothAdapter::NotifyAdapterPresentChanged(present);
 }
 
 void FakeBluetoothAdapter::SetHardwareOffloadingStatus(

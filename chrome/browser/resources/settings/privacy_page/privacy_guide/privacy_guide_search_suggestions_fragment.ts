@@ -8,7 +8,7 @@
  * guide card that contains the search suggestions setting with a two-column
  * description.
  */
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../../controls/settings_toggle_button.js';
 import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared.css.js';
 

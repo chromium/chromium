@@ -28,6 +28,7 @@ generate_grd("build_grd") {
   }
 
   public_deps = [
+    "cr_components/commerce:build_grdp",
     "cr_elements:build_grdp",
     "css:build_grdp",
     "images:build_grdp",
@@ -37,6 +38,7 @@ generate_grd("build_grd") {
   ]
   grdp_files = [
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
+    "$target_gen_dir/cr_components/commerce/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/images/resources.grdp",

@@ -12,7 +12,7 @@ namespace optimization_guide {
 TEST(OptimizationMetadataTest, ParsedMetadataAnyMetadataNotPopulatedTest) {
   OptimizationMetadata optimization_metadata;
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -28,7 +28,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataNoTypeURLTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -45,7 +45,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataMismatchedTypeTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -58,7 +58,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataNotSerializableTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_FALSE(parsed_metadata.has_value());
 }
@@ -76,7 +76,7 @@ TEST(OptimizationMetadataTest, ParsedMetadataTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.set_any_metadata(any_metadata);
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_TRUE(parsed_metadata.has_value());
   ASSERT_EQ(parsed_metadata->subresources_size(), 1);
@@ -96,7 +96,7 @@ TEST(OptimizationMetadataTest, SetAnyMetadataForTestingTest) {
   OptimizationMetadata optimization_metadata;
   optimization_metadata.SetAnyMetadataForTesting(metadata);
 
-  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+  std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();
   EXPECT_TRUE(parsed_metadata.has_value());
   ASSERT_EQ(parsed_metadata->subresources_size(), 1);

@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_IMPL_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_BRIDGE_IMPL_H_
 
-#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
-
 #include <jni.h>
+
+#include <optional>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -34,7 +34,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void ShowDatalistPopup(base::span<const SelectOption> options,
                          bool is_rtl) override;
   void HideDatalistPopup() override;
-  void OnFocusChanged(const absl::optional<FieldInfo>& field) override;
+  void OnFocusChanged(const std::optional<FieldInfo>& field) override;
   void OnFormFieldDidChange(const FieldInfo& field) override;
   void OnFormFieldVisibilitiesDidChange(base::span<const int> indices) override;
   void OnTextFieldDidScroll(const FieldInfo& field) override;

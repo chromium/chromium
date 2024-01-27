@@ -64,7 +64,7 @@ void BackgroundLongTaskScheduler::OnTaskCompleted(BackgroundTask* task) {
               "unexportable_keys::BackgroundLongTaskScheduler::OnTaskCompleted",
               perfetto::TerminatingFlow::FromPointer(running_task_.get()));
 
-  absl::optional<base::TimeDelta> elapsed_time_since_run =
+  std::optional<base::TimeDelta> elapsed_time_since_run =
       task->GetElapsedTimeSinceRun();
   // Task must have been run before being completed.
   CHECK(elapsed_time_since_run.has_value());

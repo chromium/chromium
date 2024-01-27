@@ -57,7 +57,7 @@ TEST(HashRealTimeUtilsTest, TestCanCheckUrl) {
 TEST(HashRealTimeUtilsTest, TestIsHashDetailRelevant) {
   auto create_hash_detail =
       [](V5::ThreatType threat_type,
-         absl::optional<std::vector<V5::ThreatAttribute>> threat_attributes) {
+         std::optional<std::vector<V5::ThreatAttribute>> threat_attributes) {
         V5::FullHash::FullHashDetail detail;
         detail.set_threat_type(threat_type);
         if (threat_attributes.has_value()) {
@@ -68,11 +68,11 @@ TEST(HashRealTimeUtilsTest, TestIsHashDetailRelevant) {
         return detail;
       };
   EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::MALWARE, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::MALWARE, std::nullopt)));
   EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::SOCIAL_ENGINEERING, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::SOCIAL_ENGINEERING, std::nullopt)));
   EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::UNWANTED_SOFTWARE, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::UNWANTED_SOFTWARE, std::nullopt)));
 #if BUILDFLAG(IS_IOS)
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
       V5::ThreatType::SOCIAL_ENGINEERING,
@@ -108,15 +108,15 @@ TEST(HashRealTimeUtilsTest, TestIsHashDetailRelevant) {
       std::vector<V5::ThreatAttribute>(
           {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY}))));
   EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::TRICK_TO_BILL, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::TRICK_TO_BILL, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
-      V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION, absl::nullopt)));
+      V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::API_ABUSE, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::API_ABUSE, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
-      V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION, absl::nullopt)));
+      V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::BETTER_ADS_VIOLATION, absl::nullopt)));
+      create_hash_detail(V5::ThreatType::BETTER_ADS_VIOLATION, std::nullopt)));
 }
 
 TEST(HashRealTimeUtilsTest, TestIsHashRealTimeLookupEligibleInSession_Yes) {
@@ -146,7 +146,7 @@ TEST(HashRealTimeUtilsTest,
   struct TestCase {
     bool is_feature_on = true;
     bool has_google_chrome_branding = true;
-    absl::optional<std::string> stored_permanent_country = absl::nullopt;
+    std::optional<std::string> stored_permanent_country = std::nullopt;
     bool expected_eligibility;
   } test_cases[] = {
     // Lookups eligible when no country is provided.
@@ -194,8 +194,8 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool is_off_the_record = false;
     bool is_feature_on = true;
     bool has_google_chrome_branding = true;
-    absl::optional<std::string> stored_permanent_country = absl::nullopt;
-    absl::optional<bool> lookups_allowed_by_policy = absl::nullopt;
+    std::optional<std::string> stored_permanent_country = std::nullopt;
+    std::optional<bool> lookups_allowed_by_policy = std::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
     bool expected_log_usage_histograms = true;
     bool expected_ineligible_for_session_or_location_log = false;

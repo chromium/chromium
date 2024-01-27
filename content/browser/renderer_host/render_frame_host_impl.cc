@@ -227,6 +227,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -10378,22 +10379,22 @@ void RenderFrameHostImpl::CommitNavigation(
     // See if this is for WebUI.
     const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
     if (base::Contains(webui_schemes, effective_scheme)) {
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui;
-      auto factory_receiver =
-          factory_for_webui.InitWithNewPipeAndPassReceiver();
+      network::URLLoaderFactoryBuilder factory_builder;
       GetContentClient()->browser()->WillCreateURLLoaderFactory(
           browser_context, this, GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
           subresource_loader_factories_config.origin(),
           /*navigation_id=*/std::nullopt,
-          subresource_loader_factories_config.ukm_source_id(),
-          &factory_receiver, /*header_client=*/nullptr,
+          subresource_loader_factories_config.ukm_source_id(), factory_builder,
+          /*header_client=*/nullptr,
           /*bypass_redirect_checks=*/nullptr,
           /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
           /*navigation_response_task_runner=*/nullptr);
-      mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
-          CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
-      direct_factory_for_webui->Clone(std::move(factory_receiver));
+
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui =
+          std::move(factory_builder)
+              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+                  CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
 
       // If the renderer has webui bindings, then don't give it access to
       // network loader for security reasons.
@@ -10497,15 +10498,14 @@ void RenderFrameHostImpl::CommitNavigation(
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
-          pending_factory_proxy.InitWithNewPipeAndPassReceiver();
+      network::URLLoaderFactoryBuilder factory_builder;
       WillCreateURLLoaderFactory(
-          subresource_loader_factories_config.origin(), &factory_receiver,
+          subresource_loader_factories_config.origin(), factory_builder,
           subresource_loader_factories_config.ukm_source_id());
 
-      mojo::Remote<network::mojom::URLLoaderFactory> remote(
-          std::move(original_pending_factory));
-      remote->Clone(std::move(factory_receiver));
+      std::move(factory_builder)
+          .Finish(pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
+                  std::move(original_pending_factory));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           scheme, std::move(pending_factory_proxy));
     }
@@ -11498,21 +11498,22 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
   const url::Origin& request_initiator =
       params->request_initiator_origin_lock.value();
 
+  network::URLLoaderFactoryBuilder factory_builder;
   bool bypass_redirect_checks = false;
-  WillCreateURLLoaderFactory(
-      request_initiator, &default_factory_receiver, ukm_source_id,
-      &params->header_client, &bypass_redirect_checks,
-      &params->disable_secure_dns, &params->factory_override);
+  WillCreateURLLoaderFactory(request_initiator, factory_builder, ukm_source_id,
+                             &params->header_client, &bypass_redirect_checks,
+                             &params->disable_secure_dns,
+                             &params->factory_override);
 
-  GetProcess()->CreateURLLoaderFactory(std::move(default_factory_receiver),
-                                       std::move(params));
-
+  std::move(factory_builder)
+      .Finish(std::move(default_factory_receiver), GetProcess(),
+              std::move(params));
   return bypass_redirect_checks;
 }
 
 void RenderFrameHostImpl::WillCreateURLLoaderFactory(
     const url::Origin& request_initiator,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
@@ -11523,12 +11524,12 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
       GetBrowserContext(), this, GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       request_initiator, /*navigation_id=*/std::nullopt, ukm_source_id,
-      factory_receiver, header_client, bypass_redirect_checks,
+      factory_builder, header_client, bypass_redirect_checks,
       disable_secure_dns, factory_override, /*navigation_task_runner=*/nullptr);
 
   // Keep DevTools proxy last, i.e. closest to the network.
   devtools_instrumentation::WillCreateURLLoaderFactory(
-      this, /*is_navigation=*/false, /*is_download=*/false, factory_receiver,
+      this, /*is_navigation=*/false, /*is_download=*/false, factory_builder,
       factory_override);
 }
 

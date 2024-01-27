@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sync_sessions/synced_window_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -63,7 +64,7 @@ class SyncedWindowDelegateBrowserAgent
   // Sets the window id of `web_state` to `session_id_`.
   void SetWindowIdForWebState(web::WebState* web_state);
 
-  WebStateList* web_state_list_;
+  raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };
 

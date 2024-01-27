@@ -157,7 +157,7 @@ bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
   return swap_chain_ != nullptr;
 }
 
-void SkiaOutputDeviceDawn::Present(const absl::optional<gfx::Rect>& update_rect,
+void SkiaOutputDeviceDawn::Present(const std::optional<gfx::Rect>& update_rect,
                                    BufferPresentedCallback feedback,
                                    OutputSurfaceFrame frame) {
   DCHECK(!update_rect);

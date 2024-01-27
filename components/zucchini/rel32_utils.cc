@@ -30,7 +30,7 @@ Rel32ReaderX86::Rel32ReaderX86(ConstBufferView image,
 
 Rel32ReaderX86::~Rel32ReaderX86() = default;
 
-absl::optional<Reference> Rel32ReaderX86::GetNext() {
+std::optional<Reference> Rel32ReaderX86::GetNext() {
   while (current_ < last_ && *current_ < hi_) {
     offset_t loc_offset = *(current_++);
     DCHECK_LE(loc_offset + 4, image_.size());  // Sanity check.
@@ -41,7 +41,7 @@ absl::optional<Reference> Rel32ReaderX86::GetNext() {
     DCHECK_NE(kInvalidOffset, target_offset);
     return Reference{loc_offset, target_offset};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 /******** Rel32ReceptorX86 ********/

@@ -25,7 +25,7 @@ SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    absl::optional<ThreatSource> threat_source,
+    std::optional<ThreatSource> threat_source,
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response)
     : url(url),
       threat_type(threat_type),

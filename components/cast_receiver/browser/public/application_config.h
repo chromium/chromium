@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_APPLICATION_CONFIG_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_APPLICATION_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -59,7 +59,7 @@ struct ApplicationConfig {
   std::string display_name;
 
   // The URL for this application, if any.
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
 
   // Permissions to be granted to this application.
   ContentPermissions permissions;

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_HISTOGRAMS_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_HISTOGRAMS_H_
 
+#include <optional>
+
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
@@ -138,18 +139,18 @@ void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
 enum class IsOffTheRecord { kNo, kYes };
 
 // Records a call to set security domain encryption keys in the browser.
-// `absl::nullopt` indicates the caller attempted to set keys for a security
+// `std::nullopt` indicates the caller attempted to set keys for a security
 // domain with a name that was not understood by this client.
 void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
-    absl::optional<SecurityDomainId> security_domain,
+    std::optional<SecurityDomainId> security_domain,
     IsOffTheRecord is_off_the_record);
 
 // Records a call to chrome.setClientEncryptionKeys() for the given security
-// domain in the renderer. `absl::nullopt` indicates the caller attempted to set
+// domain in the renderer. `std::nullopt` indicates the caller attempted to set
 // keys for a security domain with a name that was not understood by this
 // client.
 void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
-    absl::optional<SecurityDomainId> security_domain);
+    std::optional<SecurityDomainId> security_domain);
 
 // Returns a security domain name suitable for using in histograms. When
 // including this in a histogram, its name in the XML should have

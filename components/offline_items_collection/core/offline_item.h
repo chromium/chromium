@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_ITEM_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_ITEM_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "components/offline_items_collection/core/offline_item_filter.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/pending_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -74,7 +74,7 @@ struct OfflineItem {
 
     // The maximum value of the download progress. Absence of the value implies
     // indeterminate progress.
-    absl::optional<int64_t> max;
+    std::optional<int64_t> max;
 
     // The unit of progress to be displayed in the UI.
     OfflineItemProgressUnit unit;

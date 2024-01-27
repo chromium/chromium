@@ -1620,7 +1620,7 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
           other.GetAdditionalInfo(kACMatchPropertyScoringSignalsMerged));
 
   if (!scoring_signals.has_value()) {
-    scoring_signals = absl::make_optional<ScoringSignals>();
+    scoring_signals = std::make_optional<ScoringSignals>();
   }
 
   // Take the maximum.

@@ -4,6 +4,7 @@
 
 #include "components/update_client/test_configurator.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -203,7 +203,7 @@ TestConfigurator::GetProtocolHandlerFactory() const {
   return std::make_unique<ProtocolHandlerFactoryJSON>();
 }
 
-absl::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
+std::optional<bool> TestConfigurator::IsMachineExternallyManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_machine_externally_managed_;
 }
@@ -213,12 +213,12 @@ UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
   return updater_state_provider_;
 }
 
-absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
+std::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crx_cache_root_temp_dir_.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<base::FilePath>(
+  return std::optional<base::FilePath>(
       crx_cache_root_temp_dir_.GetPath().AppendASCII("crx_cache"));
 }
 
@@ -270,7 +270,7 @@ void TestConfigurator::SetCrxDownloaderFactory(
 }
 
 void TestConfigurator::SetIsMachineExternallyManaged(
-    absl::optional<bool> is_machine_externally_managed) {
+    std::optional<bool> is_machine_externally_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_machine_externally_managed_ = is_machine_externally_managed;
 }

@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -166,8 +167,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
-  web::FakeWebState* web_state_;
-  ToolbarTestNavigationManager* navigation_manager_;
+  raw_ptr<web::FakeWebState> web_state_;
+  raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   id consumer_;

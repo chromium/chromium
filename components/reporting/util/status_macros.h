@@ -5,21 +5,22 @@
 #ifndef COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 #define COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 
+#include <optional>
+
 #include "base/types/always_false.h"
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::internal {
 // Helper functions for the macro RETURN_IF_ERROR_STATUS. Overloads of the
 // following functions to return if the given status is OK. If yes, the return
 // value is nullopt. If not, the desired return value is returned.
-absl::optional<Status> ShouldReturnStatus(const Status& status);
-absl::optional<Status> ShouldReturnStatus(Status&& status);
-absl::optional<base::unexpected<Status>> ShouldReturnStatus(
+std::optional<Status> ShouldReturnStatus(const Status& status);
+std::optional<Status> ShouldReturnStatus(Status&& status);
+std::optional<base::unexpected<Status>> ShouldReturnStatus(
     const base::unexpected<Status>& status);
-absl::optional<base::unexpected<Status>> ShouldReturnStatus(
+std::optional<base::unexpected<Status>> ShouldReturnStatus(
     base::unexpected<Status>&& status);
 
 template <typename T>

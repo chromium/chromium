@@ -85,7 +85,7 @@ class TabFetcher {
 
   // Returns the modified time for the latest remote sync session if sync is
   // enabled.
-  absl::optional<base::Time> GetLatestRemoteSessionModifiedTime();
+  std::optional<base::Time> GetLatestRemoteSessionModifiedTime();
 
  protected:
   // Fills all the local tabs from the tab models in `tabs`.

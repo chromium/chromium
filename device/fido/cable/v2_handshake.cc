@@ -671,7 +671,7 @@ absl::optional<cbor::Value> DecodePaddedCBORMap8(
   if (padding_length + 1 > input.size()) {
     return absl::nullopt;
   }
-  auto unpadded_input = input.subspan(0, input.size() - padding_length - 1);
+  auto unpadded_input = input.first(input.size() - padding_length - 1);
 
   absl::optional<cbor::Value> payload = cbor::Reader::Read(unpadded_input);
   if (!payload || !payload->is_map()) {
@@ -696,7 +696,7 @@ absl::optional<cbor::Value> DecodePaddedCBORMap16(
   if (padding_length + sizeof(uint16_t) > input.size()) {
     return absl::nullopt;
   }
-  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
+  input = input.first(input.size() - padding_length - sizeof(uint16_t));
 
   absl::optional<cbor::Value> payload = cbor::Reader::Read(input);
   if (!payload || !payload->is_map()) {
@@ -905,7 +905,7 @@ HandshakeResult HandshakeInitiator::ProcessResponse(
                     << " bytes)";
     return absl::nullopt;
   }
-  auto peer_point_bytes = response.subspan(0, kP256X962Length);
+  auto peer_point_bytes = response.first(kP256X962Length);
   auto ciphertext = response.subspan(kP256X962Length);
 
   bssl::UniquePtr<EC_POINT> peer_point(
@@ -959,7 +959,7 @@ HandshakeResult RespondToHandshake(
     FIDO_LOG(DEBUG) << "Handshake truncated (" << in.size() << " bytes)";
     return absl::nullopt;
   }
-  auto peer_point_bytes = in.subspan(0, kP256X962Length);
+  auto peer_point_bytes = in.first(kP256X962Length);
   auto ciphertext = in.subspan(kP256X962Length);
 
   Noise noise;

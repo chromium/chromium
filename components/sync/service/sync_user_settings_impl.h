@@ -96,7 +96,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsTrustedVaultRecoverabilityDegraded() const override;
   bool IsUsingExplicitPassphrase() const override;
   base::Time GetExplicitPassphraseTime() const override;
-  absl::optional<PassphraseType> GetPassphraseType() const override;
+  std::optional<PassphraseType> GetPassphraseType() const override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
   void SetExplicitPassphraseDecryptionNigoriKey(

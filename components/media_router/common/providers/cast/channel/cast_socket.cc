@@ -61,8 +61,8 @@ bool IsTerminalState(ConnectionState state) {
 void OnConnected(
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -78,7 +78,7 @@ void ConnectOnUIThread(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
   network_context_getter.Run()->CreateTCPConnectedSocket(
-      absl::nullopt /* local_addr */, remote_address_list,
+      std::nullopt /* local_addr */, remote_address_list,
       nullptr /* tcp_connected_socket_options */,
       net::MutableNetworkTrafficAnnotationTag(
           CastSocketImpl::GetNetworkTrafficAnnotationTag()),
@@ -560,8 +560,8 @@ int CastSocketImpl::DoAuthChallengeReplyComplete(int result) {
 
 void CastSocketImpl::OnConnect(
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DoConnectLoop(result);
@@ -571,7 +571,7 @@ void CastSocketImpl::OnUpgradeToTLS(
     int result,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const absl::optional<net::SSLInfo>& ssl_info) {
+    const std::optional<net::SSLInfo>& ssl_info) {
   if (result == net::OK) {
     mojo_data_pump_ = std::make_unique<MojoDataPump>(std::move(receive_stream),
                                                      std::move(send_stream));

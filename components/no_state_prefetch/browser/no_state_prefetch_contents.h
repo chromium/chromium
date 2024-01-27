@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -71,7 +71,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
         content::BrowserContext* browser_context,
         const GURL& url,
         const content::Referrer& referrer,
-        const absl::optional<url::Origin>& initiator_origin,
+        const std::optional<url::Origin>& initiator_origin,
         Origin origin) = 0;
   };
 
@@ -182,7 +182,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // NoStatePrefetchManager's pending deletes list.
   void Destroy(FinalStatus reason);
 
-  absl::optional<base::Value::Dict> GetAsDict() const;
+  std::optional<base::Value::Dict> GetAsDict() const;
 
   // This function is not currently called in production since prerendered
   // contents are never used (only prefetch is supported), but it may be used in
@@ -209,7 +209,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin);
 
   // Set the final status for how the NoStatePrefetchContents was used. This
@@ -284,7 +284,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The origin of the page requesting the prerender. Empty when the prerender
   // is browser initiated.
-  const absl::optional<url::Origin> initiator_origin_;
+  const std::optional<url::Origin> initiator_origin_;
 
   // The browser context being used
   raw_ptr<content::BrowserContext> browser_context_;

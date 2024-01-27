@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 #include "components/permissions/permission_actions_history.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/containers/adapters.h"
 #include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
@@ -15,9 +18,6 @@
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <vector>
 
 namespace permissions {
 namespace {
@@ -97,7 +97,7 @@ void PermissionActionsHistory::RecordAction(
   // Discard permission actions older than |kPermissionActionMaxAge|.
   const base::Time cutoff = base::Time::Now() - kPermissionActionMaxAge;
   permission_actions->EraseIf([cutoff](const base::Value& entry) {
-    const absl::optional<base::Time> timestamp = base::ValueToTime(
+    const std::optional<base::Time> timestamp = base::ValueToTime(
         entry.GetDict().Find(kPermissionActionEntryTimestampKey));
     return !timestamp || *timestamp < cutoff;
   });
@@ -126,7 +126,7 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   for (auto permission_entry : update.Get()) {
     permission_entry.second.GetList().EraseIf([delete_begin,
                                                delete_end](const auto& entry) {
-      const absl::optional<base::Time> timestamp = base::ValueToTime(
+      const std::optional<base::Time> timestamp = base::ValueToTime(
           entry.GetDict().Find(kPermissionActionEntryTimestampKey));
       return (!timestamp ||
               (*timestamp >= delete_begin && *timestamp < delete_end));
@@ -151,7 +151,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
 
   for (const auto& entry : *permission_actions) {
     const base::Value::Dict& entry_dict = entry.GetDict();
-    const absl::optional<base::Time> timestamp =
+    const std::optional<base::Time> timestamp =
         base::ValueToTime(entry_dict.Find(kPermissionActionEntryTimestampKey));
 
     if (timestamp < begin)
@@ -160,7 +160,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
     if (entry_filter != EntryFilter::WANT_ALL_PROMPTS) {
       // If we want either the Loud or Quiet UI actions but don't have this
       // info due to legacy reasons we ignore the entry.
-      const absl::optional<int> prompt_disposition_int =
+      const std::optional<int> prompt_disposition_int =
           entry_dict.FindInt(kPermissionActionEntryPromptDispositionKey);
       if (!prompt_disposition_int)
         continue;

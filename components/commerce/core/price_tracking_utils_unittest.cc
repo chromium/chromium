@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/price_tracking_utils.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -16,7 +19,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
-#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
@@ -25,7 +27,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -61,9 +62,9 @@ TEST_F(PriceTrackingUtilsTest,
   const bookmarks::BookmarkNode* product2 =
       AddProductBookmark(bookmark_model_.get(), u"product 2",
                          GURL("http://example.com/2"), cluster_id, true, 0L,
-                         "usd", absl::make_optional<int64_t>(last_change_time));
-  ASSERT_EQ(absl::nullopt, GetBookmarkLastSubscriptionChangeTime(
-                               bookmark_model_.get(), product1));
+                         "usd", std::make_optional<int64_t>(last_change_time));
+  ASSERT_EQ(std::nullopt, GetBookmarkLastSubscriptionChangeTime(
+                              bookmark_model_.get(), product1));
   ASSERT_EQ(last_change_time, GetBookmarkLastSubscriptionChangeTime(
                                   bookmark_model_.get(), product2)
                                   .value());
@@ -146,7 +147,7 @@ TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_SubscribeOldBookmark) {
 
   // Since bookmarking, the shopping service detected that the bookmark is
   // actually a product.
-  absl::optional<ProductInfo> info;
+  std::optional<ProductInfo> info;
   info.emplace();
   info->product_cluster_id = cluster_id;
   shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
@@ -542,7 +543,7 @@ TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentName) {
       commerce::GetBookmarkParentName(bookmark_model_.get(), url).has_value());
 
   bookmark_model_->AddURL(bookmark_model_->mobile_node(), 0, u"test", url,
-                          nullptr, absl::nullopt, absl::nullopt, true);
+                          nullptr, std::nullopt, std::nullopt, true);
 
   ASSERT_EQ(
       bookmark_model_->mobile_node()->GetTitle(),
@@ -552,8 +553,6 @@ TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentName) {
 // Ensure the utility to get the shopping collection knows when to create or
 // simply lookup the folder. The folder's UUID should be deterministic.
 TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
-  test_features_.InitAndEnableFeature(kShoppingCollection);
-
   const base::Uuid collection_uuid =
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
 
@@ -584,8 +583,6 @@ TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
 }
 
 TEST_F(PriceTrackingUtilsTest, GetShoppingCollection_InvalidParams) {
-  test_features_.InitAndDisableFeature(kShoppingCollection);
-
   const bookmarks::BookmarkNode* collection =
       GetShoppingCollectionBookmarkFolder(nullptr);
 

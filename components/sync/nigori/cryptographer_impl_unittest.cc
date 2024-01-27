@@ -116,7 +116,7 @@ TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
 
   const std::string plaintext = "Sharing is caring";
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(plaintext)),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
@@ -135,7 +135,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonSetEncryptionKeyPair) {
 
   const std::string plaintext = "Sharing is caring";
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(plaintext)),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
@@ -155,7 +155,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonExistentDefaultEncryptionKeyPair) {
 
   const std::string plaintext = "Sharing is caring";
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(plaintext)),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
@@ -226,7 +226,7 @@ TEST(CryptographerImplTest, ShouldSetKeyPair) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   ASSERT_TRUE(key_pair.has_value());
   ASSERT_FALSE(cryptographer->HasKeyPair(0));
@@ -362,7 +362,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
 
   const std::string plaintext = "Sharing is caring";
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer_sender->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(plaintext)),
           cryptographer_recipient->GetCrossUserSharingKeyPair(0)
@@ -370,7 +370,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
 
   EXPECT_TRUE(encrypted_message.has_value());
 
-  absl::optional<std::vector<uint8_t>> decrypted_message =
+  std::optional<std::vector<uint8_t>> decrypted_message =
       cryptographer_recipient->AuthDecryptForCrossUserSharing(
           encrypted_message.value(),
           cryptographer_sender->GetCrossUserSharingKeyPair(0).GetRawPublicKey(),

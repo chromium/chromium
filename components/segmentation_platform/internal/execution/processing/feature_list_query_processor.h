@@ -47,8 +47,8 @@ struct Data {
   bool IsInput() const;
   enum DataType { INPUT_UMA, OUTPUT_UMA, INPUT_UKM, INPUT_CUSTOM };
   DataType type;
-  absl::optional<proto::InputFeature> input_feature;
-  absl::optional<proto::TrainingOutput> output_feature;
+  std::optional<proto::InputFeature> input_feature;
+  std::optional<proto::TrainingOutput> output_feature;
 };
 
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes

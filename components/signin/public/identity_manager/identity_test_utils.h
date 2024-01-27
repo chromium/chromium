@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class TestURLLoaderFactory;
@@ -51,8 +51,8 @@ class IdentityManager;
 void WaitForRefreshTokensLoaded(IdentityManager* identity_manager);
 
 // Returns the current exact consent level for the primary account, or
-// `absl::nullopt` if there is no primary account set.
-absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
+// `std::nullopt` if there is no primary account set.
+std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
     IdentityManager* identity_manager);
 
 // Sets the primary account (which must not already be set) to the given email
@@ -144,13 +144,13 @@ struct AccountAvailabilityOptions {
 
   // If present, the account to be created should be set as primary at
   // `consent_level`.
-  const absl::optional<ConsentLevel> consent_level = absl::nullopt;
+  const std::optional<ConsentLevel> consent_level = std::nullopt;
 
   // If present, a refresh token will be set for the account to be created. Can
   // be an empty string (this is the default), in this case the token's value
   // will be auto-generated. If non-empty, the value of `refresh_token` will be
   // used as the token.
-  const absl::optional<std::string> refresh_token = std::string();
+  const std::optional<std::string> refresh_token = std::string();
 
   // If non-null, the account to be created will be marked as present in the
   // Gaia cookie, by using `url_loader_factory_for_cookies` to mock the
@@ -171,8 +171,8 @@ struct AccountAvailabilityOptions {
   AccountAvailabilityOptions(
       base::StringPiece email,
       base::StringPiece gaia_id,
-      absl::optional<ConsentLevel> consent_level,
-      absl::optional<std::string> refresh_token,
+      std::optional<ConsentLevel> consent_level,
+      std::optional<std::string> refresh_token,
       raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
       signin_metrics::AccessPoint access_point);
 };
@@ -226,8 +226,8 @@ class AccountAvailabilityOptionsBuilder {
       nullptr;
 
   std::string gaia_id_;
-  absl::optional<ConsentLevel> primary_account_consent_level_;
-  absl::optional<std::string> refresh_token_ = std::string();
+  std::optional<ConsentLevel> primary_account_consent_level_;
+  std::optional<std::string> refresh_token_ = std::string();
   bool with_cookie_ = false;
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;

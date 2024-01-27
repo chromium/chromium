@@ -17,7 +17,7 @@ class TestModelExecutor
   ~TestModelExecutor() override = default;
 
   void InitializeAndMoveToExecutionThread(
-      absl::optional<base::TimeDelta>,
+      std::optional<base::TimeDelta>,
       proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
@@ -31,19 +31,19 @@ class TestModelExecutor
   void SetShouldPreloadModel(bool should_preload_model) override {}
 
   using ExecutionCallback =
-      base::OnceCallback<void(const absl::optional<std::vector<float>>&)>;
+      base::OnceCallback<void(const std::optional<std::vector<float>>&)>;
   void SendForExecution(ExecutionCallback callback_on_complete,
                         base::TimeTicks start_time,
                         const std::vector<float>& args) override;
 
   using BatchExecutionCallback = base::OnceCallback<void(
-      const std::vector<absl::optional<std::vector<float>>>&)>;
+      const std::vector<std::optional<std::vector<float>>>&)>;
   void SendForBatchExecution(
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
       const std::vector<std::vector<float>>& args) override;
 
-  std::vector<absl::optional<std::vector<float>>> SendForBatchExecutionSync(
+  std::vector<std::optional<std::vector<float>>> SendForBatchExecutionSync(
       const std::vector<std::vector<float>>& args) override;
 };
 

@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "url/gurl.h"
 
@@ -75,7 +76,7 @@ class PageLoadMetricsObserverDelegate {
     // The first time when the page becomes backgrounded after the page is
     // restored. The time is relative to the navigation start of bfcache restore
     // navigation.
-    absl::optional<base::TimeDelta> first_background_time;
+    std::optional<base::TimeDelta> first_background_time;
 
     // The navigation start time for this back-forward cache restore.
     base::TimeTicks navigation_start_time;
@@ -104,12 +105,12 @@ class PageLoadMetricsObserverDelegate {
   // The duration until the first time that the page was backgrounded since the
   // navigation started. Will be nullopt if the page has never been
   // backgrounded.
-  virtual absl::optional<base::TimeDelta> GetTimeToFirstBackground() const = 0;
+  virtual std::optional<base::TimeDelta> GetTimeToFirstBackground() const = 0;
 
   // The duration until the first time that the page was foregrounded since the
   // navigation started. Will be nullopt if the page has never been in the
   // foreground.
-  virtual absl::optional<base::TimeDelta> GetTimeToFirstForeground() const = 0;
+  virtual std::optional<base::TimeDelta> GetTimeToFirstForeground() const = 0;
 
   // The state of index-th restore from the back-forward cache.
   virtual const BackForwardCacheRestore& GetBackForwardCacheRestore(
@@ -128,7 +129,7 @@ class PageLoadMetricsObserverDelegate {
   // True iff the page is prerendered and activation_start is not yet arrived.
   bool IsInPrerenderingBeforeActivationStart() const;
   // Returns activation start if activation start was arrived, or nullopt.
-  virtual absl::optional<base::TimeDelta> GetActivationStart() const = 0;
+  virtual std::optional<base::TimeDelta> GetActivationStart() const = 0;
 
   // Whether the page load was initiated by a user.
   virtual const UserInitiatedInfo& GetUserInitiatedInfo() const = 0;
@@ -172,7 +173,7 @@ class PageLoadMetricsObserverDelegate {
   // * a new navigation which later commits is initiated in the same tab
   // This field will not be set if the page is still active and hasn't yet
   // finished.
-  virtual absl::optional<base::TimeDelta> GetTimeToPageEnd() const = 0;
+  virtual std::optional<base::TimeDelta> GetTimeToPageEnd() const = 0;
 
   // The absolute time at which the page's lifetime ended. See the comment
   // on GetTimeToPageEnd for the definition of when a page's lifetime ends.
@@ -204,7 +205,7 @@ class PageLoadMetricsObserverDelegate {
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;
-  virtual const absl::optional<blink::SubresourceLoadMetrics>&
+  virtual const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const = 0;
 
   // Returns a shared LargestContentfulPaintHandler for page load metrics.

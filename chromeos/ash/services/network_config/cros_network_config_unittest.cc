@@ -364,8 +364,7 @@ class CrosNetworkConfigTest : public testing::Test {
                 "WiFi": { "Passphrase": "fake", "SSID": "%s", "HexSSID": "%s",
                           "Security": "WPA-PSK", "AutoConnect": true}})",
             user_policy_ssid.c_str(),
-            base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
-                .c_str()));
+            base::HexEncode(user_policy_ssid).c_str()));
     ASSERT_TRUE(wifi2_onc.has_value());
 
     std::optional<base::Value::Dict> wifi_eap_onc =

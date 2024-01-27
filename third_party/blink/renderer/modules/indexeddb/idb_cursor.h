@@ -106,6 +106,13 @@ class IDBCursor : public ScriptWrappable {
  private:
   IDBObjectStore* EffectiveObjectStore() const;
 
+  // Runs some common checks to make sure the state of `this` allows operations
+  // to proceed. Returns true if so, otherwise returns false after throwing an
+  // exception on `exception_state`. If `read_only_error_message` is non-null,
+  // it will be enforced that `this` is a writable cursor.
+  bool CheckForCommonExceptions(ExceptionState& exception_state,
+                                const char* read_only_error_message);
+
   std::unique_ptr<WebIDBCursor> backend_;
   Member<IDBRequest> request_;
   const mojom::IDBCursorDirection direction_;

@@ -61,7 +61,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
-      absl::optional<ui::CaptionStyle> caption_style) override;
+      std::optional<ui::CaptionStyle> caption_style) override;
 
   bool IsWidgetVisibleForTesting() override;
   bool IsGenericErrorMessageVisibleForTesting() override;

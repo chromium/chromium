@@ -5,6 +5,7 @@
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace invalidation {
 
@@ -31,7 +31,7 @@ constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 constexpr char kHandler[] = "handler";
 constexpr char kIsPublic[] = "is_public";
 
-absl::optional<TopicData> FindAnyDuplicatedTopic(
+std::optional<TopicData> FindAnyDuplicatedTopic(
     const std::set<TopicData>& lhs,
     const std::set<TopicData>& rhs) {
   auto intersection =
@@ -39,7 +39,7 @@ absl::optional<TopicData> FindAnyDuplicatedTopic(
   if (!intersection.empty()) {
     return intersection[0];
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string DumpRegisteredHandlers(
@@ -119,7 +119,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     if (it.second.is_dict()) {
       const base::Value::Dict& second_dict = it.second.GetDict();
       const std::string* handler = second_dict.FindString(kHandler);
-      const absl::optional<bool> is_public = second_dict.FindBool(kIsPublic);
+      const std::optional<bool> is_public = second_dict.FindBool(kIsPublic);
       if (!handler || !is_public) {
         continue;
       }
@@ -304,7 +304,7 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
       continue;
     }
 
-    if (absl::optional<TopicData> duplicate =
+    if (std::optional<TopicData> duplicate =
             FindAnyDuplicatedTopic(topics, handler_and_topics.second)) {
       DVLOG(1) << "Duplicate registration: trying to register "
                << duplicate->name << " for " << handler

@@ -63,10 +63,10 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state,
 // Return UserAgentBrandList based on the expected output version type.
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
-    absl::optional<std::string> brand,
+    std::optional<std::string> brand,
     const std::string& version,
-    absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version,
+    std::optional<std::string> maybe_greasey_brand,
+    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
 
@@ -76,8 +76,8 @@ blink::UserAgentBrandList GenerateBrandVersionList(
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     std::vector<int> permuted_order,
     int seed,
-    absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version,
+    std::optional<std::string> maybe_greasey_brand,
+    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
 

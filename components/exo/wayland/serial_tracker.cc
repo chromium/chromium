@@ -78,7 +78,7 @@ uint32_t SerialTracker::GetNextSerial(EventType type) {
   return serial;
 }
 
-absl::optional<SerialTracker::EventType> SerialTracker::GetEventType(
+std::optional<SerialTracker::EventType> SerialTracker::GetEventType(
     uint32_t serial) const {
   if (max_event_ < min_event_) {
     // The valid range has partially overflowed the 32 bit space, so we should
@@ -87,7 +87,7 @@ absl::optional<SerialTracker::EventType> SerialTracker::GetEventType(
     if (!((serial < max_event_) || (serial >= min_event_))) {
       LOG(ERROR) << "Failed to find event type for serial. serial(" << serial
                  << ") is in the void range";
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else {
     // Normal, non-overflowed case. Reject the serial number if it isn't in the
@@ -95,7 +95,7 @@ absl::optional<SerialTracker::EventType> SerialTracker::GetEventType(
     if (!((serial < max_event_) && (serial >= min_event_))) {
       LOG(ERROR) << "Failed to find event type for serial. serial(" << serial
                  << ") is outside of the range.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -109,7 +109,7 @@ uint32_t SerialTracker::MaybeNextKeySerial() {
 }
 
 void SerialTracker::ResetKeySerial() {
-  key_serial_ = absl::nullopt;
+  key_serial_ = std::nullopt;
 }
 
 std::string SerialTracker::ToString() const {

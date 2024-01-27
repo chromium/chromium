@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -127,7 +127,7 @@ SkRect ToSkRect(const gfx::Size& size) {
 void DrawDummyTestPicture(SkCanvas* canvas,
                           SkColor rect_fill_color,
                           const gfx::Size& scroll_extents,
-                          absl::optional<gfx::RectF> clip_rect = absl::nullopt,
+                          std::optional<gfx::RectF> clip_rect = std::nullopt,
                           gfx::Size scroll_offsets = gfx::Size()) {
   canvas->save();
   if (clip_rect.has_value()) {
@@ -232,7 +232,7 @@ void PopulateFrameProto(
   size_t serialized_size = 0;
   ASSERT_TRUE(RecordToFile(
       base::File(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE),
-      pic, &tracker, absl::nullopt, &serialized_size));
+      pic, &tracker, std::nullopt, &serialized_size));
   ASSERT_GE(serialized_size, 0u);
 
   expected_data->insert({guid, std::move(expected_frame_data)});
@@ -667,8 +667,7 @@ TEST_F(PaintPreviewCompositorTest, TestCompositeWithMemoryBuffer) {
     PaintPreviewTracker tracker(base::UnguessableToken::Create(), kRootFrameID,
                                 /*is_main_frame=*/true);
     size_t serialized_size = 0;
-    auto result =
-        RecordToBuffer(pic, &tracker, absl::nullopt, &serialized_size);
+    auto result = RecordToBuffer(pic, &tracker, std::nullopt, &serialized_size);
     ASSERT_TRUE(result.has_value());
     buffer = std::move(result.value());
 

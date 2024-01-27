@@ -7,7 +7,7 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import type {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

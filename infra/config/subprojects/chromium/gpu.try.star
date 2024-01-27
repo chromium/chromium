@@ -561,6 +561,17 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
+    name = "gpu-fyi-try-win11-qualcomm-rel-64",
+    description_html = "Triggers GPU tests on Windows arm64 devices",
+    mirrors = [
+        "ci/GPU FYI Win arm64 Builder",
+        "ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)",
+    ],
+    gn_args = "ci/GPU FYI Win arm64 Builder",
+    pool = "luci.chromium.gpu.win11.qualcomm.try",
+)
+
+gpu_win_builder(
     name = "gpu-try-win-nvidia-dbg",
     mirrors = [
         "ci/GPU Win x64 Builder (dbg)",

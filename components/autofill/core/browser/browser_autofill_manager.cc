@@ -2918,7 +2918,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     // not used and only holds semantic value.
     return suggestion_generator_->GetSuggestionsForProfiles(
         /*field_types=*/{UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
-        /*last_targeted_fields=*/absl::nullopt, trigger_source);
+        /*last_targeted_fields=*/std::nullopt, trigger_source);
   }
   // If not manual fallback, `form_structure` and `autofill_field` should exist.
   CHECK(form_structure && trigger_autofill_field);

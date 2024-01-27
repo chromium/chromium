@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_TRIGGER_CONFIG_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_TRIGGER_CONFIG_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -12,7 +13,6 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -22,9 +22,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerConfig {
                         mojom::TriggerRegistrationError>
   Parse(base::Value::Dict&);
 
-  static absl::optional<AggregatableTriggerConfig> Create(
+  static std::optional<AggregatableTriggerConfig> Create(
       mojom::SourceRegistrationTimeConfig,
-      absl::optional<std::string> trigger_context_id);
+      std::optional<std::string> trigger_context_id);
 
   AggregatableTriggerConfig();
 
@@ -45,18 +45,18 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerConfig {
     return source_registration_time_config_;
   }
 
-  const absl::optional<std::string>& trigger_context_id() const {
+  const std::optional<std::string>& trigger_context_id() const {
     return trigger_context_id_;
   }
 
  private:
   AggregatableTriggerConfig(mojom::SourceRegistrationTimeConfig,
-                            absl::optional<std::string> trigger_context_id);
+                            std::optional<std::string> trigger_context_id);
 
   mojom::SourceRegistrationTimeConfig source_registration_time_config_ =
       mojom::SourceRegistrationTimeConfig::kExclude;
 
-  absl::optional<std::string> trigger_context_id_;
+  std::optional<std::string> trigger_context_id_;
 };
 
 }  // namespace attribution_reporting

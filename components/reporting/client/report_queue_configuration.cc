@@ -86,7 +86,7 @@ ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
 
 ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetSourceInfo(
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   if (final_value_.has_value()) {
     auto status = final_value_.value()->SetSourceInfo(std::move(source_info));
     if (!status.ok()) {
@@ -206,13 +206,13 @@ Status ReportQueueConfiguration::SetReservedSpace(int64_t reserved_space) {
 }
 
 Status ReportQueueConfiguration::SetSourceInfo(
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   if (source_info_.has_value()) {
     return Status(error::ALREADY_EXISTS, "SourceInfo cannot be reset");
   }
   if (!source_info.has_value()) {
     // No source info specified. Also the default.
-    source_info_ = absl::nullopt;
+    source_info_ = std::nullopt;
     return Status::StatusOK();
   }
 

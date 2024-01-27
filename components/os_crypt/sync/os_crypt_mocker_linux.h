@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_OS_CRYPT_MOCKER_LINUX_H_
 #define COMPONENTS_OS_CRYPT_SYNC_OS_CRYPT_MOCKER_LINUX_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Holds and serves a password from memory.
 class OSCryptMockerLinux : public KeyStorageLinux {
@@ -33,7 +33,7 @@ class OSCryptMockerLinux : public KeyStorageLinux {
  protected:
   // KeyStorageLinux
   bool Init() override;
-  absl::optional<std::string> GetKeyImpl() override;
+  std::optional<std::string> GetKeyImpl() override;
 
  private:
   std::string key_;

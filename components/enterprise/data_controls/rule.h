@@ -13,7 +13,6 @@
 #include "components/enterprise/data_controls/action_context.h"
 #include "components/enterprise/data_controls/condition.h"
 #include "components/policy/core/common/schema.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class PolicyErrorMap;
@@ -134,6 +133,10 @@ class Rule {
   // "destinations" and combine them into a single `Condition` object.
   static std::unique_ptr<const Condition> GetSourcesAndDestinationsCondition(
       const base::Value::Dict& value);
+
+  // Helper to parse the JSON list of conditions under a "and" or "or" key.
+  static std::vector<std::unique_ptr<const Condition>> GetListConditions(
+      const base::Value::List& value);
 
   // Helper to parse the following JSON schema:
   // {

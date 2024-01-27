@@ -147,8 +147,8 @@ TEST_F(BufferRequesterTest, ConfigReceivedOverMojoCallsClientCallback) {
   EXPECT_CALL(mojo_receiver_, GetBuffer(testing::_))
       .WillOnce([this](GetBufferCallback cb) {
         MojoPipePair pipes = GetMojoPipePair();
-        mojom::AudioStreamInfoPtr stream_info(
-            absl::in_place_t(), second_config_, std::move(pipes.second));
+        mojom::AudioStreamInfoPtr stream_info(std::in_place_t(), second_config_,
+                                              std::move(pipes.second));
         data_producer_ = std::move(pipes.first);
         std::move(cb).Run(mojom::GetAudioBufferResponse::NewStreamInfo(
             std::move(stream_info)));

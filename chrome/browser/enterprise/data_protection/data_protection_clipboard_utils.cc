@@ -8,7 +8,10 @@
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/rules_service.h"
 #include "components/enterprise/common/files_scan_data.h"
+#include "components/enterprise/content/clipboard_restriction_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace enterprise_data_protection {
 
@@ -246,6 +249,33 @@ void PasteIfAllowedByPolicy(
   OnDlpRulesCheckDone(source, destination, metadata,
                       std::move(clipboard_paste_data), std::move(callback),
                       /*allowed=*/true);
+}
+
+bool IsClipboardCopyAllowedByPolicy(content::BrowserContext* browser_context,
+                                    const GURL& url,
+                                    size_t data_size_in_bytes,
+                                    std::u16string& replacement_data) {
+  ClipboardRestrictionService* service =
+      ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
+          browser_context);
+  if (!service->IsUrlAllowedToCopy(url, data_size_in_bytes,
+                                   &replacement_data)) {
+    return false;
+  }
+
+  auto verdict =
+      data_controls::RulesServiceFactory::GetForBrowserContext(browser_context)
+          ->GetCopyToOSClipboardVerdict(url);
+
+  // TODO(b/302340176): Add support for verdicts other than "block".
+  // TODO(b/303640183): Add reporting logic.
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    replacement_data = l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace enterprise_data_protection

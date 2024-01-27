@@ -384,6 +384,7 @@ vertical-align: baseline
 view-timeline-axis: block
 view-timeline-inset: auto
 view-timeline-name: none
+view-transition-class: none
 view-transition-name: none
 visibility: visible
 white-space-collapse: collapse

@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_ANSWER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -214,9 +214,9 @@ class SuggestionAnswer {
    private:
     TextFields text_fields_;
     int num_text_lines_;
-    absl::optional<TextField> additional_text_;
-    absl::optional<TextField> status_text_;
-    absl::optional<std::u16string> accessibility_label_;
+    std::optional<TextField> additional_text_;
+    std::optional<TextField> status_text_;
+    std::optional<std::u16string> accessibility_label_;
     GURL image_url_;
 
     FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
@@ -263,7 +263,7 @@ class SuggestionAnswer {
 
   // Logs which answer type was used (if any) at the time a user used the
   // omnibox to go somewhere.
-  static void LogAnswerUsed(const absl::optional<SuggestionAnswer>& answer);
+  static void LogAnswerUsed(const std::optional<SuggestionAnswer>& answer);
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;

@@ -42,11 +42,10 @@ class InMemoryTextEmbeddingManager {
 
   // Creates a new instance of InMemoryTextEmbedding and adds to
   // |in_memory_text_embeddings_|.
-  void AddEmbeddingForVisit(
-      const GURL& url,
-      const std::string& page_title,
-      const base::Time& visit_time,
-      const absl::optional<std::vector<float>>& embedding);
+  void AddEmbeddingForVisit(const GURL& url,
+                            const std::string& page_title,
+                            const base::Time& visit_time,
+                            const std::optional<std::vector<float>>& embedding);
 
   // Returns QueryResults based on vector similarity between
   // |in_memory_text_embeddings_| and the input embedding when embeddings are

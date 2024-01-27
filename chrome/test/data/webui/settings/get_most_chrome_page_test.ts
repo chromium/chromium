@@ -5,8 +5,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IronCollapseElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
-import {buildRouter, HatsBrowserProxyImpl, loadTimeData, Router, SettingsRoutes, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import type {IronCollapseElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsRoutes} from 'chrome://settings/settings.js';
+import {buildRouter, HatsBrowserProxyImpl, loadTimeData, Router, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';

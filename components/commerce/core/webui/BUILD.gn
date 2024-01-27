@@ -4,8 +4,8 @@
 
 source_set("webui") {
   sources = [
-    "shopping_list_handler.cc",
-    "shopping_list_handler.h",
+    "shopping_service_handler.cc",
+    "shopping_service_handler.h",
     "webui_utils.cc",
     "webui_utils.h",
   ]
@@ -24,6 +24,7 @@ source_set("webui") {
     "//components/prefs",
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
     "//url",
   ]
 }
@@ -31,11 +32,10 @@ source_set("webui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "shopping_list_handler_unittest.cc" ]
+  sources = [ "shopping_service_handler_unittest.cc" ]
 
   deps = [
     ":webui",
-    "../mojom:mojo_bindings",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
     "//url:url",
   ]
 }

@@ -139,12 +139,6 @@ void ChromeComposeClient::ShowComposeDialog(
     compose_dialog_controller_->Close();
   }
 
-  if (ui_entry_point == EntryPoint::kContextMenu) {
-    // TODO(b/319478359): move this closer to the menu code to capture clicks
-    // even when the UI failed to open.
-    page_ukm_tracker_->MenuItemClicked();
-  }
-
   CreateOrUpdateSession(ui_entry_point, trigger_field, std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
@@ -445,6 +439,10 @@ compose::ComposeManager& ChromeComposeClient::GetManager() {
 
 ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
   return *compose_enabling_;
+}
+
+compose::PageUkmTracker* ChromeComposeClient::getPageUkmTracker() {
+  return page_ukm_tracker_.get();
 }
 
 bool ChromeComposeClient::ShouldTriggerPopup(

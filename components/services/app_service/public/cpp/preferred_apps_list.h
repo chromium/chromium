@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_LIST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -67,9 +67,9 @@ class PreferredAppsList : public PreferredAppsListHandle {
   const PreferredApps& GetReference() const override;
   bool IsPreferredAppForSupportedLinks(
       const std::string& app_id) const override;
-  absl::optional<std::string> FindPreferredAppForUrl(
+  std::optional<std::string> FindPreferredAppForUrl(
       const GURL& url) const override;
-  absl::optional<std::string> FindPreferredAppForIntent(
+  std::optional<std::string> FindPreferredAppForIntent(
       const IntentPtr& intent) const override;
   base::flat_set<std::string> FindPreferredAppsForFilters(
       const IntentFilters& intent_filters) const override;

@@ -99,7 +99,7 @@ class ProcessNode : public Node {
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.
-  virtual absl::optional<int32_t> GetExitStatus() const = 0;
+  virtual std::optional<int32_t> GetExitStatus() const = 0;
 
   // Returns the non-localized name of the process used for metrics reporting
   // metrics as specified in content::ChildProcessData during process creation.

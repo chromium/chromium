@@ -832,9 +832,7 @@ void ExtensionTelemetryService::DumpReportForTest(
         if (!scripts.empty()) {
           ss << "  Signal: TabsExecuteScript\n";
           for (const auto& script_pb : scripts) {
-            ss << "    Script hash: "
-               << base::HexEncode(script_pb.hash().c_str(),
-                                  script_pb.hash().size())
+            ss << "    Script hash: " << base::HexEncode(script_pb.hash())
                << " count: " << script_pb.execution_count() << "\n";
           }
         }

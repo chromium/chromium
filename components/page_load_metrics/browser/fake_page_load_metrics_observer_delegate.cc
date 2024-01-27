@@ -33,22 +33,22 @@ base::TimeTicks FakePageLoadMetricsObserverDelegate::GetNavigationStart()
   return navigation_start_;
 }
 
-absl::optional<base::TimeDelta> TimeDiff(
-    const absl::optional<base::TimeTicks>& time,
+std::optional<base::TimeDelta> TimeDiff(
+    const std::optional<base::TimeTicks>& time,
     const base::TimeTicks& origin) {
   if (!time.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK_GE(time.value(), origin);
   return time.value() - origin;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstForeground() const {
-  return absl::optional<base::TimeDelta>();
+  return std::optional<base::TimeDelta>();
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstBackground() const {
   return TimeDiff(first_background_time_, navigation_start_);
 }
@@ -58,7 +58,7 @@ PrerenderingState FakePageLoadMetricsObserverDelegate::GetPrerenderingState()
   return prerendering_state_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetActivationStart() const {
   return activation_start_;
 }
@@ -109,9 +109,9 @@ FakePageLoadMetricsObserverDelegate::GetPageEndUserInitiatedInfo() const {
   return page_end_user_initiated_info_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToPageEnd() const {
-  return absl::optional<base::TimeDelta>();
+  return std::optional<base::TimeDelta>();
 }
 
 const base::TimeTicks& FakePageLoadMetricsObserverDelegate::GetPageEndTime()
@@ -161,7 +161,7 @@ FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
   return page_input_timing_;
 }
 
-const absl::optional<blink::SubresourceLoadMetrics>&
+const std::optional<blink::SubresourceLoadMetrics>&
 FakePageLoadMetricsObserverDelegate::GetSubresourceLoadMetrics() const {
   return subresource_load_metrics_;
 }

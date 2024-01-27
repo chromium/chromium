@@ -9,20 +9,221 @@ load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
 load("./nodes.star", "nodes")
 
-# The binary for a target. gtests and isolated scripts must reference a binary,
-# or it defaults to one with the same name as the test.
+# A target that can be built to run a test
+#
+# Created by:
+# * functions in targets.binaries
+#
+# Parents:
+# * legacy-test (>=0)
+#   * created by targets.test.gtest_test and targets.tests.isolated_script_test
+#   * traversed when generating details in test_suites.pyl for a test in a basic
+#     suite that references a binary
 _TARGET_BINARY = nodes.create_unscoped_node_type("target-binary")
+
+# A mapping from the ninja target name to GN label and associated details.
+#
+# Created by:
+# * functions in targets.binaries
+# * targets.tests.junit_test
+#   * a mapping with type "generated_script" and the same name as the test is
+#     created
+# * targets.compile_target
+#   * a mapping is created if name != "all"
+#
+# Parents:
+# * project (1)
+#   * created for all mappings
+#   * traversed to generate entries in gn_isolate_map.pyl
+_TARGET_LABEL_MAPPING = nodes.create_unscoped_node_type("target-label-mapping")
+
+# A set of modifications to make when expanding tests in a suite
+#
+# Created by:
+# * targets.mixin
+#
+# Parents:
+# * project (1)
+#   * created for all mixins
+#   * traversed to generate entries in mixins.pyl
+# * legacy-matrix-config (>=0)
+#   * created when the matrix config for a basic suite in a matrix compound
+#     suite references a mixin
+#   * traversed to generate the mixins field in test_suites.pyl for the config
+#     for a basic suite in a matrix compound suite
+# TODO(gbeaty) add necessary edges to generate mixins fields in basic suites
 _TARGET_MIXIN = nodes.create_unscoped_node_type("target-mixin")
+
+# A set of modifications to make when multiply expanding a test in a matrix
+# compound suite
+#
+# Created by:
+# * targets.variant
+#
+# Parents:
+# * project (1)
+#   * created for all binaries
+#   * traversed to generate entries in variants.pyl
+# * legacy-matrix-config (>=0)
+#   * created when the matrix config for a basic suite in a matrix compound
+#     suite references a variant
+#   * traversed to generate the variants field in test_suites.pyl for the config
+#     for a basic suite in a matrix compound suite
 _TARGET_VARIANT = nodes.create_unscoped_node_type("target-variant")
 
 # A test that can be included in a basic suite
+#
+# Created by:
+# * functions in targets.tests
+#
+# Children:
+# * target-binary (0 or 1)
+#   * created by targets.test.gtest_test and targets.tests.isolated_script_test
+#   * traversed when generating details in test_suites.pyl for a test in a basic
+#     suite that references a binary
+#
+# Parents:
+# * legacy-basic-suite (>=0)
+#   * created when a basic suite references a test
+#   * traversed to generate the details for a test when generating a basic suite
+#     in test_suites.pyl
 _LEGACY_TEST = nodes.create_unscoped_node_type("legacy-test")
+
+# A basic suite, which is a set of tests with optional modifications
+#
+# Created by:
+# * targets.legacy_basic_suite
+#
+# Children:
+# * legacy-test (>0)
+#   * created when a basic suite references a test
+#   * traversed to generate the details for a test when generating a basic suite
+#     in test_suites.pyl
+#
+# Parents:
+# * project (1)
+#   * created for all basic suites
+#   * traversed to generate the basic_suites entries in test_suites.pyl
+# * legacy-compound-suite (>=0)
+#   * created when a compound suite includes a basic suite
+#   * traversed to generate the basic suite reference when generating a compound
+#     suite in test_suites.pyl
+# * legacy-matrix-compound-suite (>=0)
+#   * created when a matrix compound suite includes a basic suite
+#   * not traversed, created only to ensure the basic suite exists
 _LEGACY_BASIC_SUITE = nodes.create_unscoped_node_type("legacy-basic-suite")
+
+# A compound suite, which is a set of basic suites
+#
+# Created by:
+# * targets.legacy_compound_suite
+#
+# Children:
+# * legacy-basic-suite (>0)
+#   * created when a compound suite includes a basic suite
+#   * traversed to generate the basic suite reference when generating a compound
+#     suite in test_suites.pyl
+#
+# Parents:
+# * project (1)
+#   * create for all compound suites
+#   * traversed to generate the compound_suites entries in test_suites.pyl
 _LEGACY_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-compound-suite")
+
+# A matrix compound suite, which is a set of basic suites that can be optionally
+# expanded with multiple variants
+#
+# Created by:
+# * targets.legacy_matrix_compound_suite
+#
+# Children:
+# * legacy-basic-suite (>0)
+#   * created when a matrix compound suite includes a basic suite
+#   * not traversed, created only to ensure the basic suite exists
+# * legacy-matrix-config (>0)
+#   * created for each basic suite in the matrix compound suite
+#   * traversed to generate the details for a basic suite when generating a
+#     matrix compound suite in test_suites.pyl
+#
+# Parents:
+# * project (1)
+#   * created for all matrix compound suites
+#   * traversed to generate the matrix_compound_suites entries in
+#     test_suites.pyl
 _LEGACY_MATRIX_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-matrix-compound-suite")
+
+# The modifications to apply to tests in a basic suite included in a matix
+# compound suite
+#
+# Created by:
+# * targets.legacy_matrix_compound_suite
+#
+# Children:
+# * target-mixin (>=0)
+#   * created when the matrix config for a basic suite in a matrix compound
+#     suite references a mixin
+#   * traversed to generate the mixins field in test_suites.pyl for the config
+#     for a basic suite in a matrix compound suite
+# * target-variant (>=0)
+#   * created when the matrix config for a basic suite in a matrix compound
+#     suite references a variant
+#   * traversed to generate the variants field in test_suites.pyl for the config
+#     for a basic suite in a matrix compound suite
+#
+# Parents:
+# * legacy-matrix-compound-suite (1)
+#   * created for each basic suite in the matrix compound suite
+#   * traversed to generate the details for a basic suite when generating a
+#     matrix compound suite in test_suites.pyl
 _LEGACY_MATRIX_CONFIG = nodes.create_scoped_node_type("legacy-matrix-config", _LEGACY_MATRIX_COMPOUND_SUITE.kind)
 
+# Compile targets, which can be specified as additional compile targets in a
+# bundle
+#
+# Created by:
+# * targets.compile_target
+# * functions in targets.binaries
+#   * a compile target with the same name as the binary will be created
+# * targets.tests.junit_test
+#   * a compile target with the same name as the test will be created
+#
+# Parents:
+# * target-bundle (>=0)
+#   * created when a bundle references a compile target in
+#     additional_compile_targets
+#   * not traversed, created only to ensure the compile target exists
+# TODO(gbeaty) Traverse the edge from target-bundle instead of storing the
+# additional_compile_targets as node props
 _COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
+
+# A collection of compile targets to build and tests to run with optional
+# modifications
+#
+# Created by:
+# * targets.bundle
+#   * unnamed instances can be created inline to apply builder-specific
+#     modifications or apply modifications to subgroupings of targets
+# * functions in targets.tests
+#   * creates a bundle with the same name as the test containing only that test
+# * builders.builder
+#   * if the builder sets targets, then a bundle is created with the
+#     bucket-qualified name of the builder)
+#
+# Children:
+# * target-bundle (>=0)
+#   * created when a bundle references another bundle in targets
+#   * traversed when generating targets spec files for builders that have their
+#     tests defined in starlark
+#
+# Parents:
+# * builder-config (0 or 1)
+#   * created when a builder sets targets
+#   * traversed when generating targets spec files for builders that have their
+#     targets defined in starlark
+# * target-bundle (>=0)
+#   * created when a bundle references another bundle in targets
+#   * traversed when generating targets spec files for builders that have their
+#     targets defined in starlark
 _TARGET_BUNDLE = nodes.create_unscoped_node_type("bundle", allow_unnamed = True)
 
 def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
@@ -48,6 +249,29 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
 def _create_compile_target(*, name):
     _COMPILE_TARGET.add(name)
 
+def _create_label_mapping(
+        *,
+        name,
+        type,
+        label,
+        label_type = None,
+        executable = None,
+        executable_suffix = None,
+        script = None,
+        skip_usage_check = False,
+        args = None):
+    mapping_key = _TARGET_LABEL_MAPPING.add(name, props = dict(
+        type = type,
+        label = label,
+        label_type = label_type,
+        executable = executable,
+        executable_suffix = executable_suffix,
+        script = script,
+        skip_usage_check = skip_usage_check,
+        args = args,
+    ))
+    graph.add_edge(keys.project(), mapping_key)
+
 def _create_binary(
         *,
         name,
@@ -60,7 +284,8 @@ def _create_binary(
         skip_usage_check = False,
         args = None,
         test_config = None):
-    binary_key = _TARGET_BINARY.add(name, props = dict(
+    _create_label_mapping(
+        name = name,
         type = type,
         label = label,
         label_type = label_type,
@@ -69,9 +294,11 @@ def _create_binary(
         script = script,
         skip_usage_check = skip_usage_check,
         args = args,
+    )
+
+    _TARGET_BINARY.add(name, props = dict(
         test_config = test_config,
     ))
-    graph.add_edge(keys.project(), binary_key)
 
     _create_compile_target(
         name = name,
@@ -169,21 +396,18 @@ def _compile_target(*, name, label = None, skip_usage_check = False):
 
     # The all target is a special ninja target that doesn't map to a GN label
     # and so we don't create an entry in gn_isolate_map.pyl
-    if name == "all":
-        if label != None:
-            fail("label should not be set for compile target all")
-        _create_compile_target(
+    if name != "all":
+        if label == None:
+            fail("label must be set in compile_target {}".format(name))
+        _create_label_mapping(
             name = name,
+            type = "additional_compile_target",
+            label = label,
+            skip_usage_check = skip_usage_check,
         )
-        return
 
-    if label == None:
-        fail("label must be set in compile_target {}".format(name))
-    _create_binary(
+    _create_compile_target(
         name = name,
-        type = "additional_compile_target",
-        label = label,
-        skip_usage_check = skip_usage_check,
     )
 
 def _console_test_launcher(
@@ -471,7 +695,10 @@ def _junit_test(*, name, label, skip_usage_check = False):
 
     # We don't need to reuse the test binary for multiple junit tests, so just
     # define the isolate entry as part of the test declaration
-    _create_binary(
+    _create_compile_target(
+        name = name,
+    )
+    _create_label_mapping(
         name = name,
         type = "generated_script",
         label = label,
@@ -1221,7 +1448,7 @@ _PYL_HEADER_FMT = """\
 
 def _generate_gn_isolate_map_pyl(ctx):
     entries = []
-    for n in graph.children(keys.project(), _TARGET_BINARY.kind, graph.KEY_ORDER):
+    for n in graph.children(keys.project(), _TARGET_LABEL_MAPPING.kind, graph.KEY_ORDER):
         entries.append('  "{}": {{'.format(n.key.id))
         entries.append('    "label": "{}",'.format(n.props.label))
         if n.props.label_type != None:

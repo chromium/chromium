@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,13 +33,12 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
-    absl::optional<scoped_refptr<CrxCache>> crx_cache,
+    std::optional<scoped_refptr<CrxCache>> crx_cache,
     bool is_foreground,
     bool is_install,
     const std::vector<std::string>& ids,
@@ -76,14 +76,14 @@ UpdateEngine::UpdateEngine(
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
       notify_observers_callback_(notify_observers_callback) {
-  absl::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
+  std::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
   if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
       crx_cache_path.has_value()) {
     CrxCache::Options options(crx_cache_path.value());
-    crx_cache_ = absl::optional<scoped_refptr<CrxCache>>(
+    crx_cache_ = std::optional<scoped_refptr<CrxCache>>(
         base::MakeRefCounted<CrxCache>(options));
   } else {
-    crx_cache_ = absl::nullopt;
+    crx_cache_ = std::nullopt;
   }
 }
 
@@ -167,7 +167,7 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
 
 void UpdateEngine::StartOperation(
     scoped_refptr<UpdateContext> update_context,
-    const std::vector<absl::optional<CrxComponent>>& crx_components) {
+    const std::vector<std::optional<CrxComponent>>& crx_components) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (crx_components.size() != update_context->ids.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -225,7 +225,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
 
 void UpdateEngine::UpdateCheckResultsAvailable(
     scoped_refptr<UpdateContext> update_context,
-    const absl::optional<ProtocolParser::Results>& results,
+    const std::optional<ProtocolParser::Results>& results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -253,8 +253,8 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     for (const auto& id : update_context->components_to_check_for_updates) {
       CHECK_EQ(1u, update_context->components.count(id));
       auto& component = update_context->components.at(id);
-      component->SetUpdateCheckResult(absl::nullopt,
-                                      ErrorCategory::kUpdateCheck, error);
+      component->SetUpdateCheckResult(std::nullopt, ErrorCategory::kUpdateCheck,
+                                      error);
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
@@ -319,7 +319,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
                                       static_cast<int>(pair.second));
     } else {
       component->SetUpdateCheckResult(
-          absl::nullopt, ErrorCategory::kUpdateCheck,
+          std::nullopt, ErrorCategory::kUpdateCheck,
           static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND));
     }
   }

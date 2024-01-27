@@ -1,5 +1,8 @@
 caption: Allows blocking copying to the clipboard on specified URLs
+deprecated: true
 desc: |-
+  This policy is deprecated and will eventually be replaced by DataControlsRules.
+
   This policy blocks copying data to the clipboard on specific URLs.
 
   The <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> URL lists control which sites are allowed to write to the clipboard. A clipboard write is blocked if the URL matches a pattern in 'enable' and doesn't match a pattern in 'disable'. A copy is not blocked if the URL does not match any pattern.

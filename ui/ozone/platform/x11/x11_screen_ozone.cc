@@ -260,9 +260,11 @@ void X11ScreenOzone::OnEvent(const x11::Event& xev) {
   x11_display_manager_->OnEvent(xev);
 }
 
+#if BUILDFLAG(IS_LINUX)
 void X11ScreenOzone::OnDeviceScaleFactorChanged() {
   x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
+#endif
 
 void X11ScreenOzone::OnXDisplayListUpdated() {
   float scale_factor =

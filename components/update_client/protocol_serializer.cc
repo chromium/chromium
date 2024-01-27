@@ -5,6 +5,7 @@
 #include "components/update_client/protocol_serializer.h"
 
 #include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -105,7 +105,7 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
-    absl::optional<bool> domain_joined,
+    std::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
     const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps) {
@@ -157,7 +157,7 @@ protocol_request::Request MakeProtocolRequest(
   request.os.arch = GetArchitecture();
 
   if (!updater_state_attributes.empty()) {
-    request.updater = absl::make_optional<protocol_request::Updater>();
+    request.updater = std::make_optional<protocol_request::Updater>();
     auto it = updater_state_attributes.find("name");
     if (it != updater_state_attributes.end()) {
       request.updater->name = it->second;
@@ -219,10 +219,10 @@ protocol_request::App MakeProtocolApp(
     const std::string& cohort_name,
     const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
-    absl::optional<protocol_request::UpdateCheck> update_check,
+    std::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
-    absl::optional<protocol_request::Ping> ping,
-    absl::optional<std::vector<base::Value::Dict>> events) {
+    std::optional<protocol_request::Ping> ping,
+    std::optional<std::vector<base::Value::Dict>> events) {
   protocol_request::App app;
   app.app_id = app_id;
   app.version = version.GetString();

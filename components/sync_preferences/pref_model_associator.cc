@@ -53,14 +53,14 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
   }
 }
 
-absl::optional<base::Value> ReadPreferenceSpecifics(
+std::optional<base::Value> ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
   base::JSONReader::Result parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(preference.value());
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Failed to deserialize preference value: "
                << parsed_json.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*parsed_json);
 }
@@ -209,8 +209,7 @@ void PrefModelAssociator::WaitUntilReadyToSync(base::OnceClosure done) {
   std::move(done).Run();
 }
 
-absl::optional<syncer::ModelError>
-PrefModelAssociator::MergeDataAndStartSyncing(
+std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
@@ -254,7 +253,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   // Push updates to sync.
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
     models_associated_ = true;
@@ -312,7 +311,7 @@ bool PrefModelAssociator::CreatePrefSyncData(
   return true;
 }
 
-absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
+std::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
@@ -340,7 +339,7 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       continue;
     }
 
-    absl::optional<base::Value> new_value(
+    std::optional<base::Value> new_value(
         ReadPreferenceSpecifics(pref_specifics));
     if (!new_value) {
       // Skip values we can't deserialize.
@@ -362,7 +361,7 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       synced_preferences_.insert(pref_specifics.name());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<syncer::SyncableService> PrefModelAssociator::AsWeakPtr() {

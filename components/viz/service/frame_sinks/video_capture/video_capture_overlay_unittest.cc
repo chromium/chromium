@@ -5,6 +5,7 @@
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 
 #include <array>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -215,7 +215,7 @@ TEST_F(VideoCaptureOverlayTest, CalculateBlendInformation_GoldenCase) {
 
   overlay->SetImageAndBounds(MakeTestBitmap(1), gfx::RectF(.3, .5, .2, .1));
 
-  const absl::optional<VideoCaptureOverlay::BlendInformation> blend_info =
+  const std::optional<VideoCaptureOverlay::BlendInformation> blend_info =
       overlay->CalculateBlendInformation(frame_properties);
 
   ASSERT_TRUE(blend_info);

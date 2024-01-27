@@ -38,7 +38,7 @@ ReceiverConfig::ReceiverConfig(std::vector<media::VideoCodec> video_codecs,
                                std::vector<media::AudioCodec> audio_codecs,
                                std::vector<AudioLimits> audio_limits,
                                std::vector<VideoLimits> video_limits,
-                               absl::optional<Display> description)
+                               std::optional<Display> description)
     : video_codecs(std::move(video_codecs)),
       audio_codecs(std::move(audio_codecs)),
       audio_limits(std::move(audio_limits)),

@@ -48,7 +48,7 @@ DeviceSwitcherResultDispatcher::~DeviceSwitcherResultDispatcher() = default;
 
 ClassificationResult
 DeviceSwitcherResultDispatcher::GetCachedClassificationResult() {
-  absl::optional<ClassificationResult> result =
+  std::optional<ClassificationResult> result =
       latest_result_ ? latest_result_ : ReadResultFromPref();
   return result.has_value() ? result.value()
                             : ClassificationResult(PredictionStatus::kNotReady);
@@ -140,20 +140,20 @@ void DeviceSwitcherResultDispatcher::SaveResultToPref(
   dictionary.Set("result", std::move(segmentation_result));
 }
 
-absl::optional<ClassificationResult>
+std::optional<ClassificationResult>
 DeviceSwitcherResultDispatcher::ReadResultFromPref() const {
   ClassificationResult result(PredictionStatus::kNotReady);
   const base::Value::Dict& dictionary =
       prefs_->GetDict(kDeviceSwitcherUserSegmentPrefKey);
   const base::Value* value = dictionary.Find("result");
   if (!value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::Dict& segmentation_result = value->GetDict();
   const base::Value::List* labels_value =
       segmentation_result.FindList("labels");
   if (!labels_value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (const auto& label : *labels_value) {
     result.ordered_labels.push_back(label.GetString());

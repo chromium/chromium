@@ -5,6 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -356,6 +357,72 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "win-arm64-rel-compilator",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = (
+        "Compilator for {}."
+    ).format(linkify_builder("ci", "win-arm64-rel")),
+    cores = 32 if settings.is_main else 16,
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    grace_period = 3 * time.minute,
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
+try_.orchestrator_builder(
+    name = "win-arm64-rel",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = (
+        "This builder run tests for Windows ARM64 release build."
+    ),
+    mirrors = [
+        "ci/win-arm64-rel",
+        "ci/win11-arm64-rel-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-arm64-rel",
+            "release_try_builder",
+            "no_resource_allowlisting",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+        ],
+    ),
+    compilator = "win-arm64-rel-compilator",
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    siso_enabled = True,
+    use_clang_coverage = True,
+    # Enable when stable.
+    # main_list_view = "try",
+    # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    #use_orchestrator_pool = True,
+)
+
+try_.builder(
+    name = "win-arm64-dbg",
+    description_html = "This builder run tests for Windows ARM64 debug build.",
+    mirrors = [
+        "ci/win-arm64-dbg",
+        "ci/win11-arm64-dbg-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-arm64-dbg",
+        ],
+    ),
+    builderless = False,
+    cores = 16,
+    ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    # Enable when stable.
+    # main_list_view = "try",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(

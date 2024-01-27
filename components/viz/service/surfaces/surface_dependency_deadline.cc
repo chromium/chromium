@@ -31,9 +31,9 @@ bool SurfaceDependencyDeadline::HasDeadlinePassed() const {
   return tick_clock_->NowTicks() >= deadline_;
 }
 
-absl::optional<base::TimeDelta> SurfaceDependencyDeadline::Cancel() {
+std::optional<base::TimeDelta> SurfaceDependencyDeadline::Cancel() {
   if (!deadline_)
-    return absl::nullopt;
+    return std::nullopt;
 
   deadline_.reset();
 

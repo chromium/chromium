@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_TABS_MODEL_TAB_HELPER_DELEGATE_INSTALLER_H_
 
 #include "base/check.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -64,9 +65,10 @@ class TabHelperDelegateInstaller {
         : delegate_(delegate), web_state_list_(web_state_list) {
       DCHECK(delegate_);
       DCHECK(web_state_list_);
-      scoped_observation_.Observe(web_state_list_);
+      scoped_observation_.Observe(web_state_list_.get());
       for (int i = 0; i < web_state_list_->count(); ++i) {
-        SetTabHelperDelegate(web_state_list_->GetWebStateAt(i), delegate_);
+        SetTabHelperDelegate(web_state_list_->GetWebStateAt(i),
+                             delegate_.get());
       }
     }
     ~Installer() override { Disconnect(); }
@@ -78,7 +80,7 @@ class TabHelperDelegateInstaller {
       for (int i = 0; i < web_state_list_->count(); ++i) {
         SetTabHelperDelegate(web_state_list_->GetWebStateAt(i), nullptr);
       }
-      DCHECK(scoped_observation_.IsObservingSource(web_state_list_));
+      DCHECK(scoped_observation_.IsObservingSource(web_state_list_.get()));
       scoped_observation_.Reset();
       web_state_list_ = nullptr;
     }
@@ -108,13 +110,15 @@ class TabHelperDelegateInstaller {
           const WebStateListChangeReplace& replace_change =
               change.As<WebStateListChangeReplace>();
           SetTabHelperDelegate(replace_change.replaced_web_state(), nullptr);
-          SetTabHelperDelegate(replace_change.inserted_web_state(), delegate_);
+          SetTabHelperDelegate(replace_change.inserted_web_state(),
+                               delegate_.get());
           break;
         }
         case WebStateListChange::Type::kInsert: {
           const WebStateListChangeInsert& insert_change =
               change.As<WebStateListChangeInsert>();
-          SetTabHelperDelegate(insert_change.inserted_web_state(), delegate_);
+          SetTabHelperDelegate(insert_change.inserted_web_state(),
+                               delegate_.get());
           break;
         }
       }
@@ -126,9 +130,9 @@ class TabHelperDelegateInstaller {
     }
 
     // The delegate that is installed for each WebState in the WebStateList.
-    Delegate* delegate_ = nullptr;
+    raw_ptr<Delegate> delegate_ = nullptr;
     // The WebStateList whose Helpers's delegates are being installed.
-    WebStateList* web_state_list_ = nullptr;
+    raw_ptr<WebStateList> web_state_list_ = nullptr;
     // Scoped observer for `web_state_list_`.
     base::ScopedObservation<WebStateList, WebStateListObserver>
         scoped_observation_{this};
@@ -155,7 +159,7 @@ class TabHelperDelegateInstaller {
     }
 
     // The installer used to set up the Delegates.
-    Installer* installer_ = nullptr;
+    raw_ptr<Installer> installer_ = nullptr;
     // Scoped observer for the Browser.
     base::ScopedObservation<Browser, BrowserObserver> scoped_observation_{this};
   };

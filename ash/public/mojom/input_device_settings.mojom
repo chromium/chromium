@@ -44,6 +44,12 @@ struct InputDeviceSettingsFkeyPolicy {
   ui.mojom.ExtendedFkeysModifier value;
 };
 
+// Represents the policy that controls the "six pack" settings.
+struct InputDeviceSettingsSixPackKeyPolicy {
+  PolicyStatus policy_status;
+  ui.mojom.SixPackShortcutModifier value;
+};
+
 // Represents the current set of keyboard enterprise policies. All members are
 // optional. When null, there is no enterprise policy set for the given setting.
 struct KeyboardPolicies {
@@ -60,6 +66,18 @@ struct KeyboardPolicies {
   // This policy is defined at components/policy/resources/templates/
   //   policy_definitions/Miscellaneous/F12KeyModifier.yaml
   InputDeviceSettingsFkeyPolicy? f12_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/HomeAndEndKeysModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? home_and_end_keys_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/PageUpAndPageDownKeysModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? page_up_and_page_down_keys_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/DeleteKeyModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? delete_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/InsertKeyModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? insert_key_policy;
 };
 
 // Represents the current set of mouse enterprise policies. All members are

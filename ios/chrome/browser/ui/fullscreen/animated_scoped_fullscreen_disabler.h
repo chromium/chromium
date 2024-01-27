@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_ANIMATED_SCOPED_FULLSCREEN_DISABLER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_ANIMATED_SCOPED_FULLSCREEN_DISABLER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
@@ -32,7 +33,7 @@ class AnimatedScopedFullscreenDisabler : public FullscreenControllerObserver {
   void OnAnimationStart();
 
   // The FullscreenController being disabled by this object.
-  FullscreenController* controller_ = nullptr;
+  raw_ptr<FullscreenController> controller_ = nullptr;
 
   // Whether this disabler is contributing to `controller_`'s disabled counter.
   bool disabling_ = false;

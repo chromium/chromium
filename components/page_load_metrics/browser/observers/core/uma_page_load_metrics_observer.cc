@@ -903,7 +903,7 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   const page_load_metrics::ResponsivenessMetricsNormalization&
       responsiveness_metrics_normalization =
           GetDelegate().GetResponsivenessMetricsNormalization();
-  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
       responsiveness_metrics_normalization.ApproximateHighPercentile();
   if (!inp.has_value()) {
     return;
@@ -932,7 +932,7 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks app_background_time) {
-  absl::optional<base::TimeDelta> foreground_duration =
+  std::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
   if (!foreground_duration)

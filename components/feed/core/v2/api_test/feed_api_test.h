@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -46,7 +47,6 @@
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace test {
@@ -178,9 +178,9 @@ class TestSurfaceBase : public feed::SurfaceRenderer {
 
   // The initial state of the stream, if it was received. This is nullopt if
   // only the loading spinner was seen.
-  absl::optional<feedui::StreamUpdate> initial_state;
+  std::optional<feedui::StreamUpdate> initial_state;
   // The last stream update received.
-  absl::optional<feedui::StreamUpdate> update;
+  std::optional<feedui::StreamUpdate> update;
   // All stream updates.
   std::vector<feedui::StreamUpdate> all_updates;
 
@@ -272,7 +272,7 @@ class TestFeedNetwork : public FeedNetwork {
       base::StringPiece method,
       std::string request_bytes,
       const AccountInfo& account_info,
-      absl::optional<RequestMetadata> request_metadata,
+      std::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   void SendAsyncDataRequest(
@@ -349,8 +349,8 @@ class TestFeedNetwork : public FeedNetwork {
   void InjectEmptyActionRequestResult();
 
   template <typename API>
-  absl::optional<typename API::Request> GetApiRequestSent() {
-    absl::optional<typename API::Request> result;
+  std::optional<typename API::Request> GetApiRequestSent() {
+    std::optional<typename API::Request> result;
     NetworkRequestType request_type = API::kRequestType;
     auto iter = api_requests_sent_.find(request_type);
     if (iter != api_requests_sent_.end()) {
@@ -358,7 +358,7 @@ class TestFeedNetwork : public FeedNetwork {
       if (!iter->second.empty()) {
         if (!message.ParseFromString(iter->second)) {
           LOG(ERROR) << "Failed to parse API request.";
-          return absl::nullopt;
+          return std::nullopt;
         }
       }
       result = message;
@@ -366,7 +366,7 @@ class TestFeedNetwork : public FeedNetwork {
     return result;
   }
 
-  absl::optional<feedwire::UploadActionsRequest> GetActionRequestSent();
+  std::optional<feedwire::UploadActionsRequest> GetActionRequestSent();
 
   template <typename API>
   int GetApiRequestCount() const {
@@ -407,7 +407,7 @@ class TestFeedNetwork : public FeedNetwork {
   void SendResponsesOnCommand(bool on);
   void SendResponse();
 
-  absl::optional<feedwire::Request> query_request_sent;
+  std::optional<feedwire::Request> query_request_sent;
   // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
   AccountInfo last_account_info;
@@ -427,8 +427,8 @@ class TestFeedNetwork : public FeedNetwork {
   std::map<NetworkRequestType, std::string> api_requests_sent_;
   std::map<NetworkRequestType, int> api_request_count_;
   std::vector<NetworkRequestType> sent_request_types_;
-  absl::optional<feedwire::Response> injected_response_;
-  absl::optional<RawResponse> injected_raw_response_;
+  std::optional<feedwire::Response> injected_response_;
+  std::optional<RawResponse> injected_raw_response_;
 };
 
 // Forwards to |FeedStream::WireResponseTranslator| unless a response is
@@ -448,12 +448,12 @@ class TestWireResponseTranslator : public WireResponseTranslator {
       const AccountInfo& account_info,
       base::Time current_time) const override;
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
-                      absl::optional<std::string> session_id = absl::nullopt);
+                      std::optional<std::string> session_id = std::nullopt);
   void InjectResponse(RefreshResponseData response_data);
   bool InjectedResponseConsumed() const;
 
  private:
-  absl::optional<RefreshResponseData> TranslateStreamSource(
+  std::optional<RefreshResponseData> TranslateStreamSource(
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const;
@@ -507,19 +507,19 @@ class TestMetricsReporter : public MetricsReporter {
     ~StreamMetrics();
     StreamMetrics(const StreamMetrics&) = delete;
     StreamMetrics& operator=(const StreamMetrics&) = delete;
-    absl::optional<LoadStreamStatus> background_refresh_status;
+    std::optional<LoadStreamStatus> background_refresh_status;
   };
 
   StreamMetrics& Stream(const StreamType& stream_type);
 
   // Test access.
-  absl::optional<int> slice_viewed_index;
-  absl::optional<LoadStreamStatus> load_stream_status;
-  absl::optional<LoadStreamStatus> load_stream_from_store_status;
-  absl::optional<SurfaceId> load_more_surface_id;
-  absl::optional<LoadStreamStatus> load_more_status;
-  absl::optional<LoadStreamStatus> background_refresh_status;
-  absl::optional<UploadActionsStatus> upload_action_status;
+  std::optional<int> slice_viewed_index;
+  std::optional<LoadStreamStatus> load_stream_status;
+  std::optional<LoadStreamStatus> load_stream_from_store_status;
+  std::optional<SurfaceId> load_more_surface_id;
+  std::optional<LoadStreamStatus> load_more_status;
+  std::optional<LoadStreamStatus> background_refresh_status;
+  std::optional<UploadActionsStatus> upload_action_status;
 
   StreamMetrics web_feed;
   StreamMetrics for_you;

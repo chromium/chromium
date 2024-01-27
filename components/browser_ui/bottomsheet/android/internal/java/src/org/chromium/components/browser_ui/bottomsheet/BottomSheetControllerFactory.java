@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -22,6 +24,7 @@ public class BottomSheetControllerFactory {
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param edgeToEdgeBottomInsetSupplier Supplier of bottom inset when e2e is on.
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
@@ -29,14 +32,16 @@ public class BottomSheetControllerFactory {
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
-            Supplier<ViewGroup> root) {
+            Supplier<ViewGroup> root,
+            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
         return new BottomSheetControllerImpl(
                 scrim,
                 initializedCallback,
                 window,
                 keyboardDelegate,
                 root,
-                /* alwaysFullWidth= */ false);
+                /* alwaysFullWidth= */ false,
+                edgeToEdgeBottomInsetSupplier);
     }
 
     /**
@@ -60,7 +65,8 @@ public class BottomSheetControllerFactory {
                 window,
                 keyboardDelegate,
                 root,
-                /* alwaysFullWidth= */ true);
+                /* alwaysFullWidth= */ true,
+                () -> 0);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the

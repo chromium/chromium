@@ -55,6 +55,9 @@ import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
+# TODO(jam): remove is_fuchsia below
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -1073,17 +1076,7 @@ if (is_android) {
       telemetry_target_suffix = _target_suffix
     }
   }
-} else if (is_fuchsia) {
-  group("telemetry_gpu_integration_test_fuchsia") {
-    testonly = true
-    data = [ "//content/test/gpu/run_gpu_integration_test_fuchsia.py" ]
-    data_deps = [
-      "//content/test:fuchsia_telemetry_test_data",
-      "//content/test:telemetry_gpu_integration_test_support",
-      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-    ]
-  }
-} else {
+} else if (!is_fuchsia) {
   group("telemetry_gpu_integration_test") {
     testonly = true
     data_deps = [
@@ -2808,6 +2801,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/user_education/browser_user_education_service_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
+      "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_browsertest.cc",
       "../browser/ui/views/web_apps/protocol_handler_launch_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_detailed_install_dialog_browsertest.cc",
@@ -2926,6 +2920,18 @@ if (!is_android && !is_fuchsia) {
         "//components/compose/core/browser",
         "//components/compose/core/browser:features",
       ]
+    }
+
+    if (enable_screen_ai_service) {
+      sources +=
+          [ "../browser/screen_ai/screen_ai_service_router_browsertest.cc" ]
+
+      if (is_linux) {
+        # Add a data dependency for pdf_extension_accessibility_test.cc to
+        # notify testing builders that this test needs this library, which will
+        # need to be downloaded from CIPD as defined in //DEPS.
+        data_deps += [ "//third_party/screen-ai:screen_ai_linux" ]
+      }
     }
 
     if (enable_supervised_users) {
@@ -7552,7 +7558,6 @@ if (!is_fuchsia) {
         "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
         "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
         "../browser/ui/autofill/autofill_keyboard_accessory_adapter_unittest.cc",
-        "../browser/ui/autofill/payments/autofill_progress_dialog_controller_impl_unittest.cc",
         "../browser/ui/autofill/payments/autofill_snackbar_controller_impl_unittest.cc",
         "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_unittest.cc",
         "../browser/ui/fast_checkout/fast_checkout_controller_impl_unittest.cc",
@@ -10089,6 +10094,7 @@ if (!is_fuchsia) {
         "../browser/ui/views/performance_controls/battery_saver_button_unittest.cc",
         "../browser/ui/views/performance_controls/memory_saver_bubble_view_unittest.cc",
         "../browser/ui/views/performance_controls/memory_saver_chip_view_unittest.cc",
+        "../browser/ui/views/permissions/chip/multi_image_container_unittest.cc",
         "../browser/ui/views/permissions/chip/permission_dashboard_unittest.cc",
         "../browser/ui/views/permissions/permission_chip_unittest.cc",
         "../browser/ui/views/permissions/permission_prompt_bubble_one_origin_view_unittest.cc",
@@ -11274,6 +11280,7 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_custom_accelerator_and_reset_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_custom_accelerator_to_unlocked_action_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/edit_default_accelerator_interactive_uitest.cc",
+          "../browser/ui/webui/ash/shortcut_customization/integration_tests/search_for_shortcuts_interactive_ui_test.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
           # These cannot live in ":test_support" because they use

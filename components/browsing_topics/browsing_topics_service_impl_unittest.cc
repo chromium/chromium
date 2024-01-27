@@ -926,7 +926,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
       history::DeletionTimeRange(start_time + 5 * kOneTestDay,
                                  start_time + 6 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
 
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
@@ -967,7 +967,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
 
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
@@ -1005,7 +1005,7 @@ TEST_F(BrowsingTopicsServiceImplTest, Recalculate) {
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
 

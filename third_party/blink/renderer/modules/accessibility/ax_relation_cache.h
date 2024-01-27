@@ -146,7 +146,7 @@ class AXRelationCache {
   bool IsDirty() const;
 
   static bool IsValidOwner(AXObject* owner);
-  static bool IsValidOwnedChild(AXObject* child);
+  static bool IsValidOwnedChild(Node& child);
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void ElementHasBeenProcessed(Element&);
@@ -177,7 +177,7 @@ class AXRelationCache {
   // Get ids that the element points to via aria-labelledby/describedby.
   Vector<String> GetTextRelationIds(Element& relation_source);
 
-  bool IsValidOwnsRelation(AXObject* owner, AXObject* child) const;
+  bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                          const Vector<AXID>& removed_child_ids,
                                          const Vector<AXID>& newly_owned_ids);

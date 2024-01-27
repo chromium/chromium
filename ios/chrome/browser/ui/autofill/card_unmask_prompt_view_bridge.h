@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
@@ -51,7 +52,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   CardUnmaskPromptViewController* prompt_view_controller_;
 
   // The controller `this` queries for logic and state.
-  CardUnmaskPromptController* controller_;  // weak
+  raw_ptr<CardUnmaskPromptController> controller_;  // weak
 
  private:
   // Deletes self. Called after CardUnmaskPromptViewController finishes

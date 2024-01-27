@@ -85,15 +85,6 @@ export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList}
 // </if>
 
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
-export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
-export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-export {SecureDnsResolverType, SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
-// <if expr="chromeos_ash">
-export {SettingsSecureDnsDialogElement} from '/shared/settings/privacy_page/secure_dns_dialog.js';
-// </if>
-export {SecureDnsInputElement} from '/shared/settings/privacy_page/secure_dns_input.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -106,6 +97,15 @@ export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
+export {ControlledButtonElement} from './controls/controlled_button.js';
+export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
+export {SettingsSliderElement} from './controls/settings_slider.js';
+export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
+export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
+// <if expr="chromeos_ash">
+export {SettingsSecureDnsDialogElement} from './privacy_page/secure_dns_dialog.js';
+// </if>
+export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 // clang-format off
 // <if expr="is_win or is_linux or is_macosx">
 export {ScreenAiInstallStatus} from './a11y_page/a11y_browser_proxy.js';

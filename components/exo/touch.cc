@@ -4,6 +4,8 @@
 
 #include "components/exo/touch.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
@@ -13,7 +15,6 @@
 #include "components/exo/touch_delegate.h"
 #include "components/exo/touch_stylus_delegate.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"

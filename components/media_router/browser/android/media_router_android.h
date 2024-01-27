@@ -83,7 +83,7 @@ class MediaRouterAndroid : public MediaRouterBase {
   // Notifies the media router when the route was closed with an optional error.
   // Null error indicates no error.
   void OnRouteClosed(const MediaRoute::Id& route_id,
-                     const absl::optional<std::string>& error);
+                     const std::optional<std::string>& error);
 
   // Notifies the media router about a message received from the media route.
   void OnMessage(const MediaRoute::Id& route_id, const std::string& message);
@@ -155,7 +155,7 @@ class MediaRouterAndroid : public MediaRouterBase {
       const std::string& error_text,
       int route_request_id,
       base::OnceCallback<void(mojom::RouteRequestResultCode,
-                              absl::optional<mojom::MediaRouteProviderId>)>
+                              std::optional<mojom::MediaRouteProviderId>)>
           callback);
 
   void SetMediaRouterBridgeForTest(MediaRouterAndroidBridge* bridge) {

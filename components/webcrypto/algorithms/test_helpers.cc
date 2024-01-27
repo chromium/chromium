@@ -37,10 +37,10 @@ bool Base64DecodeUrlSafe(std::string_view input, std::string* output) {
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, output);
 }
 
-absl::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
+std::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
   base::FilePath test_data_dir;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::FilePath file_path = test_data_dir.AppendASCII("components")
@@ -51,7 +51,7 @@ absl::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
 
   std::string file_contents;
   if (!base::ReadFileToString(file_path, &file_contents))
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::JSONReader::Read(file_contents);
 }
@@ -147,7 +147,7 @@ std::vector<uint8_t> MakeJsonVector(const base::ValueView& value) {
 }
 
 base::Value::List ReadJsonTestFileAsList(const char* test_file_name) {
-  absl::optional<base::Value> result = ReadJsonTestFile(test_file_name);
+  std::optional<base::Value> result = ReadJsonTestFile(test_file_name);
   CHECK(result.has_value());
   CHECK(result->is_list());
 
@@ -313,14 +313,14 @@ Status ImportKeyJwkFromDict(const base::ValueView& dict,
                    algorithm, extractable, usages, key);
 }
 
-absl::optional<base::Value::Dict> GetJwkDictionary(
+std::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json) {
   std::string_view json_string(reinterpret_cast<const char*>(json.data()),
                                json.size());
-  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
-  return absl::make_optional(std::move(*value).TakeDict());
+  return std::make_optional(std::move(*value).TakeDict());
 }
 
 // Verifies the input dictionary contains the expected values. Exact matches are
@@ -350,7 +350,7 @@ absl::optional<base::Value::Dict> GetJwkDictionary(
 
   // ---- ext
   // always expect ext == true in this case
-  absl::optional<bool> ext_value = dict.FindBool("ext");
+  std::optional<bool> ext_value = dict.FindBool("ext");
   if (!ext_value)
     return ::testing::AssertionFailure() << "Missing 'ext'";
   if (!ext_value.value())
@@ -379,7 +379,7 @@ absl::optional<base::Value::Dict> GetJwkDictionary(
     std::string_view alg_expected,
     std::string_view k_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  absl::optional<base::Value::Dict> dict = GetJwkDictionary(json);
+  std::optional<base::Value::Dict> dict = GetJwkDictionary(json);
   if (!dict.has_value() || dict.value().empty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
@@ -406,7 +406,7 @@ absl::optional<base::Value::Dict> GetJwkDictionary(
     std::string_view n_expected_hex,
     std::string_view e_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
-  absl::optional<base::Value::Dict> dict = GetJwkDictionary(json);
+  std::optional<base::Value::Dict> dict = GetJwkDictionary(json);
   if (!dict.has_value() || dict.value().empty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 

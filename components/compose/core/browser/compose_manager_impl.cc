@@ -59,6 +59,21 @@ bool ComposeManagerImpl::HasSavedState(
   return client_->HasSession(trigger_field_id);
 }
 
+void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
+                                     autofill::FormGlobalId form_id,
+                                     autofill::FieldGlobalId field_id,
+                                     UiEntryPoint entry_point) {
+  if (entry_point == UiEntryPoint::kContextMenu) {
+    client_->getPageUkmTracker()->MenuItemClicked();
+    compose::LogComposeContextMenuCtr(
+        compose::ComposeContextMenuCtrEvent::kMenuItemClicked);
+  }
+  driver.ExtractForm(
+      form_id,
+      base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
+                     weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
+}
+
 void ComposeManagerImpl::GetBrowserFormHandler(
     autofill::FieldGlobalId field_id,
     compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
@@ -67,6 +82,7 @@ void ComposeManagerImpl::GetBrowserFormHandler(
   if (!form_data) {
     compose::LogOpenComposeDialogResult(
         compose::OpenComposeDialogResult::kAutofillFormDataNotFound);
+    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
     return;
   }
   const autofill::FormFieldData* form_field_data =
@@ -74,6 +90,7 @@ void ComposeManagerImpl::GetBrowserFormHandler(
   if (!form_field_data) {
     compose::LogOpenComposeDialogResult(
         compose::OpenComposeDialogResult::kAutofillFormFieldDataNotFound);
+    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
     return;
   }
   autofill::AutofillManager& manager = driver->GetAutofillManager();
@@ -86,25 +103,11 @@ void ComposeManagerImpl::GetBrowserFormHandler(
                                std::move(compose_callback));
 }
 
-void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
-                                     autofill::FormGlobalId form_id,
-                                     autofill::FieldGlobalId field_id,
-                                     UiEntryPoint entry_point) {
-  driver.ExtractForm(
-      form_id,
-      base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
-                     weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
-}
-
 void ComposeManagerImpl::OpenComposeWithFormFieldData(
     UiEntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
-  if (ui_entry_point == UiEntryPoint::kContextMenu) {
-    compose::LogComposeContextMenuCtr(
-        compose::ComposeContextMenuCtrEvent::kComposeOpened);
-  }
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
                              popup_screen_location, std::move(callback));
 }

@@ -165,9 +165,9 @@ void PredictionService::OnURLLoaderComplete(
           CreatePredictionsResponse(loader, response_body.get());
 
       if (request.second) {
-        absl::optional<GeneratePredictionsResponse> response;
+        std::optional<GeneratePredictionsResponse> response;
         if (prediction_response == nullptr) {
-          response = absl::nullopt;
+          response = std::nullopt;
         } else {
           response = *prediction_response;
         }

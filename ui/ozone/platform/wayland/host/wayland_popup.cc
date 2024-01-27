@@ -60,8 +60,8 @@ bool WaylandPopup::CreateShellPopup() {
     UpdateWindowScale(true);
   }
 
-  const auto bounds_dip =
-      wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+  auto bounds_dip = wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+  bounds_dip.Inset(GetDecorationInsetsInDIP());
 
   ShellPopupParams params;
   params.bounds = bounds_dip;
@@ -170,8 +170,9 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   // The shell popup can be null if bounds are being fixed during
   // the initialization. See WaylandPopup::CreateShellPopup.
   if (shell_popup_ && old_bounds_dip != bounds_dip) {
-    const auto bounds_dip_in_parent =
+    auto bounds_dip_in_parent =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+    bounds_dip_in_parent.Inset(GetDecorationInsetsInDIP());
 
     // If Wayland moved the popup (for example, a dnd arrow icon), schedule
     // redraw as Aura doesn't do that for moved surfaces. If redraw has not been
@@ -199,9 +200,17 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   gfx::Rect pending_bounds_dip(bounds_dip);
   if (pending_bounds_dip.IsEmpty())
     pending_bounds_dip.set_size(GetBoundsInDIP().size());
+
+  // The origin is relative to parent's window geometry.
+  // See https://crbug.com/1292486.
   pending_configure_state_.bounds_dip =
       wl::TranslateBoundsToTopLevelCoordinates(
-          pending_bounds_dip, parent_window()->GetBoundsInDIP());
+          pending_bounds_dip, parent_window()->GetBoundsInDIP()) +
+      parent_window()->GetWindowGeometryOffsetInDIP();
+
+  // Bounds are in the geometry space. Need to add decoration insets backs.
+  const auto insets = GetDecorationInsetsInDIP();
+  pending_configure_state_.bounds_dip->Inset(-insets);
   pending_configure_state_.size_px =
       delegate()->ConvertRectToPixels(pending_bounds_dip).size();
 }
@@ -299,9 +308,10 @@ void WaylandPopup::SetWindowGeometry(gfx::Size size_dip) {
   if (!shell_popup_) {
     return;
   }
-
   const auto insets = GetDecorationInsetsInDIP();
-  shell_popup_->SetWindowGeometry({{insets.left(), insets.top()}, size_dip});
+  gfx::Rect geometry_dip(size_dip);
+  geometry_dip.Inset(insets);
+  shell_popup_->SetWindowGeometry(geometry_dip);
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {

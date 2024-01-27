@@ -54,7 +54,7 @@ class AesAlgorithm : public AlgorithmImplementation {
                                 blink::WebCryptoKey* key) const override;
 
   Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
-                      absl::optional<unsigned int>* length_bits) const override;
+                      std::optional<unsigned int>* length_bits) const override;
 
  private:
   Status ImportKeyRaw(base::span<const uint8_t> key_data,

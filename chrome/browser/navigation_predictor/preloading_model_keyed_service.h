@@ -32,8 +32,8 @@ class PreloadingModelKeyedService : public KeyedService {
     bool is_in_iframe;
     bool is_url_incremented_by_one;
     base::TimeDelta navigation_start_to_link_logged;
-    int path_depth;
-    int path_length;
+    uint8_t path_depth;
+    uint8_t path_length;
     double percent_clickable_area;
     double percent_vertical_distance;
     bool is_same_origin;

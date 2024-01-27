@@ -112,18 +112,18 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   void HandleProductInfoCallback(JNIEnv* env,
                                  const ScopedJavaGlobalRef<jobject>& callback,
                                  const GURL& url,
-                                 const absl::optional<const ProductInfo>& info);
+                                 const std::optional<const ProductInfo>& info);
 
   void HandleMerchantInfoCallback(JNIEnv* env,
                                   const ScopedJavaGlobalRef<jobject>& callback,
                                   const GURL& url,
-                                  absl::optional<MerchantInfo> info);
+                                  std::optional<MerchantInfo> info);
 
   void HandlePriceInsightsInfoCallback(
       JNIEnv* env,
       const ScopedJavaGlobalRef<jobject>& callback,
       const GURL& url,
-      const absl::optional<PriceInsightsInfo>& info);
+      const std::optional<PriceInsightsInfo>& info);
 
   void OnSubscribe(const CommerceSubscription& sub, bool succeeded) override;
   void OnUnsubscribe(const CommerceSubscription& sub, bool succeeded) override;

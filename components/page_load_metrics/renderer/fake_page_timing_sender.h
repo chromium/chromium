@@ -31,7 +31,7 @@ namespace page_load_metrics {
 //
 // Normally, gmock would be used in place of this class, but gmock is not
 // compatible with structures that use aligned memory, and PageLoadTiming uses
-// absl::optional which uses aligned memory, so we're forced to roll
+// std::optional which uses aligned memory, so we're forced to roll
 // our own implementation here. See
 // https://groups.google.com/forum/#!topic/googletestframework/W-Hud3j_c6I for
 // more details.
@@ -119,7 +119,7 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::InputTimingPtr& input_timing,
-        const absl::optional<blink::SubresourceLoadMetrics>&
+        const std::optional<blink::SubresourceLoadMetrics>&
             subresource_load_metrics,
         const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics);
 
@@ -136,15 +136,15 @@ class FakePageTimingSender : public PageTimingSender {
     std::set<blink::UseCounterFeature> actual_features_;
     mojom::FrameRenderDataUpdatePtr expected_render_data_;
     mojom::FrameRenderDataUpdate actual_render_data_;
-    absl::optional<gfx::Rect> expected_main_frame_intersection_rect_;
-    absl::optional<gfx::Rect> actual_main_frame_intersection_rect_;
-    absl::optional<gfx::Rect> expected_main_frame_viewport_rect_;
-    absl::optional<gfx::Rect> actual_main_frame_viewport_rect_;
+    std::optional<gfx::Rect> expected_main_frame_intersection_rect_;
+    std::optional<gfx::Rect> actual_main_frame_intersection_rect_;
+    std::optional<gfx::Rect> expected_main_frame_viewport_rect_;
+    std::optional<gfx::Rect> actual_main_frame_viewport_rect_;
     mojom::InputTiming expected_input_timing;
     mojom::InputTiming actual_input_timing;
-    absl::optional<blink::SubresourceLoadMetrics>
+    std::optional<blink::SubresourceLoadMetrics>
         expected_subresource_load_metrics_;
-    absl::optional<blink::SubresourceLoadMetrics>
+    std::optional<blink::SubresourceLoadMetrics>
         actual_subresource_load_metrics_;
   };
 
@@ -163,7 +163,7 @@ class FakePageTimingSender : public PageTimingSender {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::InputTimingPtr new_input_timing,
-      const absl::optional<blink::SubresourceLoadMetrics>&
+      const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override;
 

@@ -6,9 +6,13 @@
 #include <memory>
 
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/widget_test.h"
@@ -34,6 +38,10 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   ~SearchResultViewWidgetTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kCrosWebAppShortcutUiUpdate,
+         features::kSeparateWebAppShortcutBadgeIcon},
+        {});
     views::test::WidgetTest::SetUp();
 
     widget_ = CreateTopLevelPlatformWidget();
@@ -92,6 +100,15 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     return view->is_progress_bar_answer_card_;
   }
 
+  bool IsWebAppShortcutStyle(SearchResultView* view) {
+    view->UpdateIconAndBadgeIcon();
+    return view->use_webapp_shortcut_style_;
+  }
+
+  bool IsBadgeIconViewHidden(SearchResultView* view) {
+    return view->badge_icon_view_->GetVisible();
+  }
+
   void SetSearchResultViewMultilineDetailsHeight(
       SearchResultView* search_result_view,
       int height) {
@@ -143,11 +160,16 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     result_id++;
   }
 
+  void SetupWebAppShortcutSearchResult(TestSearchResult* result) {
+    result->set_result_type(AppListSearchResultType::kAppShortcutV2);
+  }
+
  private:
   int result_id = 0;
   std::unique_ptr<SearchResultView> answer_card_view_;
   std::unique_ptr<SearchResultView> search_result_view_;
   raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SearchResultViewWidgetTest, SearchResultTextVectorUpdate) {
@@ -245,6 +267,17 @@ TEST_F(SearchResultViewWidgetTest, PreferredHeight) {
     EXPECT_EQ(test_case.preferred_height,
               SearchResultViewPreferredHeight(answer_card_view()));
   }
+}
+
+TEST_F(SearchResultViewWidgetTest, WebAppShortcutIconEffectsExists) {
+  auto webapp_shortcut = std::make_unique<TestSearchResult>();
+  webapp_shortcut->SetIconAndBadgeIcon();
+  SetupTestSearchResult(webapp_shortcut.get());
+  SetupWebAppShortcutSearchResult(webapp_shortcut.get());
+  search_result_view()->SetResult(webapp_shortcut.get());
+
+  EXPECT_TRUE(IsBadgeIconViewHidden(search_result_view()));
+  EXPECT_TRUE(IsWebAppShortcutStyle(search_result_view()));
 }
 
 TEST_F(SearchResultViewTest, FlexWeightCalculation) {

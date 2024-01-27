@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/clock.h"
@@ -18,7 +19,6 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::processing {
 
@@ -61,7 +61,7 @@ class FeatureProcessorState {
   }
 
   // Returns and pops the next feature processor.
-  absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+  std::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
   PopNextProcessor();
 
   // Add a processor to the list of processors waiting for processing.

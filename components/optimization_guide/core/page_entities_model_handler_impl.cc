@@ -145,7 +145,7 @@ void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   base::ElapsedThreadTimer annotate_timer;
 
-  absl::optional<std::vector<ScoredEntityMetadata>> scored_md;
+  std::optional<std::vector<ScoredEntityMetadata>> scored_md;
   if (entity_annotator_) {
     DCHECK(entity_annotator_native_library_);
     base::TimeTicks start_time = base::TimeTicks::Now();
@@ -186,7 +186,7 @@ void EntityAnnotatorHolder::GetMetadataForEntityIdOnBackgroundThread(
         callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
-  absl::optional<EntityMetadata> entity_metadata;
+  std::optional<EntityMetadata> entity_metadata;
   if (entity_annotator_) {
     DCHECK(entity_annotator_native_library_);
     entity_metadata =
@@ -291,7 +291,7 @@ void PageEntitiesModelHandlerImpl::OnModelUpdated(
   on_model_updated_callbacks_.Notify();
 }
 
-absl::optional<ModelInfo> PageEntitiesModelHandlerImpl::GetModelInfo() const {
+std::optional<ModelInfo> PageEntitiesModelHandlerImpl::GetModelInfo() const {
   return model_info_;
 }
 
@@ -299,7 +299,7 @@ void PageEntitiesModelHandlerImpl::ExecuteModelWithInput(
     const std::string& text,
     PageEntitiesMetadataModelExecutedCallback callback) {
   if (text.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

@@ -20,7 +20,7 @@ void PageEntitiesModelHandler::ExecuteOnSingleInput(
                  [](const std::string& input,
                     base::OnceCallback<void(const BatchAnnotationResult&)>
                         pca_callback,
-                    const absl::optional<std::vector<ScoredEntityMetadata>>&
+                    const std::optional<std::vector<ScoredEntityMetadata>>&
                         entity_metadata) {
                    std::move(pca_callback)
                        .Run(BatchAnnotationResult::CreatePageEntitiesResult(

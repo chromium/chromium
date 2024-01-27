@@ -636,7 +636,7 @@ class DeskSyncBridgeTest : public testing::Test {
     store_->CommitWriteBatch(
         std::move(batch),
         base::BindOnce(
-            [](base::RunLoop* loop, const absl::optional<ModelError>& result) {
+            [](base::RunLoop* loop, const std::optional<ModelError>& result) {
               EXPECT_FALSE(result.has_value()) << result->ToString();
               loop->Quit();
             },

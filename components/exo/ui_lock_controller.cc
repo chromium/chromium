@@ -5,6 +5,7 @@
 #include "components/exo/ui_lock_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/constants/app_types.h"
@@ -29,7 +30,6 @@
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

@@ -48,19 +48,19 @@ MidiDeviceAndroid::MidiDeviceAndroid(JNIEnv* env,
 MidiDeviceAndroid::~MidiDeviceAndroid() {}
 
 std::string MidiDeviceAndroid::GetManufacturer() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return ConvertMaybeJavaString(
       env, Java_MidiDeviceAndroid_getManufacturer(env, raw_device_));
 }
 
 std::string MidiDeviceAndroid::GetProductName() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return ConvertMaybeJavaString(
       env, Java_MidiDeviceAndroid_getProduct(env, raw_device_));
 }
 
 std::string MidiDeviceAndroid::GetDeviceVersion() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return ConvertMaybeJavaString(
       env, Java_MidiDeviceAndroid_getVersion(env, raw_device_));
 }

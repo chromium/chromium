@@ -4,6 +4,8 @@
 
 package org.chromium.base.test;
 
+import android.text.TextUtils;
+
 import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
 import org.json.JSONArray;
@@ -11,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
-import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.Log;
 
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /** A RunListener that list out all the test information into a json file. */
 public class TestListInstrumentationRunListener extends InstrumentationRunListener {
@@ -40,6 +42,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
 
     private final Map<Class<?>, JSONObject> mTestClassJsonMap = new HashMap<>();
     private Failure mFirstFailure;
+    private final Set<String> mClassesWithWrongRunner = new TreeSet<>();
 
     @Override
     public void testFailure(Failure failure) {
@@ -75,11 +78,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
         // BaseJUnit4ClassRunner only fires testFinished(), so a call to
         // testStarted means a different runner is active, and the test is
         // actually being executed rather than just listed.
-        throw new InitializationError(
-                "All tests must use"
-                        + " @RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof."
-                        + " Found that this test does not: "
-                        + desc.getTestClass());
+        mClassesWithWrongRunner.add(desc.getClassName());
     }
 
     /**
@@ -90,6 +89,12 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
         if (mFirstFailure != null) {
             throw new RuntimeException(
                     "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
+        }
+        if (!mClassesWithWrongRunner.isEmpty()) {
+            throw new RuntimeException(
+                    "All tests must use @RunWith(BaseJUnit4ClassRunner.class) or a subclass"
+                            + " thereof. These tests did not:\n  * "
+                            + TextUtils.join("\n  * ", mClassesWithWrongRunner));
         }
 
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(outputPath), "UTF-8")) {

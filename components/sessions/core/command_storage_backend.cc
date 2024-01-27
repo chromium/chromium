@@ -626,7 +626,7 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
   DeleteLastSession();
 
   // Move current session to last.
-  absl::optional<SessionInfo> new_last_session_info;
+  std::optional<SessionInfo> new_last_session_info;
   if (last_or_current_path_with_valid_marker_) {
     new_last_session_info =
         SessionInfo{*last_or_current_path_with_valid_marker_, timestamp_};
@@ -843,7 +843,7 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
   return true;
 }
 
-absl::optional<CommandStorageBackend::SessionInfo>
+std::optional<CommandStorageBackend::SessionInfo>
 CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
   // at startup, before a file has been opened for writing.
@@ -860,7 +860,7 @@ CommandStorageBackend::FindLastSessionFile() const {
       GetLegacySessionPath(type_, supplied_path_, true);
   if (base::PathExists(legacy_session))
     return SessionInfo{legacy_session, base::Time()};
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CommandStorageBackend::DeleteLastSessionFiles() const {

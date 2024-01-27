@@ -111,8 +111,8 @@ CastStreamingTestSender::~CastStreamingTestSender() = default;
 void CastStreamingTestSender::Start(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     net::IPAddress receiver_address,
-    absl::optional<media::AudioDecoderConfig> audio_config,
-    absl::optional<media::VideoDecoderConfig> video_config) {
+    std::optional<media::AudioDecoderConfig> audio_config,
+    std::optional<media::VideoDecoderConfig> video_config) {
   VLOG(1) << __func__;
   CHECK(!has_startup_completed_);
   CHECK(!sender_session_);

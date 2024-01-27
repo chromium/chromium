@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_STORE_METADATA_ENTRY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_STORE_METADATA_ENTRY_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -28,7 +29,7 @@ class ModelStoreMetadataEntryUpdater;
 class ModelStoreMetadataEntry {
  public:
   // Returns the metadata entry in the store if it exists.
-  static absl::optional<ModelStoreMetadataEntry> GetModelMetadataEntryIfExists(
+  static std::optional<ModelStoreMetadataEntry> GetModelMetadataEntryIfExists(
       PrefService* local_state,
       proto::OptimizationTarget optimization_target,
       const proto::ModelCacheKey& model_cache_key);
@@ -42,10 +43,10 @@ class ModelStoreMetadataEntry {
 
   // Gets the model base dir where the model files, its additional files
   // and the model info files are stored.
-  absl::optional<base::FilePath> GetModelBaseDir() const;
+  std::optional<base::FilePath> GetModelBaseDir() const;
 
   // Gets the model version.
-  absl::optional<int64_t> GetVersion() const;
+  std::optional<int64_t> GetVersion() const;
 
   // Gets the expiry time.
   base::Time GetExpiryTime() const;

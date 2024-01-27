@@ -140,7 +140,7 @@ class PermissionManager : public KeyedService,
       const url::Origin& requesting_origin) override;
   bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const absl::optional<url::Origin>& origin) override;
+      const std::optional<url::Origin>& origin) override;
   SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
@@ -149,7 +149,7 @@ class PermissionManager : public KeyedService,
       base::RepeatingCallback<void(PermissionStatus)> callback) override;
   void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
-  absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+  std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       content::WebContents* web_contents) const override;
 
   // Called when a permission was decided for a given PendingRequest. The

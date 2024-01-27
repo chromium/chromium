@@ -147,7 +147,7 @@ void UmaFeatureProcessor::ProcessSingleUmaFeature(
   // process it synchronously, and insert it into the
   // FeatureProcessorState::input_tensor so we can later pass it to the ML model
   // executor.
-  absl::optional<std::vector<float>> result = feature_aggregator_->Process(
+  std::optional<std::vector<float>> result = feature_aggregator_->Process(
       feature.type(), feature.name_hash(), feature.aggregation(),
       feature.bucket_count(), start_time, end_time, bucket_duration_,
       accepted_enum_ids, samples);

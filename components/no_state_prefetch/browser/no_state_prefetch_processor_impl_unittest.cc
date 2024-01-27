@@ -22,7 +22,7 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
   MockNoStatePrefetchLinkManager()
       : NoStatePrefetchLinkManager(/*manager=*/nullptr) {}
 
-  absl::optional<int> OnStartLinkTrigger(
+  std::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
       int launcher_render_frame_id,

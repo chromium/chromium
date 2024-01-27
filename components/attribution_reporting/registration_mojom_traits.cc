@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 
@@ -70,7 +70,7 @@ bool StructTraits<attribution_reporting::mojom::FilterDataDataView,
     return false;
   }
 
-  absl::optional<attribution_reporting::FilterData> filter_data =
+  std::optional<attribution_reporting::FilterData> filter_data =
       attribution_reporting::FilterData::Create(std::move(filter_values));
   if (!filter_data.has_value()) {
     return false;
@@ -90,7 +90,7 @@ bool StructTraits<attribution_reporting::mojom::FilterConfigDataView,
     return false;
   }
 
-  absl::optional<base::TimeDelta> lookback_window;
+  std::optional<base::TimeDelta> lookback_window;
   if (!data.ReadLookbackWindow(&lookback_window)) {
     return false;
   }
@@ -115,7 +115,7 @@ bool StructTraits<attribution_reporting::mojom::AggregationKeysDataView,
     return false;
   }
 
-  absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
+  std::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       attribution_reporting::AggregationKeys::FromKeys(std::move(keys));
   if (!aggregation_keys.has_value()) {
     return false;
@@ -361,12 +361,12 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
-  absl::optional<std::string> trigger_context_id;
+  std::optional<std::string> trigger_context_id;
   if (!data.ReadTriggerContextId(&trigger_context_id)) {
     return false;
   }
 
-  absl::optional<attribution_reporting::AggregatableTriggerConfig>
+  std::optional<attribution_reporting::AggregatableTriggerConfig>
       aggregatable_trigger_config =
           attribution_reporting::AggregatableTriggerConfig::Create(
               data.source_registration_time_config(),

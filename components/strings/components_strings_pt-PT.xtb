@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">É necessária a palavra-passe</translation>
 <translation id="1156303062776767266">Está a visualizar um ficheiro local ou partilhado</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> fechou a ligação inesperadamente.</translation>
-<translation id="115926840831309955">Verifique o Código de Segurança/CVC e tente novamente ou atualize a data de validade.</translation>
 <translation id="1161325031994447685">Ligar novamente à rede Wi-Fi</translation>
 <translation id="11635448457105324">Botão Gerir endereços; ative para adicionar e gerir endereços nas definições do Chrome</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -2041,7 +2040,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4989809363548539747">Este plug-in não é compatível</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
-<translation id="4995216769782533993">Confirme o código de segurança para partilhar os detalhes do cartão com este site.</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir a pesquisa de sites e o motor de pesquisa predefinido</translation>
 <translation id="4998950033665438990">Lado único</translation>

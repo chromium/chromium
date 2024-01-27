@@ -62,7 +62,7 @@ void HitTestManager::OnSurfaceActivated(const SurfaceId& surface_id) {
 void HitTestManager::SubmitHitTestRegionList(
     const SurfaceId& surface_id,
     const uint64_t frame_index,
-    absl::optional<HitTestRegionList> hit_test_region_list) {
+    std::optional<HitTestRegionList> hit_test_region_list) {
   if (!hit_test_region_list) {
     auto& frame_index_map = hit_test_region_lists_[surface_id];
     if (!frame_index_map.empty()) {

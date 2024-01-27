@@ -3662,6 +3662,10 @@ test("base_unittests") {
     }
   }
 
+  if (enable_base_tracing) {
+    sources += [ "test/test_trace_processor_unittest.cc" ]
+  }
+
   if (is_posix) {
     sources += [
       "files/dir_reader_posix_unittest.cc",
@@ -3822,7 +3826,8 @@ test("base_unittests") {
 
     bundle_deps = [ ":base_test_proto_bundle_data" ]
     if (use_blink) {
-      bundle_deps += [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
+      bundle_deps +=
+          [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
     }
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
@@ -4577,7 +4582,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
-      "android/javatests/src/org/chromium/base/CommandLineInitUtilTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
       "android/javatests/src/org/chromium/base/IntentUtilsTest.java",
@@ -4733,6 +4737,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutScale.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
+      "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
   }

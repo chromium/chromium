@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 #define COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "media/cast/cast_config.h"
@@ -13,7 +15,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
@@ -82,8 +83,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
       std::unique_ptr<openscreen::cast::Sender> audio_sender,
       std::unique_ptr<openscreen::cast::Sender> video_sender,
-      absl::optional<media::cast::FrameSenderConfig> audio_config,
-      absl::optional<media::cast::FrameSenderConfig> video_config);
+      std::optional<media::cast::FrameSenderConfig> audio_config,
+      std::optional<media::cast::FrameSenderConfig> video_config);
 
   // Called when a mirroring session is successfully resumed.
   void OnMirroringResumed(bool is_tab_switching = false);
@@ -115,8 +116,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   // Called by the public |StartRpcMessaging| methods.
   void StartRpcMessagingInternal(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
-      absl::optional<media::cast::FrameSenderConfig> audio_config,
-      absl::optional<media::cast::FrameSenderConfig> video_config);
+      std::optional<media::cast::FrameSenderConfig> audio_config,
+      std::optional<media::cast::FrameSenderConfig> video_config);
 
   // Called by RemotingSender when error occurred. Will stop this remoting
   // session and fallback to mirroring.
@@ -136,8 +137,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   std::unique_ptr<openscreen::cast::Sender> openscreen_audio_sender_;
   std::unique_ptr<openscreen::cast::Sender> openscreen_video_sender_;
 
-  absl::optional<media::cast::FrameSenderConfig> audio_config_;
-  absl::optional<media::cast::FrameSenderConfig> video_config_;
+  std::optional<media::cast::FrameSenderConfig> audio_config_;
+  std::optional<media::cast::FrameSenderConfig> video_config_;
 
   // State transition diagram:
   //

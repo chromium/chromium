@@ -280,9 +280,6 @@ BASE_FEATURE(kIPHRequestDesktopSiteAppMenuFeature,
 BASE_FEATURE(kIPHRequestDesktopSiteDefaultOnFeature,
              "IPH_RequestDesktopSiteDefaultOn",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHRequestDesktopSiteOptInFeature,
-             "IPH_RequestDesktopSiteOptIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHRequestDesktopSiteExceptionsGenericFeature,
              "IPH_RequestDesktopSiteExceptionsGeneric",
              base::FEATURE_ENABLED_BY_DEFAULT);

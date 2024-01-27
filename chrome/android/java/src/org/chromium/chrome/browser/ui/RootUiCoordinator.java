@@ -875,11 +875,9 @@ public class RootUiCoordinator
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                                getPrimaryDisplaySizeInInches(),
-                                Profile.getLastUsedRegularProfile(),
-                                mActivity)
-                        || RequestDesktopUtils.maybeDisableGlobalSetting(
-                                Profile.getLastUsedRegularProfile()))) {
+                        getPrimaryDisplaySizeInInches(),
+                        Profile.getLastUsedRegularProfile(),
+                        mActivity))) {
             // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
                 mActivityTabProvider
@@ -1758,7 +1756,12 @@ public class RootUiCoordinator
                         sheetInitializedCallback,
                         mActivity.getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
-                        () -> mActivity.findViewById(R.id.sheet_container));
+                        () -> mActivity.findViewById(R.id.sheet_container),
+                        () -> {
+                            return mEdgeToEdgeControllerSupplier.get() == null
+                                    ? 0
+                                    : mEdgeToEdgeControllerSupplier.get().getBottomInset();
+                        });
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable) ->
                         ChromePureJavaExceptionReporter.reportJavaException((Throwable) throwable));

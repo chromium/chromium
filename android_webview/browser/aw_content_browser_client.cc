@@ -111,6 +111,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -917,7 +918,7 @@ bool AwContentBrowserClient::ShouldLockProcessToSite(
   return false;
 }
 
-bool AwContentBrowserClient::WillCreateURLLoaderFactory(
+void AwContentBrowserClient::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,
     int render_process_id,
@@ -925,7 +926,7 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     const url::Origin& request_initiator,
     std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     bool* bypass_redirect_checks,
@@ -952,9 +953,9 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     // ContentBrowserClient::WillCreateURLLoaderFactory guarantee that
     // |factory_override| is null only when the security features on the network
     // service is no-op for requests coming to the URLLoaderFactory. Hence we
-    // can use |factory_receiver| here.
-    proxied_receiver = std::move(*factory_receiver);
-    *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
+    // can use |factory_builder| here.
+    std::tie(proxied_receiver, target_factory_remote) =
+        factory_builder.Append();
   }
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle =
       base::MakeRefCounted<AwBrowserContextIoThreadHandle>(
@@ -1009,7 +1010,6 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
             aw_browser_context->service_worker_xrw_allowlist_matcher(),
             std::move(browser_context_handle)));
   }
-  return true;
 }
 
 uint32_t AwContentBrowserClient::GetWebSocketOptions(

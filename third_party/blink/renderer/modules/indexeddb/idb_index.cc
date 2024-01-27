@@ -91,7 +91,7 @@ void IDBIndex::setName(const String& name, ExceptionState& exception_state) {
                                       IDBDatabase::kIndexNameTakenErrorMessage);
     return;
   }
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return;
@@ -132,14 +132,14 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
         transaction_->InactiveErrorMessage());
     return nullptr;
   }
-  mojom::IDBCursorDirection direction =
+  mojom::blink::IDBCursorDirection direction =
       IDBCursor::StringToDirection(direction_string);
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -150,13 +150,13 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
 
 IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
                                  IDBKeyRange* key_range,
-                                 mojom::IDBCursorDirection direction,
+                                 mojom::blink::IDBCursorDirection direction,
                                  IDBRequest::AsyncTraceState metrics) {
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyAndValue, direction);
-  db()->OpenCursor(object_store_->Id(), Id(), key_range, direction, false,
-                   mojom::IDBTaskType::Normal, request);
+  db().OpenCursor(object_store_->Id(), Id(), key_range, direction, false,
+                  mojom::blink::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -183,7 +183,7 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -191,8 +191,8 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  db()->Count(transaction_->Id(), object_store_->Id(), Id(), key_range,
-              WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
+  db().Count(transaction_->Id(), object_store_->Id(), Id(), key_range,
+             WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -215,13 +215,13 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
         transaction_->InactiveErrorMessage());
     return nullptr;
   }
-  mojom::IDBCursorDirection direction =
+  mojom::blink::IDBCursorDirection direction =
       IDBCursor::StringToDirection(direction_string);
   IDBKeyRange* key_range = IDBKeyRange::FromScriptValue(
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
     return nullptr;
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -230,8 +230,8 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyOnly, direction);
-  db()->OpenCursor(object_store_->Id(), Id(), key_range, direction, true,
-                   mojom::IDBTaskType::Normal, request);
+  db().OpenCursor(object_store_->Id(), Id(), key_range, direction, true,
+                  mojom::blink::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -319,15 +319,15 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
         IDBDatabase::kNoKeyOrKeyRangeErrorMessage);
     return nullptr;
   }
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
   }
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  db()->Get(transaction_->Id(), object_store_->Id(), Id(), key_range, key_only,
-            WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+  db().Get(transaction_->Id(), object_store_->Id(), Id(), key_range, key_only,
+           WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -356,7 +356,7 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
     return nullptr;
-  if (!db()) {
+  if (!db().IsConnectionOpen()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -364,12 +364,12 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  db()->GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
-               max_count, key_only, request);
+  db().GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
+              max_count, key_only, request);
   return request;
 }
 
-IDBDatabase* IDBIndex::db() const {
+IDBDatabase& IDBIndex::db() {
   return transaction_->db();
 }
 

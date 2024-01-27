@@ -19,7 +19,7 @@ namespace android {
 void RunIntStringCallbackAndroid(const JavaRef<jobject>& callback,
                                  int int_arg,
                                  const std::string& str_arg) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_IntStringCallback_onResult(env, callback, int_arg,
                                   ConvertUTF8ToJavaString(env, str_arg));
 }

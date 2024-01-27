@@ -6,12 +6,12 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 
 #include <array>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -95,7 +95,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   OverlayPriority overlay_priority_hint = OverlayPriority::kRegular;
 
   // This optional damage is in target render pass coordinate space.
-  absl::optional<gfx::Rect> damage_rect;
+  std::optional<gfx::Rect> damage_rect;
 
   struct VIZ_COMMON_EXPORT RoundedDisplayMasksInfo {
     static constexpr size_t kMaxRoundedDisplayMasksCount = 2;

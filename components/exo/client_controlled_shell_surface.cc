@@ -473,7 +473,7 @@ void ClientControlledShellSurface::SetShadowBounds(const gfx::Rect& bounds) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetShadowBounds", "bounds",
                bounds.ToString());
   auto shadow_bounds =
-      bounds.IsEmpty() ? absl::nullopt : absl::make_optional(bounds);
+      bounds.IsEmpty() ? std::nullopt : std::make_optional(bounds);
   if (shadow_bounds_ != shadow_bounds) {
     shadow_bounds_ = shadow_bounds;
     shadow_bounds_changed_ = true;
@@ -1140,8 +1140,7 @@ float ClientControlledShellSurface::GetScaleFactor() const {
   return GetScale();
 }
 
-absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
-    const {
+std::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds() const {
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled() && !frame_view->GetFrameOverlapped()) {
     gfx::Rect visible_bounds = GetVisibleBounds();

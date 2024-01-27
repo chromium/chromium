@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_RESULT_PROVIDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_RESULT_PROVIDER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -70,10 +71,10 @@ class SegmentResultProvider {
     proto::PredictionResult result;
 
     // If model was executed, the processed feature list.
-    absl::optional<ModelProvider::Request> model_inputs;
+    std::optional<ModelProvider::Request> model_inputs;
 
     // TODO(shaktisahu): Delete this after full migration.
-    absl::optional<float> rank;
+    std::optional<float> rank;
   };
   using SegmentResultCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentResult>)>;

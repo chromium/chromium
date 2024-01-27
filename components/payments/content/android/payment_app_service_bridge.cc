@@ -344,9 +344,9 @@ void PaymentAppServiceBridge::SetOptOutOffered() {
   set_opt_out_offered_callback_.Run();
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 PaymentAppServiceBridge::GetChromeOSTWAInstanceId() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PaymentAppServiceBridge::PaymentAppServiceBridge(

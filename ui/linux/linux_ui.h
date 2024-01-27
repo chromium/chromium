@@ -17,7 +17,7 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/display/types/display_config.h"
 
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
 // be executed behind this interface.
@@ -60,37 +60,6 @@ class SelectFilePolicy;
 class TextEditCommandAuraLinux;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
-
-struct DisplayGeometry {
-  bool operator==(const DisplayGeometry& other) const {
-    return bounds_px == other.bounds_px && scale == other.scale;
-  }
-
-  gfx::Rect bounds_px;
-  float scale;
-};
-
-struct DisplayConfig {
-  explicit DisplayConfig(float primary_scale);
-  DisplayConfig();
-  DisplayConfig(DisplayConfig&& other);
-  DisplayConfig& operator=(DisplayConfig&& other);
-  ~DisplayConfig();
-
-  std::vector<DisplayGeometry> display_geometries;
-  float primary_scale = 1.0f;
-
-  bool operator==(const DisplayConfig& other) const {
-    return display_geometries == other.display_geometries &&
-           primary_scale == other.primary_scale;
-  }
-};
-inline DisplayConfig::DisplayConfig(float primary_scale)
-    : primary_scale(primary_scale) {}
-inline DisplayConfig::DisplayConfig() = default;
-inline DisplayConfig::DisplayConfig(DisplayConfig&& other) = default;
-inline DisplayConfig& DisplayConfig::operator=(DisplayConfig&& other) = default;
-inline DisplayConfig::~DisplayConfig() = default;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
@@ -143,7 +112,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   void RemoveCursorThemeObserver(CursorThemeManagerObserver* observer);
 
   // Determines the device scale factor for all screens.
-  const DisplayConfig& display_config() const { return display_config_; }
+  const display::DisplayConfig& display_config() const {
+    return display_config_;
+  }
 
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
@@ -259,7 +230,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     return cursor_theme_observer_list_;
   }
 
-  DisplayConfig& display_config() { return display_config_; }
+  display::DisplayConfig& display_config() { return display_config_; }
 
  private:
   // Objects to notify when the device scale factor changes.
@@ -269,7 +240,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Objects to notify when the cursor theme or size changes.
   base::ObserverList<CursorThemeManagerObserver> cursor_theme_observer_list_;
 
-  DisplayConfig display_config_;
+  display::DisplayConfig display_config_;
 };
 
 class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {

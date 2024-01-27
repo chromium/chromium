@@ -31,7 +31,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
   }
 
   MOCK_METHOD(
-      bool,
+      void,
       WillCreateURLLoaderFactory,
       (BrowserContext * browser_context,
        RenderFrameHost* frame,
@@ -40,8 +40,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        const url::Origin& request_initiator,
        std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
-       mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-           factory_receiver,
+       network::URLLoaderFactoryBuilder& factory_builder,
        mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
            header_client,
        bool* bypass_redirect_checks,
@@ -99,9 +98,8 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
               true),
           testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::NotNull(), testing::NotNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   blink::mojom::Referrer referring_origin;
   referring_origin.url = kReferringUrl;
@@ -133,9 +131,8 @@ TEST_F(PrefetchNetworkContextTest,
               true),
           testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::NotNull(), testing::NotNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull(), testing::IsNull()))
-      .WillOnce(testing::Return(false));
+          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
 
   blink::mojom::Referrer referring_origin;
   referring_origin.url = kReferringUrl;

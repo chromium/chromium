@@ -6,8 +6,9 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, ControlledRadioButtonElement, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import type {ControlledRadioButtonElement, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';

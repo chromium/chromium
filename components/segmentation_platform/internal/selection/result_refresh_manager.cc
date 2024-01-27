@@ -36,7 +36,7 @@ void CollectTrainingDataIfNeeded(const Config* config,
     for (const auto& segment : config->segments) {
       execution_service->training_data_collector()->OnDecisionTime(
           segment.first, nullptr,
-          proto::TrainingOutputs::TriggerConfig::PERIODIC, absl::nullopt,
+          proto::TrainingOutputs::TriggerConfig::PERIODIC, std::nullopt,
           /*decision_result_update_trigger=*/true);
     }
   }

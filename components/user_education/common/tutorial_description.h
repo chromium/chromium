@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_DESCRIPTION_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_DESCRIPTION_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -207,10 +207,10 @@ struct TutorialDescription {
     int title_text_id() const { return title_text_id_; }
     int body_text_id() const { return body_text_id_; }
     HelpBubbleArrow arrow() const { return arrow_; }
-    absl::optional<bool> must_remain_visible() const {
+    std::optional<bool> must_remain_visible() const {
       return must_remain_visible_;
     }
-    absl::optional<bool> must_be_visible() const { return must_be_visible_; }
+    std::optional<bool> must_be_visible() const { return must_be_visible_; }
     bool transition_only_on_event() const { return transition_only_on_event_; }
     const NameElementsCallback& name_elements_callback() const {
       return name_elements_callback_;
@@ -261,12 +261,12 @@ struct TutorialDescription {
     // steps on the same element. if left empty the interaction sequence will
     // decide what its value should be based on the generated
     // InteractionSequence::StepBuilder
-    absl::optional<bool> must_remain_visible_ = absl::nullopt;
+    std::optional<bool> must_remain_visible_ = std::nullopt;
 
     // If set, determines whether the element in question must be visible at the
     // start of the step. If left empty the interaction sequence will choose a
     // reasonable default.
-    absl::optional<bool> must_be_visible_;
+    std::optional<bool> must_be_visible_;
 
     // Should the step only be completed when an event like shown or hidden only
     // happens during current step. for more information on the implementation

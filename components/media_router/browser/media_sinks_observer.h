@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_SINKS_OBSERVER_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_SINKS_OBSERVER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -56,7 +56,7 @@ class MediaSinksObserver {
   virtual void OnSinksUpdated(const std::vector<MediaSink>& sinks,
                               const std::vector<url::Origin>& origins);
 
-  const absl::optional<const MediaSource>& source() const { return source_; }
+  const std::optional<const MediaSource>& source() const { return source_; }
 
  protected:
   // This function is invoked from |OnSinksUpdated(sinks, origins)|.
@@ -66,7 +66,7 @@ class MediaSinksObserver {
   virtual void OnSinksReceived(const std::vector<MediaSink>& sinks) = 0;
 
  private:
-  const absl::optional<const MediaSource> source_;
+  const std::optional<const MediaSource> source_;
   const url::Origin origin_;
   const raw_ptr<MediaRouter> router_;
   bool initialized_;

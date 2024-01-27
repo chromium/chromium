@@ -924,7 +924,7 @@ TEST_F(NetworkingPrivateApiTest,
 
 TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork_NonMatchingSsids) {
   const std::string ssid = "new_wifi_config";
-  const std::string hex_ssid = base::HexEncode(ssid.c_str(), ssid.size());
+  const std::string hex_ssid = base::HexEncode(ssid);
   const char kNetworkConfig[] =
       R"({
            "Priority": 1,

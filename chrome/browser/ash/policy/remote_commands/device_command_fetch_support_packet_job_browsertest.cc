@@ -79,9 +79,7 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
       "Must be MixinBasedInProcessBrowserTest");
 
  protected:
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    DevicePolicyCrosBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  void SetUpOnMainThread() override {
     // Reporting test environment needs to be created before the browser
     // creation is completed.
     reporting_test_storage_ =
@@ -90,6 +88,15 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
     reporting_test_enviroment_ =
         reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
             reporting_test_storage_);
+
+    BaseBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    BaseBrowserTest::TearDownOnMainThread();
+
+    reporting_test_enviroment_.reset();
+    reporting_test_storage_.reset();
   }
 
   void SetUpInProcessBrowserTestFixture() override {

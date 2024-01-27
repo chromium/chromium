@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <optional>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,7 +19,6 @@
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 
@@ -57,7 +57,7 @@ class FileMonitorTest : public testing::Test {
   bool completion_callback_called_;
   std::unique_ptr<FileMonitor> monitor_;
 
-  absl::optional<bool> hard_recovery_result_;
+  std::optional<bool> hard_recovery_result_;
 };
 
 base::FilePath FileMonitorTest::CreateTemporaryFile(std::string file_name) {

@@ -167,7 +167,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // The autofill data that needs to be send when the |webState_| is shown.
   // The pair contains the frame ID and the base::Value::Dict to send.
   // If the value is nullopt, no data needs to be sent.
-  absl::optional<std::pair<std::string, base::Value::Dict>> _pendingFormData;
+  std::optional<std::pair<std::string, base::Value::Dict>> _pendingFormData;
 
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -796,7 +796,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   std::pair<std::string, base::Value::Dict> pendingFormData =
       std::move(_pendingFormData).value();
-  _pendingFormData = absl::nullopt;
+  _pendingFormData = std::nullopt;
 
   // The frameID cannot be empty.
   DCHECK(!pendingFormData.first.empty());

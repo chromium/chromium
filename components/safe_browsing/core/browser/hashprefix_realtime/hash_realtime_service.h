@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
+#include <optional>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +20,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -29,7 +30,7 @@ class HttpResponseHeaders;
 namespace safe_browsing {
 
 using HPRTLookupResponseCallback =
-    base::OnceCallback<void(bool, absl::optional<SBThreatType>)>;
+    base::OnceCallback<void(bool, std::optional<SBThreatType>)>;
 
 class OhttpKeyService;
 class VerdictCacheManager;
@@ -58,7 +59,7 @@ class HashRealTimeService : public KeyedService {
     // Returns a token that can be used in |AddToHPRTLookupResponses| to
     // correlate a ping and response. If the token is not populated, the
     // response should not be logged.
-    virtual absl::optional<int> AddToHPRTLookupPings(
+    virtual std::optional<int> AddToHPRTLookupPings(
         V5::SearchHashesRequest* inner_request,
         std::string relay_url_spec,
         std::string ohttp_key) = 0;
@@ -193,7 +194,7 @@ class HashRealTimeService : public KeyedService {
     // Sends |is_lookup_successful| and |sb_threat_type| back to the lookup
     // initiator.
     void CompleteLookup(bool is_lookup_successful,
-                        absl::optional<SBThreatType> sb_threat_type,
+                        std::optional<SBThreatType> sb_threat_type,
                         OperationOutcome operation_outcome);
 
    private:
@@ -226,7 +227,7 @@ class HashRealTimeService : public KeyedService {
                      std::vector<V5::FullHash> result_full_hashes,
                      base::TimeTicks request_start_time,
                      std::unique_ptr<LookupCompleter> lookup_completer,
-                     absl::optional<std::string> key);
+                     std::optional<std::string> key);
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
@@ -239,8 +240,8 @@ class HashRealTimeService : public KeyedService {
                        base::TimeTicks request_start_time,
                        std::unique_ptr<LookupCompleter> lookup_completer,
                        std::string ohttp_key,
-                       absl::optional<int> webui_delegate_token,
-                       const absl::optional<std::string>& response_body,
+                       std::optional<int> webui_delegate_token,
+                       const std::optional<std::string>& response_body,
                        int net_error,
                        int response_code,
                        scoped_refptr<net::HttpResponseHeaders> headers,
@@ -279,7 +280,7 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<std::string> response_body,
       int net_error,
       int response_code,
-      absl::optional<int> webui_delegate_token,
+      std::optional<int> webui_delegate_token,
       bool ohttp_client_destructed_early);
 
   // Determines the most severe threat type based on |result_full_hashes|, which

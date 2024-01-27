@@ -1136,7 +1136,7 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
     const bool expect_match;
     // Fields below are valid iff `expect_match` is true.
     const uint32_t expected_id = 0;
-    const absl::optional<std::vector<uint8_t>> expected_embedder_data;
+    const std::optional<std::vector<uint8_t>> expected_embedder_data;
   } cases[] = {{url_1, match_first_element_one, true, 1, embedder_data_1},
                {url_1, match_has_evens, true, 1, embedder_data_1},
                {url_1, match_first_element_three, false},

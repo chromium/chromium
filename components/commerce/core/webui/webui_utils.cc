@@ -14,11 +14,11 @@
 
 namespace commerce {
 
-shopping_list::mojom::ProductInfoPtr ProductInfoToMojoProduct(
+shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
-    const absl::optional<const ProductInfo>& info,
+    const std::optional<const ProductInfo>& info,
     const std::string& locale) {
-  auto product_info = shopping_list::mojom::ProductInfo::New();
+  auto product_info = shopping_service::mojom::ProductInfo::New();
 
   if (!info.has_value()) {
     return product_info;

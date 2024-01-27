@@ -6,10 +6,10 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_WORKER_CONTEXT_H_
 
 #include <compare>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -31,7 +31,7 @@ class WorkerContext {
 
   // Returns the WorkerContext for `token`. Returns nullopt if the WorkerToken
   // is not registered with PerformanceManager.
-  static absl::optional<WorkerContext> FromWorkerToken(
+  static std::optional<WorkerContext> FromWorkerToken(
       const blink::WorkerToken& token);
 
   // Returns the WorkerToken for this context.
@@ -48,7 +48,7 @@ class WorkerContext {
   static WorkerContext FromWorkerNode(const WorkerNode* node);
 
   // Returns the WorkerContext for `node`, or nullopt if `node` is null.
-  static absl::optional<WorkerContext> FromWeakWorkerNode(
+  static std::optional<WorkerContext> FromWeakWorkerNode(
       base::WeakPtr<WorkerNode> node);
 
   // Returns the WorkerNode for this context, or nullptr if it no longer exists.

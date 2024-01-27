@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/hint_cache.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -20,7 +21,6 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -137,7 +137,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   proto::Hint CreateHintForURL(
       const GURL& url,
-      absl::optional<int> cache_duration_in_secs = absl::optional<int>()) {
+      std::optional<int> cache_duration_in_secs = std::optional<int>()) {
     proto::Hint hint;
     hint.set_key(url.spec());
     hint.set_key_representation(proto::FULL_URL);

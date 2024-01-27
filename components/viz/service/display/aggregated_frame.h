@@ -6,12 +6,12 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_AGGREGATED_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/latency/latency_info.h"
@@ -34,7 +34,7 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // The visible height of the top-controls. If the value is not set, then the
   // visible height should be the same as in the latest submitted frame with a
   // value set.
-  absl::optional<float> top_controls_visible_height;
+  std::optional<float> top_controls_visible_height;
 
   // A list of latency info used for this frame.
   std::vector<ui::LatencyInfo> latency_info;

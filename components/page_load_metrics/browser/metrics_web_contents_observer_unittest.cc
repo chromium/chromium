@@ -123,11 +123,11 @@ class MetricsWebContentsObserverTest
                                content::RenderFrameHost* render_frame_host) {
     observer()->OnTimingUpdated(
         render_frame_host, previous_timing_->Clone(),
-        mojom::FrameMetadataPtr(absl::in_place),
+        mojom::FrameMetadataPtr(std::in_place),
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
-        mojom::FrameRenderDataUpdatePtr(absl::in_place), timing.Clone(),
-        mojom::InputTimingPtr(absl::in_place), absl::nullopt,
+        mojom::FrameRenderDataUpdatePtr(std::in_place), timing.Clone(),
+        mojom::InputTimingPtr(std::in_place), std::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
             base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
@@ -150,12 +150,12 @@ class MetricsWebContentsObserverTest
     previous_timing_ = timing.Clone();
     observer()->OnTimingUpdated(
         render_frame_host, timing.Clone(),
-        mojom::FrameMetadataPtr(absl::in_place),
+        mojom::FrameMetadataPtr(std::in_place),
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
-        mojom::FrameRenderDataUpdatePtr(absl::in_place),
-        mojom::CpuTimingPtr(absl::in_place),
-        mojom::InputTimingPtr(absl::in_place), absl::nullopt,
+        mojom::FrameRenderDataUpdatePtr(std::in_place),
+        mojom::CpuTimingPtr(std::in_place),
+        mojom::InputTimingPtr(std::in_place), std::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
             base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
@@ -240,7 +240,7 @@ class MetricsWebContentsObserverTest
     return embedder_interface_->observed_features();
   }
 
-  const absl::optional<bool>& is_first_navigation_in_web_contents() const {
+  const std::optional<bool>& is_first_navigation_in_web_contents() const {
     return embedder_interface_->is_first_navigation_in_web_contents();
   }
 

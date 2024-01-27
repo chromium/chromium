@@ -128,12 +128,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GCM.LoadStatus" enum="GCMLoadStatus" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>Status code of loading from the persistent GCM store.</summary>
-</histogram>
-
 <histogram name="GCM.MCSClientConnectionNetworkCode" enum="NetErrorCodes"
     expires_after="2025-01-17">
   <owner>rushans@google.com</owner>

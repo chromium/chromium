@@ -272,7 +272,7 @@ bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
   return !!sk_surface_;
 }
 
-void SkiaOutputDeviceGL::Present(const absl::optional<gfx::Rect>& update_rect,
+void SkiaOutputDeviceGL::Present(const std::optional<gfx::Rect>& update_rect,
                                  BufferPresentedCallback feedback,
                                  OutputSurfaceFrame frame) {
   if (multisurface_swapbuffers_tracker_) {

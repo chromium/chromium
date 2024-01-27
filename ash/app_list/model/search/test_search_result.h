@@ -28,6 +28,7 @@ class TestSearchResult : public SearchResult {
   void SetCategory(const ash::AppListSearchResultCategory category);
   void SetSystemInfoAnswerCardData(
       const ash::SystemInfoAnswerCardData& system_info_data);
+  void SetIconAndBadgeIcon();
 };
 
 }  // namespace ash

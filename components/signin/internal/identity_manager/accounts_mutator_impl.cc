@@ -4,6 +4,8 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
+#include <optional>
+
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -15,7 +17,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 

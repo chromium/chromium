@@ -45,15 +45,15 @@ class HistoryBackendForSync {
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations) = 0;
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations) = 0;
   virtual VisitID UpdateSyncedVisit(
       const GURL& url,
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations) = 0;
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations) = 0;
   virtual bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
                                             VisitID referrer_id,
                                             VisitID opener_id) = 0;

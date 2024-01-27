@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -66,8 +67,17 @@ class Environment {
   }
 
   void AssertTempDirIsEmpty() const {
-    CHECK(base::IsDirectoryEmpty(temp_dir_.GetPath()))
-        << "Expected temp dir to be empty: " << temp_dir_.GetPath();
+    if (base::IsDirectoryEmpty(temp_dir_.GetPath())) {
+      return;
+    }
+
+    base::FileEnumerator files(temp_dir_.GetPath(), /*recursive=*/true,
+                               base::FileEnumerator::FileType::FILES |
+                                   base::FileEnumerator::FileType::DIRECTORIES);
+    LOG(ERROR) << "Unexpected files or directories in temp dir:";
+    files.ForEach(
+        [](const base::FilePath& path) { LOG(ERROR) << "  " << path; });
+    LOG(FATAL) << "Expected temp dir to be empty: " << temp_dir_.GetPath();
   }
 
  private:

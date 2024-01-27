@@ -92,7 +92,7 @@ void FCMInvalidationListener::InvalidationReceived(
     int64_t version) {
   // Note: |public_topic| is empty for some invalidations (e.g. Drive). Prefer
   // using |*expected_public_topic| over |public_topic|.
-  absl::optional<std::string> expected_public_topic =
+  std::optional<std::string> expected_public_topic =
       per_user_topic_subscription_manager_
           ->LookupSubscribedPublicTopicByPrivateTopic(private_topic);
   if (!expected_public_topic ||

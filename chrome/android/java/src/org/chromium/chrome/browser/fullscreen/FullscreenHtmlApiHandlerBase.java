@@ -63,7 +63,7 @@ public abstract class FullscreenHtmlApiHandlerBase
     // the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag.
     private static final long CLEAR_LAYOUT_FULLSCREEN_DELAY_MS = 20;
 
-    private final Activity mActivity;
+    protected final Activity mActivity;
     protected final Handler mHandler;
     private final ObservableSupplierImpl<Boolean> mPersistentModeSupplier;
     private final ObservableSupplier<Boolean> mAreControlsHidden;

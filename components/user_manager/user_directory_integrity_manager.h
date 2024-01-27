@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_USER_MANAGER_USER_DIRECTORY_INTEGRITY_MANAGER_H_
 #define COMPONENTS_USER_MANAGER_USER_DIRECTORY_INTEGRITY_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 
@@ -45,12 +46,12 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
 
   // Check if a user has been incompletely created by looking for the
   // presence of a mark associated with the user's email.
-  absl::optional<AccountId> GetMisconfiguredUserAccountId();
+  std::optional<AccountId> GetMisconfiguredUserAccountId();
 
   bool IsUserMisconfigured(const AccountId& account_id);
 
  private:
-  absl::optional<std::string> GetMisconfiguredUserEmail();
+  std::optional<std::string> GetMisconfiguredUserEmail();
 
   const raw_ptr<PrefService> local_state_;
 };

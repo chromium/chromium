@@ -451,6 +451,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // window should request the wayland compositor to send key events,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
+
+    // Specifies the insets of the Widget. Default is empty, which means no
+    // insets are to be set.
+    gfx::Insets frame_insets;
 #endif
 
     // Directly sets the NativeTheme used by the Widget. Providing the

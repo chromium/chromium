@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">掛ける</translation>
 <translation id="1145018782460575098">外部デバイスのファームウェアを更新するためのウィンドウが開いています。<ph name="NUM_UPDATES" /> 件のアップデートがあります。</translation>
 <translation id="1145516343487477149">ヘルプ記事と Chromebook に関するよくある質問の回答を確認できます</translation>
 <translation id="1154390310959620237">カスタマイズできるショートカットは 5 件までです。いずれかのショートカットを削除すると、新しいショートカットを追加できるようになります。</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
+<translation id="1371650399987522809">Google AI による壁紙に関するフィードバック</translation>
 <translation id="1387854245479784695">すべてのコアの合計値です</translation>
 <translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">タッチパッド</translation>
 <translation id="1561927818299383735">バックライトの色</translation>
 <translation id="1565038567006703504">「<ph name="DEVICE_NAME" />」を更新できません</translation>
+<translation id="1566493343215789965">割る</translation>
 <translation id="1567064801249837505">アルバム</translation>
 <translation id="1572585716423026576">壁紙に設定</translation>
 <translation id="1578784163189013834">スクリーン セーバーの背景を選択する</translation>
 <translation id="160633243685262989">プレビュー画像</translation>
 <translation id="1611649489706141841">進む</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
+<translation id="1615576200479539465">画像を生成しています...</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
 <translation id="1626590945318984973">このショートカットは使用できません。ファンクション キーと <ph name="META_KEY" /> キーを使わない新しいショートカットを押してください。</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="2880569433548999039">「雲の流れ」のスクリーン セーバー</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
+<translation id="2938573842839598578">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値を（に）<ph name="CONVERSION_RATE" /> で（を）<ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">デバイスをテストできません。テストするにはディスプレイをもう一度開きます。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS の更新</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
+<translation id="3547264467365135390">数式</translation>
 <translation id="3557205324756024651">ローカル ID（オプション）</translation>
 <translation id="3565064564551103223">許可する IP</translation>
 <translation id="3569407787324516067">スクリーンセーバー</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7184043045742675738">ボタンをカスタマイズするには、いずれかのキーをクリックします。マウスまたは矢印キーを使用してキーの位置を変更します。</translation>
+<translation id="7206979415662233817">利用規約</translation>
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">キーボードの色</translation>
 <translation id="7317831949569936035">教育機関の登録</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">AI 壁紙を使用できるのは 18 歳以上の方に限られ、ご使用には <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 利用規約<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />と<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成 AI の追加利用規約<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />が適用されることに同意していただく必要があります。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI による壁紙は非営利の個人的な目的でのみ作成できます。壁紙の作成サポートでは、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google のプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってテキストが Google AI サーバーに送信され、壁紙の候補が生成されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7353413232959255829"><ph name="SEARCH_RESULT_TEXT" /> の検索結果 <ph name="LIST_SIZE" /> 件中 <ph name="LIST_POSITION" /> 件目です。ショートカットに移動するには、Enter キーを押してください。</translation>
@@ -1088,7 +1099,7 @@
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{{NUMBER_OF_PAGES} ページをスキャン}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{ ページ{NUMBER_OF_PAGES}をスキャン}}</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9003704114456258138">周波数</translation>

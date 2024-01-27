@@ -21,15 +21,25 @@ import './reimaging_calibration_setup_page.js';
 import './reimaging_device_information_page.js';
 import './reimaging_firmware_update_page.js';
 import './reimaging_provisioning_page.js';
+import './shimless_3p_diagnostics.js';
 import './shimless_rma_shared.css.js';
 import './splash_screen.js';
 import './wrapup_finalize_page.js';
 import './wrapup_repair_complete_page.js';
 import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CriticalErrorPage} from './critical_error_page.js';
+import {CLICK_EXIT_BUTTON, CLICK_NEXT_BUTTON, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, DisableAllButtonsEvent, DisableNextButtonEvent, ENABLE_ALL_BUTTONS, FATAL_HARDWARE_ERROR, FatalHardwareEvent, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, SetNextButtonLabelEvent, TRANSITION_STATE, TransitionStateEvent} from './events.js';
 import {HardwareErrorPage} from './hardware_error_page.js';
+import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {OnboardingChooseDestinationPageElement} from './onboarding_choose_destination_page.js';
 import {OnboardingChooseWipeDevicePage} from './onboarding_choose_wipe_device_page.js';
 import {OnboardingChooseWpDisableMethodPage} from './onboarding_choose_wp_disable_method_page.js';
@@ -47,24 +57,14 @@ import {ReimagingCalibrationSetupPage} from './reimaging_calibration_setup_page.
 import {ReimagingDeviceInformationPage} from './reimaging_device_information_page.js';
 import {UpdateRoFirmwarePage} from './reimaging_firmware_update_page.js';
 import {ReimagingProvisioningPage} from './reimaging_provisioning_page.js';
+import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
+import {getTemplate} from './shimless_rma.html.js';
+import {ErrorObserverReceiver, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
 import {SplashScreen} from './splash_screen.js';
 import {WrapupFinalizePage} from './wrapup_finalize_page.js';
 import {WrapupRepairCompletePage} from './wrapup_repair_complete_page.js';
 import {WrapupRestockPage} from './wrapup_restock_page.js';
 import {WrapupWaitForManualWpEnablePage} from './wrapup_wait_for_manual_wp_enable_page.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CLICK_EXIT_BUTTON, CLICK_NEXT_BUTTON, DISABLE_ALL_BUTTONS, DISABLE_NEXT_BUTTON, DisableAllButtonsEvent, DisableNextButtonEvent, ENABLE_ALL_BUTTONS, FATAL_HARDWARE_ERROR, FatalHardwareEvent, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, SetNextButtonLabelEvent, TRANSITION_STATE, TransitionStateEvent} from './events.js';
-import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
-import {getTemplate} from './shimless_rma.html.js';
-import {ErrorObserverReceiver, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
 
 
 declare global {

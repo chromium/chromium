@@ -410,9 +410,9 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
   raw_ptr<LocalDataMigrationHelper> helper_;
   syncer::ModelTypeSet types_;
 
-  absl::optional<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
+  std::optional<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
       profile_passwords_;
-  absl::optional<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
+  std::optional<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
       account_passwords_;
 
   base::WeakPtrFactory<LocalDataMigrationRequest> weak_ptr_factory_{this};

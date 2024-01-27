@@ -5,17 +5,18 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_ENTITY_METADATA_PROVIDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_ENTITY_METADATA_PROVIDER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
 // Callback to inform the caller that the metadata for an entity ID has been
 // retrieved.
 using EntityMetadataRetrievedCallback =
-    base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
+    base::OnceCallback<void(const std::optional<EntityMetadata>&)>;
 
 // Callback to inform the caller that the metadata for a batch of entity IDs has
 // been retrieved.

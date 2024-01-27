@@ -4,6 +4,8 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
@@ -102,7 +104,7 @@ NameMatchingElementInPrimaryRootWindowCallback(ui::ElementIdentifier element_id,
       [](ui::ElementIdentifier element_id, const char* element_name,
          ui::InteractionSequence* sequence, ui::TrackedElement*) {
         if (auto* element = GetMatchingElementInPrimaryRootWindow(element_id)) {
-          sequence->NameElement(element, base::StringPiece(element_name));
+          sequence->NameElement(element, std::string_view(element_name));
           return true;
         }
         return false;

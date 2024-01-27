@@ -36,7 +36,7 @@ std::string ToString(SegmentId segment_id, ModelSource model_source) {
 
 proto::SegmentInfo CreateSegment(SegmentId segment_id,
                                  ModelSource model_source,
-                                 absl::optional<int> result = absl::nullopt) {
+                                 std::optional<int> result = std::nullopt) {
   proto::SegmentInfo info;
   info.set_segment_id(segment_id);
   info.set_model_source(model_source);
@@ -61,7 +61,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void OnGetSegment(absl::optional<proto::SegmentInfo> result) {
+  void OnGetSegment(std::optional<proto::SegmentInfo> result) {
     get_segment_result_ = result;
   }
 
@@ -98,15 +98,15 @@ class SegmentInfoDatabaseTest : public testing::Test {
 
   void WriteResult(SegmentId segment_id,
                    ModelSource model_source,
-                   absl::optional<float> result) {
+                   std::optional<float> result) {
     proto::PredictionResult prediction_result;
     if (result.has_value())
       prediction_result.add_result(result.value());
 
     segment_db_->SaveSegmentResult(segment_id, model_source,
                                    result.has_value()
-                                       ? absl::make_optional(prediction_result)
-                                       : absl::nullopt,
+                                       ? std::make_optional(prediction_result)
+                                       : std::nullopt,
                                    base::DoNothing());
     if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)) {
       db_->GetCallback(true);
@@ -132,9 +132,9 @@ class SegmentInfoDatabaseTest : public testing::Test {
 
   void VerifyResult(SegmentId segment_id,
                     ModelSource model_source,
-                    absl::optional<float> result,
-                    absl::optional<std::vector<ModelProvider::Request>>
-                        training_inputs = absl::nullopt) {
+                    std::optional<float> result,
+                    std::optional<std::vector<ModelProvider::Request>>
+                        training_inputs = std::nullopt) {
     segment_db_->GetSegmentInfo(
         segment_id, model_source,
         base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
@@ -189,7 +189,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> get_all_segment_result_;
-  absl::optional<proto::SegmentInfo> get_segment_result_;
+  std::optional<proto::SegmentInfo> get_segment_result_;
   std::map<std::string, proto::SegmentInfo> db_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> db_{nullptr};
   std::unique_ptr<SegmentInfoDatabase> segment_db_;
@@ -264,7 +264,7 @@ TEST_F(SegmentInfoDatabaseTest, Update) {
   db_->LoadCallback(true);
 
   // Delete a segment.
-  segment_db_->UpdateSegment(kSegmentId, kServerModelSource, absl::nullopt,
+  segment_db_->UpdateSegment(kSegmentId, kServerModelSource, std::nullopt,
                              base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({});
@@ -304,7 +304,7 @@ TEST_F(SegmentInfoDatabaseTest, UpdateWithUnknownModelSource) {
   db_->LoadCallback(true);
 
   // Delete a segment.
-  segment_db_->UpdateSegment(kSegmentId, kUnknownModelSource, absl::nullopt,
+  segment_db_->UpdateSegment(kSegmentId, kUnknownModelSource, std::nullopt,
                              base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({});
@@ -440,8 +440,8 @@ TEST_F(SegmentInfoDatabaseTest, WriteResult) {
   VerifyResult(kSegmentId, kServerModelSource, 0.9f);
 
   // Clear results and verify.
-  WriteResult(kSegmentId, kServerModelSource, absl::nullopt);
-  VerifyResult(kSegmentId, kServerModelSource, absl::nullopt);
+  WriteResult(kSegmentId, kServerModelSource, std::nullopt);
+  VerifyResult(kSegmentId, kServerModelSource, std::nullopt);
 }
 
 TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
@@ -463,14 +463,14 @@ TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
   WriteTrainingData(kSegmentId, kServerModelSource, /*request_id=*/0,
                     /*data=*/0.4f);
   expected_training_inputs.push_back({0.4f});
-  VerifyResult(kSegmentId, kServerModelSource, absl::nullopt,
+  VerifyResult(kSegmentId, kServerModelSource, std::nullopt,
                expected_training_inputs);
 
   // Add another training data and verify.
   int64_t request_id = 1;
   WriteTrainingData(kSegmentId, kServerModelSource, request_id, /*data=*/0.9f);
   expected_training_inputs.push_back({0.9f});
-  VerifyResult(kSegmentId, kServerModelSource, absl::nullopt,
+  VerifyResult(kSegmentId, kServerModelSource, std::nullopt,
                expected_training_inputs);
 
   // Remove the last training data and verify.
@@ -478,7 +478,7 @@ TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
                                TrainingRequestId::FromUnsafeValue(request_id),
                                /*delete_from_db=*/true, base::DoNothing());
   expected_training_inputs.pop_back();
-  VerifyResult(kSegmentId, kServerModelSource, absl::nullopt,
+  VerifyResult(kSegmentId, kServerModelSource, std::nullopt,
                expected_training_inputs);
 }
 

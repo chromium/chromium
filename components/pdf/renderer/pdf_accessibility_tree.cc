@@ -1981,6 +1981,9 @@ void PdfAccessibilityTree::UnserializeNodes() {
 
     base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                               did_get_a_text_run_);
+    base::UmaHistogramBoolean(
+        "Accessibility.PDF.OpenedWithScreenReader",
+        render_accessibility->GetAXMode().has_mode(ui::AXMode::kScreenReader));
     if (!did_get_a_text_run_) {
       base::UmaHistogramCounts1000(
           "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
@@ -2610,11 +2613,11 @@ void PdfAccessibilityTree::HandleAction(
   action_handler_->HandleAccessibilityAction(action_data);
 }
 
-absl::optional<PdfAccessibilityTree::AnnotationInfo>
+std::optional<PdfAccessibilityTree::AnnotationInfo>
 PdfAccessibilityTree::GetPdfAnnotationInfoFromAXNode(int32_t ax_node_id) const {
   auto iter = node_id_to_annotation_info_.find(ax_node_id);
   if (iter == node_id_to_annotation_info_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return AnnotationInfo(iter->second.page_index, iter->second.annotation_index);
 }

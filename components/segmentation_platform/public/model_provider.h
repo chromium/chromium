@@ -6,10 +6,11 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_MODEL_PROVIDER_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace proto {
@@ -25,10 +26,10 @@ class ModelProvider {
 
   using ModelUpdatedCallback = base::RepeatingCallback<void(
       proto::SegmentId,
-      absl::optional<proto::SegmentationModelMetadata>,
+      std::optional<proto::SegmentationModelMetadata>,
       int64_t)>;
   using ExecutionCallback =
-      base::OnceCallback<void(const absl::optional<Response>&)>;
+      base::OnceCallback<void(const std::optional<Response>&)>;
 
   explicit ModelProvider(proto::SegmentId segment_id);
   virtual ~ModelProvider();
@@ -46,7 +47,7 @@ class ModelProvider {
 
   // Executes the latest model available, with the given inputs and returns
   // result via `callback`. Should be called only after InitAndFetchModel()
-  // otherwise returns absl::nullopt. Implementation could be a heuristic or
+  // otherwise returns std::nullopt. Implementation could be a heuristic or
   // model execution to return a result. The inputs to this method are the
   // computed tensors based on the features provided in the latest call to
   // `model_updated_callback`. The result is a float score with the probability

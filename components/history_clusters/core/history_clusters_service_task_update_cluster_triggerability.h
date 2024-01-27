@@ -140,7 +140,7 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // Initially nullopt but false after receiving a response with no clusters and
   // true after receiving a response with clusters after having received a
   // response with no clusters.
-  absl::optional<bool>
+  std::optional<bool>
       updated_cluster_triggerability_after_filtered_clusters_empty_;
 
   // Used for async callbacks.

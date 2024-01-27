@@ -20,7 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 
 namespace content {
 namespace {
@@ -172,11 +172,6 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     redirect_reader_ = std::move(reader);
   }
 
-  // Create URL loader factory pipe that can be possibly proxied by Extensions.
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
-      pending_receiver.InitWithNewPipeAndPassRemote();
-
   // Call WillCreateURLLoaderFactory so that Extensions (and other features) can
   // proxy the URLLoaderFactory pipe.
   FrameTreeNode* frame_tree_node =
@@ -184,6 +179,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   RenderFrameHost* render_frame_host = frame_tree_node->current_frame_host();
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
   bool bypass_redirect_checks = false;
+  network::URLLoaderFactoryBuilder factory_builder;
 
   // TODO (https://crbug.com/1369766): Investigate if header_client param should
   // be non-null, and then how to utilize it.
@@ -193,19 +189,17 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       navigation_request->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(navigation_request->GetNextPageUkmSourceId()),
-      &pending_receiver, /*header_client=*/nullptr, &bypass_redirect_checks,
+      factory_builder, /*header_client=*/nullptr, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       /*navigation_response_task_runner=*/nullptr);
 
   // Bind the (possibly proxied) mojo pipe to the URL loader factory that will
   // serve the prefetched data.
-  single_request_url_loader_factory->Clone(std::move(pending_receiver));
 
   // Wrap the other end of the mojo pipe and use it to intercept the navigation.
   std::move(loader_callback_)
-      .Run(network::SharedURLLoaderFactory::Create(
-          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-              std::move(pending_remote))));
+      .Run(std::move(factory_builder)
+               .Finish(std::move(single_request_url_loader_factory)));
 }
 
 }  // namespace content

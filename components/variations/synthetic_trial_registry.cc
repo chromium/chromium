@@ -22,13 +22,6 @@ BASE_FEATURE(kExternalExperimentAllowlist,
 
 }  // namespace internal
 
-SyntheticTrialRegistry::SyntheticTrialRegistry(
-    bool enable_external_experiment_allowlist)
-    : enable_external_experiment_allowlist_(
-          enable_external_experiment_allowlist &&
-          base::FeatureList::IsEnabled(
-              internal::kExternalExperimentAllowlist)) {}
-
 SyntheticTrialRegistry::SyntheticTrialRegistry()
     : enable_external_experiment_allowlist_(base::FeatureList::IsEnabled(
           internal::kExternalExperimentAllowlist)) {}

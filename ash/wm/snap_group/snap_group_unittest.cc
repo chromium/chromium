@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -263,6 +264,21 @@ class FasterSplitScreenTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that if the user disables the pref for snap window suggestions, we
+// don't start partial overview.
+TEST_F(FasterSplitScreenTest, DisableSnapWindowSuggestionsPref) {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  pref->SetBoolean(prefs::kSnapWindowSuggestions, false);
+  ASSERT_FALSE(pref->GetBoolean(prefs::kSnapWindowSuggestions));
+
+  // Snap a window. Test we don't start overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
 
 TEST_F(FasterSplitScreenTest, Basic) {
   // Create two test windows, snap `w1`. Test `w1` is snapped and excluded from

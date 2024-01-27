@@ -103,22 +103,22 @@ void SecurePaymentConfirmationController::
 
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-  absl::optional<std::string>& payee_name =
+  std::optional<std::string>& payee_name =
       request_->spec()
           ->method_data()
           .front()
           ->secure_payment_confirmation->payee_name;
   if (payee_name.has_value()) {
     model_.set_merchant_name(
-        absl::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
+        std::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
   }
-  absl::optional<url::Origin>& origin =
+  std::optional<url::Origin>& origin =
       request_->spec()
           ->method_data()
           .front()
           ->secure_payment_confirmation->payee_origin;
   if (origin.has_value()) {
-    model_.set_merchant_origin(absl::optional<std::u16string>(
+    model_.set_merchant_origin(std::optional<std::u16string>(
         url_formatter::FormatUrlForSecurityDisplay(
             origin.value().GetURL(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));

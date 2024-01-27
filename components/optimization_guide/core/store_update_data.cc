@@ -19,23 +19,22 @@ std::unique_ptr<StoreUpdateData>
 StoreUpdateData::CreateComponentStoreUpdateData(
     const base::Version& component_version) {
   return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(
-      absl::optional<base::Version>(component_version),
-      absl::optional<base::Time>(), absl::optional<base::Time>()));
+      std::optional<base::Version>(component_version),
+      std::optional<base::Time>(), std::optional<base::Time>()));
 }
 
 // static
 std::unique_ptr<StoreUpdateData> StoreUpdateData::CreateFetchedStoreUpdateData(
     base::Time fetch_update_time) {
   return base::WrapUnique<StoreUpdateData>(
-      new StoreUpdateData(absl::optional<base::Version>(),
-                          absl::optional<base::Time>(fetch_update_time),
-                          absl::optional<base::Time>()));
+      new StoreUpdateData(std::optional<base::Version>(),
+                          std::optional<base::Time>(fetch_update_time),
+                          std::optional<base::Time>()));
 }
 
-StoreUpdateData::StoreUpdateData(
-    absl::optional<base::Version> component_version,
-    absl::optional<base::Time> fetch_update_time,
-    absl::optional<base::Time> expiry_time)
+StoreUpdateData::StoreUpdateData(std::optional<base::Version> component_version,
+                                 std::optional<base::Time> fetch_update_time,
+                                 std::optional<base::Time> expiry_time)
     : component_version_(component_version),
       update_time_(fetch_update_time),
       expiry_time_(expiry_time),

@@ -20,10 +20,11 @@ class QuickDeleteBridge {
     public interface DomainVisitsCallback {
         /**
          * Called when the domain count and last visited domain are fetched from local history.
-         * @param lastVisitedDomain The synced last visited domain on all devices in the last 15
-         *                          minutes.
-         * @param domainCount The number of synced unique domains visited on all devices in the
-         *                    last 15 minutes.
+         *
+         * @param lastVisitedDomain The synced last visited domain on all devices within the
+         *     selected time period.
+         * @param domainCount The number of synced unique domains visited on all devices within the
+         *     selected time period.
          */
         void onLastVisitedDomainAndUniqueDomainCountReady(
                 String lastVisitedDomain, int domainCount);
@@ -48,8 +49,10 @@ class QuickDeleteBridge {
     }
 
     /**
-     * Gets the synced last visited domain and unique domain count on all devices in the last 15
-     * minutes.
+     * Gets the synced last visited domain and unique domain count on all devices within the time
+     * period.
+     *
+     * @param timePeriod The time period to fetch the results for.
      * @param callback The callback to call with the last visited domain and domain count.
      */
     public void getLastVisitedDomainAndUniqueDomainCount(

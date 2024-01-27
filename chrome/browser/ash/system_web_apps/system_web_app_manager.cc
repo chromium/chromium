@@ -138,9 +138,11 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
-  info_vec.push_back(
-      std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
-          profile));
+  if (features::IsVcBackgroundReplaceEnabled()) {
+    info_vec.push_back(
+        std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
+            profile));
+  }
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));

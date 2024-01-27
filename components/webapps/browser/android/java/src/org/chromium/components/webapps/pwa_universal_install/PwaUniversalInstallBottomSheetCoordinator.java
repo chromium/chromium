@@ -22,11 +22,11 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     /** Constructs the PwaUniversalInstallBottomSheetCoordinator. */
     @MainThread
     public PwaUniversalInstallBottomSheetCoordinator(
-            Activity activity, BottomSheetController bottomSheetController) {
+            Activity activity, BottomSheetController bottomSheetController, int arrowId) {
         mController = bottomSheetController;
 
         mView = new PwaUniversalInstallBottomSheetView(activity);
-        mView.initialize();
+        mView.initialize(arrowId);
         mContent = new PwaUniversalInstallBottomSheetContent(mView);
         mMediator = new PwaUniversalInstallBottomSheetMediator(activity);
 

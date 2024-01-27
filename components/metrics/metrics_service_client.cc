@@ -152,10 +152,6 @@ bool MetricsServiceClient::IsOnCellularConnection() {
   return false;
 }
 
-bool MetricsServiceClient::IsExternalExperimentAllowlistEnabled() {
-  return true;
-}
-
 bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return false;
 }
@@ -220,13 +216,12 @@ bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
   return ::metrics::IsMetricsReportingForceEnabled();
 }
 
-absl::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent()
-    const {
-  return absl::nullopt;
+std::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent() const {
+  return std::nullopt;
 }
 
-absl::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
-  return absl::nullopt;
+std::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
+  return std::nullopt;
 }
 
 }  // namespace metrics

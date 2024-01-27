@@ -119,7 +119,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       std::unique_ptr<PreloadedModelData> model_data);
 
   // Wrapper to call `PerformOcr` library function and record metrics.
-  absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
+  std::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
       const SkBitmap& image,
       bool a11y_tree_request);
 

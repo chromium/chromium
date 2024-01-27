@@ -400,7 +400,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        /*paask_info=*/absl::nullopt, last_fcm_registration_token,
+        /*paask_info=*/std::nullopt, last_fcm_registration_token,
         last_interested_data_types);
   }
 
@@ -455,9 +455,9 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
 
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
-  absl::optional<std::string> fcm_registration_token_;
-  absl::optional<ModelTypeSet> interested_data_types_;
-  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
+  std::optional<std::string> fcm_registration_token_;
+  std::optional<ModelTypeSet> interested_data_types_;
+  std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,
@@ -605,7 +605,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     store()->CommitWriteBatch(
         std::move(batch),
         base::BindOnce(
-            [](base::RunLoop* loop, const absl::optional<ModelError>& result) {
+            [](base::RunLoop* loop, const std::optional<ModelError>& result) {
               EXPECT_FALSE(result.has_value()) << result->ToString();
               loop->Quit();
             },
@@ -638,7 +638,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     base::RunLoop loop;
     store()->ReadAllData(base::BindOnce(
         [](std::unique_ptr<ModelTypeStore::RecordList>* output_records,
-           base::RunLoop* loop, const absl::optional<syncer::ModelError>& error,
+           base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
            std::unique_ptr<ModelTypeStore::RecordList> input_records) {
           EXPECT_FALSE(error) << error->ToString();
           EXPECT_THAT(input_records, NotNull());
@@ -1632,7 +1632,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldInvokeCallbackOnReadAllMetadata) {
 TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  absl::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
+  std::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
   ASSERT_FALSE(error);
   ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
@@ -1661,7 +1661,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   // The reupload should only be triggered once, to prevent any possible
   // ping-pong between devices.
   EXPECT_CALL(*processor(), Put(CacheGuidForSuffix(kLocalSuffix), _, _));
-  absl::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
+  std::optional<ModelError> error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
 

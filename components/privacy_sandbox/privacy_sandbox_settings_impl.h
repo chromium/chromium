@@ -5,20 +5,19 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
-#include "components/browsing_topics/common/common_types.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
-
+#include <optional>
 #include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
 class PrefService;

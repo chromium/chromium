@@ -119,7 +119,7 @@ class PageInfoUI {
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;
 
-    absl::optional<CookiesFpsInfo> fps_info;
+    std::optional<CookiesFpsInfo> fps_info;
 
     // The expiration of the active third-party cookie exception.
     base::Time expiration;
@@ -228,7 +228,7 @@ class PageInfoUI {
   // Returns a tooltip for permission |type|.
   static std::u16string PermissionTooltipUiString(
       ContentSettingsType type,
-      const absl::optional<url::Origin>& requesting_origin);
+      const std::optional<url::Origin>& requesting_origin);
 
   static base::span<const PermissionUIInfo>
   GetContentSettingsUIInfoForTesting();

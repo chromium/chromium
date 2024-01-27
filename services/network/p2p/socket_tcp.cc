@@ -505,7 +505,7 @@ bool P2PSocketStunTcp::ProcessInput(base::span<const uint8_t> input,
 
   // We have a complete packet. Read through it.
   *bytes_consumed = packet_size + pad_bytes;
-  return OnPacket(input.subspan(0, packet_size));
+  return OnPacket(input.first(packet_size));
 }
 
 void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,

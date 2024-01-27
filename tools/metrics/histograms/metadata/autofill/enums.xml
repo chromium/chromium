@@ -3887,14 +3887,9 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Not shown: some inputs already contain values"/>
 </enum>
 
-<enum name="UploadAcceptedCardOrigin">
-  <int value="0" label="Upload was accepted for existing local card"/>
-  <int value="1" label="Upload was accepted for newly-seen card"/>
-</enum>
-
-<enum name="UploadOfferedCardOrigin">
-  <int value="0" label="Upload was offered for existing local card"/>
-  <int value="1" label="Upload was offered for newly-seen card"/>
+<enum name="UploadPaymentMethodOrigin">
+  <int value="0" label="Upload was for existing local payment method"/>
+  <int value="1" label="Upload was for newly-seen payment method"/>
 </enum>
 
 <enum name="VirtualCardStandaloneCvcSuggestionFormEvent">

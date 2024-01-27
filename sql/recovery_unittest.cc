@@ -165,11 +165,6 @@ class SqlLegacyRecoveryTest : public SqlRecoveryTestBase {
 };
 
 TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
-  // Fuchsia.
-  ASSERT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
-#else
   // Attempt to recover from corruption.
   ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 
@@ -193,7 +188,6 @@ TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
   // the error callback should be reset before recovery is attempted.
   db_.set_error_callback(base::DoNothing());
   EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 // Baseline Recovery test covering the different ways to dispose of the scoped
@@ -1542,7 +1536,6 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
   }
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 // TODO(https://crbug.com/1255316): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // that it is passed a non-null database pointer and will instead likely result
@@ -1611,15 +1604,17 @@ TEST_F(SqlBuiltInRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
                       std::move(run_recovery));
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     SqlRecoveryTest,
     testing::Values(
-        std::tuple(true, true),   // BuiltInRecovery with WAL databases.
         std::tuple(true, false),  // BuiltInRecovery with non-WAL databases.
         std::tuple(false, false)  // Legacy recovery with non-WAL databases.
+// Recovering WAL databases is not supported on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+        ,
+        std::tuple(true, true)  // BuiltInRecovery with WAL databases.
+#endif
         // The legacy recovery module does not support recovering WAL databases.
         ));
 

@@ -63,7 +63,7 @@ TextFragment::TextFragment(const TextFragment& other)
 TextFragment::~TextFragment() = default;
 
 // static
-absl::optional<TextFragment> TextFragment::FromEscapedString(
+std::optional<TextFragment> TextFragment::FromEscapedString(
     std::string escaped_string) {
   // Text fragments have the format: [prefix-,]textStart[,textEnd][,-suffix]
   // That is, textStart is the only required param, all params are separated by
@@ -93,7 +93,7 @@ absl::optional<TextFragment> TextFragment::FromEscapedString(
 
   if (pieces.size() > 2 || pieces.empty() || pieces[0].empty()) {
     // Malformed if no piece is left for the textStart
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string text_start = pieces[0];
@@ -105,7 +105,7 @@ absl::optional<TextFragment> TextFragment::FromEscapedString(
       suffix.find_first_of("&-,") != std::string::npos) {
     // Malformed if any of the pieces contain characters that are supposed to be
     // URL-encoded.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TextFragment(Unescape(text_start), Unescape(text_end),
@@ -113,9 +113,9 @@ absl::optional<TextFragment> TextFragment::FromEscapedString(
 }
 
 // static
-absl::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
+std::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
   if (!value || !value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::Dict& dict = value->GetDict();
@@ -126,7 +126,7 @@ absl::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
 
   if (!HasValue(text_start)) {
     // Text Start is the only required parameter.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TextFragment(*text_start, ValueOrDefault(text_end),

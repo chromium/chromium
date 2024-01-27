@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include <deque>
+#include <optional>
 
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -77,8 +77,8 @@ class Abs32RvaExtractorWin32 {
   ~Abs32RvaExtractorWin32();
 
   // Visits given abs32 locations, rejects invalid locations and non-existent
-  // RVAs, and returns reference as Unit, or absl::nullopt on completion.
-  absl::optional<Unit> GetNext();
+  // RVAs, and returns reference as Unit, or std::nullopt on completion.
+  std::optional<Unit> GetNext();
 
  private:
   ConstBufferView image_;
@@ -98,7 +98,7 @@ class Abs32ReaderWin32 : public ReferenceReader {
   ~Abs32ReaderWin32() override;
 
   // ReferenceReader:
-  absl::optional<Reference> GetNext() override;
+  std::optional<Reference> GetNext() override;
 
  private:
   Abs32RvaExtractorWin32 abs32_rva_extractor_;

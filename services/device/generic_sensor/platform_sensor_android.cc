@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaRef;
+using jni_zero::AttachCurrentThread;
 
 namespace device {
 namespace {

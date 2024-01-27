@@ -203,20 +203,26 @@ def isInAshFolder(path):
 # https://crbug.com/1512231
 def isMigratedAshFolder(path):
   migrated_ash_folders = [
+      "ash/webui/os_feedback_ui",
       "ash/webui/scanning",
       "chrome/browser/resources/chromeos/cloud_upload",
       "chrome/browser/resources/chromeos/enterprise_reporting",
       "chrome/browser/resources/chromeos/healthd_internals",
+      "chrome/test/data/webui/chromeos/os_feedback_ui",
   ]
   return any(path.startswith(folder) for folder in migrated_ash_folders)
 
 
 def isBrowserOnlyDep(dep):
-  return dep == '//ui/webui/resources/cr_elements'
+  browser_only_deps = [
+      '//ui/webui/resources/cr_elements',
+      '//ui/webui/resources/cr_components/localized_link',
+  ]
+  return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
+
 
 def isDependencyAllowed(is_ash_target, raw_dep, target_path):
-  if isMigratedAshFolder(target_path) and \
-          raw_dep.startswith('//ui/webui/resources/cr_elements'):
+  if isMigratedAshFolder(target_path) and isBrowserOnlyDep(raw_dep):
     return False
 
   is_ash_dep = isInAshFolder(raw_dep[2:])

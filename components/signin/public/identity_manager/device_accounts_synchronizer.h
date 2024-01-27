@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_DEVICE_ACCOUNTS_SYNCHRONIZER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_DEVICE_ACCOUNTS_SYNCHRONIZER_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 
@@ -23,7 +24,7 @@ class DeviceAccountsSynchronizer {
   // accounts will be visible in IdentityManager::GetAccountsWithRefreshTokens()
   // with any persistent errors cleared after this method is called.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const absl::optional<CoreAccountId>& primary_account_id) = 0;
+      const std::optional<CoreAccountId>& primary_account_id) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   // Reloads the information of all device-level accounts. All device-level
@@ -31,7 +32,7 @@ class DeviceAccountsSynchronizer {
   // with any persistent errors cleared after this method is called.
   virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       const std::vector<CoreAccountInfo>& core_account_infos,
-      const absl::optional<CoreAccountId>& primary_account_id) = 0;
+      const std::optional<CoreAccountId>& primary_account_id) = 0;
 #endif
 
 #if BUILDFLAG(IS_IOS)

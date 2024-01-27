@@ -124,7 +124,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     std::unique_ptr<ResponseDelegate> response_delegate,
-    absl::optional<SecurityOptions> security_options)
+    std::optional<SecurityOptions> security_options)
     : resource_request_(resource_request),
       response_head_(network::mojom::URLResponseHead::New()),
       reject_cors_request_(false),
@@ -162,7 +162,7 @@ void AndroidStreamReaderURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {}
+    const std::optional<GURL>& new_url) {}
 void AndroidStreamReaderURLLoader::SetPriority(net::RequestPriority priority,
                                                int intra_priority_value) {}
 void AndroidStreamReaderURLLoader::PauseReadingBodyFromNet() {}
@@ -343,7 +343,7 @@ void AndroidStreamReaderURLLoader::SendResponseToClient() {
   cache_response_ =
       response_delegate_->ShouldCacheResponse(response_head_.get());
   client_->OnReceiveResponse(std::move(response_head_),
-                             std::move(consumer_handle_), absl::nullopt);
+                             std::move(consumer_handle_), std::nullopt);
 }
 
 void AndroidStreamReaderURLLoader::ReadMore() {

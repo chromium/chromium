@@ -288,7 +288,7 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
       const media_router::MediaRoute& route) {
     // TODO(imcheng): If we ever convert from C++ to Mojo outside of unit tests,
     // it would be better to make the |media_source_| field on MediaRoute a
-    // absl::optional<MediaSource::Id> instead so it can be returned directly
+    // std::optional<MediaSource::Id> instead so it can be returned directly
     // here.
     return mojo::OptionalAsPointer(route.media_source().id().empty()
                                        ? nullptr

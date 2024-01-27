@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REALTIME_URL_LOOKUP_SERVICE_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -21,7 +22,6 @@
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -176,7 +176,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // |should_remove_subresource_url| is true, also removes subresource URLs.
   static void SanitizeReferrerChainEntries(
       ReferrerChain* referrer_chain,
-      absl::optional<base::Time> min_allowed_timestamp,
+      std::optional<base::Time> min_allowed_timestamp,
       bool should_remove_subresource_url);
 
   // Returns the endpoint that the URL lookup will be sent to.
@@ -209,14 +209,14 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual void OnResponseUnauthorized(const std::string& invalid_access_token);
 
   // Gets a dm token string to be set in a request proto.
-  virtual absl::optional<std::string> GetDMTokenString() const = 0;
+  virtual std::optional<std::string> GetDMTokenString() const = 0;
 
   // Returns whether real time URL requests should include credentials.
   virtual bool ShouldIncludeCredentials() const = 0;
 
   // Gets the minimum timestamp allowed for referrer chains. Returns nullopt if
   // there is no such restriction.
-  virtual absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+  virtual std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const = 0;
 
   // Called to get cache from |cache_manager|. Returns the cached response if
@@ -249,12 +249,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   void SendRequestInternal(
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& req_data,
-      absl::optional<std::string> access_token_string,
+      std::optional<std::string> access_token_string,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       ChromeUserPopulation::UserPopulation user_population,
       bool is_sampled_report,
-      absl::optional<int> webui_token);
+      std::optional<int> webui_token);
 
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
@@ -263,13 +263,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // calling |OnResponseUnauthorized| in case the response code is
   // HTTP_UNAUTHORIZED.
   void OnURLLoaderComplete(
-      absl::optional<std::string> access_token_string,
+      std::optional<std::string> access_token_string,
       network::SimpleURLLoader* url_loader,
       ChromeUserPopulation::UserPopulation user_population,
       base::TimeTicks request_start_time,
       bool is_sampled_report,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      absl::optional<int> webui_token,
+      std::optional<int> webui_token,
       std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
@@ -283,11 +283,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // chrome://safe-browsing pages. Returns a token that can be passed
   // to `LogLookupResponseForToken` to associate a request and
   // response.
-  absl::optional<int> LogLookupRequest(const RTLookupRequest& request,
-                                       const std::string& oauth_token);
+  std::optional<int> LogLookupRequest(const RTLookupRequest& request,
+                                      const std::string& oauth_token);
 
   // Logs |response| on any open chrome://safe-browsing pages.
-  void LogLookupResponseForToken(absl::optional<int> token,
+  void LogLookupResponseForToken(std::optional<int> token,
                                  const RTLookupResponse& response);
 
   SEQUENCE_CHECKER(sequence_checker_);

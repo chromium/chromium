@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -333,10 +333,10 @@ class AutocompleteController : public AutocompleteProviderListener,
               AutocompleteResult* result);
     ~OldResult();
 
-    absl::optional<AutocompleteMatch> last_default_match;
+    std::optional<AutocompleteMatch> last_default_match;
     std::u16string last_default_associated_keyword;
     AutocompleteResult matches_to_transfer;
-    absl::optional<AutocompleteMatch> default_match_to_preserve;
+    std::optional<AutocompleteMatch> default_match_to_preserve;
   };
 
   // Helpers called by the constructor. These initialize the specified providers
@@ -363,7 +363,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // `UpdateResult()` helper. Returns whether the default match changed.
   bool CheckWhetherDefaultMatchChanged(
-      absl::optional<AutocompleteMatch> last_default_match,
+      std::optional<AutocompleteMatch> last_default_match,
       std::u16string last_default_associated_keyword);
 
   // Attaches actions to matches: pedals, history clusters, tab switch, etc.

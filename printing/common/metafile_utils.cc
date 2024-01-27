@@ -4,8 +4,10 @@
 
 #include "printing/common/metafile_utils.h"
 
+#include <string_view>
+#include <variant>
+
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "printing/buildflags/buildflags.h"
@@ -26,8 +28,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
-
-#include <variant>
 
 namespace {
 
@@ -221,7 +221,8 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
 namespace printing {
 
 sk_sp<SkDocument> MakePdfDocument(
-    base::StringPiece creator,
+    std::string_view creator,
+    std::string_view title,
     const ui::AXTreeUpdate& accessibility_tree,
     GeneratePdfDocumentOutline generate_document_outline,
     SkWStream* stream) {
@@ -229,11 +230,9 @@ sk_sp<SkDocument> MakePdfDocument(
   SkPDF::DateTime now = TimeToSkTime(base::Time::Now());
   metadata.fCreation = now;
   metadata.fModified = now;
-  // TODO(crbug.com/691162): Switch to SkString's string_view constructor when
-  // possible.
-  metadata.fCreator = creator.empty()
-                          ? SkString("Chromium")
-                          : SkString(creator.data(), creator.size());
+  metadata.fCreator =
+      creator.empty() ? SkString("Chromium") : SkString(creator);
+  metadata.fTitle = SkString(title);
   metadata.fRasterDPI = 300.0f;
 
   SkPDF::StructureElementNode tag_root = {};

@@ -26,6 +26,41 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidExplicitPassphrasePlatformApiResponse">
+  <summary>
+    Non-exhaustive set of possible responses for the the API internally called
+    by ExplicitPassphrasePlatformClient (see class docs).
+  </summary>
+  <int value="-1" label="Error: Unknown"/>
+  <int value="0" label="Success or data already decrypted"/>
+  <int value="4" label="Error: SIGN_IN_REQUIRED"/>
+  <int value="5" label="Error: INVALID_ACCOUNT"/>
+  <int value="6" label="Error: RESOLUTION_REQUIRED"/>
+  <int value="7" label="Error: NETWORK_ERROR"/>
+  <int value="8" label="Error: INTERNAL_ERROR"/>
+  <int value="10" label="Error: DEVELOPER_ERROR"/>
+  <int value="17" label="Error: API_NOT_CONNECTED"/>
+  <int value="19" label="Error: REMOTE_EXCEPTION"/>
+  <int value="20" label="Error: CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="22" label="Error: RECONNECTION_TIMED_OUT"/>
+  <int value="11000" label="Error: PASSPHRASE_REQUIRED"/>
+  <int value="11004" label="Error: ACCESS_DENIED"/>
+  <int value="11005" label="Error: AUTH_ERROR_RESOLVABLE"/>
+  <int value="11006" label="Error: AUTH_ERROR_UNRESOLVABLE"/>
+  <int value="11008" label="Error: BAD_REQUEST"/>
+  <int value="11009" label="Error: BACKEND_GENERIC"/>
+  <int value="11010" label="Error: BACKEND_RESOURCE_EXHAUSTED"/>
+  <int value="11011" label="Error: INVALID_DATA"/>
+  <int value="11012" label="Error: UNMAPPED_ERROR_CODE"/>
+  <int value="11013" label="Error: UNEXPECTED_ERROR"/>
+  <int value="11014" label="Error: KEY_RETRIEVAL_REQUIRED"/>
+  <int value="43502" label="Error: CHROME_SYNC_API_CALL_ERROR"/>
+  <int value="43504" label="Error: ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
+  <int value="43507" label="Error: REQUIRED_SYNCED_ACCOUNT_MISSING"/>
+  <int value="43508" label="Error: LEAK_CHECK_SERVICE_AUTH_ERROR"/>
+  <int value="43509" label="Error: LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
+</enum>
+
 <enum name="BookmarkGUIDSource">
   <summary>
     Whether a GUID came from BookmarkSpecifics, or, in case it was missing,

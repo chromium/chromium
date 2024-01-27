@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 
+#include <array>
+#include <cmath>
+
+#include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
@@ -96,6 +101,21 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
   // resolved.
   gfx::Transform other_offset_from_offset =
       other_offset_from_mojo * mojo_from_offset.value();
+
+  // TODO(https://crbug.com/1522245): Check for crash dumps.
+  std::array<float, 16> transform_data;
+  other_offset_from_offset.GetColMajorF(transform_data.data());
+  bool contains_nan = base::ranges::any_of(
+      transform_data, [](const float f) { return std::isnan(f); });
+
+  if (contains_nan) {
+    // It's unclear if this could be tripping on every frame, but reporting once
+    // per day per user (the default throttling) should be sufficient for future
+    // investigation.
+    base::debug::DumpWithoutCrashing();
+    return nullptr;
+  }
+
   return MakeGarbageCollected<XRPose>(
       other_offset_from_offset,
       EmulatedPosition() || other_space->EmulatedPosition());

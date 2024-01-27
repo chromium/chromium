@@ -5,13 +5,13 @@
 #include "components/signin/internal/identity_manager/account_info_util.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // Keys used to store the different values in the JSON dictionary received
@@ -28,17 +28,17 @@ const char kAccountCapabilityNameKey[] = "name";
 const char kAccountCapabilityBooleanValueKey[] = "booleanValue";
 }  // namespace
 
-absl::optional<AccountInfo> AccountInfoFromUserInfo(
+std::optional<AccountInfo> AccountInfoFromUserInfo(
     const base::Value::Dict& user_info) {
   // Both |gaia_id| and |email| are required value in the JSON reply, so
   // return empty result if any is missing or is empty.
   const std::string* gaia_id_value = user_info.FindString(kGaiaIdKey);
   if (!gaia_id_value || gaia_id_value->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string* email_value = user_info.FindString(kEmailKey);
   if (!email_value || email_value->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   AccountInfo account_info;
   account_info.email = *email_value;
@@ -73,12 +73,12 @@ absl::optional<AccountInfo> AccountInfoFromUserInfo(
   return account_info;
 }
 
-absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
+std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     const base::Value::Dict& account_capabilities) {
   const base::Value::List* list =
       account_capabilities.FindList(kAccountCapabilitiesListKey);
   if (!list)
-    return absl::nullopt;
+    return std::nullopt;
 
   // 1. Create "capability name" -> "boolean value" mapping.
   std::map<std::string, bool> boolean_capabilities;
@@ -86,10 +86,10 @@ absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     const std::string* name =
         capability_value.GetDict().FindString(kAccountCapabilityNameKey);
     if (!name)
-      return absl::nullopt;  // name is a required field.
+      return std::nullopt;  // name is a required field.
 
     // Check whether a capability has a boolean value.
-    absl::optional<bool> boolean_value =
+    std::optional<bool> boolean_value =
         capability_value.GetDict().FindBool(kAccountCapabilityBooleanValueKey);
     if (boolean_value.has_value()) {
       boolean_capabilities[*name] = *boolean_value;

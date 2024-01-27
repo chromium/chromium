@@ -247,7 +247,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     EXPECT_TRUE(permission_context.tab_context_updated());
 
     std::string decision_string;
-    absl::optional<PermissionAction> action;
+    std::optional<PermissionAction> action;
     if (decision == CONTENT_SETTING_ALLOW) {
       decision_string = "Accepted";
       action = PermissionAction::GRANTED;

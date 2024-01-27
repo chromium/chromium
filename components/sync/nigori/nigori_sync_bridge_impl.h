@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class NigoriLocalData;
@@ -77,10 +77,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   bool SetKeystoreKeys(const std::vector<std::vector<uint8_t>>& keys) override;
 
   // NigoriSyncBridge implementation.
-  absl::optional<ModelError> MergeFullSyncData(
-      absl::optional<EntityData> data) override;
-  absl::optional<ModelError> ApplyIncrementalSyncChanges(
-      absl::optional<EntityData> data) override;
+  std::optional<ModelError> MergeFullSyncData(
+      std::optional<EntityData> data) override;
+  std::optional<ModelError> ApplyIncrementalSyncChanges(
+      std::optional<EntityData> data) override;
   std::unique_ptr<EntityData> GetData() override;
   void ApplyDisableSyncChanges() override;
 
@@ -89,7 +89,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   KeyDerivationParams GetCustomPassphraseKeyDerivationParamsForTesting() const;
 
  private:
-  absl::optional<ModelError> UpdateLocalState(
+  std::optional<ModelError> UpdateLocalState(
       const sync_pb::NigoriSpecifics& specifics);
 
   // Builds NigoriKeyBag, which contains keys acceptable for decryption of
@@ -108,10 +108,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   //
   // If |key_bag| is not capable of decrypting pending keys,
   // |state_.pending_keys| stays set. Such outcome is not itself considered
-  // and error and returns absl::nullopt.
+  // and error and returns std::nullopt.
   //
   // Errors may be returned, in rare cases, for fatal protocol violations.
-  absl::optional<ModelError> TryDecryptPendingKeysWith(
+  std::optional<ModelError> TryDecryptPendingKeysWith(
       const NigoriKeyBag& key_bag);
 
   base::Time GetExplicitPassphraseTime() const;

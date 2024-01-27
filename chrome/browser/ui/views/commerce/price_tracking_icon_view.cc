@@ -57,12 +57,8 @@ void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
       return;
     }
 
-    const bookmarks::BookmarkNode* parent = model->other_node();
-
-    // Automatically add the bookmark to the shopping collection if enabled.
-    if (base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
-      parent = commerce::GetShoppingCollectionBookmarkFolder(model, true);
-    }
+    const bookmarks::BookmarkNode* parent =
+        commerce::GetShoppingCollectionBookmarkFolder(model, true);
 
     model->AddNewURL(parent, parent->children().size(), title, url);
   }

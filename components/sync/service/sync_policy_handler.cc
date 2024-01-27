@@ -4,6 +4,7 @@
 
 #include "components/sync/service/sync_policy_handler.h"
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
@@ -14,13 +15,12 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 namespace {
 
 void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
-  absl::optional<UserSelectableType> type =
+  std::optional<UserSelectableType> type =
       GetUserSelectableTypeFromString(type_name);
   if (type.has_value()) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, *type);
@@ -35,7 +35,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Check for OS types. This includes types that used to be browser types,
   // like "apps" and "preferences".
-  absl::optional<UserSelectableOsType> os_type =
+  std::optional<UserSelectableOsType> os_type =
       GetUserSelectableOsTypeFromString(type_name);
   if (os_type.has_value()) {
     syncer::SyncPrefs::SetOsTypeDisabledByPolicy(prefs, *os_type);

@@ -279,7 +279,7 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
 JobConfigurationBase::JobConfigurationBase(
     JobType type,
     DMAuth auth_data,
-    absl::optional<std::string> oauth_token,
+    std::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),
@@ -438,7 +438,7 @@ DeviceManagementService::Job::RetryMethod JobConfigurationBase::ShouldRetry(
   return DeviceManagementService::Job::NO_RETRY;
 }
 
-absl::optional<base::TimeDelta> JobConfigurationBase::GetTimeoutDuration() {
+std::optional<base::TimeDelta> JobConfigurationBase::GetTimeoutDuration() {
   return timeout_;
 }
 

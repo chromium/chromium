@@ -6,6 +6,7 @@
 
 #include <ios>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -37,7 +38,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
@@ -190,11 +190,11 @@ LoadAttestationsInternal(base::FilePath installed_file_path,
     return base::unexpected(ParsingStatus::kFileNotExist);
   }
 
-  absl::optional<SentinelFile> sentinel_file =
+  std::optional<SentinelFile> sentinel_file =
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxAttestationSentinel)
-          ? absl::optional<SentinelFile>(installed_file_path.DirName())
-          : absl::nullopt;
+          ? std::optional<SentinelFile>(installed_file_path.DirName())
+          : std::nullopt;
   if (sentinel_file.has_value() && sentinel_file->IsPresent()) {
     // An existing sentinel file implies previous parsing has crashed.
     std::string sentinel_version_str = sentinel_file->GetVersion();
@@ -218,7 +218,7 @@ LoadAttestationsInternal(base::FilePath installed_file_path,
   // persist in the installation directory. It will prevent this version of
   // the attestations file from being parsed again.
   base::ElapsedTimer parsing_timer;
-  absl::optional<PrivacySandboxAttestationsMap> attestations_map =
+  std::optional<PrivacySandboxAttestationsMap> attestations_map =
       ParseAttestationsFromString(proto_str);
   if (!attestations_map.has_value()) {
     // The parsing failed.
@@ -420,7 +420,7 @@ void PrivacySandboxAttestations::SetAllPrivacySandboxAttestedForTesting(
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(
-    absl::optional<PrivacySandboxAttestationsMap> attestations_map) {
+    std::optional<PrivacySandboxAttestationsMap> attestations_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   attestations_map_ = std::move(attestations_map);
   NotifyObserversOnAttestationsLoaded();

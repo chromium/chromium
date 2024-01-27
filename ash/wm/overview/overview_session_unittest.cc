@@ -5,6 +5,7 @@
 #include "ash/wm/overview/overview_session.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -6820,14 +6821,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       }
     }
 
-    auto* split_view_overview_session =
-        RootWindowController::ForWindow(root_window)
-            ->split_view_overview_session();
-    CHECK(split_view_overview_session);
-    aura::Window* window = split_view_overview_session->window();
-    overview_bounds.Subtract(window->GetBoundsInScreen());
-    overview_bounds.Subtract(GetSplitViewDividerBounds(/*is_dragging=*/false));
-    return overview_bounds;
+    return GetGridBoundsInScreen(root_window);
   }
 
   gfx::Rect GetSplitViewDividerBounds(bool is_dragging) {

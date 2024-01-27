@@ -118,7 +118,7 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
     return;
   }
 
-  absl::optional<SubresourceFilterLevel> level;
+  std::optional<SubresourceFilterLevel> level;
   NavigationHandleData* data =
       NavigationHandleData::GetOrCreateForNavigationHandle(*navigation_handle);
   data->level_for_next_committed_navigation().swap(level);
@@ -176,7 +176,7 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
       content::FrameType::kFencedFrameRoot) {
     return;
   }
-  absl::optional<safe_browsing::SubresourceFilterLevel> match_level;
+  std::optional<safe_browsing::SubresourceFilterLevel> match_level;
   if (result.threat_type ==
       safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
     auto abusive = result.threat_metadata.subresource_filter_match.find(

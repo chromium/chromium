@@ -6,12 +6,11 @@
 #define COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_REMOTE_UPDATE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
@@ -36,7 +35,7 @@ class ClientTagBasedRemoteUpdateHandler {
                                     ProcessorEntityTracker* entities);
 
   // Processes incremental updates from the sync server.
-  absl::optional<ModelError> ProcessIncrementalUpdate(
+  std::optional<ModelError> ProcessIncrementalUpdate(
       const sync_pb::ModelTypeState& model_type_state,
       UpdateResponseDataList updates);
 

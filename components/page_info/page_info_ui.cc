@@ -646,7 +646,7 @@ std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
 // static
 std::u16string PageInfoUI::PermissionTooltipUiString(
     ContentSettingsType type,
-    const absl::optional<url::Origin>& requesting_origin) {
+    const std::optional<url::Origin>& requesting_origin) {
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
       return l10n_util::GetStringFUTF16(
@@ -863,7 +863,7 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
               permission.type);
       permission_result = delegate->GetPermissionResult(permission_type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
-      absl::optional<content::PermissionResult> embargo_result =
+      std::optional<content::PermissionResult> embargo_result =
           delegate->GetEmbargoResult(permission.type);
       if (embargo_result)
         permission_result = *embargo_result;

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -20,7 +21,6 @@
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -60,7 +60,7 @@ class POLICY_EXPORT PolicyMap {
     Entry(PolicyLevel level,
           PolicyScope scope,
           PolicySource source,
-          absl::optional<base::Value> value,
+          std::optional<base::Value> value,
           std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
     ~Entry();
 
@@ -80,7 +80,7 @@ class POLICY_EXPORT PolicyMap {
     const base::Value* value_unsafe() const;
     base::Value* value_unsafe();
 
-    void set_value(absl::optional<base::Value> val);
+    void set_value(std::optional<base::Value> val);
 
     // Returns true if |this| equals |other|.
     bool Equals(const Entry& other) const;
@@ -143,13 +143,13 @@ class POLICY_EXPORT PolicyMap {
                                         L10nLookupFunction lookup) const;
 
    private:
-    absl::optional<base::Value> value_;
+    std::optional<base::Value> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
 
     // Stores all message IDs separated by message types.
     std::map<MessageType,
-             std::map<int, absl::optional<std::vector<std::u16string>>>>
+             std::map<int, std::optional<std::vector<std::u16string>>>>
         message_ids_;
   };
 
@@ -217,7 +217,7 @@ class POLICY_EXPORT PolicyMap {
            PolicyLevel level,
            PolicyScope scope,
            PolicySource source,
-           absl::optional<base::Value> value,
+           std::optional<base::Value> value,
            std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
 
   void Set(const std::string& policy, Entry entry);

@@ -23,7 +23,7 @@ class BertModelHandler
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata);
+      const std::optional<proto::Any>& model_metadata);
   ~BertModelHandler() override;
 
   BertModelHandler(const BertModelHandler&) = delete;

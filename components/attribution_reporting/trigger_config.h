@@ -71,8 +71,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // source type.
   static TriggerSpecs Default(mojom::SourceType, EventReportWindows);
 
-  static absl::optional<TriggerSpecs> Create(TriggerDataIndices,
-                                             std::vector<TriggerSpec>);
+  static std::optional<TriggerSpecs> Create(TriggerDataIndices,
+                                            std::vector<TriggerSpec>);
 
   static TriggerSpecs CreateForTesting(TriggerDataIndices,
                                        std::vector<TriggerSpec>);

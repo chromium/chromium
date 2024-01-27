@@ -35,6 +35,9 @@ std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
           [](AutoEnrollmentSystemClockSyncError) {
             return std::string("System clock sync error");
           },
+          [](AutoEnrollmentStateKeysRetrievalError) {
+            return std::string("State keys retrieval error");
+          },
           [](const AutoEnrollmentDMServerError& error) {
             return base::StringPrintf(
                 "DMServer error: %d, %s", error.dm_error,

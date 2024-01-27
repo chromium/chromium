@@ -4,6 +4,8 @@
 
 #include "components/signin/public/base/session_binding_utils.h"
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -15,7 +17,6 @@
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -26,7 +27,7 @@ base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
-  absl::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result = base::JSONReader::Read(json);
   EXPECT_TRUE(result.has_value());
   return std::move(*result);
 }
@@ -35,7 +36,7 @@ base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
 
 TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {
-  absl::optional<std::string> result =
+  std::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
           "test_client_id", "test_auth_code",
           GURL("https://accounts.google.com/RegisterKey"),
@@ -73,7 +74,7 @@ TEST(SessionBindingUtilsTest,
 
 TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForSessionBinding) {
-  absl::optional<std::string> result =
+  std::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
           "test_challenge", GURL("https://accounts.google.com/RegisterKey"),
           crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
@@ -107,7 +108,7 @@ TEST(SessionBindingUtilsTest,
 }
 
 TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
-  absl::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
+  std::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace");
@@ -140,7 +141,7 @@ TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
 }
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
-  absl::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+  std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg",
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
       std::vector<uint8_t>({1, 2, 3}));
@@ -160,7 +161,7 @@ TEST(SessionBindingUtilsTest,
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
 
-  absl::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+  std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       kDerSignature);
   EXPECT_EQ(result, base::StrCat({"abc.efg.", kRawSignatureBase64UrlEncoded}));
@@ -168,10 +169,10 @@ TEST(SessionBindingUtilsTest,
 
 TEST(SessionBindingUtilsTest,
      AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
-  absl::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+  std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}));
-  EXPECT_EQ(result, absl::nullopt);
+  EXPECT_EQ(result, std::nullopt);
 }
 
 }  // namespace signin

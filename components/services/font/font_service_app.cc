@@ -235,7 +235,7 @@ void FontServiceApp::MatchFontByPostscriptNameOrFullFontName(
   TRACE_EVENT0("fonts",
                "FontServiceApp::MatchFontByPostscriptNameOrFullFontName");
 
-  absl::optional<FontConfigLocalMatching::FontConfigMatchResult> match_result =
+  std::optional<FontConfigLocalMatching::FontConfigMatchResult> match_result =
       FontConfigLocalMatching::FindFontByPostscriptNameOrFullFontName(family);
   if (match_result) {
     uint32_t fontconfig_interface_id = FindOrAddPath(match_result->file_path);

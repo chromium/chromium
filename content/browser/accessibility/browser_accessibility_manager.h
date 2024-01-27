@@ -242,7 +242,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
                        const ui::AXTreeID& child_tree_id);
 
   // Retrieve the bounds of the parent View in screen coordinates.
-  gfx::Rect GetViewBoundsInScreenCoordinates() const;
+  virtual gfx::Rect GetViewBoundsInScreenCoordinates() const;
 
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy

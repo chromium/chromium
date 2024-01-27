@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -37,7 +38,8 @@ class RenderProcessHost;
 // It is safe to call WarmupSpareRenderProcessHost multiple times, although if
 // called in a context where the spare renderer is not likely to be used
 // performance may suffer due to the unnecessary RPH creation.
-class SpareRenderProcessHostManager : public RenderProcessHostObserver {
+class CONTENT_EXPORT SpareRenderProcessHostManager
+    : public RenderProcessHostObserver {
  public:
   SpareRenderProcessHostManager();
   ~SpareRenderProcessHostManager() override;

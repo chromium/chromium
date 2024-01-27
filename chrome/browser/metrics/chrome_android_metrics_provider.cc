@@ -26,7 +26,7 @@ const int kAppNotificationStatusBoundary = 3;
 
 void EmitAppNotificationStatusHistogram() {
   auto status = Java_NotificationSystemStatusUtil_getAppNotificationStatus(
-      base::android::AttachCurrentThread());
+      jni_zero::AttachCurrentThread());
   UMA_HISTOGRAM_ENUMERATION("Android.AppNotificationStatus", status,
                             kAppNotificationStatusBoundary);
 }

@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 
 #include <cmath>
+#include <optional>
 
 #include "base/bit_cast.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +26,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Segmentation_ModelExecution = ukm::builders::Segmentation_ModelExecution;
 
@@ -49,8 +49,8 @@ void CompareEncodeDecodeDifference(float tensor) {
       kRoundingError);
 }
 
-absl::optional<proto::PredictionResult> GetPredictionResult(
-    absl::optional<base::Time> prediction_time = absl::nullopt) {
+std::optional<proto::PredictionResult> GetPredictionResult(
+    std::optional<base::Time> prediction_time = std::nullopt) {
   proto::PredictionResult result;
   result.add_result(0.5);
   result.add_result(0.4);
@@ -279,21 +279,21 @@ TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
   ukm::SourceId source_id =
       SegmentationUkmHelper::GetInstance()->RecordTrainingData(
           proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
-          outputs, output_indexes, GetPredictionResult(), absl::nullopt);
+          outputs, output_indexes, GetPredictionResult(), std::nullopt);
   ASSERT_EQ(source_id, ukm::kInvalidSourceId);
 
   // output_indexes value too large.
   output_indexes = {100, 1000};
   source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
-      outputs, output_indexes, GetPredictionResult(), absl::nullopt);
+      outputs, output_indexes, GetPredictionResult(), std::nullopt);
   ASSERT_EQ(source_id, ukm::kInvalidSourceId);
 
   // Valid outputs.
   output_indexes = {3, 0};
   source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
-      outputs, output_indexes, GetPredictionResult(), absl::nullopt);
+      outputs, output_indexes, GetPredictionResult(), std::nullopt);
   ASSERT_NE(source_id, ukm::kInvalidSourceId);
 }
 

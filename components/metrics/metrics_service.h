@@ -219,11 +219,11 @@ class MetricsService {
   //
   // See comments at MetricsServiceClient::GetCurrentUserMetricsConsent() for
   // more details.
-  absl::optional<bool> GetCurrentUserMetricsConsent() const;
+  std::optional<bool> GetCurrentUserMetricsConsent() const;
 
   // Returns the current logged in user id. See comments at
   // MetricsServiceClient::GetCurrentUserId() for more details.
-  absl::optional<std::string> GetCurrentUserId() const;
+  std::optional<std::string> GetCurrentUserId() const;
 
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
@@ -592,7 +592,7 @@ class MetricsService {
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string&& current_app_version,
       std::string&& signing_key);
 
@@ -606,7 +606,7 @@ class MetricsService {
       MetricsLogHistogramWriter* log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string&& current_app_version,
       std::string&& signing_key);
 
@@ -615,7 +615,7 @@ class MetricsService {
   static FinalizedLog FinalizeLog(
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       const std::string& current_app_version,
       const std::string& signing_key);
 

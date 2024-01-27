@@ -224,7 +224,7 @@ void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
 }
 
 void ProfileOAuth2TokenServiceDelegate::ClearAuthError(
-    const absl::optional<CoreAccountId>& account_id) {
+    const std::optional<CoreAccountId>& account_id) {
   if (!account_id.has_value()) {
     errors_.clear();
     return;

@@ -83,7 +83,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
 }
 
 bool TutorialService::CancelTutorialIfRunning(
-    absl::optional<TutorialIdentifier> id) {
+    std::optional<TutorialIdentifier> id) {
   if (!running_tutorial_) {
     return false;
   }
@@ -159,7 +159,7 @@ bool TutorialService::RestartTutorial() {
   return true;
 }
 
-void TutorialService::AbortTutorial(absl::optional<int> abort_step) {
+void TutorialService::AbortTutorial(std::optional<int> abort_step) {
   // For various reasons, we could get called here while e.g. tearing down the
   // interaction sequence. We only want to actually run AbortTutorial() or
   // CompleteTutorial() exactly once, so we won't continue if the tutorial has
@@ -253,7 +253,7 @@ void TutorialService::HideCurrentBubbleIfShowing() {
 }
 
 bool TutorialService::IsRunningTutorial(
-    absl::optional<TutorialIdentifier> id) const {
+    std::optional<TutorialIdentifier> id) const {
   if (!running_tutorial_) {
     return false;
   }

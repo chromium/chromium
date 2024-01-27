@@ -133,7 +133,7 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
     if (!action.is_string()) {
       continue;
     }
-    if (absl::optional<ActionType> action_type =
+    if (std::optional<ActionType> action_type =
             NameToActionType(action.GetString())) {
       converted_actions.Append(static_cast<int>(action_type.value()));
     }

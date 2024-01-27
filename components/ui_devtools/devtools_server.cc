@@ -186,7 +186,7 @@ void UiDevToolsServer::SetOnSessionEnded(base::OnceClosure callback) const {
 void UiDevToolsServer::MakeServer(
     mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
   if (result == net::OK) {
     server_ = std::make_unique<network::server::HttpServer>(

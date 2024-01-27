@@ -377,7 +377,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
   DCHECK_EQ(0, web_data_service_request_);
 
   refresh_tokens_.clear();
-  ClearAuthError(absl::nullopt);
+  ClearAuthError(std::nullopt);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_) {
     token_binding_helper_->ClearAllKeys();

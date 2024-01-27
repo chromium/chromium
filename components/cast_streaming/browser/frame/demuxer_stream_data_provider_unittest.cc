@@ -79,7 +79,7 @@ class DemuxerStreamDataProviderTest : public testing::Test {
     MOCK_METHOD1(OnPreloadComplete, void(media::mojom::DecoderBufferPtr));
 
     MOCK_METHOD0(OnGetBufferDoneCalled, void());
-    void OnGetBufferDone(absl::optional<media::AudioDecoderConfig> config,
+    void OnGetBufferDone(std::optional<media::AudioDecoderConfig> config,
                          scoped_refptr<media::DecoderBuffer> buffer_expected,
                          mojom::GetAudioBufferResponsePtr get_buffer_response) {
       if (get_buffer_response->is_buffer()) {
@@ -156,7 +156,7 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), absl::nullopt, first_buffer_));
+      base::Unretained(&callbacks_), std::nullopt, first_buffer_));
   task_environment_.RunUntilIdle();
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   data_provider_->ProvideBuffer(
@@ -168,7 +168,7 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), absl::nullopt, second_buffer_));
+      base::Unretained(&callbacks_), std::nullopt, second_buffer_));
   task_environment_.RunUntilIdle();
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   data_provider_->ProvideBuffer(
@@ -195,7 +195,7 @@ TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), absl::nullopt, third_buffer_));
+      base::Unretained(&callbacks_), std::nullopt, third_buffer_));
   task_environment_.RunUntilIdle();
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   data_provider_->ProvideBuffer(
@@ -211,7 +211,7 @@ TEST_F(DemuxerStreamDataProviderTest, NoBuffersCallback) {
   EXPECT_CALL(client_, OnNoBuffersAvailable());
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), absl::nullopt, first_buffer_));
+      base::Unretained(&callbacks_), std::nullopt, first_buffer_));
   task_environment_.RunUntilIdle();
 }
 

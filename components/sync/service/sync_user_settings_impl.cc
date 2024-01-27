@@ -323,7 +323,7 @@ bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
   // TODO(crbug.com/1466401): Either make this method return a Tribool, so the
   // "unknown" case is properly communicated, or just remove it altogether
   // (callers can always use the global IsExplicitPassphrase() helper).
-  absl::optional<PassphraseType> type = GetPassphraseType();
+  std::optional<PassphraseType> type = GetPassphraseType();
   if (!type.has_value()) {
     return false;
   }
@@ -334,7 +334,7 @@ base::Time SyncUserSettingsImpl::GetExplicitPassphraseTime() const {
   return crypto_->GetExplicitPassphraseTime();
 }
 
-absl::optional<PassphraseType> SyncUserSettingsImpl::GetPassphraseType() const {
+std::optional<PassphraseType> SyncUserSettingsImpl::GetPassphraseType() const {
   return crypto_->GetPassphraseType();
 }
 

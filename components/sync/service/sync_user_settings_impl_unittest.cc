@@ -52,7 +52,7 @@ class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
   MOCK_METHOD(void, PassphraseTypeChanged, (PassphraseType), (override));
-  MOCK_METHOD(absl::optional<PassphraseType>,
+  MOCK_METHOD(std::optional<PassphraseType>,
               GetPassphraseType,
               (),
               (const override));

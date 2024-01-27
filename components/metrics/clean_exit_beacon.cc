@@ -50,8 +50,8 @@ bool g_skip_clean_shutdown_steps = false;
 // Records the the combined state of two distinct beacons' values in a
 // histogram.
 void RecordBeaconConsistency(
-    absl::optional<bool> beacon_file_beacon_value,
-    absl::optional<bool> platform_specific_beacon_value) {
+    std::optional<bool> beacon_file_beacon_value,
+    std::optional<bool> platform_specific_beacon_value) {
   CleanExitBeaconConsistency consistency =
       CleanExitBeaconConsistency::kDirtyDirty;
 
@@ -90,7 +90,7 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
                                PrefService* local_state) {
   int num_crashes;
   if (beacon_file_contents) {
-    absl::optional<int> crash_streak =
+    std::optional<int> crash_streak =
         beacon_file_contents->GetDict().FindInt(kVariationsCrashStreak);
     // Any contents without the key should have been rejected by
     // MaybeGetFileContents().
@@ -246,13 +246,13 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
   if (!IsBeaconFileSupported())
     return local_state_->GetBoolean(prefs::kStabilityExitedCleanly);
 
-  absl::optional<bool> beacon_file_beacon_value =
+  std::optional<bool> beacon_file_beacon_value =
       beacon_file_contents ? beacon_file_contents->GetDict().FindBool(
                                  prefs::kStabilityExitedCleanly)
-                           : absl::nullopt;
+                           : std::nullopt;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-  absl::optional<bool> backup_beacon_value = ExitedCleanly();
+  std::optional<bool> backup_beacon_value = ExitedCleanly();
   RecordBeaconConsistency(beacon_file_beacon_value, backup_beacon_value);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
@@ -324,11 +324,11 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   SetUserDefaultsBeacon(exited_cleanly);
 #endif  // BUILDFLAG(IS_WIN)
 
-  has_exited_cleanly_ = absl::make_optional(exited_cleanly);
+  has_exited_cleanly_ = std::make_optional(exited_cleanly);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-absl::optional<bool> CleanExitBeacon::ExitedCleanly() {
+std::optional<bool> CleanExitBeacon::ExitedCleanly() {
 #if BUILDFLAG(IS_WIN)
   base::win::RegKey regkey;
   DWORD value = 0u;
@@ -339,12 +339,12 @@ absl::optional<bool> CleanExitBeacon::ExitedCleanly() {
           ERROR_SUCCESS) {
     return value ? true : false;
   }
-  return absl::nullopt;
+  return std::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_IOS)
   if (HasUserDefaultsBeacon())
     return GetUserDefaultsBeacon();
-  return absl::nullopt;
+  return std::nullopt;
 #endif  // BUILDFLAG(IS_IOS)
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)

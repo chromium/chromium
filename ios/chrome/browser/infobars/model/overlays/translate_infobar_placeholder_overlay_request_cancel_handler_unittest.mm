@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/translate_infobar_placeholder_overlay_request_cancel_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -75,11 +76,11 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  web::FakeWebState* web_state_;
+  raw_ptr<web::FakeWebState> web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   FakeOverlayPresentationContext presentation_context_;
-  FakeTranslateInfoBarDelegate* delegate_ = nullptr;
-  InfoBarIOS* infobar_ = nullptr;
+  raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;
+  raw_ptr<InfoBarIOS> infobar_ = nullptr;
 };
 
 // Test that when TranslationFinished() is called by the handler's observer, the

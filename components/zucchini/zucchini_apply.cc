@@ -33,7 +33,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     CHECK(next_dst_it >= dst_it);
 
     offset_t gap = static_cast<offset_t>(next_dst_it - dst_it);
-    absl::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
+    std::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
     if (!extra_data) {
       LOG(ERROR) << "Error reading extra_data";
       return false;
@@ -47,7 +47,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     CHECK_EQ(dst_it, next_dst_it + equivalence->length);
   }
   offset_t gap = static_cast<offset_t>(new_image.end() - dst_it);
-  absl::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
+  std::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
   if (!extra_data) {
     LOG(ERROR) << "Error reading extra_data";
     return false;

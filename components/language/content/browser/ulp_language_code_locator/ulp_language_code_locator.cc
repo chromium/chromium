@@ -19,19 +19,19 @@ namespace {
 constexpr char kCellTokenKey[] = "celltoken";
 constexpr char kLanguageKey[] = "language";
 
-absl::optional<std::string> GetLangFromCache(const base::Value::Dict& cache,
-                                             const S2CellId& cell) {
+std::optional<std::string> GetLangFromCache(const base::Value::Dict& cache,
+                                            const S2CellId& cell) {
   const std::string* lang_cached = cache.FindString(kLanguageKey);
   if (!lang_cached) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* token_cached = cache.FindString(kCellTokenKey);
   if (!token_cached) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const S2CellId cell_cached = S2CellId::FromToken(*token_cached);
   if (!cell_cached.is_valid() || !cell_cached.contains(cell)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *lang_cached;
 }
@@ -77,7 +77,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
     if (index < celllangs_cached.size()) {
       CHECK(celllangs_cached[index].is_dict());
-      if (absl::optional<std::string> cache_language =
+      if (std::optional<std::string> cache_language =
               GetLangFromCache(celllangs_cached[index].GetDict(), cell)) {
         if (!cache_language->empty()) {
           languages.emplace_back(std::move(*cache_language));

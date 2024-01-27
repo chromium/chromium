@@ -826,12 +826,21 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
         v8_compile_hints::Status::kProduceCompileHintsStreaming);
   }
 
+  v8::Isolate* isolate = script_resource_->GetIsolateOrNull();
+  if (!isolate) {
+    stream_ = nullptr;
+    source_.reset();
+    SuppressStreaming(NotStreamingReason::kContextNotValid);
+    return false;
+  }
+
+  // Isolate is valid to pass to another thread because it is the main thread
+  // isolate that is never destroyed.
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
       script_streaming_task =
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
-              V8PerIsolateData::MainThreadIsolate(), source_.get(),
-              script_type_, compile_options, compile_hint_callback,
-              compile_hint_callback_data));
+              isolate, source_.get(), script_type_, compile_options,
+              compile_hint_callback, compile_hint_callback_data));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.
@@ -1161,6 +1170,7 @@ class InlineSourceStream final
 };
 
 BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
+    v8::Isolate* isolate,
     const String& text,
     v8::ScriptCompiler::CompileOptions compile_options) {
   auto stream = std::make_unique<InlineSourceStream>(text);
@@ -1170,8 +1180,7 @@ BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
                              : v8::ScriptCompiler::StreamedSource::TWO_BYTE);
 
   task_ = base::WrapUnique(v8::ScriptCompiler::StartStreaming(
-      V8PerIsolateData::MainThreadIsolate(), source_.get(),
-      v8::ScriptType::kClassic, compile_options));
+      isolate, source_.get(), v8::ScriptType::kClassic, compile_options));
 }
 
 void BackgroundInlineScriptStreamer::Run() {

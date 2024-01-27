@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +34,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -494,8 +494,8 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   //  - WebAppInstallInfo::title is used as the "name".
   //  - We still use the icons from the manifest.
   blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
-  manifest->name = absl::nullopt;
-  manifest->short_name = absl::nullopt;
+  manifest->name = std::nullopt;
+  manifest->short_name = std::nullopt;
 
   SetManifest(std::move(manifest));
   ObserverWaiter waiter;
@@ -518,8 +518,8 @@ TEST_F(AddToHomescreenDataFetcherTest,
   // Test that when the manifest does not provide either Manifest::short_name
   // nor Manifest::name but web page metadata provides a application-name.
   blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
-  manifest->name = absl::nullopt;
-  manifest->short_name = absl::nullopt;
+  manifest->name = std::nullopt;
+  manifest->short_name = std::nullopt;
   SetManifest(std::move(manifest));
   mojom::WebPageMetadataPtr metadata = BuildDefaultMetadata();
   SetWebPageMetadata(std::move(metadata));

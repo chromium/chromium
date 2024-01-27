@@ -80,12 +80,12 @@ class SkiaOutputDeviceDComp::OverlayData {
     return *this;
   }
 
-  absl::optional<gl::DCLayerOverlayImage> BeginOverlayAccess() {
+  std::optional<gl::DCLayerOverlayImage> BeginOverlayAccess() {
     CHECK(representation_);
     if (!access_) {
       access_ = representation_->BeginScopedReadAccess();
       if (!access_) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
     return access_->GetDCLayerOverlayImage();
@@ -153,10 +153,9 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
 
 SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() = default;
 
-void SkiaOutputDeviceDComp::Present(
-    const absl::optional<gfx::Rect>& update_rect,
-    BufferPresentedCallback feedback,
-    OutputSurfaceFrame frame) {
+void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
+                                    BufferPresentedCallback feedback,
+                                    OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   DoPresent(
@@ -191,7 +190,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
   for (auto& dc_layer : overlays) {
     // Only use the first shared image mailbox for accessing as an overlay.
     const gpu::Mailbox& mailbox = dc_layer.mailbox;
-    absl::optional<gl::DCLayerOverlayImage> overlay_image =
+    std::optional<gl::DCLayerOverlayImage> overlay_image =
         BeginOverlayAccess(mailbox);
     if (!overlay_image) {
       DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
@@ -228,7 +227,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
   }
 }
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
   auto it = overlays_.find(mailbox);
   if (it != overlays_.end())
@@ -236,7 +235,7 @@ SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
 
   auto overlay = shared_image_representation_factory_->ProduceOverlay(mailbox);
   if (!overlay)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::tie(it, std::ignore) = overlays_.emplace(mailbox, std::move(overlay));
   return it->second.BeginOverlayAccess();

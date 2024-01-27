@@ -27,7 +27,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     registered_model_metadata_.insert_or_assign(target, model_metadata);
     registered_observers_.AddObserver(observer);
@@ -41,7 +41,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
 
   bool DidRegisterForTarget(
       proto::OptimizationTarget target,
-      absl::optional<proto::Any>* out_model_metadata) const {
+      std::optional<proto::Any>* out_model_metadata) const {
     auto it = registered_model_metadata_.find(target);
     if (it == registered_model_metadata_.end())
       return false;
@@ -57,7 +57,7 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
   }
 
  private:
-  base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
+  base::flat_map<proto::OptimizationTarget, std::optional<proto::Any>>
       registered_model_metadata_;
   base::ObserverList<OptimizationTargetModelObserver> registered_observers_;
 };
@@ -91,17 +91,17 @@ class PageEntitiesModelHandlerImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  absl::optional<std::vector<ScoredEntityMetadata>> ExecuteModel(
+  std::optional<std::vector<ScoredEntityMetadata>> ExecuteModel(
       const std::string& text) {
-    absl::optional<std::vector<ScoredEntityMetadata>> entity_metadata;
+    std::optional<std::vector<ScoredEntityMetadata>> entity_metadata;
 
     base::RunLoop run_loop;
     model_executor_->ExecuteModelWithInput(
         text, base::BindOnce(
                   [](base::RunLoop* run_loop,
-                     absl::optional<std::vector<ScoredEntityMetadata>>*
+                     std::optional<std::vector<ScoredEntityMetadata>>*
                          out_entity_metadata,
-                     const absl::optional<std::vector<ScoredEntityMetadata>>&
+                     const std::optional<std::vector<ScoredEntityMetadata>>&
                          entity_metadata) {
                     *out_entity_metadata = entity_metadata;
                     run_loop->Quit();
@@ -112,17 +112,17 @@ class PageEntitiesModelHandlerImplTest : public testing::Test {
     return entity_metadata;
   }
 
-  absl::optional<EntityMetadata> GetMetadataForEntityId(
+  std::optional<EntityMetadata> GetMetadataForEntityId(
       const std::string& entity_id) {
-    absl::optional<EntityMetadata> entity_metadata;
+    std::optional<EntityMetadata> entity_metadata;
 
     base::RunLoop run_loop;
     model_executor_->GetMetadataForEntityId(
         entity_id,
         base::BindOnce(
             [](base::RunLoop* run_loop,
-               absl::optional<EntityMetadata>* out_entity_metadata,
-               const absl::optional<EntityMetadata>& entity_metadata) {
+               std::optional<EntityMetadata>* out_entity_metadata,
+               const std::optional<EntityMetadata>& entity_metadata) {
               *out_entity_metadata = entity_metadata;
               run_loop->Quit();
             },
@@ -167,7 +167,7 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateNoMetadata) {
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
@@ -196,7 +196,7 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateMetadataWrongType) {
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
@@ -225,7 +225,7 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateNoSlices) {
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), std::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
@@ -316,7 +316,7 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateMissingFiles) {
 
     // We expect that there will be no model to evaluate even for this input
     // that has output in the test model.
-    EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
+    EXPECT_EQ(ExecuteModel("Taylor Swift singer"), std::nullopt);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully", false,
@@ -329,23 +329,22 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateMissingFiles) {
 }
 
 TEST_F(PageEntitiesModelHandlerImplTest, GetMetadataForEntityIdNoModel) {
-  EXPECT_EQ(GetMetadataForEntityId("/m/0dl567"), absl::nullopt);
+  EXPECT_EQ(GetMetadataForEntityId("/m/0dl567"), std::nullopt);
 }
 
 TEST_F(PageEntitiesModelHandlerImplTest, ExecuteModelNoModel) {
-  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), std::nullopt);
 }
 
 TEST_F(PageEntitiesModelHandlerImplTest,
        SetsUpModelCorrectlyBasedOnFeatureParams) {
-  absl::optional<proto::Any> registered_model_metadata;
+  std::optional<proto::Any> registered_model_metadata;
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
       proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, &registered_model_metadata));
   EXPECT_TRUE(registered_model_metadata.has_value());
-  absl::optional<proto::PageEntitiesModelMetadata>
-      page_entities_model_metadata =
-          ParsedAnyMetadata<proto::PageEntitiesModelMetadata>(
-              *registered_model_metadata);
+  std::optional<proto::PageEntitiesModelMetadata> page_entities_model_metadata =
+      ParsedAnyMetadata<proto::PageEntitiesModelMetadata>(
+          *registered_model_metadata);
   EXPECT_TRUE(page_entities_model_metadata.has_value());
 }
 

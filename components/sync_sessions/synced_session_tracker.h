@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/tab_node_pool.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 
@@ -80,7 +80,7 @@ class SyncedSessionTracker {
   const sessions::SessionTab* LookupSessionTab(const std::string& session_tag,
                                                SessionID tab_id) const;
 
-  absl::optional<sync_pb::SyncEnums::BrowserType> LookupWindowType(
+  std::optional<sync_pb::SyncEnums::BrowserType> LookupWindowType(
       const std::string& session_tag,
       SessionID window_id) const;
 

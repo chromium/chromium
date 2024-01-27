@@ -37,7 +37,7 @@ class BertModelExecutorTest : public testing::Test {
         optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(),
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
   }
 
   void PushModelFileToModelExecutor(bool is_valid) {
@@ -91,7 +91,7 @@ TEST_F(BertModelExecutorTest, InvalidBertModel) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<tflite::task::core::Category>>&
+             const std::optional<std::vector<tflite::task::core::Category>>&
                  output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();

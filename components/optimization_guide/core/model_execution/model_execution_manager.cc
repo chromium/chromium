@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -19,6 +20,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -114,7 +116,7 @@ ModelExecutionManager::ModelExecutionManager(
       features::ShouldDownloadTextSafetyClassifierModel()) {
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-        /*model_metadata=*/absl::nullopt, this);
+        /*model_metadata=*/std::nullopt, this);
   }
 }
 
@@ -137,17 +139,15 @@ void ModelExecutionManager::ExecuteModelWithStreaming(
           [](OptimizationGuideModelExecutionResultStreamingCallback callback,
              OptimizationGuideModelExecutionResult result,
              std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            OptimizationGuideModelStreamingExecutionResult streaming_result;
+            streaming_result.log_entry = std::move(log_entry);
             if (result.has_value()) {
-              callback.Run(
-                  StreamingResponse{
-                      .response = *result,
-                      .is_complete = true,
-                  },
-                  std::move(log_entry));
+              streaming_result.response = base::ok(
+                  StreamingResponse{.response = *result, .is_complete = true});
             } else {
-              callback.Run(base::unexpected(result.error()),
-                           std::move(log_entry));
+              streaming_result.response = base::unexpected(result.error());
             }
+            callback.Run(std::move(streaming_result));
           },
           callback));
 }

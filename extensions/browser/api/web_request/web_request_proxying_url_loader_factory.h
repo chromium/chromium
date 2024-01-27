@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -289,9 +290,7 @@ class WebRequestProxyingURLLoaderFactory
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          target_factory_remote,
+      network::URLLoaderFactoryBuilder& factory_builder,
       mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
           header_client_receiver,
       WebRequestAPI::ProxySet* proxies,
@@ -314,9 +313,7 @@ class WebRequestProxyingURLLoaderFactory
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          target_factory_remote,
+      network::URLLoaderFactoryBuilder& factory_builder,
       mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
           header_client_receiver,
       WebRequestAPI::ProxySet* proxies,

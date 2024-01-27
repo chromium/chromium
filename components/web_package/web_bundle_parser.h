@@ -6,12 +6,12 @@
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
@@ -46,7 +46,7 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   // mojom::WebBundleParser implementation.
   void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
-  void ParseMetadata(absl::optional<uint64_t> offset,
+  void ParseMetadata(std::optional<uint64_t> offset,
                      ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,

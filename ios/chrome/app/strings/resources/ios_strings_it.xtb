@@ -21,6 +21,7 @@
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Passa alla finestra aperta</translation>
+<translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
 <translation id="1112015203684611006">Stampa non riuscita.</translation>
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
@@ -170,6 +171,7 @@
 <translation id="1891199774460536658">Monitoraggio automatico di tutti i pacchetti rilevati</translation>
 <translation id="1894023287452300670">Monitora qui il prezzo</translation>
 <translation id="189531189292803889">Il tuo iPad è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
+<translation id="1904580727789512086">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1923342640370224680">Ultima ora</translation>
 <translation id="1930989359703290198">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -757,6 +759,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
+<translation id="5024511550058813796">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati, quindi potrai continuare ciò che stavi facendo</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5038113048373546701">Ricevi notifiche su notizie, sport e altro in base ai tuoi interessi</translation>
 <translation id="5039804452771397117">Consenti</translation>
@@ -1148,6 +1151,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Cartelle</translation>
+<translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Per cambiare la posizione, puoi anche toccare e tenere premuta la barra degli indirizzi.</translation>
 <translation id="6988572888918530647">Gestisci il tuo Account Google</translation>
@@ -1411,7 +1415,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8425693829365242963">Le tue password sono univoche</translation>
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
-<translation id="8428634594422941299">OK</translation>
+<translation id="8428634594422941299">Ok</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8449347986464073209">Elimina ed esci</translation>
 <translation id="8459333855531264009">Non sicuro</translation>
@@ -1462,7 +1466,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8703536910991780768">Le tue password sembrano efficaci</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8709409604518538305">Le schede sono state chiuse</translation>
-<translation id="8712637175834984815">Fatto</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8721297211384281569">Menu Strumenti</translation>
 <translation id="8725066075913043281">Riprova</translation>

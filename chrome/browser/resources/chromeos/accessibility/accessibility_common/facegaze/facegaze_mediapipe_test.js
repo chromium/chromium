@@ -2,35 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
+GEN_INCLUDE(['facegaze_test_base.js']);
 
 /** FazeGaze MediaPipe tests. */
-FaceGazeMediaPipeTest = class extends E2ETestBase {
+FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
   /** @override */
   async setUpDeferred() {
+    this.overrideIntervalFunctions_ = false;
     await super.setUpDeferred();
-    await importModule(
-        ['FaceLandmarker', 'FilesetResolver'],
-        '/accessibility_common/third_party/mediapipe_task_vision/task_vision.js');
-  }
-
-  /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "ui/accessibility/accessibility_features.h"
-    `);
   }
 
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
-    GEN(`base::OnceClosure load_cb =
-        base::BindOnce(&ash::AccessibilityManager::EnableFaceGaze,
-            base::Unretained(ash::AccessibilityManager::Get()), true);`);
     // TODO(b/309121742): change `failOnConsoleError` to true and specify
     // allowed messages from mediapipe wasm.
     super.testGenPreambleCommon(
@@ -38,26 +22,47 @@ FaceGazeMediaPipeTest = class extends E2ETestBase {
         /*failOnConsoleError=*/ false);
   }
 
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kAccessibilityFaceGaze']};
+  /**
+   * Installs mock accessibility private into the camera stream context, as
+   * the default setup only installs it into the background context.
+   */
+  installMockAccessibilityPrivate() {
+    const window = chrome.extension.getViews().find(
+        view => view.location.href.includes('camera_stream.html'));
+    assertTrue(!!window);
+
+    window.chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
+  }
+
+  /** Gets the webCamFaceLandmarker object from the camera stream context. */
+  getWebCamFaceLandmarker() {
+    const window = chrome.extension.getViews().find(
+        view => view.location.href.includes('camera_stream.html'));
+
+    return window ? window.webCamFaceLandmarker : null;
+  }
+
+  /** @return {!webCamFaceLandmarker} */
+  async waitForWebCamFaceLandmarker() {
+    if (this.getWebCamFaceLandmarker()) {
+      return this.getWebCamFaceLandmarker();
+    }
+
+    return new Promise(resolve => {
+      const id = setInterval(() => {
+        if (this.getWebCamFaceLandmarker()) {
+          clearInterval(id);
+          resolve(this.getWebCamFaceLandmarker());
+        }
+      }, 1000);
+    });
   }
 };
 
-AX_TEST_F('FaceGazeMediaPipeTest', 'SmokeTest', async function() {
-  assertTrue(Boolean(FilesetResolver));
-  assertTrue(Boolean(FaceLandmarker));
-
-  const resolver = await FilesetResolver.forVisionTasks(
-      '/accessibility_common/third_party/mediapipe_task_vision');
-  assertTrue(Boolean(resolver));
-  const faceLandmarker = await FaceLandmarker.createFromOptions(resolver, {
-    baseOptions: {
-      modelAssetPath:
-          '/accessibility_common/third_party/mediapipe_task_vision/' +
-          'face_landmarker.task',
-    },
-    runningMode: 'VIDEO',
-  });
-  assertTrue(Boolean(faceLandmarker));
+AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
+  const webCamFaceLandmarker = await this.waitForWebCamFaceLandmarker();
+  this.installMockAccessibilityPrivate();
+  await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
+  await webCamFaceLandmarker.createFaceLandmarker_();
+  assertTrue(!!webCamFaceLandmarker.faceLandmarker_);
 });

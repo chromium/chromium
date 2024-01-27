@@ -86,8 +86,8 @@ HistoryClustersService::KeywordMap DictToKeywordsCache(
 
   for (auto pair : *dict) {
     const base::Value::Dict& entry_dict = pair.second.GetDict();
-    absl::optional<int> type = entry_dict.FindInt("type");
-    absl::optional<double> score = entry_dict.FindDouble("score");
+    std::optional<int> type = entry_dict.FindInt("type");
+    std::optional<double> score = entry_dict.FindDouble("score");
     if (!type || !score) {
       continue;
     }
@@ -341,15 +341,15 @@ void HistoryClustersService::UpdateClusters() {
   }
 }
 
-absl::optional<history::ClusterKeywordData>
+std::optional<history::ClusterKeywordData>
 HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   if (!IsJourneysEnabledAndVisible()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // We don't want any omnibox jank for low-end devices.
   if (base::SysInfo::IsLowEndDevice())
-    return absl::nullopt;
+    return std::nullopt;
 
   StartKeywordCacheRefresh();
   if (GetConfig().persist_on_query)
@@ -358,7 +358,7 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   // Early exit for single-character queries, even if it's an exact match.
   // We still want to allow for two-character exact matches like "uk".
   if (query.length() <= 1)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
 
@@ -372,7 +372,7 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
     return it->second;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HistoryClustersService::ClearKeywordCache() {

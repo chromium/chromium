@@ -118,7 +118,7 @@ std::unique_ptr<AwVariationsSeed> TakeSeed() {
 }
 
 void CacheSeedFreshness(long freshness) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_VariationsSeedLoader_cacheSeedFreshness(env, freshness);
 }
 

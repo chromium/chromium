@@ -19,13 +19,13 @@ TextEmbeddingModelExecutor::TextEmbeddingModelExecutor()
                        .value_or(-1)) {}
 TextEmbeddingModelExecutor::~TextEmbeddingModelExecutor() = default;
 
-absl::optional<tflite::task::processor::EmbeddingResult>
+std::optional<tflite::task::processor::EmbeddingResult>
 TextEmbeddingModelExecutor::Execute(ModelExecutionTask* execution_task,
                                     ExecutionStatus* out_status,
                                     const std::string& input) {
   if (input.empty()) {
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
-    return absl::nullopt;
+    return std::nullopt;
   }
   TRACE_EVENT2("browser", "TextEmbeddingModelExecutor::Execute",
                "optimization_target",
@@ -38,11 +38,11 @@ TextEmbeddingModelExecutor::Execute(ModelExecutionTask* execution_task,
           ->Embed(input);
   if (absl::IsCancelled(status_or_result.status())) {
     *out_status = ExecutionStatus::kErrorCancelled;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!status_or_result.ok()) {
     *out_status = ExecutionStatus::kErrorUnknown;
-    return absl::nullopt;
+    return std::nullopt;
   }
   *out_status = ExecutionStatus::kSuccess;
   return *status_or_result;

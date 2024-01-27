@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -187,14 +187,14 @@ BrowserStartupMetricRecorder& GetBrowser() {
 #if BUILDFLAG(IS_WIN)
 // Returns the hard fault count of the current process, or nullopt if it can't
 // be determined.
-absl::optional<uint32_t>
+std::optional<uint32_t>
 BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
   // Get the function pointer.
   static const NtQuerySystemInformationPtr query_sys_info =
       reinterpret_cast<NtQuerySystemInformationPtr>(::GetProcAddress(
           GetModuleHandle(L"ntdll.dll"), "NtQuerySystemInformation"));
   if (query_sys_info == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The output of this system call depends on the number of threads and
@@ -225,7 +225,7 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
       // to fill a large buffer just to record histograms.
       constexpr ULONG kMaxLength = 512 * 1024;
       if (return_length >= kMaxLength) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // Resize the buffer and retry, if the buffer hasn't already been
@@ -242,7 +242,7 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
     // times.
     DCHECK(return_length <= buffer.size() ||
            num_buffer_resize >= kMaxNumBufferResize);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Look for the struct housing information for the current process.
@@ -258,12 +258,12 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
     // The list ends when NextEntryOffset is zero. This also prevents busy
     // looping if the data is in fact invalid.
     if (proc_info->NextEntryOffset <= 0) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     index += proc_info->NextEntryOffset;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -471,7 +471,7 @@ void BrowserStartupMetricRecorder::RecordHardFaultHistogram() {
 #if BUILDFLAG(IS_WIN)
   DCHECK_EQ(UNDETERMINED_STARTUP_TEMPERATURE, g_startup_temperature);
 
-  const absl::optional<uint32_t> hard_fault_count =
+  const std::optional<uint32_t> hard_fault_count =
       GetHardFaultCountForCurrentProcess();
 
   if (hard_fault_count.has_value()) {

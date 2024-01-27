@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -108,7 +108,7 @@ class StandaloneTrustedVaultBackend
   bool MarkLocalKeysAsStale(const CoreAccountInfo& account_info);
 
   // Sets/resets |primary_account_|.
-  void SetPrimaryAccount(const absl::optional<CoreAccountInfo>& primary_account,
+  void SetPrimaryAccount(const std::optional<CoreAccountInfo>& primary_account,
                          RefreshTokenErrorState refresh_token_error_state);
 
   // Handles changes of accounts in cookie jar and removes keys for some
@@ -132,7 +132,7 @@ class StandaloneTrustedVaultBackend
 
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
-  absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
+  std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   trusted_vault_pb::LocalDeviceRegistrationInfo
   GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
@@ -176,7 +176,7 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+  std::optional<TrustedVaultDeviceRegistrationStateForUMA>
   MaybeRegisterDevice();
 
   // Attempts to honor the pending operation stored in
@@ -202,12 +202,12 @@ class StandaloneTrustedVaultBackend
   void FulfillFetchKeys(
       const std::string& gaia_id,
       FetchKeysCallback callback,
-      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
   // Same as above, but takes parameters from |ongoing_fetch_keys|, used when
   // keys are fetched asynchronously, after keys downloading attempt.
   void FulfillOngoingFetchKeys(
-      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
   // Returns true if the last failed request time imply that upcoming requests
   // should be throttled now (certain amount of time should pass since the last
@@ -241,7 +241,7 @@ class StandaloneTrustedVaultBackend
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
-  absl::optional<CoreAccountInfo> primary_account_;
+  std::optional<CoreAccountInfo> primary_account_;
 
   // Error state of refresh token for |primary_account_|.
   RefreshTokenErrorState refresh_token_error_state_ =
@@ -263,7 +263,7 @@ class StandaloneTrustedVaultBackend
     int method_type_hint;
     base::OnceClosure completion_callback;
   };
-  absl::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
+  std::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
 
   // Keys fetching is asynchronous when it involves sending request to the
   // server, this structure encapsulates the data needed to process the response
@@ -283,7 +283,7 @@ class StandaloneTrustedVaultBackend
     std::vector<FetchKeysCallback> callbacks;
     std::unique_ptr<TrustedVaultConnection::Request> request;
   };
-  absl::optional<OngoingFetchKeys> ongoing_fetch_keys_;
+  std::optional<OngoingFetchKeys> ongoing_fetch_keys_;
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
@@ -327,7 +327,7 @@ class StandaloneTrustedVaultBackend
     CoreAccountInfo account_info;
     base::OnceCallback<void(bool)> completion_callback;
   };
-  absl::optional<PendingGetIsRecoverabilityDegraded>
+  std::optional<PendingGetIsRecoverabilityDegraded>
       pending_get_is_recoverability_degraded_;
 };
 

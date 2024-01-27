@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   std::string policy_blob_path;
   std::string client_state_path;
   std::string unix_socket_path;
-  absl::optional<std::string> log_path;
+  std::optional<std::string> log_path;
   base::ScopedFD startup_pipe;
   int min_log_level;
   bool log_to_console;

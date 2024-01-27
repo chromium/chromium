@@ -122,7 +122,7 @@ class TestMultiEvent {
   }
 
   base::Lock lock_;
-  absl::optional<TupleType> result_;
+  std::optional<TupleType> result_;
   bool repeated_cb_called_ = false;
   bool result_retrieved_ = false;
   base::WeakPtrFactory<TestMultiEvent<ResType...>> weak_ptr_factory_{this};

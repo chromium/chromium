@@ -384,7 +384,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
 }
 
 void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
-    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   if (!output_surface_plane->has_value())
     return;
 

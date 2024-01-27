@@ -6,10 +6,10 @@
 #define COMPONENTS_VIZ_SERVICE_COMPOSITOR_FRAME_FUZZER_FUZZER_SOFTWARE_OUTPUT_SURFACE_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -18,7 +18,7 @@ namespace viz {
 class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
  public:
   explicit FuzzerSoftwareOutputSurfaceProvider(
-      absl::optional<base::FilePath> png_dir_path);
+      std::optional<base::FilePath> png_dir_path);
 
   FuzzerSoftwareOutputSurfaceProvider(
       const FuzzerSoftwareOutputSurfaceProvider&) = delete;
@@ -42,7 +42,7 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
   gpu::SyncPointManager* GetSyncPointManager() override;
 
  private:
-  absl::optional<base::FilePath> png_dir_path_;
+  std::optional<base::FilePath> png_dir_path_;
 };
 
 }  // namespace viz

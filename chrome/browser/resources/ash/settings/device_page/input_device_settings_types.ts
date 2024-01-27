@@ -110,6 +110,9 @@ export type InputDeviceSettingsPolicy =
 export type InputDeviceSettingsFkeyPolicy =
     InputDeviceSettingsTypes.InputDeviceSettingsFkeyPolicy;
 
+export type InputDeviceSettingsSixPackKeyPolicy =
+    InputDeviceSettingsTypes.InputDeviceSettingsSixPackKeyPolicy;
+
 export type KeyboardPolicies = InputDeviceSettingsTypes.KeyboardPolicies;
 export type MousePolicies = InputDeviceSettingsTypes.MousePolicies;
 

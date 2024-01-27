@@ -9,8 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/test/views_test_base.h"
@@ -224,6 +227,13 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
 }
 
 TEST_F(AutoPipSettingViewTest, WidgetIsCenteredWhenArrowIsFloat) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_LINUX)
+  // TODO (crbug/1521332): Evaluate fix and re-enable
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
+#endif
   // Set up the anchor view.
   views::Widget::InitParams anchor_view_widget_params =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);

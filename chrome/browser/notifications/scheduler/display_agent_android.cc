@@ -71,7 +71,7 @@ void DisplayAgentAndroid::ShowNotification(
     std::unique_ptr<SystemData> system_data) {
   // TODO(xingliu): Refactor and hook to NotificationDisplayService.
   DCHECK(notification_data);
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(!notification_data->title.empty());
   DCHECK(!notification_data->message.empty());
 

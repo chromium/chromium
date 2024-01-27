@@ -379,12 +379,34 @@ class CORE_EXPORT LocalFrameView final
     target_state_ = state;
   }
 
-  // This for doing work that needs to run synchronously at the end of lifecyle
+  // Layout invalidation is allowed by default. Instantiating this class
+  // disallows layout invalidation within the containing scope. If layout
+  // invalidation takes place while the scoper is active a DCHECK will be
+  // triggered.
+  class InvalidationDisallowedScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit InvalidationDisallowedScope(const LocalFrameView& frame_view);
+    InvalidationDisallowedScope(const InvalidationDisallowedScope&) = delete;
+    InvalidationDisallowedScope& operator=(const InvalidationDisallowedScope&) =
+        delete;
+    ~InvalidationDisallowedScope();
+
+   private:
+    base::AutoReset<bool> resetter_;
+    // The number of |InvalidationDisallowedScope| class instances currently in
+    // existence.
+    static int instance_count_;
+  };
+  friend class InvalidationDisallowedScope;
+
+  // This for doing work that needs to run synchronously at the end of lifecycle
   // updates, but needs to happen outside of the lifecycle code. It's OK to
   // schedule another animation frame here, but the layout tree should not be
   // invalidated.
   void RunPostLifecycleSteps();
-  bool InPostLifecycleSteps() const;
+  bool InvalidationDisallowed() const;
 
   void ScheduleVisualUpdateForVisualOverflowIfNeeded();
   void ScheduleVisualUpdateForPaintInvalidationIfNeeded();
@@ -1016,7 +1038,7 @@ class CORE_EXPORT LocalFrameView final
   Member<LocalFrame> frame_;
 
   bool can_have_scrollbars_;
-  bool in_post_lifecycle_steps_ = false;
+  bool invalidation_disallowed_ = false;
 
   bool has_pending_layout_;
   LayoutSubtreeRootList layout_subtree_root_list_;

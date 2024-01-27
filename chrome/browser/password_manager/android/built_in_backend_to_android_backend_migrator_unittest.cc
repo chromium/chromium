@@ -661,8 +661,8 @@ struct MigrationParamForMetrics {
   bool migration_ran_before;
   // Whether password sync is enabled in settings.
   bool is_sync_enabled;
-  // Whether non-syncable migration is required after a change in sync status.
-  bool is_non_syncable_data_migration;
+  // Whether migration is required after a change in sync status.
+  bool migration_required_after_sync_state_change;
   // Whether migration should complete successfully or not.
   bool is_successful_migration;
   // Expected migration type for metrics recording.
@@ -690,6 +690,10 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
     prefs()->registry()->RegisterIntegerPref(
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
+    prefs()->registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
     if (GetParam().migration_ran_before) {
       // Setup the pref to indicate that the initial migration has happened
@@ -705,7 +709,7 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
 
     CreateMigrator(&built_in_backend_, &android_backend_, prefs());
 
-    if (GetParam().is_non_syncable_data_migration) {
+    if (GetParam().migration_required_after_sync_state_change) {
       prefs()->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
     }
 
@@ -768,21 +772,21 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = false,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = false,
+            .migration_required_after_sync_state_change = false,
             .is_successful_migration = true,
             .expected_migration_type = "InitialMigrationForSyncUsers"},
         // Unsuccessful initial migration.
         MigrationParamForMetrics{
             .migration_ran_before = false,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = false,
+            .migration_required_after_sync_state_change = false,
             .is_successful_migration = false,
             .expected_migration_type = "InitialMigrationForSyncUsers"},
         // Successful non-syncable data migration to the android backend.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = true,
+            .migration_required_after_sync_state_change = true,
             .is_successful_migration = true,
             .expected_migration_type =
                 "NonSyncableDataMigrationToAndroidBackend"},
@@ -790,7 +794,7 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = true,
+            .migration_required_after_sync_state_change = true,
             .is_successful_migration = false,
             .expected_migration_type =
                 "NonSyncableDataMigrationToAndroidBackend"},
@@ -798,7 +802,7 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = false,
-            .is_non_syncable_data_migration = true,
+            .migration_required_after_sync_state_change = true,
             .is_successful_migration = true,
             .expected_migration_type =
                 "NonSyncableDataMigrationToBuiltInBackend"},
@@ -806,7 +810,7 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = false,
-            .is_non_syncable_data_migration = true,
+            .migration_required_after_sync_state_change = true,
             .is_successful_migration = false,
             .expected_migration_type =
                 "NonSyncableDataMigrationToBuiltInBackend"},
@@ -814,14 +818,14 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = false,
+            .migration_required_after_sync_state_change = false,
             .is_successful_migration = true,
             .expected_migration_type = "ReenrollmentAttemptMigration"},
         // Unsuccessful reenrollment attempt.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .is_non_syncable_data_migration = false,
+            .migration_required_after_sync_state_change = false,
             .is_successful_migration = false,
             .expected_migration_type = "ReenrollmentAttemptMigration"}));
 

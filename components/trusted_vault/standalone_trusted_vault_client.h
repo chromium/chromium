@@ -88,7 +88,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // Runs |cb| when all requests have completed.
   void WaitForFlushForTesting(base::OnceClosure cb) const;
   void FetchBackendPrimaryAccountForTesting(
-      base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> callback)
+      base::OnceCallback<void(const std::optional<CoreAccountInfo>&)> callback)
       const;
   void FetchIsDeviceRegisteredForTesting(
       const std::string& gaia_id,

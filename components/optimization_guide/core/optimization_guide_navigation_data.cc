@@ -71,18 +71,18 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
     builder.Record(ukm::UkmRecorder::Get());
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 OptimizationGuideNavigationData::hints_fetch_latency() const {
   if (!hints_fetch_start_ || !hints_fetch_end_) {
     // Either a fetch was not initiated for this navigation or the fetch did not
     // completely successfully.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (*hints_fetch_end_ < *hints_fetch_start_) {
     // This can happen if a hints fetch was started for a redirect, but the
     // fetch had not successfully completed yet.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *hints_fetch_end_ - *hints_fetch_start_;

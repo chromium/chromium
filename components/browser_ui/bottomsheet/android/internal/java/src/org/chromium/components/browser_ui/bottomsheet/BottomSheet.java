@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -23,6 +24,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -156,6 +158,9 @@ class BottomSheet extends FrameLayout
     /** Whether or not always use the full width of the container. */
     private boolean mAlwaysFullWidth;
 
+    /** The supplier of the bottom inset when edge to edge is enabled. */
+    private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
+
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
      * view.
@@ -288,12 +293,18 @@ class BottomSheet extends FrameLayout
      * Adds layout change listeners to the views that the bottom sheet depends on. Namely the
      * heights of the root view and control container are important as they are used in many of the
      * calculations in this class.
+     *
      * @param window Android window for getting insets.
      * @param keyboardDelegate Delegate for hiding the keyboard.
      * @param alwaysFullWidth Whether bottom sheet is always full-width.
+     * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
      */
     public void init(
-            Window window, KeyboardVisibilityDelegate keyboardDelegate, boolean alwaysFullWidth) {
+            Window window,
+            KeyboardVisibilityDelegate keyboardDelegate,
+            boolean alwaysFullWidth,
+            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
 
         mToolbarHolder =
@@ -702,9 +713,15 @@ class BottomSheet extends FrameLayout
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
         mCurrentOffsetPx = offset;
 
+        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
+        int bottomInset = ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get());
+
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
         // browser controls do.
-        float translationY = (mContainerHeight - mCurrentOffsetPx) + getOffsetFromBrowserControls();
+        float translationY =
+                (mContainerHeight - mCurrentOffsetPx)
+                        + getOffsetFromBrowserControls()
+                        - (mTargetState == SheetState.HIDDEN ? 0 : bottomInset);
 
         if (isSheetOpen() && MathUtils.areFloatsEqual(translationY, getTranslationY())) return;
 

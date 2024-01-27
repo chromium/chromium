@@ -25,7 +25,7 @@ std::pair<PaintPreviewFileMixin::ProtoReadStatus,
           std::unique_ptr<PaintPreviewProto>>
 GetProto(scoped_refptr<FileManager> file_manager,
          const DirectoryKey& key,
-         absl::optional<base::TimeDelta> expiry_horizon) {
+         std::optional<base::TimeDelta> expiry_horizon) {
   TRACE_EVENT0("paint_preview", "PaintPreviewFileMixin::GetProto");
   if (expiry_horizon.has_value()) {
     auto file_info = file_manager->GetInfo(key);
@@ -83,7 +83,7 @@ PaintPreviewFileMixin::~PaintPreviewFileMixin() = default;
 
 void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
-    absl::optional<base::TimeDelta> expiry_horizon,
+    std::optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetProto, file_manager_, key, expiry_horizon),

@@ -55,7 +55,7 @@ class DeviceSwitcherResultDispatcher
 
  private:
   void SaveResultToPref(const ClassificationResult& result);
-  absl::optional<ClassificationResult> ReadResultFromPref() const;
+  std::optional<ClassificationResult> ReadResultFromPref() const;
 
   void RefreshSegmentResultIfNeeded();
   void OnGotResult(const ClassificationResult& result);
@@ -67,7 +67,7 @@ class DeviceSwitcherResultDispatcher
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<FieldTrialRegister> field_trial_register_;
   ClassificationResultCallback waiting_callback_;
-  absl::optional<ClassificationResult> latest_result_;
+  std::optional<ClassificationResult> latest_result_;
 
   // Note that the observation is only active when the result is not computed
   // yet.

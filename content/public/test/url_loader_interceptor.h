@@ -25,6 +25,10 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+namespace network {
+class URLLoaderFactoryBuilder;
+}  // namespace network
+
 namespace content {
 
 // Helper class to intercept URLLoaderFactory calls for tests.
@@ -175,8 +179,8 @@ class URLLoaderInterceptor {
 
  private:
   class BrowserProcessWrapper;
-  class Interceptor;
   class IOState;
+  class Interceptor;
   class RenderProcessHostWrapper;
   class URLLoaderFactoryGetterWrapper;
   class URLLoaderFactoryNavigationWrapper;
@@ -197,7 +201,7 @@ class URLLoaderInterceptor {
   // Callback on UI thread whenever NavigationURLLoaderImpl needs a
   // URLLoaderFactory with a network::mojom::TrustedURLLoaderHeaderClient.
   void InterceptNavigationRequestCallback(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver);
+      network::URLLoaderFactoryBuilder& factory_builder);
 
   // Attempts to intercept the given request, returning true if it was
   // intercepted.

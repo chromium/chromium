@@ -5,6 +5,7 @@
 #include "components/user_manager/known_user.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/json/values_util.h"
@@ -19,18 +20,17 @@
 #include "components/user_manager/user_manager_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
-absl::optional<std::string> GetStringPrefValue(KnownUser* known_user,
-                                               const AccountId& account_id,
-                                               const char* pref_name) {
+std::optional<std::string> GetStringPrefValue(KnownUser* known_user,
+                                              const AccountId& account_id,
+                                              const char* pref_name) {
   if (const std::string* value =
           known_user->FindStringPath(account_id, pref_name)) {
     return *value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -198,9 +198,9 @@ TEST_F(KnownUserTest, UpdatePrefsWithoutClear) {
   known_user.SetPath(kDefaultAccountId, kPrefName2,
                      base::Value("pref2_value1"));
 
-  EXPECT_EQ(absl::make_optional(std::string("pref1_value2")),
+  EXPECT_EQ(std::make_optional(std::string("pref1_value2")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
-  EXPECT_EQ(absl::make_optional(std::string("pref2_value1")),
+  EXPECT_EQ(std::make_optional(std::string("pref2_value1")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName2));
 }
 
@@ -215,11 +215,11 @@ TEST_F(KnownUserTest, UpdatePrefsWithClear) {
   known_user.SetPath(kDefaultAccountId, kPrefName2,
                      base::Value("pref2_value1"));
 
-  known_user.SetPath(kDefaultAccountId, kPrefName1, absl::nullopt);
+  known_user.SetPath(kDefaultAccountId, kPrefName1, std::nullopt);
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
-  EXPECT_EQ(absl::make_optional(std::string("pref2_value1")),
+  EXPECT_EQ(std::make_optional(std::string("pref2_value1")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName2));
 }
 
@@ -560,7 +560,7 @@ TEST_F(KnownUserTest, CleanObsoletePrefs) {
   EXPECT_FALSE(known_user.FindBoolPath(kDefaultAccountId, kObsoletePrefName)
                    .has_value());
 
-  absl::optional<bool> custom_pref_value =
+  std::optional<bool> custom_pref_value =
       known_user.FindBoolPath(kDefaultAccountId, kCustomPrefName);
 
   EXPECT_TRUE(custom_pref_value.has_value());

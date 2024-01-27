@@ -30,12 +30,13 @@ public class PublicTransitConfig {
     static void maybePauseAfterTransition(ConditionalState state) {
         long pauseMs = sTransitionPause;
         if (pauseMs > 0) {
+            String toastText = buildToastText(state);
             ThreadUtils.runOnUiThread(
                     () -> {
                         Toast.makeText(
                                         InstrumentationRegistry.getInstrumentation()
                                                 .getTargetContext(),
-                                        state.toString(),
+                                        toastText,
                                         Toast.LENGTH_SHORT)
                                 .show();
                     });
@@ -46,5 +47,18 @@ public class PublicTransitConfig {
                 Log.e(TAG, "Interrupted pause", e);
             }
         }
+    }
+
+    private static String buildToastText(ConditionalState state) {
+        StringBuilder textToDisplay = new StringBuilder();
+        String currentTestCase = TrafficControl.getCurrentTestCase();
+        if (currentTestCase != null) {
+            textToDisplay.append("[");
+            textToDisplay.append(currentTestCase);
+            textToDisplay.append("]\n");
+        }
+        textToDisplay.append(state.toString());
+        String textToDisplayString = textToDisplay.toString();
+        return textToDisplayString;
     }
 }

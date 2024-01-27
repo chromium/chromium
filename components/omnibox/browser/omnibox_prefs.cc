@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/omnibox_prefs.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,7 +15,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 namespace omnibox {
@@ -59,7 +60,7 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
   const base::Value::Dict& dictionary =
       prefs->GetDict(kSuggestionGroupVisibility);
 
-  absl::optional<int> value =
+  std::optional<int> value =
       dictionary.FindInt(base::NumberToString(suggestion_group_id));
 
   if (value == SuggestionGroupVisibility::HIDDEN ||

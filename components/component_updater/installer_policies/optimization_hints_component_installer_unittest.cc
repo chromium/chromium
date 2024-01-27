@@ -124,7 +124,7 @@ TEST_F(OptimizationHintsComponentInstallerTest, LoadFileWithData) {
   ASSERT_NO_FATAL_FAILURE(CreateTestOptimizationHints(expected_hints));
   ASSERT_NO_FATAL_FAILURE(LoadOptimizationHints());
 
-  absl::optional<optimization_guide::HintsComponentInfo> component_info =
+  std::optional<optimization_guide::HintsComponentInfo> component_info =
       optimization_guide::OptimizationHintsComponentUpdateListener::
           GetInstance()
               ->hints_component_info();

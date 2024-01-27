@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "content_facilitated_payments_driver.cc",
+    "content_facilitated_payments_driver.h",
+    "content_facilitated_payments_driver_factory.cc",
+    "content_facilitated_payments_driver_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/facilitated_payments/core/browser",
+    "//content/public/browser",
+  ]
+}

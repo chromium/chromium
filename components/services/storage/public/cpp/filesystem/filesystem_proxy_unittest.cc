@@ -362,16 +362,16 @@ TEST_P(FilesystemProxyTest, DeleteFileFailsOnSubDirectory) {
 }
 
 TEST_P(FilesystemProxyTest, GetFileInfo) {
-  absl::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
+  std::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
   ASSERT_TRUE(file1_info.has_value());
   EXPECT_FALSE(file1_info->is_directory);
   EXPECT_EQ(static_cast<int>(std::size(kFile1Contents) - 1), file1_info->size);
 
-  absl::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
+  std::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
   ASSERT_TRUE(dir1_info.has_value());
   EXPECT_TRUE(dir1_info->is_directory);
 
-  absl::optional<base::File::Info> dir1_file1_info =
+  std::optional<base::File::Info> dir1_file1_info =
       proxy().GetFileInfo(kDir1.Append(kDir1File1));
   ASSERT_TRUE(dir1_file1_info.has_value());
   EXPECT_FALSE(dir1_file1_info->is_directory);

@@ -6,13 +6,13 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_PAGE_CONTEXT_H_
 
 #include <compare>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -37,7 +37,7 @@ class PageContext {
 
   // Returns the PageContext for `contents`, which must be non-null. Returns
   // nullopt if the WebContents is not registered with PerformanceManager.
-  static absl::optional<PageContext> FromWebContents(
+  static std::optional<PageContext> FromWebContents(
       content::WebContents* contents);
 
   // Returns the WebContents for this context, or nullptr if it no longer
@@ -55,7 +55,7 @@ class PageContext {
   static PageContext FromPageNode(const PageNode* node);
 
   // Returns the PageContext for `node`, or nullopt if `node` is null.
-  static absl::optional<PageContext> FromWeakPageNode(
+  static std::optional<PageContext> FromWeakPageNode(
       base::WeakPtr<PageNode> node);
 
   // Returns the PageNode for this context, or nullptr if it no longer exists.

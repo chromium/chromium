@@ -183,7 +183,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return;
     }
 
-    absl::optional<gfx::RoundedCornersF> window_radii =
+    std::optional<gfx::RoundedCornersF> window_radii =
         shell_surface_->window_corners_radii();
 
     if (!chromeos::features::IsRoundedWindowsEnabled() || !window_radii) {
@@ -566,7 +566,7 @@ void ShellSurfaceBase::SetShadowCornersRadii(
 }
 
 void ShellSurfaceBase::SetBoundsForShadows(
-    const absl::optional<gfx::Rect>& shadow_bounds) {
+    const std::optional<gfx::Rect>& shadow_bounds) {
   if (shadow_bounds_ != shadow_bounds) {
     // Set normal shadow bounds.
     shadow_bounds_ = shadow_bounds;
@@ -1911,7 +1911,7 @@ gfx::Rect ShellSurfaceBase::ComputeAdjustedBounds(
 
 void ShellSurfaceBase::UpdateWidgetBounds() {
   DCHECK(widget_);
-  absl::optional<gfx::Rect> bounds = GetWidgetBounds();
+  std::optional<gfx::Rect> bounds = GetWidgetBounds();
   if (!bounds) {
     return;
   }
@@ -2343,7 +2343,7 @@ void ShellSurfaceBase::CommitWidget() {
   gfx::Rect bounds = geometry_;
   if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
                                aura::client::kUseWindowBoundsForShadow)) {
-    SetBoundsForShadows(absl::make_optional(bounds));
+    SetBoundsForShadows(std::make_optional(bounds));
   }
 
   // The calling order matters. Updated window radius is need to correctly
@@ -2459,7 +2459,7 @@ void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
   initial_z_order_ = z_order;
 }
 
-void ShellSurfaceBase::SetShape(absl::optional<cc::Region> shape) {
+void ShellSurfaceBase::SetShape(std::optional<cc::Region> shape) {
   if (!shape) {
     pending_shape_dp_.reset();
     return;

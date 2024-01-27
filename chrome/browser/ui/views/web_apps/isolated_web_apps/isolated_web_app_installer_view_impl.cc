@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -374,7 +375,11 @@ class InstallSuccessView : public InstallerDialogView {
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
-            IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {}
+            IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {
+    auto image = std::make_unique<NonAccessibleImageView>();
+    image->SetImage(ui::ImageModel::FromResourceId(IDR_IWA_INSTALL_SUCCESS));
+    SetContentsView(std::move(image));
+  }
 };
 
 BEGIN_METADATA(InstallSuccessView)
@@ -531,7 +536,7 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                     confirm_installation_dialog.learn_more_callback));
             ShowChildDialog(
                 IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
-                CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
+                CreateImageModelFromVector(kPrivacyTipIcon, ui::kColorAccent),
                 IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
           },
           [this](
@@ -555,6 +560,10 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
+views::Widget* IsolatedWebAppInstallerViewImpl::GetChildWidgetForTesting() {
+  return child_widget_;
+}
+
 void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
     int title,
     const ui::DialogModelLabel& subtitle,
@@ -571,7 +580,11 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       .DisableCloseOnDeactivate()
       .AddCancelButton(base::BindOnce(
           &IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled,
-          base::Unretained(this)));
+          base::Unretained(this)))
+      .SetDialogDestroyingCallback(base::BindOnce(
+          &IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying,
+          weak_ptr_factory_.GetWeakPtr()));
+
   if (ok_label.has_value()) {
     dialog_model_builder.AddOkButton(
         base::BindOnce(&IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted,
@@ -608,7 +621,10 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       // `bubble` is initialized, at which point it must still be alive.
       base::Unretained(bubble.get()), std::move(header)));
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  child_widget_ = widget;
+  widget->Show();
 }
 
 void IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted() {
@@ -625,6 +641,10 @@ void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
   for (views::View* child : children()) {
     child->SetVisible(child == view);
   }
+}
+
+void IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying() {
+  child_widget_ = nullptr;
 }
 
 BEGIN_METADATA(IsolatedWebAppInstallerViewImpl)

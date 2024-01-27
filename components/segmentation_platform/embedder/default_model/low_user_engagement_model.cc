@@ -88,7 +88,7 @@ void LowUserEngagementModel::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != 28) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

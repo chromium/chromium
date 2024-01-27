@@ -55,12 +55,10 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   void CloseIdleConnections();
 
  private:
-  // Binds |pending_receiver| to a URL loader factory associated with
-  // the given |network_context|.
-  void CreateNewURLLoaderFactory(
+  // Returns a URLLoaderFactory associated with the given |network_context|.
+  scoped_refptr<network::SharedURLLoaderFactory> CreateNewURLLoaderFactory(
       BrowserContext* browser_context,
       network::mojom::NetworkContext* network_context,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       std::optional<net::IsolationInfo> isolation_info);
 
   // Bind |network_context_| to a new network context and configure it to use

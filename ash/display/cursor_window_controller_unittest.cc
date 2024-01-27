@@ -5,6 +5,7 @@
 #include "ash/display/cursor_window_controller.h"
 #include "base/memory/raw_ptr.h"
 
+#include <cmath>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -48,6 +49,22 @@
 #include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
+
+namespace {
+
+float DistanceBetweenPoints(const gfx::Point& p1, const gfx::Point& p2) {
+  float x_diff = p1.x() - p2.x();
+  float y_diff = p1.y() - p2.y();
+  return std::sqrt(x_diff * x_diff + y_diff * y_diff);
+}
+
+float DistanceBetweenSizes(const gfx::Size& s1, const gfx::Size& s2) {
+  float width_diff = s1.width() - s2.width();
+  float height_diff = s1.height() - s2.height();
+  return std::sqrt(width_diff * width_diff + height_diff * height_diff);
+}
+
+}  // namespace
 
 using ::ui::mojom::CursorType;
 
@@ -236,6 +253,11 @@ TEST_F(CursorWindowControllerTest, ScaleUsesCorrectAssets) {
                             gfx::Size(25, 25));
 
   auto get_pixel_value = [&](float scale) {
+    // TODO(b/318592117): don't need to update display when
+    // wm::GetCursorData uses ImageSkia instead of SkBitmap.
+    // Trigger regeneration of the cursor image.
+    UpdateDisplay(base::StringPrintf("300x200*%f", scale));
+
     uint32_t* data = static_cast<uint32_t*>(
         GetCursorImage().GetRepresentation(scale).GetBitmap().getPixels());
     return data[0];
@@ -294,7 +316,10 @@ TEST_F(CursorWindowControllerTest, DSF) {
             cursor_scale));
     const gfx::Size kCursorSize =
         size != 0 ? gfx::Size(size, size) : kOriginalCursorSize;
-    EXPECT_EQ(GetCursorImage().size(), kCursorSize);
+    // Scaling operations and conversions between dp and px can cause rounding
+    // errors. We accept rounding errors <= sqrt(1+1).
+    EXPECT_LE(DistanceBetweenSizes(GetCursorImage().size(), kCursorSize),
+              sqrt(2));
 
     // TODO(hferreiro): the cursor hotspot for non-custom cursors cannot be
     // checked, since the software cursor uses
@@ -306,8 +331,12 @@ TEST_F(CursorWindowControllerTest, DSF) {
           gfx::ConvertPointToDips(cursor_data->hotspot, cursor_scale));
       const float rescale =
           static_cast<float>(kCursorSize.width()) / kOriginalCursorSize.width();
-      EXPECT_EQ(GetCursorHotPoint(),
-                gfx::ScaleToCeiledPoint(kHotspot, rescale));
+      // Scaling operations and conversions between dp and px can cause rounding
+      // errors. We accept rounding errors <= sqrt(1+1).
+      EXPECT_LE(
+          DistanceBetweenPoints(GetCursorHotPoint(),
+                                gfx::ScaleToCeiledPoint(kHotspot, rescale)),
+          sqrt(2));
     }
 
     // The cursor window should have the same size as the cursor.

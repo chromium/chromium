@@ -67,7 +67,7 @@ void BrowsingDataCounterBridge::Destroy(JNIEnv* env,
 
 void BrowsingDataCounterBridge::onCounterFinished(
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Profile* profile =
       ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
   ScopedJavaLocalRef<jstring> result_string =

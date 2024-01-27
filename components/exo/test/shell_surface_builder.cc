@@ -35,7 +35,7 @@ struct Holder {
   std::unique_ptr<exo::SecurityDelegate> security_delegate_;
 
   void AddRootSurface(const gfx::Size& size,
-                      absl::optional<gfx::BufferFormat> buffer_format) {
+                      std::optional<gfx::BufferFormat> buffer_format) {
     auto surface = std::make_unique<exo::Surface>();
     std::unique_ptr<exo::Buffer> buffer;
     if (!size.IsEmpty() && buffer_format) {

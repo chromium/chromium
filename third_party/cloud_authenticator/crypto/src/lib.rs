@@ -86,7 +86,9 @@ mod rustcrypto {
 
     /// Perform the HKDF operation from https://datatracker.ietf.org/doc/html/rfc5869
     pub fn hkdf_sha256(ikm: &[u8], salt: &[u8], info: &[u8], output: &mut [u8]) -> Result<(), ()> {
-        hkdf::Hkdf::<sha2::Sha256>::new(Some(salt), ikm).expand(info, output).map_err(|_| ())
+        hkdf::Hkdf::<sha2::Sha256>::new(Some(salt), ikm)
+            .expand(info, output)
+            .map_err(|_| ())
     }
 
     pub fn aes_256_gcm_seal_in_place(
@@ -137,7 +139,9 @@ mod rustcrypto {
             let mut ret = [0u8; P256_SCALAR_LENGTH];
             // Warning: not very random.
             ret[0] = 1;
-            P256Scalar { v: p256::Scalar::from_repr(ret.into()).unwrap() }
+            P256Scalar {
+                v: p256::Scalar::from_repr(ret.into()).unwrap(),
+            }
         }
 
         pub fn compute_public_key(&self) -> [u8; P256_X962_LENGTH] {
@@ -339,7 +343,12 @@ mod ringimpl {
 
         pub fn compute_public_key(&self) -> [u8; P256_X962_LENGTH] {
             // unwrap: only returns an error if the input length is incorrect, but it isn't.
-            self.v.compute_public_key().unwrap().as_ref().try_into().unwrap()
+            self.v
+                .compute_public_key()
+                .unwrap()
+                .as_ref()
+                .try_into()
+                .unwrap()
         }
 
         pub fn bytes(&self) -> [u8; P256_SCALAR_LENGTH] {
@@ -447,7 +456,12 @@ mod ringimpl {
         pub fn sign(&self, to_be_signed: &[u8]) -> Result<impl AsRef<[u8]>, ()> {
             let mut signature = vec![0; self.key_pair.public_modulus_len()];
             self.key_pair
-                .sign(&ring::signature::RSA_PKCS1_SHA256, &PRNG, to_be_signed, &mut signature)
+                .sign(
+                    &ring::signature::RSA_PKCS1_SHA256,
+                    &PRNG,
+                    to_be_signed,
+                    &mut signature,
+                )
                 .unwrap();
             Ok(signature)
         }
@@ -464,6 +478,8 @@ mod ringimpl {
     }
 }
 
+// This implementation uses the bssl-crypto crate from the BoringSSL
+// distribution. This is used for testing within Chromium.
 #[cfg(feature = "bssl")]
 mod bsslimpl {
     #![allow(clippy::upper_case_acronyms)]
@@ -472,28 +488,15 @@ mod bsslimpl {
         NONCE_LEN, P256_SCALAR_LENGTH, P256_X962_LENGTH, SHA1_OUTPUT_LEN, SHA256_OUTPUT_LEN,
     };
     use alloc::vec::Vec;
-    use libc::{c_int, size_t};
-
-    use bssl_sys::{
-        i2d_ECPrivateKey, point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED, CBS_init,
-        ECDH_compute_key, EC_KEY_free, EC_KEY_generate_key, EC_KEY_get0_group,
-        EC_KEY_get0_private_key, EC_KEY_get0_public_key, EC_KEY_new, EC_KEY_oct2priv,
-        EC_KEY_priv2oct, EC_KEY_set_enc_flags, EC_KEY_set_group, EC_KEY_set_public_key,
-        EC_POINT_free, EC_POINT_mul, EC_POINT_new, EC_POINT_oct2point, EC_POINT_point2oct,
-        EC_group_p256, EVP_AEAD_CTX_free, EVP_AEAD_CTX_new, EVP_AEAD_CTX_open, EVP_AEAD_CTX_seal,
-        EVP_DigestSign, EVP_DigestSignInit, EVP_DigestVerify, EVP_DigestVerifyInit,
-        EVP_MD_CTX_free, EVP_MD_CTX_new, EVP_PKEY_assign_EC_KEY, EVP_PKEY_assign_RSA,
-        EVP_PKEY_free, EVP_PKEY_get0_EC_KEY, EVP_PKEY_get0_RSA, EVP_PKEY_new, EVP_aead_aes_256_gcm,
-        EVP_parse_private_key, EVP_sha256, RAND_bytes, RSA_parse_public_key, CBS, EC_KEY, EVP_PKEY,
-        HKDF, SHA1, SHA256,
-    };
+    use bssl_crypto::aead::{Aead, Aes256Gcm};
+    use bssl_crypto::ec::P256;
+    use bssl_crypto::hkdf::HkdfSha256;
+    use bssl_crypto::{digest, ecdh, ecdsa, hkdf, rsa};
 
     const GCM_TAG_LEN: usize = 16;
 
     pub fn rand_bytes(output: &mut [u8]) {
-        unsafe {
-            RAND_bytes(output.as_mut_ptr(), output.len());
-        }
+        bssl_crypto::rand_bytes(output)
     }
 
     pub fn aes_256_gcm_open_in_place(
@@ -502,31 +505,18 @@ mod bsslimpl {
         aad: &[u8],
         mut ciphertext: Vec<u8>,
     ) -> Result<Vec<u8>, ()> {
-        unsafe {
-            let ctx =
-                EVP_AEAD_CTX_new(EVP_aead_aes_256_gcm(), key.as_ptr(), key.len(), GCM_TAG_LEN);
-            let mut out_len: size_t = 0;
-            let ret = if EVP_AEAD_CTX_open(
-                ctx,
-                ciphertext.as_mut_ptr(),
-                &mut out_len,
-                ciphertext.len(),
-                nonce.as_ptr(),
-                NONCE_LEN,
-                ciphertext.as_ptr(),
-                ciphertext.len(),
-                aad.as_ptr(),
-                aad.len(),
-            ) != 1
-            {
-                Err(())
-            } else {
-                ciphertext.resize(out_len, 0u8);
-                Ok(ciphertext)
-            };
-            EVP_AEAD_CTX_free(ctx);
-            ret
+        if ciphertext.len() < GCM_TAG_LEN {
+            return Err(());
         }
+        let ciphertext_len = ciphertext.len() - GCM_TAG_LEN;
+        let (ciphertext_slice, tag) = ciphertext.split_at_mut(ciphertext_len);
+
+        let tag: &[u8; GCM_TAG_LEN] = &tag.try_into().unwrap();
+        let aead = Aes256Gcm::new(key);
+        aead.open_in_place(nonce, ciphertext_slice, tag, aad)
+            .map_err(|_| ())?;
+        ciphertext.resize(ciphertext_len, 0u8);
+        Ok(ciphertext)
     }
 
     pub fn aes_256_gcm_seal_in_place(
@@ -535,116 +525,45 @@ mod bsslimpl {
         aad: &[u8],
         plaintext: &mut Vec<u8>,
     ) {
-        unsafe {
-            plaintext.resize(plaintext.len() + GCM_TAG_LEN, 0u8);
-            let ctx =
-                EVP_AEAD_CTX_new(EVP_aead_aes_256_gcm(), key.as_ptr(), key.len(), GCM_TAG_LEN);
-            let mut out_len: size_t = 0;
-            if EVP_AEAD_CTX_seal(
-                ctx,
-                plaintext.as_mut_ptr(),
-                &mut out_len,
-                plaintext.len(),
-                nonce.as_ptr(),
-                NONCE_LEN,
-                plaintext.as_ptr(),
-                plaintext.len() - GCM_TAG_LEN,
-                aad.as_ptr(),
-                aad.len(),
-            ) != 1
-            {
-                panic!("EVP_AEAD_CTX_seal failed");
-            };
-            EVP_AEAD_CTX_free(ctx);
-        }
+        let tag = Aes256Gcm::new(key).seal_in_place(nonce, plaintext, aad);
+        plaintext.extend_from_slice(&tag);
     }
 
     pub fn hkdf_sha256(ikm: &[u8], salt: &[u8], info: &[u8], output: &mut [u8]) -> Result<(), ()> {
-        unsafe {
-            if HKDF(
-                output.as_mut_ptr(),
-                output.len(),
-                EVP_sha256(),
-                ikm.as_ptr(),
-                ikm.len(),
-                salt.as_ptr(),
-                salt.len(),
-                info.as_ptr(),
-                info.len(),
-            ) == 1
-            {
-                Ok(())
-            } else {
-                Err(())
-            }
-        }
+        HkdfSha256::derive_into(ikm, hkdf::Salt::NonEmpty(salt), info, output).map_err(|_| ())
     }
 
     pub fn sha1_two_part(input1: &[u8], input2: &[u8]) -> [u8; SHA1_OUTPUT_LEN] {
-        let mut ret = [0u8; SHA1_OUTPUT_LEN];
-        let input = [input1, input2].concat();
-        unsafe {
-            SHA1(input.as_ptr(), input.len(), ret.as_mut_ptr());
-        }
-        ret
+        let mut ctx = digest::InsecureSha1::new();
+        ctx.update(input1);
+        ctx.update(input2);
+        ctx.digest()
     }
 
     pub fn sha256(input: &[u8]) -> [u8; SHA256_OUTPUT_LEN] {
-        let mut ret = [0u8; SHA256_OUTPUT_LEN];
-        unsafe {
-            SHA256(input.as_ptr(), input.len(), ret.as_mut_ptr());
-        }
-        ret
+        digest::Sha256::hash(input)
     }
 
     pub fn sha256_two_part(input1: &[u8], input2: &[u8]) -> [u8; SHA256_OUTPUT_LEN] {
-        sha256(&[input1, input2].concat())
+        let mut ctx = digest::Sha256::new();
+        ctx.update(input1);
+        ctx.update(input2);
+        ctx.digest()
     }
 
-    pub struct P256Scalar {
-        ec_key: *mut EC_KEY,
-    }
+    pub struct P256Scalar(ecdh::PrivateKey<P256>);
 
     impl P256Scalar {
-        pub fn generate() -> P256Scalar {
-            unsafe {
-                let key = EC_KEY_new();
-                assert!(EC_KEY_set_group(key, EC_group_p256()) == 1);
-                assert!(EC_KEY_generate_key(key) == 1);
-                P256Scalar { ec_key: key }
-            }
+        pub fn generate() -> Self {
+            Self(ecdh::PrivateKey::generate())
         }
 
         pub fn compute_public_key(&self) -> [u8; P256_X962_LENGTH] {
-            let mut ret = [0u8; P256_X962_LENGTH];
-            unsafe {
-                let point = EC_KEY_get0_public_key(self.ec_key);
-                assert!(
-                    EC_POINT_point2oct(
-                        EC_group_p256(),
-                        point,
-                        POINT_CONVERSION_UNCOMPRESSED,
-                        ret.as_mut_ptr(),
-                        ret.len(),
-                        core::ptr::null_mut()
-                    ) == P256_X962_LENGTH
-                );
-            }
-            ret
+            self.0.to_x962_uncompressed().as_ref().try_into().unwrap()
         }
 
         pub fn bytes(&self) -> [u8; P256_SCALAR_LENGTH] {
-            let mut ret = [0u8; P256_SCALAR_LENGTH];
-            unsafe {
-                assert!(EC_KEY_priv2oct(self.ec_key, ret.as_mut_ptr(), ret.len()) == ret.len());
-            }
-            ret
-        }
-    }
-
-    impl Drop for P256Scalar {
-        fn drop(&mut self) {
-            unsafe { EC_KEY_free(self.ec_key) }
+            self.0.to_big_endian().as_ref().try_into().unwrap()
         }
     }
 
@@ -652,8 +571,7 @@ mod bsslimpl {
         type Error = ();
 
         fn try_from(bytes: &[u8]) -> Result<Self, ()> {
-            let array: [u8; P256_SCALAR_LENGTH] = bytes.try_into().map_err(|_| ())?;
-            (&array).try_into()
+            Ok(Self(ecdh::PrivateKey::from_big_endian(bytes).ok_or(())?))
         }
     }
 
@@ -661,30 +579,7 @@ mod bsslimpl {
         type Error = ();
 
         fn try_from(bytes: &[u8; P256_SCALAR_LENGTH]) -> Result<Self, ()> {
-            unsafe {
-                let group = EC_group_p256();
-                let key = EC_KEY_new();
-                assert!(EC_KEY_set_group(key, EC_group_p256()) == 1);
-                assert!(EC_KEY_oct2priv(key, bytes.as_ptr(), bytes.len()) == 1);
-                let pub_key = EC_POINT_new(group);
-                if EC_POINT_mul(
-                    group,
-                    pub_key,
-                    EC_KEY_get0_private_key(key),
-                    core::ptr::null(),
-                    core::ptr::null(),
-                    core::ptr::null_mut(),
-                ) != 1
-                {
-                    EC_KEY_free(key);
-                    EC_POINT_free(pub_key);
-                    return Err(());
-                }
-                assert!(EC_KEY_set_public_key(key, pub_key) == 1);
-                EC_POINT_free(pub_key);
-
-                Ok(P256Scalar { ec_key: key })
-            }
+            Ok(Self(ecdh::PrivateKey::from_big_endian(bytes).ok_or(())?))
         }
     }
 
@@ -692,277 +587,60 @@ mod bsslimpl {
         scalar: &P256Scalar,
         encoded_point: &[u8; P256_X962_LENGTH],
     ) -> Result<[u8; 32], ()> {
-        let mut buf = [0u8; 32];
-        unsafe {
-            let group = EC_group_p256();
-            let point = EC_POINT_new(group);
-            let ret = if EC_POINT_oct2point(
-                group,
-                point,
-                encoded_point.as_ptr(),
-                encoded_point.len(),
-                core::ptr::null_mut(),
-            ) != 1
-                || ECDH_compute_key(
-                    buf.as_mut_ptr() as *mut libc::c_void,
-                    buf.len(),
-                    point,
-                    scalar.ec_key,
-                    Option::None,
-                ) != buf.len() as c_int
-            {
-                Err(())
-            } else {
-                Ok(buf)
-            };
-            EC_POINT_free(point);
-            ret
-        }
+        let pub_key = ecdh::PublicKey::from_x962_uncompressed(encoded_point).ok_or(())?;
+        Ok(scalar.0.compute_shared_key(&pub_key).try_into().unwrap())
     }
 
-    fn i2d<T, F>(ctx: *const T, i2d_func: F) -> Vec<u8>
-    where
-        F: Fn(*const T, *mut *mut u8) -> c_int,
-    {
-        unsafe {
-            let size = i2d_func(ctx, core::ptr::null_mut());
-            assert!(size > 0);
-            let size = size as usize;
-            let mut ret = Vec::with_capacity(size);
-            let mut ptr = ret.as_mut_ptr();
-            i2d_func(ctx, &mut ptr);
-            ret.set_len(size);
-            ret
-        }
-    }
-
-    struct KeyPair {
-        pkey: *mut EVP_PKEY,
-    }
-
-    unsafe impl Sync for KeyPair {}
-    unsafe impl Send for KeyPair {}
-
-    impl KeyPair {
-        fn from_pkcs8(pkcs8: &[u8]) -> Result<KeyPair, ()> {
-            unsafe {
-                let mut cbs = CBS { data: core::ptr::null(), len: 0 };
-                CBS_init(&mut cbs, pkcs8.as_ptr(), pkcs8.len());
-                let pkey = EVP_parse_private_key(&mut cbs);
-                if pkey.is_null() {
-                    return Err(());
-                }
-                Ok(KeyPair { pkey })
-            }
-        }
-
-        fn is_ecdsa_p256(&self) -> bool {
-            unsafe {
-                let ec_key = EVP_PKEY_get0_EC_KEY(self.pkey);
-                if ec_key.is_null() {
-                    return false;
-                }
-                EC_KEY_get0_group(ec_key) == EC_group_p256()
-            }
-        }
-
-        fn is_rsa(&self) -> bool {
-            unsafe { !EVP_PKEY_get0_RSA(self.pkey).is_null() }
-        }
-
-        fn sign(&self, signed_data: &[u8]) -> Result<impl AsRef<[u8]>, ()> {
-            unsafe {
-                let ctx = EVP_MD_CTX_new();
-                let mut sig_len: size_t = 0;
-                assert!(
-                    EVP_DigestSignInit(
-                        ctx,
-                        core::ptr::null_mut(),
-                        EVP_sha256(),
-                        core::ptr::null_mut(),
-                        self.pkey
-                    ) == 1
-                );
-                assert!(
-                    EVP_DigestSign(
-                        ctx,
-                        core::ptr::null_mut(),
-                        &mut sig_len,
-                        signed_data.as_ptr(),
-                        signed_data.len()
-                    ) == 1
-                );
-                let mut ret = Vec::with_capacity(sig_len);
-                assert!(
-                    EVP_DigestSign(
-                        ctx,
-                        ret.as_mut_ptr(),
-                        &mut sig_len,
-                        signed_data.as_ptr(),
-                        signed_data.len()
-                    ) == 1
-                );
-                ret.set_len(sig_len);
-                EVP_MD_CTX_free(ctx);
-                Ok(ret)
-            }
-        }
-    }
-
-    impl Drop for KeyPair {
-        fn drop(&mut self) {
-            unsafe { EVP_PKEY_free(self.pkey) }
-        }
-    }
-
-    pub struct EcdsaKeyPair {
-        keypair: KeyPair,
-    }
+    pub struct EcdsaKeyPair(ecdsa::PrivateKey<P256>);
 
     impl EcdsaKeyPair {
         pub fn from_pkcs8(pkcs8: &[u8]) -> Result<EcdsaKeyPair, ()> {
-            let keypair = KeyPair::from_pkcs8(pkcs8)?;
-            if !keypair.is_ecdsa_p256() {
-                return Err(());
-            }
-            Ok(EcdsaKeyPair { keypair })
+            Ok(Self(
+                ecdsa::PrivateKey::from_der_private_key_info(pkcs8).ok_or(())?,
+            ))
         }
 
         pub fn generate_pkcs8() -> impl AsRef<[u8]> {
-            unsafe {
-                let ec_key = EC_KEY_new();
-                assert!(EC_KEY_set_group(ec_key, EC_group_p256()) == 1);
-                assert!(EC_KEY_generate_key(ec_key) == 1);
-                // Set EC_PKEY_NO_PARAMETERS, since we'll be wrapping in PKCS#8.
-                EC_KEY_set_enc_flags(ec_key, 1);
-
-                let serialized = i2d(ec_key, |ctx, ptr| i2d_ECPrivateKey(ctx, ptr));
-                const PKCS8_PREFIX : &[u8] = b"\x30\x81\x87\x02\x01\x00\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01\x06\x08\x2a\x86\x48\xce\x3d\x03\x01\x07\x04\x6d";
-                [PKCS8_PREFIX, &serialized].concat()
-            }
+            ecdsa::PrivateKey::<P256>::generate().to_der_private_key_info()
         }
 
         pub fn public_key(&self) -> impl AsRef<[u8]> + '_ {
-            unsafe {
-                let ec_key = EVP_PKEY_get0_EC_KEY(self.keypair.pkey);
-                let point = EC_KEY_get0_public_key(ec_key);
-                let mut ret = [0u8; P256_X962_LENGTH];
-                assert!(
-                    EC_POINT_point2oct(
-                        EC_group_p256(),
-                        point,
-                        POINT_CONVERSION_UNCOMPRESSED,
-                        ret.as_mut_ptr(),
-                        ret.len(),
-                        core::ptr::null_mut()
-                    ) == P256_X962_LENGTH
-                );
-                ret
-            }
+            self.0.to_x962_uncompressed()
         }
 
         pub fn sign(&self, signed_data: &[u8]) -> Result<impl AsRef<[u8]>, ()> {
-            self.keypair.sign(signed_data)
+            Ok(self.0.sign(signed_data))
         }
     }
 
     pub fn ecdsa_verify(pub_key: &[u8], signed_data: &[u8], signature: &[u8]) -> bool {
-        unsafe {
-            let group = EC_group_p256();
-            let point = EC_POINT_new(group);
-            if EC_POINT_oct2point(
-                group,
-                point,
-                pub_key.as_ptr(),
-                pub_key.len(),
-                core::ptr::null_mut(),
-            ) != 1
-            {
-                EC_POINT_free(point);
-                return false;
-            }
-            let ec_key = EC_KEY_new();
-            EC_KEY_set_group(ec_key, group);
-            EC_KEY_set_public_key(ec_key, point);
-            EC_POINT_free(point);
-
-            let pkey = EVP_PKEY_new();
-            EVP_PKEY_assign_EC_KEY(pkey, ec_key);
-
-            let ctx = EVP_MD_CTX_new();
-            assert!(
-                EVP_DigestVerifyInit(
-                    ctx,
-                    core::ptr::null_mut(),
-                    EVP_sha256(),
-                    core::ptr::null_mut(),
-                    pkey
-                ) == 1
-            );
-            let ok = EVP_DigestVerify(
-                ctx,
-                signature.as_ptr(),
-                signature.len(),
-                signed_data.as_ptr(),
-                signed_data.len(),
-            ) == 1;
-            EVP_MD_CTX_free(ctx);
-            EVP_PKEY_free(pkey);
-            ok
-        }
+        let Some(pub_key) = ecdsa::PublicKey::<P256>::from_x962_uncompressed(pub_key) else {
+            return false;
+        };
+        pub_key.verify(signed_data, signature).is_ok()
     }
 
-    pub struct RsaKeyPair {
-        keypair: KeyPair,
-    }
+    pub struct RsaKeyPair(rsa::PrivateKey);
 
     impl RsaKeyPair {
         pub fn from_pkcs8(pkcs8: &[u8]) -> Result<RsaKeyPair, ()> {
-            let keypair = KeyPair::from_pkcs8(pkcs8)?;
-            if !keypair.is_rsa() {
-                return Err(());
-            }
-            Ok(RsaKeyPair { keypair })
+            Ok(Self(
+                rsa::PrivateKey::from_der_private_key_info(pkcs8).ok_or(())?,
+            ))
         }
 
         pub fn sign(&self, signed_data: &[u8]) -> Result<impl AsRef<[u8]>, ()> {
-            self.keypair.sign(signed_data)
+            Ok(self.0.sign_pkcs1::<digest::Sha256>(signed_data))
         }
     }
 
     pub fn rsa_verify(pub_key: &[u8], signed_data: &[u8], signature: &[u8]) -> bool {
-        unsafe {
-            let mut cbs = CBS { data: core::ptr::null(), len: 0 };
-            CBS_init(&mut cbs, pub_key.as_ptr(), pub_key.len());
-            let rsa = RSA_parse_public_key(&mut cbs);
-            if rsa.is_null() {
-                return false;
-            }
-
-            let pkey = EVP_PKEY_new();
-            EVP_PKEY_assign_RSA(pkey, rsa);
-
-            let ctx = EVP_MD_CTX_new();
-            assert!(
-                EVP_DigestVerifyInit(
-                    ctx,
-                    core::ptr::null_mut(),
-                    EVP_sha256(),
-                    core::ptr::null_mut(),
-                    pkey
-                ) == 1
-            );
-            let ok = EVP_DigestVerify(
-                ctx,
-                signature.as_ptr(),
-                signature.len(),
-                signed_data.as_ptr(),
-                signed_data.len(),
-            ) == 1;
-            EVP_MD_CTX_free(ctx);
-            EVP_PKEY_free(pkey);
-            ok
-        }
+        let Some(pub_key) = rsa::PublicKey::from_der_rsa_public_key(pub_key) else {
+            return false;
+        };
+        pub_key
+            .verify_pkcs1::<digest::Sha256>(signed_data, signature)
+            .is_ok()
     }
 
     #[cfg(test)]
@@ -1011,7 +689,11 @@ mod bsslimpl {
             let pub_key = priv_key.public_key();
             let signed_message = [42u8; 20];
             let signature = priv_key.sign(&signed_message).unwrap();
-            assert!(ecdsa_verify(pub_key.as_ref(), &signed_message, signature.as_ref()));
+            assert!(ecdsa_verify(
+                pub_key.as_ref(),
+                &signed_message,
+                signature.as_ref()
+            ));
         }
     }
 }

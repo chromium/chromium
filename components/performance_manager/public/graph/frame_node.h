@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
@@ -16,7 +18,6 @@
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -235,7 +236,7 @@ class FrameNode : public Node {
   // when the viewport intersection is first calculated. May only be called for
   // a child frame, as the main frame is always considered to be intersecting
   // the viewport.
-  virtual absl::optional<bool> IntersectsViewport() const = 0;
+  virtual std::optional<bool> IntersectsViewport() const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.

@@ -12,9 +12,9 @@ namespace content {
 
 void ViewStructureBuilder_populateViewStructureNode(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node,
-    const base::android::JavaRef<jstring>& text,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node,
+    const jni_zero::JavaRef<jstring>& text,
     jboolean has_selection,
     JniIntWrapper sel_start,
     JniIntWrapper sel_end,
@@ -25,7 +25,7 @@ void ViewStructureBuilder_populateViewStructureNode(
     jboolean italic,
     jboolean underline,
     jboolean line_through,
-    const base::android::JavaRef<jstring>& class_name,
+    const jni_zero::JavaRef<jstring>& class_name,
     JniIntWrapper child_count) {
   Java_ViewStructureBuilder_populateViewStructureNode(
       env, obj, node, text, has_selection, sel_start, sel_end, color, bgcolor,
@@ -34,8 +34,8 @@ void ViewStructureBuilder_populateViewStructureNode(
 
 void ViewStructureBuilder_setViewStructureNodeBounds(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node,
     jboolean is_root_node,
     JniIntWrapper parent_relative_left,
     JniIntWrapper parent_relative_top,
@@ -58,36 +58,36 @@ void ViewStructureBuilder_setViewStructureNodeBounds(
 
 void ViewStructureBuilder_setViewStructureNodeHtmlInfo(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node,
-    const base::android::JavaRef<jstring>& html_tag,
-    const base::android::JavaRef<jstring>& css_display,
-    const base::android::JavaRef<jobjectArray>& html_attributes) {
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node,
+    const jni_zero::JavaRef<jstring>& html_tag,
+    const jni_zero::JavaRef<jstring>& css_display,
+    const jni_zero::JavaRef<jobjectArray>& html_attributes) {
   Java_ViewStructureBuilder_setViewStructureNodeHtmlInfo(
       env, obj, node, html_tag, css_display, html_attributes);
 }
 
 void ViewStructureBuilder_setViewStructureNodeHtmlMetadata(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node,
-    const base::android::JavaRef<jobjectArray>& metadata_strings) {
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node,
+    const jni_zero::JavaRef<jobjectArray>& metadata_strings) {
   Java_ViewStructureBuilder_setViewStructureNodeHtmlMetadata(env, obj, node,
                                                              metadata_strings);
 }
 
 void ViewStructureBuilder_commitViewStructureNode(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node) {
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node) {
   Java_ViewStructureBuilder_commitViewStructureNode(env, obj, node);
 }
 
-base::android::ScopedJavaLocalRef<jobject>
+jni_zero::ScopedJavaLocalRef<jobject>
 ViewStructureBuilder_addViewStructureNodeChild(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& node,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& node,
     JniIntWrapper index) {
   return Java_ViewStructureBuilder_addViewStructureNodeChild(env, obj, node,
                                                              index);

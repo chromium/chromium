@@ -562,7 +562,7 @@ void SyncEngineImpl::RecordNigoriMemoryUsageAndCountsHistograms() {
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<ModelTypeSet> interested_data_types =
+  std::optional<ModelTypeSet> interested_data_types =
       sync_invalidations_service_->GetInterestedDataTypes();
 
   // Interested data types must be initialized before handling invalidations to

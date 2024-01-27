@@ -859,7 +859,7 @@ GetDomainDiversityHelper(HistoryService* history,
 
 // Test one domain visit metric. A negative value indicates that an invalid
 // metric is expected.
-void TestDomainMetric(const absl::optional<DomainMetricCountType>& metric,
+void TestDomainMetric(const std::optional<DomainMetricCountType>& metric,
                       int expected) {
   if (expected >= 0) {
     ASSERT_TRUE(metric.has_value());
@@ -1188,7 +1188,7 @@ class AddSyncedVisitTask : public HistoryDBTask {
 
   bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
     VisitID visit_id = backend->AddSyncedVisit(
-        url_, u"Title", /*hidden=*/false, visit_, absl::nullopt, absl::nullopt);
+        url_, u"Title", /*hidden=*/false, visit_, std::nullopt, std::nullopt);
     EXPECT_NE(visit_id, kInvalidVisitID);
     LOG(ERROR) << "Added visit!";
     return true;

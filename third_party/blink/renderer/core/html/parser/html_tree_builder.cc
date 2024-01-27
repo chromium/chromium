@@ -1570,7 +1570,11 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           // we are shipping with <button> and <datalist>.
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kHTMLButtonInSelect);
-          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+          // TODO(crbug.com/1511354): Consider adding support for stylable
+          // select in <table>s and remove this kInSelectMode check and the one
+          // in the kDatalist case.
+          if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+              GetInsertionMode() == kInSelectMode) {
             SetInsertionMode(kInButtonInSelectMode);
             ProcessStartTagForInBody(token);
             return;
@@ -1579,7 +1583,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         case HTMLTag::kDatalist:
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kHTMLDatalistInSelect);
-          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+          if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+              GetInsertionMode() == kInSelectMode) {
             SetInsertionMode(kInDatalistInSelectMode);
             ProcessStartTagForInBody(token);
             return;

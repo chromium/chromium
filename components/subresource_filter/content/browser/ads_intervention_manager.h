@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -86,10 +87,10 @@ class AdsInterventionManager {
       mojom::AdsViolation ads_violation);
 
   // Returns the last active ads intervention written to metadata,
-  // otherwise absl::nullopt is returned. When retrieving ads interventions
+  // otherwise std::nullopt is returned. When retrieving ads interventions
   // for a navigation, should_record_metrics should be true to record
   // per-navigation ads intervention metrics.
-  absl::optional<LastAdsIntervention> GetLastAdsIntervention(
+  std::optional<LastAdsIntervention> GetLastAdsIntervention(
       const GURL& url) const;
 
   // Returns whether the subresource filter should activate for

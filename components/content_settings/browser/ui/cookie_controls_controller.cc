@@ -63,7 +63,7 @@ base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
 }
 
 bool WasEntryPointAlreadyAnimated(const base::Value::Dict& metadata) {
-  absl::optional<bool> entry_point_animated =
+  std::optional<bool> entry_point_animated =
       metadata.FindBool(kEntryPointAnimatedKey);
   return entry_point_animated.has_value() && entry_point_animated.value();
 }

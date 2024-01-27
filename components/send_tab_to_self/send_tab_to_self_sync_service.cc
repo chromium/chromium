@@ -45,7 +45,7 @@ void SendTabToSelfSyncService::OnSyncServiceInitialized(
   sync_service_->AddObserver(this);
 }
 
-absl::optional<EntryPointDisplayReason>
+std::optional<EntryPointDisplayReason>
 SendTabToSelfSyncService::GetEntryPointDisplayReason(const GURL& url_to_share) {
   // `sync_service_` can be null in any of these cases. In all of them the
   // handling is correct because sync is not available (Yet? Anymore?).

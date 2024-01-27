@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.device.DeviceFeatureList;
@@ -45,11 +46,14 @@ public class CredManSupportProvider {
             }
         }
 
-        if (ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
-                == null) {
+        if (!sOverrideVersionCheckForTesting
+                && ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
+                        == null) {
             sCredManSupport = CredManSupport.DISABLED;
+            recordCredManAvailability(/*available*/ false);
             return sCredManSupport;
         }
+        recordCredManAvailability(/*available*/ true);
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)) {
             sCredManSupport =
@@ -65,6 +69,11 @@ public class CredManSupportProvider {
         sCredManSupport = CredManSupport.IF_REQUIRED;
 
         return sCredManSupport;
+    }
+
+    private static void recordCredManAvailability(boolean available) {
+        RecordHistogram.recordBooleanHistogram(
+                "WebAuthentication.Android.CredManAvailability", available);
     }
 
     private static boolean hasOldGmsVersion() {

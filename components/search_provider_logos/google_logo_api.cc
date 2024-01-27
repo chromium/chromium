@@ -220,10 +220,10 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   if (is_simple || is_animated) {
     const base::Value::Dict* image = ddljson->FindDict("large_image");
     if (image) {
-      if (absl::optional<int> width_px = image->FindInt("width")) {
+      if (std::optional<int> width_px = image->FindInt("width")) {
         logo->metadata.width_px = *width_px;
       }
-      if (absl::optional<int> height_px = image->FindInt("height")) {
+      if (std::optional<int> height_px = image->FindInt("height")) {
         logo->metadata.height_px = *height_px;
       }
     }
@@ -234,10 +234,10 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
               dark_image->FindString("background_color")) {
         logo->metadata.dark_background_color = *background_color;
       }
-      if (absl::optional<int> width_px = dark_image->FindInt("width")) {
+      if (std::optional<int> width_px = dark_image->FindInt("width")) {
         logo->metadata.dark_width_px = *width_px;
       }
-      if (absl::optional<int> height_px = dark_image->FindInt("height")) {
+      if (std::optional<int> height_px = dark_image->FindInt("height")) {
         logo->metadata.dark_height_px = *height_px;
       }
     }
@@ -258,13 +258,13 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
       short_link_str.insert(0, "https:");
       logo->metadata.short_link = GURL(std::move(short_link_str));
       if (logo->metadata.short_link.is_valid()) {
-        if (absl::optional<int> offset_x = share_button->FindInt("offset_x")) {
+        if (std::optional<int> offset_x = share_button->FindInt("offset_x")) {
           logo->metadata.share_button_x = *offset_x;
         }
-        if (absl::optional<int> offset_y = share_button->FindInt("offset_y")) {
+        if (std::optional<int> offset_y = share_button->FindInt("offset_y")) {
           logo->metadata.share_button_y = *offset_y;
         }
-        if (absl::optional<double> opacity =
+        if (std::optional<double> opacity =
                 share_button->FindDouble("opacity")) {
           logo->metadata.share_button_opacity = *opacity;
         }
@@ -281,15 +281,15 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
         ddljson->FindDict("dark_share_button");
     if (dark_share_button) {
       if (logo->metadata.short_link.is_valid()) {
-        if (absl::optional<int> offset_x =
+        if (std::optional<int> offset_x =
                 dark_share_button->FindInt("offset_x")) {
           logo->metadata.dark_share_button_x = *offset_x;
         }
-        if (absl::optional<int> offset_y =
+        if (std::optional<int> offset_y =
                 dark_share_button->FindInt("offset_y")) {
           logo->metadata.dark_share_button_y = *offset_y;
         }
-        if (absl::optional<double> opacity =
+        if (std::optional<double> opacity =
                 dark_share_button->FindDouble("opacity")) {
           logo->metadata.dark_share_button_opacity = *opacity;
         }
@@ -373,7 +373,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
 
   base::TimeDelta time_to_live;
   // The JSON doesn't guarantee the number to fit into an int.
-  if (absl::optional<double> ttl_ms = ddljson->FindDouble("time_to_live_ms")) {
+  if (std::optional<double> ttl_ms = ddljson->FindDouble("time_to_live_ms")) {
     time_to_live = base::Milliseconds(*ttl_ms);
     logo->metadata.can_show_after_expiration = false;
   } else {

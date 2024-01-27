@@ -66,7 +66,7 @@ class ServerBackedStateKeysBroker {
   const std::vector<std::string>& state_keys() const { return state_keys_; }
 
   // Returns latest state key retrieval error.
-  ErrorType error_type() const { return error_type_; }
+  virtual ErrorType error_type() const;
 
   // Returns the state key for the current point in time. Returns an empty
   // string if state keys are unavailable or pending retrieval.

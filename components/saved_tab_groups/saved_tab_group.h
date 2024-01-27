@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -28,19 +28,19 @@ class SavedTabGroup {
       const std::u16string& title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
-      absl::optional<size_t> position,
-      absl::optional<base::Uuid> saved_guid = absl::nullopt,
-      absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt,
-      absl::optional<base::Time> creation_time_windows_epoch_micros =
-          absl::nullopt,
-      absl::optional<base::Time> update_time_windows_epoch_micros =
-          absl::nullopt);
+      std::optional<size_t> position,
+      std::optional<base::Uuid> saved_guid = std::nullopt,
+      std::optional<tab_groups::TabGroupId> local_group_id = std::nullopt,
+      std::optional<base::Time> creation_time_windows_epoch_micros =
+          std::nullopt,
+      std::optional<base::Time> update_time_windows_epoch_micros =
+          std::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
   ~SavedTabGroup();
 
   // Metadata accessors.
   const base::Uuid& saved_guid() const { return saved_guid_; }
-  const absl::optional<tab_groups::TabGroupId>& local_group_id() const {
+  const std::optional<tab_groups::TabGroupId>& local_group_id() const {
     return local_group_id_;
   }
   const base::Time& creation_time_windows_epoch_micros() const {
@@ -54,7 +54,7 @@ class SavedTabGroup {
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
     return saved_tabs_;
   }
-  absl::optional<size_t> position() const { return position_; }
+  std::optional<size_t> position() const { return position_; }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -68,9 +68,9 @@ class SavedTabGroup {
   SavedTabGroupTab* GetTab(const base::Token& local_tab_id);
 
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
-  // returns absl::nullopt.
-  absl::optional<int> GetIndexOfTab(const base::Uuid& saved_tab_guid) const;
-  absl::optional<int> GetIndexOfTab(const base::Token& local_tab_id) const;
+  // returns std::nullopt.
+  std::optional<int> GetIndexOfTab(const base::Uuid& saved_tab_guid) const;
+  std::optional<int> GetIndexOfTab(const base::Token& local_tab_id) const;
 
   // Returns true if the `tab_id` was found in `saved_tabs_`.
   bool ContainsTab(const base::Uuid& saved_tab_guid) const;
@@ -80,7 +80,7 @@ class SavedTabGroup {
   SavedTabGroup& SetTitle(std::u16string title);
   SavedTabGroup& SetColor(tab_groups::TabGroupColorId color);
   SavedTabGroup& SetLocalGroupId(
-      absl::optional<tab_groups::TabGroupId> tab_group_id);
+      std::optional<tab_groups::TabGroupId> tab_group_id);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
@@ -174,7 +174,7 @@ class SavedTabGroup {
   // The ID of the tab group in the tab strip which is associated with the saved
   // tab group object. This can be null if the saved tab group is not in any tab
   // strip.
-  absl::optional<tab_groups::TabGroupId> local_group_id_;
+  std::optional<tab_groups::TabGroupId> local_group_id_;
 
   // The title of the saved tab group.
   std::u16string title_;
@@ -188,7 +188,7 @@ class SavedTabGroup {
   // The current position of the group in relation to all other saved groups.
   // A value of nullopt means that the group was not assigned a position and
   // will be assigned one when it is added into the SavedTabGroupModel.
-  absl::optional<size_t> position_;
+  std::optional<size_t> position_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

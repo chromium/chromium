@@ -207,7 +207,7 @@ std::unique_ptr<uint8_t[]> AAC::CreateAdtsFromEsds(
   auto adts = std::make_unique<uint8_t[]>(total_size);
 
   auto adts_span = base::make_span(adts.get(), total_size);
-  auto adts_header = adts_span.subspan(0, kADTSHeaderMinSize);
+  auto adts_header = adts_span.first(kADTSHeaderMinSize);
   auto adts_data = adts_span.subspan(kADTSHeaderMinSize);
 
   SetAdtsHeader(adts_header, total_size);
@@ -258,7 +258,7 @@ bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
 
   adts.insert(buffer->begin(), kADTSHeaderMinSize, 0);
 
-  SetAdtsHeader(base::make_span(adts).subspan(0, kADTSHeaderMinSize), size);
+  SetAdtsHeader(base::make_span(adts).first(kADTSHeaderMinSize), size);
 
   *adts_header_size = kADTSHeaderMinSize;
   return true;

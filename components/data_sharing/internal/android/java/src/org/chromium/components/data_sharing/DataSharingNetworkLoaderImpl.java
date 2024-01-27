@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
@@ -20,12 +21,13 @@ import org.chromium.url.GURL;
 public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
     private long mNativePtr;
 
+
     @CalledByNative
     private static DataSharingNetworkLoaderImpl create(long nativePtr) {
         return new DataSharingNetworkLoaderImpl(nativePtr);
     }
 
-    private DataSharingNetworkLoaderImpl(long nativePtr) {
+    DataSharingNetworkLoaderImpl(long nativePtr) {
         mNativePtr = nativePtr;
     }
 
@@ -41,14 +43,28 @@ public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
             byte[] postData,
             NetworkTrafficAnnotationTag networkAnnotationTag,
             Callback<String> callback) {
-        DataSharingNetworkLoaderImplJni.get()
-                .loadUrl(
-                        mNativePtr,
-                        url,
-                        scopes,
-                        postData,
-                        networkAnnotationTag.getHashCode(),
-                        callback);
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    loadUrlOnUiThread(url, scopes, postData, networkAnnotationTag, callback);
+                });
+    }
+
+    private void loadUrlOnUiThread(
+            GURL url,
+            String[] scopes,
+            byte[] postData,
+            NetworkTrafficAnnotationTag networkAnnotationTag,
+            Callback<String> callback) {
+        if (mNativePtr != 0) {
+            DataSharingNetworkLoaderImplJni.get()
+                    .loadUrl(
+                            mNativePtr,
+                            url,
+                            scopes,
+                            postData,
+                            networkAnnotationTag.getHashCode(),
+                            callback);
+        }
     }
 
     @NativeMethods

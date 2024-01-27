@@ -262,7 +262,7 @@ MATCHER_P2(HasBooleanField,
                               negation ? "does not contain" : "contains",
                               field_name,
                               expected_value)) {
-  absl::optional<bool> dict_value = (arg).GetDict().FindBool(field_name);
+  std::optional<bool> dict_value = (arg).GetDict().FindBool(field_name);
   return dict_value && *dict_value == expected_value;
 }
 
@@ -275,7 +275,7 @@ MATCHER_P2(HasIntegerField,
                               negation ? "does not contain" : "contains",
                               field_name,
                               expected_value)) {
-  absl::optional<int> dict_value = (arg).GetDict().FindInt(field_name);
+  std::optional<int> dict_value = (arg).GetDict().FindInt(field_name);
   return dict_value && *dict_value == expected_value;
 }
 
@@ -286,7 +286,7 @@ MATCHER_P(HasDoubleField,
           base::StringPrintf("%s double field `%s` with non-zero value",
                              negation ? "does not contain" : "contains",
                              field_name)) {
-  absl::optional<double> dict_value = (arg).GetDict().FindDouble(field_name);
+  std::optional<double> dict_value = (arg).GetDict().FindDouble(field_name);
   return dict_value && *dict_value != 0.0;
 }
 

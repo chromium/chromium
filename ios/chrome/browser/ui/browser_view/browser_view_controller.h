@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -60,7 +61,7 @@ typedef struct {
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeMediator* sideSwipeMediator;
   BookmarksCoordinator* bookmarksCoordinator;
-  FullscreenController* fullscreenController;
+  raw_ptr<FullscreenController> fullscreenController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
@@ -68,10 +69,10 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
-  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
-  UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
+  raw_ptr<PagePlaceholderBrowserAgent> pagePlaceholderBrowserAgent;
+  raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
-  TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
+  raw_ptr<TabUsageRecorderBrowserAgent> tabUsageRecorderBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
 } BrowserViewControllerDependencies;

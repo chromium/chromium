@@ -119,7 +119,7 @@ crbug.com/1009860 [ fuchsia ] SwapChainTraceTest_* [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video* [ Skip ]
 
 # Skip unaccelerated canvas test since we don't use swap chains without GPU compositing.
-crbug.com/1009860 [ win10 ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]
+crbug.com/1009860 [ win ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]
 
 # Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
 # tests that disable GPU compositing (--disable-gpu-compositing).

@@ -12,6 +12,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -180,8 +181,8 @@ const CGFloat kSymbolSize = 18;
                                   UIGestureRecognizerDelegate,
                                   UIScrollViewDelegate,
                                   URLDropDelegate> {
-  Browser* _browser;
-  WebStateList* _webStateList;
+  raw_ptr<Browser> _browser;
+  raw_ptr<WebStateList> _webStateList;
   TabStripContainerView* _view;
   TabStripView* _tabStripView;
   UIButton* _buttonNewTab;

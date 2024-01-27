@@ -4,6 +4,7 @@
 
 #include "components/browsing_data/core/browsing_data_utils.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace browsing_data {
@@ -379,7 +379,7 @@ bool GetDeletionPreferenceFromDataType(
   return false;
 }
 
-absl::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
+std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
     const std::string& pref_name) {
   using DataTypeMap = base::flat_map<std::string, BrowsingDataType>;
   static base::NoDestructor<DataTypeMap> preference_to_datatype(
@@ -401,7 +401,7 @@ absl::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
   if (iter != preference_to_datatype->end()) {
     return iter->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsHttpsCookieSourceScheme(net::CookieSourceScheme cookie_source_scheme) {

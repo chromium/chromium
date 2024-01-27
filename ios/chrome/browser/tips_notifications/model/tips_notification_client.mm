@@ -6,7 +6,16 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
 using tips_notifications::IsTipsNotification;
@@ -23,23 +32,28 @@ void TipsNotificationClient::HandleNotificationInteraction(
     return;
   }
 
-  std::optional<NotificationType> type =
+  interacted_type_ =
       tips_notifications::ParseType(response.notification.request);
-  if (!type.has_value()) {
+  if (!interacted_type_.has_value()) {
     // TODO(crbug.com/1519157): Add logging for this error condition.
     return;
   }
-  HandleNotificationInteraction(type.value());
+  // If the app is not yet foreground active, store the notification type and
+  // handle it later when the app becomes foreground active.
+  if (IsSceneLevelForegroundActive()) {
+    HandleNotificationInteraction(interacted_type_.value());
+    interacted_type_ = std::nullopt;
+  }
 }
 
 void TipsNotificationClient::HandleNotificationInteraction(
     NotificationType type) {
   switch (type) {
     case NotificationType::kDefaultBrowser:
-      // TODO(crbug.com/1517910) implement DefaultBrowser interaction.
+      ShowDefaultBrowserPromo();
       break;
     case NotificationType::kWhatsNew:
-      // TODO(crbug.com/1517911) implement What's New interaction.
+      ShowWhatsNew();
       break;
     case NotificationType::kSignin:
       // TODO(crbug.com/1517912) implement Signin interaction.
@@ -58,6 +72,10 @@ TipsNotificationClient::RegisterActionableNotifications() {
 }
 
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
+  if (interacted_type_.has_value()) {
+    HandleNotificationInteraction(interacted_type_.value());
+    interacted_type_ = std::nullopt;
+  }
   ClearNotification();
   MaybeRequestNotification();
 }
@@ -112,4 +130,37 @@ bool TipsNotificationClient::ShouldSendNotification(NotificationType type) {
     case NotificationType::kSignin:
       return true;
   }
+}
+
+Browser* TipsNotificationClient::GetSceneLevelForegroundActiveBrowser() {
+  ChromeBrowserState* browser_state = GetApplicationContext()
+                                          ->GetChromeBrowserStateManager()
+                                          ->GetLastUsedBrowserState();
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+  for (Browser* browser : browser_list->AllRegularBrowsers()) {
+    if (!browser->IsInactive()) {
+      if (browser->GetSceneState().activationLevel ==
+          SceneActivationLevelForegroundActive) {
+        return browser;
+      }
+    }
+  }
+  return nullptr;
+}
+
+bool TipsNotificationClient::IsSceneLevelForegroundActive() {
+  return GetSceneLevelForegroundActiveBrowser() != nullptr;
+}
+
+void TipsNotificationClient::ShowDefaultBrowserPromo() {
+  raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
+  [HandlerForProtocol(browser->GetCommandDispatcher(), PromosManagerCommands)
+      maybeDisplayDefaultBrowserPromo];
+}
+
+void TipsNotificationClient::ShowWhatsNew() {
+  raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showWhatsNew];
 }

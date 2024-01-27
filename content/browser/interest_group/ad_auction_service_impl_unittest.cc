@@ -10317,6 +10317,34 @@ TEST_F(AdAuctionServiceImplTest, HandlesInvalidCoordinatorOrigin) {
   run_loop.Run();
 }
 
+// Expect bad mojo message if we use an unsupported coordinator origin. The
+// coordinator origin must match one of the ones in our list.
+TEST_F(AdAuctionServiceImplTest, HandlesUnsupportedCoordinatorOrigin) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  url::Origin bad_coordinator =
+      url::Origin::Create(GURL("https://unsupported.coordinator.test/"));
+
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  interest_service->GetInterestGroupAdAuctionData(
+      /*seller=*/test_origin,
+      /*coordinator=*/bad_coordinator,
+      /*callback=*/
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        EXPECT_EQ("Invalid Coordinator", error_message);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // Keep running callbacks to ensure the failed request is cleaned up
+  // properly.
+  task_environment()->RunUntilIdle();
+}
+
 // Test that interest_group_manager serialize the blob correctly.
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));

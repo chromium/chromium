@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_CDM_RENDERER_EXTERNAL_CLEAR_KEY_KEY_SYSTEM_INFO_H_
 #define COMPONENTS_CDM_RENDERER_EXTERNAL_CLEAR_KEY_KEY_SYSTEM_INFO_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "build/build_config.h"
 #include "media/base/key_system_info.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cdm {
 

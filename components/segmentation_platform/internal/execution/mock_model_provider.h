@@ -32,7 +32,7 @@ class MockModelProvider : public ModelProvider {
       void,
       ExecuteModelWithInput,
       (const ModelProvider::Request& input,
-       base::OnceCallback<void(const absl::optional<ModelProvider::Response>&)>
+       base::OnceCallback<void(const std::optional<ModelProvider::Response>&)>
            callback),
       (override));
 
@@ -58,7 +58,7 @@ class MockDefaultModelProvider : public DefaultModelProvider {
       void,
       ExecuteModelWithInput,
       (const ModelProvider::Request& input,
-       base::OnceCallback<void(const absl::optional<ModelProvider::Response>&)>
+       base::OnceCallback<void(const std::optional<ModelProvider::Response>&)>
            callback),
       (override));
 

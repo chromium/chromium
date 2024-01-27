@@ -30,11 +30,40 @@ source_set("browser_tests") {
 
   deps = [
     ":os_crypt",
+    ":test_support",
     "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+
+  data_deps = [ ":app_binary" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/elevation_service:public_headers",
+    "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:constants",
-    "//chrome/test:test_support",
-    "//components/version_info:version_info",
-    "//content/test:test_support",
+    "//chrome/installer/util:work_item",
+  ]
+}
+
+# This binary is launched by the browser tests and makes calls to the app-bound
+# service to test the functionality for various executable callers.
+executable("app_binary") {
+  testonly = true
+  sources = [ "app_bound_encryption_test_main.cc" ]
+  deps = [
+    ":os_crypt",
+    ":test_support",
+    "//base",
+    "//chrome/install_static/test:test_support",
   ]
 }

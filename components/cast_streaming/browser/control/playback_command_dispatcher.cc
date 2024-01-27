@@ -75,7 +75,7 @@ PlaybackCommandDispatcher::PlaybackCommandDispatcher(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::AssociatedRemote<mojom::RendererController> control_configuration,
     remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb,
-    absl::optional<ReceiverConfig::RemotingConstraints> remoting_constraints)
+    std::optional<ReceiverConfig::RemotingConstraints> remoting_constraints)
     : RpcInitializationCallHandlerBase(base::BindRepeating(
           &PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote,
           base::Unretained(this))),
@@ -152,15 +152,13 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
   streaming_dispatcher_ = dispatcher;
   receiver_session_ = session;
 
-  absl::optional<StreamingInitializationInfo::AudioStreamInfo>
-      audio_stream_info;
+  std::optional<StreamingInitializationInfo::AudioStreamInfo> audio_stream_info;
   if (receivers.audio_receiver) {
     audio_stream_info.emplace(media::AudioDecoderConfig(),
                               receivers.audio_receiver);
   }
 
-  absl::optional<StreamingInitializationInfo::VideoStreamInfo>
-      video_stream_info;
+  std::optional<StreamingInitializationInfo::VideoStreamInfo> video_stream_info;
   if (receivers.video_receiver) {
     video_stream_info.emplace(media::VideoDecoderConfig(),
                               receivers.video_receiver);
@@ -174,7 +172,7 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
 void PlaybackCommandDispatcher::OnRemotingSessionEnded() {
   demuxer_stream_handler_.reset();
   messenger_ = nullptr;
-  streaming_init_info_ = absl::nullopt;
+  streaming_init_info_ = std::nullopt;
 }
 
 void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(

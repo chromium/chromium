@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">請輸入密碼</translation>
 <translation id="1156303062776767266">目前查看的是本機檔案或共用檔案</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> 意外中斷連線。</translation>
-<translation id="115926840831309955">請檢查信用卡驗證碼或更新到期日，然後再試一次</translation>
 <translation id="1161325031994447685">重新連線至 Wi-Fi 網路</translation>
 <translation id="11635448457105324">「管理地址」按鈕，啟動後即可在 Chrome 設定中新增及管理地址</translation>
 <translation id="1165039591588034296">錯誤</translation>
@@ -2034,7 +2033,6 @@
 <translation id="4989809363548539747">這是不支援的外掛程式</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">取消靜音</translation>
-<translation id="4995216769782533993">如要與這個網站分享你的卡片資料，請確認安全碼</translation>
 <translation id="4995474875135717171">修改日期：</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理站內搜尋和預設搜尋引擎</translation>
 <translation id="4998950033665438990">單面</translation>

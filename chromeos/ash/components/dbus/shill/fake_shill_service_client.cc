@@ -501,8 +501,7 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
   }
   if (type == shill::kTypeWifi) {
     properties->Set(shill::kSSIDProperty, name);
-    properties->Set(shill::kWifiHexSsid,
-                    base::HexEncode(name.c_str(), name.size()));
+    properties->Set(shill::kWifiHexSsid, base::HexEncode(name));
   }
   properties->Set(shill::kNameProperty, name);
   std::string device_path =

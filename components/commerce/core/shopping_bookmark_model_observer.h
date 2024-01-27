@@ -90,7 +90,7 @@ class ShoppingBookmarkModelObserver
 
   // Track the title of the shopping collection if we get a signal that the node
   // will change.
-  absl::optional<std::u16string> shopping_collection_name_before_change_;
+  std::optional<std::u16string> shopping_collection_name_before_change_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,

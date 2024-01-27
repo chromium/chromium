@@ -94,8 +94,7 @@ void ForwardingModelTypeChangeProcessor::ReportError(const ModelError& error) {
   other_->ReportError(error);
 }
 
-absl::optional<ModelError> ForwardingModelTypeChangeProcessor::GetError()
-    const {
+std::optional<ModelError> ForwardingModelTypeChangeProcessor::GetError() const {
   return other_->GetError();
 }
 

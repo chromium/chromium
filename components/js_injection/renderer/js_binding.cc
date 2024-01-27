@@ -52,7 +52,7 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   size_t GetLength() const override { return array_buffer_->ByteLength(); }
 
-  absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+  std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
     return base::make_span(static_cast<const uint8_t*>(array_buffer_->Data()),
                            array_buffer_->ByteLength());
@@ -236,7 +236,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   for (auto& obj : objs) {
-    absl::optional<blink::MessagePortChannel> port =
+    std::optional<blink::MessagePortChannel> port =
         blink::WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
             args->isolate(), obj);
     // If the port is null we should throw an exception.

@@ -283,7 +283,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          base::Time(),
                          0,
                          0,
-                         absl::nullopt,
+                         std::nullopt,
                          GURL(),
                          RedirectList(),
                          ui::PAGE_TRANSITION_LINK,
@@ -291,19 +291,19 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          SOURCE_BROWSED,
                          false,
                          true,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt,
-                         absl::nullopt) {}
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt,
+                         std::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
     const GURL& url,
     base::Time time,
     ContextID context_id,
     int nav_entry_id,
-    absl::optional<int64_t> local_navigation_id,
+    std::optional<int64_t> local_navigation_id,
     const GURL& referrer,
     const RedirectList& redirects,
     ui::PageTransition transition,
@@ -311,12 +311,12 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     VisitSource source,
     bool did_replace_entry,
     bool consider_for_ntp_most_visited,
-    absl::optional<std::u16string> title,
-    absl::optional<GURL> top_level_url,
-    absl::optional<Opener> opener,
-    absl::optional<int64_t> bookmark_id,
-    absl::optional<std::string> app_id,
-    absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
+    std::optional<std::u16string> title,
+    std::optional<GURL> top_level_url,
+    std::optional<Opener> opener,
+    std::optional<int64_t> bookmark_id,
+    std::optional<std::string> app_id,
+    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),
       context_id(context_id),
@@ -388,7 +388,7 @@ bool DeletionTimeRange::IsAllTime() const {
 // static
 DeletionInfo DeletionInfo::ForAllHistory() {
   return DeletionInfo(DeletionTimeRange::AllTime(), false, {}, {},
-                      absl::nullopt);
+                      std::nullopt);
 }
 
 // static
@@ -396,14 +396,14 @@ DeletionInfo DeletionInfo::ForUrls(URLRows deleted_rows,
                                    std::set<GURL> favicon_urls) {
   return DeletionInfo(DeletionTimeRange::Invalid(), false,
                       std::move(deleted_rows), std::move(favicon_urls),
-                      absl::nullopt);
+                      std::nullopt);
 }
 
 DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            bool is_from_expiration,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
-                           absl::optional<std::set<GURL>> restrict_urls)
+                           std::optional<std::set<GURL>> restrict_urls)
     : DeletionInfo(time_range,
                    is_from_expiration,
                    Reason::kOther,
@@ -416,7 +416,7 @@ DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            Reason deletion_reason,
                            URLRows deleted_rows,
                            std::set<GURL> favicon_urls,
-                           absl::optional<std::set<GURL>> restrict_urls)
+                           std::optional<std::set<GURL>> restrict_urls)
     : time_range_(time_range),
       is_from_expiration_(is_from_expiration),
       deletion_reason_(deletion_reason),
@@ -573,8 +573,8 @@ Cluster::Cluster(int64_t cluster_id,
                  const base::flat_map<std::u16string, ClusterKeywordData>&
                      keyword_to_data_map,
                  bool should_show_on_prominent_ui_surfaces,
-                 absl::optional<std::u16string> label,
-                 absl::optional<std::u16string> raw_label,
+                 std::optional<std::u16string> label,
+                 std::optional<std::u16string> raw_label,
                  query_parser::Snippet::MatchPositions label_match_positions,
                  std::vector<std::string> related_searches,
                  float search_match_score)

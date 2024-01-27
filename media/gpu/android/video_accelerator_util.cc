@@ -15,7 +15,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
   static const base::NoDestructor<std::vector<MediaCodecEncoderInfo>> infos([] {
     // Sadly the NDK doesn't provide a mechanism for accessing the equivalent of
     // the SDK's MediaCodecList, so we must call into Java to enumerate support.
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
         Java_VideoAcceleratorUtil_getSupportedEncoderProfiles(env);
@@ -72,7 +72,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
 
 const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
   static const base::NoDestructor<std::vector<MediaCodecDecoderInfo>> infos([] {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
         Java_VideoAcceleratorUtil_getSupportedDecoderProfiles(env);

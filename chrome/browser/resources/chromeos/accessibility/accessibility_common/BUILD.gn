@@ -207,7 +207,10 @@ source_set("browser_tests") {
   ]
 
   if (include_mediapipe_task_vision_files_for_facegaze) {
-    deps += [ ":extract_mediapipe_task_vision_files" ]
+    deps += [
+      ":extract_mediapipe_task_vision_files",
+      ":extract_mediapipe_task_vision_files_for_test",
+    ]
   }
 
   data = [
@@ -302,6 +305,8 @@ action("pumpkin_test_files") {
   outputs = files_to_extract
 }
 
+# This rule extracts all mediapipe files for production.
+# TODO(b/309121742): Remove this rule and check-in the mediapipe JS sources.
 action("extract_mediapipe_task_vision_files") {
   script = "third_party/mediapipe_task_vision/unpack.py"
   sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
@@ -326,6 +331,28 @@ action("extract_mediapipe_task_vision_files") {
 
   args = [
     "--dest-dir=$mediapipe_task_vision_dir_rebased",
+    rebase_path(
+        "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
+        root_build_dir),
+    string_join(",", files_to_extract),
+  ]
+  outputs = files_to_extract
+}
+
+# Extracts the FaceLandmarker model and WASM for testing purposes.
+action("extract_mediapipe_task_vision_files_for_test") {
+  testonly = true
+  script = "third_party/mediapipe_task_vision/unpack.py"
+  sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
+  out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision"
+
+  files_to_extract = [
+    "$out_dir/face_landmarker.task",
+    "$out_dir/vision_wasm_internal.wasm",
+  ]
+
+  args = [
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/mediapipe_task_vision",
     rebase_path(
         "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
         root_build_dir),

@@ -4,10 +4,11 @@
 
 #include "components/cast_streaming/common/message_serialization.h"
 
+#include <optional>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_streaming {
 
@@ -55,7 +56,7 @@ bool DeserializeCastMessage(std::string_view buffer,
                             std::string* sender_id,
                             std::string* message_namespace,
                             std::string* message) {
-  absl::optional<base::Value> converted_value = base::JSONReader::Read(buffer);
+  std::optional<base::Value> converted_value = base::JSONReader::Read(buffer);
   if (!converted_value)
     return false;
 

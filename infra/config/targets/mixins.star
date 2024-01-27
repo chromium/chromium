@@ -1626,6 +1626,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11_qualcomm_adreno_690_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "cpu": "arm64",
+            "gpu": "qcom:043a-27.20.1870.0",
+            "os": "Windows-11-22621.3007",
+            "pool": "chromium.tests",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11",
     swarming = targets.swarming(
         dimensions = {
@@ -1635,7 +1648,7 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "win_arm64",
+    name = "chrome-win-arm64",
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1651,6 +1664,16 @@ targets.mixin(
         # The slowest test is expected to run >9 hours.
         expiration_sec = 64800,  # 18 hours
         hard_timeout_sec = 43200,  # 12 hours
+    ),
+)
+
+targets.mixin(
+    name = "win-arm64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Windows-11",
+        },
     ),
 )
 

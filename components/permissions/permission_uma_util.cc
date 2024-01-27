@@ -328,7 +328,7 @@ void RecordUmaForRevocationSourceUI(ContentSettingsType permission_type,
 }
 
 void RecordPermissionUsageUkm(ContentSettingsType permission_type,
-                              absl::optional<ukm::SourceId> source_id) {
+                              std::optional<ukm::SourceId> source_id) {
   RecordUmaForWhetherUsageUkmWasRecorded(permission_type,
                                          source_id.has_value());
   if (!source_id.has_value())
@@ -350,18 +350,18 @@ void RecordPermissionActionUkm(
     PermissionSourceUI source_ui,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    absl::optional<PermissionPromptDispositionReason> ui_reason,
-    absl::optional<bool> has_three_consecutive_denies,
-    absl::optional<bool> has_previously_revoked_permission,
-    absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+    std::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<bool> has_three_consecutive_denies,
+    std::optional<bool> has_previously_revoked_permission,
+    std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
         predicted_grant_likelihood,
     PredictionRequestFeatures::ActionCounts
         loud_ui_actions_counts_for_request_type,
     PredictionRequestFeatures::ActionCounts loud_ui_actions_counts,
     PredictionRequestFeatures::ActionCounts actions_counts_for_request_type,
     PredictionRequestFeatures::ActionCounts actions_counts,
-    absl::optional<bool> prediction_decision_held_back,
-    absl::optional<ukm::SourceId> source_id) {
+    std::optional<bool> prediction_decision_held_back,
+    std::optional<ukm::SourceId> source_id) {
   if (action == PermissionAction::REVOKED) {
     RecordUmaForWhetherRevocationUkmWasRecorded(permission,
                                                 source_id.has_value());
@@ -485,7 +485,7 @@ void RecordPermissionActionUkm(
 // CrowdDeny versions published before 2020 will be reported as 1.
 // Returns 0 if no version available.
 // Returns 1 if a version has invalid format.
-int ConvertCrowdDenyVersionToInt(const absl::optional<base::Version>& version) {
+int ConvertCrowdDenyVersionToInt(const std::optional<base::Version>& version) {
   if (!version.has_value() || !version.value().IsValid())
     return 0;
 
@@ -688,11 +688,11 @@ void PermissionUmaUtil::PermissionRevoked(
                          PermissionRequestGestureType::UNKNOWN,
                          /*time_to_decision=*/base::TimeDelta(),
                          PermissionPromptDisposition::NOT_APPLICABLE,
-                         /*ui_reason=*/absl::nullopt, revoked_origin,
+                         /*ui_reason=*/std::nullopt, revoked_origin,
                          /*web_contents=*/nullptr, browser_context,
                          /*render_frame_host*/ nullptr,
-                         /*predicted_grant_likelihood=*/absl::nullopt,
-                         /*prediction_decision_held_back=*/absl::nullopt);
+                         /*predicted_grant_likelihood=*/std::nullopt,
+                         /*prediction_decision_held_back=*/std::nullopt);
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -818,10 +818,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionAction permission_action,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    absl::optional<PermissionPromptDispositionReason> ui_reason,
-    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
-    absl::optional<bool> prediction_decision_held_back,
-    absl::optional<permissions::PermissionIgnoredReason> ignored_reason,
+    std::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    std::optional<bool> prediction_decision_held_back,
+    std::optional<permissions::PermissionIgnoredReason> ignored_reason,
     bool did_show_prompt,
     bool did_click_managed,
     bool did_click_learn_more) {
@@ -965,7 +965,7 @@ void PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(
 }
 
 void PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
-    const absl::optional<base::Version>& version) {
+    const std::optional<base::Version>& version) {
   base::UmaHistogramSparse(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime",
       ConvertCrowdDenyVersionToInt(version));
@@ -1086,13 +1086,13 @@ void PermissionUmaUtil::RecordPermissionAction(
     PermissionRequestGestureType gesture_type,
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
-    absl::optional<PermissionPromptDispositionReason> ui_reason,
+    std::optional<PermissionPromptDispositionReason> ui_reason,
     const GURL& requesting_origin,
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
-    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
-    absl::optional<bool> prediction_decision_held_back) {
+    std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    std::optional<bool> prediction_decision_held_back) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -1151,7 +1151,7 @@ void PermissionUmaUtil::RecordPermissionAction(
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(
                         browser_context)
-              : absl::nullopt,
+              : std::nullopt,
           PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
               browser_context, requesting_origin, permission),
           predicted_grant_likelihood, loud_ui_actions_counts_per_request_type,
@@ -1700,7 +1700,7 @@ void PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
     content::BrowserContext* browser_context,
     base::Time current_time) {
   auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context);
-  absl::optional<uint32_t> days_since_revocation =
+  std::optional<uint32_t> days_since_revocation =
       GetDaysSinceUnusedSitePermissionRevocation(origin, content_settings_type,
                                                  current_time, hcsm);
   if (!days_since_revocation.has_value()) {
@@ -1732,7 +1732,7 @@ void PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
 }
 
 // static
-absl::optional<uint32_t>
+std::optional<uint32_t>
 PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
     const GURL& origin,
     ContentSettingsType content_settings_type,
@@ -1743,12 +1743,12 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
       origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       &info));
   if (!stored_value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value::List* permission_type_list =
       stored_value.GetDict().FindList(permissions::kRevokedKey);
   if (!permission_type_list) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Time revoked_time =
       info.metadata.expiration() -
@@ -1767,7 +1767,7 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace permissions

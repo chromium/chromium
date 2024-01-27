@@ -57,7 +57,7 @@ class ResourceCacheTest : public testing::Test {
 TEST_F(ResourceCacheTest, StoreAndLoad) {
   ResourceCache cache(temp_dir_.GetPath(),
                       base::SingleThreadTaskRunner::GetCurrentDefault(),
-                      /* max_cache_size */ absl::nullopt);
+                      /* max_cache_size */ std::nullopt);
 
   // No data initially.
   std::string data;
@@ -147,7 +147,7 @@ TEST_F(ResourceCacheTest, StoreAndLoad) {
 TEST_F(ResourceCacheTest, FilterSubkeys) {
   ResourceCache cache(temp_dir_.GetPath(),
                       base::SingleThreadTaskRunner::GetCurrentDefault(),
-                      /* max_cache_size */ absl::nullopt);
+                      /* max_cache_size */ std::nullopt);
 
   // Store some data.
   EXPECT_FALSE(cache.Store(kKey1, kSubA, kData0).empty());

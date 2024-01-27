@@ -6,12 +6,12 @@
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_FACTORY_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
@@ -32,7 +32,7 @@ class WebBundleParserFactory : public mojom::WebBundleParserFactory {
   // mojom::WebBundleParserFactory implementation.
   void GetParserForDataSource(
       mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-      const absl::optional<GURL>& base_url,
+      const std::optional<GURL>& base_url,
       mojo::PendingRemote<mojom::BundleDataSource> data_source) override;
 
   void BindFileDataSource(mojo::PendingReceiver<mojom::BundleDataSource>

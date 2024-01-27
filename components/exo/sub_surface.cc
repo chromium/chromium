@@ -49,7 +49,7 @@ void SubSurface::SetPosition(const gfx::PointF& position) {
   parent_->SetSubSurfacePosition(surface_, position);
 }
 
-void SubSurface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
+void SubSurface::SetClipRect(const std::optional<gfx::RectF>& clip_rect) {
   TRACE_EVENT1("exo", "SubSurface::SetClipRect", "clip_rect",
                (clip_rect ? clip_rect->ToString() : "nullopt"));
 

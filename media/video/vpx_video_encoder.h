@@ -43,7 +43,7 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   void DrainOutputs(int temporal_id,
                     base::TimeDelta ts,
                     gfx::ColorSpace color_space);
-
+  void RecreateVpxImageIfNeeded(vpx_img_fmt fmt, bool needs_memory);
   void UpdateEncoderColorSpace();
 
   using vpx_codec_unique_ptr =

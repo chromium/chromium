@@ -20,7 +20,7 @@ std::u16string GetLocalizedRepresentationInternal(
     browsing_topics::Topic topic_id) {
   browsing_topics::SemanticTree semantic_tree;
 
-  absl::optional<int> localized_name_message_id =
+  std::optional<int> localized_name_message_id =
       semantic_tree.GetLatestLocalizedNameMessageId(topic_id);
 
   // Topic IDs  are provided by a categorization model shipped over the network,
@@ -53,9 +53,9 @@ std::u16string GetLocalizedDescriptionInternal(
         semantic_tree.GetLatestLocalizedNameMessageId(children[0]).value());
   }
 
-  absl::optional<int> message_id_1 =
+  std::optional<int> message_id_1 =
       semantic_tree.GetLatestLocalizedNameMessageId(children[0]);
-  absl::optional<int> message_id_2 =
+  std::optional<int> message_id_2 =
       semantic_tree.GetLatestLocalizedNameMessageId(children[1]);
 
   return l10n_util::GetStringFUTF16(
@@ -86,20 +86,20 @@ base::Value CanonicalTopic::ToValue() const {
                          .Set(kTaxonomyVersion, taxonomy_version_));
 }
 
-/*static*/ absl::optional<CanonicalTopic> CanonicalTopic::FromValue(
+/*static*/ std::optional<CanonicalTopic> CanonicalTopic::FromValue(
     const base::Value& value) {
   if (!value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto topic_id = value.GetDict().FindInt(kTopicId);
   if (!topic_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto taxonomy_version = value.GetDict().FindInt(kTaxonomyVersion);
   if (!taxonomy_version) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return CanonicalTopic(browsing_topics::Topic(*topic_id), *taxonomy_version);

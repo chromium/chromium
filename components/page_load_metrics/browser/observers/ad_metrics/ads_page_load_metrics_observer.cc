@@ -531,7 +531,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // logic should be moved into /subresource_filter/ and applied to all of ad
   // tagging, rather than being implemented in AdsPLMO.
   bool should_ignore_detected_ad = false;
-  absl::optional<subresource_filter::LoadPolicy> load_policy =
+  std::optional<subresource_filter::LoadPolicy> load_policy =
       throttle_manager->LoadPolicyForLastCommittedNavigation(
           navigation_handle->GetFrameTreeNodeId());
 

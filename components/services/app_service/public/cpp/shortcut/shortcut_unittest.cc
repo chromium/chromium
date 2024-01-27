@@ -5,9 +5,9 @@
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 #include <memory>
+#include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -74,7 +74,7 @@ TEST_F(ShortcutTest, CloneShortcutWithNoIconKey) {
   EXPECT_EQ(cloned_shortcut->shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(cloned_shortcut->host_app_id, host_app_id);
   EXPECT_EQ(cloned_shortcut->local_id, local_id);
-  EXPECT_EQ(cloned_shortcut->icon_key, absl::nullopt);
+  EXPECT_EQ(cloned_shortcut->icon_key, std::nullopt);
   EXPECT_TRUE(cloned_shortcut->allow_removal);
 }
 

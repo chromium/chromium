@@ -4,6 +4,8 @@
 
 #include "components/webapps/browser/installable/ml_install_result_reporter.h"
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
@@ -17,7 +19,6 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
 
@@ -81,7 +82,7 @@ void MlInstallResultReporter::ReportResult(
 }
 
 void MlInstallResultReporter::ReportResultInternal(
-    absl::optional<WebappInstallSource> source,
+    std::optional<WebappInstallSource> source,
     MlInstallResponse response) {
   WebappsClient* client = WebappsClient::Get();
   CHECK(client);

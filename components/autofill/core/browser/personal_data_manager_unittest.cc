@@ -3718,7 +3718,7 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(base::Time::Min(), end_of_deletion), false,
       deleted_urls, {},
-      absl::make_optional<std::set<GURL>>({first_url, second_url}));
+      std::make_optional<std::set<GURL>>({first_url, second_url}));
 
   personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
 

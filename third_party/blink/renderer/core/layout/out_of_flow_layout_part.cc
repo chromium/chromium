@@ -314,7 +314,7 @@ class OOFCandidateStyleIterator {
         // and re-resolves the ComputedStyle.
         //
         // Note that UpdateStyle returns early without any update
-        // if the incoming try_set matches the set on PositionFallbackData
+        // if the incoming try_set matches the set on OutOfFlowData
         // (including the case where both are unllptr).
         style_ = UpdateStyle(/* try_set */ nullptr);
       }
@@ -395,7 +395,7 @@ class OOFCandidateStyleIterator {
     CHECK(element_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-      style_engine.UpdateStyleForPositionFallback(*element_, try_set);
+      style_engine.UpdateStyleForOutOfFlow(*element_, try_set);
     }
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
@@ -2052,19 +2052,28 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                         anchor_queries, implicit_anchor);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
+  const LogicalAlignment alignment =
+      ComputeAlignment(candidate_style, container_writing_direction,
+                       candidate_writing_direction);
+
   const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-      candidate_style, node_info.constraint_space.AvailableSize(),
+      candidate_style, node_info.constraint_space.AvailableSize(), alignment,
       container_writing_direction, candidate_writing_direction,
       anchor_evaluator);
 
+  const LogicalAnchorCenterPosition anchor_center_position =
+      ComputeAnchorCenterPosition(alignment, candidate_writing_direction,
+                                  node_info.constraint_space.AvailableSize(),
+                                  anchor_evaluator);
+
   const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
-      node_info.node, node_info.constraint_space.AvailableSize(), insets,
-      node_info.static_position, container_writing_direction,
-      candidate_writing_direction);
+      node_info.node, node_info.constraint_space.AvailableSize(), alignment,
+      insets, node_info.static_position, anchor_center_position,
+      container_writing_direction, candidate_writing_direction);
 
   {
     auto& document = node_info.node.GetDocument();
-    if (imcb.inline_alignment.GetPosition() != ItemPosition::kNormal) {
+    if (alignment.inline_alignment.GetPosition() != ItemPosition::kNormal) {
       if (insets.inline_start && insets.inline_end) {
         UseCounter::Count(document,
                           WebFeature::kOutOfFlowJustifySelfBothInsets);
@@ -2076,7 +2085,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       }
     }
 
-    if (imcb.block_alignment.GetPosition() != ItemPosition::kNormal) {
+    if (alignment.block_alignment.GetPosition() != ItemPosition::kNormal) {
       if (insets.block_start && insets.block_end) {
         UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfBothInsets);
       } else if (insets.block_start || insets.block_end) {
@@ -2136,7 +2145,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
       node_info.node, candidate_style, node_info.constraint_space, imcb,
-      border_padding, replaced_size, container_writing_direction,
+      alignment, border_padding, replaced_size, container_writing_direction,
       anchor_evaluator, &node_dimensions);
 
   const absl::optional<LogicalRect> additional_fallback_bounds =
@@ -2152,7 +2161,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   absl::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
-        node_info.constraint_space.AvailableSize(), insets,
+        node_info.constraint_space.AvailableSize(), alignment, insets,
         node_info.static_position, candidate_style, container_writing_direction,
         candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
@@ -2180,7 +2189,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOofBlockDimensions(
         node_info.node, candidate_style, node_info.constraint_space, imcb,
-        border_padding, replaced_size, container_writing_direction,
+        alignment, border_padding, replaced_size, container_writing_direction,
         anchor_evaluator, &node_dimensions);
   }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -44,7 +45,7 @@ class InfobarBannerInteractionHandlerTest : public PlatformTest {
  protected:
   InfobarBannerInteractionHandler handler_;
   web::FakeWebState web_state_;
-  InfoBarIOS* infobar_;
+  raw_ptr<InfoBarIOS> infobar_;
 };
 
 // Tests that pressing the modal button calls adds an OverlayRequest for the

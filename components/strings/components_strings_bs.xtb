@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Potrebna je lozinka</translation>
 <translation id="1156303062776767266">Pregledate lokalni ili dijeljeni fajl</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> je neočekivano prekinuo vezu.</translation>
-<translation id="115926840831309955">Provjerite CVC i pokušajte ponovo ili ažurirajte datum isteka</translation>
 <translation id="1161325031994447685">Ponovno povezivanje na WiFi mrežu</translation>
 <translation id="11635448457105324">Dugme Upravljaj adresama, aktivirajte da dodate i upravljate adresama u postavkama Chromea</translation>
 <translation id="1165039591588034296">Greška</translation>
@@ -2041,7 +2040,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4989809363548539747">Ovaj dodatak nije podržan</translation>
 <translation id="4990241977441916452">Koverta A2</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
-<translation id="4995216769782533993">Potvrdite sigurnosni kôd da dijelite detalje o svojoj kartici s ovom web lokacijom</translation>
 <translation id="4995474875135717171">Izmijenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate pretraživanjem web lokacija i zadanim pretraživačem</translation>
 <translation id="4998950033665438990">Jedno lice</translation>

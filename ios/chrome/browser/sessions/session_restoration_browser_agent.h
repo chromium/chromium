@@ -11,6 +11,7 @@
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -104,7 +105,7 @@ class SessionRestorationBrowserAgent
   SessionServiceIOS* session_service_ = nullptr;
 
   // The Browser containing the WebStates to be saved.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // List of registered observers.
   base::ObserverList<SessionRestorationObserver, true> observers_;

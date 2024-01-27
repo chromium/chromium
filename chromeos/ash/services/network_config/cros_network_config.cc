@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -2297,7 +2298,7 @@ CrosNetworkConfig::CrosNetworkConfig(
       technology_state_controller_(technology_state_controller) {
   CHECK(network_state_handler);
   if (features::IsCellularCarrierLockEnabled()) {
-    const std::optional<base::StringPiece> serial_number =
+    const std::optional<std::string_view> serial_number =
         system::StatisticsProvider::GetInstance()->GetMachineID();
     if (!serial_number || serial_number->empty()) {
       LOG(WARNING) << "Serial number not set.";

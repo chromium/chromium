@@ -27,12 +27,12 @@ std::string MakeListResponse(const std::vector<PlusProfile>& profiles) {
   base::Value::List list;
   for (const PlusProfile& profile : profiles) {
     std::string json = MakePlusProfile(profile);
-    absl::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(json);
+    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(json);
     DCHECK(dict.has_value());
     list.Append(std::move(dict.value()));
   }
   response.Set("plusProfiles", std::move(list));
-  absl::optional<std::string> json = base::WriteJson(response);
+  std::optional<std::string> json = base::WriteJson(response);
   DCHECK(json.has_value());
   return json.value();
 }

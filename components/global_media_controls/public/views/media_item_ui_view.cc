@@ -82,9 +82,9 @@ MediaItemUIView::MediaItemUIView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     std::unique_ptr<MediaItemUIFooter> footer_view,
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-    absl::optional<media_message_center::NotificationTheme> notification_theme,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme,
-    absl::optional<MediaDisplayPage> media_display_page)
+    std::optional<media_message_center::NotificationTheme> notification_theme,
+    std::optional<media_message_center::MediaColorTheme> media_color_theme,
+    std::optional<MediaDisplayPage> media_display_page)
     : views::Button(PressedCallback()),
       id_(id),
       has_notification_theme_(notification_theme.has_value()) {

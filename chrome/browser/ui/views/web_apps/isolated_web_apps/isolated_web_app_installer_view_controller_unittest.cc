@@ -159,6 +159,7 @@ class MockView : public IsolatedWebAppInstallerView {
               ShowDialog,
               (const IsolatedWebAppInstallerModel::Dialog& dialog),
               (override));
+  MOCK_METHOD(views::Widget*, GetChildWidgetForTesting, (), (override));
 };
 
 // Fake pref observer that mimics the behavior of an actual observer. i.e.
@@ -362,6 +363,41 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<IsolatedWebAppInstallerModel::BundleOutdatedDialog>(_)));
+
+  controller.Start(base::DoNothing(), base::DoNothing());
+
+  TestIsolatedWebAppInstallerModelObserver(&model).WaitForChildDialog();
+  EXPECT_EQ(model.step(), Step::kGetMetadata);
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       NewerBundleShowsAlreadyInstalledDialog) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "2.0");
+  MockIconAndPageState(url_info, "2.0");
+
+  AddDummyIsolatedAppToRegistry(
+      profile(), url_info.origin().GetURL(), "app",
+      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+                            base::Version("1.0")));
+
+  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  model.SetStep(Step::kGetMetadata);
+
+  auto pref_observer =
+      std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true);
+  IsolatedWebAppInstallerViewController controller(
+      profile(), fake_provider(), &model, std::move(pref_observer));
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
+  EXPECT_CALL(view, ShowGetMetadataScreen());
+  EXPECT_CALL(
+      view,
+      ShowDialog(
+          VariantWith<
+              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_)));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 

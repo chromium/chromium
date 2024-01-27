@@ -82,7 +82,15 @@ source_set("push_notification_client") {
     "push_notification_client.mm",
     "push_notification_client_id.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/url_loading/model",
+    "//url:url",
+  ]
 }
 
 source_set("constants") {
@@ -111,6 +119,7 @@ source_set("unit_tests") {
     "//components/commerce/core:pref_names",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

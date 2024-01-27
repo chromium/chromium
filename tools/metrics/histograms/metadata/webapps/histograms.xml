@@ -991,6 +991,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Media.SystemMediaControls"
+    enum="WebAppSystemMediaControlsEvent" expires_after="2024-09-10">
+  <owner>dmurph@chromium.org</owner>
+  <owner>stahon@microsoft.com</owner>
+  <owner>stemiel@chromium.org</owner>
+  <summary>
+    Records events when Progressive Web Apps (PWAs) play audio as well as when
+    PWA specific SystemMediaControls are interacted with in the operating
+    system. This can be to play, pause, skip and other similar actions available
+    from the OS. This histogram is only used when instanced PWA system media
+    controls is enabled. The control events (like next) are only fired if the
+    request comes from system media controls (and the OS) not when the media is
+    directly interacted.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.MlInstall.DialogResponse"
     enum="WebAppMlInstallResponse" expires_after="2024-09-10">
   <owner>dmurph@chromium.org</owner>

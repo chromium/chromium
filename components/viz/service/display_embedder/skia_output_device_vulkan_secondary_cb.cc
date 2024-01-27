@@ -80,7 +80,7 @@ bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
 }
 
 void SkiaOutputDeviceVulkanSecondaryCB::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   CHECK(!update_rect);

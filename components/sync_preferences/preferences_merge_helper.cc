@@ -16,7 +16,7 @@ namespace {
 
 MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
                                const std::string& pref_name) {
-  absl::optional<SyncablePrefMetadata> metadata =
+  std::optional<SyncablePrefMetadata> metadata =
       client.GetSyncablePrefsDatabase().GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());
   return metadata->merge_behavior();

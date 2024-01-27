@@ -6,6 +6,7 @@
 
 #import <map>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_infobar_interaction_handler.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
@@ -144,7 +145,7 @@ class InfobarOverlayBrowserAgentTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   std::map<InfobarOverlayType, FakeInfobarOverlayRequestSupport>
       request_supports_;
   std::map<InfobarOverlayType, MockOverlayRequestCallbackReceiver>

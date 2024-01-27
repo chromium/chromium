@@ -2006,6 +2006,9 @@ extern const char kTpcdTrialSettingsDescription[];
 extern const char kTopLevelTpcdTrialSettingsName[];
 extern const char kTopLevelTpcdTrialSettingsDescription[];
 
+extern const char kCookieSettingsUiAlignmentName[];
+extern const char kCookieSettingsUiAlignmentDescription[];
+
 extern const char kIpProtectionV1Name[];
 extern const char kIpProtectionV1Description[];
 
@@ -2453,6 +2456,9 @@ extern const char kMouseAndTrackpadDropdownMenuDescription[];
 extern const char kNewTabSearchEngineUrlAndroidName[];
 extern const char kNewTabSearchEngineUrlAndroidDescription[];
 
+extern const char kNotificationOneTapUnsubscribeName[];
+extern const char kNotificationOneTapUnsubscribeDescription[];
+
 extern const char kNotificationPermissionRationaleName[];
 extern const char kNotificationPermissionRationaleDescription[];
 
@@ -2542,15 +2548,6 @@ extern const char kRelatedSearchesAllLanguageDescription[];
 
 extern const char kRemoveUPMUnenrollmentName[];
 extern const char kRemoveUPMUnenrollmentDescription[];
-
-extern const char kRequestDesktopSiteDefaultsName[];
-extern const char kRequestDesktopSiteDefaultsDescription[];
-
-extern const char kRequestDesktopSiteDefaultsDowngradeName[];
-extern const char kRequestDesktopSiteDefaultsDowngradeDescription[];
-
-extern const char kRequestDesktopSiteDefaultsLoggingName[];
-extern const char kRequestDesktopSiteDefaultsLoggingDescription[];
 
 extern const char kRequestDesktopSiteWindowSettingName[];
 extern const char kRequestDesktopSiteWindowSettingDescription[];
@@ -3439,6 +3436,9 @@ extern const char kCameraAppAutoQRDetectionDescription[];
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 
+extern const char kDeskProfilesName[];
+extern const char kDeskProfilesDescription[];
+
 extern const char kDisableCameraFrameRotationAtSourceName[];
 extern const char kDisableCameraFrameRotationAtSourceDescription[];
 
@@ -3899,6 +3899,9 @@ extern const char kLacrosWaylandLoggingDescription[];
 
 extern const char kLanguagePacksInSettingsName[];
 extern const char kLanguagePacksInSettingsDescription[];
+
+extern const char kLauncherContinueSectionWithRecentsName[];
+extern const char kLauncherContinueSectionWithRecentsDescription[];
 
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];

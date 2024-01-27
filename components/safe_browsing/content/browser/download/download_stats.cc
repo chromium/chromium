@@ -133,7 +133,7 @@ void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,
     bool has_user_gesture,
     bool visited_referrer_before,
-    absl::optional<base::Time> last_bypass_time) {
+    std::optional<base::Time> last_bypass_time) {
   if (danger_level != DownloadFileType::ALLOW_ON_USER_GESTURE) {
     return;
   }

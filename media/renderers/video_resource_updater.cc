@@ -49,7 +49,6 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/resource_sync_token_client.h"
-#include "media/video/half_float_maker.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/khronos/GLES3/gl3.h"
@@ -1337,8 +1336,7 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
     scoped_refptr<VideoFrame> video_frame,
     HardwarePlaneResource* plane_resource,
     size_t bits_per_channel,
-    size_t plane_index,
-    HalfFloatMaker* half_float_maker) {
+    size_t plane_index) {
   const viz::SharedImageFormat plane_si_format = plane_resource->si_format();
 
   // |video_stride_bytes| is the width of the |video_frame| we are uploading
@@ -1417,13 +1415,19 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
 
     if (plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
         plane_si_format == viz::SinglePlaneFormat::kR_F16) {
-      for (int row = 0; row < resource_size_pixels.height(); ++row) {
-        uint16_t* dst = reinterpret_cast<uint16_t*>(
-            &upload_pixels_[upload_image_stride * row]);
-        const uint16_t* src = reinterpret_cast<const uint16_t*>(
-            video_frame->data(plane_index) + (video_stride_bytes * row));
-        half_float_maker->MakeHalfFloats(src, bytes_per_row / 2, dst);
-      }
+      int max_value = 1 << bits_per_channel;
+      // Use 1.0/max_value to be consistent with multiplanar shared images
+      // which create TextureDrawQuads and don't take in a multiplier, offset.
+      // This is consistent with GpuMemoryBufferVideoFramePool as well which
+      // performs libyuv conversion for converting I420 to buffer. This is
+      // sub-optimal but okay as it is only used for 16-bit float formats with
+      // slower software pixel upload path here.
+      float libyuv_multiplier = 1.f / max_value;
+      libyuv::HalfFloatPlane(
+          reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
+          video_stride_bytes, reinterpret_cast<uint16_t*>(upload_pixels_.get()),
+          upload_image_stride, libyuv_multiplier, resource_size_pixels.width(),
+          resource_size_pixels.height());
     } else if (needs_bit_downshifting) {
       DCHECK(plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_8 ||
              plane_si_format == viz::SinglePlaneFormat::kR_8);
@@ -1618,17 +1622,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
          yuv_si_format == viz::SinglePlaneFormat::kR_8)
       << yuv_si_format.ToString();
 
-  std::unique_ptr<HalfFloatMaker> half_float_maker;
-  if (yuv_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
-      yuv_si_format == viz::SinglePlaneFormat::kR_F16) {
-    half_float_maker = HalfFloatMaker::NewHalfFloatMaker(bits_per_channel);
-    external_resources.offset = half_float_maker->Offset();
-    external_resources.multiplier = half_float_maker->Multiplier();
-  } else if (yuv_si_format == viz::SinglePlaneFormat::kR_16) {
-    external_resources.multiplier = 65535.0f / ((1 << bits_per_channel) - 1);
-    external_resources.offset = 0;
-  }
-
   // We need to transfer data from |video_frame| to the plane resources.
   for (size_t i = 0; i < plane_resources.size(); ++i) {
     HardwarePlaneResource* plane_resource = plane_resources[i]->AsHardware();
@@ -1643,8 +1636,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
            plane_si_format == subplane_si_format.value_or(yuv_si_format));
 
     if (!WriteYUVPixelsPerPlaneToPerTexture(video_frame, plane_resource,
-                                            bits_per_channel, i,
-                                            half_float_maker.get())) {
+                                            bits_per_channel, i)) {
       // Return empty resources if this fails.
       return VideoFrameExternalResources();
     }

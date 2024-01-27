@@ -4,7 +4,7 @@
   }
 </style>
 <oobe-adaptive-dialog id="networkDialog" role="dialog"
-    on-show-dialog="onShown_" for-step="default"
+    on-show-dialog="onShown" for-step="default"
     aria-label$="[[i18nDynamic(locale, 'networkSectionTitle')]]">
   <iron-icon slot="icon" icon="oobe-32:wifi">
   </iron-icon>
@@ -12,26 +12,26 @@
     [[i18nDynamic(locale, 'networkSectionTitle')]]
   </h1>
   <div slot="subtitle" id="subtitleText">
-    [[getSubtitleMessage_(locale, errorMessage_, useQuickStartSubtitle_)]]
+    [[getSubtitleMessage(locale, errorMessage, useQuickStartSubtitle)]]
   </div>
   <div slot="content" class="layout vertical">
     <network-select-login id="networkSelectLogin"
-        enable-wifi-scans="[[enableWifiScans_]]"
-        on-selected-network-connected="onContinue_"
-        is-network-connected="{{isConnected_}}"
-        on-quick-start-clicked="onQuickStartClicked_"
-        is-quick-start-visible="[[isQuickStartVisible_]]">
+        enable-wifi-scans="[[enableWifiScans]]"
+        on-selected-network-connected="onContinue"
+        is-network-connected="{{isNetworkConnected}}"
+        on-quick-start-clicked="onQuickStartClicked"
+        is-quick-start-visible="[[isQuickStartVisible]]">
     </network-select-login>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="backButton" on-click="onBackClicked_">
+    <oobe-back-button id="backButton" on-click="onBackClicked">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons" class="flex layout horizontal end-justified">
     <oobe-next-button
       id="nextButton"
-      disabled="[[!isConnected_]]"
-      on-click="onContinue_">
+      disabled="[[!isNetworkConnected]]"
+      on-click="onContinue">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
@@ -43,7 +43,7 @@
   </iron-icon>
   <!-- TODO(b/300389592): Add a WiFi name to subtitle -->
   <div slot="cancel-button">
-    <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked"
         text-key="cancelButton">
     </oobe-text-button>
   </div>

@@ -36,7 +36,7 @@ class TextEmbeddingModelExecutorTest : public testing::Test {
     model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
         optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(),
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
   }
 
   void PushModelFileToModelExecutor() {
@@ -78,7 +78,7 @@ TEST_F(TextEmbeddingModelExecutorTest, InvalidTextEmbeddingModel) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<tflite::task::processor::EmbeddingResult>&
+             const std::optional<tflite::task::processor::EmbeddingResult>&
                  output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();

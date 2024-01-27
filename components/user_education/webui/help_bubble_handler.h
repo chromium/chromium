@@ -86,18 +86,18 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
     void set_handler(HelpBubbleHandlerBase* handler) { handler_ = handler; }
 
     // Does the check if visibility is currently unknown. Returns
-    // `absl::nullopt` if the visibility cannot be determined (this should be
+    // `std::nullopt` if the visibility cannot be determined (this should be
     // treated as "not visible" for most purposes).
     //
     // This method may lazily instantiate some visibility-tracking logic.
-    virtual absl::optional<bool> CheckIsVisible() = 0;
+    virtual std::optional<bool> CheckIsVisible() = 0;
 
    protected:
     HelpBubbleHandlerBase* handler() const { return handler_; }
 
     // Sets a new visibility state when visibility changes via an external
     // event.
-    void SetLastKnownVisibility(absl::optional<bool> visible);
+    void SetLastKnownVisibility(std::optional<bool> visible);
 
    private:
     raw_ptr<HelpBubbleHandlerBase> handler_;
@@ -137,7 +137,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
                                   HelpBubble* help_bubble);
-  void OnWebContentsVisibilityChanged(absl::optional<bool> visibility);
+  void OnWebContentsVisibilityChanged(std::optional<bool> visibility);
 
   // mojom::HelpBubbleHandler:
   void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
@@ -161,7 +161,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   //    background tab or hidden side panel)
   //  - nullopt if the visibility is not yet known, or there is no render host
   //    to query for visibility
-  absl::optional<bool> web_contents_visibility_;
+  std::optional<bool> web_contents_visibility_;
 
   std::unique_ptr<ClientProvider> client_provider_;
   std::unique_ptr<VisibilityProvider> visibility_provider_;

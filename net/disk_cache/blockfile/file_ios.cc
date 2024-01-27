@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/blockfile/in_flight_io.h"
@@ -58,10 +59,10 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
  private:
   ~FileBackgroundIO() override {}
 
-  disk_cache::FileIOCallback* callback_;
+  raw_ptr<disk_cache::FileIOCallback> callback_;
 
-  disk_cache::File* file_;
-  const void* buf_;
+  raw_ptr<disk_cache::File> file_;
+  raw_ptr<const void> buf_;
   size_t buf_len_;
   size_t offset_;
 };
@@ -98,7 +99,7 @@ class FileInFlightIO : public disk_cache::InFlightIO {
 
 // Runs on a worker thread.
 void FileBackgroundIO::Read() {
-  if (file_->Read(const_cast<void*>(buf_), buf_len_, offset_)) {
+  if (file_->Read(const_cast<void*>(buf_.get()), buf_len_, offset_)) {
     result_ = static_cast<int>(buf_len_);
   } else {
     result_ = net::ERR_CACHE_READ_FAILURE;

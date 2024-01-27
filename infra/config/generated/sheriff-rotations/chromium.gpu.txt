@@ -19,6 +19,7 @@ ci/GPU FYI Mac Builder (asan)
 ci/GPU FYI Mac Builder (dbg)
 ci/GPU FYI Mac arm64 Builder
 ci/GPU FYI Win Builder
+ci/GPU FYI Win arm64 Builder
 ci/GPU FYI Win x64 Builder
 ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
@@ -67,6 +68,7 @@ ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
+ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64

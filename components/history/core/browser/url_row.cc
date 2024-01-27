@@ -50,16 +50,16 @@ VisitContentModelAnnotations::Category::Category(const std::string& id,
 VisitContentModelAnnotations::Category::Category() = default;
 
 // static
-absl::optional<VisitContentModelAnnotations::Category>
+std::optional<VisitContentModelAnnotations::Category>
 VisitContentModelAnnotations::Category::FromStringVector(
     const std::vector<std::string>& vector) {
   if (vector.size() != 2)
-    return absl::nullopt;
+    return std::nullopt;
 
   VisitContentModelAnnotations::Category category;
   category.id = vector[0];
   if (!base::StringToInt(vector[1], &category.weight))
-    return absl::nullopt;
+    return std::nullopt;
   return category;
 }
 

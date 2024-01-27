@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -14,7 +15,7 @@
 @end
 
 @implementation SessionWindowIOSFactory {
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 }
 
 #pragma mark - Initialization

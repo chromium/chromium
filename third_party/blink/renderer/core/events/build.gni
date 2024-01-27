@@ -86,6 +86,8 @@ blink_core_sources_events = [
   "ui_event_with_key_state.h",
   "visual_viewport_resize_event.cc",
   "visual_viewport_resize_event.h",
+  "visual_viewport_scrollend_event.cc",
+  "visual_viewport_scrollend_event.h",
   "visual_viewport_scroll_event.cc",
   "visual_viewport_scroll_event.h",
   "web_input_event_conversion.cc",

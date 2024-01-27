@@ -139,13 +139,13 @@ BuiltApp SavedDeskGenericAppBuilder::Build() {
   window_info->display_id = display_id_;
 
   if (launch_conatiner_) {
-    app_launch_info->container = absl::optional<int32_t>(
-        static_cast<int32_t>(launch_conatiner_.value()));
+    app_launch_info->container =
+        std::optional<int32_t>(static_cast<int32_t>(launch_conatiner_.value()));
   }
 
   if (disposition_) {
     app_launch_info->disposition =
-        absl::optional<int32_t>(static_cast<int32_t>(disposition_.value()));
+        std::optional<int32_t>(static_cast<int32_t>(disposition_.value()));
   }
 
   if (event_flag_) {

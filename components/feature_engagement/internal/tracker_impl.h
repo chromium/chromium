@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -63,12 +63,12 @@ class TrackerImpl : public Tracker {
                         bool from_window) const override;
   void Dismissed(const base::Feature& feature) override;
   void DismissedWithSnooze(const base::Feature& feature,
-                           absl::optional<SnoozeAction> snooze_action) override;
+                           std::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
   void SetPriorityNotification(const base::Feature& feature) override;
-  absl::optional<std::string> GetPendingPriorityNotification() override;
+  std::optional<std::string> GetPendingPriorityNotification() override;
   void RegisterPriorityNotificationHandler(const base::Feature& feature,
                                            base::OnceClosure callback) override;
   void UnregisterPriorityNotificationHandler(

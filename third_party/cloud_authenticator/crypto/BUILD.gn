@@ -8,11 +8,9 @@ rust_static_library("crypto") {
   crate_name = "crypto"
   sources = [ "src/lib.rs" ]
   deps = [
-    "//third_party/boringssl:bssl_sys",
-    "//third_party/rust/libc/v0_2:lib",
+    "//third_party/boringssl:bssl_crypto",
   ]
   features = [ "bssl" ]
   no_chromium_prelude = true
   testonly = true
-  allow_unsafe = true
 }

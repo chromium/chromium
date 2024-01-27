@@ -48,14 +48,14 @@ class AlwaysInMemTestTFLiteModelHandler : public TestTFLiteModelHandler {
 
 class EnsureCancelledTestTFLiteModelExecutor : public TestTFLiteModelExecutor {
  protected:
-  absl::optional<std::vector<float>> Execute(
+  std::optional<std::vector<float>> Execute(
       ModelExecutionTask* execution_task,
       ExecutionStatus* out_status,
       const std::vector<float>& input) override {
     while (true) {
       // Timing is tricky, so give a few invocations for the cancel flag in
       // TFLite Support to be noticed.
-      absl::optional<std::vector<float>> out =
+      std::optional<std::vector<float>> out =
           TestTFLiteModelExecutor::Execute(execution_task, out_status, input);
       if (!out) {
         return out;
@@ -115,7 +115,7 @@ class TFLiteModelExecutorTest : public testing::Test {
 
   void PushModelFileToModelExecutor(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata) {
+      const std::optional<proto::Any>& model_metadata) {
     DCHECK(model_handler());
     std::unique_ptr<ModelInfo> model_info =
         TestModelInfoBuilder()
@@ -157,7 +157,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();
           },
@@ -213,7 +213,7 @@ TEST_F(TFLiteModelExecutorTest, BatchExecuteReturnsImmediatelyIfNoModelLoaded) {
   model_handler()->BatchExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const std::vector<absl::optional<std::vector<float>>>& output) {
+             const std::vector<std::optional<std::vector<float>>>& output) {
             for (const auto& out : output) {
               EXPECT_FALSE(out.has_value());
             }
@@ -272,7 +272,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -285,7 +285,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
 
             std::vector<float> expected_output = {
@@ -351,7 +351,7 @@ TEST_F(TFLiteModelExecutorTest, BatchExecuteWithLoadedModel) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -365,7 +365,7 @@ TEST_F(TFLiteModelExecutorTest, BatchExecuteWithLoadedModel) {
   model_handler()->BatchExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const std::vector<absl::optional<std::vector<float>>>& output) {
+             const std::vector<std::optional<std::vector<float>>>& output) {
             for (const auto& out : output) {
               EXPECT_TRUE(out.has_value());
             }
@@ -430,7 +430,7 @@ TEST_F(TFLiteModelExecutorTest, BatchExecutionSyncWithLoadedModel) {
   // Load model.
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -535,7 +535,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -549,7 +549,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -581,7 +581,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -672,7 +672,7 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -713,7 +713,7 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
             run_loop->Quit();
           },
@@ -767,7 +767,7 @@ TEST_F(CancelledTFLiteModelExecutorTest, RunsTooLong) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -781,7 +781,7 @@ TEST_F(CancelledTFLiteModelExecutorTest, RunsTooLong) {
   model_handler()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<float>>& output) {
+             const std::optional<std::vector<float>>& output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();
           },
@@ -806,7 +806,7 @@ TEST_F(CancelledTFLiteModelExecutorTest, BatchRunsTooLong) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
 
   std::vector<float> input;
@@ -820,7 +820,7 @@ TEST_F(CancelledTFLiteModelExecutorTest, BatchRunsTooLong) {
   model_handler()->BatchExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const std::vector<absl::optional<std::vector<float>>>& output) {
+             const std::vector<std::optional<std::vector<float>>>& output) {
             for (const auto& out : output) {
               EXPECT_FALSE(out.has_value());
             }
@@ -850,7 +850,7 @@ TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
   // Invoke UpdateModelFile() to preload model.
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
 
   // Ensures pending tasks are processed. They are generating UMA metrics.
   RunUntilIdle();
@@ -868,14 +868,14 @@ TEST_F(TFLiteModelExecutorTest, NullModelUpdate) {
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
   EXPECT_TRUE(model_handler()->GetModelInfo());
 
   // Model should not be available after a null model update.
   model_handler()->OnModelUpdated(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_info=*/absl::nullopt);
+      /*model_info=*/std::nullopt);
   RunUntilIdle();
 
   EXPECT_FALSE(model_handler()->ModelAvailable());
@@ -911,7 +911,7 @@ TEST_F(ForegroundTFLiteModelExecutorTest, LoadAndUpdateAndUnloadModel) {
   // Invoke UpdateModelFile() to load the model.
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
 
   // Ensures pending tasks are processed. They are generating UMA metrics.
   RunUntilIdle();
@@ -919,7 +919,7 @@ TEST_F(ForegroundTFLiteModelExecutorTest, LoadAndUpdateAndUnloadModel) {
   // Push the model again to ensure model file updating is correctly threaded.
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/absl::nullopt);
+      /*model_metadata=*/std::nullopt);
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(

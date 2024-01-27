@@ -78,8 +78,8 @@ class TestEntityMetadataProvider
                   {"toolow-" + entity_id, 0.01});
               metadata.human_readable_aliases.push_back("alias-" + entity_id);
               std::move(callback).Run(entity_id == "nometadata"
-                                          ? absl::nullopt
-                                          : absl::make_optional(metadata));
+                                          ? std::nullopt
+                                          : std::make_optional(metadata));
             },
             entity_id, std::move(callback)));
   }

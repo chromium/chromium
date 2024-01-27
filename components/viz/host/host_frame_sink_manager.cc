@@ -4,6 +4,7 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,6 @@
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -174,7 +174,7 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
-  CreateFrameSink(frame_sink_id, /*bundle_id=*/absl::nullopt,
+  CreateFrameSink(frame_sink_id, /*bundle_id=*/std::nullopt,
                   std::move(receiver), std::move(client));
 }
 
@@ -197,7 +197,7 @@ void HostFrameSinkManager::CreateBundledCompositorFrameSink(
 
 void HostFrameSinkManager::CreateFrameSink(
     const FrameSinkId& frame_sink_id,
-    absl::optional<FrameSinkBundleId> bundle_id,
+    std::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];

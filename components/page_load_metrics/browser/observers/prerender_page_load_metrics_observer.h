@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <optional>
+
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace internal {
 
@@ -113,13 +114,13 @@ class PrerenderPageLoadMetricsObserver
   // 'Cache-control: no-store' response header and set to false otherwise. Not
   // set if Chrome did not receive response headers or if the prerendered page
   // load was not activated.
-  absl::optional<bool> main_frame_resource_has_no_store_;
+  std::optional<bool> main_frame_resource_has_no_store_;
 
   // Set when the main resource of the main frame finishes loading.
-  absl::optional<net::Error> main_resource_load_status_;
+  std::optional<net::Error> main_resource_load_status_;
 
   // The type to trigger prerendering.
-  absl::optional<content::PreloadingTriggerType> trigger_type_;
+  std::optional<content::PreloadingTriggerType> trigger_type_;
   // The suffix of a prerender embedder. This value is valid only when
   // PreloadingTriggerType is kEmbedder. Otherwise, it's an empty string.
   std::string embedder_histogram_suffix_;

@@ -31,8 +31,8 @@
 namespace device_signals {
 
 using SignalsCallback =
-    base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
-                            absl::optional<SignalCollectionError>)>;
+    base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
+                            std::optional<SignalCollectionError>)>;
 
 namespace {
 
@@ -55,7 +55,7 @@ void GetZtaJwtPayload(
     SignalsCallback results_callback) {
   if (!base::PathExists(zta_file_path)) {
     // Not finding a file is a supported use-case (not an error).
-    std::move(results_callback).Run(absl::nullopt, absl::nullopt);
+    std::move(results_callback).Run(std::nullopt, std::nullopt);
     return;
   }
   std::string file_content;
@@ -63,13 +63,13 @@ void GetZtaJwtPayload(
                                          kMaxZtaFileSize)) {
     LogCrowdStrikeParsingError(SignalsParsingError::kHitMaxDataSize);
     std::move(results_callback)
-        .Run(absl::nullopt, SignalCollectionError::kParsingFailed);
+        .Run(std::nullopt, SignalCollectionError::kParsingFailed);
     return;
   }
 
   if (file_content.empty()) {
     // Having an empty file is a supported use-case (not an error).
-    std::move(results_callback).Run(absl::nullopt, absl::nullopt);
+    std::move(results_callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -82,7 +82,7 @@ void GetZtaJwtPayload(
     // A JWT payload must have three sections.
     LogCrowdStrikeParsingError(SignalsParsingError::kDataMalformed);
     std::move(results_callback)
-        .Run(absl::nullopt, SignalCollectionError::kUnexpectedValue);
+        .Run(std::nullopt, SignalCollectionError::kUnexpectedValue);
     return;
   }
 
@@ -92,7 +92,7 @@ void GetZtaJwtPayload(
                              &json_payload)) {
     LogCrowdStrikeParsingError(SignalsParsingError::kBase64DecodingFailed);
     std::move(results_callback)
-        .Run(absl::nullopt, SignalCollectionError::kParsingFailed);
+        .Run(std::nullopt, SignalCollectionError::kParsingFailed);
     return;
   }
 
@@ -101,8 +101,8 @@ void GetZtaJwtPayload(
 }
 
 void OnStaticSignalsRetrieved(SignalsCallback callback,
-                              absl::optional<SignalCollectionError> error,
-                              absl::optional<CrowdStrikeSignals> signals) {
+                              std::optional<SignalCollectionError> error,
+                              std::optional<CrowdStrikeSignals> signals) {
   // Forward the unexpected `error` to make sure it is captured in the metrics.
   std::move(callback).Run(signals, error);
 }
@@ -132,8 +132,8 @@ class CrowdStrikeClientImpl : public CrowdStrikeClient {
   // value that was successfully found. This function will set the cache and
   // then invoke the original caller's `callback`.
   void OnSignalsRetrieved(SignalsCallback callback,
-                          absl::optional<CrowdStrikeSignals> signals,
-                          absl::optional<SignalCollectionError> error);
+                          std::optional<CrowdStrikeSignals> signals,
+                          std::optional<SignalCollectionError> error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -170,7 +170,7 @@ void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto& cached_values = cached_signals_.Get();
   if (cached_values) {
-    std::move(callback).Run(cached_values.value(), /*error=*/absl::nullopt);
+    std::move(callback).Run(cached_values.value(), /*error=*/std::nullopt);
     return;
   }
 
@@ -207,7 +207,7 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
     LogCrowdStrikeParsingError(SignalsParsingError::kJsonParsingFailed);
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             SignalCollectionError::kParsingFailed);
     return;
   }
@@ -216,7 +216,7 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
   const std::string* agent_id = result_dict.FindString(kAgentIdJwtPropertyKey);
   if (!agent_id) {
     LogCrowdStrikeParsingError(SignalsParsingError::kMissingRequiredProperty);
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             SignalCollectionError::kParsingFailed);
     return;
   }
@@ -230,13 +230,13 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
     identifiers.customer_id = *customer_id;
   }
 
-  std::move(callback).Run(identifiers, /*error=*/absl::nullopt);
+  std::move(callback).Run(identifiers, /*error=*/std::nullopt);
 }
 
 void CrowdStrikeClientImpl::OnSignalsRetrieved(
     SignalsCallback callback,
-    absl::optional<CrowdStrikeSignals> signals,
-    absl::optional<SignalCollectionError> error) {
+    std::optional<CrowdStrikeSignals> signals,
+    std::optional<SignalCollectionError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!signals) {
     // If signals could not be retrieved via the ZTA file, then fallback to

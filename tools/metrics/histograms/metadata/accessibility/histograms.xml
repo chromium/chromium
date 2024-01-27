@@ -1734,6 +1734,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.OpenedWithScreenReader" enum="BooleanExists"
+    expires_after="2024-12-30">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a PDF is constructed for accessibility, true if a screen reader is on;
+    otherwise, false.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened"
     enum="BooleanExists" expires_after="2024-06-30">
   <owner>kyungjunlee@google.com</owner>

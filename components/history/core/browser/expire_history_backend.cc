@@ -231,7 +231,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
   DeleteFaviconsIfPossible(&effects);
 
   BroadcastNotifications(&effects, DELETION_USER_INITIATED,
-                         DeletionTimeRange::Invalid(), absl::nullopt,
+                         DeletionTimeRange::Invalid(), std::nullopt,
                          DeletionInfo::Reason::kOther);
 }
 
@@ -308,7 +308,7 @@ void ExpireHistoryBackend::ExpireVisitsInternal(
   DeleteFaviconsIfPossible(&effects);
   BroadcastNotifications(
       &effects, type, time_range,
-      restrict_urls.empty() ? absl::optional<std::set<GURL>>() : restrict_urls,
+      restrict_urls.empty() ? std::optional<std::set<GURL>>() : restrict_urls,
       deletion_reason);
 
   // Pick up any bits possibly left over.
@@ -360,7 +360,7 @@ void ExpireHistoryBackend::ClearOldOnDemandFaviconsIfPossible(
   }
 
   BroadcastNotifications(&effects, DELETION_EXPIRED,
-                         DeletionTimeRange::Invalid(), absl::nullopt,
+                         DeletionTimeRange::Invalid(), std::nullopt,
                          DeletionInfo::Reason::kOther);
 }
 
@@ -424,7 +424,7 @@ void ExpireHistoryBackend::BroadcastNotifications(
     DeleteEffects* effects,
     DeletionType type,
     const DeletionTimeRange& time_range,
-    absl::optional<std::set<GURL>> restrict_urls,
+    std::optional<std::set<GURL>> restrict_urls,
     DeletionInfo::Reason deletion_reason) {
   if (!effects->modified_urls.empty()) {
     notifier_->NotifyURLsModified(
@@ -669,7 +669,7 @@ bool ExpireHistoryBackend::ExpireSomeOldHistory(
   DeleteFaviconsIfPossible(&deleted_effects);
 
   BroadcastNotifications(&deleted_effects, DELETION_EXPIRED,
-                         DeletionTimeRange::Invalid(), absl::nullopt,
+                         DeletionTimeRange::Invalid(), std::nullopt,
                          DeletionInfo::Reason::kOther);
 
   return more_to_expire;

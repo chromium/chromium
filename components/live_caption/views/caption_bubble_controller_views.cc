@@ -128,7 +128,7 @@ void CaptionBubbleControllerViews::OnAudioStreamEnd(
 }
 
 void CaptionBubbleControllerViews::UpdateCaptionStyle(
-    absl::optional<ui::CaptionStyle> caption_style) {
+    std::optional<ui::CaptionStyle> caption_style) {
   caption_bubble_->UpdateCaptionStyle(caption_style);
 }
 

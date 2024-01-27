@@ -4609,9 +4609,28 @@
                     "enable_features": [
                         "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting",
-                        "FledgeFacilitatedTestingSignalsHeaders",
                         "SkipTpcdMitigationsForAds",
                         "TPCDAdHeuristicSubframeRequestTagging"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CookieDeprecationFacilitatedTestingFledgeTrustedSignalsHeaders": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "windows",
+                "mac",
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeFacilitatedTestingSignalsHeaders"
                     ]
                 }
             ]
@@ -5481,6 +5500,25 @@
             ]
         }
     ],
+    "DeferredSparerRendererForTopChromeWebUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeferredSpareRendererForTopChromeWebUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayStructuredMetricsUntilHwidAvailable": [
         {
             "platforms": [
@@ -5974,7 +6012,7 @@
             ]
         }
     ],
-    "DevToolsConsoleInsights": [
+    "DevToolsConsoleInsightsDogfood": [
         {
             "platforms": [
                 "chromeos",
@@ -5985,7 +6023,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "DevToolsConsoleInsights_Enabled_Dogfood",
                     "enable_features": [
                         "DevToolsConsoleInsights"
                     ]
@@ -10598,6 +10636,24 @@
             ]
         }
     ],
+    "LegacyTechReportEnableCookieIssueReports": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LegacyTechReportEnableCookieIssueReports"
+                    ]
+                }
+            ]
+        }
+    ],
     "LinkPreview": [
         {
             "platforms": [
@@ -11743,6 +11799,22 @@
                     "enable_features": [
                         "NotificationGesturesUpdate"
                     ]
+                }
+            ]
+        }
+    ],
+    "NotificationOneTapUnsubscribe": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationOneTapUnsubscribe"
+                    ],
+                    "min_os_version": "9.0.0"
                 }
             ]
         }
@@ -14060,40 +14132,7 @@
             ],
             "experiments": [
                 {
-                    "name": "BothMouseDownAndMouseHover_1206",
-                    "params": {
-                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
-                        "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
-                        "prerender_start_delay_on_mouse_hover_ms": "300"
-                    },
-                    "enable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "OnlyMouseHover300ms_1206",
-                    "params": {
-                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
-                        "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
-                        "prerender_start_delay_on_mouse_hover_ms": "300"
-                    },
-                    "enable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "OnlyMouseHover200ms_1206",
-                    "params": {
-                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
-                        "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
-                        "prerender_start_delay_on_mouse_hover_ms": "200"
-                    },
-                    "enable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "OnlyMouseDown_1206",
+                    "name": "OnlyMouseDown_20240126",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "false",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "true"
@@ -15993,25 +16032,6 @@
             ]
         }
     ],
-    "SaveForLater": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShoppingCollection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScalableIphStudy": [
         {
             "platforms": [
@@ -17215,6 +17235,21 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForSecurityPage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SeedAccountsRevampAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeedAccountsRevamp"
                     ]
                 }
             ]
@@ -19414,12 +19449,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableUnoPhase2FollowUp",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableBatchUploadFromBookmarksManager",
                         "EnableReviewAccountSettingsPromo",
                         "HistoryOptInForRestoreShortyAndReSignin",
-                        "IPH_iOSReplaceSyncPromosWithSignInPromos",
                         "LinkAccountSettingsToPrivacyFooter"
                     ]
                 }
@@ -22358,6 +22392,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ZstdContentEncoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "sqlWalMode": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
                     ]
                 }
             ]

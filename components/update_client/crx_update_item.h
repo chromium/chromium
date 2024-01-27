@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -32,7 +32,7 @@ struct CrxUpdateItem {
   // caller by responding to the |CrxDataCallback|. If the caller can't
   // provide this value, for instance, in cases where the CRX was uninstalled,
   // then the |component| member will not be present.
-  absl::optional<CrxComponent> component;
+  std::optional<CrxComponent> component;
 
   // Time when an update check for this CRX has happened.
   base::TimeTicks last_check;
@@ -59,7 +59,7 @@ struct CrxUpdateItem {
 
   // The value of this data member is provided to the `UpdateClient` by the
   // `CrxInstaller` instance when the install completes.
-  absl::optional<CrxInstaller::Result> installer_result;
+  std::optional<CrxInstaller::Result> installer_result;
 };
 
 }  // namespace update_client

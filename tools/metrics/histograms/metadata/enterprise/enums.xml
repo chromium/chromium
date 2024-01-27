@@ -2020,6 +2020,11 @@ chromium-metrics-reviews@google.com.
   <int value="1200" label="F11KeyModifier"/>
   <int value="1201" label="F12KeyModifier"/>
   <int value="1202" label="VirtualKeyboardSmartVisibilityEnabled"/>
+  <int value="1203" label="WebAnnotations"/>
+  <int value="1204" label="DeleteKeyModifier"/>
+  <int value="1205" label="HomeAndEndKeysModifier"/>
+  <int value="1206" label="PageUpAndPageDownKeysModifier"/>
+  <int value="1207" label="InsertKeyModifier"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2316,6 +2321,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UnsupportedAccountTypeError"/>
   <int value="6" label="GetTokenError"/>
   <int value="7" label="GetUserInfoError"/>
+</enum>
+
+<enum name="StateKeysRetrievalErrorType">
+  <int value="0" label="No error"/>
+  <int value="1" label="Invalid response"/>
+  <int value="2" label="Communication error"/>
+  <int value="3" label="Missing identifiers"/>
 </enum>
 
 <enum name="SystemFeature">

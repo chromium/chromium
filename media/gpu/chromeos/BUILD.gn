@@ -177,7 +177,6 @@ source_set("video_frame_mapper") {
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
-    "//third_party/libyuv",
   ]
 }
 
@@ -258,6 +257,12 @@ test("image_processor_test") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+  if (use_vaapi) {
+    deps += [ "//media/gpu/vaapi:vaapi" ]
+  }
+  if (use_v4l2_codec) {
+    deps += [ "//media/gpu/v4l2" ]
+  }
   if (enable_vulkan) {
     deps += [ "//gpu/command_buffer/service:gles2" ]
   }

@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_ANDROID_COOKIE_CONTROLS_BRIDGE_H_
 #define COMPONENTS_CONTENT_SETTINGS_ANDROID_COOKIE_CONTROLS_BRIDGE_H_
 
+#include <optional>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content_settings {
 
@@ -73,11 +74,11 @@ class CookieControlsBridge : public CookieControlsObserver {
       CookieControlsEnforcement::kNoEnforcement;
   CookieControlsBreakageConfidenceLevel level_ =
       CookieControlsBreakageConfidenceLevel::kUninitialized;
-  absl::optional<base::Time> expiration_;
-  absl::optional<int> blocked_cookies_;
-  absl::optional<int> allowed_cookies_;
-  absl::optional<int> blocked_third_party_sites_count_;
-  absl::optional<int> allowed_third_party_sites_count_;
+  std::optional<base::Time> expiration_;
+  std::optional<int> blocked_cookies_;
+  std::optional<int> allowed_cookies_;
+  std::optional<int> blocked_third_party_sites_count_;
+  std::optional<int> allowed_third_party_sites_count_;
   std::unique_ptr<CookieControlsController> controller_;
   base::ScopedObservation<CookieControlsController, CookieControlsObserver>
       observation_{this};

@@ -92,6 +92,10 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.hdr_metadata;
   }
 
+  static bool needs_detiling(const viz::TransferableResource& resource) {
+    return resource.needs_detiling;
+  }
+
   static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;

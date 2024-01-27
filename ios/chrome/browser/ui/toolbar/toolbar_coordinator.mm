@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -41,7 +42,7 @@
 @interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
                                   ToolbarMediatorDelegate> {
-  PrerenderService* _prerenderService;
+  raw_ptr<PrerenderService> _prerenderService;
 }
 
 /// Whether this coordinator has been started.

@@ -34,12 +34,12 @@ class ResponsivenessMetricsNormalization {
   void ClearAllUserInteractionLatencies();
 
   // Approximate a high percentile of user interaction latency.
-  absl::optional<mojom::UserInteractionLatency> ApproximateHighPercentile()
+  std::optional<mojom::UserInteractionLatency> ApproximateHighPercentile()
       const;
 
   uint64_t num_user_interactions() const { return num_user_interactions_; }
 
-  absl::optional<mojom::UserInteractionLatency> worst_latency() const;
+  std::optional<mojom::UserInteractionLatency> worst_latency() const;
 
  private:
   void NormalizeUserInteractionLatencies(

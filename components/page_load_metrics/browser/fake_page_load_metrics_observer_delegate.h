@@ -34,10 +34,10 @@ class FakePageLoadMetricsObserverDelegate
   // PageLoadMetricsObserverDelegate
   content::WebContents* GetWebContents() const override;
   base::TimeTicks GetNavigationStart() const override;
-  absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
-  absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
+  std::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
+  std::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
   PrerenderingState GetPrerenderingState() const override;
-  absl::optional<base::TimeDelta> GetActivationStart() const override;
+  std::optional<base::TimeDelta> GetActivationStart() const override;
   // By default no BackForwardCacheRestores are present, tests can add them by
   // calling |AddBackForwardCacheRestore|.
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
@@ -51,7 +51,7 @@ class FakePageLoadMetricsObserverDelegate
   bool DidCommit() const override;
   PageEndReason GetPageEndReason() const override;
   const UserInitiatedInfo& GetPageEndUserInitiatedInfo() const override;
-  absl::optional<base::TimeDelta> GetTimeToPageEnd() const override;
+  std::optional<base::TimeDelta> GetTimeToPageEnd() const override;
   const base::TimeTicks& GetPageEndTime() const override;
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
@@ -67,7 +67,7 @@ class FakePageLoadMetricsObserverDelegate
   const ResponsivenessMetricsNormalization&
   GetSoftNavigationIntervalResponsivenessMetricsNormalization() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
-  const absl::optional<blink::SubresourceLoadMetrics>&
+  const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
@@ -105,7 +105,7 @@ class FakePageLoadMetricsObserverDelegate
   NormalizedCLSData normalized_cls_data_;
   ResponsivenessMetricsNormalization responsiveness_metrics_normalization_;
   mojom::InputTiming page_input_timing_;
-  absl::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
+  std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
   PageRenderData main_frame_render_data_;
   ui::ScopedVisibilityTracker visibility_tracker_;
   ResourceTracker resource_tracker_;
@@ -113,11 +113,11 @@ class FakePageLoadMetricsObserverDelegate
   LargestContentfulPaintHandler experimental_largest_contentful_paint_handler_;
   int64_t navigation_id_;
   base::TimeTicks navigation_start_;
-  absl::optional<base::TimeTicks> first_background_time_ = absl::nullopt;
+  std::optional<base::TimeTicks> first_background_time_ = std::nullopt;
   bool started_in_foreground_ = true;
   PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
   PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
-  absl::optional<base::TimeDelta> activation_start_ = absl::nullopt;
+  std::optional<base::TimeDelta> activation_start_ = std::nullopt;
 
   // This vector backs the |GetBackForwardCacheRestore| and
   // |GetMostRecentBackForwardCacheRestore| methods.

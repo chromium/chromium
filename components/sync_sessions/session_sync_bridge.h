@@ -58,10 +58,10 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -81,7 +81,7 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
 
  private:
   void OnStoreInitialized(
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void StartLocalSessionEventHandler();
@@ -110,7 +110,7 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   };
 
   // TODO(mastiz): We should rather rename this to |syncing_state_|.
-  absl::optional<SyncingState> syncing_;
+  std::optional<SyncingState> syncing_;
 
   base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_{this};
 };

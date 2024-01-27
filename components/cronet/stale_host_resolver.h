@@ -6,6 +6,7 @@
 #define COMPONENTS_CRONET_STALE_HOST_RESOLVER_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -91,13 +91,12 @@ class StaleHostResolver : public net::HostResolver {
       url::SchemeHostPort host,
       net::NetworkAnonymizationKey network_anonymization_key,
       net::NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters) override;
+      std::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const net::HostPortPair& host,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const net::NetLogWithSource& net_log,
-      const absl::optional<ResolveHostParameters>& optional_parameters)
-      override;
+      const std::optional<ResolveHostParameters>& optional_parameters) override;
 
   // The remaining public methods pass through to the inner resolver:
 

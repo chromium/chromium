@@ -5,6 +5,7 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "url/origin.h"
 
@@ -151,8 +151,7 @@ WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
 std::string BluetoothChooserContext::GetDeviceAddress(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   if (device)
     return *device->FindString(kDeviceAddressKey);
 
@@ -239,16 +238,14 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
 bool BluetoothChooserContext::HasDevicePermission(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   return device.has_value();
 }
 
 void BluetoothChooserContext::RevokeDevicePermissionWebInitiated(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   if (device.has_value())
     RevokeObjectPermission(origin, std::move(*device));
 }
@@ -256,8 +253,7 @@ void BluetoothChooserContext::RevokeDevicePermissionWebInitiated(
 bool BluetoothChooserContext::IsAllowedToAccessAtLeastOneService(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   if (!device.has_value())
     return false;
   return !device->FindDict(kServicesKey)->empty();
@@ -267,8 +263,7 @@ bool BluetoothChooserContext::IsAllowedToAccessService(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id,
     const BluetoothUUID& service) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   if (!device.has_value())
     return false;
 
@@ -280,8 +275,7 @@ bool BluetoothChooserContext::IsAllowedToAccessManufacturerData(
     const url::Origin& origin,
     const WebBluetoothDeviceId& device_id,
     uint16_t manufacturer_code) {
-  absl::optional<base::Value::Dict> device =
-      FindDeviceObject(origin, device_id);
+  std::optional<base::Value::Dict> device = FindDeviceObject(origin, device_id);
   if (!device.has_value())
     return false;
 
@@ -322,7 +316,7 @@ bool BluetoothChooserContext::IsValidDict(const base::Value::Dict& dict) {
          dict.FindDict(kServicesKey) && dict.FindDict(kManufacturerDataKey);
 }
 
-absl::optional<base::Value::Dict> BluetoothChooserContext::FindDeviceObject(
+std::optional<base::Value::Dict> BluetoothChooserContext::FindDeviceObject(
     const url::Origin& origin,
     const blink::WebBluetoothDeviceId& device_id) {
   const std::vector<std::unique_ptr<Object>> object_list =
@@ -336,7 +330,7 @@ absl::optional<base::Value::Dict> BluetoothChooserContext::FindDeviceObject(
     if (device_id == web_bluetooth_device_id)
       return device;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace permissions

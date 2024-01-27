@@ -46,7 +46,7 @@ const char kClearSiteSettingsActionName[] = "clear_site_settings";
 const char kReloadPagesActionName[] = "reload_pages";
 }  // namespace
 
-absl::optional<ActionType> NameToActionType(const std::string& name) {
+std::optional<ActionType> NameToActionType(const std::string& name) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (name == kCloseBrowsersActionName) {
     return ActionType::kCloseBrowsers;
@@ -91,7 +91,7 @@ absl::optional<ActionType> NameToActionType(const std::string& name) {
   if (name == kReloadPagesActionName) {
     return ActionType::kReloadPages;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string GetActionBrowsingDataTypeName(const std::string& action) {

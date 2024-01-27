@@ -69,7 +69,7 @@ constexpr const T& AsContext(const ResourceContext& context) {
 // copy of that context. Otherwise, returns nullopt.
 template <typename T,
           internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
-constexpr absl::optional<T> AsOptionalContext(const ResourceContext& context) {
+constexpr std::optional<T> AsOptionalContext(const ResourceContext& context) {
   return internal::GetAsOptional<T>(context);
 }
 

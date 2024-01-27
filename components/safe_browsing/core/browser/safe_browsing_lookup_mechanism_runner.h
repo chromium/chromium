@@ -20,7 +20,7 @@ class SafeBrowsingLookupMechanismRunner {
  public:
   using CompleteCheckCallbackWithTimeout = base::OnceCallback<void(
       bool timed_out,
-      absl::optional<std::unique_ptr<
+      std::optional<std::unique_ptr<
           SafeBrowsingLookupMechanism::CompleteCheckResult>> result)>;
 
   // |lookup_mechanism| is the mechanism that the runner will use to perform the

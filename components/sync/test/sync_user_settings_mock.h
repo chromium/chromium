@@ -113,7 +113,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(bool, IsTrustedVaultRecoverabilityDegraded, (), (const override));
   MOCK_METHOD(bool, IsUsingExplicitPassphrase, (), (const override));
   MOCK_METHOD(base::Time, GetExplicitPassphraseTime, (), (const override));
-  MOCK_METHOD(absl::optional<PassphraseType>,
+  MOCK_METHOD(std::optional<PassphraseType>,
               GetPassphraseType,
               (),
               (const override));

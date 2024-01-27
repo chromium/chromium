@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_SYNCABLE_PREFS_DATABASE_H_
 #define COMPONENTS_SYNC_PREFERENCES_SYNCABLE_PREFS_DATABASE_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -12,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_preferences {
 
@@ -103,7 +103,7 @@ class SyncablePrefsDatabase {
 
   // Returns the metadata associated to the pref and null if `pref_name` is not
   // syncable.
-  virtual absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+  virtual std::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
       const std::string& pref_name) const = 0;
 
   // Returns true if `pref_name` is part of the allowlist of syncable

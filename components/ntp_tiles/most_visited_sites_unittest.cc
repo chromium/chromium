@@ -194,14 +194,14 @@ class FakeHomepageClient : public MostVisitedSites::HomepageClient {
 
   void SetHomepageUrl(GURL homepage_url) { homepage_url_ = homepage_url; }
 
-  void SetHomepageTitle(const absl::optional<std::u16string>& homepage_title) {
+  void SetHomepageTitle(const std::optional<std::u16string>& homepage_title) {
     homepage_title_ = homepage_title;
   }
 
  private:
   bool homepage_tile_enabled_;
   GURL homepage_url_;
-  absl::optional<std::u16string> homepage_title_;
+  std::optional<std::u16string> homepage_title_;
 };
 
 class MockIconCacher : public IconCacher {

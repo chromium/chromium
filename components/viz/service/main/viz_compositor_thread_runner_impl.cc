@@ -193,7 +193,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   FrameSinkManagerImpl::InitParams init_params;
   init_params.shared_bitmap_manager = server_shared_bitmap_manager_.get();
   // Set default activation deadline to infinite if client doesn't provide one.
-  init_params.activation_deadline_in_frames = absl::nullopt;
+  init_params.activation_deadline_in_frames = std::nullopt;
   if (params->use_activation_deadline) {
     init_params.activation_deadline_in_frames =
         params->activation_deadline_in_frames;

@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 
+#include <optional>
 #include <string>
 
 #include "base/test/gmock_expected_support.h"
@@ -16,7 +17,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 namespace {
@@ -124,7 +124,7 @@ TEST(AggregatableTriggerConfigTest, ParseTriggerContextId) {
                       kTriggerContextIdInvalidSourceRegistrationTimeConfig),
           ValueIs(*AggregatableTriggerConfig::Create(
               SourceRegistrationTimeConfig::kInclude,
-              /*trigger_context_id=*/absl::nullopt)),
+              /*trigger_context_id=*/std::nullopt)),
       },
   };
 
@@ -160,8 +160,8 @@ TEST(AggregatableTriggerConfigTest, Create) {
   const struct {
     const char* desc;
     SourceRegistrationTimeConfig source_registration_time_config;
-    absl::optional<std::string> trigger_context_id;
-    absl::optional<AggregatableTriggerConfig> expected;
+    std::optional<std::string> trigger_context_id;
+    std::optional<AggregatableTriggerConfig> expected;
   } kTestCases[] = {
       {
           "valid_exclude_source_registration_time_with_trigger_context_id",
@@ -173,33 +173,33 @@ TEST(AggregatableTriggerConfigTest, Create) {
       {
           "valid_exclude_source_registration_time_without_trigger_context_id",
           SourceRegistrationTimeConfig::kExclude,
-          absl::nullopt,
+          std::nullopt,
           AggregatableTriggerConfig(),
       },
       {
           "valid_include_source_registration_time_without_trigger_context_id",
           SourceRegistrationTimeConfig::kInclude,
-          absl::nullopt,
+          std::nullopt,
           *AggregatableTriggerConfig::Create(
-              SourceRegistrationTimeConfig::kInclude, absl::nullopt),
+              SourceRegistrationTimeConfig::kInclude, std::nullopt),
       },
       {
           "trigger_context_id_empty",
           SourceRegistrationTimeConfig::kExclude,
           "",
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "trigger_context_id_too_long",
           SourceRegistrationTimeConfig::kExclude,
           std::string(65, 'a'),
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "trigger_context_id_disallowed",
           SourceRegistrationTimeConfig::kInclude,
           "123",
-          absl::nullopt,
+          std::nullopt,
       },
   };
 
@@ -244,7 +244,7 @@ TEST(AggregatableTriggerConfigTest, Serialize) {
       {
           *AggregatableTriggerConfig::Create(
               SourceRegistrationTimeConfig::kInclude,
-              /*trigger_context_id=*/absl::nullopt),
+              /*trigger_context_id=*/std::nullopt),
           R"json({
             "aggregatable_source_registration_time":"include"
           })json",

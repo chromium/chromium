@@ -6,6 +6,7 @@
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 
 #include "base/time/time.h"
+#include "components/compose/core/browser/compose_enums.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -36,6 +37,7 @@ extern const char kComposeFirstRunSessionDialogShownCount[];
 extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
+extern const char kComposeContextMenuCtr[];
 extern const char kOpenComposeDialogResult[];
 
 // Enum for calculating the CTR of the Compose context menu item.
@@ -45,8 +47,8 @@ extern const char kOpenComposeDialogResult[];
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeContextMenuCtrEvent {
   kMenuItemDisplayed = 0,
-  kComposeOpened = 1,
-  kMaxValue = kComposeOpened,
+  kMenuItemClicked = 1,
+  kMaxValue = kMenuItemClicked,
 };
 
 // Keep in sync with ComposeRequestReason in
@@ -193,6 +195,17 @@ struct ComposeSessionEvents {
   bool inserted_results = false;
   // True if the the user closed the compose session via the "x" button.
   bool close_clicked = false;
+  // Number of on-device responses received.
+  unsigned int on_device_responses = 0;
+  // Number of server responses received.
+  unsigned int server_responses = 0;
+};
+
+enum class EvalLocation {
+  // Response was evaluated on the server.
+  kServer,
+  // Response was evaluated on the device.
+  kOnDevice,
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -236,6 +249,11 @@ class PageUkmTracker {
   // The composed text was accepted and inserted into the webpage by the user.
   void ComposeTextInserted();
 
+  // The compose dialog was requested but not shown due to problems obtaining
+  // form data from Autofill.
+  void ShowDialogAbortedDueToMissingFormData();
+  void ShowDialogAbortedDueToMissingFormFieldData();
+
   // Records UKM if any of the above events happened during this object's
   // lifetime.  Called in the destructor.
   void MaybeLogUkm();
@@ -245,6 +263,8 @@ class PageUkmTracker {
   unsigned int menu_item_shown_count_ = 0;
   unsigned int menu_item_clicked_count_ = 0;
   unsigned int compose_text_inserted_count_ = 0;
+  unsigned int missing_form_data_count_ = 0;
+  unsigned int missing_form_field_data_count_ = 0;
 
   ukm::SourceId source_id;
 };
@@ -257,9 +277,14 @@ void LogOpenComposeDialogResult(OpenComposeDialogResult result);
 
 void LogComposeRequestReason(ComposeRequestReason reason);
 
+void LogComposeRequestStatus(EvalLocation eval_location,
+                             compose::mojom::ComposeStatus status);
+
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.
-void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
+void LogComposeRequestDuration(base::TimeDelta duration,
+                               EvalLocation eval_location,
+                               bool is_ok);
 
 void LogComposeFirstRunSessionCloseReason(
     ComposeFirstRunSessionCloseReason reason);

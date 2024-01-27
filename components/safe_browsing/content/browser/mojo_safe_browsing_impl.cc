@@ -184,7 +184,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
                           frame_token),
       /*weak_web_state=*/nullptr, render_process_id_, sb_frame_token,
       content::RenderFrameHost::kNoFrameTreeNodeId,
-      /*navigation_id=*/absl::nullopt,
+      /*navigation_id=*/std::nullopt,
       /*url_real_time_lookup_enabled=*/false,
       /*can_urt_check_subresource_url=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,

@@ -91,6 +91,15 @@ using content::WebContents;
 
 namespace extensions {
 
+// This feature is a kill switch guarding the removal of
+// RenderProcessHostPrivilege buckets for classifying renderer processes.
+// Stricter isolation is already provided by existing site isolation and
+// extension isolation checks, making these buckets unnecessary.
+// See crbug.com/1519931.
+BASE_FEATURE(kStopUsingRenderProcessHostPrivilege,
+             "StopUsingRenderProcessHostPrivilege",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // If non-null, a scope of a service worker to always allow to be unregistered.
@@ -100,12 +109,17 @@ const GURL* g_allow_service_worker_unregistration_scope = nullptr;
 // below.  Extensions and hosted apps require different privileges to be
 // granted to their RenderProcessHosts.  This classification allows us to make
 // sure URLs are served by hosts with the right set of privileges.
+//
+// TODO(crbug.com/1519931): This mechanism is deprecated and will be removed
+// soon.
 enum RenderProcessHostPrivilege {
   PRIV_NORMAL,
   PRIV_HOSTED,
   PRIV_EXTENSION,
 };
 
+// TODO(crbug.com/1519931): Do not add more uses of this function. It is
+// deprecated and will be removed soon.
 RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
     const GURL& url,
     ExtensionRegistry* registry) {
@@ -128,6 +142,8 @@ RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
   return PRIV_EXTENSION;
 }
 
+// TODO(crbug.com/1519931): Do not add more uses of this function. It is
+// deprecated and will be removed soon.
 RenderProcessHostPrivilege GetProcessPrivilege(
     content::RenderProcessHost* process_host,
     ProcessMap* process_map,
@@ -432,14 +448,20 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
 
   // TODO(creis, crbug.com/840857): In the past, there were cases where an
   // extension URL committed in an extension process but not one registered for
-  // it in ProcessMap. Hence, the code below allows this case, as long as this
-  // is an extension process and not a hosted app process. Since extensions no
-  // longer share processes with each other, it is possible that this no longer
-  // occurs, so add a DumpWithoutCrashing() to confirm if this is still needed.
-  if (GetProcessPrivilege(process_host, process_map, registry) ==
-      PRIV_EXTENSION) {
-    base::debug::DumpWithoutCrashing();
-    return true;
+  // it in ProcessMap. Hence, the code below used to allow this case, as long
+  // as this is an extension process and not a hosted app process. Since
+  // extensions no longer share processes with each other, this workaround
+  // should no longer be needed; this has been validated by the
+  // DumpWithoutCrashing() below which has not produced any reports since it
+  // was added (though if any reports do show up, please mention them on
+  // https://crbug.com/840857). Hence, the workaround is now disabled and
+  // moved behind a kill switch, and should eventually be removed.
+  if (!base::FeatureList::IsEnabled(kStopUsingRenderProcessHostPrivilege)) {
+    if (GetProcessPrivilege(process_host, process_map, registry) ==
+        PRIV_EXTENSION) {
+      base::debug::DumpWithoutCrashing();
+      return true;
+    }
   }
 
   // Most hosted apps (except for the Chrome Web Store) can commit anywhere.
@@ -485,12 +507,44 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
   if (!registry || !process_map)
     return true;
 
-  // Otherwise, just make sure the process privilege matches the privilege
-  // required by the site.
-  RenderProcessHostPrivilege privilege_required =
-      GetPrivilegeRequiredByUrl(site_url, registry);
-  return GetProcessPrivilege(process_host, process_map, registry) ==
-         privilege_required;
+  if (base::FeatureList::IsEnabled(kStopUsingRenderProcessHostPrivilege)) {
+    // Don't use a process that's not in the ProcessMap for a site URL that
+    // corresponds to an enabled extension. For example, this prevents a
+    // navigation to an enabled extension's URL from reusing a process that has
+    // previously loaded non-functional URLs from that same extension while it
+    // was disabled.
+    //
+    // Note that this is called on site URLs that have been computed after
+    // effective URL translation, so site URLs with an extension scheme capture
+    // SiteInstances for both extensions and hosted apps.
+    const Extension* extension =
+        GetEnabledExtensionFromSiteURL(profile, site_url);
+    if (extension &&
+        !process_map->Contains(extension->id(), process_host->GetID())) {
+      return false;
+    }
+
+    // Conversely, don't use an extension process for a site URL that does not
+    // map to an enabled extension. For example, this prevents a reload of an
+    // extension or app that has just been disabled from staying in the
+    // privileged extension process.
+    if (!extension && process_map->Contains(process_host->GetID())) {
+      return false;
+    }
+
+    // Otherwise, the extensions layer is ok with using `process_host` for
+    // `site_url`.
+    return true;
+  } else {
+    // Make sure the process privilege matches the privilege required by the
+    // site.
+    //
+    // TODO(crbug.com/1519931): Remove this deprecated path.
+    RenderProcessHostPrivilege privilege_required =
+        GetPrivilegeRequiredByUrl(site_url, registry);
+    return GetProcessPrivilege(process_host, process_map, registry) ==
+           privilege_required;
+  }
 }
 
 size_t

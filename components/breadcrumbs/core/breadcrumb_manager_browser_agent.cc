@@ -68,9 +68,9 @@ void BreadcrumbManagerBrowserAgent::LogTabReplaced(int old_tab_id,
 }
 
 void BreadcrumbManagerBrowserAgent::LogActiveTabChanged(
-    absl::optional<int> old_tab_id,
-    absl::optional<int> new_tab_id,
-    absl::optional<size_t> index) {
+    std::optional<int> old_tab_id,
+    std::optional<int> new_tab_id,
+    std::optional<size_t> index) {
   std::vector<std::string> event = {"Switch"};
   if (old_tab_id) {
     event.push_back(base::StringPrintf("from Tab%d", old_tab_id.value()));

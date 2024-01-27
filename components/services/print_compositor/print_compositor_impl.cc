@@ -197,7 +197,7 @@ void PrintCompositorImpl::FinishDocumentComposition(
   docinfo_->callback = std::move(callback);
 
   if (!docinfo_->doc) {
-    docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+    docinfo_->doc = MakePdfDocument(creator_, title_, accessibility_tree_,
                                     GeneratePdfDocumentOutline::kNone,
                                     &docinfo_->compositor_stream);
   }
@@ -367,7 +367,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
   sk_sp<SkDocument> doc = MakePdfDocument(
-      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_,
+      creator_, title_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_,
       GeneratePdfDocumentOutline::kNone, &wstream);
 
   for (const auto& page : pages) {
@@ -380,7 +380,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
       if (!docinfo_->doc) {
         // TODO(crbug.com/1008222) Make use of `document_type` parameter once
         // `MakeXpsDocument()` is available.
-        docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+        docinfo_->doc = MakePdfDocument(creator_, title_, accessibility_tree_,
                                         GeneratePdfDocumentOutline::kNone,
                                         &docinfo_->compositor_stream);
       }
@@ -505,5 +505,9 @@ PrintCompositorImpl::RequestInfo::RequestInfo(
       callback(std::move(callback)) {}
 
 PrintCompositorImpl::RequestInfo::~RequestInfo() = default;
+
+void PrintCompositorImpl::SetTitle(const std::string& title) {
+  title_ = title;
+}
 
 }  // namespace printing

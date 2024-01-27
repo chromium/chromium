@@ -223,13 +223,13 @@ TEST_F(SignalDatabaseImplTest, DeleteSamples) {
 
   // Write two samples, at timestamp1 and timestamp3.
   test_clock_.SetNow(timestamp1);
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
+  signal_db_->WriteSample(signal_type, name_hash, std::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
   EXPECT_EQ(1u, db_entries_.size());
 
   test_clock_.SetNow(timestamp3);
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
+  signal_db_->WriteSample(signal_type, name_hash, std::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
   EXPECT_EQ(2u, db_entries_.size());
@@ -279,17 +279,17 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   base::Time timestamp_day2_1 = day2 + base::Hours(2);
 
   test_clock_.SetNow(timestamp_day1_1);
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
+  signal_db_->WriteSample(signal_type, name_hash, std::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
 
   test_clock_.SetNow(timestamp_day1_2);
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
+  signal_db_->WriteSample(signal_type, name_hash, std::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
 
   test_clock_.SetNow(timestamp_day2_1);
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
+  signal_db_->WriteSample(signal_type, name_hash, std::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
   std::vector<SignalDatabase::DbEntry> all_cached_samples = {

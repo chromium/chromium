@@ -102,7 +102,7 @@ void FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(
     const char* event_name,
     Constraint constraint,
     uint32_t count,
-    absl::optional<uint32_t> in_days) {
+    std::optional<uint32_t> in_days) {
   AddAdditionalCondition({event_name, constraint, count, in_days});
 }
 

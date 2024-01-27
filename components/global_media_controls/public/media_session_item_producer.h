@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
       mojo::Remote<media_session::mojom::MediaControllerManager>
           controller_manager_remote,
       MediaItemManager* item_manager,
-      absl::optional<base::UnguessableToken> source_id);
+      std::optional<base::UnguessableToken> source_id);
   MediaSessionItemProducer(const MediaSessionItemProducer&) = delete;
   MediaSessionItemProducer& operator=(const MediaSessionItemProducer&) = delete;
   ~MediaSessionItemProducer() override;
@@ -121,15 +121,14 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
     void MediaSessionInfoChanged(
         media_session::mojom::MediaSessionInfoPtr session_info) override;
     void MediaSessionMetadataChanged(
-        const absl::optional<media_session::MediaMetadata>& metadata) override {
-    }
+        const std::optional<media_session::MediaMetadata>& metadata) override {}
     void MediaSessionActionsChanged(
         const std::vector<media_session::mojom::MediaSessionAction>& actions)
         override;
     void MediaSessionChanged(
-        const absl::optional<base::UnguessableToken>& request_id) override {}
+        const std::optional<base::UnguessableToken>& request_id) override {}
     void MediaSessionPositionChanged(
-        const absl::optional<media_session::MediaPosition>& position) override;
+        const std::optional<media_session::MediaPosition>& position) override;
 
     // Called when the request ID associated with this session is released (i.e.
     // when the tab is closed).
@@ -178,7 +177,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
     base::TimeTicks last_interaction_time_ = base::TimeTicks::Now();
 
     // The reason why this session was dismissed/removed.
-    absl::optional<GlobalMediaControlsDismissReason> dismiss_reason_;
+    std::optional<GlobalMediaControlsDismissReason> dismiss_reason_;
 
     // True if the session's playback state is "playing".
     bool is_playing_ = false;

@@ -96,7 +96,7 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
     action_info.set_action_type(test_case.action_type);
 
     auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-        std::move(action_info), absl::nullopt);
+        std::move(action_info), std::nullopt);
     EXPECT_EQ(OmniboxActionId::ACTION_IN_SUGGEST, action->ActionId())
         << "while evaluatin action " << ToString(test_case.action_type);
     EXPECT_EQ(test_case.action_type, action->Type());
@@ -129,7 +129,7 @@ TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
 
     scoped_refptr<OmniboxAction> upcasted_action =
         base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
-                                                     absl::nullopt);
+                                                     std::nullopt);
 
     auto* downcasted_action =
         OmniboxActionInSuggest::FromAction(upcasted_action.get());
@@ -164,7 +164,7 @@ TEST_F(OmniboxActionInSuggestTest, AllDeclaredActionTypesAreProperlyReflected) {
 
       // This is a valid action type. Object MUST build.
       auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(action_info), absl::nullopt);
+          std::move(action_info), std::nullopt);
       // This is a valid action type. Object MUST be able to report metrics.
       {
         base::HistogramTester histograms;
@@ -217,7 +217,7 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
     action_info.set_action_type(test_case.type);
     scoped_refptr<OmniboxAction> action =
         base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
-                                                     absl::nullopt);
+                                                     std::nullopt);
 
     {
       // Just show.

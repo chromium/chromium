@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_SCOPED_FULLSCREEN_DISABLER_H_
 
 #include "base/check.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
@@ -29,7 +30,7 @@ class ScopedFullscreenDisabler : public FullscreenControllerObserver {
   base::ScopedObservation<FullscreenController, FullscreenControllerObserver>
       scoped_observer_{this};
   // The FullscreenController being disabled by this object.
-  FullscreenController* controller_;
+  raw_ptr<FullscreenController> controller_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_SCOPED_FULLSCREEN_DISABLER_H_

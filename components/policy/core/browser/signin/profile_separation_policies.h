@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -31,7 +31,7 @@ class POLICY_EXPORT ProfileSeparationPolicies {
   ProfileSeparationPolicies();
   ProfileSeparationPolicies(
       int profile_separation_settings,
-      absl::optional<int> profile_separation_data_migration_settings);
+      std::optional<int> profile_separation_data_migration_settings);
   explicit ProfileSeparationPolicies(
       const std::string& managed_accounts_signin_restrictions);
   ProfileSeparationPolicies(const ProfileSeparationPolicies&);
@@ -47,21 +47,21 @@ class POLICY_EXPORT ProfileSeparationPolicies {
   // versa.
   bool Valid() const;
 
-  const absl::optional<std::string>& managed_accounts_signin_restrictions()
+  const std::optional<std::string>& managed_accounts_signin_restrictions()
       const {
     return managed_accounts_signin_restrictions_;
   }
-  absl::optional<int> profile_separation_settings() const {
+  std::optional<int> profile_separation_settings() const {
     return profile_separation_settings_;
   }
-  absl::optional<int> profile_separation_data_migration_settings() const {
+  std::optional<int> profile_separation_data_migration_settings() const {
     return profile_separation_data_migration_settings_;
   }
 
  private:
-  absl::optional<std::string> managed_accounts_signin_restrictions_;
-  absl::optional<int> profile_separation_settings_;
-  absl::optional<int> profile_separation_data_migration_settings_;
+  std::optional<std::string> managed_accounts_signin_restrictions_;
+  std::optional<int> profile_separation_settings_;
+  std::optional<int> profile_separation_data_migration_settings_;
 };
 
 }  // namespace policy

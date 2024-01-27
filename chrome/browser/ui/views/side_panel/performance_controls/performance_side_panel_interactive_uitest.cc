@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -85,8 +86,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
       SelectMenuItem(AppMenuModel::kPerformanceMenuItem),
       WaitForShow(kSidePanelElementId), FlushEvents(),
       WaitForShow(kPinnedToolbarActionsContainerElementId),
-      NameChildViewByType<
-          PinnedToolbarActionsContainer::PinnedActionToolbarButton>(
+      NameChildViewByType<PinnedActionToolbarButton>(
           kPinnedToolbarActionsContainerElementId, kPerformanceButton),
       WaitForShow(kPerformanceButton), FlushEvents(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,

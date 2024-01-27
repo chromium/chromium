@@ -124,7 +124,7 @@ void CastMessagePortImpl::ResetClient() {
 
 void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
                                              const std::string& message) {
-  absl::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value = base::JSONReader::Read(message);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": not a json payload:" << message;
@@ -149,7 +149,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
     return;
   }
 
-  absl::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
+  std::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
   if (!request_id) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no request id: " << message;
@@ -170,7 +170,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
 
 void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
                                              const std::string& message) {
-  absl::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value = base::JSONReader::Read(message);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": not a json payload: " << message;
@@ -201,7 +201,7 @@ void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
     return;
   }
 
-  absl::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
+  std::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
   if (!request_id.has_value()) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no request id: " << message;

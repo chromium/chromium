@@ -16,11 +16,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -788,10 +790,10 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
 
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.
-  absl::optional<WipeSearchEngineChoiceReason> wipe_reason;
+  std::optional<WipeSearchEngineChoiceReason> wipe_reason;
   // Internal results of the reprompt computation.
-  absl::optional<RepromptResult> wildcard_result;
-  absl::optional<RepromptResult> country_result;
+  std::optional<RepromptResult> wildcard_result;
+  std::optional<RepromptResult> country_result;
   // Version of the choice.
   const base::StringPiece choice_version;
   // The reprompt params, as sent by the server.  Use `CURRENT_VERSION` for the
@@ -908,24 +910,24 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
      RepromptResult::kNoDictionaryKey, "10.10.1.1",
      R"( {"*":"30.45.678.9100"} )"},
     // Reprompt a specific country.
-    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"1.0.0.1"} )"},
     // Reprompt for params inclusive of current version
-    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"CURRENT_VERSION"} )"},
     // Reprompt when the choice version is malformed.
-    {WipeSearchEngineChoiceReason::kInvalidChoiceVersion, absl::nullopt,
-     absl::nullopt, "Blah", ""},
+    {WipeSearchEngineChoiceReason::kInvalidChoiceVersion, std::nullopt,
+     std::nullopt, "Blah", ""},
     // Reprompt when both the country and the wild card are specified, as long
     // as one of them qualifies.
-    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"1.0.0.1","BE":"1.0.0.1"} )"},
-    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"FUTURE_VERSION","BE":"1.0.0.1"} )"},
     // Still works with irrelevant parameters for other countries.
-    {WipeSearchEngineChoiceReason::kReprompt, absl::nullopt,
+    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"(
        {
@@ -936,34 +938,34 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
        } )"},
 
     // Don't reprompt when the choice was made in the current version.
-    {absl::nullopt, RepromptResult::kRecentChoice,
+    {std::nullopt, RepromptResult::kRecentChoice,
      RepromptResult::kNoDictionaryKey, version_info::GetVersionNumber(),
      "{\"*\":\"CURRENT_VERSION\"}"},
     // Don't reprompt when the choice was recent enough.
-    {absl::nullopt, RepromptResult::kRecentChoice,
+    {std::nullopt, RepromptResult::kRecentChoice,
      RepromptResult::kNoDictionaryKey, "2.0.0.0", R"( {"*":"1.0.0.1"} )"},
     // Don't reprompt for another country.
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"FR":"1.0.0.1"} )"},
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"US":"1.0.0.1"} )"},
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"XX":"1.0.0.1"} )"},
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0",
      R"( {"INVALID_COUNTRY":"1.0.0.1"} )"},
-    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
+    {std::nullopt, std::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
      R"( {"FR":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
     // Don't reprompt for future versions.
-    {absl::nullopt, RepromptResult::kChromeTooOld,
+    {std::nullopt, RepromptResult::kChromeTooOld,
      RepromptResult::kNoDictionaryKey, "1.0.0.0",
      R"( {"*":"FUTURE_VERSION"} )"},
     // Wildcard is overridden by specific country.
-    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
+    {std::nullopt, std::nullopt, RepromptResult::kChromeTooOld, "1.0.0.0",
      R"( {"*":"1.0.0.1","BE":"FUTURE_VERSION"} )"},
     // Combination of right version for wrong country and wrong version for
     // right country.
-    {absl::nullopt, absl::nullopt, RepromptResult::kChromeTooOld, "2.0.0.0",
+    {std::nullopt, std::nullopt, RepromptResult::kChromeTooOld, "2.0.0.0",
      R"(
        {
           "*":"1.1.0.0",
@@ -971,16 +973,16 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
           "FR":"2.0.0.1"
         } )"},
     // Empty dictionary.
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", "{}"},
     // Empty parameter.
-    {absl::nullopt, RepromptResult::kNoDictionaryKey,
+    {std::nullopt, RepromptResult::kNoDictionaryKey,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", ""},
     // Wrong number of components.
-    {absl::nullopt, RepromptResult::kInvalidVersion,
+    {std::nullopt, RepromptResult::kInvalidVersion,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"2.0"} )"},
     // Wildcard in version.
-    {absl::nullopt, RepromptResult::kInvalidVersion,
+    {std::nullopt, RepromptResult::kInvalidVersion,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"2.0.0.*"} )"},
 };
 
@@ -988,8 +990,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
+#if !BUILDFLAG(IS_ANDROID)
 
 class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
  public:
@@ -1036,7 +1037,56 @@ TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
-        // BUILDFLAG(CHROME_FOR_TESTING)
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
+ public:
+  SearchEngineChoiceServiceWithVariationsTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  }
+
+  PrefService& pref_service() { return pref_service_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+// Tests that the country falls back to `country_codes::GetCurrentCountryID()`
+// when the variations country is not available.
+TEST_F(SearchEngineChoiceServiceWithVariationsTest, NoVariationsCountry) {
+  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSearchEngineChoiceCountry));
+  SearchEngineChoiceService search_engine_choice_service(
+      pref_service(), country_codes::kCountryIDUnknown);
+
+  EXPECT_EQ(search_engine_choice_service.GetCountryId(),
+            country_codes::GetCurrentCountryID());
+}
+
+// Tests that the country is read from the variations service when available.
+TEST_F(SearchEngineChoiceServiceWithVariationsTest, WithVariationsCountry) {
+  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSearchEngineChoiceCountry));
+
+  int variation_country_id = country_codes::CountryStringToCountryID("FR");
+  if (country_codes::GetCurrentCountryCode() == "FR") {
+    // Make sure to use a country different from the current one.
+    variation_country_id = country_codes::CountryStringToCountryID("DE");
+  }
+
+  SearchEngineChoiceService search_engine_choice_service(pref_service(),
+                                                         variation_country_id);
+
+  EXPECT_EQ(variation_country_id, search_engine_choice_service.GetCountryId());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 }  // namespace search_engines

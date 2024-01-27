@@ -122,12 +122,12 @@ class TestEntryBuilder {
   const GURL url_;
   const base::Time creation_time_;
 
-  absl::optional<std::pair<std::string, base::Time>> title_and_update_time_;
-  absl::optional<base::Time> update_read_time_;
+  std::optional<std::pair<std::string, base::Time>> title_and_update_time_;
+  std::optional<base::Time> update_read_time_;
   bool read_;
-  absl::optional<base::TimeDelta> estimated_read_time_;
-  absl::optional<ReadingListEntry::DistillationState> distilation_state_;
-  absl::optional<base::FilePath> distilation_path_;
+  std::optional<base::TimeDelta> estimated_read_time_;
+  std::optional<ReadingListEntry::DistillationState> distilation_state_;
+  std::optional<base::FilePath> distilation_path_;
 };
 
 // TODO(crbug.com/1510547): Add test coverage for GetAccountModelIfSyncing.

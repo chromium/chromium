@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/files/file_path.h"
@@ -15,7 +16,6 @@
 #include "build/build_config.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/test_ax_tree_update_json_reader.h"
@@ -337,7 +337,7 @@ TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
   std::string file_content;
   ASSERT_TRUE(base::ReadFileToString(kInputJsonPath, &file_content))
       << "Failed to load input AX tree: " << kInputJsonPath;
-  absl::optional<base::Value> json = base::JSONReader::Read(file_content);
+  std::optional<base::Value> json = base::JSONReader::Read(file_content);
   ASSERT_TRUE(json.has_value());
 
   // Convert JSON file to AX tree update.

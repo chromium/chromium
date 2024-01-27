@@ -1907,7 +1907,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetNeedsCollectInlines(bool b) {
     NOT_DESTROYED();
-    DCHECK(!GetDocument().InPostLifecycleSteps());
+    DCHECK(!GetDocument().InvalidationDisallowed());
     bitfields_.SetNeedsCollectInlines(b);
   }
 
@@ -3147,7 +3147,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // Same as LayoutObject::SetNeedsPaintPropertyUpdate(), but does not mark
     // ancestors as having a descendant needing a paint property update.
     void SetOnlyThisNeedsPaintPropertyUpdate() {
-      DCHECK(!layout_object_.GetDocument().InPostLifecycleSteps());
+      DCHECK(!layout_object_.GetDocument().InvalidationDisallowed());
       layout_object_.bitfields_.SetNeedsPaintPropertyUpdate(true);
     }
 
@@ -4170,14 +4170,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetChildNeedsFullLayout(bool b) {
     NOT_DESTROYED();
-    DCHECK(!GetDocument().InPostLifecycleSteps());
+    DCHECK(!GetDocument().InvalidationDisallowed());
     bitfields_.SetChildNeedsFullLayout(b);
     if (b)
       bitfields_.SetIsTableColumnsConstraintsDirty(true);
   }
   void SetNeedsSimplifiedLayout(bool b) {
     NOT_DESTROYED();
-    DCHECK(!GetDocument().InPostLifecycleSteps());
+    DCHECK(!GetDocument().InvalidationDisallowed());
     bitfields_.SetNeedsSimplifiedLayout(b);
   }
 
@@ -4333,7 +4333,7 @@ inline void LayoutObject::SetNeedsSimplifiedLayout() {
 // TODO(1229581): Get rid of this.
 inline void LayoutObject::SetIsInLayoutNGInlineFormattingContext(
     bool new_value) {
-  DCHECK(!GetDocument().InPostLifecycleSteps());
+  DCHECK(!GetDocument().InvalidationDisallowed());
   if (IsInLayoutNGInlineFormattingContext() == new_value)
     return;
   InLayoutNGInlineFormattingContextWillChange(new_value);
@@ -4345,7 +4345,7 @@ inline void LayoutObject::SetIsInLayoutNGInlineFormattingContext(
 }
 
 inline void LayoutObject::SetHasBoxDecorationBackground(bool b) {
-  DCHECK(!GetDocument().InPostLifecycleSteps());
+  DCHECK(!GetDocument().InvalidationDisallowed());
   if (b == bitfields_.HasBoxDecorationBackground())
     return;
 

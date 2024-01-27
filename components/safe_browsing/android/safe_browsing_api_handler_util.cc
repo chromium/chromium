@@ -116,7 +116,7 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     return UmaRemoteCallResult::JSON_EMPTY;
 
   // Pick out the "matches" list.
-  absl::optional<base::Value> value = base::JSONReader::Read(metadata_str);
+  std::optional<base::Value> value = base::JSONReader::Read(metadata_str);
   const base::Value::List* matches = nullptr;
   {
     if (!value.has_value())

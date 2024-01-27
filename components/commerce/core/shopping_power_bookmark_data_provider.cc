@@ -34,7 +34,7 @@ ShoppingPowerBookmarkDataProvider::~ShoppingPowerBookmarkDataProvider() {
 void ShoppingPowerBookmarkDataProvider::AttachMetadataForNewBookmark(
     const bookmarks::BookmarkNode* node,
     power_bookmarks::PowerBookmarkMeta* meta) {
-  absl::optional<commerce::ProductInfo> info =
+  std::optional<commerce::ProductInfo> info =
       shopping_service_->GetAvailableProductInfoForUrl(node->url());
 
   if (info.has_value()) {

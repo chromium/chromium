@@ -40,7 +40,7 @@ std::string GetPersonalizableDeviceNameInternal() {
   // If all else fails, return to using a slightly nicer version of the hardware
   // model. Warning: This will soon return just a useless "Mac" string.
   std::string model = base::SysInfo::HardwareModelName();
-  absl::optional<base::SysInfo::HardwareModelNameSplit> split =
+  std::optional<base::SysInfo::HardwareModelNameSplit> split =
       base::SysInfo::SplitHardwareModelNameDoNotUse(model);
 
   if (!split) {

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/thread_annotations.h"
 #include "components/system_cpu/cpu_probe.h"
 #include "components/system_cpu/pressure_sample.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_cpu {
 
@@ -35,14 +35,14 @@ class FakePlatformCpuProbe : public T {
 
   // Tests the internals of each platform CPU probe by calling Update() directly
   // instead of using the public interface.
-  absl::optional<PressureSample> UpdateAndWaitForSample() {
+  std::optional<PressureSample> UpdateAndWaitForSample() {
     T::Update(sample_.GetCallback());
     // Blocks until the sample callback is invoked.
     return sample_.Take();
   }
 
  private:
-  base::test::TestFuture<absl::optional<PressureSample>> sample_;
+  base::test::TestFuture<std::optional<PressureSample>> sample_;
 };
 
 // Test double for CpuProbe that always returns a predetermined value.
@@ -56,11 +56,11 @@ class FakeCpuProbe final : public CpuProbe {
   base::WeakPtr<CpuProbe> GetWeakPtr() final;
 
   // Can be called from any thread.
-  void SetLastSample(absl::optional<PressureSample> sample);
+  void SetLastSample(std::optional<PressureSample> sample);
 
  private:
   base::Lock lock_;
-  absl::optional<PressureSample> last_sample_ GUARDED_BY_CONTEXT(lock_);
+  std::optional<PressureSample> last_sample_ GUARDED_BY_CONTEXT(lock_);
 
   base::WeakPtrFactory<FakeCpuProbe> weak_factory_{this};
 };

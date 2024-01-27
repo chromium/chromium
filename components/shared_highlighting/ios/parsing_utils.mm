@@ -18,26 +18,26 @@ BOOL IsValidDictValue(const base::Value* value) {
   return value && value->is_dict() && !value->GetDict().empty();
 }
 
-absl::optional<CGRect> ParseRect(const base::Value::Dict* dict) {
+std::optional<CGRect> ParseRect(const base::Value::Dict* dict) {
   if (!dict || dict->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<double> xValue = dict->FindDouble("x");
-  absl::optional<double> yValue = dict->FindDouble("y");
-  absl::optional<double> widthValue = dict->FindDouble("width");
-  absl::optional<double> heightValue = dict->FindDouble("height");
+  std::optional<double> xValue = dict->FindDouble("x");
+  std::optional<double> yValue = dict->FindDouble("y");
+  std::optional<double> widthValue = dict->FindDouble("width");
+  std::optional<double> heightValue = dict->FindDouble("height");
 
   if (!xValue || !yValue || !widthValue || !heightValue) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return CGRectMake(*xValue, *yValue, *widthValue, *heightValue);
 }
 
-absl::optional<GURL> ParseURL(const std::string* url_value) {
+std::optional<GURL> ParseURL(const std::string* url_value) {
   if (!url_value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL url(*url_value);
@@ -45,7 +45,7 @@ absl::optional<GURL> ParseURL(const std::string* url_value) {
     return url;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {

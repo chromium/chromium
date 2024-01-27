@@ -173,7 +173,7 @@ void LayerTreeFrameSinkHolder::SetBeginFrameSource(
   }
 }
 
-absl::optional<viz::HitTestRegionList>
+std::optional<viz::HitTestRegionList>
 LayerTreeFrameSinkHolder::BuildHitTestData() {
   return {};
 }

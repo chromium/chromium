@@ -63,11 +63,11 @@ using base::SampleCountIterator;
 namespace metrics {
 
 LogMetadata::LogMetadata()
-    : samples_count(absl::nullopt), user_id(absl::nullopt) {}
+    : samples_count(std::nullopt), user_id(std::nullopt) {}
 LogMetadata::LogMetadata(
-    const absl::optional<base::HistogramBase::Count> samples_count,
-    const absl::optional<uint64_t> user_id,
-    const absl::optional<metrics::UkmLogSourceType> log_source_type)
+    const std::optional<base::HistogramBase::Count> samples_count,
+    const std::optional<uint64_t> user_id,
+    const std::optional<metrics::UkmLogSourceType> log_source_type)
     : samples_count(samples_count),
       user_id(user_id),
       log_source_type(log_source_type) {}
@@ -550,7 +550,7 @@ MetricsLog::GetCurrentClockTime(bool record_time_zone) {
 void MetricsLog::FinalizeLog(
     bool truncate_events,
     const std::string& current_app_version,
-    absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string* encoded_log) {
   if (truncate_events)
     TruncateEvents();

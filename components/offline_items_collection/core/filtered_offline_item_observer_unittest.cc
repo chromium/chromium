@@ -32,11 +32,11 @@ TEST(FilteredOfflineItemObserverTest, TestBasicUsage) {
   MockFilteredOfflineItemObserver::ScopedMockObserver obs2(&filter, id2);
   MockFilteredOfflineItemObserver::ScopedMockObserver obs3(&filter, id3);
 
-  EXPECT_CALL(obs2, OnItemUpdated(item2, Eq(absl::nullopt))).Times(1);
+  EXPECT_CALL(obs2, OnItemUpdated(item2, Eq(std::nullopt))).Times(1);
   EXPECT_CALL(obs3, OnItemRemoved(id3)).Times(1);
 
   provider.NotifyOnItemsAdded({item1});
-  provider.NotifyOnItemUpdated(item2, absl::nullopt);
+  provider.NotifyOnItemUpdated(item2, std::nullopt);
   provider.NotifyOnItemRemoved(id3);
   provider.NotifyOnItemRemoved(id4);
 }
@@ -52,21 +52,21 @@ TEST(FilteredOfflineItemObserverTest, AddRemoveObservers) {
 
   {
     EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(0);
-    provider.NotifyOnItemUpdated(item1, absl::nullopt);
+    provider.NotifyOnItemUpdated(item1, std::nullopt);
   }
 
   filter.AddObserver(id1, &obs1);
 
   {
     EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(1);
-    provider.NotifyOnItemUpdated(item1, absl::nullopt);
+    provider.NotifyOnItemUpdated(item1, std::nullopt);
   }
 
   filter.RemoveObserver(id1, &obs1);
 
   {
     EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(0);
-    provider.NotifyOnItemUpdated(item1, absl::nullopt);
+    provider.NotifyOnItemUpdated(item1, std::nullopt);
   }
 }
 

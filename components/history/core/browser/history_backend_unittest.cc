@@ -109,7 +109,7 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
   for (const URLRow& row : rows) {
     observer->OnURLVisited(nullptr, row, VisitRow());
     observer->OnURLVisitedWithNavigationId(nullptr, row, VisitRow(),
-                                           absl::nullopt);
+                                           std::nullopt);
   }
 }
 
@@ -191,7 +191,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                              const GURL& icon_url) override;
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& visit_row,
-                        absl::optional<int64_t> local_navigation_id) override;
+                        std::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
@@ -324,7 +324,7 @@ class HistoryBackendTestBase : public testing::Test {
           HistoryBackend::IsTypedIncrement(visit.second),
           /*opener_visit=*/0,
           /*consider_for_ntp_most_visited=*/true,
-          /*local_navigation_id=*/absl::nullopt);
+          /*local_navigation_id=*/std::nullopt);
     }
   }
 
@@ -393,7 +393,7 @@ void HistoryBackendTestDelegate::NotifyFaviconsChanged(
 void HistoryBackendTestDelegate::NotifyURLVisited(
     const URLRow& url_row,
     const VisitRow& new_visit,
-    absl::optional<int64_t> local_navigation_id) {
+    std::optional<int64_t> local_navigation_id) {
   test_->NotifyURLVisited(url_row, new_visit);
 }
 
@@ -449,7 +449,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
 
     ContextID context_id = 1;
     HistoryAddPageArgs request(redirects.back(), time, context_id, nav_entry_id,
-                               /*local_navigation_id=*/absl::nullopt, GURL(),
+                               /*local_navigation_id=*/std::nullopt, GURL(),
                                redirects, transition, false, SOURCE_BROWSED,
                                true, true);
     backend_->AddPage(request);
@@ -474,7 +474,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
       redirects.push_back(url1);
     if (url2.is_valid())
       redirects.push_back(url2);
-    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, absl::nullopt,
+    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, std::nullopt,
                                url1, redirects,
                                ui::PAGE_TRANSITION_CLIENT_REDIRECT, false,
                                SOURCE_BROWSED, did_replace, true);
@@ -507,10 +507,10 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     redirects.push_back(url2);
     ui::PageTransition redirect_transition = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_FORM_SUBMIT | ui::PAGE_TRANSITION_SERVER_REDIRECT);
-    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, absl::nullopt,
+    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, std::nullopt,
                                url1, redirects, redirect_transition, false,
                                SOURCE_BROWSED, did_replace, true,
-                               absl::optional<std::u16string>(page2_title));
+                               std::optional<std::u16string>(page2_title));
     backend_->AddPage(request);
 
     transition1 = GetTransition(url1);
@@ -951,7 +951,7 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
 
   base::Time visit_time = base::Time::Now();
   GURL url("http://www.google.com/");
-  HistoryAddPageArgs request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+  HistoryAddPageArgs request(url, visit_time, 0, 0, std::nullopt, GURL(),
                              RedirectList(),
                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                              SOURCE_BROWSED, false, true);
@@ -1089,7 +1089,7 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   GURL url("http://google.com");
 
   base::Time visit_time = base::Time::Now() - base::Days(1);
-  HistoryAddPageArgs request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+  HistoryAddPageArgs request(url, visit_time, 0, 0, std::nullopt, GURL(),
                              RedirectList(),
                              ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                              SOURCE_BROWSED, false, true);
@@ -1122,7 +1122,7 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   // Going back to the same entry should not increment the typed count.
   ui::PageTransition back_transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FORWARD_BACK);
-  HistoryAddPageArgs back_request(url, visit_time, 0, 0, absl::nullopt, GURL(),
+  HistoryAddPageArgs back_request(url, visit_time, 0, 0, std::nullopt, GURL(),
                                   RedirectList(), back_transition, false,
                                   SOURCE_BROWSED, false, true);
   backend_->AddPage(back_request);
@@ -1159,7 +1159,7 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
   int nav_entry_id = 2;
   HistoryAddPageArgs initial_request(
       initial_url, visit_time, context_id1, nav_entry_id,
-      /*local_navigation_id=*/absl::nullopt, GURL(), RedirectList(),
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(initial_request);
 
@@ -1173,10 +1173,10 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
   // Simulate the initial URL opening a page that then redirects.
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id2, 0,
-      absl::nullopt, GURL(),
+      std::nullopt, GURL(),
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true,
-      absl::nullopt, /*top_level_url*/ absl::nullopt,
+      std::nullopt, /*top_level_url*/ std::nullopt,
       Opener(context_id1, nav_entry_id, initial_url));
   backend_->AddPage(request);
 
@@ -1226,10 +1226,10 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
 
   // User goes to form page.
   GURL url_a("http://www.google.com/a");
-  HistoryAddPageArgs request(url_a, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request(url_a, base::Time::Now(), 0, 0, std::nullopt,
                              GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
                              false, SOURCE_BROWSED, false, true,
-                             absl::optional<std::u16string>(page1_title));
+                             std::optional<std::u16string>(page1_title));
   backend_->AddPage(request);
 
   // Check that URL was added.
@@ -1680,18 +1680,18 @@ TEST_F(HistoryBackendTest, AddPageArgsSource) {
   GURL url("http://testpageargs.com");
 
   // Assume this page is browsed by user.
-  HistoryAddPageArgs request1(url, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request1(url, base::Time::Now(), 0, 0, std::nullopt,
                               GURL(), RedirectList(),
                               ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                               SOURCE_BROWSED, false, true);
   backend_->AddPage(request1);
   // Assume this page is synced.
-  HistoryAddPageArgs request2(url, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request2(url, base::Time::Now(), 0, 0, std::nullopt,
                               GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
                               false, SOURCE_SYNCED, false, true);
   backend_->AddPage(request2);
   // Assume this page is browsed again.
-  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, std::nullopt,
                               GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
                               false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request3);
@@ -1715,7 +1715,7 @@ TEST_F(HistoryBackendTest, AddPageArgsConsiderForNewTabPageMostVisited) {
 
   // Request with `consider_for_ntp_most_visited` as true.
   HistoryAddPageArgs request1(url, base::Time::Now() - base::Days(2), 0, 0,
-                              absl::nullopt, GURL(), RedirectList(),
+                              std::nullopt, GURL(), RedirectList(),
                               ui::PAGE_TRANSITION_KEYWORD_GENERATED, false,
                               SOURCE_BROWSED, false,
                               /* consider_for_ntp_most_visited */ true);
@@ -1723,13 +1723,13 @@ TEST_F(HistoryBackendTest, AddPageArgsConsiderForNewTabPageMostVisited) {
 
   // Request with `consider_for_ntp_most_visited` as false.
   HistoryAddPageArgs request2(
-      url, base::Time::Now() - base::Days(1), 0, 0, absl::nullopt, GURL(),
+      url, base::Time::Now() - base::Days(1), 0, 0, std::nullopt, GURL(),
       RedirectList(), ui::PAGE_TRANSITION_LINK, false, SOURCE_SYNCED, false,
       /* consider_for_ntp_most_visited */ false);
   backend_->AddPage(request2);
 
   // Request with `consider_for_ntp_most_visited` as true.
-  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request3(url, base::Time::Now(), 0, 0, std::nullopt,
                               GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
                               false, SOURCE_BROWSED, false,
                               /* consider_for_ntp_most_visited */ true);
@@ -1757,7 +1757,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotationsWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1795,7 +1795,7 @@ TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1829,7 +1829,7 @@ TEST_F(HistoryBackendTest, AddSearchMetadataWithNoEntryInVisitTable) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1863,7 +1863,7 @@ TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1912,7 +1912,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -1995,7 +1995,7 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -2055,7 +2055,7 @@ TEST_F(HistoryBackendTest, AddSearchMetadata) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -2119,7 +2119,7 @@ TEST_F(HistoryBackendTest, AddPageMetadata) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -2180,7 +2180,7 @@ TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -2225,7 +2225,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   int nav_entry_id = 1;
 
   HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
-                             /*local_navigation_id=*/absl::nullopt, GURL(),
+                             /*local_navigation_id=*/std::nullopt, GURL(),
                              RedirectList(), ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -2483,7 +2483,7 @@ TEST_F(HistoryBackendTest, RecentRedirectsForClientRedirects) {
 
   // Page A is browsed by user and server redirects to B.
   HistoryAddPageArgs request(
-      client_redirect_url, base::Time::Now(), 0, 0, absl::nullopt, GURL(),
+      client_redirect_url, base::Time::Now(), 0, 0, std::nullopt, GURL(),
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -3456,7 +3456,7 @@ TEST_F(HistoryBackendTest, ClientRedirectScoring) {
   const GURL redirected_url("https://foo.com");
 
   // Initial typed page visit, with no server redirects.
-  HistoryAddPageArgs request(typed_url, base::Time::Now(), 0, 0, absl::nullopt,
+  HistoryAddPageArgs request(typed_url, base::Time::Now(), 0, 0, std::nullopt,
                              GURL(), {}, ui::PAGE_TRANSITION_TYPED, false,
                              SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
@@ -3871,7 +3871,7 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
   const int navigation_entry_id = 2;
   HistoryAddPageArgs request(
       url, base::Time::Now(), context_id, navigation_entry_id,
-      /*local_navigation_id=*/absl::nullopt, GURL(), {},
+      /*local_navigation_id=*/std::nullopt, GURL(), {},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
   backend_->AddPage(request);
   URLRow url_row;
@@ -3911,13 +3911,13 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
   context_annotations.response_code = 200;
   HistoryAddPageArgs request(
       url, visit_time, /*context_id=*/0,
-      /*nav_entry_id=*/0, /*local_navigation_id=*/absl::nullopt,
+      /*nav_entry_id=*/0, /*local_navigation_id=*/std::nullopt,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
       /*hidden=*/false, SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*title=*/absl::nullopt, /*top_level_url*/ absl::nullopt,
-      /*opener=*/absl::nullopt,
-      /*bookmark_id=*/absl::nullopt, /*app_id=*/absl::nullopt,
+      /*title=*/std::nullopt, /*top_level_url*/ std::nullopt,
+      /*opener=*/std::nullopt,
+      /*bookmark_id=*/std::nullopt, /*app_id=*/std::nullopt,
       context_annotations);
   backend_->AddPage(request);
 
@@ -4476,7 +4476,7 @@ TEST_F(HistoryBackendTest,
   foreign_visit.is_known_to_sync = true;
   VisitID added_id1 = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
   history::ClusterVisit cluster_visit;
   cluster_visit.annotated_visit.visit_row = foreign_visit;
   cluster_visit.annotated_visit.visit_row.visit_id = added_id1;
@@ -4509,7 +4509,7 @@ TEST_F(HistoryBackendTest,
   foreign_visit2.is_known_to_sync = true;
   VisitID added_id2 = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit2,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
   history::ClusterVisit cluster_visit2;
   cluster_visit2.annotated_visit.visit_row = foreign_visit2;
   cluster_visit2.annotated_visit.visit_row.visit_id = added_id2;
@@ -4536,7 +4536,7 @@ TEST_F(HistoryBackendTest, UpdateClusterVisit_NoClusterAssigned) {
   foreign_visit.is_known_to_sync = true;
   VisitID added_id1 = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   // Attempt to update cluster visit.
   history::ClusterVisit cluster_visit;
@@ -4776,16 +4776,16 @@ TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
   EXPECT_EQ(kInvalidVisitID,
             backend_->AddSyncedVisit(GURL("chrome://settings"), u"Settings",
                                      /*hidden=*/false, foreign_visit,
-                                     absl::nullopt, absl::nullopt));
+                                     std::nullopt, std::nullopt));
   EXPECT_EQ(kInvalidVisitID,
             backend_->AddSyncedVisit(GURL("Not a URL at all"), u"Title",
                                      /*hidden=*/false, foreign_visit,
-                                     absl::nullopt, absl::nullopt));
+                                     std::nullopt, std::nullopt));
 
   // A regular old URL should get added successfully.
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
   EXPECT_NE(added_id, kInvalidVisitID);
   VisitRow added_visit;
   EXPECT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
@@ -4805,7 +4805,7 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
 
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
   ASSERT_NE(added_id, kInvalidVisitID);
   VisitRow added_visit;
   ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
@@ -4844,7 +4844,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   VisitID foreign_visit_1_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit_1,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   const ui::PageTransition kLink = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
@@ -4859,8 +4859,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
   foreign_visit_2.consider_for_ntp_most_visited = true;
 
   backend_->AddSyncedVisit(GURL("https://foobar.url"), u"Foobar",
-                           /*hidden=*/false, foreign_visit_2, absl::nullopt,
-                           absl::nullopt);
+                           /*hidden=*/false, foreign_visit_2, std::nullopt,
+                           std::nullopt);
 
   // Check that the visits were added.
   VisitVector all_visits;
@@ -4912,7 +4912,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   VisitID foreign_visit_1_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit_1,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   const ui::PageTransition kLink = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
@@ -4927,8 +4927,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
   foreign_visit_2.consider_for_ntp_most_visited = true;
 
   backend_->AddSyncedVisit(GURL("https://foobar.url"), u"Foobar",
-                           /*hidden=*/false, foreign_visit_2, absl::nullopt,
-                           absl::nullopt);
+                           /*hidden=*/false, foreign_visit_2, std::nullopt,
+                           std::nullopt);
 
   // Check that the visits were added.
   VisitVector all_visits;
@@ -4946,8 +4946,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   foreign_visit_2.transition = ui::PAGE_TRANSITION_TYPED;
   backend_->UpdateSyncedVisit(GURL("https://foobar.url"), u"Foobar",
-                              /*hidden=*/false, foreign_visit_2, absl::nullopt,
-                              absl::nullopt);
+                              /*hidden=*/false, foreign_visit_2, std::nullopt,
+                              std::nullopt);
 
   VisitVector updated_visits;
   backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
@@ -4981,7 +4981,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   ASSERT_NE(added_id, kInvalidVisitID);
 
@@ -5018,7 +5018,7 @@ TEST_F(
 
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   ASSERT_NE(added_id, kInvalidVisitID);
 
@@ -5056,7 +5056,7 @@ TEST_F(
 
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   ASSERT_NE(added_id, kInvalidVisitID);
 
@@ -5096,7 +5096,7 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   VisitID added_id = backend_->AddSyncedVisit(
       GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   ASSERT_NE(added_id, kInvalidVisitID);
 
@@ -5139,7 +5139,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   foreign_visit1.is_known_to_sync = true;
   VisitID foreign_visit_id1 = backend_->AddSyncedVisit(
       GURL("https://remote1.url"), u"Title 1", /*hidden=*/false, foreign_visit1,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
@@ -5163,7 +5163,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   foreign_visit2.is_known_to_sync = true;
   VisitID foreign_visit_id2 = backend_->AddSyncedVisit(
       GURL("https://remote2.url"), u"Title 2", /*hidden=*/true, foreign_visit2,
-      absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
@@ -5218,8 +5218,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
     foreign_visit.originator_cache_guid = "originator";
     foreign_visit.is_known_to_sync = true;
     backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
-                             /*hidden=*/false, foreign_visit, absl::nullopt,
-                             absl::nullopt);
+                             /*hidden=*/false, foreign_visit, std::nullopt,
+                             std::nullopt);
 
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -5269,8 +5269,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
     foreign_visit.originator_cache_guid = "originator";
     foreign_visit.is_known_to_sync = true;
     backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
-                             /*hidden=*/false, foreign_visit, absl::nullopt,
-                             absl::nullopt);
+                             /*hidden=*/false, foreign_visit, std::nullopt,
+                             std::nullopt);
 
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -5298,7 +5298,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
     foreign_visit.is_known_to_sync = true;
     new_foreign_visit_ids.push_back(backend_->AddSyncedVisit(
         GURL("https://remote.url"), /*title=*/u"",
-        /*hidden=*/false, foreign_visit, absl::nullopt, absl::nullopt));
+        /*hidden=*/false, foreign_visit, std::nullopt, std::nullopt));
 
     task_environment_.FastForwardBy(base::Seconds(1));
   }
@@ -5398,14 +5398,14 @@ TEST_F(HistoryBackendTest, InternalAndExternalReferrer) {
   // There's a regular visit to `internal_referrer`.
   backend_->AddPage(HistoryAddPageArgs(
       internal_referrer, base::Time::Now(), context_id, nav_entry_id,
-      /*local_navigation_id=*/absl::nullopt,
+      /*local_navigation_id=*/std::nullopt,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK, false,
       SOURCE_BROWSED, false, true));
   // There's another visit (in the same context) to `url_with_internal_referrer`
   // which has `internal_referrer` as its referrer URL.
   backend_->AddPage(HistoryAddPageArgs(
       url_with_internal_referrer, base::Time::Now(), context_id, nav_entry_id,
-      /*local_navigation_id=*/absl::nullopt,
+      /*local_navigation_id=*/std::nullopt,
       /*referrer=*/internal_referrer, RedirectList(), ui::PAGE_TRANSITION_LINK,
       false, SOURCE_BROWSED, false, true));
 
@@ -5414,7 +5414,7 @@ TEST_F(HistoryBackendTest, InternalAndExternalReferrer) {
   // not correspond to any actual visit.
   backend_->AddPage(HistoryAddPageArgs(
       url_with_external_referrer, base::Time::Now(), context_id, nav_entry_id,
-      /*local_navigation_id=*/absl::nullopt,
+      /*local_navigation_id=*/std::nullopt,
       /*referrer=*/external_referrer, RedirectList(), ui::PAGE_TRANSITION_LINK,
       false, SOURCE_BROWSED, false, true));
 
@@ -5481,8 +5481,8 @@ class HistoryBackendTestForVisitedLinks
 
   VisitID AddPageVisit(const GURL& link_url,
                        ui::PageTransition transition,
-                       absl::optional<GURL> top_level_url,
-                       absl::optional<GURL> frame_url) {
+                       std::optional<GURL> top_level_url,
+                       std::optional<GURL> frame_url) {
     return backend_
         ->AddPageVisit(link_url, base::Time::Now(),
                        /*referring_visit=*/kInvalidVisitID,
@@ -5491,8 +5491,8 @@ class HistoryBackendTestForVisitedLinks
                        /*should_increment_typed_count=*/false,
                        /*opener_visit=*/kInvalidVisitID,
                        /*consider_for_ntp_most_visited=*/true,
-                       /*local_navigation_id=*/absl::nullopt,
-                       /*title=*/absl::nullopt, top_level_url, frame_url)
+                       /*local_navigation_id=*/std::nullopt,
+                       /*title=*/std::nullopt, top_level_url, frame_url)
         .second;
   }
 
@@ -5547,7 +5547,7 @@ TEST_P(HistoryBackendTestForVisitedLinks, AddPageAndSyncedVisit) {
   foreign_visit.visited_link_id = local_visited_link_id;
   VisitID sync_visit_id =
       backend_->AddSyncedVisit(link_url, u"Title", /*hidden=*/false,
-                               foreign_visit, absl::nullopt, absl::nullopt);
+                               foreign_visit, std::nullopt, std::nullopt);
 
   // Ensure the sync visit is added to the VisitDatabase.
   EXPECT_NE(sync_visit_id, kInvalidVisitID);
@@ -5610,7 +5610,7 @@ TEST_P(HistoryBackendTestForVisitedLinks, OnlyAddValidVisitedLinks) {
   // Add a local visit without a top_level_url.
   VisitID no_top_level_id =
       AddPageVisit(link_url, link_transition_,
-                   /*top_level_url=*/absl::nullopt, frame_url);
+                   /*top_level_url=*/std::nullopt, frame_url);
 
   // Ensure the visit is added to the VisitDatabase but NOT to the
   // VisitedLinkDatabase.
@@ -5621,7 +5621,7 @@ TEST_P(HistoryBackendTestForVisitedLinks, OnlyAddValidVisitedLinks) {
 
   // Add a local visit without a frame_origin.
   VisitID no_frame_id = AddPageVisit(link_url, link_transition_, top_level_url,
-                                     /*frame_url=*/absl::nullopt);
+                                     /*frame_url=*/std::nullopt);
 
   // Ensure the visit is added to the VisitDatabase but NOT to the
   // VisitedLinkDatabase.
@@ -5661,10 +5661,10 @@ TEST_P(HistoryBackendTestForVisitedLinks, AddWholeRedirectChain) {
   // Simulate a user clicking a link which redirects.
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
-      absl::nullopt, frame_url,
+      std::nullopt, frame_url,
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false, true,
-      absl::nullopt, top_level_url);
+      std::nullopt, top_level_url);
   backend_->AddPage(request);
 
   VisitVector visits;

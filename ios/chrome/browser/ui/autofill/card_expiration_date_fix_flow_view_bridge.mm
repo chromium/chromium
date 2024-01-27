@@ -6,6 +6,7 @@
 #import <string>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"
@@ -98,7 +99,7 @@ void CardExpirationDateFixFlowViewBridge::DeleteSelf() {
   ExpirationDatePicker* _expirationDatePicker;
   TableViewTextEditCell* _confirmExpirationDateCell;
   TableViewTextHeaderFooterView* _footerView;
-  autofill::CardExpirationDateFixFlowViewBridge* _bridge;  // weak
+  raw_ptr<autofill::CardExpirationDateFixFlowViewBridge> _bridge;  // weak
 }
 
 @end

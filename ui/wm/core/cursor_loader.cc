@@ -109,7 +109,7 @@ absl::optional<ui::CursorData> CursorLoader::GetCursorData(
   // TODO(https://crbug.com/1193775): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, size_, resource_scale_,
+  return wm::GetCursorData(type, size_, resource_scale_, absl::nullopt,
                            display::Display::ROTATE_0);
 }
 
@@ -147,7 +147,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   absl::optional<ui::CursorData> cursor_data =
-      wm::GetCursorData(type, size_, resource_scale_, rotation_);
+      wm::GetCursorData(type, size_, resource_scale_, absl::nullopt, rotation_);
   if (!cursor_data) {
     return nullptr;
   }

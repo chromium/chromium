@@ -90,13 +90,10 @@ void DeleteOldStorePaths(const base::FilePath& profile_path) {
   //
   // Delete the old profile-wide model download store path, since
   // the install-wide model store is enabled now.
-  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::GetDeletePathRecursivelyCallback(profile_path.Append(
-            optimization_guide::
-                kOldOptimizationGuidePredictionModelDownloads)));
-  }
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::GetDeletePathRecursivelyCallback(profile_path.Append(
+          optimization_guide::kOldOptimizationGuidePredictionModelDownloads)));
 }
 
 // Returns the profile to use for when setting up the keyed service when the
@@ -629,7 +626,7 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
   }
 
   // Don't trigger upload for an empty log entry.
-  if (!log_entry && log_entry->log_ai_data_request()) {
+  if (!log_entry || !log_entry->log_ai_data_request()) {
     return;
   }
 
@@ -678,10 +675,6 @@ void OptimizationGuideKeyedService::OnProfileInitializationComplete(
     Profile* profile) {
   DCHECK(profile_observation_.IsObservingSource(profile));
   profile_observation_.Reset();
-
-  if (!optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-    return;
-  }
 
   if (profile->IsOffTheRecord()) {
     return;

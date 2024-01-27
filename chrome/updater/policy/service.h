@@ -108,6 +108,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   std::string source() const;
 
   // These methods call and aggregate the results from the policy managers.
+  PolicyStatus<bool> CloudPolicyOverridesPlatformPolicy() const;
   PolicyStatus<base::TimeDelta> GetLastCheckPeriod() const;
   PolicyStatus<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes() const;
   PolicyStatus<std::string> GetDownloadPreference() const;

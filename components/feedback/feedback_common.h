@@ -69,9 +69,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Getters
-  const absl::optional<std::string>& mac_address() const {
-    return mac_address_;
-  }
+  const std::optional<std::string>& mac_address() const { return mac_address_; }
   const std::string& category_tag() const { return category_tag_; }
   const std::string& page_url() const { return page_url_; }
   const std::string& description() const { return description_; }
@@ -83,7 +81,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string locale() const { return locale_; }
   std::string& autofill_metadata() { return autofill_metadata_; }
   bool include_chrome_platform() const { return include_chrome_platform_; }
-  const absl::optional<bool>& is_offensive_or_unsafe() {
+  const std::optional<bool>& is_offensive_or_unsafe() {
     return is_offensive_or_unsafe_;
   }
   std::string& ai_metadata() { return ai_metadata_; }
@@ -92,7 +90,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   size_t attachments() const { return attachments_.size(); }
 
   // Setters
-  void set_mac_address(const absl::optional<std::string>& mac_address) {
+  void set_mac_address(const std::optional<std::string>& mac_address) {
     mac_address_ = mac_address;
   }
   void set_category_tag(const std::string& category_tag) {
@@ -119,7 +117,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   void set_include_chrome_platform(bool include_chrome_platform) {
     include_chrome_platform_ = include_chrome_platform;
   }
-  void set_is_offensive_or_unsafe(const absl::optional<bool>& value) {
+  void set_is_offensive_or_unsafe(const std::optional<bool>& value) {
     is_offensive_or_unsafe_ = value;
   }
   void set_ai_metadata(const std::string& value) { ai_metadata_ = value; }
@@ -146,7 +144,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // Returns true if a product ID was set in the feedback report.
   bool HasProductId() const { return product_id_ != -1; }
 
-  absl::optional<std::string> mac_address_;
+  std::optional<std::string> mac_address_;
   std::string category_tag_;
   std::string page_url_;
   std::string description_;
@@ -156,7 +154,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string locale_;
   std::string autofill_metadata_;
   bool include_chrome_platform_ = true;
-  absl::optional<bool> is_offensive_or_unsafe_;
+  std::optional<bool> is_offensive_or_unsafe_;
   std::string ai_metadata_;
 
   std::string image_;

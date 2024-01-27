@@ -5,13 +5,13 @@
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/rand_util.h"
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 

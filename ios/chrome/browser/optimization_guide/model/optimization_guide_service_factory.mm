@@ -83,14 +83,12 @@ OptimizationGuideServiceFactory::GetInstance() {
 
 // static
 void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
-  if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-    base::FilePath model_downloads_dir;
-    base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
-    model_downloads_dir = model_downloads_dir.Append(
-        optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-    optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-        GetApplicationContext()->GetLocalState(), model_downloads_dir);
-  }
+  base::FilePath model_downloads_dir;
+  base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
+  model_downloads_dir = model_downloads_dir.Append(
+      optimization_guide::kOptimizationGuideModelStoreDirPrefix);
+  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
+      GetApplicationContext()->GetLocalState(), model_downloads_dir);
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()

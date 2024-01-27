@@ -23,11 +23,12 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AutoEnrollmentStates">
-  <variant name="ConnectionError" summary="connection error"/>
-  <variant name="Disabled" summary="disabled"/>
-  <variant name="Enrollment" summary="enrollment"/>
-  <variant name="NoEnrollment" summary="no enrollment"/>
-  <variant name="ServerError" summary="server error"/>
+  <variant name="ConnectionError" summary="Connection error"/>
+  <variant name="Disabled" summary="Disabled"/>
+  <variant name="Enrollment" summary="Enrollment"/>
+  <variant name="NoEnrollment" summary="No enrollment"/>
+  <variant name="ServerError" summary="Server error"/>
+  <variant name="StateKeysRetrievalError" summary="State keys retrieval error"/>
 </variants>
 
 <variants name="CleanupHandler">
@@ -127,7 +128,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OPRFRequest" summary="PSM OPRF request"/>
   <variant name="OwnershipCheck" summary="ownership check"/>
   <variant name="QueryRequest" summary="PSM Query request"/>
-  <variant name="StateKeyRetrieval" summary="state key retrieval"/>
+  <variant name="StateKeysRetrieval" summary="state keys retrieval"/>
   <variant name="StateRequest" summary="state request"/>
   <variant name="SystemClockSync" summary="system clock sync"/>
 </variants>
@@ -2673,12 +2674,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.StateDetermination.StateKeysRetrieved"
-    enum="Boolean" expires_after="2024-05-10">
+<histogram name="Enterprise.StateDetermination.StateKeys.RetrievalErrorType"
+    enum="StateKeysRetrievalErrorType" expires_after="2024-05-10">
   <owner>sergiyb@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    Tracks whether state keys were retrieved during state determination.
+    Tracks the final errors due to which state keys failed to be retrieved.
+    Errors which are hidden by the retries are not reported.
   </summary>
 </histogram>
 

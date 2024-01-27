@@ -26,7 +26,7 @@ void FieldTrialRecorder::RecordFieldTrialAtStartup(
     }
 
     std::string trial_name = config->GetSegmentationFilterName();
-    absl::optional<proto::PredictionResult> cached_results =
+    std::optional<proto::PredictionResult> cached_results =
         cached_result_provider->GetPredictionResultForClient(
             config->segmentation_key);
     std::string group_name = "Unselected";

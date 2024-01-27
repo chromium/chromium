@@ -47,11 +47,11 @@ class UserModifiableProvider : public ObservableProvider {
   // be updated; otherwise, a rule will only be updated if its value matches
   // `setting_to_match`. Returns the TimeDelta between now and the setting's old
   // expiration if any setting was updated; nullopt otherwise.
-  virtual absl::optional<base::TimeDelta> RenewContentSetting(
+  virtual std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      absl::optional<ContentSetting> setting_to_match,
+      std::optional<ContentSetting> setting_to_match,
       const PartitionKey& partition_key) = 0;
   // Sets the providers internal clock for testing purposes.
   virtual void SetClockForTesting(base::Clock* clock) = 0;

@@ -27,6 +27,7 @@ static_library("quick_start") {
     "//base",
     "//components/cbor",
     "//crypto",
+    "//google_apis:google_apis",
     "//sandbox/policy",
     "//url",
   ]

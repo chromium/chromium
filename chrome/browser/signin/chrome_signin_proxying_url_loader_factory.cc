@@ -54,11 +54,9 @@ class BrowserContextData : public base::SupportsUserData::Data {
 
   ~BrowserContextData() override {}
 
-  static void StartProxying(
-      Profile* profile,
-      content::WebContents::Getter web_contents_getter,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory) {
+  static void StartProxying(Profile* profile,
+                            content::WebContents::Getter web_contents_getter,
+                            network::URLLoaderFactoryBuilder& factory_builder) {
     auto* self = static_cast<BrowserContextData*>(
         profile->GetUserData(kBrowserContextUserDataKey));
     if (!self) {
@@ -83,8 +81,7 @@ class BrowserContextData : public base::SupportsUserData::Data {
     auto delegate = std::make_unique<HeaderModificationDelegateImpl>(profile);
 #endif
     auto proxy = std::make_unique<ProxyingURLLoaderFactory>(
-        std::move(delegate), std::move(web_contents_getter),
-        std::move(receiver), std::move(target_factory),
+        std::move(delegate), std::move(web_contents_getter), factory_builder,
         base::BindOnce(&BrowserContextData::RemoveProxy,
                        self->weak_factory_.GetWeakPtr()));
     self->proxies_.emplace(std::move(proxy));
@@ -434,14 +431,15 @@ void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     std::unique_ptr<HeaderModificationDelegate> delegate,
     content::WebContents::Getter web_contents_getter,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+    network::URLLoaderFactoryBuilder& factory_builder,
     DisconnectCallback on_disconnect) {
   DCHECK(proxy_receivers_.empty());
-  DCHECK(!target_factory_.is_bound());
   DCHECK(!delegate_);
   DCHECK(!web_contents_getter_);
   DCHECK(!on_disconnect_);
+
+  auto [loader_receiver, target_factory] = factory_builder.Append();
+  DCHECK(!target_factory_.is_bound());
 
   delegate_ = std::move(delegate);
   web_contents_getter_ = std::move(web_contents_getter);
@@ -459,24 +457,24 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
 ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() = default;
 
 // static
-bool ProxyingURLLoaderFactory::MaybeProxyRequest(
+void ProxyingURLLoaderFactory::MaybeProxyRequest(
     content::RenderFrameHost* render_frame_host,
     bool is_navigation,
     const url::Origin& request_initiator,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver) {
+    network::URLLoaderFactoryBuilder& factory_builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Navigation requests are handled using signin::URLLoaderThrottle.
   if (is_navigation)
-    return false;
+    return;
 
   if (!render_frame_host)
-    return false;
+    return;
 
   // This proxy should only be installed for subresource requests from a frame
   // that is rendering the GAIA signon realm.
   if (request_initiator != GaiaUrls::GetInstance()->gaia_origin())
-    return false;
+    return;
 
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -485,10 +483,10 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
   if (profile->IsOffTheRecord()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     if (!switches::IsBoundSessionCredentialsEnabled()) {
-      return false;
+      return;
     }
 #else
-    return false;
+    return;
 #endif
   }
 
@@ -496,23 +494,16 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
   // Most requests from guest web views are ignored.
   if (HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
           web_contents)) {
-    return false;
+    return;
   }
 #endif
-
-  auto proxied_receiver = std::move(*factory_receiver);
-  // TODO(crbug.com/955171): Replace this with PendingRemote.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote;
-  *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
 
   auto web_contents_getter =
       base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
                           render_frame_host->GetFrameTreeNodeId());
 
   BrowserContextData::StartProxying(profile, std::move(web_contents_getter),
-                                    std::move(proxied_receiver),
-                                    std::move(target_factory_remote));
-  return true;
+                                    factory_builder);
 }
 
 void ProxyingURLLoaderFactory::CreateLoaderAndStart(

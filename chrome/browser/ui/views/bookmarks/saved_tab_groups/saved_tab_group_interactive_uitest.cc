@@ -41,6 +41,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -547,6 +548,13 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
                        OverflowMenuUpdatesWhileOpen) {
+#if BUILDFLAG(IS_MAC)
+  // TODO (crbug/1521486): Test fails on MacOS when ChromeRefresh2023 flags are
+  //                       enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
+#endif
   // Add 5 additional tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));

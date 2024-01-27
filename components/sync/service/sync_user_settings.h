@@ -127,7 +127,7 @@ class SyncUserSettings {
   // The type of the passphrase currently in use. Returns nullopt if the state
   // isn't known, i.e. before the engine has been initialized successfully at
   // least once (in particular, it's nullopt for all signed-out users).
-  virtual absl::optional<PassphraseType> GetPassphraseType() const = 0;
+  virtual std::optional<PassphraseType> GetPassphraseType() const = 0;
 
   // Passphrase prompt mute-state getter and setter, used on Android.
   virtual bool IsPassphrasePromptMutedForCurrentProductVersion() const = 0;

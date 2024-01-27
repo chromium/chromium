@@ -103,8 +103,8 @@ TEST(CursorUtil, GetCursorData) {
       for (const auto& test : kTestCases) {
         SCOPED_TRACE(test.cursor);
         constexpr auto kDefaultRotation = display::Display::ROTATE_0;
-        const auto pointer_data =
-            GetCursorData(test.cursor, size, scale, kDefaultRotation);
+        const auto pointer_data = GetCursorData(
+            test.cursor, size, scale, absl::nullopt, kDefaultRotation);
         ASSERT_TRUE(pointer_data);
         ASSERT_GT(pointer_data->bitmaps.size(), 0u);
         EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),

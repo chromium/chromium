@@ -969,10 +969,14 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
           gpu::RepresentationAccessMode::kWrite, begin_semaphores,
           end_semaphores);
 
+      // TODO(b/251458823): Add tests for more interesting crop and rotation
+      // parameters. Preliminary testing indicates that rotation in particular
+      // might have a substantial impact on performance.
       vulkan_image_processor->Process(
           input_access->GetVulkanImage(), test_coded_size, test_image_size,
-          output_access->GetVulkanImage(), test_coded_size, test_image_size,
-          begin_semaphores, end_semaphores);
+          output_access->GetVulkanImage(), gfx::Rect(test_coded_size),
+          gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
+          end_semaphores);
     }
   }
   // This implicitly waits for all semaphores to signal.
@@ -1038,7 +1042,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams ozone_param;
   ozone_param.single_process = true;
-#if BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(USE_V4L2_CODEC)
   ui::OzonePlatform::InitializeForUI(ozone_param);
 #endif
   ui::OzonePlatform::InitializeForGPU(ozone_param);

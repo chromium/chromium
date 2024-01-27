@@ -374,10 +374,15 @@ class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
     test_->ClearNotifications();
 
     base::RunLoop loop;
-    InnerNestedWatcher inner_watcher(test_.get(), *controller_,
-                                     loop.QuitClosure());
+    std::unique_ptr<InnerNestedWatcher> inner_watcher =
+        std::make_unique<InnerNestedWatcher>(test_.get(), *controller_,
+                                             loop.QuitClosure());
     test_->Notify();
     loop.Run();
+
+    // Ensure that `InnerNestedWatcher` is destroyed before
+    // `OuterNestedWatcher`.
+    inner_watcher.reset();
     std::move(callback_).Run();
   }
 
@@ -398,7 +403,7 @@ class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
   std::unique_ptr<MessagePumpLibevent::FdWatchController> controller_;
 };
 
-TEST_P(MessagePumpLibeventTest, DISABLED_NestedNotification) {
+TEST_P(MessagePumpLibeventTest, NestedNotification) {
   // Regression test for https://crbug.com/1469529. Verifies that it's safe for
   // a nested RunLoop to stop watching a file descriptor while the outer RunLoop
   // is handling an event for the same descriptor.

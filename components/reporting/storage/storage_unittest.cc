@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -42,7 +43,6 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -403,7 +403,7 @@ class StorageTest
         base::flat_map<std::tuple<Priority,
                                   int64_t /*generation id*/,
                                   int64_t /*sequencing id*/>,
-                       absl::optional<std::string /*digest*/>>;
+                       std::optional<std::string /*digest*/>>;
 
     // Helper class for setting up mock uploader expectations of a successful
     // completion.
@@ -628,7 +628,7 @@ class StorageTest
           std::make_tuple(sequence_information.priority(),
                           sequence_information.sequencing_id(),
                           sequence_information.generation_id()),
-          absl::nullopt);
+          std::nullopt);
 
       sequence_bound_upload_.AsyncCall(&SequenceBoundUpload::DoUploadGap)
           .WithArgs(uploader_id_, sequence_information.priority(),
@@ -758,7 +758,7 @@ class StorageTest
     // match the expected uploader.
     const int64_t uploader_id_;
 
-    absl::optional<int64_t> generation_id_;
+    std::optional<int64_t> generation_id_;
     const raw_ptr<base::flat_map<Priority, int64_t>> last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 

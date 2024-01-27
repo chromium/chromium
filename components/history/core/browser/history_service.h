@@ -596,9 +596,10 @@ class HistoryService : public KeyedService,
   //
   // If `compute_redirect_chain_start_properties` is true, the opener and
   // referring visit IDs for the start of the redirect chain will be computed.
+  // Virtual for testing.
   using GetAnnotatedVisitsCallback =
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
-  base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
+  virtual base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       const QueryOptions& options,
       bool compute_redirect_chain_start_properties,
       bool get_unclustered_visits_only,
@@ -850,7 +851,7 @@ class HistoryService : public KeyedService,
   // `content::NavigationHandle` and will be populated only during local visits.
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& new_visit,
-                        absl::optional<int64_t> local_navigation_id);
+                        std::optional<int64_t> local_navigation_id);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

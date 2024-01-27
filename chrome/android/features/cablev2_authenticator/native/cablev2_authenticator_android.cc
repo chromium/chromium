@@ -674,7 +674,7 @@ static int JNI_CableAuthenticator_ValidateServerLinkData(
   }
 
   base::span<const uint8_t> x962 =
-      base::make_span(data).subspan(0, device::kP256X962Length);
+      base::make_span(data).first(device::kP256X962Length);
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
   bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));

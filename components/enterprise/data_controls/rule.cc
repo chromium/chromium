@@ -12,6 +12,7 @@
 #include "components/enterprise/data_controls/and_condition.h"
 #include "components/enterprise/data_controls/attributes_condition.h"
 #include "components/enterprise/data_controls/not_condition.h"
+#include "components/enterprise/data_controls/or_condition.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -129,7 +130,7 @@ std::optional<Rule> Rule::Create(const base::Value::Dict& value) {
     return std::nullopt;
   }
 
-  return absl::make_optional(Rule(
+  return std::make_optional(Rule(
       GetStringOrEmpty(value, kKeyName), GetStringOrEmpty(value, kKeyRuleId),
       GetStringOrEmpty(value, kKeyDescription), std::move(condition),
       std::move(restrictions)));
@@ -172,10 +173,17 @@ std::unique_ptr<const Condition> Rule::GetCondition(
   // These 3 cases are mutually exclusive and should preemptively be filtered
   // by policy validations of the DataControlsRules policy, and as such the
   // precedence in which these keys are parsed here should not matter.
-  // - TODO(b/302340176): Add "and" and "or" support
 
   if (const base::Value::Dict* condition = value.FindDict(kKeyNot)) {
     return NotCondition::Create(GetCondition(*condition));
+  }
+
+  if (const base::Value::List* condition = value.FindList(kKeyAnd)) {
+    return AndCondition::Create(GetListConditions(*condition));
+  }
+
+  if (const base::Value::List* condition = value.FindList(kKeyOr)) {
+    return OrCondition::Create(GetListConditions(*condition));
   }
 
   // Reaching this statement implies `value` contains no boolean-logic keys
@@ -214,6 +222,23 @@ std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
   }
 
   return AndCondition::Create(std::move(conditions));
+}
+
+// static
+std::vector<std::unique_ptr<const Condition>> Rule::GetListConditions(
+    const base::Value::List& value) {
+  std::vector<std::unique_ptr<const Condition>> sub_conditions;
+  for (const base::Value& sub_value : value) {
+    if (!sub_value.is_dict()) {
+      continue;
+    }
+
+    auto sub_condition = GetCondition(sub_value.GetDict());
+    if (sub_condition) {
+      sub_conditions.push_back(std::move(sub_condition));
+    }
+  }
+  return sub_conditions;
 }
 
 // static

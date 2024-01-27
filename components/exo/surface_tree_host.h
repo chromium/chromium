@@ -265,7 +265,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void CleanUpCallbacks();
 
-  float CalculateScaleFactor(const absl::optional<float>& scale_factor) const;
+  float CalculateScaleFactor(const std::optional<float>& scale_factor) const;
 
   // Applies `rounded_corner_bounds` to the `surface` and propagates the bounds
   // to its subsurfaces. `rounded_corner_bounds` should be in the local
@@ -308,11 +308,11 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // When a client calls set_scale_factor they're actually setting the scale
   // factor for all future commits.
-  absl::optional<float> pending_scale_factor_;
+  std::optional<float> pending_scale_factor_;
 
   // This is the client-set scale factor that is being used for the current
   // buffer.
-  absl::optional<float> scale_factor_;
+  std::optional<float> scale_factor_;
 
   viz::FrameTokenGenerator next_token_;
 

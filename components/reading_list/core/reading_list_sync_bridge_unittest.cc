@@ -103,7 +103,7 @@ syncer::ModelTypeStore::RecordList ReadAllDataFromModelTypeStore(
   syncer::ModelTypeStore::RecordList result;
   base::RunLoop loop;
   store->ReadAllData(base::BindLambdaForTesting(
-      [&](const absl::optional<syncer::ModelError>& error,
+      [&](const std::optional<syncer::ModelError>& error,
           std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
         EXPECT_FALSE(error.has_value()) << error->ToString();
         result = std::move(*records);
@@ -417,12 +417,12 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       underlying_in_memory_store_->CreateWriteBatch();
   write_batch->WriteData("orphan-data-key", "orphan-data-value");
-  absl::optional<syncer::ModelError> error;
+  std::optional<syncer::ModelError> error;
   base::RunLoop loop;
   underlying_in_memory_store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindLambdaForTesting(
-          [&loop](const absl::optional<syncer::ModelError>& error) {
+          [&loop](const std::optional<syncer::ModelError>& error) {
             EXPECT_FALSE(error.has_value()) << error->ToString();
             loop.Quit();
           }));

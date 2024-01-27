@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_PROVIDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 struct Config;
@@ -34,7 +34,7 @@ class CachedResultProvider {
   CachedResultProvider& operator=(CachedResultProvider&) = delete;
 
   // Returns cached un-processed result from last session for the client.
-  absl::optional<proto::PredictionResult> GetPredictionResultForClient(
+  std::optional<proto::PredictionResult> GetPredictionResultForClient(
       const std::string& segmentation_key);
 
  private:

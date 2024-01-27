@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/tracker_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -48,7 +49,6 @@
 #include "components/feature_engagement/public/group_constants.h"
 #include "components/feature_engagement/public/group_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -389,7 +389,7 @@ void TrackerImpl::Dismissed(const base::Feature& feature) {
 
 void TrackerImpl::DismissedWithSnooze(
     const base::Feature& feature,
-    absl::optional<SnoozeAction> snooze_action) {
+    std::optional<SnoozeAction> snooze_action) {
   DCHECK(!IsFeatureBlockedByTest(feature));
 
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
@@ -418,12 +418,12 @@ void TrackerImpl::SetPriorityNotification(const base::Feature& feature) {
   }
 
   // We already have a handler. Serve the request and remove the handler.
-  condition_validator_->SetPriorityNotification(absl::nullopt);
+  condition_validator_->SetPriorityNotification(std::nullopt);
   std::move(iter->second).Run();
   priority_notification_handlers_.erase(feature.name);
 }
 
-absl::optional<std::string> TrackerImpl::GetPendingPriorityNotification() {
+std::optional<std::string> TrackerImpl::GetPendingPriorityNotification() {
   return condition_validator_->GetPendingPriorityNotification();
 }
 
@@ -436,7 +436,7 @@ void TrackerImpl::RegisterPriorityNotificationHandler(
   if (pending_priority_notification.has_value() &&
       pending_priority_notification.value() == feature.name) {
     std::move(callback).Run();
-    condition_validator_->SetPriorityNotification(absl::nullopt);
+    condition_validator_->SetPriorityNotification(std::nullopt);
     return;
   }
 

@@ -72,7 +72,6 @@ public class ClipboardTest {
     public void tearDown() {
         ToastManager.resetForTesting();
         ShadowToast.reset();
-        ClipboardImpl.setSkipImageMimeTypeCheckForTesting(null);
         Clipboard.resetForTesting();
     }
 

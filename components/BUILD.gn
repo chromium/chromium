@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//components/compose/features.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -816,6 +817,10 @@ test("components_unittests") {
     ]
   }
 
+  if (enable_compose) {
+    deps += [ "//components/compose/core/browser:unit_tests" ]
+  }
+
   # Only supported on cast-enabled platforms.
   if (enable_cast_receiver) {
     deps += [ "//components/cast_receiver:unit_tests" ]
@@ -1211,6 +1216,7 @@ if (is_android) {
       "//components/commerce/core/android:junit_tests",
       "//components/content_capture/android/junit:components_content_capture_junit_tests",
       "//components/crash/android:junit",
+      "//components/data_sharing/internal:data_sharing_junit_tests",
       "//components/download/network:junit",
       "//components/embedder_support/android:components_embedder_support_junit_tests",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",

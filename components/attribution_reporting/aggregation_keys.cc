@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregation_keys.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -46,9 +46,9 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
 }  // namespace
 
 // static
-absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
+std::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
   if (!IsValid(keys))
-    return absl::nullopt;
+    return std::nullopt;
 
   return AggregationKeys(std::move(keys));
 }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_METRICS_COLLECTOR_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_METRICS_COLLECTOR_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -13,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -125,11 +126,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // Gets the latest event timestamp of the |event_type|. Returns nullopt if
   // the |event_type| didn't happen in the past.
-  absl::optional<base::Time> GetLatestEventTimestamp(EventType event_type);
+  std::optional<base::Time> GetLatestEventTimestamp(EventType event_type);
 
   // Gets the latest event timestamp for security sensitive events. Returns
   // nullopt if a security sensitive event didn't happen in the past.
-  virtual absl::optional<base::Time> GetLatestSecuritySensitiveEventTimestamp();
+  virtual std::optional<base::Time> GetLatestSecuritySensitiveEventTimestamp();
 
   // KeyedService:
   // Called before the actual deletion of the object.
@@ -213,11 +214,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // Gets the latest event timestamp for events filtered by |event_type_filter|.
   // Returns nullopt if none of the events happened in the past.
-  absl::optional<base::Time> GetLatestEventTimestamp(
+  std::optional<base::Time> GetLatestEventTimestamp(
       EventTypeFilter event_type_filter);
-  absl::optional<SafeBrowsingMetricsCollector::Event>
+  std::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventType(UserState user_state, EventType event_type);
-  absl::optional<SafeBrowsingMetricsCollector::Event>
+  std::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventTypeFilter(UserState user_state,
                                     EventTypeFilter event_type_filter);
   const base::Value::Dict* GetSafeBrowsingEventDictionary(UserState user_state);

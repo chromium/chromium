@@ -2986,8 +2986,9 @@ const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[] =
 
 const char kQuickDeleteForAndroidName[] = "Enable quick delete";
 const char kQuickDeleteForAndroidDescription[] =
-    "When enabled, a new quick delete option appears in the three dots menu, "
-    "allowing users to quickly delete their last 15 mins of data.";
+    "When enabled, a new entrypoint to Clear Browsing Data appears in the "
+    "three dots menu, allowing users to achieve their browsing data and tabs "
+    "deletion needs in a quicker and more reassuring manner.";
 
 const char kQuickDeleteAndroidAnimationName[] =
     "Enable Quick Delete Animation on Android";
@@ -3495,6 +3496,10 @@ const char kTopLevelTpcdTrialSettingsDescription[] =
     "set, for it to have an effect. See "
     "https://developer.chrome.com/blog/cookie-countdown-2023oct/ for more "
     "details.";
+
+const char kCookieSettingsUiAlignmentName[] = "Cookie Settings UI Alignment";
+const char kCookieSettingsUiAlignmentDescription[] =
+    "Updates UI on cookie settings page to align with Tracking Protection UI.";
 
 const char kIpProtectionV1Name[] = "IP Protection Setting";
 const char kIpProtectionV1Description[] =
@@ -4187,6 +4192,12 @@ const char kNewTabSearchEngineUrlAndroidDescription[] =
     "Swap out NTP and Start surface according to a user's default search "
     "engine.";
 
+const char kNotificationOneTapUnsubscribeName[] =
+    "Notification one-tap unsubscribe";
+const char kNotificationOneTapUnsubscribeDescription[] =
+    "Enables an experimental UX that replaces the [Site settings] button on "
+    "web push notifications with an [Unsubscribe] button.";
+
 const char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 const char kNotificationPermissionRationaleDescription[] =
@@ -4321,24 +4332,6 @@ const char kRemoveUPMUnenrollmentDescription[] =
     "Instead of unenrolling from UPM the Password Manager will be disabled (no "
     "password saving, no password generation, etc.) until the error "
     "disappears.";
-
-const char kRequestDesktopSiteDefaultsName[] =
-    "Default settings for request desktop site on Android.";
-const char kRequestDesktopSiteDefaultsDescription[] =
-    "Request the desktop version of websites by default based on device "
-    "conditions.";
-
-const char kRequestDesktopSiteDefaultsDowngradeName[] =
-    "Downgrade default settings for request desktop site on Android.";
-const char kRequestDesktopSiteDefaultsDowngradeDescription[] =
-    "Disable the request desktop site global setting if it was enabled by "
-    "default based on device conditions.";
-
-const char kRequestDesktopSiteDefaultsLoggingName[] =
-    "Silently report crashes for debugging request desktop site on Android.";
-const char kRequestDesktopSiteDefaultsLoggingDescription[] =
-    "Silently report crashes with display spec when ineligible device shows "
-    "up in cohort or device screen size exceeds threshold.";
 
 const char kRequestDesktopSiteWindowSettingName[] =
     "Window setting for request desktop site on Android.";
@@ -5969,6 +5962,10 @@ const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";
 
+const char kDeskProfilesName[] = "Desk profiles";
+const char kDeskProfilesDescription[] =
+    "Enable association of lacros profiles with desks.";
+
 const char kDisableCameraFrameRotationAtSourceName[] =
     "Disable camera frame rotation at source";
 const char kDisableCameraFrameRotationAtSourceDescription[] =
@@ -6782,6 +6779,12 @@ const char kLanguagePacksInSettingsName[] = "Language Packs in Settings";
 const char kLanguagePacksInSettingsDescription[] =
     "Enables the UI and logic to manage Language Packs in Settings. This is "
     "used for languages and input methods.";
+
+const char kLauncherContinueSectionWithRecentsName[] =
+    "Launcher continue section with recent drive files";
+const char kLauncherContinueSectionWithRecentsDescription[] =
+    "Adds Google Drive file suggestions based on users' recent activity to "
+    "\"Continue where you left off\" section in Launcher.";
 
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =

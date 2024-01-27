@@ -35,7 +35,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
@@ -46,6 +45,7 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -425,10 +425,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     // safely.
     factory_params->is_trusted = true;
 
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        default_factory_receiver =
-            factory_bundle_for_browser_info->pending_default_factory()
-                .InitWithNewPipeAndPassReceiver();
+    network::URLLoaderFactoryBuilder factory_builder;
     bool bypass_redirect_checks = false;
     GetContentClient()->browser()->WillCreateURLLoaderFactory(
         browser_context, creator_render_frame_host, factory_process->GetID(),
@@ -436,7 +433,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
         request_initiator,
         /*navigation_id=*/std::nullopt,
         /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
-        ukm::kInvalidSourceIdObj, &default_factory_receiver,
+        ukm::kInvalidSourceIdObj, factory_builder,
         &factory_params->header_client, &bypass_redirect_checks,
         nullptr /* disable_secure_dns */, &factory_params->factory_override,
         /*navigation_response_task_runner=*/nullptr);
@@ -446,8 +443,10 @@ void WorkerScriptFetcher::CreateScriptLoader(
     devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
         devtools_agent_host, devtools_worker_token,
         &factory_params->factory_override);
-    factory_process->CreateURLLoaderFactory(std::move(default_factory_receiver),
-                                            std::move(factory_params));
+    std::move(factory_builder)
+        .Finish(factory_bundle_for_browser_info->pending_default_factory()
+                    .InitWithNewPipeAndPassReceiver(),
+                factory_process, std::move(factory_params));
 
     url_loader_factory = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
         std::move(factory_bundle_for_browser_info));

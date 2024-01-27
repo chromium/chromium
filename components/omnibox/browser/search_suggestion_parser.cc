@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -38,7 +39,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -559,7 +559,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
 }
 
 // static
-absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
+std::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     base::StringPiece json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
@@ -568,13 +568,13 @@ absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     // Remove any XSSI guards to allow for JSON parsing.
     json_data.remove_prefix(response_start_index);
 
-    absl::optional<base::Value> data =
+    std::optional<base::Value> data =
         base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
     if (data && data->is_list()) {
       return std::move(data->GetList());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -629,14 +629,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
       relevances = nullptr;
     }
 
-    if (absl::optional<int> relevance =
+    if (std::optional<int> relevance =
             extras.FindInt("google:verbatimrelevance")) {
       results->verbatim_relevance = *relevance;
     }
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
-    absl::optional<bool> field_trial_triggered =
+    std::optional<bool> field_trial_triggered =
         extras.FindBool("google:fieldtrialtriggered");
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
@@ -650,7 +650,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         if (!experiment_stats_v2_dict) {
           continue;
         }
-        absl::optional<int> type_int =
+        std::optional<int> type_int =
             experiment_stats_v2_dict->FindInt(kTypeIntFieldNumber);
         const auto* string_value =
             experiment_stats_v2_dict->FindString(kStringValueFieldNumber);
@@ -803,7 +803,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::u16string match_contents_prefix;
       SuggestionAnswer answer;
       bool answer_parsed_successfully = false;
-      absl::optional<int> suggestion_group_id;
+      std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&

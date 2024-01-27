@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_MESSAGE_HANDLER_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_MESSAGE_HANDLER_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/callback_list.h"
@@ -23,7 +24,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_channel {
 
@@ -228,7 +228,7 @@ class CastMessageHandler : public CastSocket::Observer {
       const std::string& app_id,
       base::TimeDelta launch_timeout,
       const std::vector<std::string>& supported_app_types,
-      const absl::optional<base::Value>& app_params,
+      const std::optional<base::Value>& app_params,
       LaunchSessionCallback callback);
 
   // Stops the session given by |session_id| on the device given by
@@ -236,7 +236,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // request.
   virtual void StopSession(int channel_id,
                            const std::string& session_id,
-                           const absl::optional<std::string>& client_id,
+                           const std::optional<std::string>& client_id,
                            ResultCallback callback);
 
   // Sends |message| to the device given by |channel_id|. The caller may use
@@ -261,7 +261,7 @@ class CastMessageHandler : public CastSocket::Observer {
 
   // Sends a media command |body|. Returns the ID of the request that is sent to
   // the receiver. It is invalid to call this with a message body that is not a
-  // media command.  Returns |absl::nullopt| if |channel_id| is invalid.
+  // media command.  Returns |std::nullopt| if |channel_id| is invalid.
   //
   // Note: This API is designed to return a request ID instead of taking a
   // callback. This is because a MEDIA_STATUS message from the receiver can be
@@ -270,7 +270,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // all clients and (2) make sure the client that sent the media command
   // receives the message only once *and* in the form of a response (by setting
   // the sequenceNumber on the message).
-  virtual absl::optional<int> SendMediaRequest(
+  virtual std::optional<int> SendMediaRequest(
       int channel_id,
       const base::Value::Dict& body,
       const std::string& source_id,

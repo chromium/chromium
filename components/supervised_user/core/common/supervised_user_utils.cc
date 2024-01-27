@@ -4,6 +4,8 @@
 
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
@@ -11,7 +13,6 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
@@ -59,7 +60,7 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
              ->IsDefaultValue();
 }
 
-absl::optional<LogSegment> SupervisionStatusForUser(
+std::optional<LogSegment> SupervisionStatusForUser(
     const signin::IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // The user is not signed in to this profile, and is therefore
@@ -72,7 +73,7 @@ absl::optional<LogSegment> SupervisionStatusForUser(
   if (!AreParentalSupervisionCapabilitiesKnown(account_info.capabilities)) {
     // The user is signed in, but the parental supervision capabilities are
     // not known.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto is_subject_to_parental_controls =
@@ -95,7 +96,7 @@ absl::optional<LogSegment> SupervisionStatusForUser(
 }
 
 bool EmitLogSegmentHistogram(const std::vector<LogSegment>& log_segments) {
-  absl::optional<LogSegment> merged_log_segment;
+  std::optional<LogSegment> merged_log_segment;
   for (const LogSegment& log_segment : log_segments) {
     if (merged_log_segment.has_value() &&
         merged_log_segment.value() != log_segment) {

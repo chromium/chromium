@@ -23,7 +23,7 @@ class BertModelExecutor
                                       const std::string&>;
 
   // ModelExecutor:
-  absl::optional<std::vector<tflite::task::core::Category>> Execute(
+  std::optional<std::vector<tflite::task::core::Category>> Execute(
       ModelExecutionTask* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;

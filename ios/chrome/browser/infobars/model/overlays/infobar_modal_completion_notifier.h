@@ -7,6 +7,7 @@
 
 #include <map>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -68,7 +69,7 @@ class InfobarModalCompletionNotifier {
     void InstallCallbacksInternal(OverlayRequest* request) override;
 
     // The owning notifier.
-    InfobarModalCompletionNotifier* notifier_ = nullptr;
+    raw_ptr<InfobarModalCompletionNotifier> notifier_ = nullptr;
     base::WeakPtrFactory<ModalCompletionInstaller> weak_factory_;
   };
 

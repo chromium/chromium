@@ -73,7 +73,7 @@ TEST_F(PageLoadMetricsUtilTest, GetGoogleHostnamePrefix) {
       {true, "www.www", "https://www.www.google.com/"},
   };
   for (const auto& test : test_cases) {
-    absl::optional<std::string> result =
+    std::optional<std::string> result =
         page_load_metrics::GetGoogleHostnamePrefix(GURL(test.url));
     EXPECT_EQ(test.expected_result, result.has_value())
         << "For URL: " << test.url;
@@ -255,27 +255,27 @@ TEST_F(PageLoadMetricsUtilTest, UmaMaxCumulativeShiftScoreHistogram) {
 TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
   struct {
     PrerenderingState prerendering_state;
-    absl::optional<base::TimeDelta> activation_start;
+    std::optional<base::TimeDelta> activation_start;
     PageVisibility visibility_at_start_or_activation_;
-    absl::optional<base::TimeDelta> time_to_first_background;
-    absl::optional<base::TimeDelta> expected_result;
+    std::optional<base::TimeDelta> time_to_first_background;
+    std::optional<base::TimeDelta> expected_result;
   } test_cases[] = {
-      {PrerenderingState::kNoPrerendering, absl::nullopt,
-       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
-      {PrerenderingState::kNoPrerendering, absl::nullopt,
+      {PrerenderingState::kNoPrerendering, std::nullopt,
+       PageVisibility::kForeground, std::nullopt, std::nullopt},
+      {PrerenderingState::kNoPrerendering, std::nullopt,
        PageVisibility::kForeground, base::Seconds(2), base::Seconds(2)},
-      {PrerenderingState::kNoPrerendering, absl::nullopt,
-       PageVisibility::kBackground, absl::nullopt, base::Seconds(0)},
-      {PrerenderingState::kNoPrerendering, absl::nullopt,
+      {PrerenderingState::kNoPrerendering, std::nullopt,
+       PageVisibility::kBackground, std::nullopt, base::Seconds(0)},
+      {PrerenderingState::kNoPrerendering, std::nullopt,
        PageVisibility::kBackground, base::Seconds(2), base::Seconds(0)},
-      {PrerenderingState::kInPrerendering, absl::nullopt,
-       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
-      {PrerenderingState::kInPrerendering, absl::nullopt,
-       PageVisibility::kForeground, base::Seconds(10), absl::nullopt},
-      {PrerenderingState::kActivatedNoActivationStart, absl::nullopt,
-       PageVisibility::kForeground, base::Seconds(12), absl::nullopt},
+      {PrerenderingState::kInPrerendering, std::nullopt,
+       PageVisibility::kForeground, std::nullopt, std::nullopt},
+      {PrerenderingState::kInPrerendering, std::nullopt,
+       PageVisibility::kForeground, base::Seconds(10), std::nullopt},
+      {PrerenderingState::kActivatedNoActivationStart, std::nullopt,
+       PageVisibility::kForeground, base::Seconds(12), std::nullopt},
       {PrerenderingState::kActivated, base::Seconds(10),
-       PageVisibility::kForeground, absl::nullopt, absl::nullopt},
+       PageVisibility::kForeground, std::nullopt, std::nullopt},
       {PrerenderingState::kActivated, base::Seconds(10),
        PageVisibility::kForeground, base::Seconds(12), base::Seconds(12)},
       // Invalid time_to_first_background. Not checked and may return invalid
@@ -283,7 +283,7 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
       {PrerenderingState::kActivated, base::Seconds(10),
        PageVisibility::kForeground, base::Seconds(2), base::Seconds(2)},
       {PrerenderingState::kActivated, base::Seconds(10),
-       PageVisibility::kBackground, absl::nullopt, base::Seconds(10)},
+       PageVisibility::kBackground, std::nullopt, base::Seconds(10)},
       {PrerenderingState::kActivated, base::Seconds(10),
        PageVisibility::kBackground, base::Seconds(12), base::Seconds(10)},
       // Invalid time_to_first_background. Not checked and may return invalid
@@ -300,7 +300,7 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
           delegate.navigation_start_ +
           test_case.time_to_first_background.value();
     } else {
-      delegate.first_background_time_ = absl::nullopt;
+      delegate.first_background_time_ = std::nullopt;
     }
 
     switch (test_case.prerendering_state) {
@@ -329,7 +329,7 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
         break;
     }
 
-    absl::optional<base::TimeDelta> got =
+    std::optional<base::TimeDelta> got =
         GetNonPrerenderingBackgroundStartTiming(delegate);
     EXPECT_EQ(test_case.expected_result, got);
   }
@@ -338,18 +338,18 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
 TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
   struct {
     PrerenderingState prerendering_state;
-    absl::optional<base::TimeDelta> activation_start;
+    std::optional<base::TimeDelta> activation_start;
     base::TimeDelta event;
-    absl::optional<base::TimeDelta> expected_result;
+    std::optional<base::TimeDelta> expected_result;
   } test_cases[] = {
       // Not modified
-      {PrerenderingState::kNoPrerendering, absl::nullopt, base::Seconds(2),
+      {PrerenderingState::kNoPrerendering, std::nullopt, base::Seconds(2),
        base::Seconds(2)},
       // max(0, 2 - x), where x is time of activation start that may come in the
       // future and should be greater than an already occurred event.
-      {PrerenderingState::kInPrerendering, absl::nullopt, base::Seconds(2),
+      {PrerenderingState::kInPrerendering, std::nullopt, base::Seconds(2),
        base::Seconds(0)},
-      {PrerenderingState::kActivatedNoActivationStart, absl::nullopt,
+      {PrerenderingState::kActivatedNoActivationStart, std::nullopt,
        base::Seconds(2), base::Seconds(0)},
       // max(0, 2 - 10)
       {PrerenderingState::kActivated, base::Seconds(10), base::Seconds(2),
@@ -382,7 +382,7 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
 
     // In some path, this function is called with old PageLoadTiming, which can
     // lack activation_start. The result is the same for such case.
-    timing.activation_start = absl::nullopt;
+    timing.activation_start = std::nullopt;
     base::TimeDelta got3 = CorrectEventAsNavigationOrActivationOrigined(
         delegate, timing, test_case.event);
     EXPECT_EQ(test_case.expected_result, got3);

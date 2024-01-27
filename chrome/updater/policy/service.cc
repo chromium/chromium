@@ -213,6 +213,12 @@ std::string PolicyService::source() const {
   return base::JoinString(sources, ";");
 }
 
+PolicyStatus<bool> PolicyService::CloudPolicyOverridesPlatformPolicy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return QueryPolicy(
+      &PolicyManagerInterface::CloudPolicyOverridesPlatformPolicy);
+}
+
 PolicyStatus<base::TimeDelta> PolicyService::GetLastCheckPeriod() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(&PolicyManagerInterface::GetLastCheckPeriod);
@@ -345,6 +351,18 @@ base::Value PolicyService::GetAllPolicies() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict policies;
 
+  const PolicyStatus<bool> cloud_policy_override_platform_policy =
+      CloudPolicyOverridesPlatformPolicy();
+  if (cloud_policy_override_platform_policy) {
+    policies.Set(
+        "CloudPolicyOverridesPlatformPolicy",
+        base::Value::Dict()
+            .Set("value", cloud_policy_override_platform_policy.policy())
+            .Set("source",
+                 cloud_policy_override_platform_policy.effective_policy()
+                     ->source));
+  }
+
   const PolicyStatus<base::TimeDelta> last_check_period = GetLastCheckPeriod();
   if (last_check_period) {
     policies.Set(
@@ -468,6 +486,16 @@ base::Value PolicyService::GetAllPolicies() const {
 std::string PolicyService::GetAllPoliciesAsString() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> policies;
+
+  const PolicyStatus<bool> cloud_policy_override_platform_policy =
+      CloudPolicyOverridesPlatformPolicy();
+  if (cloud_policy_override_platform_policy) {
+    policies.push_back(base::StringPrintf(
+        "CloudPolicyOverridesPlatformPolicy = %d (%s)",
+        cloud_policy_override_platform_policy.policy(),
+        cloud_policy_override_platform_policy.effective_policy()
+            ->source.c_str()));
+  }
 
   const PolicyStatus<base::TimeDelta> last_check_period = GetLastCheckPeriod();
   if (last_check_period) {

@@ -5,6 +5,7 @@
 #include "components/trusted_vault/download_keys_response_handler.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
@@ -14,7 +15,6 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
@@ -42,19 +42,19 @@ FindMembershipForSecurityDomain(
 // Extracts (decrypts |wrapped_key| and converts to ExtractedSharedKey) shared
 // keys from |membership| and sorts them by version. In case of decryption
 // errors it returns nullopt.
-absl::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
+std::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
     const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership&
         membership,
     const SecureBoxPrivateKey& member_private_key) {
   std::map<int, ExtractedSharedKey> epoch_to_extracted_key;
   for (const trusted_vault_pb::SharedMemberKey& shared_key :
        membership.keys()) {
-    absl::optional<std::vector<uint8_t>> decrypted_key =
+    std::optional<std::vector<uint8_t>> decrypted_key =
         DecryptTrustedVaultWrappedKey(
             member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
     if (!decrypted_key.has_value()) {
       // Decryption failed.
-      return absl::nullopt;
+      return std::nullopt;
     }
     epoch_to_extracted_key[shared_key.epoch()].version = shared_key.epoch();
     epoch_to_extracted_key[shared_key.epoch()].trusted_vault_key =
@@ -145,12 +145,12 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 // static
-absl::optional<TrustedVaultDownloadKeysStatus>
+std::optional<TrustedVaultDownloadKeysStatus>
 DownloadKeysResponseHandler::GetErrorFromHttpStatus(
     TrustedVaultRequest::HttpStatus http_status) {
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
-      return absl::nullopt;
+      return std::nullopt;
     case TrustedVaultRequest::HttpStatus::kNotFound:
       return TrustedVaultDownloadKeysStatus::kMemberNotFound;
     case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
@@ -167,7 +167,7 @@ DownloadKeysResponseHandler::GetErrorFromHttpStatus(
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
@@ -186,7 +186,7 @@ DownloadKeysResponseHandler::ProcessedResponse
 DownloadKeysResponseHandler::ProcessResponse(
     TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) const {
-  absl::optional<TrustedVaultDownloadKeysStatus> error_from_http_status =
+  std::optional<TrustedVaultDownloadKeysStatus> error_from_http_status =
       GetErrorFromHttpStatus(http_status);
   if (error_from_http_status.has_value()) {
     return ProcessedResponse(*error_from_http_status);
@@ -207,7 +207,7 @@ DownloadKeysResponseHandler::ProcessResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kMembershipNotFound);
   }
 
-  const absl::optional<std::vector<ExtractedSharedKey>> extracted_keys =
+  const std::optional<std::vector<ExtractedSharedKey>> extracted_keys =
       ExtractAndSortSharedKeys(*membership, device_key_pair_->private_key());
   if (!extracted_keys.has_value()) {
     // |current_member| appears corrupt, as its keys could not be decrypted.

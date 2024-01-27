@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -461,9 +462,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
  protected:
-  void OnResponse(OptimizationGuideModelStreamingExecutionResult result,
-                  std::unique_ptr<ModelQualityLogEntry> log_entry) {
-    log_entry_received_ = std::move(log_entry);
+  void OnResponse(OptimizationGuideModelStreamingExecutionResult result) {
+    log_entry_received_ = std::move(result.log_entry);
     if (log_entry_received_) {
       // Make sure that an execution ID is always generated if we return a log
       // entry.
@@ -476,14 +476,14 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
                                        .execution_id(),
                                    "on-device"));
     }
-    if (!result.has_value()) {
-      response_error_ = result.error().error();
+    if (!result.response.has_value()) {
+      response_error_ = result.response.error().error();
       return;
     }
-    provided_by_on_device_ = result.value().provided_by_on_device;
+    provided_by_on_device_ = result.provided_by_on_device;
     auto response =
-        ParsedAnyMetadata<proto::ComposeResponse>(result.value().response);
-    if (result.value().is_complete) {
+        ParsedAnyMetadata<proto::ComposeResponse>(result.response->response);
+    if (result.response->is_complete) {
       response_received_ = response->output();
     } else {
       streamed_responses_.push_back(response->output());

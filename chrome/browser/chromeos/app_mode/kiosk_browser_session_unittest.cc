@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -152,7 +153,7 @@ std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
     TestingProfile* profile,
     bool is_main_browser = false) {
   // The main browser window for the kiosk is always fullscreen in the
-  // prodaction.
+  // production.
   FullscreenTestBrowserWindow* window =
       new FullscreenTestBrowserWindow(profile, /*fullscreen=*/is_main_browser);
   new TestBrowserWindowOwner(window);
@@ -328,31 +329,32 @@ class KioskBrowserSessionBaseTest
   // close. In this case we will also ensure that `new_browser_window` was
   // automatically closed.
   bool DidSessionCloseNewWindow(BrowserWindow* new_browser_window) {
-    bool already_closed = false;
-    static_cast<TestBrowserWindow*>(new_browser_window)
-        ->SetCloseCallback(base::BindLambdaForTesting(
-            [&already_closed]() { already_closed = true; }));
-
     // Wait until the new window is handled by `kiosk_browser_session_`.
-    base::RunLoop handler_loop;
-    bool result = false;
+    base::test::TestFuture<bool> is_handled;
     kiosk_browser_session_->SetOnHandleBrowserCallbackForTesting(
-        base::BindLambdaForTesting([&handler_loop, &result](bool is_closing) {
-          result = is_closing;
-          handler_loop.Quit();
-        }));
-    handler_loop.Run();
+        is_handled.GetRepeatingCallback());
+    bool is_closed_by_kiosk_session = is_handled.Get();
 
-    if (result) {
-      EXPECT_TRUE(already_closed);
-    }
-
-    return result;
+    EXPECT_EQ(IsClosed(*new_browser_window), is_closed_by_kiosk_session);
+    return is_closed_by_kiosk_session;
   }
 
   void CloseMainBrowser() {
     // Close the main browser window.
     web_kiosk_main_browser_.reset();
+  }
+
+  bool IsMainBrowserClosed() {
+    return web_kiosk_main_browser_ == nullptr ||
+           IsClosed(*web_kiosk_main_browser_);
+  }
+
+  bool IsClosed(const Browser& browser) const {
+    return IsClosed(CHECK_DEREF(browser.window()));
+  }
+
+  bool IsClosed(const BrowserWindow& browser_window) const {
+    return static_cast<const TestBrowserWindow&>(browser_window).IsClosed();
   }
 
   bool IsMainBrowserFullscreen() {
@@ -479,16 +481,13 @@ TEST_F(KioskBrowserSessionTest, ChromeAppKioskShouldClosePreexistingBrowsers) {
   ASSERT_TRUE(closed_future.IsReady());
 }
 
-TEST_F(KioskBrowserSessionTest, WebKioskShouldNotClosePreexistingBrowsers) {
+TEST_F(KioskBrowserSessionTest, WebKioskShouldClosePreexistingBrowsers) {
   std::unique_ptr<Browser> preexisting_browser = CreateBrowserWithTestWindow();
-  base::test::TestFuture<void> closed_future;
-
-  static_cast<TestBrowserWindow*>(preexisting_browser->window())
-      ->SetCloseCallback(closed_future.GetCallback());
 
   StartWebKioskSession();
 
-  ASSERT_FALSE(closed_future.IsReady());
+  EXPECT_TRUE(IsClosed(*preexisting_browser));
+  EXPECT_FALSE(IsMainBrowserClosed());
 }
 
 // Check that sessions list in local_state contains only sessions within the

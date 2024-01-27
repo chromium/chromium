@@ -33,11 +33,11 @@ bool AvailabilityModelImpl::IsReady() const {
   return ready_;
 }
 
-absl::optional<uint32_t> AvailabilityModelImpl::GetAvailability(
+std::optional<uint32_t> AvailabilityModelImpl::GetAvailability(
     const base::Feature& feature) const {
   auto search = feature_availabilities_.find(feature.name);
   if (search == feature_availabilities_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return search->second;
 }

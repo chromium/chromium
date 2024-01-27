@@ -131,7 +131,7 @@ void TokenBindingHelper::SignAssertionToken(
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
-  absl::optional<std::string> header_and_payload =
+  std::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
           algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),

@@ -23,7 +23,7 @@ namespace segmentation_platform::processing {
 
 namespace {
 
-absl::optional<int> GetArgAsInt(
+std::optional<int> GetArgAsInt(
     const google::protobuf::Map<std::string, std::string>& args,
     const std::string& key) {
   int value;
@@ -31,14 +31,14 @@ absl::optional<int> GetArgAsInt(
 
   // Did not find target key.
   if (iter == args.end())
-    return absl::optional<int>();
+    return std::optional<int>();
 
   // Perform string to int conversion, return empty value if the conversion
   // failed.
   if (!base::StringToInt(base::StringPiece(iter->second), &value))
-    return absl::optional<int>();
+    return std::optional<int>();
 
-  return absl::optional<int>(value);
+  return std::optional<int>(value);
 }
 
 }  // namespace
@@ -244,7 +244,7 @@ bool CustomInputProcessor::AddFromInputContext(
     input_name = custom_input_iter->second;
   }
 
-  absl::optional<processing::ProcessedValue> input_context_value;
+  std::optional<processing::ProcessedValue> input_context_value;
   if (input_context) {
     input_context_value = input_context->GetMetadataArgument(input_name);
   }
@@ -279,7 +279,7 @@ bool CustomInputProcessor::AddTimeRangeBeforePrediction(
   }
 
   constexpr char kBucketCountArg[] = "bucket_count";
-  absl::optional<int> bucket_count =
+  std::optional<int> bucket_count =
       GetArgAsInt(custom_input.additional_args(), kBucketCountArg);
 
   if (bucket_count.has_value()) {

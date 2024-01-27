@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class RSAPrivateKey;
@@ -73,7 +73,7 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
 
   int generate_key_fail_times_ = 0;
   std::vector<uint8_t> public_key_;
-  absl::optional<CK_SLOT_ID> private_key_slot_id_;
+  std::optional<CK_SLOT_ID> private_key_slot_id_;
   crypto::ScopedSECKEYPrivateKey private_key_;
 };
 

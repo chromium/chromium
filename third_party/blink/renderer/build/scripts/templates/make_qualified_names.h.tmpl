@@ -56,7 +56,7 @@ std::unique_ptr<const QualifiedName*[]> GetAttrs();
 {% endif %}
 
 {% if generate_tag_enum %}
-{{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifedName({{namespace}}Tag tag);
+{{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifiedName({{namespace}}Tag tag);
 {% endif %}
 
 void Init();

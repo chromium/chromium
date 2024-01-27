@@ -153,7 +153,7 @@ void NavigationPredictorMetricsDocumentData::RecordAnchorElementMetricsData(
   builder.SetIsBold(metrics.is_bold_);
   builder.SetNavigationStartToLinkLoggedMs(ukm::GetExponentialBucketMin(
       metrics.navigation_start_to_link_logged.InMilliseconds(), 1.3));
-  builder.SetFontSize(metrics.font_size_);
+  builder.SetFontSize(metrics.font_size_bucket_);
   builder.SetPathLength(metrics.path_length_);
   builder.SetPathDepth(metrics.path_depth_);
   builder.SetBucketedPathHash(metrics.bucketed_path_hash_);

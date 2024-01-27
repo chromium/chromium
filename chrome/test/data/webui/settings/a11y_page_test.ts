@@ -7,7 +7,8 @@ import 'chrome://settings/lazy_load.js';
 // clang-format off
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {ScreenAiInstallStatus, SettingsPdfOcrToggleElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPdfOcrToggleElement} from 'chrome://settings/lazy_load.js';
+import {ScreenAiInstallStatus} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -15,8 +16,10 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {AccessibilityBrowserProxy, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
+import {AccessibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements

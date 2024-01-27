@@ -35,7 +35,7 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
 ObjectPermissionContextBase::ObjectPermissionContextBase(
     ContentSettingsType data_content_settings_type,
     HostContentSettingsMap* host_content_settings_map)
-    : guard_content_settings_type_(absl::nullopt),
+    : guard_content_settings_type_(std::nullopt),
       data_content_settings_type_(data_content_settings_type),
       host_content_settings_map_(host_content_settings_map) {
   DCHECK(host_content_settings_map_);
@@ -71,7 +71,7 @@ ObjectPermissionContextBase::Object::Clone() {
 }
 
 void ObjectPermissionContextBase::PermissionObserver::OnObjectPermissionChanged(
-    absl::optional<ContentSettingsType> guard_content_settings_type,
+    std::optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {}
 
 void ObjectPermissionContextBase::PermissionObserver::OnPermissionRevoked(

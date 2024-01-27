@@ -112,7 +112,7 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
     return surface &&
            wl_resource_get_client(GetSurfaceResource(surface)) == client_;
   }
-  void OnTarget(const absl::optional<std::string>& mime_type) override {
+  void OnTarget(const std::optional<std::string>& mime_type) override {
     wl_data_source_send_target(data_source_resource_,
                                mime_type ? mime_type->c_str() : nullptr);
     wl_client_flush(wl_resource_get_client(data_source_resource_));
@@ -327,9 +327,9 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                  Surface* origin,
                  Surface* icon,
                  uint32_t serial) {
-    absl::optional<wayland::SerialTracker::EventType> event_type =
+    std::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
-    if (event_type == absl::nullopt) {
+    if (event_type == std::nullopt) {
       LOG(ERROR) << "The serial passed to StartDrag does not exist.";
       source->Cancelled();
       return;
@@ -386,9 +386,9 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
   void SetSelection(DataDevice* data_device,
                     DataSource* source,
                     uint32_t serial) {
-    absl::optional<wayland::SerialTracker::EventType> event_type =
+    std::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
-    if (event_type == absl::nullopt) {
+    if (event_type == std::nullopt) {
       LOG(ERROR) << "The serial passed to SetSelection does not exist.";
       return;
     }

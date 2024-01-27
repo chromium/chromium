@@ -3360,6 +3360,26 @@
       "features": [
         "disable_media_foundation_frame_size_change"
       ]
+    },
+    {
+      "id": 428,
+      "cr_bugs": [
+        1401061
+      ],
+      "description": "Don't use Media Foundation hardware security on Polaris-architecture AMD GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x67c7", "0x67df", "0x67ff", "0x6fdf", "0x67ef", "0x6981",
+        "0x6987", "0x699f", "0x67c2", "0x67d0", "0x6900", "0x6984",
+        "0x67c0", "0x67c1", "0x67e0", "0x67e3", "0x67e8", "0x67eb",
+        "0x6980", "0x6985", "0x6986", "0x6995", "0x6997"
+      ],
+      "features": [
+        "disable_media_foundation_hardware_security"
+      ]
     }
   ]
 }

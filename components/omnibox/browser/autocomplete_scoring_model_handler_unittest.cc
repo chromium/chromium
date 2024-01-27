@@ -27,10 +27,10 @@ namespace {
 
 ScoringSignalSpec CreateScoringSignalSpec(
     ScoringSignalType type,
-    absl::optional<ScoringSignalTransformation> transformation = absl::nullopt,
-    absl::optional<float> min_val = absl::nullopt,
-    absl::optional<float> max_val = absl::nullopt,
-    absl::optional<float> missing_val = absl::nullopt) {
+    std::optional<ScoringSignalTransformation> transformation = std::nullopt,
+    std::optional<float> min_val = std::nullopt,
+    std::optional<float> max_val = std::nullopt,
+    std::optional<float> missing_val = std::nullopt) {
   ScoringSignalSpec spec;
   spec.set_type(type);
   if (transformation) {
@@ -57,7 +57,7 @@ class TestAutocompleteScoringModelExecutor
   ~TestAutocompleteScoringModelExecutor() override = default;
 
   void InitializeAndMoveToExecutionThread(
-      absl::optional<base::TimeDelta>,
+      std::optional<base::TimeDelta>,
       optimization_guide::proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
@@ -84,7 +84,7 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
         std::make_unique<TestAutocompleteScoringModelExecutor>(),
         /*optimization_target=*/
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
 
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
@@ -103,17 +103,16 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
   }
 
   void PushModelFileToModelExecutor(
-      absl::optional<
-          optimization_guide::proto::AutocompleteScoringModelMetadata>
+      std::optional<optimization_guide::proto::AutocompleteScoringModelMetadata>
           metadata) {
-    absl::optional<optimization_guide::proto::Any> any;
+    std::optional<optimization_guide::proto::Any> any;
 
     // Craft a correct Any proto in the case we passed in metadata.
     if (metadata) {
       std::string serialized_metadata;
       metadata->SerializeToString(&serialized_metadata);
       optimization_guide::proto::Any any_proto;
-      any = absl::make_optional(any_proto);
+      any = std::make_optional(any_proto);
       any->set_value(serialized_metadata);
       any->set_type_url(
           "type.googleapis.com/"
@@ -161,8 +160,8 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::
           SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_SEC,
-      /*transformation=*/absl::nullopt,
-      /*min_val=*/0, /*max_val=*/absl::nullopt, /*missing_val=*/-2);
+      /*transformation=*/std::nullopt,
+      /*min_val=*/0, /*max_val=*/std::nullopt, /*missing_val=*/-2);
   // Clamped by upper boundary.
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::SCORING_SIGNAL_TYPE_TYPED_COUNT);
@@ -213,7 +212,7 @@ TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {
   scoring_signals_vec.push_back(&scoring_signals_1);
   scoring_signals_2.set_length_of_url(12);
   scoring_signals_vec.push_back(&scoring_signals_2);
-  const absl::optional<std::vector<std::vector<float>>> batch_model_input =
+  const std::optional<std::vector<std::vector<float>>> batch_model_input =
       model_handler_->GetBatchModelInput(scoring_signals_vec);
   ASSERT_TRUE(batch_model_input);
   ASSERT_EQ(batch_model_input->size(), 2u);

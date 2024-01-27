@@ -143,7 +143,7 @@ TEST_F(MediaRouterAndroidTest, OnRouteClosed) {
   base::CallbackListSubscription subscription =
       router_->AddPresentationConnectionStateChangedCallback("route",
                                                              callback.Get());
-  router_->OnRouteClosed("route", absl::nullopt);
+  router_->OnRouteClosed("route", std::nullopt);
 
   EXPECT_EQ(nullptr, router_->FindRouteBySource("source"));
 }

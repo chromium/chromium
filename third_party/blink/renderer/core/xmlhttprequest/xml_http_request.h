@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -296,6 +297,11 @@ class CORE_EXPORT XMLHttpRequest final
   //   so there is no need.
   void ReportMemoryUsageToV8();
 
+  // Creates a task scope used for firing events if the `parent_task_` is set
+  // and different from the current task.
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  MaybeCreateTaskAttributionScope();
+
   Member<XMLHttpRequestUpload> upload_;
 
   KURL url_;
@@ -355,6 +361,8 @@ class CORE_EXPORT XMLHttpRequest final
   // This blob loader will be used if |m_downloadingToFile| is true and
   // |m_responseTypeCode| is NOT ResponseTypeBlob.
   Member<BlobLoader> blob_loader_;
+
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 
   bool async_ = true;
 

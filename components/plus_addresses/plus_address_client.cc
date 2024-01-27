@@ -4,6 +4,8 @@
 
 #include "components/plus_addresses/plus_address_client.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/sequence_checker.h"
@@ -21,7 +23,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace plus_addresses {
@@ -123,9 +124,9 @@ const net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
       }
     )");
 
-absl::optional<GURL> ValidateAndGetUrl() {
+std::optional<GURL> ValidateAndGetUrl() {
   GURL maybe_url = GURL(kEnterprisePlusAddressServerUrl.Get());
-  return maybe_url.is_valid() ? absl::make_optional(maybe_url) : absl::nullopt;
+  return maybe_url.is_valid() ? std::make_optional(maybe_url) : std::nullopt;
 }
 
 }  // namespace
@@ -176,7 +177,7 @@ void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
 void PlusAddressClient::ReservePlusAddressInternal(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed,
-    absl::optional<std::string> auth_token) {
+    std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
     std::move(on_completed)
         .Run(base::unexpected(
@@ -221,7 +222,7 @@ void PlusAddressClient::ConfirmPlusAddressInternal(
     const url::Origin& origin,
     const std::string& plus_address,
     PlusAddressRequestCallback on_completed,
-    absl::optional<std::string> auth_token) {
+    std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
     std::move(on_completed)
         .Run(base::unexpected(
@@ -265,7 +266,7 @@ void PlusAddressClient::ConfirmPlusAddressInternal(
 
 void PlusAddressClient::GetAllPlusAddressesInternal(
     PlusAddressMapCallback callback,
-    absl::optional<std::string> auth_token) {
+    std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
     return;
   }
@@ -327,7 +328,7 @@ void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
       base::BindOnce(&PlusAddressParser::ParsePlusProfileFromV1Create)
           .Then(base::BindOnce(
               [](PlusAddressRequestCallback callback,
-                 absl::optional<PlusProfile> result) {
+                 std::optional<PlusProfile> result) {
                 if (!result.has_value()) {
                   std::move(callback).Run(
                       base::unexpected(PlusAddressRequestError(
@@ -365,7 +366,7 @@ void PlusAddressClient::OnGetAllPlusAddressesComplete(
       base::BindOnce(&PlusAddressParser::ParsePlusAddressMapFromV1List)
           .Then(base::BindOnce(
               [](PlusAddressMapCallback callback,
-                 absl::optional<PlusAddressMap> result) {
+                 std::optional<PlusAddressMap> result) {
                 if (result.has_value()) {
                   std::move(callback).Run(result.value());
                 }
@@ -402,7 +403,7 @@ void PlusAddressClient::OnTokenFetched(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
   PlusAddressMetrics::RecordNetworkRequestOauthError(error);
-  absl::optional<std::string> access_token;
+  std::optional<std::string> access_token;
   if (error.state() == GoogleServiceAuthError::NONE) {
     access_token = access_token_info.token;
   }

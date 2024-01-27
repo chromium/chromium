@@ -127,7 +127,7 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
                void(const TopicMap& topics, const std::string& token));
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
-                     absl::optional<Topic>(const std::string& private_topic));
+                     std::optional<Topic>(const std::string& private_topic));
   void NotifySubscriptionRequestFinished(
       Topic topic,
       PerUserTopicSubscriptionManager::RequestType request_type,

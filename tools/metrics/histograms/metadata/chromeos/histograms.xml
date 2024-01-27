@@ -3487,51 +3487,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.SystemTray.Network.RowClickedAction"
-    enum="NetworkRowClickedAction" expires_after="2024-02-25">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>tjohnsonkanu@chromium.org</owner>
-  <owner>chadduffin@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    This metric will record each action taken as a result of a user clicking a
-    Network from Network list within system tray. Metric emitted each time a
-    user clicks on a network list row.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.SystemTray.Network.SectionShown"
-    enum="DetailedViewSection" expires_after="2024-02-25">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>tjohnsonkanu@chromium.org</owner>
-  <owner>chadduffin@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Records when different sections within the detailed network view in the
-    system tray shown. This metric is emitted each time a user opens the system
-    tray and each time a different network section is newly shown.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.SystemTray.Network.{NetworkType}.Toggled"
-    enum="BooleanToggled" expires_after="2024-06-30">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>tjohnsonkanu@chromium.org</owner>
-  <owner>chadduffin@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Records the new value of the WiFi/Mobile toggle button in system tray.
-    Metric emitted each time a user clicks on the enable/disable WiFi or Mobile
-    toggle. Note that the Mobile NetworkType is to be deprecated and replaced by
-    Cellular.
-  </summary>
-  <token key="NetworkType">
-    <variant name="Cellular"/>
-    <variant name="Mobile"/>
-    <variant name="WiFi"/>
-  </token>
-</histogram>
-
 <histogram name="ChromeOS.SystemTray.NotificationsRemovedByClearAll"
     units="notifications" expires_after="2024-06-30">
   <owner>amehfooz@chromium.org</owner>

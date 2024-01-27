@@ -179,12 +179,6 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
-const char kClearUndecryptablePasswordsOnSyncName[] =
-    "Enable cleaning up of password store on initial Sync";
-const char kClearUndecryptablePasswordsOnSyncDescription[] =
-    "Once password sync starts for the first time, the currently undecryptable "
-    "passwords will be silently cleaned up";
-
 const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
@@ -228,12 +222,6 @@ const char kEnableFamilyLinkControlsDescription[] =
 extern const char kOneTapForMapsName[] = "Enable one Tap Experience for Maps";
 extern const char kOneTapForMapsDescription[] =
     "Enables the one tap experience for maps experience kit.";
-
-const char kUseAnnotationsForLanguageDetectionName[] =
-    "Enable Shared Web Page Text Fetching";
-const char kUseAnnotationsForLanguageDetectionDescription[] =
-    "When enabled, both full page intent detection and language detection will "
-    "use the same text manager to fetch web page text.";
 
 const char kEnablePopoutOmniboxIpadName[] = "Popout omnibox (iPad)";
 const char kEnablePopoutOmniboxIpadDescription[] =
@@ -884,12 +872,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kSkipUndecryptablePasswordsName[] =
-    "Enable silent ignoring of undecryptable passwords";
-const char kSkipUndecryptablePasswordsDescription[] =
-    "The password store will silently skip undecryptable passwords when "
-    "reading them";
-
 const char kSpotlightOpenTabsSourceName[] = "Show Open local tabs in Spotlight";
 const char kSpotlightOpenTabsSourceDescription[] =
     "Donate local open tabs items to iOS Search Engine Spotlight";
@@ -897,6 +879,12 @@ const char kSpotlightOpenTabsSourceDescription[] =
 const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";
+
+const char kSyncRememberCustomPassphraseAfterSignoutName[] =
+    "Remember custom passphrase after sign-out";
+const char kSyncRememberCustomPassphraseAfterSignoutDescription[] =
+    "Remember custom passphrase after sign-out, instead of asking the user to "
+    "re-enter it after every sign-in.";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =

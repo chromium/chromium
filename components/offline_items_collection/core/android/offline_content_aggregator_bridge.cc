@@ -83,7 +83,7 @@ void RunGetAllItemsCallback(const base::android::JavaRef<jobject>& j_callback,
 }
 
 void RunGetItemByIdCallback(const base::android::JavaRef<jobject>& j_callback,
-                            const absl::optional<OfflineItem>& item) {
+                            const std::optional<OfflineItem>& item) {
   JNIEnv* env = AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       j_callback, item.has_value()
@@ -269,7 +269,7 @@ void OfflineContentAggregatorBridge::OnItemRemoved(const ContentId& id) {
 
 void OfflineContentAggregatorBridge::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   if (java_ref_.is_null())
     return;
 

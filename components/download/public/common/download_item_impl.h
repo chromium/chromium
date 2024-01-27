@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,7 +56,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 const std::string& serialized_embedder_download_data,
                 const GURL& tab_url,
                 const GURL& tab_referrer_url,
-                const absl::optional<url::Origin>& request_initiator,
+                const std::optional<url::Origin>& request_initiator,
                 const std::string& suggested_filename,
                 const base::FilePath& forced_file_path,
                 ui::PageTransition transition_type,
@@ -64,7 +64,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 const std::string& remote_address,
                 base::Time start_time,
                 ::network::mojom::CredentialsMode credentials_mode,
-                const absl::optional<net::IsolationInfo>& isolation_info,
+                const std::optional<net::IsolationInfo>& isolation_info,
                 int64_t range_request_from,
                 int64_t range_request_to);
     RequestInfo();
@@ -91,7 +91,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     GURL tab_referrer_url;
 
     // The origin of the requester that originally initiated the download.
-    absl::optional<url::Origin> request_initiator;
+    std::optional<url::Origin> request_initiator;
 
     // Filename suggestion from DownloadSaveInfo. It could, among others, be the
     // suggested filename in 'download' attribute of an anchor. Details:
@@ -119,7 +119,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
         ::network::mojom::CredentialsMode::kInclude;
 
     // Isolation info for the request.
-    absl::optional<net::IsolationInfo> isolation_info;
+    std::optional<net::IsolationInfo> isolation_info;
 
     // Range request offsets. Used only for explicitly download part of the
     // content.
@@ -197,7 +197,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -275,7 +275,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
-  const absl::optional<url::Origin>& GetRequestInitiator() const override;
+  const std::optional<url::Origin>& GetRequestInitiator() const override;
   std::string GetSuggestedFilename() const override;
   const scoped_refptr<const net::HttpResponseHeaders>& GetResponseHeaders()
       const override;
@@ -329,7 +329,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
-  const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
+  const std::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;

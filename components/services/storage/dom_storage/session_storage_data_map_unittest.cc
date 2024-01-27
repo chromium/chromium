@@ -74,7 +74,7 @@ class SessionStorageDataMapTest : public testing::Test {
   SessionStorageDataMapTest() {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageDataMapTest",
+        std::nullopt, "SessionStorageDataMapTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());

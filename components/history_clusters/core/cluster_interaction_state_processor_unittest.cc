@@ -57,13 +57,13 @@ std::vector<history::Cluster> GetTestClusters() {
   history::Cluster cluster1;
   cluster1.visits = {
       testing::CreateClusterVisit(
-          visit1, absl::nullopt, 1.0,
+          visit1, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
       testing::CreateClusterVisit(
-          visit2, absl::nullopt, 1.0,
+          visit2, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
       testing::CreateClusterVisit(
-          visit3, absl::nullopt, 1.0,
+          visit3, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
   };
   clusters.push_back(cluster1);
@@ -83,13 +83,13 @@ std::vector<history::Cluster> GetTestClusters() {
   history::Cluster cluster2;
   cluster2.visits = {
       testing::CreateClusterVisit(
-          visit4, absl::nullopt, 1.0,
+          visit4, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
       testing::CreateClusterVisit(
-          visit5, absl::nullopt, 1.0,
+          visit5, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
       testing::CreateClusterVisit(
-          visit6, absl::nullopt, 1.0,
+          visit6, std::nullopt, 1.0,
           history::ClusterVisit::InteractionState::kDefault),
   };
   clusters.push_back(cluster2);
@@ -108,13 +108,13 @@ std::vector<history::Cluster> GetTestClusters() {
   visit9.content_annotations.search_terms = u"hidden";
   history::Cluster cluster3;
   cluster3.visits = {testing::CreateClusterVisit(
-                         visit7, absl::nullopt, 1.0,
+                         visit7, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kDone),
                      testing::CreateClusterVisit(
-                         visit8, absl::nullopt, 1.0,
+                         visit8, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kDefault),
                      testing::CreateClusterVisit(
-                         visit9, absl::nullopt, 1.0,
+                         visit9, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kDefault)};
   clusters.push_back(cluster3);
 
@@ -132,13 +132,13 @@ std::vector<history::Cluster> GetTestClusters() {
   visit12.content_annotations.search_terms = u"hidden";
   history::Cluster cluster4;
   cluster4.visits = {testing::CreateClusterVisit(
-                         visit10, absl::nullopt, 1.0,
+                         visit10, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kDefault),
                      testing::CreateClusterVisit(
-                         visit11, absl::nullopt, 1.0,
+                         visit11, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kHidden),
                      testing::CreateClusterVisit(
-                         visit12, absl::nullopt, 1.0,
+                         visit12, std::nullopt, 1.0,
                          history::ClusterVisit::InteractionState::kDefault)};
   clusters.push_back(cluster4);
   return clusters;

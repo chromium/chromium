@@ -44,12 +44,12 @@ ConfigHolder::ConfigHolder(std::vector<std::unique_ptr<Config>> configs)
 
 ConfigHolder::~ConfigHolder() = default;
 
-absl::optional<std::string> ConfigHolder::GetKeyForSegmentId(
+std::optional<std::string> ConfigHolder::GetKeyForSegmentId(
     proto::SegmentId segment_id) const {
   auto key_for_updated_segment =
       segmentation_key_by_segment_id_.find(segment_id);
   if (key_for_updated_segment == segmentation_key_by_segment_id_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return key_for_updated_segment->second;
 }

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
 
@@ -38,7 +39,7 @@
     // when optional steps are implemented.
     _steps = @[
       @(kPrivacyGuideWelcomeStep), @(kPrivacyGuideURLUsageStep),
-      @(kPrivacyGuideHistorySyncStep)
+      @(kPrivacyGuideHistorySyncStep), @(kPrivacyGuideSafeBrowsingStep)
     ];
   }
   return self;
@@ -137,6 +138,17 @@
   [self.childCoordinators addObject:coordinator];
 }
 
+// Initializes the Safe Browsing step and starts it.
+- (void)startSafeBrowsingCoordinator {
+  PrivacyGuideSafeBrowsingCoordinator* coordinator =
+      [[PrivacyGuideSafeBrowsingCoordinator alloc]
+          initWithBaseNavigationController:_navigationController
+                                   browser:self.browser];
+  [coordinator start];
+
+  [self.childCoordinators addObject:coordinator];
+}
+
 - (void)startNextCoordinator {
   switch ([self nextStepType]) {
     case kPrivacyGuideWelcomeStep:
@@ -148,6 +160,8 @@
     case kPrivacyGuideHistorySyncStep:
       [self startHistorySyncCoordinator];
       break;
+    case kPrivacyGuideSafeBrowsingStep:
+      [self startSafeBrowsingCoordinator];
   }
 }
 

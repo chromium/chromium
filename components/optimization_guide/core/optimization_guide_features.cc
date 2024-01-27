@@ -242,12 +242,6 @@ BASE_FEATURE(kOptimizationHintsComponent,
              "OptimizationHintsComponent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new model store that is tied with Chrome installation and shares
-// the models across user profiles.
-BASE_FEATURE(kOptimizationGuideInstallWideModelStore,
-             "OptimizationGuideInstallWideModelStore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -652,16 +646,9 @@ base::TimeDelta PredictionModelFetchInterval() {
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
 }
 
-bool IsPredictionModelNewRegistrationFetchEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kOptimizationGuideInstallWideModelStore, "new_registration_fetch_enabled",
-      true);
-}
-
 base::TimeDelta PredictionModelNewRegistrationFetchDelay() {
   return base::Seconds(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationGuideInstallWideModelStore,
-      "new_registration_fetch_delay_secs", 30));
+      kOptimizationTargetPrediction, "new_registration_fetch_delay_secs", 30));
 }
 
 bool IsModelExecutionWatchdogEnabled() {
@@ -841,10 +828,10 @@ size_t MaxVisitAnnotationCacheSize() {
   return std::max(1, batch_size);
 }
 
-absl::optional<int> OverrideNumThreadsForOptTarget(
+std::optional<int> OverrideNumThreadsForOptTarget(
     proto::OptimizationTarget opt_target) {
   if (!base::FeatureList::IsEnabled(kOverrideNumThreadsForModelExecution)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 0 is an invalid value to pass to TFLite, so make that nullopt. -1 is valid,
@@ -853,7 +840,7 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
       kOverrideNumThreadsForModelExecution,
       proto::OptimizationTarget_Name(opt_target), 0);
   if (num_threads == 0 || num_threads < -1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Cap to the number of CPUs on the device.
@@ -868,10 +855,6 @@ bool ShouldCheckFailedComponentVersionPref() {
   return GetFieldTrialParamByFeatureAsBool(
       kOptimizationHintsComponent, "check_failed_component_version_pref",
       false);
-}
-
-bool IsInstallWideModelStoreEnabled() {
-  return base::FeatureList::IsEnabled(kOptimizationGuideInstallWideModelStore);
 }
 
 bool ShouldPersistSalientImageMetadata(const std::string& locale,

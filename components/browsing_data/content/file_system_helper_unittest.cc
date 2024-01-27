@@ -89,7 +89,7 @@ class FileSystemHelperTest : public testing::Test {
         ->GetFileSystemContext()
         ->OpenFileSystem(
             blink::StorageKey::CreateFirstParty(origin),
-            /*bucket=*/absl::nullopt, type, open_mode,
+            /*bucket=*/std::nullopt, type, open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);

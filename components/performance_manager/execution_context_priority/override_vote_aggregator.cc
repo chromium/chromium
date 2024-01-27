@@ -47,7 +47,7 @@ void OverrideVoteAggregator::OnVoteSubmitted(
 
   // Remember the previous chosen vote before adding the new vote. There could
   // be none if the this the first vote submitted for |execution_context|.
-  absl::optional<Vote> old_chosen_vote;
+  std::optional<Vote> old_chosen_vote;
   if (vote_data.HasChosenVote())
     old_chosen_vote = vote_data.GetChosenVote();
 
@@ -150,11 +150,11 @@ void OverrideVoteAggregator::VoteData::RemoveVote(VoterType voter_type) {
   switch (voter_type) {
     case VoterType::kDefault:
       DCHECK(default_vote_.has_value());
-      default_vote_ = absl::nullopt;
+      default_vote_ = std::nullopt;
       break;
     case VoterType::kOverride:
       DCHECK(override_vote_.has_value());
-      override_vote_ = absl::nullopt;
+      override_vote_ = std::nullopt;
       break;
   }
 }

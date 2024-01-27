@@ -110,7 +110,7 @@ void DownloadUIAdapter::OfflinePageAdded(OfflinePageModel* model,
   OfflineItem offline_item(
       OfflineItemConversions::CreateOfflineItem(added_page));
 
-  NotifyItemUpdated(offline_item, absl::nullopt);
+  NotifyItemUpdated(offline_item, std::nullopt);
 }
 
 // OfflinePageModel::Observer
@@ -162,7 +162,7 @@ void DownloadUIAdapter::OnCompleted(
     // Actual cause could be server or network related, but we need to pick
     // a fail_state.
     item.fail_state = offline_items_collection::FailState::SERVER_FAILED;
-    NotifyItemUpdated(item, absl::nullopt);
+    NotifyItemUpdated(item, std::nullopt);
   }
 }
 
@@ -172,7 +172,7 @@ void DownloadUIAdapter::OnChanged(const SavePageRequest& request) {
     return;
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
-  NotifyItemUpdated(offline_item, absl::nullopt);
+  NotifyItemUpdated(offline_item, std::nullopt);
 }
 
 // RequestCoordinator::Observer
@@ -183,7 +183,7 @@ void DownloadUIAdapter::OnNetworkProgress(const SavePageRequest& request,
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
   offline_item.received_bytes = received_bytes;
-  NotifyItemUpdated(offline_item, absl::nullopt);
+  NotifyItemUpdated(offline_item, std::nullopt);
 }
 
 void DownloadUIAdapter::GetAllItems(
@@ -340,7 +340,7 @@ void DownloadUIAdapter::OnAllRequestsGetForGetItem(
     const ContentId& id,
     OfflineContentProvider::SingleItemCallback callback,
     std::vector<std::unique_ptr<SavePageRequest>> requests) {
-  absl::optional<OfflineItem> offline_item;
+  std::optional<OfflineItem> offline_item;
   for (const auto& request : requests) {
     if (request->client_id().id == id.id)
       offline_item = OfflineItemConversions::CreateOfflineItem(*request);

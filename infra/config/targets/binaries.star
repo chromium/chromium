@@ -1692,7 +1692,7 @@ targets.binaries.script(
 
 targets.binaries.script(
     name = "telemetry_gpu_integration_test_fuchsia",
-    label = "//chrome/test:telemetry_gpu_integration_test_fuchsia",
+    label = "//content/test:telemetry_gpu_integration_test_fuchsia",
     script = "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     args = [
         "../../content/test/gpu/run_gpu_integration_test_fuchsia.py",

@@ -4,6 +4,8 @@
 
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,7 +21,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using policy::EnterpriseManagementAuthority;
 using policy::ScopedManagementServiceOverrideForTesting;
@@ -104,7 +105,7 @@ class UserPermissionServiceImplTest : public testing::Test,
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestManagementService management_service_;
-  absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
+  std::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;
 

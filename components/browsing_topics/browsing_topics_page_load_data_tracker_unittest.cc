@@ -95,7 +95,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
       policy.emplace_back(
           blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
           /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }
@@ -105,7 +105,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
           blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }

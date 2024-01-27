@@ -11,11 +11,4 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/push_notification/model",
-  "+ios/chrome/browser/url_loading/model",
 ]
-
-specific_include_rules = {
-  "commerce_push_notification_client.mm": [
-    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-  ]
-}

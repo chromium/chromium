@@ -37,7 +37,7 @@ void BatchEntityMetadataTask::Execute(
 
 void BatchEntityMetadataTask::OnEntityMetadataRetrieved(
     const std::string& entity_id,
-    const absl::optional<EntityMetadata>& entity_metadata) {
+    const std::optional<EntityMetadata>& entity_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(task_state_, TaskState::kStarted);
 

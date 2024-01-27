@@ -95,7 +95,7 @@ FakeCryptographer::GetCrossUserSharingKeyPair(uint32_t version) const {
   return cross_user_sharing_key_pair_;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 FakeCryptographer::AuthEncryptForCrossUserSharing(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> recipient_public_key) const {
@@ -108,7 +108,7 @@ FakeCryptographer::AuthEncryptForCrossUserSharing(
   return result;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 FakeCryptographer::AuthDecryptForCrossUserSharing(
     base::span<const uint8_t> encrypted_data,
     base::span<const uint8_t> sender_public_key,
@@ -119,7 +119,7 @@ FakeCryptographer::AuthDecryptForCrossUserSharing(
   // public key during decryption.
   if (encrypted_data.size() <
       cross_user_sharing_key_pair_.GetRawPublicKey().size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Verify that the prefix contains an expected public key.
@@ -129,7 +129,7 @@ FakeCryptographer::AuthDecryptForCrossUserSharing(
           encrypted_data.begin(),
           encrypted_data.begin() +
               cross_user_sharing_key_pair_.GetRawPublicKey().size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::vector<uint8_t>(
       encrypted_data.begin() +

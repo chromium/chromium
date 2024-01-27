@@ -4,9 +4,10 @@
 
 #include "components/user_education/common/feature_promo_storage_service.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/time/default_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_education {
 

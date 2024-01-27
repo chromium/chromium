@@ -6,9 +6,9 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
 
 #include <map>
+#include <optional>
 
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -72,8 +72,8 @@ class OverrideVoteAggregator : public VoteObserver {
    private:
     // At least one of these is not null if a vote has been emitted for this
     // execution context.
-    absl::optional<Vote> default_vote_;
-    absl::optional<Vote> override_vote_;
+    std::optional<Vote> default_vote_;
+    std::optional<Vote> override_vote_;
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;

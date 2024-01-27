@@ -27,7 +27,7 @@ class TestPasskeyModel : public PasskeyModel {
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
-  absl::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
       const std::string& rp_id,
       const std::string& credential_id) const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics>

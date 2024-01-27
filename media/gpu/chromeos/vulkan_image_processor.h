@@ -17,6 +17,9 @@
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/overlay_transform.h"
 
 namespace media {
 
@@ -30,12 +33,15 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
   static std::unique_ptr<VulkanImageProcessor> Create();
 
+  // Note: |crop_rect| is actually the crop *in addition* to the |visible_rect|
+  // cropping. It is equivalent to |uv_rect| in an OverlayCandidate.
   void Process(gpu::VulkanImage& in_image,
                const gfx::Size& input_coded_size,
                const gfx::Size& input_visible_size,
                gpu::VulkanImage& out_image,
-               const gfx::Size& output_coded_size,
-               const gfx::Size& output_visible_size,
+               const gfx::Rect& display_rect,
+               const gfx::RectF& crop_rect,
+               gfx::OverlayTransform transform,
                std::vector<VkSemaphore>& begin_semaphores,
                std::vector<VkSemaphore>& end_sempahores);
 

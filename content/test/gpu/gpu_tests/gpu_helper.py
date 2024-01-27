@@ -178,7 +178,7 @@ def GetCommandDecoder(gpu_info: Optional[tgi.GPUInfo]) -> str:
 
 def GetSkiaGraphiteStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
   if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
-      'skia_graphite') == 'enabled':
+      'skia_graphite') == 'enabled_on':
     return 'graphite-enabled'
   return 'graphite-disabled'
 

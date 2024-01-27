@@ -70,6 +70,7 @@ def _ExtractPartition(objcopy, input_elf, output_elf, partition):
 
   with tempfile.TemporaryDirectory() as tempdir:
     temp_elf = os.path.join(tempdir, 'obj_without_id.so')
+    temp_elf2 = os.path.join(tempdir, 'obj_with_id_unaligned.so')
     old_build_id_file = os.path.join(tempdir, 'old_build_id')
     new_build_id_file = os.path.join(tempdir, 'new_build_id')
 
@@ -117,11 +118,19 @@ def _ExtractPartition(objcopy, input_elf, output_elf, partition):
         objcopy,
         '--add-section',
         '{}={}'.format(build_id_section, new_build_id_file),
+        temp_elf,
+        temp_elf2,
+    ])
+    subprocess.check_call([
+        objcopy,
         # Add alloc section flag, or else the section will be removed by
         # objcopy --strip-all when generating unstripped lib file.
         '--set-section-flags',
         '{}={}'.format(build_id_section, 'alloc'),
-        temp_elf,
+        # Set the section alignment to 4 bytes
+        '--set-section-alignment',
+        '{}={}'.format(build_id_section, '4'),
+        temp_elf2,
         output_elf,
     ])
 

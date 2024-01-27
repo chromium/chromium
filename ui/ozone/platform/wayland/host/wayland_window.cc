@@ -826,6 +826,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
+  SetDecorationInsets(&properties.frame_insets_px);
+
   if (!OnInitialize(std::move(properties), &state)) {
     return false;
   }

@@ -341,6 +341,8 @@ class DlpContentManagerReportingBrowserTest
   void TearDownOnMainThread() override {
     DlpContentManagerBrowserTest::TearDownOnMainThread();
     cloned_tab_observer_.reset();
+    test_reporting_.reset();
+    storage_module_.reset();
   }
 
   // Sets up real report queue together with TestStorageModule

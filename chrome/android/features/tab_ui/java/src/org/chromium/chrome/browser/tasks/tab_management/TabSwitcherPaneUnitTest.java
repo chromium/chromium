@@ -45,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
@@ -97,10 +98,14 @@ public class TabSwitcherPaneUnitTest {
     private MockTabModel mTabModel;
     private int mTimesCreated;
 
+    private UserActionTester mActionTester;
+
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mHubContainerView.getContext()).thenReturn(mContext);
+
+        mActionTester = new UserActionTester();
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
@@ -570,6 +575,29 @@ public class TabSwitcherPaneUnitTest {
 
         mOnTabClickedCallbackCaptor.getValue().onResult(tabId);
         verify(mPaneHubController).selectTabAndHideHub(tabId);
+    }
+
+    @Test
+    @SmallTest
+    public void testPriceDropRecord() {
+        mTabModel.addTab(TAB_ID);
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasks();
+
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER, false);
+        assertEquals(1, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
+
+        mTabModel.addTab(TAB_ID + 1);
+        mTabModel.setIndex(1, TabSelectionType.FROM_USER, false);
+        assertEquals(2, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasks();
+
+        mTabModel.addTab(TAB_ID + 2);
+        mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
+        assertEquals(2, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
     }
 
     private void createSelectedTab() {

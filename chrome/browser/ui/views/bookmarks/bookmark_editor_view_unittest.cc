@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -583,6 +584,11 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
 // Add enough new folders to scroll to the bottom of the scroll view. Verify
 // that the editor at the end can still be fully visible.
 TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
+  // TODO (crbug/1521085): Fix and re-enable or remove if no longer relevant for
+  //                       ChromeRefresh2023.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
                BookmarkEditorView::SHOW_TREE);

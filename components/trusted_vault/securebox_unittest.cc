@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
@@ -110,10 +110,10 @@ TEST_F(SecureBoxTest, ShouldEncryptThenDecrypt) {
   std::vector<uint8_t> encrypted = key_pair->public_key().Encrypt(
       kTestSharedSecret, kTestHeader, kTestPayload);
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       key_pair->private_key().Decrypt(kTestSharedSecret, kTestHeader,
                                       encrypted);
-  ASSERT_THAT(decrypted, Ne(absl::nullopt));
+  ASSERT_THAT(decrypted, Ne(std::nullopt));
   EXPECT_THAT(*decrypted, Eq(kTestPayload));
 }
 
@@ -125,10 +125,10 @@ TEST_F(SecureBoxTest, ShouldEncryptThenDecryptWithEmptySharedSecret) {
   std::vector<uint8_t> encrypted = key_pair->public_key().Encrypt(
       /*shared_secret=*/base::span<uint8_t>(), kTestHeader, kTestPayload);
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       key_pair->private_key().Decrypt(/*shared_secret=*/base::span<uint8_t>(),
                                       kTestHeader, encrypted);
-  ASSERT_THAT(decrypted, Ne(absl::nullopt));
+  ASSERT_THAT(decrypted, Ne(std::nullopt));
   EXPECT_THAT(*decrypted, Eq(kTestPayload));
 }
 
@@ -140,10 +140,10 @@ TEST_F(SecureBoxTest, ShouldEncryptThenDecryptWithEmptyHeader) {
   std::vector<uint8_t> encrypted = key_pair->public_key().Encrypt(
       kTestSharedSecret, /*header=*/base::span<uint8_t>(), kTestPayload);
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       key_pair->private_key().Decrypt(
           kTestSharedSecret, /*header=*/base::span<uint8_t>(), encrypted);
-  ASSERT_THAT(decrypted, Ne(absl::nullopt));
+  ASSERT_THAT(decrypted, Ne(std::nullopt));
   EXPECT_THAT(*decrypted, Eq(kTestPayload));
 }
 
@@ -155,10 +155,10 @@ TEST_F(SecureBoxTest, ShouldEncryptThenDecryptWithEmptyPayload) {
   std::vector<uint8_t> encrypted = key_pair->public_key().Encrypt(
       kTestSharedSecret, kTestHeader, /*payload=*/base::span<uint8_t>());
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       key_pair->private_key().Decrypt(kTestSharedSecret, kTestHeader,
                                       encrypted);
-  ASSERT_THAT(decrypted, Ne(absl::nullopt));
+  ASSERT_THAT(decrypted, Ne(std::nullopt));
   EXPECT_THAT(*decrypted, IsEmpty());
 }
 
@@ -238,9 +238,9 @@ TEST_F(SecureBoxTest, ShouldDecryptTestVectors) {
     ASSERT_TRUE(base::HexStringToBytes(test_vector.encrypted_payload,
                                        &encrypted_payload));
 
-    absl::optional<std::vector<uint8_t>> decrypted_payload =
+    std::optional<std::vector<uint8_t>> decrypted_payload =
         private_key->Decrypt(shared_secret, header, encrypted_payload);
-    ASSERT_THAT(decrypted_payload, Ne(absl::nullopt));
+    ASSERT_THAT(decrypted_payload, Ne(std::nullopt));
 
     std::vector<uint8_t> expected_payload;
     ASSERT_TRUE(base::HexStringToBytes(test_vector.payload, &expected_payload));
@@ -252,10 +252,10 @@ TEST_F(SecureBoxTest, ShouldEncryptThenDecryptInSymmetricMode) {
   std::vector<uint8_t> encrypted =
       SecureBoxSymmetricEncrypt(kTestSharedSecret, kTestHeader, kTestPayload);
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       SecureBoxSymmetricDecrypt(kTestSharedSecret, kTestHeader, encrypted);
 
-  ASSERT_THAT(decrypted, Ne(absl::nullopt));
+  ASSERT_THAT(decrypted, Ne(std::nullopt));
   EXPECT_THAT(*decrypted, Eq(kTestPayload));
 }
 
@@ -307,9 +307,9 @@ TEST_F(SecureBoxTest, ShouldDecryptTestVectorsInSymmetricMode) {
     ASSERT_TRUE(base::HexStringToBytes(test_vector.encrypted_payload,
                                        &encrypted_payload));
 
-    absl::optional<std::vector<uint8_t>> decrypted_payload =
+    std::optional<std::vector<uint8_t>> decrypted_payload =
         SecureBoxSymmetricDecrypt(shared_secret, header, encrypted_payload);
-    ASSERT_THAT(decrypted_payload, Ne(absl::nullopt));
+    ASSERT_THAT(decrypted_payload, Ne(std::nullopt));
 
     std::vector<uint8_t> expected_payload;
     ASSERT_TRUE(base::HexStringToBytes(test_vector.payload, &expected_payload));

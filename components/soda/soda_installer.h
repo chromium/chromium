@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   // Returns the error encountered while installing soda for the language code
   // or soda binary.
-  absl::optional<ErrorCode> GetSodaInstallErrorCode(
+  std::optional<ErrorCode> GetSodaInstallErrorCode(
       LanguageCode language_code) const;
 
   // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that

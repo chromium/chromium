@@ -21,6 +21,8 @@ static_library("feature_status_tracker") {
     "fast_pair_support_utils.h",
     "google_api_key_availability_provider.cc",
     "google_api_key_availability_provider.h",
+    "hardware_offloading_supported_provider.cc",
+    "hardware_offloading_supported_provider.h",
     "logged_in_user_enabled_provider.cc",
     "logged_in_user_enabled_provider.h",
     "quick_pair_feature_status_tracker.h",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
     "fast_pair_support_utils_unittest.cc",
+    "hardware_offloading_supported_provider_unittest.cc",
     "logged_in_user_enabled_provider_unittest.cc",
     "screen_state_enabled_provider_unittest.cc",
   ]

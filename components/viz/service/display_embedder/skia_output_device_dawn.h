@@ -57,7 +57,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
                int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
-  void Present(const absl::optional<gfx::Rect>& update_rect,
+  void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   SkSurface* BeginPaint(

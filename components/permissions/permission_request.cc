@@ -204,7 +204,7 @@ IconId PermissionRequest::GetBlockedIconForChip() {
   return permissions::GetBlockedIconId(request_type());
 }
 
-absl::optional<std::u16string> PermissionRequest::GetRequestChipText(
+std::optional<std::u16string> PermissionRequest::GetRequestChipText(
     ChipTextType type) const {
   static base::NoDestructor<std::map<RequestType, std::vector<int>>> kMessageIds(
       {{RequestType::kArSession,
@@ -263,7 +263,7 @@ absl::optional<std::u16string> PermissionRequest::GetRequestChipText(
   if (messages != kMessageIds->end() && messages->second[type] != -1)
     return l10n_util::GetStringUTF16(messages->second[type]);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string PermissionRequest::GetMessageTextFragment() const {

@@ -345,7 +345,7 @@ static absl::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
   }
 
   absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
-      Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(0, kNonceLength),
+      Cryptor::Algorithm::kAes256Gcm, credential_id.first(kNonceLength),
       credential_id.subspan(kNonceLength), MakeAad(version, rp_id));
   if (!plaintext) {
     return absl::nullopt;

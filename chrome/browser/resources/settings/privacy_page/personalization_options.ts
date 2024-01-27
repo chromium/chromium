@@ -10,7 +10,7 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
@@ -27,7 +27,6 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {StatusAction} from '/shared/settings/people_page/sync_browser_proxy.js';
 import type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
@@ -36,6 +35,7 @@ import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {PrivacyPageVisibility} from '../page_visibility.js';

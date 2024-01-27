@@ -2237,13 +2237,8 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   base::ScopedTempDir temp_dir_;
 };
 
-// Flaky, http://crbug.com/1269103
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Save DISABLED_Save
-#else
-#define MAYBE_Save Save
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, MAYBE_Save) {
+// Flaky, https://crbug.com/1269103, https://crbug.com/1520715
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, DISABLED_Save) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -2314,13 +2309,9 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-// Flaky, http://crbug.com/1269103
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
-#else
-#define MAYBE_SaveWithPolicy SaveWithPolicy
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
+// Flaky, https://crbug.com/1269103, https://crbug.com/1520715
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
+                       DISABLED_SaveWithPolicy) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -2342,15 +2333,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   WaitForSavedPdf(save_path);
 }
 
-// Flaky, http://crbug.com/1269103
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SaveWithPolicyUniqueNumberSuffix \
-  DISABLED_SaveWithPolicyUniqueNumberSuffix
-#else
-#define MAYBE_SaveWithPolicyUniqueNumberSuffix SaveWithPolicyUniqueNumberSuffix
-#endif
+// Flaky, https://crbug.com/1269103, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
-                       MAYBE_SaveWithPolicyUniqueNumberSuffix) {
+                       DISABLED_SaveWithPolicyUniqueNumberSuffix) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -2481,14 +2466,9 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
 };
 
 // TODO(crbug.com/1121446): Fix flakiness.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_IndividualShiftRightArrowPresses \
-  DISABLED_IndividualShiftRightArrowPresses
-#else
-#define MAYBE_IndividualShiftRightArrowPresses IndividualShiftRightArrowPresses
-#endif
+// TODO(crbug.com/1520715): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
-                       MAYBE_IndividualShiftRightArrowPresses) {
+                       DISABLED_IndividualShiftRightArrowPresses) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -2547,15 +2527,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard(guest, "HEL");
 }
 
-// Flaky, http://crbug.com/1121446, http://crbug.com/1350332
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_CombinedShiftRightArrowPresses \
-  DISABLED_CombinedShiftRightArrowPresses
-#else
-#define MAYBE_CombinedShiftRightArrowPresses CombinedShiftRightArrowPresses
-#endif
+// Flaky, https://crbug.com/1121446, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
-                       MAYBE_CombinedShiftRightArrowPresses) {
+                       DISABLED_CombinedShiftRightArrowPresses) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();

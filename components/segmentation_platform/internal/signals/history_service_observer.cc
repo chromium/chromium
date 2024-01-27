@@ -95,12 +95,12 @@ void HistoryServiceObserver::DeleteResultsForHistoryBasedSegments() {
   for (const auto segment_id : *history_based_segments_) {
     // For Server models.
     storage_service_->segment_info_database()->SaveSegmentResult(
-        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, absl::nullopt,
+        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, std::nullopt,
         base::DoNothing());
 
     // For Default models.
     storage_service_->segment_info_database()->SaveSegmentResult(
-        segment_id, proto::ModelSource::DEFAULT_MODEL_SOURCE, absl::nullopt,
+        segment_id, proto::ModelSource::DEFAULT_MODEL_SOURCE, std::nullopt,
         base::DoNothing());
   }
 

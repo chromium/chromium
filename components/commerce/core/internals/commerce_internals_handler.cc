@@ -11,7 +11,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -21,18 +20,19 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 
-shopping_list::mojom::BookmarkProductInfoPtr GetBookmarkProductInfo(
+shopping_service::mojom::BookmarkProductInfoPtr GetBookmarkProductInfo(
     const bookmarks::BookmarkNode* bookmark,
     power_bookmarks::PowerBookmarkMeta* meta,
     const std::string& locale_on_startup) {
   const power_bookmarks::ShoppingSpecifics& specifics =
       meta->shopping_specifics();
-  auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
+  auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
   bookmark_info->bookmark_id = bookmark->id();
-  bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+  bookmark_info->info = shopping_service::mojom::ProductInfo::New();
   bookmark_info->info->title = specifics.title();
   bookmark_info->info->product_url = bookmark->url();
   bookmark_info->info->domain = base::UTF16ToUTF8(
@@ -74,7 +74,7 @@ std::vector<commerce::mojom::SubscriptionPtr> GetSubscriptionsMojom(
       std::vector<const bookmarks::BookmarkNode*> bookmarks =
           commerce::GetBookmarksWithClusterId(bookmark_model, cluster_id);
 
-      std::vector<shopping_list::mojom::BookmarkProductInfoPtr> info_list;
+      std::vector<shopping_service::mojom::BookmarkProductInfoPtr> info_list;
       for (auto* bookmark : bookmarks) {
         std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
             power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model, bookmark);
@@ -189,7 +189,7 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
     const GURL& url,
     GetProductInfoForUrlCallback callback) {
   if (!shopping_service_) {
-    std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+    std::move(callback).Run(shopping_service::mojom::ProductInfo::New());
     return;
   }
 
@@ -198,9 +198,10 @@ void CommerceInternalsHandler::GetProductInfoForUrl(
       base::BindOnce(
           [](GetProductInfoForUrlCallback callback,
              base::WeakPtr<ShoppingService> service, const GURL& url,
-             const absl::optional<const ProductInfo>& info) {
+             const std::optional<const ProductInfo>& info) {
             if (!service || !info) {
-              std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+              std::move(callback).Run(
+                  shopping_service::mojom::ProductInfo::New());
               return;
             }
 

@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {
@@ -107,17 +107,17 @@ class AlgorithmImplementation {
   // (crypto.subtle.deriveBits() dispatches to this)
   virtual Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                             const blink::WebCryptoKey& base_key,
-                            absl::optional<unsigned int> length_bits,
+                            std::optional<unsigned int> length_bits,
                             std::vector<uint8_t>* derived_bytes) const;
 
   // This is what is run whenever the spec says:
   //    "Let length be the result of executing the get key length algorithm"
   //
   // In the Web Crypto spec the operation returns either "null" or an
-  // "Integer". In this code "null" is represented with |absl::nullopt|.
+  // "Integer". In this code "null" is represented with |std::nullopt|.
   virtual Status GetKeyLength(
       const blink::WebCryptoAlgorithm& key_length_algorithm,
-      absl::optional<unsigned int>* length_bits) const;
+      std::optional<unsigned int>* length_bits) const;
 
   // This is what is run whenever the spec says:
   //    "Let result be the result of performing the import key operation"

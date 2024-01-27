@@ -121,10 +121,10 @@ class CryptographerImpl : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
-  absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
+  std::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
       base::span<const uint8_t> plaintext,
       base::span<const uint8_t> recipient_public_key) const override;
-  absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
+  std::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
       base::span<const uint8_t> encrypted_data,
       base::span<const uint8_t> sender_public_key,
       const uint32_t recipient_key_version) const override;
@@ -144,7 +144,7 @@ class CryptographerImpl : public Cryptographer {
 
   // The version of the default cross user sharing key to be used for
   // encryption.
-  absl::optional<uint32_t> default_cross_user_sharing_key_version_;
+  std::optional<uint32_t> default_cross_user_sharing_key_version_;
 
   // Cross user sharing keys we know about.
   CrossUserSharingKeys cross_user_sharing_keys_;

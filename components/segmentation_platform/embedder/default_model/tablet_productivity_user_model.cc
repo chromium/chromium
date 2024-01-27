@@ -149,7 +149,7 @@ void TabletProductivityUserModel::ExecuteModelWithInput(
   if (inputs.size() !=
       kTabletProductivityUserUMAFeatures.size() + 3 /*custom_inputs*/) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

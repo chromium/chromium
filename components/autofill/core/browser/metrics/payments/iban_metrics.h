@@ -91,6 +91,26 @@ enum class IbanUploadEnabledStatus {
   kMaxValue = kEnabled,
 };
 
+// Metric to measure if an IBAN for which an upload action was taken (offered,
+// accepted, declined, ignored) is already stored as a local IBAN on the device
+// or if it's a new IBAN.
+enum class UploadIbanOriginMetric {
+  // IBAN upload action happened for a local IBAN already on the device.
+  kLocalIban = 0,
+  // IBAN upload action happened for a new IBAN.
+  kNewIban = 1,
+  kMaxValue = kNewIban,
+};
+
+// Metric to track the metrics for an IBAN upload offer.
+enum class UploadIbanActionMetric {
+  kOffered = 0,
+  kAccepted = 1,
+  kDeclined = 2,
+  kIgnored = 3,
+  kMaxValue = kIgnored,
+};
+
 // Logs various metrics about the local IBANs associated with a profile. This
 // should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.
@@ -106,6 +126,12 @@ void LogStrikesPresentWhenIbanSaved(const int num_strikes, bool is_upload_save);
 // Logs whenever IBAN save is not offered due to max strikes.
 void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
     AutofillMetrics::SaveTypeMetric metric);
+
+// When IBAN upload is offered/accepted/declined/ignored, logs whether the IBAN
+// being offered or accepted is already a local IBAN on the device or not, as
+// well as the user decision on the offer.
+void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
+                         UploadIbanActionMetric action_metric);
 
 // Logs when IBAN save bubble is offered to users.
 void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,

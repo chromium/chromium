@@ -48,7 +48,7 @@ TemplateUrlServiceAndroid::TemplateUrlServiceAndroid(
 
 TemplateUrlServiceAndroid::~TemplateUrlServiceAndroid() {
   if (java_ref_) {
-    Java_TemplateUrlService_clearNativePtr(base::android::AttachCurrentThread(),
+    Java_TemplateUrlService_clearNativePtr(jni_zero::AttachCurrentThread(),
                                            java_ref_);
     java_ref_.Reset();
   }
@@ -56,7 +56,7 @@ TemplateUrlServiceAndroid::~TemplateUrlServiceAndroid() {
 }
 
 ScopedJavaLocalRef<jobject> TemplateUrlServiceAndroid::GetJavaObject() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (!java_ref_) {
     java_ref_.Reset(
         Java_TemplateUrlService_create(env, reinterpret_cast<intptr_t>(this)));
@@ -159,14 +159,14 @@ bool TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle() {
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded() {
   template_url_subscription_ = {};
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (!java_ref_)
     return;
   Java_TemplateUrlService_templateUrlServiceLoaded(env, java_ref_);
 }
 
 void TemplateUrlServiceAndroid::OnTemplateURLServiceChanged() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (!java_ref_)
     return;
   Java_TemplateUrlService_onTemplateURLServiceChanged(env, java_ref_);

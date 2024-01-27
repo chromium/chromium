@@ -7,6 +7,7 @@
 
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_observer.h"
 #include "ios/web/public/web_state_observer.h"
@@ -54,11 +55,11 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
   bool HasWebStateBeenActivated(web::WebState* web_state);
 
   // The controller passed on construction.
-  FullscreenController* controller_ = nullptr;
+  raw_ptr<FullscreenController> controller_ = nullptr;
   // The model passed on construction.
-  FullscreenModel* model_ = nullptr;
+  raw_ptr<FullscreenModel> model_ = nullptr;
   // The WebStateList passed on construction.
-  WebStateList* web_state_list_ = nullptr;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
   // The observer for the active WebState.
   FullscreenWebStateObserver web_state_observer_;
   // The WebStates that have been activated in `web_state_list_`.

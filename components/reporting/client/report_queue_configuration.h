@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_CONFIGURATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/wrapped_rate_limiter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -60,7 +60,7 @@ class ReportQueueConfiguration {
     Builder SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
     Builder SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
     Builder SetDMToken(std::string_view dm_token);
-    Builder SetSourceInfo(absl::optional<SourceInfo> source_info);
+    Builder SetSourceInfo(std::optional<SourceInfo> source_info);
 
     // Finalizes the builder (no modifications are accepted after that) and
     // outputs the final `ReportQueueConfiguration` or status.
@@ -148,7 +148,7 @@ class ReportQueueConfiguration {
 
   int64_t reserved_space() const { return reserved_space_; }
 
-  absl::optional<SourceInfo> source_info() const { return source_info_; }
+  std::optional<SourceInfo> source_info() const { return source_info_; }
 
   Status SetDMToken(std::string_view dm_token);
 
@@ -164,7 +164,7 @@ class ReportQueueConfiguration {
   Status SetReservedSpace(int64_t reserved_space);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
   Status SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
-  Status SetSourceInfo(absl::optional<SourceInfo> source_info);
+  Status SetSourceInfo(std::optional<SourceInfo> source_info);
 
   std::string dm_token_;
   EventType event_type_;
@@ -177,7 +177,7 @@ class ReportQueueConfiguration {
   WrappedRateLimiter::AsyncAcquireCb is_event_allowed_cb_;
 
   int64_t reserved_space_ = 0L;  // By default queues are not opportunistic.
-  absl::optional<SourceInfo> source_info_ = absl::nullopt;
+  std::optional<SourceInfo> source_info_ = std::nullopt;
 };
 
 }  // namespace reporting

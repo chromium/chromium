@@ -90,12 +90,12 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
       codec.Encode(model_, model_->client()->EncodeBookmarkSyncMetadata()));
 
   return base::BindOnce(
-      [](base::Value value) -> absl::optional<std::string> {
+      [](base::Value value) -> std::optional<std::string> {
         // This runs on the background sequence.
         std::string output;
         if (!base::JSONWriter::WriteWithOptions(
                 value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         return output;
       },

@@ -29,6 +29,12 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
   // `g`.
   static GammaCurve MakeConcat(const GammaCurve& f, const GammaCurve& g);
 
+  // Return a gamma curve with the specified exponent.
+  static GammaCurve MakeGamma(float gamma);
+
+  // Return a linear curve that scales each component as specified.
+  static GammaCurve MakeScale(float red, float green, float blue);
+
   // Returns true if this was set to an empty LUT and is therefore the identity
   // function.
   bool IsDefaultIdentity() const { return lut_.empty(); }

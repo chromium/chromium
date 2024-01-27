@@ -42,7 +42,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   const base::Version version = base::Version("0.0.1");
   const std::string expectation = "some list contents";
   base::test::RepeatingTestFuture<base::Version,
-                                  const absl::optional<std::string>&>
+                                  const std::optional<std::string>&>
       future;
   auto policy = MaskedDomainListComponentInstallerPolicy(future.GetCallback());
 
@@ -54,7 +54,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   policy.ComponentReady(version, component_install_dir_.GetPath(),
                         base::Value::Dict());
 
-  std::tuple<base::Version, absl::optional<std::string>> got = future.Take();
+  std::tuple<base::Version, std::optional<std::string>> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
   EXPECT_EQ(std::get<0>(got), version);
   EXPECT_EQ(std::get<1>(got), expectation);
@@ -65,7 +65,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
       network::features::kMaskedDomainList);
 
   base::test::RepeatingTestFuture<base::Version,
-                                  const absl::optional<std::string>&>
+                                  const std::optional<std::string>&>
       future;
   auto policy = MaskedDomainListComponentInstallerPolicy(future.GetCallback());
 
@@ -80,7 +80,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
       list_v1));
   policy.ComponentReady(version1, dir_v1.GetPath(), base::Value::Dict());
 
-  std::tuple<base::Version, absl::optional<std::string>> got = future.Take();
+  std::tuple<base::Version, std::optional<std::string>> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
   EXPECT_EQ(std::get<0>(got), version1);
   EXPECT_EQ(std::get<1>(got), list_v1);
@@ -98,7 +98,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, LoadsNewListWhenUpdated) {
       list_v2));
   policy.ComponentReady(version2, dir_v2.GetPath(), base::Value::Dict());
 
-  std::tuple<base::Version, absl::optional<std::string>> got2 = future.Take();
+  std::tuple<base::Version, std::optional<std::string>> got2 = future.Take();
   EXPECT_TRUE(std::get<0>(got2).IsValid());
   EXPECT_EQ(std::get<0>(got2), version2);
   EXPECT_EQ(std::get<1>(got2), list_v2);

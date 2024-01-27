@@ -416,7 +416,7 @@ struct FillUtilExpirationDateTestCase {
   bool expected_response;
   const char* opt_label = nullptr;
   FieldType server_override = UNKNOWN_TYPE;
-  // If this is absl::nullopt, a test is valid regardless whether the
+  // If this is std::nullopt, a test is valid regardless whether the
   // features::kAutofillEnableExpirationDateImprovements is enabled or not.
   // If it is true, it should only execute if
   // features::kAutofillEnableExpirationDateImprovements is enabled. The inverse

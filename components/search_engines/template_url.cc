@@ -1878,7 +1878,7 @@ GURL TemplateURL::RemoveSideSearchParamFromURL(
   if (!IsSideSearchSupported())
     return side_search_url;
   return net::AppendOrReplaceQueryParameter(side_search_url,
-                                            side_search_param(), absl::nullopt);
+                                            side_search_param(), std::nullopt);
 }
 
 GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,
@@ -1899,7 +1899,7 @@ GURL TemplateURL::RemoveSideImageSearchParamFromURL(
   if (!IsSideImageSearchSupported())
     return image_search_url;
   return net::AppendOrReplaceQueryParameter(
-      image_search_url, side_image_search_param(), absl::nullopt);
+      image_search_url, side_image_search_param(), std::nullopt);
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {

@@ -113,7 +113,8 @@ float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
 //
 // Note, this should NOT be called for `cluster_visits` with NO matching visits.
 void PromoteMatchingVisitsAboveNonMatchingVisits(
-    std::vector<history::ClusterVisit>& cluster_visits) {
+    std::vector<history::ClusterVisit>& cluster_visits,
+    history::Cluster::LabelSource label_source) {
   for (auto& visit : cluster_visits) {
     if (visit.matches_search_query) {
       // Smash all matching scores into the range that's above the fold.
@@ -123,8 +124,14 @@ void PromoteMatchingVisitsAboveNonMatchingVisits(
               (1 - GetConfig().min_score_to_always_show_above_the_fold);
     } else {
       // Smash all non-matching scores into the range that's below the fold.
-      visit.score =
-          visit.score * GetConfig().min_score_to_always_show_above_the_fold;
+      if (label_source == history::Cluster::LabelSource::kUngroupedVisits) {
+        // When dealing with a fake cluster of ungrouped visits,
+        // completely zero out the score of non-matching visits.
+        visit.score = 0;
+      } else {
+        visit.score =
+            visit.score * GetConfig().min_score_to_always_show_above_the_fold;
+      }
     }
   }
 
@@ -220,7 +227,8 @@ void ApplySearchQuery(const std::string& query,
     DCHECK_GE(total_matching_visit_score, 0);
     if (total_matching_visit_score > 0 &&
         GetConfig().rescore_visits_within_clusters_for_query) {
-      PromoteMatchingVisitsAboveNonMatchingVisits(cluster.visits);
+      PromoteMatchingVisitsAboveNonMatchingVisits(cluster.visits,
+                                                  cluster.label_source);
     }
 
     cluster.search_match_score = total_matching_visit_score;

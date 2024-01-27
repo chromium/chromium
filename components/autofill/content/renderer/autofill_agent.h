@@ -189,7 +189,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
-  // Function that should be called whenever the value of |element| changes due
+  // Function that should be called whenever the value of `element` changes due
   // to user input. This is separate from OnTextFieldDidChange() as that
   // function may trigger UI and should only be called when other UI won't be
   // shown.
@@ -319,19 +319,19 @@ class AutofillAgent : public content::RenderFrameObserver,
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);
 
-  // Shows the autofill suggestions for |element|. This call is asynchronous
+  // Shows the autofill suggestions for `element`. This call is asynchronous
   // and may or may not lead to the showing of a suggestion popup (no popup is
   // shown if there are no available suggestions).
   void ShowSuggestions(const blink::WebFormControlElement& element,
                        AutofillSuggestionTriggerSource trigger_source);
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
-  // |element|.
+  // `element`.
   void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
                                 AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the selected value of the the field identified by |field_id| to
-  // |suggested_value|.
+  // Sets the selected value of the the field identified by `field_id` to
+  // `suggested_value`.
   void DoAcceptDataListSuggestion(FieldRendererId field_id,
                                   const std::u16string& suggested_value);
 

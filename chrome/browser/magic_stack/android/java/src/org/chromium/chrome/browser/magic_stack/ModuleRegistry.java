@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A singleton class which is responsible for registering module builders {@link
@@ -102,5 +103,10 @@ public class ModuleRegistry {
     /** Destroys the registry. */
     public void destroy() {
         mModuleBuildersMap.clear();
+    }
+
+    /** Returns the set which contains all the module types that are registered. */
+    public @ModuleType Set<Integer> getRegisteredModuleTypes() {
+        return mModuleBuildersMap.keySet();
     }
 }

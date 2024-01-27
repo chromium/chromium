@@ -246,7 +246,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   EXPECT_FALSE(recent_content.GetRecentURLFromClipboard().has_value());
   EXPECT_FALSE(recent_content.GetRecentTextFromClipboard().has_value());
   recent_content.GetRecentImageFromClipboard(
-      base::BindLambdaForTesting([&bitmap](absl::optional<gfx::Image> image) {
+      base::BindLambdaForTesting([&bitmap](std::optional<gfx::Image> image) {
         EXPECT_TRUE(gfx::BitmapsAreEqual(image->AsBitmap(), bitmap));
       }));
 }

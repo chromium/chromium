@@ -6,12 +6,12 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -53,7 +53,7 @@ class IconLoader {
   // Looks up the IconKey for the given ID (For apps, the ID is the app id. For
   // shortcut, the ID is the shortcut id.) Return a fake icon key as the default
   // implementation to simplify the sub class implementation in test code.
-  virtual absl::optional<IconKey> GetIconKey(const std::string& id);
+  virtual std::optional<IconKey> GetIconKey(const std::string& id);
 
   // This can return nullptr, meaning that the IconLoader does not track when
   // the icon is no longer actively used by the caller. `callback` may be

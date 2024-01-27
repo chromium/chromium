@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeAccountCapabilitiesFetcher;
 class AccountCapabilities;
@@ -38,7 +38,7 @@ class FakeAccountCapabilitiesFetcherFactory
 
   void CompleteAccountCapabilitiesFetch(
       const CoreAccountId& account_id,
-      const absl::optional<AccountCapabilities> account_capabilities);
+      const std::optional<AccountCapabilities> account_capabilities);
 
  private:
   void OnFetcherDestroyed(const CoreAccountId& account_id);

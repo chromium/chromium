@@ -36,9 +36,9 @@ PermissionPromptAndroid::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kKeepPromptAlive;
 }
 
-absl::optional<gfx::Rect> PermissionPromptAndroid::GetViewBoundsInScreen()
+std::optional<gfx::Rect> PermissionPromptAndroid::GetViewBoundsInScreen()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PermissionPromptAndroid::ShouldFinalizeRequestAfterDecided() const {
@@ -73,7 +73,7 @@ bool PermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
   return delegate_->ShouldCurrentRequestUseQuietUI();
 }
 
-absl::optional<PermissionUiSelector::QuietUiReason>
+std::optional<PermissionUiSelector::QuietUiReason>
 PermissionPromptAndroid::ReasonForUsingQuietUi() const {
   return delegate_->ReasonForUsingQuietUi();
 }

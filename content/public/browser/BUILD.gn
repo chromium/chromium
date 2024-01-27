@@ -231,6 +231,8 @@ source_set("browser_sources") {
     "javascript_dialog_manager.h",
     "k_anonymity_service_delegate.h",
     "keyboard_event_processing_result.h",
+    "last_clipboard_writer_info.cc",
+    "last_clipboard_writer_info.h",
     "legacy_tech_cookie_issue_details.cc",
     "legacy_tech_cookie_issue_details.h",
     "login_delegate.h",

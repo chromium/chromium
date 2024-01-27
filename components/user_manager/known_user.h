@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_MANAGER_KNOWN_USER_H_
 #define COMPONENTS_USER_MANAGER_KNOWN_USER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/version.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/user_manager_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 enum class AccountType;
@@ -54,7 +54,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // clears the |path| in properties.
   void SetPath(const AccountId& account_id,
                const std::string& path,
-               absl::optional<base::Value> opt_value);
+               std::optional<base::Value> opt_value);
 
   // Returns `nullptr` if value is not found or not a string.
   const std::string* FindStringPath(const AccountId& account_id,
@@ -71,8 +71,8 @@ class USER_MANAGER_EXPORT KnownUser final {
                      const std::string& path,
                      const std::string& in_value);
 
-  absl::optional<bool> FindBoolPath(const AccountId& account_id,
-                                    base::StringPiece path) const;
+  std::optional<bool> FindBoolPath(const AccountId& account_id,
+                                   base::StringPiece path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -85,10 +85,10 @@ class USER_MANAGER_EXPORT KnownUser final {
                       const std::string& path,
                       const bool in_value);
 
-  // Return absl::nullopt if the value is not found or doesn't have the int
+  // Return std::nullopt if the value is not found or doesn't have the int
   // type.
-  absl::optional<int> FindIntPath(const AccountId& account_id,
-                                  base::StringPiece path) const;
+  std::optional<int> FindIntPath(const AccountId& account_id,
+                                 base::StringPiece path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -181,8 +181,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   void UpdateReauthReason(const AccountId& account_id, const int reauth_reason);
 
   // Returns the reason why the user with |account_id| has to go through the
-  // re-auth flow. Returns absl::nullopt if value is not set.
-  absl::optional<int> FindReauthReason(const AccountId& account_id) const;
+  // re-auth flow. Returns std::nullopt if value is not set.
+  std::optional<int> FindReauthReason(const AccountId& account_id) const;
 
   // Setter and getter for the information about challenge-response keys that
   // can be used by this user to authenticate. The getter returns a null value
@@ -198,9 +198,9 @@ class USER_MANAGER_EXPORT KnownUser final {
   base::Time GetLastOnlineSignin(const AccountId& account_id);
 
   void SetOfflineSigninLimit(const AccountId& account_id,
-                             absl::optional<base::TimeDelta> time_limit);
+                             std::optional<base::TimeDelta> time_limit);
 
-  absl::optional<base::TimeDelta> GetOfflineSigninLimit(
+  std::optional<base::TimeDelta> GetOfflineSigninLimit(
       const AccountId& account_id);
 
   void SetIsEnterpriseManaged(const AccountId& account_id,
@@ -249,8 +249,8 @@ class USER_MANAGER_EXPORT KnownUser final {
   // the onboarding flow.
   void SetOnboardingCompletedVersion(
       const AccountId& account_id,
-      const absl::optional<base::Version> version);
-  absl::optional<base::Version> GetOnboardingCompletedVersion(
+      const std::optional<base::Version> version);
+  std::optional<base::Version> GetOnboardingCompletedVersion(
       const AccountId& account_id);
   void RemoveOnboardingCompletedVersionForTests(const AccountId& account_id);
 

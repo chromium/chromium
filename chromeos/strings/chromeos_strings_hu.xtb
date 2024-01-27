@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Belső hiba</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">szorzás</translation>
 <translation id="1145018782460575098">A külső eszközök firmware-frissítésére szolgáló ablak megnyílt. <ph name="NUM_UPDATES" /> frissítés érhető el</translation>
 <translation id="1145516343487477149">Súgócikkek és a Chromebookkal kapcsolatos gyakori kérdésekre adott válaszok.</translation>
 <translation id="1154390310959620237">Csak öt billentyűparancsot szabhat személyre. Új billentyűparancs hozzáadásához töröljön egy meglévőt</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Igazítás a beolvasási területhez</translation>
 <translation id="1367951781824006909">Válasszon egy fájlt</translation>
+<translation id="1371650399987522809">Visszajelzés a Google AI által működtetett háttérképről</translation>
 <translation id="1387854245479784695">Ez az összes mag összesítése</translation>
 <translation id="1394661041439318933">Az eszköz tokjának akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Az átjáró pingelhető</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
 <translation id="1565038567006703504">Nem sikerült frissíteni a következőt: <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">osztás</translation>
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="1578784163189013834">A képernyővédő hátterének kiválasztása</translation>
 <translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1611649489706141841">következő</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
+<translation id="1615576200479539465">Képek generálása…</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1626590945318984973">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot a funkció- és <ph name="META_KEY" /> billentyűk használata nélkül.</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="2880569433548999039">Szálló felhők képernyővédő</translation>
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
+<translation id="2938573842839598578">Hozzávetőleges eredményért <ph name="OPERATOR_TEXT" /> a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Az eszköz tesztelése nem sikerült. Nyissa fel újra a fedelet a teszteléshez.</translation>
 <translation id="2941112035454246133">Alacsony</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
+<translation id="3547264467365135390">Képlet</translation>
 <translation id="3557205324756024651">Helyi azonosító (nem kötelező)</translation>
 <translation id="3565064564551103223">Engedélyezett IP-címek</translation>
 <translation id="3569407787324516067">Képernyővédő</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7184043045742675738">Kattintson bármelyik billentyűre a gomb személyre szabásához. Az egér vagy a nyílbillentyűk segítségével áthelyezheti a billentyűt.</translation>
+<translation id="7206979415662233817">Általános Szerződési Feltételek</translation>
 <translation id="7212547870105584639">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7212734716605298123">Firmware-frissítések külső eszközökhöz</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">billentyűzet színe</translation>
 <translation id="7317831949569936035">Iskolai regisztráció</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Önnek legalább 18 évesnek kell lennie, és el kell fogadnia, hogy az AI-háttérképek használatára a <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Általános Szerződési Feltételek<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> és a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generatív AI-ra vonatkozó Kiegészítő Általános Szerződési Feltételek<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> vonatkoznak.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Az AI segítségével csak személyes, nem kereskedelmi célra hozhat létre háttérképeket. Amikor segítséget kap a háttérképpel kapcsolatban, a rendszer elküldi a szöveget a Google AI szervereinek a háttérképre vonatkozó javaslatok létrehozásához, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />A Google adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; A Keresés és a szóköz billentyűkombináció lenyomásával megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />. keresési találat: <ph name="SEARCH_RESULT_TEXT" />. Az Enter billentyűt lenyomva navigálhat a billentyűparancshoz.</translation>

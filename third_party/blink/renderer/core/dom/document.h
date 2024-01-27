@@ -1473,6 +1473,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueMediaQueryChangeListeners(
       HeapVector<Member<MediaQueryListListener>>&);
   void EnqueueVisualViewportScrollEvent();
+  void EnqueueVisualViewportScrollEndEvent();
   void EnqueueVisualViewportResizeEvent();
   void EnqueueSnapChangedEvent(Node* target, HeapVector<Member<Node>>& targets);
   void EnqueueSnapChangingEvent(Node* target,
@@ -1627,7 +1628,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsStopped() const {
     return lifecycle_.GetState() == DocumentLifecycle::kStopped;
   }
-  bool InPostLifecycleSteps() const;
+  bool InvalidationDisallowed() const;
 
   enum HttpRefreshType { kHttpRefreshFromHeader, kHttpRefreshFromMetaTag };
   void MaybeHandleHttpRefresh(const String&, HttpRefreshType);

@@ -302,7 +302,7 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
 
-  // Checks that "Site Security | Not secure” is displayed.
+  // Check that "Site Security | Not secure” is displayed.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_PAGE_INFO_SITE_SECURITY))]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -326,7 +326,7 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
 
-  // Checks that “Connection | Not secure” is displayed.
+  // Check that “Connection | Not secure” is displayed.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_PAGE_INFO_CONNECTION))]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -350,6 +350,34 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kPageInfoSecurityViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that we don't crash when showing the page info twice (prevent
+// regression from (crbug.com/1486309).
+- (void)testShowingPageInfoTwice {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that the page info view has appeared.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPageInfoViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPageInfoViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the page info view has disappeared.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPageInfoViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Reopen the page.
+  [ChromeEarlGreyUI openPageInfo];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPageInfoViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

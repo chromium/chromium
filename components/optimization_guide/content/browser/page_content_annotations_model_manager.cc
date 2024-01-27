@@ -86,7 +86,7 @@ void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
   page_visibility_model_handler_ = std::make_unique<PageVisibilityModelHandler>(
       optimization_guide_model_provider,
       base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      absl::nullopt);
+      std::nullopt);
 }
 
 void PageContentAnnotationsModelManager::SetUpTextEmbeddingModel(
@@ -102,7 +102,7 @@ void PageContentAnnotationsModelManager::SetUpTextEmbeddingModel(
   text_embedding_model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
       optimization_guide_model_provider,
       base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      absl::nullopt);
+      std::nullopt);
 }
 
 void PageContentAnnotationsModelManager::GetMetadataForEntityId(
@@ -114,7 +114,7 @@ void PageContentAnnotationsModelManager::GetMetadataForEntityId(
     return;
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
@@ -156,7 +156,7 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
   std::move(callback).Run(false);
 }
 
-absl::optional<ModelInfo>
+std::optional<ModelInfo>
 PageContentAnnotationsModelManager::GetModelInfoForType(
     AnnotationType type) const {
   if (type == AnnotationType::kContentVisibility &&
@@ -169,7 +169,7 @@ PageContentAnnotationsModelManager::GetModelInfoForType(
   if (type == AnnotationType::kTextEmbedding && text_embedding_model_handler_) {
     return text_embedding_model_handler_->GetModelInfo();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PageContentAnnotationsModelManager::Annotate(

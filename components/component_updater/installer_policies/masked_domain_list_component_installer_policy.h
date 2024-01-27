@@ -32,7 +32,7 @@ class MaskedDomainListComponentInstallerPolicy
  public:
   using ListReadyRepeatingCallback =
       base::RepeatingCallback<void(base::Version,
-                                   const absl::optional<std::string>&)>;
+                                   const std::optional<std::string>&)>;
 
   // |on_list_ready| will be called on the UI thread when the list is ready. It
   // is exposed here for testing.

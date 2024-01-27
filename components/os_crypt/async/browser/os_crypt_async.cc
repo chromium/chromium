@@ -77,7 +77,7 @@ void OSCryptAsync::CallbackHelper(InitCallback callback) const {
 
 void OSCryptAsync::HandleKey(ProviderIterator current,
                              const std::string& tag,
-                             absl::optional<Encryptor::Key> key) {
+                             std::optional<Encryptor::Key> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (key && !tag.empty()) {

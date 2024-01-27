@@ -128,12 +128,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Callers should init an SkAutoCanvasRestore before calling this function.
   // |scissor_rect| and |mask_filter_info| should be in device space,
   // i.e. same space that |cdt| will transform subsequent draws into.
-  void PrepareCanvas(
-      const absl::optional<gfx::Rect>& scissor_rect,
-      const absl::optional<gfx::MaskFilterInfo>& mask_filter_info,
-      const gfx::Transform* cdt);
+  void PrepareCanvas(const std::optional<gfx::Rect>& scissor_rect,
+                     const std::optional<gfx::MaskFilterInfo>& mask_filter_info,
+                     const gfx::Transform* cdt);
   void PrepareGradient(
-      const absl::optional<gfx::MaskFilterInfo>& mask_filter_info);
+      const std::optional<gfx::MaskFilterInfo>& mask_filter_info);
 
   // Further modify the canvas as needed to apply the effects represented by
   // |rpdq_params|. Call Prepare[Paint|Color]OrCanvasForRPDQ when possible,
@@ -156,7 +155,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Skia in a consistent manner.
   DrawQuadParams CalculateDrawQuadParams(
       const gfx::AxisTransform2d& target_to_device,
-      const absl::optional<gfx::Rect>& scissor_rect,
+      const std::optional<gfx::Rect>& scissor_rect,
       const DrawQuad* quad,
       const gfx::QuadF* draw_region) const;
 
@@ -210,7 +209,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                        DrawQuadParams* params);
 
   void DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
-                         const absl::optional<SkColor4f>& clear_color,
+                         const std::optional<SkColor4f>& clear_color,
                          const TileDrawQuad* quad,
                          const DrawQuadParams* params);
 
@@ -268,8 +267,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // quads. The default values perform no adjustment.
   sk_sp<SkColorFilter> GetColorSpaceConversionFilter(
       const gfx::ColorSpace& src,
-      absl::optional<uint32_t> src_bit_depth,
-      absl::optional<gfx::HDRMetadata> src_hdr_metadata,
+      std::optional<uint32_t> src_bit_depth,
+      std::optional<gfx::HDRMetadata> src_hdr_metadata,
       const gfx::ColorSpace& dst,
       bool is_video_frame,
       float resource_offset = 0.0f,
@@ -368,15 +367,15 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // The scissor rect for the current draw. In the same coordinate space as and
   // contained by |current_render_pass_update_rect_|.
-  absl::optional<gfx::Rect> scissor_rect_;
+  std::optional<gfx::Rect> scissor_rect_;
 
   gfx::Rect swap_buffer_rect_;
 
   // State common to all quads in a batch. Draws that require an SkPaint not
   // captured by this state cannot be batched.
   struct BatchedQuadState {
-    absl::optional<gfx::Rect> scissor_rect;
-    absl::optional<gfx::MaskFilterInfo> mask_filter_info;
+    std::optional<gfx::Rect> scissor_rect;
+    std::optional<gfx::MaskFilterInfo> mask_filter_info;
     SkBlendMode blend_mode;
     SkSamplingOptions sampling;
     SkCanvas::SrcRectConstraint constraint;
@@ -400,7 +399,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // the compositor thread. And the sync token will be released when the DDL
   // for the current frame is replayed on the GPU thread.
   // It is only used with DDL.
-  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+  std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
 
   struct OverlayLock {
@@ -450,11 +449,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
     // Either resource_lock is set for non render pass overlays (i.e. videos),
     // or render_pass_lock is set for render pass overlays.
-    absl::optional<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
+    std::optional<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
         resource_lock;
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-    absl::optional<gpu::Mailbox> render_pass_lock;
+    std::optional<gpu::Mailbox> render_pass_lock;
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   };
 

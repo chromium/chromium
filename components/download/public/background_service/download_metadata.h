@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_METADATA_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_METADATA_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -31,7 +31,7 @@ struct CompletionInfo {
 #if BUILDFLAG(USE_BLINK)
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
-  absl::optional<storage::BlobDataHandle> blob_handle;
+  std::optional<storage::BlobDataHandle> blob_handle;
 #endif
 
   // Download file size in bytes.
@@ -81,7 +81,7 @@ struct DownloadMetaData {
 
   // Info about successfully completed download, or null for in-progress
   // download. Failed download will not be persisted and exposed as meta data.
-  absl::optional<CompletionInfo> completion_info;
+  std::optional<CompletionInfo> completion_info;
 
   DownloadMetaData();
   ~DownloadMetaData();

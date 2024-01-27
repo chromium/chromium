@@ -7,8 +7,8 @@
 #include "base/memory/singleton.h"
 #include "ui/events/devices/ui_events_devices_jni_headers/InputDeviceObserver_jni.h"
 
-using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using jni_zero::AttachCurrentThread;
+using jni_zero::JavaParamRef;
 
 namespace ui {
 

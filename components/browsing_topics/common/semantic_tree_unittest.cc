@@ -4,12 +4,13 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
@@ -125,21 +126,21 @@ TEST_F(SemanticTreeUnittest, GetAncestorTopicsMaximumTopic) {
 }
 
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdValidTopic) {
-  absl::optional<int> message_id =
+  std::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_EQ(message_id.value(),
             IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_100);
 }
 
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdAddedTopic) {
-  absl::optional<int> message_id =
+  std::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(363));
   EXPECT_EQ(message_id.value(),
             IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_363);
 }
 
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdMaximumTopic) {
-  absl::optional<int> message_id =
+  std::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(
           Topic(SemanticTree::kNumTopics));
   EXPECT_EQ(message_id.value(),
@@ -150,13 +151,13 @@ TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTaxonomy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "0"}});
-  absl::optional<int> message_id =
+  std::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_FALSE(message_id.has_value());
 }
 
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTopic) {
-  absl::optional<int> message_id =
+  std::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(9999));
   EXPECT_FALSE(message_id.has_value());
 }

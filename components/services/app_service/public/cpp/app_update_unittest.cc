@@ -59,7 +59,7 @@ class AppUpdateTest : public testing::Test {
   std::vector<std::string> expect_additional_search_terms_;
   bool expect_additional_search_terms_changed_;
 
-  absl::optional<IconKey> expect_icon_key_;
+  std::optional<IconKey> expect_icon_key_;
   bool expect_icon_key_changed_;
 
   base::Time expect_last_launch_time_;
@@ -80,69 +80,69 @@ class AppUpdateTest : public testing::Test {
   std::vector<std::string> expect_policy_ids_;
   bool expect_policy_ids_changed_;
 
-  absl::optional<bool> expect_is_platform_app_;
+  std::optional<bool> expect_is_platform_app_;
   bool expect_is_platform_app_changed_;
 
-  absl::optional<bool> expect_recommendable_;
+  std::optional<bool> expect_recommendable_;
   bool expect_recommendable_changed_;
 
-  absl::optional<bool> expect_searchable_;
+  std::optional<bool> expect_searchable_;
   bool expect_searchable_changed_;
 
-  absl::optional<bool> expect_show_in_launcher_;
+  std::optional<bool> expect_show_in_launcher_;
   bool expect_show_in_launcher_changed_;
 
-  absl::optional<bool> expect_show_in_shelf_;
+  std::optional<bool> expect_show_in_shelf_;
   bool expect_show_in_shelf_changed_;
 
-  absl::optional<bool> expect_show_in_search_;
+  std::optional<bool> expect_show_in_search_;
   bool expect_show_in_search_changed_;
 
-  absl::optional<bool> expect_show_in_management_;
+  std::optional<bool> expect_show_in_management_;
   bool expect_show_in_management_changed_;
 
-  absl::optional<bool> expect_handles_intents_;
+  std::optional<bool> expect_handles_intents_;
   bool expect_handles_intents_changed_;
 
-  absl::optional<bool> expect_allow_uninstall_;
+  std::optional<bool> expect_allow_uninstall_;
   bool expect_allow_uninstall_changed_;
 
-  absl::optional<bool> expect_has_badge_;
+  std::optional<bool> expect_has_badge_;
   bool expect_has_badge_changed_;
 
-  absl::optional<bool> expect_paused_;
+  std::optional<bool> expect_paused_;
   bool expect_paused_changed_;
 
   IntentFilters expect_intent_filters_;
   bool expect_intent_filters_changed_;
 
-  absl::optional<bool> expect_resize_locked_;
+  std::optional<bool> expect_resize_locked_;
   bool expect_resize_locked_changed_;
 
   WindowMode expect_window_mode_;
   bool expect_window_mode_changed_;
 
-  absl::optional<RunOnOsLogin> expect_run_on_os_login_;
+  std::optional<RunOnOsLogin> expect_run_on_os_login_;
   bool expect_run_on_os_login_changed_;
 
-  absl::optional<bool> expect_allow_close_;
+  std::optional<bool> expect_allow_close_;
   bool expect_allow_close_changed_;
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
-  absl::optional<uint64_t> expect_app_size_in_bytes_;
+  std::optional<uint64_t> expect_app_size_in_bytes_;
   bool expect_app_size_in_bytes_changed_;
 
-  absl::optional<uint64_t> expect_data_size_in_bytes_;
+  std::optional<uint64_t> expect_data_size_in_bytes_;
   bool expect_data_size_in_bytes_changed_;
 
   std::vector<std::string> expect_supported_locales_;
   bool expect_supported_locales_changed_;
 
-  absl::optional<std::string> expect_selected_locale_;
+  std::optional<std::string> expect_selected_locale_;
   bool expect_selected_locale_changed_;
 
-  absl::optional<base::Value::Dict> expect_extra_;
+  std::optional<base::Value::Dict> expect_extra_;
   bool expect_extra_changed_;
 
   void ExpectNoChange() {
@@ -305,32 +305,32 @@ class AppUpdateTest : public testing::Test {
     expect_description_ = "";
     expect_version_ = "";
     expect_additional_search_terms_.clear();
-    expect_icon_key_ = absl::nullopt;
+    expect_icon_key_ = std::nullopt;
     expect_last_launch_time_ = base::Time();
     expect_install_time_ = base::Time();
     expect_permissions_.clear();
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
     expect_policy_ids_ = {};
-    expect_is_platform_app_ = absl::nullopt;
-    expect_recommendable_ = absl::nullopt;
-    expect_searchable_ = absl::nullopt;
-    expect_show_in_launcher_ = absl::nullopt;
-    expect_show_in_shelf_ = absl::nullopt;
-    expect_show_in_search_ = absl::nullopt;
-    expect_show_in_management_ = absl::nullopt;
-    expect_handles_intents_ = absl::nullopt;
-    expect_has_badge_ = absl::nullopt;
-    expect_paused_ = absl::nullopt;
+    expect_is_platform_app_ = std::nullopt;
+    expect_recommendable_ = std::nullopt;
+    expect_searchable_ = std::nullopt;
+    expect_show_in_launcher_ = std::nullopt;
+    expect_show_in_shelf_ = std::nullopt;
+    expect_show_in_search_ = std::nullopt;
+    expect_show_in_management_ = std::nullopt;
+    expect_handles_intents_ = std::nullopt;
+    expect_has_badge_ = std::nullopt;
+    expect_paused_ = std::nullopt;
     expect_intent_filters_.clear();
-    expect_resize_locked_ = absl::nullopt;
+    expect_resize_locked_ = std::nullopt;
     expect_window_mode_ = WindowMode::kUnknown;
-    expect_run_on_os_login_ = absl::nullopt;
-    expect_allow_close_ = absl::nullopt;
-    expect_app_size_in_bytes_ = absl::nullopt;
-    expect_data_size_in_bytes_ = absl::nullopt;
+    expect_run_on_os_login_ = std::nullopt;
+    expect_allow_close_ = std::nullopt;
+    expect_app_size_in_bytes_ = std::nullopt;
+    expect_data_size_in_bytes_ = std::nullopt;
     expect_supported_locales_.clear();
-    expect_selected_locale_ = absl::nullopt;
+    expect_selected_locale_ = std::nullopt;
     ExpectNoChange();
 
     if (!state && delta) {
@@ -362,7 +362,7 @@ class AppUpdateTest : public testing::Test {
       expect_changed_ = true;
       CheckExpects(u);
 
-      delta->name = absl::nullopt;
+      delta->name = std::nullopt;
       expect_name_ = state ? test_name_0 : "";
       expect_name_changed_ = false;
       CheckExpects(u);

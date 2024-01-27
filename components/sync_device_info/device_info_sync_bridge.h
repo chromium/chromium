@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
@@ -71,10 +71,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  absl::optional<ModelError> MergeFullSyncData(
+  std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  absl::optional<ModelError> ApplyIncrementalSyncChanges(
+  std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -121,7 +121,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // Parses the content of |record_list| into |*all_data|. The output
   // parameter is first for binding purposes.
-  static absl::optional<ModelError> ParseSpecificsOnBackendSequence(
+  static std::optional<ModelError> ParseSpecificsOnBackendSequence(
       ClientIdToDeviceInfo* all_data,
       std::unique_ptr<ModelTypeStore::RecordList> record_list);
 
@@ -142,16 +142,16 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void NotifyObservers();
 
   // Methods used as callbacks given to DataTypeStore.
-  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<ModelTypeStore> store);
   void OnLocalDeviceNameInfoRetrieved(
       LocalDeviceNameInfo local_device_name_info);
   void OnReadAllData(std::unique_ptr<ClientIdToDeviceInfo> all_data,
-                     const absl::optional<syncer::ModelError>& error);
+                     const std::optional<syncer::ModelError>& error);
   void OnSyncInvalidationsInitialized();
-  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
+  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<MetadataBatch> metadata_batch);
-  void OnCommit(const absl::optional<syncer::ModelError>& error);
+  void OnCommit(const std::optional<syncer::ModelError>& error);
 
   // Performs reconciliation between the locally provided device info and the
   // stored device info data. If the sets of data differ, then we consider this
@@ -184,7 +184,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   LocalDeviceNameInfo local_device_name_info_;
 
-  absl::optional<SyncMode> sync_mode_;
+  std::optional<SyncMode> sync_mode_;
 
   // Used to restrict reuploads of local device info on incoming tombstones.
   // This is necessary to prevent uncontrolled commits based on incoming

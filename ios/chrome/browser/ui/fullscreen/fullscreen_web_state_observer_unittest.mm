@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_observer.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
@@ -48,7 +49,7 @@ class FullscreenWebStateObserverTest : public PlatformTest {
   TestFullscreenController controller_;
   TestFullscreenMediator mediator_;
   web::FakeWebState web_state_;
-  web::FakeNavigationManager* navigation_manager_;
+  raw_ptr<web::FakeNavigationManager> navigation_manager_;
   FullscreenWebStateObserver observer_;
 };
 

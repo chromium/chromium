@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
+import type {ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

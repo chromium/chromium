@@ -198,15 +198,15 @@ class ResourceLoadingCancellingThrottle
     resource->is_complete = true;
     resource->is_primary_frame_resource = true;
     resources.push_back(std::move(resource));
-    auto timing = mojom::PageLoadTimingPtr(absl::in_place);
+    auto timing = mojom::PageLoadTimingPtr(std::in_place);
     InitPageLoadTimingForTest(timing.get());
     observer->OnTimingUpdated(
         navigation_handle()->GetRenderFrameHost(), std::move(timing),
-        mojom::FrameMetadataPtr(absl::in_place),
+        mojom::FrameMetadataPtr(std::in_place),
         std::vector<blink::UseCounterFeature>(), resources,
-        mojom::FrameRenderDataUpdatePtr(absl::in_place),
-        mojom::CpuTimingPtr(absl::in_place),
-        mojom::InputTimingPtr(absl::in_place), absl::nullopt,
+        mojom::FrameRenderDataUpdatePtr(std::in_place),
+        mojom::CpuTimingPtr(std::in_place),
+        mojom::InputTimingPtr(std::in_place), std::nullopt,
         mojom::SoftNavigationMetrics::New());
   }
 };
@@ -575,8 +575,8 @@ class AdsPageLoadMetricsObserverTest
   // of the first call.
   void SimulateFirstEligibleToPaintOrFirstContentfulPaint(
       RenderFrameHost* frame,
-      absl::optional<base::TimeDelta> first_eligible_to_paint,
-      absl::optional<base::TimeDelta> first_contentful_paint) {
+      std::optional<base::TimeDelta> first_eligible_to_paint,
+      std::optional<base::TimeDelta> first_contentful_paint) {
     InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::Now();
     timing_.parse_timing->parse_start = kParseStartTime;
@@ -590,7 +590,7 @@ class AdsPageLoadMetricsObserverTest
 
   void SimulateFirstContentfulPaint(
       RenderFrameHost* frame,
-      absl::optional<base::TimeDelta> first_contentful_paint) {
+      std::optional<base::TimeDelta> first_contentful_paint) {
     SimulateFirstEligibleToPaintOrFirstContentfulPaint(
         frame, first_contentful_paint /* first_eligible_to_paint */,
         first_contentful_paint /* first_contentful_paint */);
@@ -724,10 +724,10 @@ class AdsPageLoadMetricsObserverTest
             frames[i], eligible_time, fcp_time);
       } else if (!is_throttled) {
         SimulateFirstEligibleToPaintOrFirstContentfulPaint(
-            frames[i], eligible_time, absl::nullopt);
+            frames[i], eligible_time, std::nullopt);
       } else {
         SimulateFirstEligibleToPaintOrFirstContentfulPaint(
-            frames[i], absl::nullopt, absl::nullopt);
+            frames[i], std::nullopt, std::nullopt);
       }
     }
 
@@ -777,7 +777,7 @@ class AdsPageLoadMetricsObserverTest
   // relevant histogram, ensuring it's empty if there is no task_time, or it
   // has the correct task_time for the tasks performed otherwise.
   void CheckTotalUsageHistogram(std::string prefix,
-                                absl::optional<int> task_time,
+                                std::optional<int> task_time,
                                 std::string suffix = "") {
     suffix = suffix.empty() ? "" : "." + suffix;
     if (task_time.has_value()) {
@@ -792,9 +792,9 @@ class AdsPageLoadMetricsObserverTest
 
   // A shorcut that given pre- and post-activation task time (if they exist),
   // will check the three relevant TotalUsage histograms.
-  void CheckActivatedTotalUsageHistograms(absl::optional<int> pre_task_time,
-                                          absl::optional<int> post_task_time) {
-    absl::optional<int> total_task_time;
+  void CheckActivatedTotalUsageHistograms(std::optional<int> pre_task_time,
+                                          std::optional<int> post_task_time) {
+    std::optional<int> total_task_time;
     if (pre_task_time.has_value() || post_task_time.has_value())
       total_task_time = pre_task_time.value_or(0) + post_task_time.value_or(0);
 
@@ -1860,7 +1860,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
   // Check the cpu histograms.
   CheckTotalUsageHistogram("FullPage", 500 + 500 + 1000 + 500);
   CheckTotalUsageHistogram("NonAdFrames.Aggregate", 500 + 500);
-  CheckActivatedTotalUsageHistograms(absl::nullopt, absl::nullopt);
+  CheckActivatedTotalUsageHistograms(std::nullopt, std::nullopt);
   CheckTotalUsageHistogram("AdFrames.PerFrame", 500 + 1000, "Unactivated");
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("Cpu.AdFrames.Aggregate.TotalUsage2"), 500 + 1000, 1);
@@ -1909,7 +1909,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
   // Check the cpu histograms.
   CheckTotalUsageHistogram("FullPage", 500 + 500 + 1000 + 500);
   CheckTotalUsageHistogram("NonAdFrames.Aggregate", 500 + 500);
-  CheckTotalUsageHistogram("AdFrames.PerFrame", absl::nullopt, "Unactivated");
+  CheckTotalUsageHistogram("AdFrames.PerFrame", std::nullopt, "Unactivated");
   CheckActivatedTotalUsageHistograms(500 + 500, 500);
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("Cpu.AdFrames.Aggregate.TotalUsage2"), 1000 + 500, 1);

@@ -7,13 +7,13 @@
 
 // Utility functions for App Service intent handling.
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -161,12 +161,12 @@ SharedText ExtractSharedText(const std::string& share_text);
 // The underlying strings must be kept alive while the AuthorityView is around.
 struct AuthorityView {
   const std::string_view host;
-  const absl::optional<std::string_view> port;
+  const std::optional<std::string_view> port;
 
   // Stringifies the effective port of `url` if there is one. Not all URL
   // schemes have ports.
-  static absl::optional<std::string> PortToString(const GURL& url);
-  static absl::optional<std::string> PortToString(const url::Origin& url);
+  static std::optional<std::string> PortToString(const GURL& url);
+  static std::optional<std::string> PortToString(const url::Origin& url);
 
   // Decodes strings of the form:
   // "www.example.com:1234" into {.host="www.example.com", .port="1234"}

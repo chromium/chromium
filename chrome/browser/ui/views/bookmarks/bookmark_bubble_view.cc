@@ -169,11 +169,6 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
 bool ShouldShowShoppingCollectionFootnote(Profile* profile,
                                           bookmarks::BookmarkModel* model,
                                           const bookmarks::BookmarkNode* node) {
-  // Skip if not in the experiment.
-  if (!base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
-    return false;
-  }
-
   if (!commerce::IsProductBookmark(model, node)) {
     return false;
   }

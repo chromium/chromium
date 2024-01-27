@@ -32,7 +32,7 @@ UnifiedConsentService::SyncState UnifiedConsentService::GetSyncState(
     return SyncState::kSignedInWithoutHistory;
   }
 
-  absl::optional<syncer::PassphraseType> passphrase_type =
+  std::optional<syncer::PassphraseType> passphrase_type =
       sync_service->GetUserSettings()->GetPassphraseType();
 
   if (!passphrase_type.has_value()) {

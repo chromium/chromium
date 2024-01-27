@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   };
 
   explicit MediaItemUIListView(
-      const absl::optional<SeparatorStyle>& separator_style,
+      const std::optional<SeparatorStyle>& separator_style,
       bool should_clip_height);
   MediaItemUIListView();
   MediaItemUIListView(const MediaItemUIListView&) = delete;
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
  private:
   std::map<const std::string, MediaItemUIView*> items_;
 
-  absl::optional<SeparatorStyle> separator_style_;
+  std::optional<SeparatorStyle> separator_style_;
 
   base::WeakPtrFactory<MediaItemUIListView> weak_factory_{this};
 };

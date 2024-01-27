@@ -28,7 +28,7 @@ namespace {
 bool HasSystemFeatureMidi() {
   // Check if the MIDI service actually runs on the system.
   return Java_MidiManagerAndroid_hasSystemFeatureMidi(
-      base::android::AttachCurrentThread());
+      jni_zero::AttachCurrentThread());
 }
 
 }  // namespace
@@ -49,7 +49,7 @@ MidiManagerAndroid::~MidiManagerAndroid() {
     return;
 
   // Finalization steps should be implemented after the UnbindInstance() call.
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_MidiManagerAndroid_stop(env, raw_manager_);
 }
 
@@ -57,7 +57,7 @@ void MidiManagerAndroid::StartInitialization() {
   if (!service()->task_service()->BindInstance())
     return CompleteInitialization(Result::INITIALIZATION_ERROR);
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   uintptr_t pointer = reinterpret_cast<uintptr_t>(this);
   raw_manager_.Reset(Java_MidiManagerAndroid_create(env, pointer));

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class WebStateList;
@@ -94,7 +95,7 @@ class SessionRestorationWebStateListObserver final
   // saved to disk. May invoke the callback passed to the constructor
   void MarkDirty();
 
-  WebStateList* const web_state_list_;
+  const raw_ptr<WebStateList> web_state_list_;
   WebStateListDirtyCallback callback_;
 
   bool is_web_state_list_dirty_ = false;

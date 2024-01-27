@@ -85,7 +85,7 @@ class KeyValueDataTest : public ::testing::Test {
  public:
   KeyValueDataTest()
       : manager_(base::MakeRefCounted<FakeTableManager>()),
-        data_(manager_, &table_, absl::nullopt, base::TimeDelta()) {
+        data_(manager_, &table_, std::nullopt, base::TimeDelta()) {
     // In these tests, we're using the current thread as the DB sequence.
     data_.InitializeOnDBSequence();
   }
@@ -189,7 +189,7 @@ TEST(KeyValueDataTestSize, PrunesOverlargeTable) {
   // Initialization: write a table of size 2 to |manager|'s backend.
   {
     KeyValueData<TestProto, TestProtoCompare> data(
-        manager, &table, /*max_num_entries=*/absl::nullopt,
+        manager, &table, /*max_num_entries=*/std::nullopt,
         /*flush_delay=*/base::TimeDelta());
     // In these tests, we're using the current thread as the DB sequence.
     data.InitializeOnDBSequence();
@@ -219,7 +219,7 @@ TEST(KeyValueDataTestSize, PrunesOverlargeTable) {
 
   {
     KeyValueData<TestProto, TestProtoCompare> data(
-        manager, &table, /*max_num_entries=*/absl::nullopt,
+        manager, &table, /*max_num_entries=*/std::nullopt,
         /*flush_delay=*/base::TimeDelta());
     // In these tests, we're using the current thread as the DB sequence.
     data.InitializeOnDBSequence();

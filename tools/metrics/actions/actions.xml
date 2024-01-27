@@ -41378,7 +41378,7 @@ should be able to be added at any place in this file.
   <suffix name="RequestDesktopSiteExceptionsGeneric"
       label="For the RequestDesktopSiteExceptionsGeneric feature."/>
   <suffix name="RequestDesktopSiteOptIn"
-      label="For the RequestDesktopSiteOptIn feature."/>
+      label="For the RequestDesktopSiteOptIn feature. (obsolete)"/>
   <suffix name="RequestDesktopSiteWindowSetting"
       label="For the RequestDesktopSiteWindowSetting feature."/>
   <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>

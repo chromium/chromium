@@ -5,6 +5,7 @@
 #include "components/reporting/metrics/periodic_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -169,7 +169,7 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
-  sampler_->SetMetricData(absl::nullopt);
+  sampler_->SetMetricData(std::nullopt);
   histogram_tester_.ExpectTotalCount(
       PeriodicCollector::kNoMetricDataMetricsName, /*expected_count=*/0);
 }
@@ -178,7 +178,7 @@ TEST_F(PeriodicCollectorTest, NoMetricData) {
   settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
-  sampler_->SetMetricData(absl::nullopt);
+  sampler_->SetMetricData(std::nullopt);
   PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
                               settings_.get(), kEnableSettingPath,
                               /*setting_enabled_default_value=*/false,

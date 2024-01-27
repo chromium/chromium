@@ -333,12 +333,12 @@ void WebUIInfoSingleton::ClearURTLookupPings() {
   std::map<int, RTLookupResponse>().swap(urt_lookup_responses_);
 }
 
-absl::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
+std::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
     V5::SearchHashesRequest* inner_request,
     std::string relay_url_spec,
     std::string ohttp_key) {
   if (!HasListener()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   HPRTLookupRequest request = {.inner_request = *inner_request,
                                .relay_url_spec = relay_url_spec,
@@ -971,7 +971,7 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("url", cdr.url());
   if (cdr.digests().has_sha256()) {
     const std::string& sha256 = cdr.digests().sha256();
-    dict.Set("digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
+    dict.Set("digests.sha256", base::HexEncode(sha256));
   }
   if (cdr.has_download_type())
     dict.Set("download_type", cdr.download_type());
@@ -998,8 +998,7 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
         dict_archived_binary.Set("is_encrypted", true);
       if (archived_binary.digests().has_sha256()) {
         const std::string& sha256 = archived_binary.digests().sha256();
-        dict_archived_binary.Set(
-            "digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
+        dict_archived_binary.Set("digests.sha256", base::HexEncode(sha256));
       }
       archived_binaries.Append(std::move(dict_archived_binary));
     }

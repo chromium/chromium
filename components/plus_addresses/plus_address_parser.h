@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PARSER_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PARSER_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
 
@@ -27,7 +28,7 @@ class PlusAddressParser {
   //       }
   //   }
   //  This method returns nullopt otherwise or if `response` is an error.
-  static absl::optional<PlusProfile> ParsePlusProfileFromV1Create(
+  static std::optional<PlusProfile> ParsePlusProfileFromV1Create(
       const data_decoder::DataDecoder::ValueOrError response);
 
   //   If `response` is present, it should fit this schema (in TS notation):
@@ -45,7 +46,7 @@ class PlusAddressParser {
   //
   // Note: `plusProfiles` may have 0 or many profiles. The "plusProfiles" key
   // must always be present though.
-  static absl::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
+  static std::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
       const data_decoder::DataDecoder::ValueOrError response);
 
  private:
@@ -58,7 +59,7 @@ class PlusAddressParser {
   //   }
   // }
   // Returns nullopt if none of the values are parsed.
-  static absl::optional<PlusProfile> ParsePlusProfileFromV1Dict(
+  static std::optional<PlusProfile> ParsePlusProfileFromV1Dict(
       const base::Value::Dict* dict);
 
   // Creates a list of PlusProfiles by parsing each dict-value in `list` that

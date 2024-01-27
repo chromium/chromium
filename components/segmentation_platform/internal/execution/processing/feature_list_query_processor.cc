@@ -185,7 +185,7 @@ void FeatureListQueryProcessor::CreateProcessors(
 
 void FeatureListQueryProcessor::Process(
     FeatureProcessorState& feature_processor_state) {
-  absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+  std::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
       next_processor = feature_processor_state.PopNextProcessor();
   if (next_processor.has_value()) {
     // Process input feature processors.

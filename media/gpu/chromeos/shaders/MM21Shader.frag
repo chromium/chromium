@@ -4,8 +4,9 @@
 precision mediump float;
 precision mediump int;
 
-layout( push_constant ) uniform constants {
-  uvec2 codedDims;
+layout( push_constant ) uniform fragmentConstants {
+  // Takes into account offset from vertex shader push constants.
+  layout(offset = 32) uvec2 codedDims;
   uvec2 visibleDims;
 } pushConstants;
 

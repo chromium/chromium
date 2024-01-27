@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
 #include <cstddef>
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -27,7 +28,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -98,7 +98,7 @@ class ResponseValueBuilder {
  public:
   static base::Value::Dict CreateResponse(
       const base::Value::Dict& sequence_information,
-      absl::optional<base::Value> upload_failure) {
+      std::optional<base::Value> upload_failure) {
     base::Value::Dict response;
 
     response.Set(reporting::json_keys::kLastSucceedUploadedRecord,
@@ -183,7 +183,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   using MockCompleteCb = MockFunction<void(DeviceManagementService::Job* upload,
                                            DeviceManagementStatus code,
                                            int response_code,
-                                           absl::optional<base::Value::Dict>)>;
+                                           std::optional<base::Value::Dict>)>;
   struct TestUpload {
     std::unique_ptr<EncryptedReportingJobConfiguration> configuration;
     std::unique_ptr<StrictMock<MockCompleteCb>> completion_cb;
@@ -206,7 +206,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     test_upload.response = ResponseValueBuilder::CreateResponse(
         *record_value.GetDict().FindDict(
             reporting::json_keys::kSequenceInformation),
-        absl::nullopt);
+        std::nullopt);
     test_upload.completion_cb = std::make_unique<StrictMock<MockCompleteCb>>();
     test_upload.configuration =
         std::make_unique<EncryptedReportingJobConfiguration>(
@@ -287,7 +287,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
-    absl::optional<base::Value> payload_result =
+    std::optional<base::Value> payload_result =
         base::JSONReader::Read(configuration->GetPayload());
 
     EXPECT_TRUE(payload_result.has_value());
@@ -745,7 +745,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
   StrictMock<MockCompleteCb> completion_cb;
   DeviceManagementService::Job job;
   EXPECT_CALL(completion_cb, Call(&job, DM_STATUS_REQUEST_FAILED, _,
-                                  testing::Eq(absl::nullopt)))
+                                  testing::Eq(std::nullopt)))
       .Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
@@ -945,7 +945,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
       shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
       kServerUrl, std::move(request), &client_, base::DoNothing());
 
-  absl::optional<base::Value> payload =
+  std::optional<base::Value> payload =
       base::JSONReader::Read(configuration.GetPayload());
 
   ASSERT_TRUE(payload);

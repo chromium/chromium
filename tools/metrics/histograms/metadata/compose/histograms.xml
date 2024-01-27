@@ -22,15 +22,25 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ComposeEvalLocation">
+  <variant name="" summary="Recorded for all evaluation locations."/>
+  <variant name="OnDevice."
+      summary="Recorded only when the compose response was evaluated on the
+               device."/>
+  <variant name="Server."
+      summary="Recorded only when the compose response was evaluated on the
+               server."/>
+</variants>
+
 <histogram name="Compose.ContextMenu.CTR" enum="ComposeContextMenuCtrEvent"
     expires_after="2024-06-02">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Histogram for calculating the click-through rate (CTR) of the Compose
-    context menu item. Logged each time the menu item is displayed and when
-    Compose is opened from the context menu. CTR is calculated through
-    `opened`/`displayed`.
+    context menu item. Logged each time the context menu item is displayed and
+    when it's clicked by the user. CTR is calculated through
+    `clicked/displayed`.
   </summary>
 </histogram>
 
@@ -142,41 +152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Request.Status" enum="ComposeResponseStatus"
-    expires_after="2024-06-02">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Histogram for recording the Compose server request status. Logged each time
-    a Compose request receives a response.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Session.CloseReason"
-    enum="ComposeSessionCloseReasonType" expires_after="2024-11-01">
-  <owner>petewil@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    When a session ends, record how we exited the session, whether by accepting
-    the input, canceling with the close button, or losing focus and not going
-    back to the session.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Session.ComposeCount.{FinalStatus}" units="count"
-    expires_after="2024-06-09">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Count of the number of Compose requests in a session where {FinalStatus}.
-    Recorded once per session when it is closed or destroyed.
-  </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
-</histogram>
-
 <histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"
     expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
@@ -282,33 +257,106 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compose.Session.UndoCount.{FinalStatus}" units="count"
-    expires_after="2024-06-09">
+<histogram name="Compose.{ComposeEvalLocation}Request.Status"
+    enum="ComposeResponseStatus" expires_after="2024-06-02">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for recording the Compose server request status. Logged each time
+    a Compose request receives a response. {ComposeEvalLocation}.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Response.Duration.Error"
+    units="ms" expires_after="2024-06-02">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Count of the number of times undo is done in a session where {FinalStatus}.
+    Time in milliseconds for an invalid response from the Compose service.
+    Logged each time a response with status not equal to OK is received.
+    {ComposeEvalLocation}.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Response.Duration.Ok" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for a valid response from the Compose service. Logged
+    each time a response with status OK is received. {ComposeEvalLocation}.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Session.CloseReason"
+    enum="ComposeSessionCloseReasonType" expires_after="2024-11-01">
+  <owner>petewil@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    When a session ends, record how we exited the session, whether by accepting
+    the input, canceling with the close button, or losing focus and not going
+    back to the session. {ComposeEvalLocation}, if a mix of Server and OnDevice
+    requests were used for this session, neither Server or OnDevice variants are
+    recorded.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram
+    name="Compose.{ComposeEvalLocation}Session.ComposeCount.{FinalStatus}"
+    units="count" expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of Compose requests in a session where {FinalStatus}.
     Recorded once per session when it is closed or destroyed.
+    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
+    for this session, neither Server or OnDevice variants are recorded.
   </summary>
   <token key="FinalStatus">
     <variant name="Accepted" summary="the Compose response was inserted"/>
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
 
-<histogram name="Compose.Session.UpdateInputCount.{FinalStatus}" units="count"
-    expires_after="2024-03-31">
+<histogram
+    name="Compose.{ComposeEvalLocation}Session.SubmitEditCount.{FinalStatus}"
+    units="count" expires_after="2024-03-31">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Count of the number of Compose requests resulting from submitting an input
     edit in a session where {FinalStatus}. Recorded once per session when it is
-    closed or destroyed.
+    closed or destroyed. {ComposeEvalLocation}, if a mix of Server and OnDevice
+    requests were used for this session, neither Server or OnDevice variants are
+    recorded.
   </summary>
   <token key="FinalStatus">
     <variant name="Accepted" summary="the Compose response was inserted"/>
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Session.UndoCount.{FinalStatus}"
+    units="count" expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times undo is done in a session where {FinalStatus}.
+    Recorded once per session when it is closed or destroyed.
+    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
+    for this session, neither Server or OnDevice variants are recorded.
+  </summary>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
+  </token>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
 
 </histograms>

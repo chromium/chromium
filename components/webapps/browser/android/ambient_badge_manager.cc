@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/ambient_badge_manager.h"
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -25,7 +26,6 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
 
@@ -162,7 +162,7 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
     return false;
   }
 
-  absl::optional<base::Time> last_could_show_time =
+  std::optional<base::Time> last_could_show_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents_.get(), validated_url_, app_identifier_,
           AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE);

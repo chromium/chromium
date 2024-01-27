@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -120,8 +121,10 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 
 }  // namespace
 
-SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs)
-    : profile_prefs_(profile_prefs) {}
+SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
+                                                     int variations_country_id)
+    : profile_prefs_(profile_prefs),
+      variations_country_id_(variations_country_id) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
@@ -332,9 +335,8 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 
   // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
-  absl::optional<base::Value::Dict> reprompt_params =
-      base::JSONReader::ReadDict(
-          switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+  std::optional<base::Value::Dict> reprompt_params = base::JSONReader::ReadDict(
+      switches::kSearchEngineChoiceTriggerRepromptParams.Get());
   if (!reprompt_params) {
     // No valid reprompt parameters.
     base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
@@ -390,7 +392,11 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
 }
 
 int SearchEngineChoiceService::GetCountryIdInternal() {
-#if BUILDFLAG(IS_ANDROID)
+  // `country_codes::kCountryIDAtInstall` may not be set yet.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // On Android, ChromeOS and Linux, `country_codes::kCountryIDAtInstall` is
+  // computed asynchronously using platform-specific signals, and may not be
+  // available yet.
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
   }
@@ -398,9 +404,13 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
   if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
     return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
   }
-
-  // Usage of `WeakPtr` is crucial here, as `SearchEngineChoiceService` is not
-  // guaranteed to be alive when the response from Java arrives.
+  // If `country_codes::kCountryIDAtInstall` is not available, attempt to
+  // compute it at startup. On success, it is saved to prefs and never changes
+  // later. Until then, fall back to `country_codes::GetCurrentCountryID()`.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android get it from Play API in Java.
+  // Usage of `WeakPtr` is crucial here, as `SearchEngineChoiceService` is
+  // not guaranteed to be alive when the response from Java arrives.
   auto heap_callback = std::make_unique<NativeCallbackType>(base::BindOnce(
       &SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi,
       weak_ptr_factory_.GetWeakPtr()));
@@ -409,13 +419,25 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
   Java_SearchEngineChoiceService_requestCountryFromPlayApi(
       base::android::AttachCurrentThread(),
       reinterpret_cast<intptr_t>(heap_callback.release()));
-  // Java call above might save the preference, so we need to re-check.
+#else  // BUILDFLAG(IS_ANDROID)
+  // On ChromeOS and Linux, get it from `VariationsService`, by polling at every
+  // startup until it is found.
+  if (variations_country_id_ != country_codes::kCountryIDUnknown) {
+    profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall,
+                               variations_country_id_);
+  }
+#endif
+
+  // The preference may have been updated, so we need to re-check.
   if (!profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    // Couldn't get the value from the Play API, fallback to locale.
+    // Couldn't get the value from the asynchronous API, fallback to locale.
     return country_codes::GetCurrentCountryID();
   }
   return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+
 #else
+  // On other platforms, `country_codes::kCountryIDAtInstall` is computed
+  // synchronously inside `country_codes::GetCountryIDFromPrefs()`.
   return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
 #endif
 }

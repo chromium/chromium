@@ -353,6 +353,8 @@ class StyleBuilderConverter {
 
   static AtomicString ConvertViewTransitionName(StyleResolverState&,
                                                 const CSSValue&);
+  static Vector<AtomicString> ConvertViewTransitionClass(StyleResolverState&,
+                                                         const CSSValue&);
 
   // Take a list value for a specified color-scheme, extract flags for known
   // color-schemes and the 'only' modifier, and push the list items into a

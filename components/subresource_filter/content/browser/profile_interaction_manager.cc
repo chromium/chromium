@@ -77,10 +77,8 @@ void ProfileInteractionManager::OnAdsViolationTriggered(
   // TODO(https://crbug.com/1131971): Add support for enabling ads interventions
   // separately for different ads violations.
   const GURL& url = rfh->GetLastCommittedURL();
-  absl::optional<AdsInterventionManager::LastAdsIntervention>
-      last_intervention =
-          profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
-              url);
+  std::optional<AdsInterventionManager::LastAdsIntervention> last_intervention =
+      profile_context_->ads_intervention_manager()->GetLastAdsIntervention(url);
   // TODO(crbug.com/1131971): If a host triggers multiple times on a single
   // navigate and the durations don't match, we'll use the last duration rather
   // than the longest. The metadata should probably store the activation with

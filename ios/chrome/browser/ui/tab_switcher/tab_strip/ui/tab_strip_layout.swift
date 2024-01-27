@@ -257,17 +257,18 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]?
   {
     guard
-      var computedAttributes = super.layoutAttributesForElements(in: rect)
+      let collectionView = collectionView
     else { return nil }
 
-    computedAttributes = computedAttributes.compactMap { layoutAttribute in
-      layoutAttributesForItem(at: layoutAttribute.indexPath)
-    }
-
-    // Explicitly update the layout of the selected item.
-    guard let selectedIndexPath = selectedIndexPath else { return computedAttributes }
-    if let attr = layoutAttributesForItem(at: selectedIndexPath) {
-      computedAttributes.append(attr)
+    /// To ensure the proper positioning of the selected cell and the
+    /// disappearing cells, compute the `attribute` of each cells.
+    var computedAttributes: [UICollectionViewLayoutAttributes] = []
+    for section in 0..<collectionView.numberOfSections {
+      for item in 0..<collectionView.numberOfItems(inSection: section) {
+        if let attribute = layoutAttributesForItem(at: IndexPath(item: item, section: section)) {
+          computedAttributes.append(attribute)
+        }
+      }
     }
 
     return computedAttributes

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
@@ -23,7 +23,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -47,7 +46,7 @@ class PredictionModelFetcherTest : public testing::Test {
 
   ~PredictionModelFetcherTest() override {}
 
-  void OnModelsFetched(absl::optional<std::unique_ptr<proto::GetModelsResponse>>
+  void OnModelsFetched(std::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response) {
     if (get_models_response)
       models_fetched_ = true;

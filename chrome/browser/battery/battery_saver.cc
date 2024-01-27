@@ -35,7 +35,7 @@ bool IsBatterySaverEnabled() {
     return g_override_battery_saver_mode_for_testing.value();
   }
 #if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return battery::android::Java_BatterySaverOSSetting_isBatterySaverEnabled(
       env);
 #else

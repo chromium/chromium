@@ -49,7 +49,7 @@ void SafeBrowsingLookupMechanismRunner::OnCompleteCheckResult(
 
 void SafeBrowsingLookupMechanismRunner::OnTimeout() {
   OnCheckComplete();
-  std::move(complete_check_callback_).Run(/*timed_out=*/true, absl::nullopt);
+  std::move(complete_check_callback_).Run(/*timed_out=*/true, std::nullopt);
   // NOTE: Invoking the callback results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
 }

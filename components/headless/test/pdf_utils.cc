@@ -4,11 +4,12 @@
 
 #include "components/headless/test/pdf_utils.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "components/headless/test/bitmap_utils.h"
 #include "pdf/pdf.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -28,7 +29,7 @@ bool PDFPageBitmap::Render(const std::string& pdf_data, int page_index) {
 }
 
 bool PDFPageBitmap::Render(base::span<const uint8_t> pdf_data, int page_index) {
-  absl::optional<gfx::SizeF> page_size_in_points =
+  std::optional<gfx::SizeF> page_size_in_points =
       chrome_pdf::GetPDFPageSizeByIndex(pdf_data, page_index);
   if (!page_size_in_points) {
     return false;

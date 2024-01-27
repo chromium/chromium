@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -77,8 +78,8 @@ class TranslateOverlayTabHelper
                             translate::TranslateInfoBarDelegate::Observer>
         translate_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
-    TranslateOverlayTabHelper* tab_helper_;
-    infobars::InfoBar* translate_infobar_ = nil;
+    raw_ptr<TranslateOverlayTabHelper> tab_helper_;
+    raw_ptr<infobars::InfoBar> translate_infobar_ = nil;
   };
 
   // Observes a WebState's InfoBarManager for Translate Infobars.
@@ -98,7 +99,7 @@ class TranslateOverlayTabHelper
                             infobars::InfoBarManager::Observer>
         infobar_manager_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
-    TranslateOverlayTabHelper* tab_helper_;
+    raw_ptr<TranslateOverlayTabHelper> tab_helper_;
   };
 
   // Listens for a WebStateDestroyed callback to null out any WebState-scoped
@@ -117,7 +118,7 @@ class TranslateOverlayTabHelper
     base::ScopedObservation<web::WebState, web::WebStateObserver>
         web_state_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
-    TranslateOverlayTabHelper* tab_helper_;
+    raw_ptr<TranslateOverlayTabHelper> tab_helper_;
   };
 
   // Inserts the placeholder after the initial banner if one is in the queue.
@@ -136,9 +137,9 @@ class TranslateOverlayTabHelper
   WebStateDestroyedObserver web_state_observer_;
 
   // Banner queue for the TabHelper's WebState;
-  OverlayRequestQueue* banner_queue_ = nullptr;
+  raw_ptr<OverlayRequestQueue> banner_queue_ = nullptr;
   // Request inserter for the TabHelper's WebState;
-  InfobarOverlayRequestInserter* inserter_ = nullptr;
+  raw_ptr<InfobarOverlayRequestInserter> inserter_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_TRANSLATE_OVERLAY_TAB_HELPER_H_

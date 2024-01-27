@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace apps {
@@ -95,7 +96,7 @@ struct COMPONENT_EXPORT(APP_TYPES) WindowInfo {
   int32_t window_id = -1;
   int32_t state = 0;
   int64_t display_id = -1;
-  absl::optional<gfx::Rect> bounds;
+  std::optional<gfx::Rect> bounds;
 };
 
 using WindowInfoPtr = std::unique_ptr<WindowInfo>;

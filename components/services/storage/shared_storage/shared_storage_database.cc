@@ -521,7 +521,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
   select_statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   bool has_more_entries = true;
-  absl::optional<std::u16string> saved_first_key_for_next_batch;
+  std::optional<std::u16string> saved_first_key_for_next_batch;
 
   while (has_more_entries) {
     has_more_entries = false;
@@ -634,8 +634,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
   select_statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   bool has_more_entries = true;
-  absl::optional<std::u16string> saved_first_key_for_next_batch;
-  absl::optional<std::u16string> saved_first_value_for_next_batch;
+  std::optional<std::u16string> saved_first_key_for_next_batch;
+  std::optional<std::u16string> saved_first_value_for_next_batch;
 
   while (has_more_entries) {
     has_more_entries = false;

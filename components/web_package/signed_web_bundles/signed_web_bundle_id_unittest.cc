@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 #include <array>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -45,7 +45,7 @@ class SignedWebBundleIdValidTest
     : public ::testing::TestWithParam<
           std::tuple<std::string,
                      SignedWebBundleId::Type,
-                     absl::optional<Ed25519PublicKey>>> {
+                     std::optional<Ed25519PublicKey>>> {
  public:
   SignedWebBundleIdValidTest()
       : raw_id_(std::get<0>(GetParam())),
@@ -55,7 +55,7 @@ class SignedWebBundleIdValidTest
  protected:
   std::string raw_id_;
   SignedWebBundleId::Type type_;
-  absl::optional<Ed25519PublicKey> public_key_;
+  std::optional<Ed25519PublicKey> public_key_;
 };
 
 TEST_P(SignedWebBundleIdValidTest, ParseValidIDs) {
@@ -71,7 +71,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Development-only key suffix
         std::make_tuple(kDevelopmentSignedWebBundleId,
                         SignedWebBundleId::Type::kDevelopment,
-                        absl::nullopt),
+                        std::nullopt),
         // Ed25519 key suffix
         std::make_tuple(
             kEd25519SignedWebBundleId,

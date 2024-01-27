@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/notreached.h"
@@ -15,7 +16,6 @@
 #include "components/segmentation_platform/internal/database/signal_sample_view.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::processing {
 namespace {
@@ -152,7 +152,7 @@ std::vector<float> BucketedSumAggregation(
 
   std::vector<float> tensor_data;
   for (auto& bucket : bucketized_samples) {
-    SignalSampleView iter(bucket, absl::nullopt);
+    SignalSampleView iter(bucket, std::nullopt);
     tensor_data.emplace_back(static_cast<float>(SumValues(signal_type, iter)));
   }
 
@@ -170,7 +170,7 @@ std::vector<float> BucketedSumBooleanAggregation(
 
   std::vector<float> tensor_data;
   for (auto& bucket : bucketized_samples) {
-    SignalSampleView iter(bucket, absl::nullopt);
+    SignalSampleView iter(bucket, std::nullopt);
     tensor_data.emplace_back(
         static_cast<float>(SumValues(signal_type, iter) > 0 ? 1 : 0));
   }
@@ -189,7 +189,7 @@ std::vector<float> BucketedSumBooleanTrueCountAggregation(
 
   int64_t true_count = 0;
   for (auto& bucket : bucketized_samples) {
-    SignalSampleView iter(bucket, absl::nullopt);
+    SignalSampleView iter(bucket, std::nullopt);
     if (SumValues(signal_type, iter) > 0) {
       true_count = base::ClampAdd(true_count, 1);
     }
@@ -210,7 +210,7 @@ std::vector<float> BucketedCumulativeSumAggregation(
   int64_t cumulative_sum = 0;
   std::vector<float> tensor_data;
   for (auto& bucket : bucketized_samples) {
-    SignalSampleView iter(bucket, absl::nullopt);
+    SignalSampleView iter(bucket, std::nullopt);
     cumulative_sum =
         base::ClampAdd(cumulative_sum, SumValues(signal_type, iter));
     tensor_data.emplace_back(static_cast<float>(cumulative_sum));
@@ -225,7 +225,7 @@ FeatureAggregatorImpl::FeatureAggregatorImpl() = default;
 
 FeatureAggregatorImpl::~FeatureAggregatorImpl() = default;
 
-absl::optional<std::vector<float>> FeatureAggregatorImpl::Process(
+std::optional<std::vector<float>> FeatureAggregatorImpl::Process(
     proto::SignalType signal_type,
     uint64_t name_hash,
     proto::Aggregation aggregation,
@@ -278,7 +278,7 @@ absl::optional<std::vector<float>> FeatureAggregatorImpl::Process(
       auto it = samples.Last();
       if (it == samples.end()) {
         // If empty, then latest data cannot be found.
-        return absl::nullopt;
+        return std::nullopt;
       }
       return std::vector<float>({static_cast<float>((*it).value)});
   }

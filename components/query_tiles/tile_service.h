@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_QUERY_TILES_TILE_SERVICE_H_
 #define COMPONENTS_QUERY_TILES_TILE_SERVICE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/query_tiles/logger.h"
 #include "components/query_tiles/tile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Image;
@@ -23,7 +23,7 @@ namespace query_tiles {
 
 using TileList = std::vector<Tile>;
 using GetTilesCallback = base::OnceCallback<void(TileList)>;
-using TileCallback = base::OnceCallback<void(absl::optional<Tile>)>;
+using TileCallback = base::OnceCallback<void(std::optional<Tile>)>;
 using VisualsCallback = base::OnceCallback<void(const gfx::Image&)>;
 using BackgroundTaskFinishedCallback = base::OnceCallback<void(bool)>;
 
@@ -55,9 +55,8 @@ class TileService : public KeyedService, public base::SupportsUserData {
 
   // Called when the final level of tile is selected. |parent_tile_id| is
   // the Id of the parent tile, if it exists.
-  virtual void OnQuerySelected(
-      const absl::optional<std::string>& parent_tile_id,
-      const std::u16string& query_text) = 0;
+  virtual void OnQuerySelected(const std::optional<std::string>& parent_tile_id,
+                               const std::u16string& query_text) = 0;
 
   // Returns a Logger instance that is meant to be used by logging and debug UI
   // components in the larger system.

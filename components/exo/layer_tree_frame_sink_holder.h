@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_LAYER_TREE_FRAME_SINK_HOLDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
@@ -17,7 +18,6 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -92,7 +92,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   // Overridden from cc::LayerTreeFrameSinkClient:
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
-  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
+  std::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void SetTreeActivationCallback(base::RepeatingClosure callback) override {}
   void DidReceiveCompositorFrameAck() override;
@@ -159,7 +159,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   std::vector<viz::ResourceId> last_frame_resources_;
 
-  absl::optional<viz::CompositorFrame> cached_frame_;
+  std::optional<viz::CompositorFrame> cached_frame_;
 
   // Resources that are submitted and still in use by the remote side.
   std::set<viz::ResourceId> in_use_resources_;
@@ -187,7 +187,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   const bool reactive_frame_submission_ = false;
 
   // Set if `reactive_frame_submission_` is enabled.
-  absl::optional<FrameTimingHistory> frame_timing_history_;
+  std::optional<FrameTimingHistory> frame_timing_history_;
 };
 
 }  // namespace exo

@@ -201,7 +201,7 @@ class SyncPrefs {
 
   // The user's passphrase type, determined the first time the engine is
   // successfully initialized.
-  absl::optional<PassphraseType> GetCachedPassphraseType() const;
+  std::optional<PassphraseType> GetCachedPassphraseType() const;
   void SetCachedPassphraseType(PassphraseType passphrase_type);
   void ClearCachedPassphraseType();
 

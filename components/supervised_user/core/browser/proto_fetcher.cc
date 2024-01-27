@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -34,7 +35,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
@@ -96,7 +96,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const signin::AccessTokenInfo access_token_info,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
-    const absl::optional<std::string>& payload) {
+    const std::optional<std::string>& payload) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
   resource_request->url = CreateRequestUrl(fetcher_config, args);
@@ -230,12 +230,12 @@ base::TimeDelta Stopwatch::Elapsed() const {
 }
 
 Metrics::Metrics(std::string_view basename) : basename_(basename) {}
-/* static */ absl::optional<Metrics> Metrics::FromConfig(
+/* static */ std::optional<Metrics> Metrics::FromConfig(
     const FetcherConfig& config) {
   if (config.histogram_basename.has_value()) {
     return Metrics(*config.histogram_basename);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Metrics::RecordStatus(const ProtoFetcherStatus& status) const {
@@ -341,12 +341,12 @@ std::string Metrics::ToMetricEnumLabel(const ProtoFetcherStatus& status) {
 }
 
 OverallMetrics::OverallMetrics(std::string_view basename) : Metrics(basename) {}
-/* static */ absl::optional<OverallMetrics> OverallMetrics::FromConfig(
+/* static */ std::optional<OverallMetrics> OverallMetrics::FromConfig(
     const FetcherConfig& config) {
   if (config.histogram_basename.has_value()) {
     return OverallMetrics(*config.histogram_basename);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Per-status latency is not defined for OverallMetrics.
@@ -453,9 +453,9 @@ void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
   OnResponse(std::move(response_body));
 }
 
-absl::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
+std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
   if (config_.method == FetcherConfig::Method::kGet) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return payload_;
 }

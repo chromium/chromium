@@ -176,7 +176,7 @@ base::Value CloudExternalDataManagerBaseTest::ConstructMetadata(
     const std::string& hash) {
   base::Value::Dict metadata;
   metadata.Set("url", url);
-  metadata.Set("hash", base::HexEncode(hash.c_str(), hash.size()));
+  metadata.Set("hash", base::HexEncode(hash));
   return base::Value(std::move(metadata));
 }
 

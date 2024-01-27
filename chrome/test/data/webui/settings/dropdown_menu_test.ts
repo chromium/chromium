@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
+import type {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

@@ -57,11 +57,11 @@ const char kTintCompositedContentModulate[] =
 // The debug borders are offset from the layer rect by a few pixels for clarity.
 const char kShowDCLayerDebugBorders[] = "show-dc-layer-debug-borders";
 
-absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
+std::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw)) {
     // In full-pipeline mode, surface deadlines should always be unlimited.
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string deadline_to_synchronize_surfaces_string =
       command_line->GetSwitchValueASCII(
@@ -72,7 +72,7 @@ absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
   uint32_t activation_deadline_in_frames;
   if (!base::StringToUint(deadline_to_synchronize_surfaces_string,
                           &activation_deadline_in_frames)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return activation_deadline_in_frames;
 }

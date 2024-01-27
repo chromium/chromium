@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
@@ -461,7 +462,9 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
           std::move(log_ai_data_request));
       log_entry->set_model_execution_id(GenerateExecutionId());
     }
-    callback.Run(base::unexpected(og_error), std::move(log_entry));
+    callback.Run(OptimizationGuideModelStreamingExecutionResult(
+        base::unexpected(og_error), /*provided_by_on_device=*/true,
+        std::move(log_entry)));
   }
 }
 
@@ -584,13 +587,10 @@ void SessionImpl::SendResponse(ResponseType response_type) {
       on_device_state_->log_ai_data_request.reset();
     }
   }
-  on_device_state_->callback.Run(
-      StreamingResponse{
-          .response = *output,
-          .is_complete = is_complete,
-          .provided_by_on_device = true,
-      },
-      std::move(log_entry));
+  on_device_state_->callback.Run(OptimizationGuideModelStreamingExecutionResult(
+      base::ok(
+          StreamingResponse{.response = *output, .is_complete = is_complete}),
+      true, std::move(log_entry)));
 }
 
 bool SessionImpl::ShouldUseOnDeviceModel() const {

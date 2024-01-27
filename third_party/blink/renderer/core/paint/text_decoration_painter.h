@@ -39,7 +39,6 @@ class CORE_EXPORT TextDecorationPainter {
   explicit TextDecorationPainter(
       TextPainter& text_painter,
       const InlinePaintContext* inline_context,
-      const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
@@ -50,16 +49,21 @@ class CORE_EXPORT TextDecorationPainter {
   // Sets the given optional to a new TextDecorationInfo with the decorations
   // that need to be painted, or nullopt if decorations should not be painted.
   void UpdateDecorationInfo(absl::optional<TextDecorationInfo>&,
+                            const FragmentItem&,
                             const ComputedStyle&,
                             absl::optional<LineRelativeRect> = {},
                             const AppliedTextDecoration* = nullptr);
 
   enum Phase { kOriginating, kSelection };
-  void Begin(Phase phase);
+  void Begin(const FragmentItem&, Phase phase);
   void PaintExceptLineThrough(const TextFragmentPaintInfo&);
   void PaintOnlyLineThrough();
 
   const InlinePaintContext* InlineContext() const { return inline_context_; }
+
+  // Expand a (selection) rect to be suitable for clipping without affecting
+  // decorations. This is currently an approximation.
+  static gfx::RectF ExpandRectForDecorations(const LineRelativeRect&);
 
  private:
   enum Step { kBegin, kExcept, kOnly };
@@ -67,7 +71,6 @@ class CORE_EXPORT TextDecorationPainter {
 
   TextPainter& text_painter_;
   const InlinePaintContext* inline_context_;
-  const FragmentItem& text_item_;
   const PaintInfo& paint_info_;
   const ComputedStyle& style_;
   const TextPaintStyle& text_style_;

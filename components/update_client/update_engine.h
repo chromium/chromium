@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "components/update_client/ping_manager.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -99,13 +99,13 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
       Callback update_callback);
   void StartOperation(
       scoped_refptr<UpdateContext> update_context,
-      const std::vector<absl::optional<CrxComponent>>& crx_components);
+      const std::vector<std::optional<CrxComponent>>& crx_components);
   void UpdateComplete(scoped_refptr<UpdateContext> update_context, Error error);
 
   void DoUpdateCheck(scoped_refptr<UpdateContext> update_context);
   void UpdateCheckResultsAvailable(
       scoped_refptr<UpdateContext> update_context,
-      const absl::optional<ProtocolParser::Results>& results,
+      const std::optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
       int retry_after_sec);
@@ -126,7 +126,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // Called when CRX state changes occur.
   const NotifyObserversCallback notify_observers_callback_;
 
-  absl::optional<scoped_refptr<CrxCache>> crx_cache_;
+  std::optional<scoped_refptr<CrxCache>> crx_cache_;
 
   // Contains the contexts associated with each update in progress.
   UpdateContexts update_contexts_;
@@ -136,7 +136,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
 struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   UpdateContext(
       scoped_refptr<Configurator> config,
-      absl::optional<scoped_refptr<CrxCache>> crx_cache,
+      std::optional<scoped_refptr<CrxCache>> crx_cache,
       bool is_foreground,
       bool is_install,
       const std::vector<std::string>& ids,
@@ -150,7 +150,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   scoped_refptr<Configurator> config;
 
-  absl::optional<scoped_refptr<CrxCache>> crx_cache_;
+  std::optional<scoped_refptr<CrxCache>> crx_cache_;
 
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;

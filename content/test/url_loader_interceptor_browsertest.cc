@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/sequenced_task_runner.h"
 #include "content/public/test/url_loader_interceptor.h"
 
 #include "base/command_line.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -159,7 +159,7 @@ class TestBrowserClientWithHeaderClient
       public network::mojom::TrustedURLLoaderHeaderClient {
  private:
   // ContentBrowserClient:
-  bool WillCreateURLLoaderFactory(
+  void WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* frame,
       int render_process_id,
@@ -167,7 +167,7 @@ class TestBrowserClientWithHeaderClient
       const url::Origin& request_initiator,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+      network::URLLoaderFactoryBuilder& factory_builder,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client,
       bool* bypass_redirect_checks,
@@ -178,7 +178,6 @@ class TestBrowserClientWithHeaderClient
     if (header_client) {
       receivers_.Add(this, header_client->InitWithNewPipeAndPassReceiver());
     }
-    return true;
   }
 
   // network::mojom::TrustedURLLoaderHeaderClient:

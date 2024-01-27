@@ -54,10 +54,6 @@ std::string MojomSecurityToString(
   }
 }
 
-std::string HexEncode(const std::string& ssid) {
-  return base::HexEncode(ssid.c_str(), ssid.size());
-}
-
 std::string HexDecode(const std::string& hex_ssid) {
   std::string ssid;
   if (!base::HexStringToString(hex_ssid, &ssid)) {
@@ -213,7 +209,8 @@ base::Value::Dict MojomConfigToShillConfig(
              MojomBandToString(mojom_config->band));
   result.Set(shill::kTetheringConfSecurityProperty,
              MojomSecurityToString(mojom_config->security));
-  result.Set(shill::kTetheringConfSSIDProperty, HexEncode(mojom_config->ssid));
+  result.Set(shill::kTetheringConfSSIDProperty,
+             base::HexEncode(mojom_config->ssid));
   result.Set(shill::kTetheringConfPassphraseProperty, mojom_config->passphrase);
   result.Set(shill::kTetheringConfMARProperty,
              mojom_config->bssid_randomization);

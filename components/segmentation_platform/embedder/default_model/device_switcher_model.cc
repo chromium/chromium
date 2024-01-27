@@ -104,7 +104,7 @@ void DeviceSwitcherModel::ExecuteModelWithInput(
   // The custom input added should return 10 float values.
   if (inputs.size() != 10) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

@@ -218,7 +218,7 @@ TEST_F(RelocUtilsWin32Test, ReadWrite) {
 
   // Read all references and check.
   std::vector<Reference> refs;
-  for (absl::optional<Reference> ref = reader->GetNext(); ref.has_value();
+  for (std::optional<Reference> ref = reader->GetNext(); ref.has_value();
        ref = reader->GetNext()) {
     refs.push_back(ref.value());
   }

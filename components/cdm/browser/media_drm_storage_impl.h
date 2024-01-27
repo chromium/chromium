@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CDM_BROWSER_MEDIA_DRM_STORAGE_IMPL_H_
 #define COMPONENTS_CDM_BROWSER_MEDIA_DRM_STORAGE_IMPL_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,7 +48,7 @@ class MediaDrmStorageImpl final
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
-  using MediaDrmOriginId = absl::optional<base::UnguessableToken>;
+  using MediaDrmOriginId = std::optional<base::UnguessableToken>;
 
   // |success| is true if an origin ID was obtained and |origin_id| is
   // specified, false otherwise.

@@ -95,7 +95,7 @@ class CachedImageFetcherTest : public testing::Test {
     const std::string kImageUrl("http://gstatic.img.com/foo.jpg");
     image_cache_->SaveImage(kImageUrl, kImageData,
                             /* needs_transcoding */ false,
-                            /* expiration_interval */ absl::nullopt);
+                            /* expiration_interval */ std::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     image_cache_->DeleteImage(kImageUrl);
@@ -168,7 +168,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -194,7 +194,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ true,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -222,7 +222,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
   RunUntilIdle();
   {
@@ -379,7 +379,7 @@ TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageDataOther,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   RunUntilIdle();
   test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 

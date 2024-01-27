@@ -12,8 +12,12 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace ui {
 class AXNode;
@@ -244,6 +248,66 @@ class ReadAnythingAppModel {
   void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }
   bool is_docs() const { return is_docs_; }
 
+  // Returns a list of AXNodeIds representing the next nodes that should be
+  // spoken and highlighted with Read Aloud after navigating backwards.
+  // GetNextTextStartIndex and GetNextTextEndIndex called with an AXNodeID
+  // returned by GetNextText will return the starting text and ending text
+  // indices for specific text that should be referenced within the node.
+  std::vector<ui::AXNodeID> GetPreviousText();
+
+  // Returns true if the node was previously spoken or we expect to speak it
+  // to be spoken once the current run of #GetNextText which called
+  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
+  // sometimes returns leaf nodes, we sometimes need to use the parent of a
+  // node returned by AXPosition instead of the node itself. Because of this,
+  // we need to double-check that the node has not been used or currently
+  // in use.
+  // Example:
+  // parent node: id=5
+  //    child node: id=6
+  //    child node: id =7
+  // node: id = 10
+  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
+  // process them as 5, 10. Without checking for previously spoken nodes,
+  // id 5 will be spoken twice.
+  bool NodeBeenOrWillBeSpoken(
+      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
+      ui::AXNodeID id);
+
+  // Returns the next valid AXNodePosition.
+  ui::AXNodePosition::AXPositionInstance
+  GetNextValidPositionFromCurrentPosition(
+      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
+
+  // Inits the AXPosition with a starting node.
+  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
+  // where this isn't needed.
+  void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
+
+  // Returns a list of AXNodeIds representing the next nodes that should be
+  // spoken and highlighted with Read Aloud. GetNextTextStartIndex and
+  // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
+  // return the starting text and ending text indices for specific text that
+  // should be referenced within the node.
+  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+
+  // Helper method for GetNextText.
+  ReadAloudCurrentGranularity GetNextNodes(int max_text_length);
+
+  // Returns the Read Aloud starting text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return 0. Returns -1 if the node isn't in the current
+  // segment.
+  int GetNextTextStartIndex(ui::AXNodeID node_id);
+
+  // Returns the Read Aloud ending text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return the length of the node's text. Returns -1 if the
+  // node isn't in the current segment.
+  int GetNextTextEndIndex(ui::AXNodeID node_id);
+
+  void ClearReadAloudState();
+
  private:
   void EraseTree(ui::AXTreeID tree_id);
 
@@ -276,6 +340,10 @@ class ReadAnythingAppModel {
   std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
                                       std::string html_tag) const;
   std::string GetAriaLevel(ui::AXNode* ax_node) const;
+
+  // Uses the current AXNodePosition to return the next node that should be
+  // spoken by Read Aloud.
+  ui::AXNode* GetNodeFromCurrentPosition();
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
@@ -371,6 +439,25 @@ class ReadAnythingAppModel {
   // Google Docs are different from regular webpages. We want to distill content
   // from the annotated canvas elements, not the main tree.
   bool is_docs_ = false;
+
+  // Read Aloud state
+
+  ui::AXNodePosition::AXPositionInstance ax_position_;
+
+  // Our current index within processed_granularities_on_current_page_. If it is
+  // equal to the size of the triples - 1, we're not navigating through
+  // previously processed text.
+  size_t processed_granularity_index_ = -1;
+
+  // The current text index within the given node.
+  int current_text_index_ = 0;
+
+  // TODO(crbug.com/1474951): Clear this when granularity changes.
+  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
+  // backwards.
+  // Previously processed granularities on the current page.
+  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
+      processed_granularities_on_current_page_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

@@ -5,6 +5,7 @@
 #include "components/component_updater/component_installer.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/backup_util.h"
@@ -123,7 +123,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
                                          base::Value::Dict* manifest,
                                          base::Version* version,
                                          base::FilePath* install_path) {
-  absl::optional<base::Value::Dict> local_manifest =
+  std::optional<base::Value::Dict> local_manifest =
       update_client::ReadManifest(unpack_path);
   if (!local_manifest) {
     return Result(InstallError::BAD_MANIFEST);
@@ -257,8 +257,7 @@ bool ComponentInstaller::FindPreinstallation(
     return false;
   }
 
-  absl::optional<base::Value::Dict> manifest =
-      update_client::ReadManifest(path);
+  std::optional<base::Value::Dict> manifest = update_client::ReadManifest(path);
   if (!manifest) {
     DVLOG(1) << "Manifest does not exist: " << path.MaybeAsASCII();
     return false;
@@ -294,21 +293,20 @@ bool ComponentInstaller::FindPreinstallation(
 
 // Checks to see if the installation found in |path| is valid, and returns
 // its manifest if it is.
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
-  absl::optional<base::Value::Dict> manifest =
-      update_client::ReadManifest(path);
+  std::optional<base::Value::Dict> manifest = update_client::ReadManifest(path);
   if (!manifest) {
     VPLOG(0) << "Failed to read manifest for " << installer_policy_->GetName()
              << " (" << path.MaybeAsASCII() << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!installer_policy_->VerifyInstallation(*manifest, path)) {
     VPLOG(0) << "Failed to verify installation for "
              << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
              << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::List* accept_archs = manifest->FindList("accept_arch");
@@ -318,7 +316,7 @@ ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
             update_client::UpdateQueryParams::GetArch();
         return v.is_string() && v.GetString() == current_arch;
       })) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return manifest;
@@ -326,16 +324,16 @@ ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
 
 // Processes the user component directory to select an appropriate component
 // version, and saves its data to |registration_info|.
-absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
+std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
     const base::Version& registered_version,
     const base::FilePath& base_dir,
     scoped_refptr<RegistrationInfo> registration_info) {
   base::FileEnumerator file_enumerator(base_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
 
-  absl::optional<base::Version> selected_version;
+  std::optional<base::Version> selected_version;
   base::FilePath selected_path;
-  absl::optional<base::Value::Dict> selected_manifest;
+  std::optional<base::Value::Dict> selected_manifest;
 
   const base::Version bundled_version = registration_info->version.IsValid()
                                             ? registration_info->version
@@ -343,10 +341,10 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
   // Only look for a previously registered version if it is higher than the
   // bundled version, else default to the highest version.
-  const absl::optional<base::Version> target_version =
+  const std::optional<base::Version> target_version =
       (registered_version > bundled_version)
-          ? absl::optional<base::Version>(registered_version)
-          : absl::nullopt;
+          ? std::optional<base::Version>(registered_version)
+          : std::nullopt;
 
   for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
        path = file_enumerator.Next()) {
@@ -359,7 +357,7 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
     if (!selected_version || version > *selected_version ||
         (target_version && version == *target_version)) {
-      absl::optional<base::Value::Dict> candidate_manifest =
+      std::optional<base::Value::Dict> candidate_manifest =
           GetValidInstallationManifest(path);
       if (candidate_manifest) {
         selected_version = version;
@@ -376,7 +374,7 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
   // No suitable version was found.
   if (!selected_version || bundled_version >= *selected_version) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   registration_info->version = selected_version.value();
@@ -390,7 +388,7 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
 void ComponentInstaller::DeleteUnselectedComponentVersions(
     const base::FilePath& base_dir,
-    const absl::optional<base::Version>& selected_version) {
+    const std::optional<base::Version>& selected_version) {
   base::FileEnumerator file_enumerator(base_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
 
@@ -405,10 +403,10 @@ void ComponentInstaller::DeleteUnselectedComponentVersions(
   }
 }
 
-absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
+std::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
   base::FilePath base_component_dir;
   if (!base::PathService::Get(DIR_COMPONENT_USER, &base_component_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::FilePath base_dir =
       base_component_dir.Append(installer_policy_->GetRelativeInstallDir());
@@ -416,7 +414,7 @@ absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
     VPLOG(0) << "Could not create the base directory for "
              << installer_policy_->GetName() << " (" << base_dir.MaybeAsASCII()
              << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -426,7 +424,7 @@ absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
     base_dir_ = base_dir_.Append(component);
     if (!base::SetPosixFilePermissions(base_dir_, 0755)) {
       VPLOG(0) << "SetPosixFilePermissions failed: " << base_dir.value();
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -455,7 +453,7 @@ void ComponentInstaller::StartRegistration(
       FindPreinstallation(root_alternate, registration_info)) {
   }
 
-  absl::optional<base::FilePath> base_dir = GetComponentDirectory();
+  std::optional<base::FilePath> base_dir = GetComponentDirectory();
 
   if (!base_dir) {
     return;
@@ -471,7 +469,7 @@ void ComponentInstaller::UninstallOnTaskRunner() {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  const absl::optional<base::FilePath> base_dir = GetComponentDirectory();
+  const std::optional<base::FilePath> base_dir = GetComponentDirectory();
   if (!base_dir) {
     return;
   }

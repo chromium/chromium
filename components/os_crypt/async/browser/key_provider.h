@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_OS_CRYPT_ASYNC_BROWSER_KEY_PROVIDER_H_
 #define COMPONENTS_OS_CRYPT_ASYNC_BROWSER_KEY_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace os_crypt_async {
 
@@ -24,7 +24,7 @@ class KeyProvider {
  public:
   using KeyCallback =
       base::OnceCallback<void(/*tag=*/const std::string&,
-                              /*key=*/absl::optional<Encryptor::Key>)>;
+                              /*key=*/std::optional<Encryptor::Key>)>;
 
   virtual ~KeyProvider() = default;
 

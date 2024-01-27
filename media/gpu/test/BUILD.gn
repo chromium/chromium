@@ -27,6 +27,10 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (use_vaapi) {
+      data_deps = [ "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video" ]
+    }
   }
 
   test("video_decode_accelerator_perf_tests") {

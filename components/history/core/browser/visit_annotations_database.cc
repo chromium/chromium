@@ -875,10 +875,10 @@ Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   //  clustering UI code.
   cluster.label = statement.ColumnString16(2);
   if (cluster.label->empty())
-    cluster.label = absl::nullopt;
+    cluster.label = std::nullopt;
   cluster.raw_label = statement.ColumnString16(3);
   if (cluster.raw_label->empty())
-    cluster.raw_label = absl::nullopt;
+    cluster.raw_label = std::nullopt;
   cluster.triggerability_calculated = statement.ColumnBool(4);
   cluster.originator_cache_guid = statement.ColumnString(5);
   cluster.originator_cluster_id = statement.ColumnInt64(6);

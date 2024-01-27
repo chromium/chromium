@@ -147,7 +147,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
   void SetOptOutOffered() override;
-  absl::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
+  std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const override;
 
   // PaymentResponseHelper::Delegate

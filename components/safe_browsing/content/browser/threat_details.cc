@@ -680,7 +680,7 @@ void ThreatDetails::FinishCollection(
     int num_visit,
     std::unique_ptr<security_interstitials::InterstitialInteractionMap>
         interstitial_interactions,
-    absl::optional<int64_t> warning_shown_ts) {
+    std::optional<int64_t> warning_shown_ts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   all_done_expected_ = true;

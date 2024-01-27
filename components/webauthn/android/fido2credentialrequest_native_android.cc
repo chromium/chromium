@@ -42,7 +42,7 @@ static base::android::ScopedJavaLocalRef<jbyteArray> MojoClassFromJSON(
     ParseFuncType parse_func,
     const base::android::JavaParamRef<jstring>& jjson) {
   const std::string json = base::android::ConvertJavaStringToUTF8(env, jjson);
-  const absl::optional<base::Value> parsed =
+  const std::optional<base::Value> parsed =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
   if (!parsed) {
     LOG(ERROR) << __func__ << " failed to parse JSON";

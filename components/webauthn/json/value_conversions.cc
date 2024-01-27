@@ -4,6 +4,8 @@
 
 #include "components/webauthn/json/value_conversions.h"
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/feature_list.h"
 #include "base/ranges/ranges.h"
@@ -20,7 +22,6 @@
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace webauthn {
@@ -45,16 +46,16 @@ bool Base64UrlDecode(base::StringPiece input, std::string* output) {
 
 // Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
 // key isn't present or decoding failed.
-absl::optional<std::string> Base64UrlDecodeStringKey(
+std::optional<std::string> Base64UrlDecodeStringKey(
     const base::Value::Dict& dict,
     const std::string& key) {
   const std::string* b64url_data = dict.FindString(key);
   if (!b64url_data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string decoded;
   if (!Base64UrlDecode(*b64url_data, &decoded)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return decoded;
 }
@@ -67,25 +68,25 @@ absl::optional<std::string> Base64UrlDecodeStringKey(
 // instead. This code is in a transitional state where either form is accepted.
 //
 // Returns true on success and the decoded result if the value was a string.
-// Returns `{false, absl::nullopt}` if the key wasn't found or if decoding the
+// Returns `{false, std::nullopt}` if the key wasn't found or if decoding the
 // string failed.
-std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeOptionalStringKey(
+std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
     const base::Value::Dict& dict,
     const std::string& key,
     const JSONUser user) {
   const base::Value* value = dict.Find(key);
   if (!value) {
-    return {true, absl::nullopt};
+    return {true, std::nullopt};
   }
   if (value->is_none()) {
     return {!base::FeatureList::IsEnabled(
                 device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) &&
                 user == JSONUser::kRemoteDesktop,
-            absl::nullopt};
+            std::nullopt};
   }
   std::string decoded;
   if (!value->is_string() || !Base64UrlDecode(value->GetString(), &decoded)) {
-    return {false, absl::nullopt};
+    return {false, std::nullopt};
   }
   return {true, decoded};
 }
@@ -185,7 +186,7 @@ base::Value ToValue(
 base::Value ToValue(
     const device::AuthenticatorSelectionCriteria& authenticator_selection) {
   base::Value::Dict value;
-  absl::optional<std::string> attachment;
+  std::optional<std::string> attachment;
   if (authenticator_selection.authenticator_attachment !=
       device::AuthenticatorAttachment::kAny) {
     value.Set("authenticatorAttachment",
@@ -303,15 +304,15 @@ base::Value ToValue(
   return base::Value(std::move(value));
 }
 
-absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
+std::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
     const base::Value& value) {
   if (!value.is_string()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return device::ConvertToFidoTransportProtocol(value.GetString());
 }
 
-absl::optional<device::AuthenticatorAttachment>
+std::optional<device::AuthenticatorAttachment>
 OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
                                          const JSONUser user) {
   if (!value) {
@@ -323,12 +324,12 @@ OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
     if (base::FeatureList::IsEnabled(
             device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
         user != JSONUser::kRemoteDesktop) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return device::AuthenticatorAttachment::kAny;
   }
   if (!value->is_string()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string& attachment_name = value->GetString();
   if (attachment_name == "platform") {
@@ -336,7 +337,7 @@ OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
   } else if (attachment_name == "cross-platform") {
     return device::AuthenticatorAttachment::kCrossPlatform;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
@@ -548,43 +549,44 @@ base::Value ToValue(
   return base::Value(std::move(value));
 }
 
-absl::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
-    const base::Value::Dict* results, const JSONUser user) {
-  const absl::optional<std::string> first =
+std::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
+    const base::Value::Dict* results,
+    const JSONUser user) {
+  const std::optional<std::string> first =
       Base64UrlDecodeStringKey(*results, "first");
   if (!first || first->size() != 32) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto [ok, second] =
       Base64UrlDecodeOptionalStringKey(*results, "second", user);
   if (!ok || (second && second->size() != 32)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return blink::mojom::PRFValues::New(
-      /*id=*/absl::nullopt, ToByteVector(*first),
-      second ? absl::optional<std::vector<uint8_t>>(ToByteVector(*second))
-             : absl::nullopt);
+      /*id=*/std::nullopt, ToByteVector(*first),
+      second ? std::optional<std::vector<uint8_t>>(ToByteVector(*second))
+             : std::nullopt);
 }
 
-absl::optional<blink::mojom::SupplementalPubKeysResponsePtr>
+std::optional<blink::mojom::SupplementalPubKeysResponsePtr>
 ParseSupplementalPubKeys(const base::Value::Dict* json) {
   const base::Value::List* signatures = json->FindList("signatures");
   if (!signatures || signatures->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto ret = blink::mojom::SupplementalPubKeysResponse::New();
   for (const base::Value& b64url_signature : *signatures) {
     if (!b64url_signature.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
-    absl::optional<std::vector<uint8_t>> signature =
+    std::optional<std::vector<uint8_t>> signature =
         Base64UrlDecode(b64url_signature.GetString(),
                         base::Base64UrlDecodePolicy::DISALLOW_PADDING);
     if (!signature) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     ret->signatures.emplace_back(std::move(*signature));
   }
@@ -612,13 +614,13 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     return InvalidMakeCredentialField("id");
   }
   response->info->id = *id;
-  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
+  std::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
     return InvalidMakeCredentialField("rawId");
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
-  absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
+  std::optional<device::AuthenticatorAttachment> authenticator_attachment =
       OptionalAuthenticatorAttachmentFromValue(
           dict.Find("authenticatorAttachment"), user);
   if (!authenticator_attachment) {
@@ -631,7 +633,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     return InvalidMakeCredentialField("response");
   }
 
-  absl::optional<std::string> attestation_object =
+  std::optional<std::string> attestation_object =
       Base64UrlDecodeStringKey(*attestation_response, "attestationObject");
   if (!attestation_object) {
     return InvalidMakeCredentialField("attestationObject");
@@ -639,7 +641,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   std::vector<uint8_t> attestation_object_bytes =
       ToByteVector(*attestation_object);
 
-  absl::optional<device::AttestationObject::ResponseFields> fields =
+  std::optional<device::AttestationObject::ResponseFields> fields =
       device::AttestationObject::ParseForResponseFields(
           std::move(attestation_object_bytes),
           /*attestation_acceptable=*/true);
@@ -653,7 +655,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
       user != JSONUser::kRemoteDesktop) {
     // These fields are checked against the calculated values to ensure that
     // bugs in providers don't sneak in.
-    absl::optional<int> opt_public_key_algo =
+    std::optional<int> opt_public_key_algo =
         attestation_response->FindInt("publicKeyAlgorithm");
     if (!opt_public_key_algo ||
         *opt_public_key_algo != fields->public_key_algo) {
@@ -661,7 +663,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     }
     response->public_key_algo = *opt_public_key_algo;
 
-    absl::optional<std::string> opt_authenticator_data =
+    std::optional<std::string> opt_authenticator_data =
         Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
     if (!opt_authenticator_data) {
       return InvalidMakeCredentialField("authenticatorData");
@@ -707,7 +709,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     // from providers on Android but, for now, just check that they have the
     // correct value if provided.
 
-    absl::optional<int> opt_public_key_algo =
+    std::optional<int> opt_public_key_algo =
         attestation_response->FindInt("publicKeyAlgorithm");
     if (opt_public_key_algo &&
         response->public_key_algo != *opt_public_key_algo) {
@@ -722,7 +724,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
       return InvalidMakeCredentialField("authenticatorData");
     }
 
-    absl::optional<std::string> opt_public_key_der;
+    std::optional<std::string> opt_public_key_der;
     std::tie(ok, opt_public_key_der) = Base64UrlDecodeOptionalStringKey(
         *attestation_response, "publicKey", user);
     if (!ok || (response->public_key_der && opt_public_key_der &&
@@ -732,7 +734,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     }
   }
 
-  absl::optional<std::string> client_data_json =
+  std::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*attestation_response, "clientDataJSON");
   // Providers can return an empty clientDataJson when it knows it will
   // be overridden by the caller.
@@ -746,7 +748,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
     return InvalidMakeCredentialField("transports");
   }
   for (const base::Value& transport_name : *transports) {
-    absl::optional<device::FidoTransportProtocol> transport =
+    std::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
     // Unknown transports are ignored because new transport values might be
     // introduced in the future. Plausibly we should pass them as opaque
@@ -761,7 +763,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   if (!client_extension_results) {
     return InvalidMakeCredentialField("clientExtensionResults");
   }
-  absl::optional<bool> cred_blob =
+  std::optional<bool> cred_blob =
       client_extension_results->FindBool("credBlob");
   if (cred_blob) {
     response->echo_cred_blob = true;
@@ -771,13 +773,13 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
       client_extension_results->FindDict("credProps");
   if (cred_props) {
     response->echo_cred_props = true;
-    absl::optional<bool> rk = cred_props->FindBool("rk");
+    std::optional<bool> rk = cred_props->FindBool("rk");
     if (rk) {
       response->has_cred_props_rk = true;
       response->cred_props_rk = *rk;
     }
   }
-  const absl::optional<bool> hmac_create_secret =
+  const std::optional<bool> hmac_create_secret =
       client_extension_results->FindBool("hmacCreateSecret");
   if (hmac_create_secret) {
     response->echo_hmac_create_secret = true;
@@ -787,7 +789,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
       client_extension_results->FindDict("largeBlob");
   if (large_blob) {
     response->echo_large_blob = true;
-    const absl::optional<bool> supported = large_blob->FindBool("supported");
+    const std::optional<bool> supported = large_blob->FindBool("supported");
     if (!supported) {
       return InvalidMakeCredentialField("largeBlob");
     }
@@ -796,7 +798,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   const base::Value::Dict* prf = client_extension_results->FindDict("prf");
   if (prf) {
     response->echo_prf = true;
-    const absl::optional<bool> enabled = prf->FindBool("enabled");
+    const std::optional<bool> enabled = prf->FindBool("enabled");
     if (!enabled) {
       return InvalidMakeCredentialField("prf");
     }
@@ -804,7 +806,7 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
 
     const base::Value::Dict* results = prf->FindDict("results");
     if (results) {
-      absl::optional<blink::mojom::PRFValuesPtr> prf_results =
+      std::optional<blink::mojom::PRFValuesPtr> prf_results =
           ParsePRFResults(results, user);
       if (!prf_results) {
         return InvalidMakeCredentialField("prf");
@@ -847,13 +849,13 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     return InvalidGetAssertionField("id");
   }
   response->info->id = *id;
-  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
+  std::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
     return InvalidGetAssertionField("rawId");
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
-  absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
+  std::optional<device::AuthenticatorAttachment> authenticator_attachment =
       OptionalAuthenticatorAttachmentFromValue(
           dict.Find("authenticatorAttachment"), user);
   if (!authenticator_attachment) {
@@ -866,7 +868,7 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     return InvalidGetAssertionField("response");
   }
 
-  absl::optional<std::string> client_data_json =
+  std::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*assertion_response, "clientDataJSON");
   // Providers can return an empty clientDataJson when it knows it will
   // be overridden by the caller.
@@ -874,14 +876,14 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
     response->info->client_data_json = ToByteVector(*client_data_json);
   }
 
-  absl::optional<std::string> authenticator_data =
+  std::optional<std::string> authenticator_data =
       Base64UrlDecodeStringKey(*assertion_response, "authenticatorData");
   if (!authenticator_data) {
     return InvalidGetAssertionField("authenticatorData");
   }
   response->info->authenticator_data = ToByteVector(*authenticator_data);
 
-  absl::optional<std::string> signature =
+  std::optional<std::string> signature =
       Base64UrlDecodeStringKey(*assertion_response, "signature");
   if (!signature) {
     return InvalidGetAssertionField("signature");
@@ -902,14 +904,14 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   if (!client_extension_results) {
     return InvalidGetAssertionField("clientExtensionResults");
   }
-  const absl::optional<bool> app_id =
+  const std::optional<bool> app_id =
       client_extension_results->FindBool("appid");
   if (app_id) {
     response->extensions->echo_appid_extension = true;
     response->extensions->appid_extension = *app_id;
   }
   if (client_extension_results->contains("getCredBlob")) {
-    absl::optional<std::string> cred_blob =
+    std::optional<std::string> cred_blob =
         Base64UrlDecodeStringKey(*client_extension_results, "getCredBlob");
     if (!cred_blob) {
       return InvalidGetAssertionField("credBlob");
@@ -921,14 +923,14 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   if (large_blob) {
     response->extensions->echo_large_blob = true;
     if (large_blob->contains("blob")) {
-      absl::optional<std::string> blob =
+      std::optional<std::string> blob =
           Base64UrlDecodeStringKey(*large_blob, "blob");
       if (!blob) {
         return InvalidGetAssertionField("largeBlob");
       }
       response->extensions->large_blob = ToByteVector(*blob);
     }
-    const absl::optional<bool> written = large_blob->FindBool("written");
+    const std::optional<bool> written = large_blob->FindBool("written");
     if (written) {
       response->extensions->echo_large_blob_written = true;
       response->extensions->large_blob_written = *written;
@@ -938,7 +940,7 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   if (prf) {
     const base::Value::Dict* results = prf->FindDict("results");
     if (results) {
-      absl::optional<blink::mojom::PRFValuesPtr> prf_results =
+      std::optional<blink::mojom::PRFValuesPtr> prf_results =
           ParsePRFResults(results, user);
       if (!prf_results) {
         return InvalidGetAssertionField("prf");

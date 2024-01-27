@@ -46,7 +46,7 @@ void AddRenderPassQuad(CompositorRenderPass* render_pass,
                        CompositorRenderPassId render_pass_id) {
   auto* sqs = render_pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), kOutputRect, kOutputRect, gfx::MaskFilterInfo(),
-              /*clip=*/absl::nullopt, /*contents_opaque=*/false, 1,
+              /*clip=*/std::nullopt, /*contents_opaque=*/false, 1,
               SkBlendMode::kSrcOver, /*sorting_context=*/0,
               /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   auto* quad =

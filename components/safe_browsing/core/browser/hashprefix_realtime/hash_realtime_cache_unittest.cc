@@ -51,8 +51,8 @@ class HashRealTimeCacheTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
   void CheckAndResetCacheDurationLogs(
-      absl::optional<int> initial_cache_duration_sec,
-      absl::optional<int> remaining_cache_duration_sec) {
+      std::optional<int> initial_cache_duration_sec,
+      std::optional<int> remaining_cache_duration_sec) {
     if (initial_cache_duration_sec.has_value()) {
       histogram_tester_->ExpectUniqueSample(
           /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
@@ -444,20 +444,20 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_CacheDurationLogging) {
                                    CreateCacheDuration(300, 0));
   CheckAndResetCacheDurationLogs(
       /*initial_cache_duration_sec=*/300,
-      /*remaining_cache_duration_sec=*/absl::nullopt);
+      /*remaining_cache_duration_sec=*/std::nullopt);
 
   cache->SearchCache({"aaaa"});
-  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/absl::nullopt,
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/std::nullopt,
                                  /*remaining_cache_duration_sec=*/300);
   task_environment_.FastForwardBy(base::Seconds(299));
   cache->SearchCache({"aaaa"});
-  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/absl::nullopt,
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/std::nullopt,
                                  /*remaining_cache_duration_sec=*/1);
   task_environment_.FastForwardBy(base::Seconds(1));
   cache->SearchCache({"aaaa"});
   CheckAndResetCacheDurationLogs(
-      /*initial_cache_duration_sec=*/absl::nullopt,
-      /*remaining_cache_duration_sec=*/absl::nullopt);
+      /*initial_cache_duration_sec=*/std::nullopt,
+      /*remaining_cache_duration_sec=*/std::nullopt);
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_EmptyCache) {

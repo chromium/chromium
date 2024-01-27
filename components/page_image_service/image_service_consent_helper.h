@@ -50,7 +50,7 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
  private:
   // Returns whether it is appropriate to fetch images for synced entities of
   // `model_type_`. Will return nullopt if Sync Service is not ready yet.
-  absl::optional<bool> GetConsentStatus();
+  std::optional<bool> GetConsentStatus();
 
   // Run periodically to sweep away old queued requests.
   void OnTimeoutExpired();

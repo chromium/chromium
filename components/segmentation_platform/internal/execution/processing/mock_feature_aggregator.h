@@ -17,7 +17,7 @@ class MockFeatureAggregator : public FeatureAggregator {
  public:
   MockFeatureAggregator();
   ~MockFeatureAggregator() override;
-  MOCK_METHOD(absl::optional<std::vector<float>>,
+  MOCK_METHOD(std::optional<std::vector<float>>,
               Process,
               (proto::SignalType signal_type,
                uint64_t name_hash,

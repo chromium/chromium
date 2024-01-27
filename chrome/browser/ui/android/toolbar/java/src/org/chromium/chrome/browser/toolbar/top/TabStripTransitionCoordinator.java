@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -72,6 +73,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private final ControlContainer mControlContainer;
     private final View mToolbarLayout;
     private final int mTabStripHeightFromResource;
+    private final TabObscuringHandler mTabObscuringHandler;
     private final TokenHolder mDeferTransitionTokenHolder;
 
     /**
@@ -97,10 +99,13 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     /** Token used to block the transition when URL bar has focus. */
     private int mUrlBarFocusToken = TokenHolder.INVALID_TOKEN;
 
+    private int mTabObscurToken = TokenHolder.INVALID_TOKEN;
+
     /** Tracks the last width seen for the mControlContainer. */
     private int mControlContainerLayoutWidth;
 
     private OnLayoutChangeListener mOnLayoutChangedListener;
+    private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
     private @Nullable Runnable mLayoutTransitionTask;
 
     private @Nullable BrowserControlsStateProvider.Observer mTransitionKickoffObserver;
@@ -119,7 +124,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             ControlContainer controlContainer,
             View toolbarLayout,
-            int tabStripHeightFromResource) {
+            int tabStripHeightFromResource,
+            TabObscuringHandler tabObscuringHandler) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
@@ -136,6 +142,25 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                 };
         controlContainerView().addOnLayoutChangeListener(mOnLayoutChangedListener);
         mDeferTransitionTokenHolder = new TokenHolder(this::onTokenUpdate);
+
+        mTabObscuringHandler = tabObscuringHandler;
+        mTabObscuringHandlerObserver =
+                (obscureTabContent, obscureToolbar) -> {
+                    // Do not block transition if the toolbar is also obscured.
+                    if (obscureToolbar) return;
+
+                    if (obscureTabContent) {
+                        int token = requestDeferTabStripTransitionToken();
+                        if (mTabObscurToken != TokenHolder.INVALID_TOKEN) {
+                            releaseTabStripToken(mTabObscurToken);
+                        }
+                        mTabObscurToken = token;
+                    } else {
+                        releaseTabStripToken(mTabObscurToken);
+                        mTabObscurToken = TokenHolder.INVALID_TOKEN;
+                    }
+                };
+        mTabObscuringHandler.addObserver(mTabObscuringHandlerObserver);
 
         updateTabStripTransitionThreshold();
         onLayoutWidthChanged(controlContainerView().getWidth());
@@ -183,6 +208,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             controlContainerView().removeOnLayoutChangeListener(mOnLayoutChangedListener);
             mOnLayoutChangedListener = null;
         }
+        if (mTabObscuringHandlerObserver != null) {
+            mTabObscuringHandler.removeObserver(mTabObscuringHandlerObserver);
+            mTabObscuringHandlerObserver = null;
+        }
         mCallbackController.destroy();
         mTabStripHeightObservers.clear();
     }
@@ -198,6 +227,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     /**
      * Called when URL bar gains / lost focus. When gaining focus, block the tab strip transition.
      */
+    // TODO(crbug.com/1519696): Remove this APIs - location bar is also using TabObscuringHandler.
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
             int token = requestDeferTabStripTransitionToken();

@@ -87,8 +87,8 @@ void ReceiverSessionImpl::OnReceiverEnabled() {
 
 void ReceiverSessionImpl::OnSessionInitialization(
     StreamingInitializationInfo initialization_info,
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
+    std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+    std::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   DVLOG(1) << __func__;
   DCHECK_EQ(!!initialization_info.audio_stream_info, !!audio_pipe_consumer);
   DCHECK_EQ(!!initialization_info.video_stream_info, !!video_pipe_consumer);
@@ -164,8 +164,8 @@ void ReceiverSessionImpl::OnSessionReinitializationPending() {
 
 void ReceiverSessionImpl::OnSessionReinitialization(
     StreamingInitializationInfo initialization_info,
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
+    std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+    std::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   DVLOG(1) << __func__;
   DCHECK(audio_pipe_consumer || video_pipe_consumer);
   DCHECK_EQ(!!audio_pipe_consumer, !!initialization_info.audio_stream_info);

@@ -10,8 +10,19 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -23,7 +34,21 @@ using tips_notifications::NotificationType;
 
 class TipsNotificationClientTest : public PlatformTest {
  protected:
-  TipsNotificationClientTest() { SetupMockNotificationCenter(); }
+  TipsNotificationClientTest() {
+    SetupMockNotificationCenter();
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        TestChromeBrowserState::Builder().Build());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+    BrowserList* list = BrowserListFactory::GetForBrowserState(
+        browser_state_manager_->GetLastUsedBrowserState());
+    mock_scene_state_ = OCMClassMock([SceneState class]);
+    OCMStub([mock_scene_state_ activationLevel])
+        .andReturn(SceneActivationLevelForegroundActive);
+    browser_ = std::make_unique<TestBrowser>(
+        browser_state_manager_->GetLastUsedBrowserState(), mock_scene_state_);
+    list->AddBrowser(browser_.get());
+  }
 
   // Sets up a mock notification center, so notification requests can be
   // tested.
@@ -82,6 +107,11 @@ class TipsNotificationClientTest : public PlatformTest {
   // Ensures that Chrome is not considered as default browser.
   void SetFalseChromeLikelyDefaultBrowser() { ClearDefaultBrowserPromoData(); }
 
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
+  raw_ptr<BrowserList> browser_list_;
+  id mock_scene_state_;
+  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TipsNotificationClient> client_ =
       std::make_unique<TipsNotificationClient>();
   id mock_notification_center_;
@@ -126,9 +156,16 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
 
 // Tests that the client handles a Default Browser notification response.
 TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
+  id mock_handler = OCMProtocolMock(@protocol(PromosManagerCommands));
+  OCMExpect([mock_handler maybeDisplayDefaultBrowserPromo]);
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_handler
+                   forProtocol:@protocol(PromosManagerCommands)];
+
   id mock_response = MockRequestResponse(NotificationType::kDefaultBrowser);
   client_->HandleNotificationInteraction(mock_response);
-  // TODO(crbug.com/1517910) verify DefaultBrowser interaction.
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }
 
 // Tests that the client can register a Whats New notification.
@@ -146,7 +183,14 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
 
 // Tests that the client handles a Whats New notification response.
 TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
+  id mock_handler = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showWhatsNew]);
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_handler
+                   forProtocol:@protocol(BrowserCoordinatorCommands)];
+
   id mock_response = MockRequestResponse(NotificationType::kWhatsNew);
   client_->HandleNotificationInteraction(mock_response);
-  // TODO(crbug.com/1517911) verify WhatsNew interaction.
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }

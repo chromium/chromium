@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/version.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The UpdateClient class is a facade with a simple interface. The interface
 // exposes a few APIs to install a CRX or update a group of CRXs.
@@ -400,7 +400,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // output vector.
   using CrxDataCallback = base::OnceCallback<void(
       const std::vector<std::string>& ids,
-      base::OnceCallback<void(const std::vector<absl::optional<CrxComponent>>&)>
+      base::OnceCallback<void(const std::vector<std::optional<CrxComponent>>&)>
           callback)>;
 
   // Called when state changes occur during an Install or Update call.

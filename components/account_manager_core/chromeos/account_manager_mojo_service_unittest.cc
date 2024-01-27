@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,7 +32,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -130,10 +130,10 @@ class TestAccountManagerObserver
   int num_account_removed_calls_ = 0;
   int num_auth_errors_ = 0;
   int num_signin_dialog_closed_notifications_ = 0;
-  absl::optional<account_manager::Account> last_upserted_account_;
-  absl::optional<account_manager::Account> last_removed_account_;
-  absl::optional<account_manager::AccountKey> last_err_account_;
-  absl::optional<GoogleServiceAuthError> last_error_;
+  std::optional<account_manager::Account> last_upserted_account_;
+  std::optional<account_manager::Account> last_removed_account_;
+  std::optional<account_manager::AccountKey> last_err_account_;
+  std::optional<GoogleServiceAuthError> last_error_;
   mojo::Receiver<mojom::AccountManagerObserver> receiver_;
 };
 
@@ -165,7 +165,7 @@ class AccountManagerSpy : public account_manager::AccountManager {
  private:
   // Mutated by const CreateAccessTokenFetcher.
   mutable int num_access_token_fetches_ = 0;
-  mutable absl::optional<account_manager::AccountKey>
+  mutable std::optional<account_manager::AccountKey>
       last_access_token_account_key_;
 };
 
@@ -462,7 +462,7 @@ TEST_F(AccountManagerMojoServiceTest,
   // Check status.
   EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess, result->status);
   // Check account.
-  absl::optional<account_manager::Account> account =
+  std::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -490,7 +490,7 @@ TEST_F(AccountManagerMojoServiceTest,
   // Check status.
   EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess, result->status);
   // Check account.
-  absl::optional<account_manager::Account> account =
+  std::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -527,7 +527,7 @@ TEST_F(AccountManagerMojoServiceTest,
 
   EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess, result->status);
   // Check account.
-  absl::optional<account_manager::Account> account =
+  std::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -552,7 +552,7 @@ TEST_F(AccountManagerMojoServiceTest,
   auto result = future.Take();
   EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess, result->status);
   // Check account.
-  absl::optional<account_manager::Account> account =
+  std::optional<account_manager::Account> account =
       account_manager::FromMojoAccount(result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
@@ -569,7 +569,7 @@ TEST_F(AccountManagerMojoServiceTest,
   auto result_2 = future_2.Take();
   EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess, result_2->status);
   // Check account.
-  absl::optional<account_manager::Account> account_2 =
+  std::optional<account_manager::Account> account_2 =
       account_manager::FromMojoAccount(result_2->account);
   EXPECT_TRUE(account_2.has_value());
   EXPECT_EQ(kFakeAccount.key, account_2.value().key);

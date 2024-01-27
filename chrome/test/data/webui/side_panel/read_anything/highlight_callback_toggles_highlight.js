@@ -69,7 +69,7 @@
   // resetPreviousHighlight and playNextMessage.
   readAnythingApp.playSpeech();
   readAnythingApp.resetPreviousHighlight();
-  readAnythingApp.playNextMessage();
+  readAnythingApp.highlightAndPlayNextMessage();
 
   // Color should start visible, and the previous highlight should be there
   const highlights = container.querySelectorAll('.current-read-highlight');

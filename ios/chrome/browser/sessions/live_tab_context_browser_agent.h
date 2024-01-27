@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sessions/core/live_tab_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -82,8 +83,8 @@ class LiveTabContextBrowserAgent
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 
-  ChromeBrowserState* browser_state_;
-  WebStateList* web_state_list_;
+  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };
 

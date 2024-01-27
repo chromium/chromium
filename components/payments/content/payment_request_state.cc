@@ -244,10 +244,10 @@ void PaymentRequestState::SetOptOutOffered() {
     journey_logger_->SetOptOutOffered();
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 PaymentRequestState::GetChromeOSTWAInstanceId() const {
   if (!payment_request_delegate_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return payment_request_delegate_->GetChromeOSTWAInstanceId();

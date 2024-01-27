@@ -65,7 +65,7 @@ class VisitScores {
   // The score for whether the visit had a URL-keyed image.
   float has_url_keyed_image_score_ = 0.0;
   // The score for NTP visit attributes.
-  absl::optional<float> ntp_visit_attributes_score_;
+  std::optional<float> ntp_visit_attributes_score_;
 };
 
 // A cluster finalizer that scores visits based on visit duration.

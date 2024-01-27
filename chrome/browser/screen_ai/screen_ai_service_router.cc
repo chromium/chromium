@@ -391,4 +391,13 @@ void ScreenAIServiceRouter::SetLibraryLoadState(int request_id,
                  : screen_ai::ScreenAIInstallState::State::kFailed);
 }
 
+bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {
+  switch (service) {
+    case Service::kMainContentExtraction:
+      return main_content_extraction_service_.is_bound();
+    case Service::kOCR:
+      return ocr_service_.is_bound();
+  }
+}
+
 }  // namespace screen_ai

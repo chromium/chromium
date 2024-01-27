@@ -36,13 +36,13 @@ MediaItemUIListView::SeparatorStyle::SeparatorStyle(SkColor separator_color,
       separator_thickness(separator_thickness) {}
 
 MediaItemUIListView::MediaItemUIListView()
-    : MediaItemUIListView(absl::nullopt, /*should_clip_height=*/true) {}
+    : MediaItemUIListView(std::nullopt, /*should_clip_height=*/true) {}
 
 MediaItemUIListView::MediaItemUIListView(
-    const absl::optional<SeparatorStyle>& separator_style,
+    const std::optional<SeparatorStyle>& separator_style,
     bool should_clip_height)
     : separator_style_(separator_style) {
-  SetBackgroundColor(absl::nullopt);
+  SetBackgroundColor(std::nullopt);
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

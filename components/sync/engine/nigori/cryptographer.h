@@ -6,13 +6,13 @@
 #define COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/encryption.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -54,7 +54,7 @@ class Cryptographer {
   // Encrypts |plaintext| using Auth HPKE using |recipient_public_key|.
   // Authentication is added with the current sender's authentication key.
   // Empty optional is returned upon failure.
-  virtual absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
+  virtual std::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
       base::span<const uint8_t> plaintext,
       base::span<const uint8_t> recipient_public_key) const = 0;
 
@@ -62,7 +62,7 @@ class Cryptographer {
   // to |recipient_key_version| and authenticates that the sender actually used
   // |sender_public_key| upon auth encryption.
   // Empty optional is returned upon failure.
-  virtual absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
+  virtual std::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
       base::span<const uint8_t> encrypted_data,
       base::span<const uint8_t> sender_public_key,
       const uint32_t recipient_key_version) const = 0;

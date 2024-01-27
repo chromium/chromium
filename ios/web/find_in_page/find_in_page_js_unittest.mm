@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -85,7 +86,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     return main_frame->GetWebFrameInternal();
   }
 
-  JavaScriptContentWorld* content_world_;
+  raw_ptr<JavaScriptContentWorld> content_world_;
 };
 
 // Tests that FindInPage searches in main frame containing a match and responds

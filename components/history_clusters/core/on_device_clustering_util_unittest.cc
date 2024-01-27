@@ -180,7 +180,7 @@ TEST_F(OnDeviceClusteringUtilTest, AppendClusterVisits) {
           testing::CreateClusterVisit(
               testing::CreateDefaultAnnotatedVisit(1, GURL("https://two.com/"),
                                                    base::Time::FromTimeT(10)),
-              absl::nullopt, 0.1),
+              std::nullopt, 0.1),
       },
       {});
 
@@ -190,7 +190,7 @@ TEST_F(OnDeviceClusteringUtilTest, AppendClusterVisits) {
           testing::CreateClusterVisit(
               testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                                    base::Time::FromTimeT(10)),
-              absl::nullopt, 0.1),
+              std::nullopt, 0.1),
       },
       {});
 
@@ -211,7 +211,7 @@ TEST_F(OnDeviceClusteringUtilTest, RemoveEmptyClusters) {
           testing::CreateClusterVisit(
               testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                                    base::Time::FromTimeT(10)),
-              absl::nullopt, 0.1),
+              std::nullopt, 0.1),
       },
       {}));
 

@@ -14,6 +14,7 @@ import androidx.preference.DialogPreference;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
 
 /** The preference used to save the download directory in download settings page. */
 public class DownloadLocationPreference extends DialogPreference
@@ -24,12 +25,19 @@ public class DownloadLocationPreference extends DialogPreference
      */
     private DownloadLocationPreferenceAdapter mAdapter;
 
+    private DownloadLocationHelper mLocationHelper;
+
     /** Constructor for DownloadLocationPreference. */
     public DownloadLocationPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDialogLayoutResource(R.layout.download_location_preference);
         mAdapter = new DownloadLocationPreferenceAdapter(getContext(), this);
         mAdapter.update();
+    }
+
+    /** Set the helper to access and update the default download location. */
+    public void setDownloadLocationHelper(DownloadLocationHelper helper) {
+        mLocationHelper = helper;
     }
 
     /** Updates the summary that shows the download location directory. */
@@ -64,6 +72,11 @@ public class DownloadLocationPreference extends DialogPreference
     @Override
     public void onDirectorySelectionChanged() {
         updateSummary();
+    }
+
+    @Override
+    public DownloadLocationHelper getDownloadLocationHelper() {
+        return mLocationHelper;
     }
 
     DownloadLocationPreferenceAdapter getAdapter() {

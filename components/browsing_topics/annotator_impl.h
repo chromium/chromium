@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_ANNOTATOR_IMPL_H_
 #define COMPONENTS_BROWSING_TOPICS_ANNOTATOR_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -55,14 +55,14 @@ class AnnotatorImpl : public Annotator,
   AnnotatorImpl(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata);
+      const std::optional<optimization_guide::proto::Any>& model_metadata);
   ~AnnotatorImpl() override;
 
   // Annotator:
   void BatchAnnotate(BatchAnnotationCallback callback,
                      const std::vector<std::string>& inputs) override;
   void NotifyWhenModelAvailable(base::OnceClosure callback) override;
-  absl::optional<optimization_guide::ModelInfo> GetBrowsingTopicsModelInfo()
+  std::optional<optimization_guide::ModelInfo> GetBrowsingTopicsModelInfo()
       const override;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ class AnnotatorImpl : public Annotator,
       override;
 
   // Extracts the scored categories from the output of the model.
-  absl::optional<std::vector<int32_t>> ExtractCategoriesFromModelOutput(
+  std::optional<std::vector<int32_t>> ExtractCategoriesFromModelOutput(
       const std::vector<tflite::task::core::Category>& model_output) const;
 
  protected:
@@ -89,7 +89,7 @@ class AnnotatorImpl : public Annotator,
   void OnOverrideListLoadAttemptDone(
       BatchAnnotationCallback callback,
       const std::vector<std::string>& inputs,
-      absl::optional<std::unordered_map<std::string, std::vector<int32_t>>>
+      std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
           override_list);
 
   // Starts a batch annotation once the override list is loaded, if provided.
@@ -115,20 +115,20 @@ class AnnotatorImpl : public Annotator,
   void PostprocessCategoriesToBatchAnnotationResult(
       base::OnceClosure single_input_done_signal,
       Annotation* annotation,
-      const absl::optional<std::vector<tflite::task::core::Category>>& output);
+      const std::optional<std::vector<tflite::task::core::Category>>& output);
 
   // Used to read the override list file on a background thread.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Set whenever a valid override list file is passed along with the model file
   // update. Used on the UI thread.
-  absl::optional<base::FilePath> override_list_file_path_;
+  std::optional<base::FilePath> override_list_file_path_;
 
   // Set whenever an override list file is available and the model file is
   // loaded into memory. Reset whenever the model file is unloaded.
   // Used on the UI thread. Lookups in this mapping should have |PreprocessHost|
   // applied first.
-  absl::optional<std::unordered_map<std::string, std::vector<int32_t>>>
+  std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
       override_list_;
 
   // The version of topics model provided by the server in the model metadata

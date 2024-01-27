@@ -24,12 +24,12 @@ class SyncChangeProcessor {
   virtual ~SyncChangeProcessor() = default;
 
   // Process a list of SyncChanges.
-  // Returns: absl::nullopt if no error was encountered, otherwise a
-  //          absl::optional filled with such error.
+  // Returns: std::nullopt if no error was encountered, otherwise a
+  //          std::optional filled with such error.
   // Inputs:
   //   |from_here|: allows tracking of where sync changes originate.
   //   |change_list|: is the list of sync changes in need of processing.
-  virtual absl::optional<ModelError> ProcessSyncChanges(
+  virtual std::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
 };

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -94,7 +95,12 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   password_sync_configured_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
 
-  if (password_sync_configured_setting_ != password_sync_applied_setting_) {
+  // TODO(crbug.com/1445497): Re-evaluate migration code for local passwords.
+  bool upm_for_local_active =
+      password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs_);
+
+  if (password_sync_configured_setting_ != password_sync_applied_setting_ &&
+      !upm_for_local_active) {
     prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
   } else {
     // The setting was changed back and forth, the migration is not needed.

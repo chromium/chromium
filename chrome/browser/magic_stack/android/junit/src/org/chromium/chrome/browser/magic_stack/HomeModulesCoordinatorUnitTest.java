@@ -42,6 +42,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -49,6 +50,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.HashSet;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -75,9 +79,14 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private Configuration mConfiguration;
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
     private HomeModulesCoordinator mCoordinator;
+
+    @Captor
+    private ArgumentCaptor<HomeModulesConfigManager.HomeModulesStateListener>
+            mHomeModulesStateListener;
 
     @Before
     public void setUp() {
@@ -88,6 +97,8 @@ public class HomeModulesCoordinatorUnitTest {
         when(mActivity.getApplicationInfo()).thenReturn(mApplicationInfo);
         when(mView.findViewById(R.id.home_modules_recycler_view)).thenReturn(mRecyclerView);
         when(mRecyclerView.getContext()).thenReturn(mActivity);
+        when(mHomeModulesConfigManager.getEnabledModuleList())
+                .thenReturn(new HashSet<>(List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB)));
     }
 
     @After
@@ -99,7 +110,9 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testCreate_phones() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
 
         // Verifies that there isn't an observer of UiConfig registered.
         assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
@@ -116,7 +129,9 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 
@@ -145,12 +160,51 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator = new HomeModulesCoordinator(mActivity, mModuleDelegateHost, mView);
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 
         mCoordinator.destroy();
         verify(mUiConfig).removeObserver(mDisplayStyleObserver.capture());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetModuleList() {
+        when(mHomeModulesConfigManager.getEnabledModuleList())
+                .thenReturn(new HashSet<>(List.of(ModuleType.SINGLE_TAB)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        List<Integer> expectedModuleList = List.of(ModuleType.SINGLE_TAB);
+        assertEquals(mCoordinator.getModuleList(), expectedModuleList);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnModuleConfigChanged() {
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+
+        verify(mHomeModulesConfigManager).addListener(mHomeModulesStateListener.capture());
+        List<Integer> expectedModuleListBeforeHidingModule =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(mCoordinator.getModuleList(), expectedModuleListBeforeHidingModule);
+
+        mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, false);
+        List<Integer> expectedModuleListAfterHidingModule = List.of(ModuleType.SINGLE_TAB);
+        assertEquals(mCoordinator.getModuleList(), expectedModuleListAfterHidingModule);
+
+        mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, true);
+        assertEquals(mCoordinator.getModuleList(), expectedModuleListBeforeHidingModule);
+
+        mCoordinator.destroy();
+        verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());
     }
 
     private void setupAndVerifyTablets() {

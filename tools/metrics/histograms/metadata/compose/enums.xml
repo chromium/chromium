@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ComposeContextMenuCtrEvent">
   <int value="0" label="Menu item displayed"/>
-  <int value="1" label="Compose opened from context menu"/>
+  <int value="1" label="Menu item clicked"/>
 </enum>
 
 <enum name="ComposeFirstRunSessionCloseReasonType">

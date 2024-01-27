@@ -472,6 +472,18 @@ public class LocationBarCoordinator
         return mUrlCoordinator.getUrlBarData();
     }
 
+    @Override
+    public void addOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {
+        mAutocompleteCoordinator.addOmniboxSuggestionsDropdownScrollListener(listener);
+    }
+
+    @Override
+    public void removeOmniboxSuggestionsDropdownScrollListener(
+            OmniboxSuggestionsDropdownScrollListener listener) {
+        mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(listener);
+    }
+
     // AutocompleteDelegate implementation.
     @Override
     public void onUrlTextChanged() {

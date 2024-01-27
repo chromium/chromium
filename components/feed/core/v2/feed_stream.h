@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,6 @@
 #include "components/offline_pages/task/task_queue.h"
 #include "components/prefs/pref_member.h"
 #include "components/search_engines/template_url_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -250,7 +250,7 @@ class FeedStream : public FeedApi,
   RequestThrottler& GetRequestThrottler() { return request_throttler_; }
   const feedstore::Metadata& GetMetadata() const;
   void SetMetadata(feedstore::Metadata metadata);
-  bool SetMetadata(absl::optional<feedstore::Metadata> metadata);
+  bool SetMetadata(std::optional<feedstore::Metadata> metadata);
   void SetStreamStale(const StreamType& stream_type, bool is_stale);
 
   MetricsReporter& GetMetricsReporter() const { return *metrics_reporter_; }

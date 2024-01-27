@@ -113,7 +113,7 @@ void BindingsMessagePortConnector::OnPageLoadComplete() {
   DCHECK(!connect_message.empty());
   std::u16string data_utf16 = base::UTF8ToUTF16(connect_message);
 
-  const absl::optional<std::u16string> target_origin_utf16;
+  const std::optional<std::u16string> target_origin_utf16;
   content::MessagePortProvider::PostMessageToFrame(
       web_contents()->GetPrimaryPage(), std::u16string(), target_origin_utf16,
       data_utf16, std::move(ports));

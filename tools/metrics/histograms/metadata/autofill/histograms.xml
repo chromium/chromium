@@ -5249,7 +5249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UploadAcceptedCardOrigin"
-    enum="UploadAcceptedCardOrigin" expires_after="never">
+    enum="UploadPaymentMethodOrigin" expires_after="never">
 <!-- expires-never: https://crbug.com/975713 -->
 
   <owner>jsaul@google.com</owner>
@@ -5282,8 +5282,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.UploadIban.{UploadIbanAction}"
+    enum="UploadPaymentMethodOrigin" expires_after="2024-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records every time the IBAN upload save is offered to the user, as well as
+    when there are actions made on the offer. The metric is broken down by IBAN
+    origins (new IBAN or an existing local IBAN).
+  </summary>
+  <token key="UploadIbanAction">
+    <variant name="Accepted" summary="The user has accepted the offer"/>
+    <variant name="Declined" summary="The user has declined the offer"/>
+    <variant name="Ignored" summary="The user has ignored the offer"/>
+    <variant name="Offered" summary="It is an IBAN upload save offer"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.UploadOfferedCardOrigin"
-    enum="UploadOfferedCardOrigin" expires_after="never">
+    enum="UploadPaymentMethodOrigin" expires_after="never">
 <!-- expires-never: https://crbug.com/975713 -->
 
   <owner>jsaul@google.com</owner>

@@ -519,16 +519,16 @@ TEST_F(VideoResourceUpdaterTestWithF16, HighBitFrame) {
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_NEAR(resources.multiplier, 2.0, 0.1);
-  EXPECT_NEAR(resources.offset, 0.5, 0.1);
+  EXPECT_NEAR(resources.multiplier, 1.0, 0.1);
+  EXPECT_NEAR(resources.offset, 0, 0.1);
 
   // Create the resource again, to test the path where the
   // resources are cached.
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
-  EXPECT_NEAR(resources2.multiplier, 2.0, 0.1);
-  EXPECT_NEAR(resources2.offset, 0.5, 0.1);
+  EXPECT_NEAR(resources2.multiplier, 1.0, 0.1);
+  EXPECT_NEAR(resources2.offset, 0, 0.1);
 }
 
 class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
@@ -560,8 +560,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
 
   // Max 10-bit values as read by a sampler.
-  double max_10bit_value = ((1 << 10) - 1) / 65535.0;
-  EXPECT_NEAR(resources.multiplier * max_10bit_value, 1.0, 0.0001);
+  EXPECT_NEAR(resources.multiplier, 1.0, 0.0001);
   EXPECT_NEAR(resources.offset, 0.0, 0.1);
 
   // Create the resource again, to test the path where the
@@ -569,7 +568,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
-  EXPECT_NEAR(resources2.multiplier * max_10bit_value, 1.0, 0.0001);
+  EXPECT_NEAR(resources2.multiplier, 1.0, 0.0001);
   EXPECT_NEAR(resources2.offset, 0.0, 0.1);
 }
 

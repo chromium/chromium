@@ -24,7 +24,7 @@ class CommonSyncablePrefsDatabase : public SyncablePrefsDatabase {
  public:
   // Returns the metadata associated to the pref or null if `pref_name` is not
   // syncable.
-  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+  std::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
       const std::string& pref_name) const override;
 
   std::map<base::StringPiece, SyncablePrefMetadata> GetAllSyncablePrefsForTest()

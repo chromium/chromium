@@ -216,20 +216,20 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
   return BackgroundTracingSetupMode::kFromJsonConfigFile;
 }
 
-absl::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig() {
   if (!base::FeatureList::IsEnabled(kFieldTracing)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string serialized_config;
   if (!base::Base64Decode(kFieldTracingConfig.Get(), &serialized_config)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   perfetto::protos::gen::ChromeFieldTracingConfig config;
   if (config.ParseFromString(serialized_config)) {
     return config;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsFieldTracingEnabled() {

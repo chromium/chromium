@@ -44,7 +44,7 @@ std::string HexEncodeHash(const std::string& hashed_data) {
       base::HexEncode(std::data(hashed_data), hashed_data.size()));
 }
 
-absl::optional<size_t> FindItemIndexByFilePath(
+std::optional<size_t> FindItemIndexByFilePath(
     const base::FilePath& expected_file_path,
     const std::vector<FileSystemItem>& items) {
   for (size_t i = 0; i < items.size(); i++) {
@@ -52,7 +52,7 @@ absl::optional<size_t> FindItemIndexByFilePath(
       return i;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -259,7 +259,7 @@ TEST_F(FileSystemServiceTest, GetSignals_ExecutableMetadata) {
   EXPECT_EQ(item.executable_metadata.value(), executable_metadata);
 
   // We did not request executable metadata from the second file, so it should
-  // be absl::nullopt.
+  // be std::nullopt.
   index = FindItemIndexByFilePath(second_found_path, file_system_items);
   ASSERT_TRUE(index.has_value());
   item = file_system_items[index.value()];

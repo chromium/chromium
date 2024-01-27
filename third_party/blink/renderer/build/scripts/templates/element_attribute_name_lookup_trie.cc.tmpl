@@ -21,7 +21,6 @@ const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigne
   return g_null_name;
 }
 
-#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
 const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
@@ -31,6 +30,5 @@ const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigne
   {{ trie_length_switch(length_tries, trie_return_expression, false, true) | indent(2) }}
   return g_null_name;
 }
-#endif
 
 }  // namespace blink

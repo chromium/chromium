@@ -51,9 +51,9 @@ bool GetFileSystemInfoOptions::operator==(
          compute_executable_metadata == other.compute_executable_metadata;
 }
 
-absl::optional<base::Value> CrowdStrikeSignals::ToValue() const {
+std::optional<base::Value> CrowdStrikeSignals::ToValue() const {
   if (customer_id.empty() && agent_id.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict dict_value;

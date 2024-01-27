@@ -6,12 +6,12 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_TEST_MOCK_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -48,10 +48,10 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(Dismissed, void(const base::Feature& feature));
   MOCK_METHOD2(DismissedWithSnooze,
                void(const base::Feature& feature,
-                    absl::optional<SnoozeAction> snooze_action));
+                    std::optional<SnoozeAction> snooze_action));
   MOCK_METHOD0(AcquireDisplayLock, std::unique_ptr<DisplayLockHandle>());
   MOCK_METHOD1(SetPriorityNotification, void(const base::Feature&));
-  MOCK_METHOD0(GetPendingPriorityNotification, absl::optional<std::string>());
+  MOCK_METHOD0(GetPendingPriorityNotification, std::optional<std::string>());
   MOCK_METHOD2(RegisterPriorityNotificationHandler,
                void(const base::Feature&, base::OnceClosure));
   MOCK_METHOD1(UnregisterPriorityNotificationHandler,

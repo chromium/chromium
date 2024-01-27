@@ -31,7 +31,7 @@ void RunGetTilesCallback(const JavaRef<jobject>& j_callback,
 }
 
 void RunGetTileCallback(const JavaRef<jobject>& j_callback,
-                        absl::optional<Tile> tile) {
+                        std::optional<Tile> tile) {
   JNIEnv* env = AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       j_callback,

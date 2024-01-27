@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_COMMON_INFOBAR_BANNER_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_COMMON_INFOBAR_BANNER_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 
 class OverlayRequestSupport;
@@ -56,9 +57,9 @@ class InfobarBannerOverlayRequestCallbackInstaller
   const OverlayRequestSupport* GetRequestSupport() const override;
 
   // The request support for `interaction_handler_`.
-  const OverlayRequestSupport* request_support_ = nullptr;
+  raw_ptr<const OverlayRequestSupport> request_support_ = nullptr;
   // The handler for received responses.
-  InfobarBannerInteractionHandler* interaction_handler_ = nullptr;
+  raw_ptr<InfobarBannerInteractionHandler> interaction_handler_ = nullptr;
 
   base::WeakPtrFactory<InfobarBannerOverlayRequestCallbackInstaller>
       weak_factory_{this};

@@ -21,7 +21,7 @@ TEST(SurfaceRangeTest, InRangeTest) {
                                   viz::LocalSurfaceId(2, 2, token2));
 
   const viz::SurfaceRange surface_range1(start, end);
-  const viz::SurfaceRange surface_range2(absl::nullopt, end);
+  const viz::SurfaceRange surface_range2(std::nullopt, end);
   const viz::SurfaceRange surface_range1_token2(start, end_token2);
 
   const viz::SurfaceId surface_id1(FrameSink1,
@@ -38,7 +38,7 @@ TEST(SurfaceRangeTest, InRangeTest) {
   EXPECT_TRUE(surface_range1.IsInRangeExclusive(surface_id1));
 
   // |surface_id1| has the right embed token and inside the range
-  // (absl::nullopt,end).
+  // (std::nullopt,end).
   EXPECT_TRUE(surface_range2.IsInRangeExclusive(surface_id1));
 
   // |surface_id2| has an unmatching token.

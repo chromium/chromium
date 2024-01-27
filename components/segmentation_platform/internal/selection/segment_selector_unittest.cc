@@ -89,7 +89,7 @@ class MockTrainingDataCollector : public TrainingDataCollector {
                TrainingRequestId(proto::SegmentId id,
                                  scoped_refptr<InputContext> input_context,
                                  DecisionType type,
-                                 absl::optional<ModelProvider::Request> inputs,
+                                 std::optional<ModelProvider::Request> inputs,
                                  bool decision_result_update_trigger));
   MOCK_METHOD4(CollectTrainingData,
                void(SegmentId segment_id,
@@ -106,16 +106,16 @@ class TestSegmentationResultPrefs : public SegmentationResultPrefs {
 
   void SaveSegmentationResultToPref(
       const std::string& result_key,
-      const absl::optional<SelectedSegment>& selected_segment) override {
+      const std::optional<SelectedSegment>& selected_segment) override {
     selection = selected_segment;
   }
 
-  absl::optional<SelectedSegment> ReadSegmentationResultFromPref(
+  std::optional<SelectedSegment> ReadSegmentationResultFromPref(
       const std::string& result_key) override {
     return selection;
   }
 
-  absl::optional<SelectedSegment> selection;
+  std::optional<SelectedSegment> selection;
 };
 
 class SegmentSelectorTest : public testing::Test {

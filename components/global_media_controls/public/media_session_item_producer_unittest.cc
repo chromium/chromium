@@ -70,7 +70,7 @@ class MediaSessionItemProducerTest : public testing::Test {
 
     producer_ = std::make_unique<MediaSessionItemProducer>(
         std::move(audio_focus_remote), std::move(controller_manager_remote),
-        &item_manager_, absl::nullopt);
+        &item_manager_, std::nullopt);
 
     audio_focus_manager_->Flush();
     testing::Mock::VerifyAndClearExpectations(audio_focus_manager_.get());
@@ -202,7 +202,7 @@ class MediaSessionItemProducerTest : public testing::Test {
   void SimulateMediaSeeked(const base::UnguessableToken& id) {
     auto item_itr = sessions().find(id.ToString());
     EXPECT_NE(sessions().end(), item_itr);
-    item_itr->second.MediaSessionPositionChanged(absl::nullopt);
+    item_itr->second.MediaSessionPositionChanged(std::nullopt);
   }
 
   void SimulateNotificationClicked(const base::UnguessableToken& id,

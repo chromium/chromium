@@ -171,9 +171,9 @@ GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
   // panel request.
   if (!is_side_panel_request) {
     modified_url = net::AppendOrReplaceQueryParameter(
-        modified_url, kViewportWidthQueryParameter, absl::nullopt);
+        modified_url, kViewportWidthQueryParameter, std::nullopt);
     modified_url = net::AppendOrReplaceQueryParameter(
-        modified_url, kViewportHeightQueryParameter, absl::nullopt);
+        modified_url, kViewportHeightQueryParameter, std::nullopt);
   }
   return modified_url;
 }

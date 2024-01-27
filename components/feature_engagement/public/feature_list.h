@@ -162,8 +162,6 @@ DEFINE_VARIATION_PARAM(kIPHRequestDesktopSiteAppMenuFeature,
                        "IPH_RequestDesktopSiteAppMenu");
 DEFINE_VARIATION_PARAM(kIPHRequestDesktopSiteDefaultOnFeature,
                        "IPH_RequestDesktopSiteDefaultOn");
-DEFINE_VARIATION_PARAM(kIPHRequestDesktopSiteOptInFeature,
-                       "IPH_RequestDesktopSiteOptIn");
 DEFINE_VARIATION_PARAM(kIPHRequestDesktopSiteExceptionsGenericFeature,
                        "IPH_RequestDesktopSiteExceptionsGeneric");
 DEFINE_VARIATION_PARAM(kIPHRequestDesktopSiteWindowSettingFeature,
@@ -547,7 +545,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadLaterBottomSheetFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteAppMenuFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteDefaultOnFeature),
-        VARIATION_ENTRY(kIPHRequestDesktopSiteOptInFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteExceptionsGenericFeature),
         VARIATION_ENTRY(kIPHRequestDesktopSiteWindowSettingFeature),
         VARIATION_ENTRY(kIPHShoppingListMenuItemFeature),

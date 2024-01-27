@@ -55,17 +55,17 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void ReadDataDone(ReadDataCallback callback,
                     std::unique_ptr<RecordList> record_list,
                     std::unique_ptr<IdList> missing_id_list,
-                    const absl::optional<ModelError>& error);
+                    const std::optional<ModelError>& error);
   void ReadAllDataDone(ReadAllDataCallback callback,
                        std::unique_ptr<RecordList> record_list,
-                       const absl::optional<ModelError>& error);
+                       const std::optional<ModelError>& error);
   void ReadAllMetadataDone(ReadMetadataCallback callback,
                            std::unique_ptr<MetadataBatch> metadata_batch,
-                           const absl::optional<ModelError>& error);
+                           const std::optional<ModelError>& error);
   void ReadAllDataAndPreprocessDone(CallbackWithResult callback,
-                                    const absl::optional<ModelError>& error);
+                                    const std::optional<ModelError>& error);
   void WriteModificationsDone(CallbackWithResult callback,
-                              const absl::optional<ModelError>& error);
+                              const std::optional<ModelError>& error);
 
   const ModelType model_type_;
   const StorageType storage_type_;

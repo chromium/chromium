@@ -417,21 +417,20 @@ bool Device::StreamOff(BufferType type) {
 }
 
 // VIDIOC_EXPBUF
-std::vector<base::ScopedFD> Device::ExportAsDMABUF(int index,
-                                                   uint32_t num_planes) {
+std::vector<base::ScopedFD> Device::ExportAsDMABUF(const Buffer& buffer) {
   DVLOGF(4);
 
   std::vector<base::ScopedFD> dmabuf_fds;
-  for (uint32_t i = 0; i < num_planes; ++i) {
+  for (uint32_t i = 0; i < buffer.PlaneCount(); ++i) {
     struct v4l2_exportbuffer expbuf;
     memset(&expbuf, 0, sizeof(expbuf));
     expbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    expbuf.index = index;
+    expbuf.index = buffer.GetIndex();
     expbuf.plane = i;
     expbuf.flags = O_CLOEXEC;
     if (IoctlDevice(VIDIOC_EXPBUF, &expbuf) != 0) {
       DVLOGF(1) << "VIDIOC_EXPBUF failed to export " << i << " of "
-                << num_planes << " planes";
+                << buffer.PlaneCount() << " planes";
       dmabuf_fds.clear();
       break;
     }

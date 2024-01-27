@@ -32,7 +32,7 @@ struct PartialTranslateRequest {
 
   // The source language to translate from. If this isn't specified the server
   // will attempt to detect the selection language.
-  absl::optional<std::string> source_language;
+  std::optional<std::string> source_language;
 
   // The desired target language.
   std::string target_language;

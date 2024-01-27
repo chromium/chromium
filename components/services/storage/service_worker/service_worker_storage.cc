@@ -133,7 +133,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(
           /*data=*/nullptr, /*resources=*/nullptr,
-          /*scopes=*/absl::nullopt,
+          /*scopes=*/std::nullopt,
           ServiceWorkerDatabase::Status::kErrorDisabled);
       return;
     case STORAGE_STATE_INITIALIZING:
@@ -153,7 +153,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
 
   // Bypass database lookup when there is no stored registration.
   if (!base::Contains(registered_keys_, key)) {
-    absl::optional<std::vector<GURL>> scopes;
+    std::optional<std::vector<GURL>> scopes;
     if (base::FeatureList::IsEnabled(storage::kServiceWorkerScopeCache)) {
       scopes = std::vector<GURL>();
     }
@@ -1766,7 +1766,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   /*data=*/nullptr,
                                   /*resources=*/nullptr,
-                                  /*scopes=*/absl::nullopt, status));
+                                  /*scopes=*/std::nullopt, status));
     return;
   }
 
@@ -1789,7 +1789,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   // scopes that are relevant to the `key` so that we can cache scope
   // URLs in the UI thread. The 'scopes' is valid only when the status
   // is `kOk` or `kErrorNotFound`.
-  absl::optional<std::vector<GURL>> scopes;
+  std::optional<std::vector<GURL>> scopes;
   if (enable_scope_cache) {
     scopes = std::vector<GURL>();
     scopes->reserve(registration_data_list.size());

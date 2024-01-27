@@ -1014,144 +1014,13 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
       << "After disabling, the pinned overlay owner should be reset.";
 }
 
-TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Temperature) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
   drm_state.crtc_properties[0].properties.push_back(
       {.id = kCtmPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetColorMatrix(
-      fake_drm_->crtc_property(0).id, std::vector<float>(9)));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
-  } else {
-    EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
-  }
-}
-
-TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_AllowEmptyCtm) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetColorMatrix(
-      fake_drm_->crtc_property(0).id, {}));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
-  } else {
-    EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
-  }
-}
-
-TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    // Page flip should succeed even if the properties failed to be updated.
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-  } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-  }
-
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kDegammaLutSizePropId, .value = 1});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    // Page flip should succeed even if the properties failed to be updated.
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-  } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-  }
-}
-
-TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingGamma) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    // Page flip should succeed even if the properties failed to be updated.
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-  } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-  }
-
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kGammaLutSizePropId, .value = 1});
-
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
-  if (use_atomic_) {
-    HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
-    // Page flip should succeed even if the properties failed to be updated.
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-  } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-  }
-}
-
-TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_LegacyGamma) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  fake_drm_->set_legacy_gamma_ramp_expectation(true);
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
-  EXPECT_EQ(1, fake_drm_->get_set_gamma_ramp_count());
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-  EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-
-  // Ensure disabling gamma also works on legacy.
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kEmptyGammaCurve));
-  EXPECT_EQ(2, fake_drm_->get_set_gamma_ramp_count());
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-  EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
-}
-
-TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.crtc_properties[0].properties.push_back(
-      {.id = kCtmPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-
   drm_state.crtc_properties[0].properties.push_back(
       {.id = kDegammaLutSizePropId, .value = 1});
   drm_state.crtc_properties[0].properties.push_back(
@@ -1160,36 +1029,137 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
       {.id = kGammaLutSizePropId, .value = 1});
   drm_state.crtc_properties[0].properties.push_back(
       {.id = kGammaLutPropId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
 
-  HardwareDisplayPlaneList state;
-  // Check that we reset the properties correctly.
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {}, {}));
+  // Color temperature adjustment will set all properties.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[0][0] = 1.0;
+  cta.srgb_matrix.vals[1][1] = 0.7;
+  cta.srgb_matrix.vals[2][2] = 0.3;
+  fake_drm_->plane_manager()->SetColorTemperatureAdjustment(
+      fake_drm_->crtc_property(0).id, cta);
+
   if (use_atomic_) {
+    HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
     EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
     EXPECT_EQ(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
                                        "DEGAMMA_LUT"));
   } else {
-    EXPECT_EQ(2, fake_drm_->get_set_object_property_count());
+    EXPECT_EQ(3, fake_drm_->get_set_object_property_count());
   }
+}
 
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve,
-      kNonemptyGammaCurve));
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Profile) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kCtmPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+  display::ColorCalibration calibration;
+  calibration.srgb_to_linear = display::GammaCurve::MakeGamma(2.2f);
+  calibration.linear_to_device = display::GammaCurve::MakeGamma(1.f / 2.2);
+  fake_drm_->plane_manager()->SetColorCalibration(
+      fake_drm_->crtc_property(0).id, calibration);
+
   if (use_atomic_) {
+    HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
-    EXPECT_EQ(4, fake_drm_->get_commit_count());
+    EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
     EXPECT_NE(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
                                        "DEGAMMA_LUT"));
   } else {
-    EXPECT_EQ(4, fake_drm_->get_set_object_property_count());
+    EXPECT_EQ(3, fake_drm_->get_set_object_property_count());
   }
+}
+
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kCtmPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutPropId, .value = 0});
+
+  // Gamma adjustment will set all properties.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+  display::GammaAdjustment gamma_adjustment;
+  gamma_adjustment.curve = display::GammaCurve::MakeGamma(1.1);
+  fake_drm_->plane_manager()->SetGammaAdjustment(fake_drm_->crtc_property(0).id,
+                                                 gamma_adjustment);
+
+  if (use_atomic_) {
+    HardwareDisplayPlaneList state;
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+    EXPECT_NE(
+        0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
+    EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
+                                       "DEGAMMA_LUT"));
+  } else {
+    EXPECT_EQ(3, fake_drm_->get_set_object_property_count());
+  }
+}
+
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_LegacyGamma) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test is missing GAMMA.
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kCtmPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutPropId, .value = 0});
+
+  // Gamma adjustment should call the legacy method.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+  display::GammaAdjustment gamma_adjustment;
+  gamma_adjustment.curve = display::GammaCurve::MakeGamma(1.1);
+  fake_drm_->plane_manager()->SetGammaAdjustment(fake_drm_->crtc_property(0).id,
+                                                 gamma_adjustment);
+
+  if (use_atomic_) {
+    HardwareDisplayPlaneList state;
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+
+    // If we have DEGAMMA but no GAMMA, we still ignore the DEGAMMA.
+    EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
+                                       "DEGAMMA_LUT"));
+  } else {
+    EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
+  }
+  EXPECT_EQ(1, fake_drm_->get_set_gamma_ramp_count());
 }
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {

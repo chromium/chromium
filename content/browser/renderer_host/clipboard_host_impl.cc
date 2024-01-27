@@ -29,6 +29,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/last_clipboard_writer_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -58,24 +59,6 @@
 namespace content {
 
 namespace {
-
-// Used to skip content analysis checks when the source and destination of the
-// clipboard data are the same.
-struct LastWriterInfo {
-  // A pointer to the last ClipboardHostImpl that committed data to the
-  // clipboard.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION ClipboardHostImpl* writer = nullptr;
-
-  // The sequence number of the last commit made by `writer`.
-  ui::ClipboardSequenceNumberToken seqno;
-};
-
-LastWriterInfo& GetLastWriterInfo() {
-  static LastWriterInfo info;
-  return info;
-}
 
 std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
                            std::unique_ptr<ui::DataTransferEndpoint> data_dst) {
@@ -172,7 +155,7 @@ void ClipboardHostImpl::Create(
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {
-  GetLastWriterInfo() = {};
+  ClearIfLastClipboardWriterIs(render_frame_host());
   clipboard_writer_->Reset();
 }
 
@@ -555,12 +538,11 @@ void ClipboardHostImpl::CommitWrite() {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 
-  // Remember the ClipboardHostImpl and associated seqno of the last write
-  // made to the clipboard by any ClipboardHostImpl.
-  GetLastWriterInfo() = {
-      .writer = this,
-      .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste)};
+  // Remember the RFH and associated seqno of the last write made to the
+  // clipboard by any ClipboardHostImpl.
+  SetLastClipboardWrite(render_frame_host(),
+                        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                            ui::ClipboardBuffer::kCopyPaste));
 }
 
 bool ClipboardHostImpl::IsRendererPasteAllowed(
@@ -649,8 +631,7 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
 
   // Always allow if the source of the last clipboard commit was this host.
-  const LastWriterInfo& info = GetLastWriterInfo();
-  if (info.writer == this && info.seqno == seqno) {
+  if (IsLastClipboardWrite(render_frame_host(), seqno)) {
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }

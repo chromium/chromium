@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_modal_completion_notifier.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -41,9 +42,9 @@ class InfobarBannerOverlayRequestCancelHandler
     void InserterDestroyed(InfobarOverlayRequestInserter* inserter) override;
 
     // The owning cancel handler.
-    InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
+    raw_ptr<InfobarBannerOverlayRequestCancelHandler> cancel_handler_ = nullptr;
     // The infobar for which to look for modal insertions.
-    InfoBarIOS* infobar_ = nullptr;
+    raw_ptr<InfoBarIOS> infobar_ = nullptr;
     base::ScopedObservation<InfobarOverlayRequestInserter,
                             InfobarOverlayRequestInserter::Observer>
         scoped_observation_{this};
@@ -68,9 +69,9 @@ class InfobarBannerOverlayRequestCancelHandler
         InfobarModalCompletionNotifier* notifier) override;
 
     // The owning cancel handler.
-    InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
+    raw_ptr<InfobarBannerOverlayRequestCancelHandler> cancel_handler_ = nullptr;
     // The infobar whose modal dismissals should trigger cancellation.
-    InfoBarIOS* infobar_ = nullptr;
+    raw_ptr<InfoBarIOS> infobar_ = nullptr;
     base::ScopedObservation<InfobarModalCompletionNotifier,
                             InfobarModalCompletionNotifier::Observer>
         scoped_observation_{this};
@@ -89,7 +90,7 @@ class InfobarBannerOverlayRequestCancelHandler
   // Whether a modal is currently being displayed from this banner.
   bool presenting_modal_ = false;
   // The inserter used to add replacement banner requests.
-  InfobarOverlayRequestInserter* inserter_ = nullptr;
+  raw_ptr<InfobarOverlayRequestInserter> inserter_ = nullptr;
   // The modal completion observer.
   ModalCompletionObserver modal_completion_observer_;
   // The modal insertion observer.

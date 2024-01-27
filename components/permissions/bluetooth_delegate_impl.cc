@@ -43,7 +43,7 @@ void BluetoothDelegateImpl::ShowDevicePairPrompt(
     const std::u16string& device_identifier,
     PairPromptCallback callback,
     PairingKind pairing_kind,
-    const absl::optional<std::u16string>& pin) {
+    const std::optional<std::u16string>& pin) {
   client_->ShowBluetoothDevicePairDialog(
       frame, device_identifier, std::move(callback), pairing_kind, pin);
 }

@@ -16,7 +16,7 @@ namespace extensions {
 
 // A structure to hold the set of tokens provided by this extension.
 struct TrialTokens : public Extension::ManifestData {
-  TrialTokens();
+  TrialTokens(std::set<std::string> tokens);
 
   TrialTokens(const TrialTokens&) = delete;
   TrialTokens& operator=(const TrialTokens&) = delete;
@@ -30,8 +30,9 @@ struct TrialTokens : public Extension::ManifestData {
 
   static bool HasTrialTokens(const Extension& extension);
 
+ private:
   // A set of trial tokens used by this extension.
-  std::set<std::string> tokens;
+  std::set<std::string> tokens_;
 };
 
 // Parses the "trust_tokens" manifest key.

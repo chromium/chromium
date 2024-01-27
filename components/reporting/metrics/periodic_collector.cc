@@ -5,6 +5,7 @@
 #include "components/reporting/metrics/periodic_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "components/reporting/metrics/metric_reporting_controller.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -83,7 +83,7 @@ PeriodicCollector::~PeriodicCollector() = default;
 
 void PeriodicCollector::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   CheckOnSequence();
   CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {

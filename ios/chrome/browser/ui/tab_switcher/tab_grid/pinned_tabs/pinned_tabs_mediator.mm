@@ -162,8 +162,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
       const WebStateListChangeStatusOnly& selectionOnlyChange =
           change.As<WebStateListChangeStatusOnly>();
       if (status.pinned_state_change) {
-        [self changePinnedStateForWebState:selectionOnlyChange
-                                               .selected_web_state()
+        [self changePinnedStateForWebState:selectionOnlyChange.web_state()
                                    atIndex:status.index];
         break;
       }

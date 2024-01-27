@@ -65,7 +65,7 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 // platform dependent, as Windows will fail, but other platforms will return the
 // ciphertext back.
 [[nodiscard]] bool MaybeVerifyDecryptOperation(
-    const absl::optional<std::string>& decrypted,
+    const std::optional<std::string>& decrypted,
     base::span<const uint8_t> ciphertext) {
 #if BUILDFLAG(IS_WIN)
   // On Windows, decryption fails, and decrypted will have no valid value.

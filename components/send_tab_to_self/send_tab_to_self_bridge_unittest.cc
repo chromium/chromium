@@ -84,8 +84,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
       "model", "full_hardware_class", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      send_tab_to_self_receiving_enabled, /*sharing_info=*/absl::nullopt,
-      /*paask_info=*/absl::nullopt,
+      send_tab_to_self_receiving_enabled, /*sharing_info=*/std::nullopt,
+      /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -98,7 +98,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // The currently-requested frame sink for capture. The frame sink manager
   // calls this when it learns of a new CapturableFrameSink to see if the target
   // can be resolved.
-  const absl::optional<VideoCaptureTarget>& target() const { return target_; }
+  const std::optional<VideoCaptureTarget>& target() const { return target_; }
 
   // In some cases, the target to resolve is already known and can be passed
   // directly instead of attempting to resolve it in |ResolveTarget|. This is
@@ -118,7 +118,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
+  void ChangeTarget(const std::optional<VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
              mojom::BufferFormatPreference buffer_format_preference) final;
@@ -371,7 +371,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The target requested by the client, as provided in the last call to
   // ChangeTarget(). May be nullopt if no target is currently set.
-  absl::optional<VideoCaptureTarget> target_;
+  std::optional<VideoCaptureTarget> target_;
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
@@ -408,7 +408,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frame, when RequestRefreshFrame() has been called.
   //
   // Note: This is always set, but the instance is overridden for unit testing.
-  absl::optional<base::OneShotTimer> refresh_frame_retry_timer_;
+  std::optional<base::OneShotTimer> refresh_frame_retry_timer_;
 
   raw_ptr<GmbVideoFramePoolContextProvider>
       gmb_video_frame_pool_context_provider_;
@@ -452,7 +452,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The Oracle-provided media timestamp of the first frame. This is used to
   // compute the relative media stream timestamps for each successive frame.
-  absl::optional<base::TimeTicks> first_frame_media_ticks_;
+  std::optional<base::TimeTicks> first_frame_media_ticks_;
 
   // Zero or more overlays to be rendered over each captured video frame. The
   // order of the entries in this map determines the order in which each overlay

@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/features.h"
@@ -21,7 +22,7 @@ class ScopedIncrementer {
   ~ScopedIncrementer() { --(*counter_); }
 
  private:
-  size_t* counter_;
+  raw_ptr<size_t> counter_;
 };
 }
 

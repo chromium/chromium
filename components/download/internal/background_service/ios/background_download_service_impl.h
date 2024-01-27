@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -20,7 +21,6 @@
 #include "components/download/internal/background_service/service_config_impl.h"
 #include "components/download/internal/background_service/startup_status.h"
 #include "components/download/public/task/download_task_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -85,7 +85,7 @@ class BackgroundDownloadServiceImpl
   Controller::State GetControllerState() override;
   const StartupStatus& GetStartupStatus() override;
   LogSource::EntryDetailsList GetServiceDownloads() override;
-  absl::optional<LogSource::EntryDetails> GetServiceDownload(
+  std::optional<LogSource::EntryDetails> GetServiceDownload(
       const std::string& guid) override;
 
   void PruneDbRecords();

@@ -9,9 +9,14 @@ import org.chromium.base.test.transit.ConditionalState.Phase;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Keeps track of all existing TransitStations and which one is active. */
+/**
+ * Keeps track of all existing TransitStations and which one is active.
+ *
+ * <p>Also keeps track of which test is currently running for batched tests.
+ */
 public class TrafficControl {
     private static final List<TransitStation> sAllStations = new ArrayList<>();
+    private static String sCurrentTestCase;
 
     private static TransitStation sActiveStation;
 
@@ -28,11 +33,23 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    static List<TransitStation> getAllStations() {
+    public static List<TransitStation> getAllStations() {
         return sAllStations;
     }
 
-    static TransitStation getActiveStation() {
+    public static TransitStation getActiveStation() {
         return sActiveStation;
+    }
+
+    static void onTestStarted(String testName) {
+        sCurrentTestCase = testName;
+    }
+
+    static void onTestFinished(String testName) {
+        sCurrentTestCase = null;
+    }
+
+    static String getCurrentTestCase() {
+        return sCurrentTestCase;
     }
 }

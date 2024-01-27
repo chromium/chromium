@@ -145,7 +145,7 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
     }
 
     // Detach the "3rdparty" node.
-    absl::optional<base::Value> third_party =
+    std::optional<base::Value> third_party =
         dictionary_value->Extract("3rdparty");
     if (third_party.has_value()) {
       Merge3rdPartyPolicy(&*third_party, level, bundle,

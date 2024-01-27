@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -30,6 +31,8 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -127,10 +130,20 @@ gaia::OAuthClientInfo GetClientInfo() {
 QuickStartController::QuickStartController() {
   gaia_client_ = std::make_unique<gaia::GaiaOAuthClient>(
       g_browser_process->shared_url_loader_factory());
-  if (features::IsOobeQuickStartEnabled()) {
-    InitTargetDeviceBootstrapController();
-    StartObservingBluetoothState();
+  // Main feature flag
+  if (!features::IsOobeQuickStartEnabled()) {
+    return;
   }
+
+  // QuickStart may not be available on the login screen.
+  if (session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::OOBE &&
+      !features::IsOobeQuickStartOnLoginScreenEnabled()) {
+    return;
+  }
+
+  InitTargetDeviceBootstrapController();
+  StartObservingBluetoothState();
 }
 
 QuickStartController::~QuickStartController() {

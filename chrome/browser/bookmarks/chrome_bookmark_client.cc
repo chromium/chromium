@@ -110,12 +110,10 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
     managed_bookmark_service_->BookmarkModelCreated(model);
   model_ = model;
 
-  if (base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
-    shopping_save_location_provider_ =
-        std::make_unique<ShoppingCollectionProvider>(model, profile_);
+  shopping_save_location_provider_ =
+      std::make_unique<ShoppingCollectionProvider>(model, profile_);
 
-    AddSuggestedSaveLocationProvider(shopping_save_location_provider_.get());
-  }
+  AddSuggestedSaveLocationProvider(shopping_save_location_provider_.get());
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_page_observer_ =

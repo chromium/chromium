@@ -162,7 +162,7 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
 
 sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     const KeyParamsForTesting& passphrase_key_params,
-    const absl::optional<KeyParamsForTesting>& old_key_params) {
+    const std::optional<KeyParamsForTesting>& old_key_params) {
   KeyDerivationMethod method = passphrase_key_params.derivation_params.method();
 
   sync_pb::NigoriSpecifics nigori;
@@ -207,7 +207,7 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
 
 KeyDerivationParams InitCustomPassphraseKeyDerivationParamsFromNigori(
     const sync_pb::NigoriSpecifics& nigori) {
-  absl::optional<KeyDerivationMethod> key_derivation_method =
+  std::optional<KeyDerivationMethod> key_derivation_method =
       ProtoKeyDerivationMethodToEnum(
           nigori.custom_passphrase_key_derivation_method());
   if (!key_derivation_method.has_value()) {

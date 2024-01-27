@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Veuillez entrer le mot de passe</translation>
 <translation id="1156303062776767266">Vous consultez un fichier local ou partagé</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> a mis fin à la connexion de manière inattendue.</translation>
-<translation id="115926840831309955">Vérifiez votre code CVC et réessayez ou bien mettez à jour la date d'expiration</translation>
 <translation id="1161325031994447685">De vous reconnecter au réseau Wi-Fi</translation>
 <translation id="11635448457105324">Bouton Gérer les adresses, activez-le pour ajouter et gérer des adresses dans les paramètres de Chrome</translation>
 <translation id="1165039591588034296">Erreur</translation>
@@ -2036,7 +2035,6 @@
 <translation id="4989809363548539747">Ce plugiciel n'est pas pris en charge</translation>
 <translation id="4990241977441916452">Enveloppe A2</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
-<translation id="4995216769782533993">Confirmez le code de sécurité pour partager les détails de votre carte avec ce site</translation>
 <translation id="4995474875135717171">Modifié :</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer la recherche de sites et votre moteur de recherche par défaut</translation>
 <translation id="4998950033665438990">Visage unique</translation>

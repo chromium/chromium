@@ -20,13 +20,13 @@ static bool g_disable_subframe_navigation_start_offset = false;
 
 namespace {
 
-absl::optional<base::TimeDelta> AdjustedTime(
-    absl::optional<base::TimeDelta> candidate_time,
+std::optional<base::TimeDelta> AdjustedTime(
+    std::optional<base::TimeDelta> candidate_time,
     base::TimeDelta navigation_start_offset) {
   // If |candidate_time| is not positive, this means that the candidate is an
   // image that has not finished loading. Preserve its meaning by not adding the
   // |navigation_start_offset|.
-  absl::optional<base::TimeDelta> new_time = absl::nullopt;
+  std::optional<base::TimeDelta> new_time = std::nullopt;
   if (candidate_time) {
     new_time = candidate_time->is_positive()
                    ? navigation_start_offset + candidate_time.value()
@@ -74,18 +74,18 @@ void MergeForSubframesWithAdjustedTime(
   inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
                       merged_candidate.Type(), merged_candidate.ImageBPP(),
                       merged_candidate.ImageRequestPriority(),
-                      /*image_discovery_time=*/absl::nullopt,
-                      /*image_load_start=*/absl::nullopt,
-                      /*image_load_end=*/absl::nullopt);
+                      /*image_discovery_time=*/std::nullopt,
+                      /*image_load_start=*/std::nullopt,
+                      /*image_load_end=*/std::nullopt);
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
-  timing.Reset(absl::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
+  timing.Reset(std::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
                /*image_bpp=*/0.0,
-               /*image_request_priority=*/absl::nullopt,
-               /*image_discovery_time=*/absl::nullopt,
-               /*image_load_start=*/absl::nullopt,
-               /*image_load_end=*/absl::nullopt);
+               /*image_request_priority=*/std::nullopt,
+               /*image_discovery_time=*/std::nullopt,
+               /*image_load_start=*/std::nullopt,
+               /*image_load_end=*/std::nullopt);
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
@@ -99,12 +99,12 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-absl::optional<net::RequestPriority> GetImageRequestPriority(
+std::optional<net::RequestPriority> GetImageRequestPriority(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint) {
   if (largest_contentful_paint.image_request_priority_valid)
     return largest_contentful_paint.image_request_priority_value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -117,11 +117,11 @@ ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
       type_(type),
       in_main_frame_(in_main_frame) {}
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
-    const absl::optional<base::TimeDelta>& time,
+    const std::optional<base::TimeDelta>& time,
     const uint64_t& size,
     const LargestContentTextOrImage text_or_image,
     double image_bpp,
-    const absl::optional<net::RequestPriority>& image_request_priority,
+    const std::optional<net::RequestPriority>& image_request_priority,
     bool in_main_frame,
     blink::LargestContentfulPaintType type)
     : time_(time),
@@ -177,14 +177,14 @@ void LargestContentfulPaintHandler::SetTestMode(bool enabled) {
 }
 
 void ContentfulPaintTimingInfo::Reset(
-    const absl::optional<base::TimeDelta>& time,
+    const std::optional<base::TimeDelta>& time,
     const uint64_t& size,
     blink::LargestContentfulPaintType type,
     double image_bpp,
-    const absl::optional<net::RequestPriority>& image_request_priority,
-    const absl::optional<base::TimeDelta>& image_discovery_time,
-    const absl::optional<base::TimeDelta>& image_load_start,
-    const absl::optional<base::TimeDelta>& image_load_end) {
+    const std::optional<net::RequestPriority>& image_request_priority,
+    const std::optional<base::TimeDelta>& image_discovery_time,
+    const std::optional<base::TimeDelta>& image_load_start,
+    const std::optional<base::TimeDelta>& image_load_end) {
   size_ = size;
   time_ = time;
   type_ = type;
@@ -213,7 +213,7 @@ const ContentfulPaintTimingInfo& ContentfulPaint::MergeTextAndImageTiming()
 bool LargestContentfulPaintHandler::AssignTimeAndSizeForLargestContentfulPaint(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    absl::optional<base::TimeDelta>* largest_content_paint_time,
+    std::optional<base::TimeDelta>* largest_content_paint_time,
     uint64_t* largest_content_paint_size,
     ContentfulPaintTimingInfo::LargestContentTextOrImage*
         largest_content_type) {
@@ -277,10 +277,10 @@ void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
         static_cast<blink::LargestContentfulPaintType>(
             largest_contentful_paint.type),
         /*image_bpp=*/0.0,
-        /*image_request_priority=*/absl::nullopt,
-        /*image_discovery_time=*/absl::nullopt,
-        /*image_load_start=*/absl::nullopt,
-        /*image_load_end=*/absl::nullopt);
+        /*image_request_priority=*/std::nullopt,
+        /*image_discovery_time=*/std::nullopt,
+        /*image_load_start=*/std::nullopt,
+        /*image_load_end=*/std::nullopt);
   }
   if (largest_contentful_paint.largest_image_paint.has_value()) {
     soft_navigation_contentful_paint_candidate_.Image().Reset(
@@ -299,7 +299,7 @@ void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const absl::optional<base::TimeDelta>&
+    const std::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp) {
   UpdateFirstInputOrScrollNotified(
       first_input_or_scroll_notified_timestamp,
@@ -312,10 +312,10 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
         static_cast<blink::LargestContentfulPaintType>(
             largest_contentful_paint.type),
         /*image_bpp=*/0.0,
-        /*image_request_priority=*/absl::nullopt,
-        /*image_discovery_time=*/absl::nullopt,
-        /*image_load_start=*/absl::nullopt,
-        /*image_load_end=*/absl::nullopt);
+        /*image_request_priority=*/std::nullopt,
+        /*image_discovery_time=*/std::nullopt,
+        /*image_load_start=*/std::nullopt,
+        /*image_load_end=*/std::nullopt);
   }
   if (IsValid(largest_contentful_paint.largest_image_paint)) {
     main_frame_contentful_paint_.Image().Reset(
@@ -334,7 +334,7 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
 void LargestContentfulPaintHandler::RecordSubFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const absl::optional<base::TimeDelta>&
+    const std::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     content::RenderFrameHost* subframe_rfh,
     const GURL& main_frame_url) {
@@ -366,7 +366,7 @@ void LargestContentfulPaintHandler::RecordSubFrameTiming(
 void LargestContentfulPaintHandler::RecordSubFrameTimingInternal(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
-    const absl::optional<base::TimeDelta>&
+    const std::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     const base::TimeDelta& navigation_start_offset) {
   UpdateFirstInputOrScrollNotified(first_input_or_scroll_notified_timestamp,
@@ -378,7 +378,7 @@ void LargestContentfulPaintHandler::RecordSubFrameTimingInternal(
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
-      /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt,
+      /*image_bpp=*/0.0, /*image_request_priority=*/std::nullopt,
       /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
@@ -415,7 +415,7 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
-      /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt,
+      /*image_bpp=*/0.0, /*image_request_priority=*/std::nullopt,
       /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
@@ -442,7 +442,7 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
 }
 
 void LargestContentfulPaintHandler::UpdateFirstInputOrScrollNotified(
-    const absl::optional<base::TimeDelta>& candidate_new_time,
+    const std::optional<base::TimeDelta>& candidate_new_time,
     const base::TimeDelta& navigation_start_offset) {
   if (!candidate_new_time.has_value())
     return;

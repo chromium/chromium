@@ -478,7 +478,7 @@ void BackForwardCachePageLoadMetricsObserver::
     // This logic for finding the foreground duration is intended to mimic
     // page_load_metrics::GetInitialForegroundDuration, but adjusted to
     // take into account the back forward cache.
-    absl::optional<base::TimeDelta> foreground_duration;
+    std::optional<base::TimeDelta> foreground_duration;
     DCHECK(back_forward_cache_navigation_ids_.size() >= 1);
     auto back_forward_state = GetDelegate().GetBackForwardCacheRestore(
         back_forward_cache_navigation_ids_.size() - 1);
@@ -488,9 +488,9 @@ void BackForwardCachePageLoadMetricsObserver::
     if (!back_forward_state.was_in_foreground)
       return;
 
-    absl::optional<base::TimeDelta> time_to_page_end =
+    std::optional<base::TimeDelta> time_to_page_end =
         GetDelegate().GetPageEndReason() == page_load_metrics::END_NONE
-            ? absl::optional<base::TimeDelta>()
+            ? std::optional<base::TimeDelta>()
             : GetDelegate().GetPageEndTime() -
                   back_forward_state.navigation_start_time;
 

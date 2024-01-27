@@ -34,7 +34,7 @@ APP_ENUM_TO_STRING(TriState, kAllow, kBlock, kAsk)
 Permission::Permission(PermissionType permission_type,
                        PermissionValue value,
                        bool is_managed,
-                       absl::optional<std::string> details)
+                       std::optional<std::string> details)
     : permission_type(permission_type),
       value(std::move(value)),
       is_managed(is_managed),
@@ -129,7 +129,7 @@ base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission) {
 }
 
 PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
-  absl::optional<int> permission_type = dict.FindInt(kPermissionTypeKey);
+  std::optional<int> permission_type = dict.FindInt(kPermissionTypeKey);
   if (!permission_type.has_value() ||
       permission_type.value() < static_cast<int>(PermissionType::kUnknown) ||
       permission_type.value() > static_cast<int>(PermissionType::kMaxValue)) {
@@ -137,11 +137,11 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
   }
 
   Permission::PermissionValue permission_value;
-  absl::optional<bool> value = dict.FindBool(kValueKey);
+  std::optional<bool> value = dict.FindBool(kValueKey);
   if (value.has_value()) {
     permission_value = value.value();
   } else {
-    absl::optional<int> tri_state = dict.FindInt(kValueKey);
+    std::optional<int> tri_state = dict.FindInt(kValueKey);
     if (tri_state.has_value() &&
         tri_state.value() >= static_cast<int>(TriState::kAllow) &&
         tri_state.value() <= static_cast<int>(TriState::kMaxValue)) {
@@ -151,7 +151,7 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
     }
   }
 
-  absl::optional<bool> is_managed = dict.FindBool(kIsManagedKey);
+  std::optional<bool> is_managed = dict.FindBool(kIsManagedKey);
   if (!is_managed.has_value()) {
     return nullptr;
   }
@@ -161,7 +161,7 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
   return std::make_unique<Permission>(
       static_cast<PermissionType>(permission_type.value()), permission_value,
       is_managed.value(),
-      details ? absl::optional<std::string>(*details) : absl::nullopt);
+      details ? std::optional<std::string>(*details) : std::nullopt);
 }
 
 base::Value::List ConvertPermissionsToList(const Permissions& permissions) {

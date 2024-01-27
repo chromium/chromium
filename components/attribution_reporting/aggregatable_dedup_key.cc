@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/types/expected.h"
@@ -14,7 +15,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
@@ -48,7 +48,7 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
 
 AggregatableDedupKey::AggregatableDedupKey() = default;
 
-AggregatableDedupKey::AggregatableDedupKey(absl::optional<uint64_t> dedup_key,
+AggregatableDedupKey::AggregatableDedupKey(std::optional<uint64_t> dedup_key,
                                            FilterPair filters)
     : dedup_key(dedup_key), filters(std::move(filters)) {}
 

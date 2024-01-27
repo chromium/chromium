@@ -5,6 +5,7 @@
 #include "components/exo/extended_drag_source.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/window_properties.h"
@@ -19,7 +20,6 @@
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -408,11 +408,11 @@ aura::Window* ExtendedDragSource::GetDraggedWindowForTesting() {
                                 : nullptr;
 }
 
-absl::optional<gfx::Vector2d> ExtendedDragSource::GetDragOffsetForTesting()
+std::optional<gfx::Vector2d> ExtendedDragSource::GetDragOffsetForTesting()
     const {
   return dragged_window_holder_
-             ? absl::optional<gfx::Vector2d>(dragged_window_holder_->offset())
-             : absl::nullopt;
+             ? std::optional<gfx::Vector2d>(dragged_window_holder_->offset())
+             : std::nullopt;
 }
 
 aura::Window* ExtendedDragSource::GetDragSourceWindowForTesting() {

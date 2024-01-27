@@ -77,11 +77,11 @@ class AttributesCondition {
   // corresponding attribute was not set in the JSON initializing this
   // `AttributesCondition`, and such attributes are ignored.
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
-  absl::optional<bool> incognito_;
+  std::optional<bool> incognito_;
 
   // This attribute indicates the destination/source condition must/mustn't be
   // the OS clipboard. It is always null for non-clipboard conditions.
-  absl::optional<bool> os_clipboard_;
+  std::optional<bool> os_clipboard_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // A destination/source must be in this set to pass the condition, unless the

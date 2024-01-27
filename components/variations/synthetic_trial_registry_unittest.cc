@@ -182,7 +182,10 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialsOlderThanSuffix) {
 }
 
 TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_NoAllowlist) {
-  SyntheticTrialRegistry registry(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      internal::kExternalExperimentAllowlist);
+  SyntheticTrialRegistry registry;
   const std::string context = "TestTrial1";
   const auto mode = SyntheticTrialRegistry::kOverrideExistingIds;
 
@@ -328,8 +331,10 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
 }
 
 TEST_F(SyntheticTrialRegistryTest, NotifyObserverExternalTrials) {
-  SyntheticTrialRegistry registry(
-      /*enable_external_experiment_allowlist=*/false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      internal::kExternalExperimentAllowlist);
+  SyntheticTrialRegistry registry;
   MockSyntheticTrialObserver observer;
   registry.AddObserver(&observer);
 

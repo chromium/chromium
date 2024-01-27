@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_COMMON_SEMANTIC_TREE_H_
 #define COMPONENTS_BROWSING_TOPICS_COMMON_SEMANTIC_TREE_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "components/browsing_topics/common/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_topics {
 
@@ -53,15 +53,15 @@ class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
   std::vector<Topic> GetAncestorTopics(const Topic& topic);
   // Get the most recent localized name message id as of the version in
   // `blink::features::kBrowsingTopicsTaxonomyVersion.Get()`.
-  absl::optional<int> GetLatestLocalizedNameMessageId(const Topic& topic);
+  std::optional<int> GetLatestLocalizedNameMessageId(const Topic& topic);
 
  private:
   // Get the localized name message id for a topic in taxonomy
   // `taxonomy_version.` If the topic is not in taxonomy `taxonomy_version,` try
   // to get the most recent name for a prior taxonomy. If the topic was not in
   // any taxonomy, return an empty result.
-  absl::optional<int> GetLocalizedNameMessageId(const Topic& topic,
-                                                int taxonomy_version);
+  std::optional<int> GetLocalizedNameMessageId(const Topic& topic,
+                                               int taxonomy_version);
   FRIEND_TEST_ALL_PREFIXES(SemanticTreeUnittest,
                            RepresentativesNeverEmptyForFirstLevelTopics);
   FRIEND_TEST_ALL_PREFIXES(SemanticTreeUnittest,

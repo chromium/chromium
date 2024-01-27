@@ -238,7 +238,7 @@ RenderPassBuilder& RenderPassBuilder::SetQuadOpacity(float opacity) {
 }
 
 RenderPassBuilder& RenderPassBuilder::SetQuadClipRect(
-    absl::optional<gfx::Rect> clip_rect) {
+    std::optional<gfx::Rect> clip_rect) {
   CHECK(!clip_rect || pass_->output_rect.Contains(*clip_rect));
   GetLastQuadSharedQuadState()->clip_rect = clip_rect;
   return *this;
@@ -288,7 +288,7 @@ SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
     const gfx::Rect visible_rect) {
   SharedQuadState* sqs = pass_->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), rect, visible_rect, gfx::MaskFilterInfo(),
-              /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+              /*clip=*/std::nullopt, /*contents_opaque=*/false,
               /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, /*sorting_context=*/0,
               /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return sqs;

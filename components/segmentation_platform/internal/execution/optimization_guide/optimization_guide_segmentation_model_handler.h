@@ -32,7 +32,7 @@ class OptimizationGuideSegmentationModelHandler
  public:
   using ModelUpdatedCallback = base::RepeatingCallback<void(
       proto::SegmentId,
-      absl::optional<proto::SegmentationModelMetadata>,
+      std::optional<proto::SegmentationModelMetadata>,
       int64_t)>;
 
   explicit OptimizationGuideSegmentationModelHandler(
@@ -40,7 +40,7 @@ class OptimizationGuideSegmentationModelHandler
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       optimization_guide::proto::OptimizationTarget segment_id,
       const ModelUpdatedCallback& model_updated_callback,
-      absl::optional<optimization_guide::proto::Any>&& model_metadata);
+      std::optional<optimization_guide::proto::Any>&& model_metadata);
 
   ~OptimizationGuideSegmentationModelHandler() override;
 

@@ -26,14 +26,17 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
   std::string GetUserAgentBasedOnPolicy(
       content::BrowserContext* context) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
-  bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
-                              content::RenderFrameHost* rfh,
-                              const url::Origin& top_frame_origin,
-                              const url::Origin& accessing_origin) override;
+  bool IsSharedStorageAllowed(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) override;
   bool IsSharedStorageSelectURLAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin) override;
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   std::unique_ptr<content::DevToolsManagerDelegate>

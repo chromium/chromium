@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_H_
 
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
 #include "url/origin.h"
 
@@ -37,10 +37,10 @@ class BackgroundSyncDelegate {
 #endif
 
   // Gets the source_ID to log the UKM event for, and calls |callback| with that
-  // source_id, or with absl::nullopt if UKM recording is not allowed.
+  // source_id, or with std::nullopt if UKM recording is not allowed.
   virtual void GetUkmSourceId(
       const url::Origin& origin,
-      base::OnceCallback<void(absl::optional<ukm::SourceId>)> callback) = 0;
+      base::OnceCallback<void(std::optional<ukm::SourceId>)> callback) = 0;
 
   // Handles browser shutdown.
   virtual void Shutdown() = 0;

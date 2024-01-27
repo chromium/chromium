@@ -56,7 +56,7 @@ void InsertAPI(
 
 namespace privacy_sandbox {
 
-absl::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
+std::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
     std::string& input) {
   PrivacySandboxAttestationsProto proto;
 
@@ -64,7 +64,7 @@ absl::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
   if (!proto.ParseFromString(input)) {
     // Parsing failed. This should never happen in real use, because the input
     // comes from Chrome servers.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Convert the parsed proto into a C++ attestations map.

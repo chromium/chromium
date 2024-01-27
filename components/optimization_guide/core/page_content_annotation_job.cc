@@ -60,17 +60,17 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
     switch (type()) {
       case AnnotationType::kPageEntities:
         PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
-                          input, absl::nullopt),
+                          input, std::nullopt),
                       i);
         break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
-                          input, absl::nullopt),
+                          input, std::nullopt),
                       i);
         break;
       case AnnotationType::kTextEmbedding:
         PostNewResult(BatchAnnotationResult::CreateTextEmbeddingResult(
-                          input, absl::nullopt),
+                          input, std::nullopt),
                       i);
         break;
       case AnnotationType::kUnknown:
@@ -96,13 +96,13 @@ size_t PageContentAnnotationJob::CountOfRemainingNonNullInputs() const {
   return inputs_.size();
 }
 
-absl::optional<std::string> PageContentAnnotationJob::GetNextInput() {
+std::optional<std::string> PageContentAnnotationJob::GetNextInput() {
   if (!job_execution_start_time_) {
     job_execution_start_time_ = base::TimeTicks::Now();
   }
 
   if (inputs_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string next = inputs_.front();
   inputs_.erase(inputs_.begin());

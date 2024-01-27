@@ -29,7 +29,7 @@ FakeAccountCapabilitiesFetcherFactory::CreateAccountCapabilitiesFetcher(
 
 void FakeAccountCapabilitiesFetcherFactory::CompleteAccountCapabilitiesFetch(
     const CoreAccountId& account_id,
-    const absl::optional<AccountCapabilities> account_capabilities) {
+    const std::optional<AccountCapabilities> account_capabilities) {
   DCHECK(fetchers_.count(account_id));
   // `CompleteFetch` may destroy the fetcher.
   fetchers_[account_id]->CompleteFetch(account_capabilities);

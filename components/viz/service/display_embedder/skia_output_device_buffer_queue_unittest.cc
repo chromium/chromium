@@ -438,7 +438,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   void ScheduleNoPrimaryPlane() {
-    absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+    std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
         no_plane;
     output_device_->SchedulePrimaryPlane(no_plane);
   }

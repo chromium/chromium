@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -116,7 +117,7 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
     return base::File();
   }
 
-  const base::StringPiece contents(buf.data(), file_length);
+  const std::string_view contents(buf.data(), file_length);
 
   const std::string sha_contents = crypto::SHA256HashString(contents);
 

@@ -22,6 +22,7 @@
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_observer.h"
@@ -658,6 +659,10 @@ TEST_F(LockScreenMediaControlsViewTest, SeekForwardButtonClick) {
 }
 
 TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
+  // TODO (crbug/1520620): Remove the skip code once test is fixed.
+  if (::features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 

@@ -132,6 +132,11 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, I18nMixin) {
   RunTest("chromeos/ash_common/cr_elements/i18n_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, LocalizedLink) {
+  RunTest("chromeos/ash_common/cr_elements/localized_link_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, ListPropertyUpdateMixin) {
   RunTest("chromeos/ash_common/cr_elements/list_property_update_mixin_test.js",
           "mocha.run()");

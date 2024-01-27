@@ -108,7 +108,7 @@ RefreshResponseData TranslateWireResponse(feedwire::Response response) {
   return TranslateWireResponse(response, TestAccountInfo());
 }
 
-absl::optional<feedstore::DataOperation> TranslateDataOperation(
+std::optional<feedstore::DataOperation> TranslateDataOperation(
     feedwire::DataOperation operation) {
   return ::feed::TranslateDataOperation(base::Time(), std::move(operation));
 }
@@ -331,7 +331,7 @@ TEST_F(ProtocolTranslatorTest, MissingResponseVersion) {
 TEST_F(ProtocolTranslatorTest, TranslateContent) {
   feedwire::DataOperation wire_operation =
       MakeDataOperationWithContent(feedwire::DataOperation::UPDATE_OR_APPEND);
-  absl::optional<feedstore::DataOperation> translated =
+  std::optional<feedstore::DataOperation> translated =
       TranslateDataOperation(wire_operation);
   EXPECT_TRUE(translated);
   EXPECT_EQ("content", translated->content().frame());

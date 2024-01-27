@@ -25,7 +25,7 @@ namespace {
 constexpr char kMaskedDomainListComponentMetricsSuffix[] = "MaskedDomainList";
 
 // Loads the raw MDL as a string from the component file in storage.
-absl::optional<std::string> LoadMdlFromDisk(base::ScopedFD fd) {
+std::optional<std::string> LoadMdlFromDisk(base::ScopedFD fd) {
   std::string raw_mdl;
   if (base::ReadStreamToString(base::FileToFILE(base::File(std::move(fd)), "r"),
                                &raw_mdl)) {

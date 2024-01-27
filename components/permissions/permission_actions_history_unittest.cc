@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_actions_history.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -26,7 +27,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 namespace {
@@ -88,7 +88,7 @@ class PermissionActionHistoryTest : public testing::Test {
       delete;
 
   std::vector<PermissionActionsHistory::Entry> GetHistory(
-      absl::optional<RequestType> type,
+      std::optional<RequestType> type,
       PermissionActionsHistory::EntryFilter entry_filter =
           PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS) {
     if (type.has_value()) {
@@ -106,7 +106,7 @@ class PermissionActionHistoryTest : public testing::Test {
     const std::string formatted_legacy_prefs =
         base::StringPrintf(kLegacyPrefs, base::NumberToString(time).c_str(),
                            base::NumberToString(time).c_str());
-    absl::optional<base::Value> legacy_pref_value =
+    std::optional<base::Value> legacy_pref_value =
         base::JSONReader::Read(formatted_legacy_prefs);
     GetPermissionActionsHistory()->GetPrefServiceForTesting()->Set(
         prefs::kPermissionActions, legacy_pref_value.value());
@@ -136,7 +136,7 @@ class PermissionActionHistoryTest : public testing::Test {
 };
 
 TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
-  auto all_entries = GetHistory(absl::nullopt);
+  auto all_entries = GetHistory(std::nullopt);
 
   EXPECT_EQ(10u, all_entries.size());
 
@@ -169,14 +169,14 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
 }
 
 TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
-  size_t general_count = GetHistory(absl::nullopt).size();
+  size_t general_count = GetHistory(std::nullopt).size();
   size_t notification_count = GetHistory(RequestType::kNotifications).size();
 
   GetPermissionActionsHistory()->RecordAction(
       PermissionAction::GRANTED, RequestType::kNotifications,
       PermissionPromptDisposition::ANCHORED_BUBBLE);
 
-  EXPECT_EQ(general_count + 1, GetHistory(absl::nullopt).size());
+  EXPECT_EQ(general_count + 1, GetHistory(std::nullopt).size());
   EXPECT_EQ(notification_count + 1,
             GetHistory(RequestType::kNotifications).size());
 
@@ -184,7 +184,7 @@ TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
       PermissionAction::GRANTED, RequestType::kGeolocation,
       PermissionPromptDisposition::ANCHORED_BUBBLE);
 
-  EXPECT_EQ(general_count + 2, GetHistory(absl::nullopt).size());
+  EXPECT_EQ(general_count + 2, GetHistory(std::nullopt).size());
   EXPECT_EQ(notification_count + 1,
             GetHistory(RequestType::kNotifications).size());
 }
@@ -251,7 +251,7 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
     test.end += current_offset;
 
     GetPermissionActionsHistory()->ClearHistory(test.begin, test.end);
-    EXPECT_EQ(test.generic_count, GetHistory(absl::nullopt).size());
+    EXPECT_EQ(test.generic_count, GetHistory(std::nullopt).size());
     EXPECT_EQ(test.notifications_count,
               GetHistory(RequestType::kNotifications).size());
 
@@ -266,17 +266,17 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
 
 TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
   auto loud_entries =
-      GetHistory(absl::nullopt,
+      GetHistory(std::nullopt,
                  PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
   EXPECT_EQ(5u, loud_entries.size());
 
   auto quiet_entries = GetHistory(
-      absl::nullopt, PermissionActionsHistory::PermissionActionsHistory::
-                         EntryFilter::WANT_QUIET_PROMPTS_ONLY);
+      std::nullopt, PermissionActionsHistory::PermissionActionsHistory::
+                        EntryFilter::WANT_QUIET_PROMPTS_ONLY);
   EXPECT_EQ(2u, quiet_entries.size());
 
   auto all_entries = GetHistory(
-      absl::nullopt, PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+      std::nullopt, PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
   EXPECT_EQ(10u, all_entries.size());
 
   auto quiet_entries_in_last_two_days =

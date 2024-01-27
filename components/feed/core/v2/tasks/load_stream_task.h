@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_LOAD_STREAM_TASK_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -27,7 +28,6 @@
 #include "components/feed/core/v2/view_demotion.h"
 #include "components/offline_pages/task/task.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 class FeedStream;
@@ -78,10 +78,10 @@ class LoadStreamTask : public offline_pages::Task {
     ContentHashSet content_ids;
     LoadType load_type = LoadType::kInitialLoad;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
-    absl::optional<RequestSchedule> request_schedule;
+    std::optional<RequestSchedule> request_schedule;
 
     // Information about the network request, if one was made.
-    absl::optional<NetworkResponseInfo> network_response_info;
+    std::optional<NetworkResponseInfo> network_response_info;
     bool loaded_new_content_from_network = false;
     std::unique_ptr<LoadLatencyTimes> latencies;
 
@@ -152,13 +152,13 @@ class LoadStreamTask : public offline_pages::Task {
 
   // Information to be stuffed in |Result|.
   LoadStreamStatus load_from_store_status_ = LoadStreamStatus::kNoStatus;
-  absl::optional<NetworkResponseInfo> network_response_info_;
+  std::optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
   ContentHashSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
-  absl::optional<RequestSchedule> request_schedule_;
+  std::optional<RequestSchedule> request_schedule_;
   NetworkRequestId network_request_id_;
   base::TimeTicks response_received_timestamp_;
 

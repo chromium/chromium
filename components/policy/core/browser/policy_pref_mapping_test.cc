@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -493,10 +493,10 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
   provider->UpdateChromePolicy(policy_map);
 }
 
-absl::optional<base::flat_set<std::string>> GetTestFilter() {
+std::optional<base::flat_set<std::string>> GetTestFilter() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kPolicyToPrefMappingsFilterSwitch)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string value =
@@ -505,7 +505,7 @@ absl::optional<base::flat_set<std::string>> GetTestFilter() {
   auto list = base::SplitString(value, ":", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
   if (list.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::flat_set<std::string>(std::move(list));
 }

@@ -35,21 +35,11 @@ public class Menu extends LinearLayout {
         mLastItemIndex = -1;
     }
 
-    MenuItem addItem(int itemId, int iconId, String label, @MenuItem.Action int action) {
-        return addItem(itemId, iconId, label, action, "");
-    }
-
-    public MenuItem addItem(
-            int itemId,
-            int iconId,
-            String label,
-            @MenuItem.Action int action,
-            String contentDescription) {
+    public MenuItem addItem(int itemId, int iconId, String label, @MenuItem.Action int action) {
         if (mItemsContainer == null) {
             mItemsContainer = (LinearLayout) findViewById(R.id.items_container);
         }
-        MenuItem item =
-                new MenuItem(mContext, this, itemId, iconId, label, action, contentDescription);
+        MenuItem item = new MenuItem(mContext, this, itemId, iconId, label, action);
         mItemsContainer.addView(
                 item,
                 /* width= */ LayoutParams.MATCH_PARENT,

@@ -4,6 +4,7 @@
 
 #include "components/soda/constants.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_enumerator.h"
@@ -18,7 +19,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
@@ -134,7 +134,7 @@ const base::FilePath GetSodaTestBinaryPath() {
                           : test_dir.Append(kSodaTestBinaryRelativePath);
 }
 
-absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code) {
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
@@ -143,10 +143,10 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name) {
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
@@ -156,10 +156,10 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<SodaLanguagePackComponentConfig>
+std::optional<SodaLanguagePackComponentConfig>
 GetLanguageComponentConfigMatchingLanguageSubtag(
     const std::string& language_name) {
   for (const SodaLanguagePackComponentConfig& config :
@@ -170,7 +170,7 @@ GetLanguageComponentConfigMatchingLanguageSubtag(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
@@ -188,7 +188,7 @@ LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
 std::string GetLanguageName(LanguageCode language_code) {
   std::string language_name;
   if (language_code != LanguageCode::kNone) {
-    absl::optional<SodaLanguagePackComponentConfig> language_config =
+    std::optional<SodaLanguagePackComponentConfig> language_config =
         GetLanguageComponentConfig(language_code);
     if (language_config.has_value()) {
       language_name = language_config.value().language_name;
@@ -199,7 +199,7 @@ std::string GetLanguageName(LanguageCode language_code) {
 }
 
 LanguageCode GetLanguageCode(const std::string& language_name) {
-  absl::optional<SodaLanguagePackComponentConfig> language_config =
+  std::optional<SodaLanguagePackComponentConfig> language_config =
       GetLanguageComponentConfig(language_name);
   if (language_config.has_value()) {
     return language_config.value().language_code;

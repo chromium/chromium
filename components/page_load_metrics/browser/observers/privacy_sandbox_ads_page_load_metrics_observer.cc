@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/privacy_sandbox_ads_page_load_metrics_observer.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
@@ -14,7 +15,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom.h"
 
@@ -146,7 +146,7 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
       continue;
     }
 
-    absl::optional<PrivacySandboxAdsApi> api;
+    std::optional<PrivacySandboxAdsApi> api;
     switch (static_cast<WebFeature>(feature.value())) {
       case WebFeature::kAttributionReportingAPIAll:
         api = PrivacySandboxAdsApi::kAttributionReporting;

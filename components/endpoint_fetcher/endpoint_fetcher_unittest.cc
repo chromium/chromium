@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -37,7 +38,7 @@ const char kHttpPostMethod[] = "POST";
 const char kMalformedResponse[] = "asdf";
 const char kJsonMimeType[] = "application/json";
 const char kMockPostData[] = "mock_post_data";
-int64_t kMockTimeoutMs = 1000000;
+constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
 const char kOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kScope[] = "mock_scope";
 const char kApiKey[] = "api_key";
@@ -63,7 +64,7 @@ class EndpointFetcherTest : public testing::Test {
             &test_url_loader_factory_);
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
         kOAuthConsumerName, GURL(kEndpoint), kHttpPostMethod, kContentType,
-        std::vector<std::string>{kScope}, kMockTimeoutMs, kMockPostData,
+        std::vector<std::string>{kScope}, kMockTimeout, kMockPostData,
         TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
     in_process_data_decoder_ =
@@ -128,7 +129,7 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -185,7 +186,7 @@ TEST_F(EndpointFetcherTest, FetchRedirectionResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_FOUND),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -257,7 +258,7 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kMalformedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });

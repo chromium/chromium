@@ -7,17 +7,17 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "components/sync/base/sync_invalidation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
 class SyncInvalidationAdapter : public SyncInvalidation {
  public:
   SyncInvalidationAdapter(const std::string& payload,
-                          absl::optional<int64_t> version);
+                          std::optional<int64_t> version);
   ~SyncInvalidationAdapter() override;
 
   // Implementation of SyncInvalidation.
@@ -29,7 +29,7 @@ class SyncInvalidationAdapter : public SyncInvalidation {
 
  private:
   const std::string payload_;
-  const absl::optional<int64_t> version_;
+  const std::optional<int64_t> version_;
 };
 
 }  // namespace syncer

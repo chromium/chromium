@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
@@ -41,18 +41,18 @@ ProcessContext::ProcessContext(ProcessContext&& other) = default;
 ProcessContext& ProcessContext::operator=(ProcessContext&& other) = default;
 
 // static
-absl::optional<ProcessContext> ProcessContext::FromBrowserProcess() {
+std::optional<ProcessContext> ProcessContext::FromBrowserProcess() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForBrowserProcess();
   if (!process_node.MaybeValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ProcessContext(BrowserProcessTag{}, std::move(process_node));
 }
 
 // static
-absl::optional<ProcessContext> ProcessContext::FromRenderProcessHost(
+std::optional<ProcessContext> ProcessContext::FromRenderProcessHost(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(host);
@@ -61,13 +61,13 @@ absl::optional<ProcessContext> ProcessContext::FromRenderProcessHost(
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(host);
   if (!process_node.MaybeValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ProcessContext(std::move(id), std::move(process_node));
 }
 
 // static
-absl::optional<ProcessContext> ProcessContext::FromBrowserChildProcessHost(
+std::optional<ProcessContext> ProcessContext::FromBrowserChildProcessHost(
     content::BrowserChildProcessHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(host);
@@ -76,7 +76,7 @@ absl::optional<ProcessContext> ProcessContext::FromBrowserChildProcessHost(
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForBrowserChildProcessHost(host);
   if (!process_node.MaybeValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ProcessContext(std::move(id), std::move(process_node));
 }
@@ -153,10 +153,10 @@ ProcessContext ProcessContext::FromProcessNode(const ProcessNode* node) {
 }
 
 // static
-absl::optional<ProcessContext> ProcessContext::FromWeakProcessNode(
+std::optional<ProcessContext> ProcessContext::FromWeakProcessNode(
     base::WeakPtr<ProcessNode> node) {
   if (!node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return FromProcessNode(node.get());
 }

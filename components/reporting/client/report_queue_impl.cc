@@ -5,6 +5,7 @@
 #include "components/reporting/client/report_queue_impl.h"
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -76,7 +76,7 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
                         std::string dm_token,
                         Destination destination,
                         int64_t reserved_space,
-                        absl::optional<SourceInfo> source_info,
+                        std::optional<SourceInfo> source_info,
                         ReportQueue::RecordProducer record_producer,
                         StorageModuleInterface::EnqueueCallback callback) {
   // Generate record data.

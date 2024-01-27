@@ -6,13 +6,13 @@
 #define COMPONENTS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/screen.h"
@@ -86,7 +86,7 @@ class EyeDropperView : public content::EyeDropper,
 #endif
   };
 
-  void CaptureScreen(absl::optional<webrtc::DesktopCapturer::SourceId> screen);
+  void CaptureScreen(std::optional<webrtc::DesktopCapturer::SourceId> screen);
   void OnScreenCaptured();
 
   // Moves the view to the specified position.
@@ -110,7 +110,7 @@ class EyeDropperView : public content::EyeDropper,
   std::unique_ptr<PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<ViewPositionHandler> view_position_handler_;
   std::unique_ptr<ScreenCapturer> screen_capturer_;
-  absl::optional<SkColor> selected_color_;
+  std::optional<SkColor> selected_color_;
   base::TimeTicks ignore_selection_time_;
   gfx::Point last_cursor_position_ =
       display::Screen::GetScreen()->GetCursorScreenPoint();

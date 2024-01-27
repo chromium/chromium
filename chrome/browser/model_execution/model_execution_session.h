@@ -34,8 +34,8 @@ class ModelExecutionSession : public blink::mojom::ModelGenericSession {
  private:
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
 
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

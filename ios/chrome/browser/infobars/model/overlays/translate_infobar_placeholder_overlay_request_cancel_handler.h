@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
@@ -47,7 +48,7 @@ class PlaceholderRequestCancelHandler
     void TranslateOverlayTabHelperDestroyed(
         TranslateOverlayTabHelper* tab_helper) override;
 
-    PlaceholderRequestCancelHandler* cancel_handler_;
+    raw_ptr<PlaceholderRequestCancelHandler> cancel_handler_;
 
     base::ScopedObservation<TranslateOverlayTabHelper,
                             TranslateOverlayTabHelper::Observer>

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_COMPOSITOR_FRAME_SINK_SUPPORT_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -37,7 +38,6 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -189,7 +189,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      absl::optional<HitTestRegionList> hit_test_region_list = absl::nullopt,
+      std::optional<HitTestRegionList> hit_test_region_list = std::nullopt,
       uint64_t submit_time = 0);
   // Returns false if the notification was not valid (a duplicate).
   bool DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -220,7 +220,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   SubmitResult MaybeSubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      absl::optional<HitTestRegionList> hit_test_region_list,
+      std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback);
 
@@ -228,7 +228,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   const FrameSinkId& GetFrameSinkId() const override;
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
-  absl::optional<CapturableFrameSink::RegionProperties>
+  std::optional<CapturableFrameSink::RegionProperties>
   GetRequestRegionProperties(
       const VideoCaptureSubTarget& sub_target) const override;
   void OnClientCaptureStarted() override;
@@ -368,7 +368,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // If this contains a value then a surface reference from the top-level root
   // to SurfaceId(frame_sink_id_, referenced_local_surface_id_.value()) was
   // added. This will not contain a value if |is_root_| is false.
-  absl::optional<LocalSurfaceId> referenced_local_surface_id_;
+  std::optional<LocalSurfaceId> referenced_local_surface_id_;
 
   SurfaceResourceHolder surface_resource_holder_;
 
@@ -425,7 +425,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool auto_needs_begin_frame_ = false;
 
   // Indicates the FrameSinkBundle to which this sink belongs, if any.
-  absl::optional<FrameSinkBundleId> bundle_id_;
+  std::optional<FrameSinkBundleId> bundle_id_;
 
   const bool is_root_;
 

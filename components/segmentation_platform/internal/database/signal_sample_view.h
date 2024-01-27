@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_SAMPLE_VIEW_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_SAMPLE_VIEW_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -76,7 +76,7 @@ class SignalSampleView {
   // apply on the samples for the view. If `query` is empty, all samples are
   // included, just acts like a vector.
   SignalSampleView(const std::vector<SignalDatabase::DbEntry>& samples,
-                   const absl::optional<Query>& query);
+                   const std::optional<Query>& query);
   ~SignalSampleView();
   SignalSampleView(const SignalSampleView&) = delete;
 
@@ -102,7 +102,7 @@ class SignalSampleView {
   size_t FindPrev(int index) const;
 
   const std::vector<SignalDatabase::DbEntry>& samples_;
-  absl::optional<Query> query_;
+  std::optional<Query> query_;
 };
 
 }  // namespace segmentation_platform

@@ -6,7 +6,6 @@ package org.chromium.content.browser;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,9 +43,6 @@ public class WakeLockTest {
         final String code = "navigator.wakeLock.request('" + type + "');";
         JavaScriptUtils.executeJavaScriptAndWaitForResult(mActivityTestRule.getWebContents(), code);
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     @SmallTest

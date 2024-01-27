@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -17,7 +18,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -173,7 +173,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   gfx::ColorSpace color_space_;
   // The format of all allocated buffers. The |format_| is optional to prevent
   // use of uninitialized values.
-  absl::optional<gfx::BufferFormat> format_;
+  std::optional<gfx::BufferFormat> format_;
 
   // This buffer is currently bound. This may be nullptr if no buffer has
   // been bound.
@@ -199,7 +199,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // reporting.
   // Used to see how often we destroy buffers and recreate them very soon, which
   // we want to be rare.
-  absl::optional<base::ElapsedTimer> destroyed_timer_;
+  std::optional<base::ElapsedTimer> destroyed_timer_;
 };
 
 }  // namespace viz

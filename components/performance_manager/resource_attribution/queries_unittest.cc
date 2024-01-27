@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -41,7 +42,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -142,7 +142,7 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
  private:
   raw_ptr<Graph> graph_ = nullptr;
 
-  absl::optional<FrameContext> main_frame_context_;
+  std::optional<FrameContext> main_frame_context_;
 
   // These must be deleted after TearDown() so that they outlive the
   // CPUMeasurementMonitor and MemoryMeasurementProvider.
@@ -336,7 +336,7 @@ TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
   // Abort the whole test if the scheduler wasn't found.
   ASSERT_TRUE(scheduler);
 
-  absl::optional<ScopedResourceUsageQuery> scoped_memory_query =
+  std::optional<ScopedResourceUsageQuery> scoped_memory_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kMemorySummary)
@@ -346,7 +346,7 @@ TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
     EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
               1U);
   });
-  absl::optional<ScopedResourceUsageQuery> scoped_cpu_query =
+  std::optional<ScopedResourceUsageQuery> scoped_cpu_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
@@ -362,7 +362,7 @@ TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
     EXPECT_EQ(scheduler->GetQueryCountForTesting(ResourceType::kMemorySummary),
               0U);
   });
-  absl::optional<ScopedResourceUsageQuery> scoped_cpu_memory_query =
+  std::optional<ScopedResourceUsageQuery> scoped_cpu_memory_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
@@ -397,7 +397,7 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryIsMovable) {
   // Abort the whole test if the scheduler wasn't found.
   ASSERT_TRUE(scheduler);
 
-  absl::optional<ScopedResourceUsageQuery> outer_query;
+  std::optional<ScopedResourceUsageQuery> outer_query;
   {
     ScopedResourceUsageQuery inner_query =
         QueryBuilder()
@@ -500,7 +500,7 @@ TEST_F(ResourceAttrQueriesPMTest, GraphTeardown) {
   // ScopedResourceUsageQuery registers with the QueryScheduler on creation and
   // unregisters on destruction. Make sure it's safe for it to outlive the
   // scheduler, which is deleted during graph teardown.
-  absl::optional<ScopedResourceUsageQuery> scoped_query =
+  std::optional<ScopedResourceUsageQuery> scoped_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kCPUTime)
@@ -551,7 +551,7 @@ TEST_F(ResourceAttrQueriesPMTest, RepeatingQueries) {
 
   ScopedResourceUsageQuery::ScopedDisableMemoryQueryDelayForTesting disable;
 
-  absl::optional<ScopedResourceUsageQuery> scoped_query =
+  std::optional<ScopedResourceUsageQuery> scoped_query =
       QueryBuilder()
           .AddResourceContext(main_frame_context())
           .AddResourceType(ResourceType::kMemorySummary)

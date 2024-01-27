@@ -742,8 +742,8 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   const LineRelativeRect rect = LineRelativeWorldRect(range);
 
   absl::optional<TextDecorationInfo> decoration_info{};
-  decoration_painter_.UpdateDecorationInfo(decoration_info, style, rect,
-                                           decoration_override);
+  decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
+                                           style, rect, decoration_override);
 
   GraphicsContextStateSaver saver{paint_info_.context};
   ClipToPartDecorations(rect);
@@ -1080,21 +1080,8 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
 
 void HighlightPainter::ClipToPartDecorations(
     const LineRelativeRect& part_rect) {
-  gfx::RectF clip_rect{part_rect};
-
-  // Whether it’s best to clip to selection rect on both axes or only inline
-  // depends on the situation, but the latter can improve the appearance of
-  // decorations. For example, we often paint overlines entirely past the
-  // top edge of selection rect, and wavy underlines have similar problems.
-  //
-  // Sadly there’s no way to clip to a rect of infinite height, so for now,
-  // let’s clip to selection rect plus its height both above and below. This
-  // should be enough to avoid clipping most decorations in the wild.
-  //
-  // TODO(crbug.com/1433400): take text-underline-offset and other
-  // text-decoration properties into account?
-  clip_rect.set_y(clip_rect.y() - clip_rect.height());
-  clip_rect.set_height(3.0 * clip_rect.height());
+  const gfx::RectF clip_rect =
+      TextDecorationPainter::ExpandRectForDecorations(part_rect);
   paint_info_.context.Clip(clip_rect);
 }
 
@@ -1145,8 +1132,9 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
                                            : decoration_rect;
 
     absl::optional<TextDecorationInfo> decoration_info{};
-    decoration_painter_.UpdateDecorationInfo(
-        decoration_info, *decoration_layer.style, decoration_rect);
+    decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
+                                             *decoration_layer.style,
+                                             decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
@@ -1211,8 +1199,9 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
                                            : decoration_rect;
 
     absl::optional<TextDecorationInfo> decoration_info{};
-    decoration_painter_.UpdateDecorationInfo(
-        decoration_info, *decoration_layer.style, decoration_rect);
+    decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
+                                             *decoration_layer.style,
+                                             decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
@@ -1316,11 +1305,11 @@ void HighlightPainter::PaintDecoratedText(const StringView& text,
       fragment_item_, text, paint_start_offset, paint_end_offset);
   decoration_rect.Move(LineRelativeOffset::CreateFromBoxOrigin(box_origin_));
   TextDecorationPainter decoration_painter(
-      text_painter_, decoration_painter_.InlineContext(), fragment_item_,
-      paint_info_, pseudo_style ? *pseudo_style : originating_style_,
-      text_style, decoration_rect, selection_);
+      text_painter_, decoration_painter_.InlineContext(), paint_info_,
+      pseudo_style ? *pseudo_style : originating_style_, text_style,
+      decoration_rect, selection_);
 
-  decoration_painter.Begin(TextDecorationPainter::kOriginating);
+  decoration_painter.Begin(fragment_item_, TextDecorationPainter::kOriginating);
   decoration_painter.PaintExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset));
 

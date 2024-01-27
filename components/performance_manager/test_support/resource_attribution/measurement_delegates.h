@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -16,7 +17,6 @@
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/memory_measurement_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 class ProcessNode;
@@ -160,7 +160,7 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
 
   // If not nullopt, GetCumulativeCPUUsage() will ignore `cpu_usage_periods` and
   // return this value to simulate an error.
-  absl::optional<base::TimeDelta> usage_error_;
+  std::optional<base::TimeDelta> usage_error_;
 };
 
 // A factory that manages FakeMemoryMeasurementDelegate instances. Embed an

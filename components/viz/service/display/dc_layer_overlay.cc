@@ -68,7 +68,7 @@ enum DCLayerResult {
 };
 
 bool IsCompatibleHDRMetadata(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   return hdr_metadata &&
          ((hdr_metadata->smpte_st_2086 &&
            hdr_metadata->smpte_st_2086->IsValid()) ||
@@ -79,7 +79,7 @@ DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
     const gfx::BufferFormat& buffer_format,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    const std::optional<gfx::HDRMetadata>& hdr_metadata,
     bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,

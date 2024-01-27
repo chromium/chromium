@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/internal/never_condition_validator.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace feature_engagement {
 
@@ -32,11 +32,11 @@ void NeverConditionValidator::NotifyIsShowing(
 void NeverConditionValidator::NotifyDismissed(const base::Feature& feature) {}
 
 void NeverConditionValidator::SetPriorityNotification(
-    const absl::optional<std::string>& feature) {}
+    const std::optional<std::string>& feature) {}
 
-absl::optional<std::string>
+std::optional<std::string>
 NeverConditionValidator::GetPendingPriorityNotification() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace feature_engagement

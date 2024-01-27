@@ -388,7 +388,7 @@ BaseUIManager::CreateBlockingPage(
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource,
     bool forward_extension_event,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // TODO(carlosil): This can be removed once all implementations of SB use
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed

@@ -103,6 +103,7 @@ struct CC_EXPORT CompositorCommitData {
     bool scroll_gesture_did_end = false;
 
     bool gesture_affects_outer_viewport_scroll = false;
+    bool gesture_affects_inner_viewport_scroll = false;
   };
   ScrollEndInfo scroll_end_data;
 

@@ -52,7 +52,7 @@ class ValueStoreFrontendTest : public testing::Test {
         value_store::GetValueStoreTaskRunner());
   }
 
-  bool Get(const std::string& key, absl::optional<base::Value>* output) {
+  bool Get(const std::string& key, std::optional<base::Value>* output) {
     storage_->Get(key, base::BindOnce(&ValueStoreFrontendTest::GetAndWait,
                                       base::Unretained(this), output));
     RunUntilIdle();
@@ -62,8 +62,8 @@ class ValueStoreFrontendTest : public testing::Test {
  protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void GetAndWait(absl::optional<base::Value>* output,
-                  absl::optional<base::Value> result) {
+  void GetAndWait(std::optional<base::Value>* output,
+                  std::optional<base::Value> result) {
     *output = std::move(result);
   }
 
@@ -75,7 +75,7 @@ class ValueStoreFrontendTest : public testing::Test {
 };
 
 TEST_F(ValueStoreFrontendTest, GetExistingData) {
-  absl::optional<base::Value> value;
+  std::optional<base::Value> value;
   ASSERT_FALSE(Get("key0", &value));
 
   // Test existing keys in the DB.
@@ -100,7 +100,7 @@ TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
   // Reload the DB and test our changes.
   ResetStorage();
 
-  absl::optional<base::Value> value;
+  std::optional<base::Value> value;
   {
     ASSERT_TRUE(Get("key0", &value));
     ASSERT_TRUE(value->is_int());

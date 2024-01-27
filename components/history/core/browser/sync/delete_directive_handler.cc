@@ -376,7 +376,7 @@ bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(
   time_range_directive->set_start_time_usec(begin_time_usecs);
   time_range_directive->set_end_time_usec(end_time_usecs);
 
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       ProcessLocalDeleteDirective(delete_directive);
   return !error.has_value();
 }
@@ -390,12 +390,12 @@ bool DeleteDirectiveHandler::CreateUrlDeleteDirective(const GURL& url) {
   url_directive->set_url(url.spec());
   url_directive->set_end_time_usec(TimeToUnixUsec(base::Time::Now()));
 
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       ProcessLocalDeleteDirective(delete_directive);
   return !error.has_value();
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 DeleteDirectiveHandler::ProcessLocalDeleteDirective(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -431,7 +431,7 @@ void DeleteDirectiveHandler::WaitUntilReadyToSync(base::OnceClosure done) {
   }
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 DeleteDirectiveHandler::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -449,7 +449,7 @@ DeleteDirectiveHandler::MergeDataAndStartSyncing(
                                 &internal_tracker_);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeleteDirectiveHandler::StopSyncing(syncer::ModelType type) {
@@ -458,7 +458,7 @@ void DeleteDirectiveHandler::StopSyncing(syncer::ModelType type) {
   sync_processor_.reset();
 }
 
-absl::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
+std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -493,7 +493,7 @@ absl::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
                                 &internal_tracker_);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<syncer::SyncableService> DeleteDirectiveHandler::AsWeakPtr() {

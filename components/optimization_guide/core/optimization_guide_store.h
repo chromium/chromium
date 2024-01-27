@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_STORE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -20,7 +21,6 @@
 #include "components/optimization_guide/core/memory_hint.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -355,7 +355,7 @@ class OptimizationGuideStore {
   // The current component version of the store. This should only be updated
   // via SetComponentVersion(), which ensures that both |component_version_|
   // and |component_hint_key_prefix_| are updated at the same time.
-  absl::optional<base::Version> component_version_;
+  std::optional<base::Version> component_version_;
 
   // The current entry key prefix shared by all component hints containd within
   // the store. While this could be generated on the fly using

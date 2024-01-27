@@ -42,7 +42,7 @@ class ManualCollector : public CollectorBase {
   bool CanCollect() const override;
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override;
+                             std::optional<MetricData> metric_data) override;
 
  private:
   const raw_ptr<MetricReportQueue> metric_report_queue_;

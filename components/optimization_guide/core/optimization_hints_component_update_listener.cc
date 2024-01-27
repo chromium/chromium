@@ -63,7 +63,7 @@ void OptimizationHintsComponentUpdateListener::MaybeUpdateHintsComponent(
 }
 
 void OptimizationHintsComponentUpdateListener::ResetStateForTesting() {
-  hints_component_info_ = absl::nullopt;
+  hints_component_info_ = std::nullopt;
 }
 
 }  // namespace optimization_guide

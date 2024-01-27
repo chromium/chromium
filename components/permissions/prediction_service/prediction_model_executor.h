@@ -20,7 +20,7 @@ struct PredictionModelExecutorInput {
   PredictionModelExecutorInput(const PredictionModelExecutorInput&);
 
   GeneratePredictionsRequest request;
-  absl::optional<WebPermissionPredictionsModelMetadata> metadata;
+  std::optional<WebPermissionPredictionsModelMetadata> metadata;
 };
 
 class PredictionModelExecutor : public optimization_guide::BaseModelExecutor<
@@ -50,12 +50,12 @@ class PredictionModelExecutor : public optimization_guide::BaseModelExecutor<
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const PredictionModelExecutorInput& input) override;
 
-  absl::optional<GeneratePredictionsResponse> Postprocess(
+  std::optional<GeneratePredictionsResponse> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
  private:
   RequestType request_type_;
-  absl::optional<WebPermissionPredictionsModelMetadata> model_metadata_;
+  std::optional<WebPermissionPredictionsModelMetadata> model_metadata_;
 };
 
 }  // namespace permissions

@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/core/css/position_fallback_data.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
@@ -3435,19 +3435,16 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       container.GetLayoutObject());
 }
 
-void StyleEngine::UpdateStyleForPositionFallback(
-    Element& element,
-    const CSSPropertyValueSet* try_set) {
+void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
+                                          const CSSPropertyValueSet* try_set) {
   // Note that we enter this function for any OOF element, not just those that
   // use position-fallback. Therefore, it's important to return immediately
   // without doing any work when `try_set` and `existing_try_set` both are
   // nullptr.
 
-  PositionFallbackData* position_fallback_data =
-      element.GetPositionFallbackData();
+  OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData();
   const CSSPropertyValueSet* existing_try_set =
-      position_fallback_data ? position_fallback_data->GetTryPropertyValueSet()
-                             : nullptr;
+      out_of_flow_data ? out_of_flow_data->GetTryPropertyValueSet() : nullptr;
   if (existing_try_set == try_set) {
     // No need to update style, the try set is the one we already used.
     return;
@@ -3455,7 +3452,7 @@ void StyleEngine::UpdateStyleForPositionFallback(
 
   // The last seen `try_set` is persisted on Element, such that subsequent
   // regular style recalcs can continue to include this set.
-  element.EnsurePositionFallbackData().SetTryPropertyValueSet(try_set);
+  element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
 
   base::AutoReset<bool> pf_recalc(&in_position_fallback_style_recalc_, true);
 
@@ -3463,7 +3460,7 @@ void StyleEngine::UpdateStyleForPositionFallback(
 
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
-  style_recalc_context.is_position_fallback = true;
+  style_recalc_context.is_interleaved_oof = true;
 
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
 

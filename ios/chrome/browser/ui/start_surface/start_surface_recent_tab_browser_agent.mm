@@ -40,7 +40,7 @@ void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
     if (web_state_observation_.IsObserving()) {
       web_state_observation_.Reset();
     }
-    web_state_observation_.Observe(most_recent_tab_);
+    web_state_observation_.Observe(most_recent_tab_.get());
   }
 }
 
@@ -81,7 +81,7 @@ void StartSurfaceRecentTabBrowserAgent::WebStateListDidChange(
 
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      if (most_recent_tab_ == detach_change.detached_web_state()) {
+      if (most_recent_tab_.get() == detach_change.detached_web_state()) {
         for (auto& observer : observers_) {
           observer.MostRecentTabRemoved(most_recent_tab_);
         }

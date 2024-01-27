@@ -11185,6 +11185,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4790" label="StorageAccessAPI_hasUnpartitionedCookieAccess"/>
   <int value="4791"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_cookies"/>
+  <int value="4792" label="VisualViewportScrollEndFired"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -16740,8 +16741,6 @@ from previous Chrome versions.
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
   <int value="-1777820415" label="WebAssemblyStringref:disabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
-  <int value="-1776429545"
-      label="OptimizationGuideInstallWideModelStore:enabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
@@ -18247,6 +18246,7 @@ from previous Chrome versions.
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
   <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
   <int value="-1082602234" label="ReadAnythingReadAloud:enabled"/>
+  <int value="-1082472229" label="LauncherContinueSectionWithRecents:disabled"/>
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
@@ -20955,6 +20955,7 @@ from previous Chrome versions.
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
   <int value="181908345" label="TearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
+  <int value="182475641" label="NotificationOneTapUnsubscribe:enabled"/>
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>
   <int value="182986882" label="TerminalSSH:disabled"/>
   <int value="183208826" label="TabGroups:enabled"/>
@@ -21074,6 +21075,7 @@ from previous Chrome versions.
       label="FriendlierSafeBrowsingSettingsStandardProtection:disabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
+  <int value="242181887" label="NotificationOneTapUnsubscribe:disabled"/>
   <int value="244040049" label="DrawImmediatelyWhenInteractive:disabled"/>
   <int value="244208319"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:disabled"/>
@@ -22768,6 +22770,7 @@ from previous Chrome versions.
   <int value="1031278117" label="FedCmDisconnect:enabled"/>
   <int value="1031281564"
       label="DisablePeripheralDataAccessProtection:disabled"/>
+  <int value="1032338582" label="CookieSettingsUiAlignment:enabled"/>
   <int value="1033148287" label="NTPShortcuts:disabled"/>
   <int value="1033412163" label="OmniboxDisplayTitleForCurrentUrl:enabled"/>
   <int value="1033597574" label="disable-layer-squashing"/>
@@ -23311,6 +23314,7 @@ from previous Chrome versions.
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
+  <int value="1283455082" label="DeskProfiles:disabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
@@ -23694,8 +23698,6 @@ from previous Chrome versions.
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
   <int value="1462042881" label="ArcRoundedWindowCompat:enabled"/>
-  <int value="1462900129"
-      label="OptimizationGuideInstallWideModelStore:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
@@ -23779,6 +23781,7 @@ from previous Chrome versions.
   <int value="1499009324" label="ZeroSuggestPrefetchingOnSRP:disabled"/>
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
+  <int value="1501382655" label="LauncherContinueSectionWithRecents:enabled"/>
   <int value="1502417134" label="BulkTabRestore:disabled"/>
   <int value="1503291145" label="ForceSigninFlowInProfilePicker:enabled"/>
   <int value="1504223335" label="PipPinchToResize:disabled"/>
@@ -24471,6 +24474,7 @@ from previous Chrome versions.
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
   <int value="1816816375" label="MediaAppHandlesAudio:disabled"/>
   <int value="1816843861" label="ServiceWorkerServicification:enabled"/>
+  <int value="1816939624" label="DeskProfiles:enabled"/>
   <int value="1817312143" label="num-raster-threads"/>
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>
@@ -24545,6 +24549,7 @@ from previous Chrome versions.
   <int value="1845781020" label="DesktopSharePreview:disabled"/>
   <int value="1846717591" label="CaptureMode:disabled"/>
   <int value="1847024354" label="enable-hotword-hardware"/>
+  <int value="1847630679" label="CookieSettingsUiAlignment:disabled"/>
   <int value="1847658464" label="MeteredShowToggle:disabled"/>
   <int value="1848974467" label="DelayAsyncScriptExecution:disabled"/>
   <int value="1849379463" label="OfflinePagesCTV2:enabled"/>
@@ -26181,6 +26186,7 @@ Called by update_use_counter_css.py.-->
   <int value="779" label="mask-position"/>
   <int value="780" label="mask-mode"/>
   <int value="781" label="inset-area"/>
+  <int value="782" label="view-transition-class"/>
 </enum>
 
 <enum name="MediaEncryptionType">

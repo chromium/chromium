@@ -351,7 +351,7 @@ void FuzzedCompositorFrameBuilder::ConfigureSharedQuadState(
     SharedQuadState* shared_quad_state,
     const proto::DrawQuad& quad_spec) {
   if (quad_spec.has_sqs()) {
-    absl::optional<gfx::Rect> clip_rect;
+    std::optional<gfx::Rect> clip_rect;
     if (quad_spec.sqs().is_clipped()) {
       clip_rect = GetRectFromProtobuf(quad_spec.sqs().clip_rect());
     }
@@ -378,7 +378,7 @@ void FuzzedCompositorFrameBuilder::ConfigureSharedQuadState(
     shared_quad_state->SetAll(
         transform, GetRectFromProtobuf(quad_spec.rect()),
         GetRectFromProtobuf(quad_spec.visible_rect()), gfx::MaskFilterInfo(),
-        /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/true,
+        /*clip_rect=*/std::nullopt, /*are_contents_opaque=*/true,
         /*opacity=*/1.0, SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
         /*layer_id=*/0u, /*fast_rounded_corner*/ false);
   }

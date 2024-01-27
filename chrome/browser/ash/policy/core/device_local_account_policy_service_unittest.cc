@@ -620,8 +620,7 @@ void DeviceLocalAccountPolicyExtensionCacheTest::SetUp() {
 base::FilePath
 DeviceLocalAccountPolicyExtensionCacheTest::GetCacheDirectoryForAccountID(
     const std::string& account_id) {
-  return cache_root_dir_.GetPath().Append(
-      base::HexEncode(account_id.c_str(), account_id.size()));
+  return cache_root_dir_.GetPath().Append(base::HexEncode(account_id));
 }
 
 // Verifies that during startup, orphaned cache directories are deleted,

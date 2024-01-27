@@ -7,6 +7,7 @@
 
 #include <climits>
 #include <map>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -19,7 +20,6 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 namespace feedstore {
@@ -114,7 +114,7 @@ class MetricsReporter {
     bool loaded_new_content_from_network = false;
     base::TimeDelta stored_content_age;
     ContentOrder content_order = ContentOrder::kUnspecified;
-    absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
+    std::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
   };
   virtual void OnLoadStream(const StreamType& stream_type,
                             const LoadStreamResultSummary& result_summary,
@@ -248,7 +248,7 @@ class MetricsReporter {
   SurfaceWaiting pending_open_;
 
   // For tracking time spent in the Feed.
-  absl::optional<base::TimeTicks> time_in_feed_start_;
+  std::optional<base::TimeTicks> time_in_feed_start_;
   // For TimeSpentOnFeed.
   base::TimeDelta tracked_visit_time_in_feed_;
   // Non-null only directly after a stream load.

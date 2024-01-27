@@ -15,6 +15,7 @@
 #import <vector>
 
 #import "base/containers/small_map.h"
+#import "base/memory/raw_ptr.h"
 #import "base/time/clock.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -105,7 +106,7 @@ class PromosManagerImpl : public PromosManager {
   PromoConfigsSet promo_configs_;
 
   // The class to handle migrating events to the Feature Engagement Tracker.
-  PromosManagerEventExporter* event_exporter_;
+  raw_ptr<PromosManagerEventExporter> event_exporter_;
 
   base::WeakPtrFactory<PromosManagerImpl> weak_ptr_factory_{this};
 };

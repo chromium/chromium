@@ -652,6 +652,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/fullscreen/BrowserControlsManager.java",
   "java/src/org/chromium/chrome/browser/fullscreen/BrowserControlsManagerSupplier.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerBase.java",
+  "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerCompat.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerFactory.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacy.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenToast.java",

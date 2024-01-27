@@ -5,6 +5,7 @@
 #include "components/payments/content/android_app_communication.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -63,7 +63,7 @@ class AndroidAppCommunicationTest : public testing::Test {
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
-  absl::optional<base::UnguessableToken> twa_instance_identifier_ =
+  std::optional<base::UnguessableToken> twa_instance_identifier_ =
       base::UnguessableToken::Create();
 };
 
@@ -84,11 +84,11 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentInstanceForGetAppDescriptions) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
@@ -110,11 +110,11 @@ TEST_F(AndroidAppCommunicationTest, NoAppDescriptions) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   EXPECT_FALSE(error.has_value());
@@ -132,11 +132,11 @@ TEST_F(AndroidAppCommunicationTest, TwoActivitiesInPackage) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
@@ -162,11 +162,11 @@ TEST_F(AndroidAppCommunicationTest, TwoServicesInPackage) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   EXPECT_FALSE(error.has_value());
@@ -204,11 +204,11 @@ TEST_F(AndroidAppCommunicationTest, ActivityAndService) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   EXPECT_FALSE(error.has_value());
@@ -240,11 +240,11 @@ TEST_F(AndroidAppCommunicationTest, OnlyActivity) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions("com.example.app", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
   EXPECT_FALSE(error.has_value());
@@ -274,13 +274,13 @@ TEST_F(AndroidAppCommunicationTest, OutsideOfTwa) {
       AndroidAppCommunication::GetForBrowserContext(support_->context());
   communication->SetForTesting();
 
-  base::test::TestFuture<const absl::optional<std::string>&,
+  base::test::TestFuture<const std::optional<std::string>&,
                          std::vector<std::unique_ptr<AndroidAppDescription>>>
       future;
   communication->GetAppDescriptions(
       /*twa_package_name=*/"",  // Empty string means this is not TWA.
       future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   const auto& apps =
       future.Get<std::vector<std::unique_ptr<AndroidAppDescription>>>();
 
@@ -300,13 +300,13 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentInstanceForIsReadyToPay) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ(support_->GetNoInstanceExpectedErrorString(), error.value());
@@ -324,14 +324,14 @@ TEST_F(AndroidAppCommunicationTest, TwaIsReadyToPayOnlyWithPlayBilling) {
 
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://example.test"].insert("{}");
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   base::RunLoop run_loop;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_FALSE(error.has_value());
@@ -358,13 +358,13 @@ TEST_F(AndroidAppCommunicationTest, MoreThanOnePaymentMethodDataNotReadyToPay) {
   stringified_method_data["https://play.google.com/billing"].insert(
       "{\"product_id\": \"2\"}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   ASSERT_TRUE(error.has_value());
 
@@ -391,13 +391,13 @@ TEST_F(AndroidAppCommunicationTest, EmptyMethodDataIsReadyToPay) {
   stringified_method_data.insert(std::make_pair(
       "https://play.google.com/billing", std::set<std::string>()));
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_FALSE(error.has_value());
@@ -421,13 +421,13 @@ TEST_F(AndroidAppCommunicationTest, NotReadyToPay) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_FALSE(error.has_value());
@@ -451,13 +451,13 @@ TEST_F(AndroidAppCommunicationTest, ReadyToPay) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool> future;
+  base::test::TestFuture<const std::optional<std::string>&, bool> future;
   communication->IsReadyToPay("com.example.app", "com.example.app.Service",
                               stringified_method_data,
                               GURL("https://top-level-origin.com"),
                               GURL("https://payment-request-origin.com"),
                               "payment-request-id", future.GetCallback());
-  auto error = future.Get<absl::optional<std::string>>();
+  auto error = future.Get<std::optional<std::string>>();
   auto is_ready_to_pay = future.Get<bool>();
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_FALSE(error.has_value());
@@ -481,7 +481,7 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentInstanceForInvokePaymentApp) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(
@@ -513,7 +513,7 @@ TEST_F(AndroidAppCommunicationTest, TwaPaymentOnlyWithPlayBilling) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://example.test"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(
@@ -553,7 +553,7 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentWithMoreThanOnePaymentMethodData) {
   stringified_method_data["https://play.google.com/billing"].insert(
       "{\"product_id\": \"2\"}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(
@@ -596,7 +596,7 @@ TEST_F(AndroidAppCommunicationTest, PaymentWithEmptyMethodData) {
   stringified_method_data.insert(std::make_pair(
       "https://play.google.com/billing", std::set<std::string>()));
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(
@@ -636,7 +636,7 @@ TEST_F(AndroidAppCommunicationTest, UserCancelInvokePaymentApp) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(
@@ -676,7 +676,7 @@ TEST_F(AndroidAppCommunicationTest, UserConfirmInvokePaymentApp) {
   std::map<std::string, std::set<std::string>> stringified_method_data;
   stringified_method_data["https://play.google.com/billing"].insert("{}");
 
-  base::test::TestFuture<const absl::optional<std::string>&, bool,
+  base::test::TestFuture<const std::optional<std::string>&, bool,
                          const std::string&, const std::string&>
       future;
   communication->InvokePaymentApp(

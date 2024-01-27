@@ -42,7 +42,7 @@ class LoadMoreTask : public offline_pages::Task {
     // Final status of loading the stream.
     LoadStreamStatus final_status = LoadStreamStatus::kNoStatus;
     bool loaded_new_content_from_network = false;
-    absl::optional<RequestSchedule> request_schedule;
+    std::optional<RequestSchedule> request_schedule;
     std::unique_ptr<StreamModelUpdateRequest> model_update_request;
   };
 

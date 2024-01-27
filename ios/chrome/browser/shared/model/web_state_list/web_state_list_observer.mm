@@ -9,8 +9,8 @@
 #import "base/check.h"
 
 WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
-    raw_ptr<web::WebState> selected_web_state)
-    : selected_web_state_(selected_web_state) {}
+    raw_ptr<web::WebState> web_state)
+    : web_state_(web_state) {}
 
 WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
   return kType;

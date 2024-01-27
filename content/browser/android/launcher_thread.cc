@@ -21,7 +21,7 @@ scoped_refptr<base::SingleThreadTaskRunner> LauncherThread::GetTaskRunner() {
 LauncherThread::LauncherThread()
     : java_handler_thread_(nullptr,
                            Java_LauncherThread_getHandlerThread(
-                               base::android::AttachCurrentThread())) {
+                               jni_zero::AttachCurrentThread())) {
   java_handler_thread_.Start();
 }
 

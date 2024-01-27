@@ -2,4 +2,11 @@ include_rules = [
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/tips_notifications/model",
+  "+ios/chrome/browser/url_loading",
 ]
+
+specific_include_rules = {
+  "push_notification_client.mm": [
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+  ]
+}

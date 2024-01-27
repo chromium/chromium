@@ -190,7 +190,7 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
 
 void ModelExecutorImpl::OnModelExecutionComplete(
     std::unique_ptr<ExecutionState> state,
-    const absl::optional<ModelProvider::Response>& result) {
+    const std::optional<ModelProvider::Response>& result) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutorImpl::OnModelExecutionComplete", *state);
   stats::RecordModelExecutionDurationModel(

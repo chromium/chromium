@@ -193,6 +193,25 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
             GetIbanSaveManager().DetermineHowToSaveIbanForTesting(iban));
 }
 
+// Test that an existing local and server IBAN should not be offered save at
+// all.
+TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalAndServerIban) {
+  Iban local_iban;
+  local_iban.set_value(u"DE91100000000123456789");
+  personal_data().AddAsLocalIban(local_iban);
+  Iban server_iban(Iban::InstrumentId(1234567));
+  server_iban.set_prefix(u"DE91");
+  server_iban.set_suffix(u"6789");
+  server_iban.set_length(22);
+  personal_data().AddServerIban(server_iban);
+
+  // Creates an unknown IBAN with the same prefix, suffix and length as the
+  // above server IBAN.
+  Iban iban;
+  iban.set_value(u"DE91100000000123456789");
+  EXPECT_FALSE(GetIbanSaveManager().AttemptToOfferSave(iban));
+}
+
 // Test that an existing server IBAN should not be offered save at all.
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_ServerIban) {
   Iban iban(Iban::InstrumentId(1234567));
@@ -664,6 +683,168 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Ignore_AddsStrike) {
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
   // Verify that `UploadIban` handler is not triggered.
   EXPECT_CALL(*payments_network_interface(), UploadIban).Times(0);
+}
+
+// Test that offer-to-upload IBAN origin is logged as `kNewIban` for a new IBAN.
+TEST_F(IbanSaveManagerTest, Metric_UploadOfferedIbanOrigin_NewIban) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Offered",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      /*expected_count=*/1);
+}
+
+// Test that offer-to-upload IBAN origin is logged as `kLocalIban` for a local
+// IBAN.
+TEST_F(IbanSaveManagerTest, Metric_UploadOfferedIbanOrigin_LocalIban) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddAsLocalIban(iban);
+
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Offered",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kLocalIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for a new IBAN and the offer is accepted,
+// `kAccepted` and `kNewIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_AcceptedOfferedIbanOrigin_NewIban) {
+  base::HistogramTester histogram_tester;
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/true);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Accepted",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for an existing IBAN and the offer is
+// accepted, `kAccepted` and `kLocalIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_AcceptedOfferedIbanOrigin_LocalIban) {
+  base::HistogramTester histogram_tester;
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/true);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddAsLocalIban(iban);
+
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Accepted",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kLocalIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for a new IBAN and the offer is declined,
+// `kDeclined` and `kNewIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_DeclinedOfferedIbanOrigin_NewIban) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Declined",
+      /*sample=*/autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for an existing IBAN and the offer is
+// declined, `kDeclined` and `kLocalIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_DeclinedOfferedIbanOrigin_LocalIban) {
+  base::HistogramTester histogram_tester;
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/true);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddAsLocalIban(iban);
+
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Declined",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kLocalIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for a new IBAN and the offer is ignored,
+// `kIgnored` and `kNewIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_IgnoredOfferedIbanOrigin_NewIban) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kIgnored,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Ignored",
+      /*sample=*/autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      /*expected_count=*/1);
+}
+
+// Test that when upload is offered for an existing IBAN and the offer is
+// ignored, `kIgnored` and `kLocalIban` are logged.
+TEST_F(IbanSaveManagerTest, Metric_IgnoredOfferedIbanOrigin_LocalIban) {
+  base::HistogramTester histogram_tester;
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+  SetUpUploadIbanResponse(/*is_successful=*/true);
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddAsLocalIban(iban);
+
+  ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
+  GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::SaveIbanOfferUserDecision::kIgnored,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UploadIban.Ignored",
+      /*sample=*/
+      autofill_metrics::UploadIbanOriginMetric::kLocalIban,
+      /*expected_count=*/1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -18,6 +18,10 @@ class GURL;
 class PrefService;
 class PrefChangeRegistrar;
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace commerce {
 
 extern const char kNotificationsPrefUrl[];
@@ -60,7 +64,7 @@ class AccountChecker {
       const std::string& http_method,
       const std::string& content_type,
       const std::vector<std::string>& scopes,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 

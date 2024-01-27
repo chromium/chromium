@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_DATA_SOURCE_H_
 #define COMPONENTS_EXO_DATA_SOURCE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/surface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 
@@ -53,7 +53,7 @@ class DataSource {
 
   // Notifies the client of the mime type that will be used by the
   // recipient. Only used during drag drop operations.
-  void Target(const absl::optional<std::string>& mime_type);
+  void Target(const std::optional<std::string>& mime_type);
 
   // Notifies the client of the dnd action that will be performed if the
   // currently running drag operation ends now. Only used during drag drop
@@ -118,7 +118,7 @@ class DataSource {
                          ReadDataCallback callback,
                          const std::string& mime_type,
                          base::OnceClosure failure_callback,
-                         const absl::optional<std::vector<uint8_t>>& data);
+                         const std::optional<std::vector<uint8_t>>& data);
 
   void OnTextRead(ReadTextDataCallback callback,
                   const std::string& mime_type,

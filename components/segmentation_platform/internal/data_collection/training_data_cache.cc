@@ -34,7 +34,7 @@ void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
                                            ModelSource model_source,
                                            TrainingRequestId request_id,
                                            TrainingDataCallback callback) {
-  absl::optional<TrainingData> result;
+  std::optional<TrainingData> result;
   if (cache.contains(std::make_pair(segment_id, model_source)) &&
       cache[std::make_pair(segment_id, model_source)].contains(request_id)) {
     // TrainingRequestId found from cache, return and delete the cache entry.
@@ -50,12 +50,12 @@ void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
   }
 }
 
-absl::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
+std::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
     SegmentId segment_id,
     ModelSource model_source) {
   // TODO(haileywang): Add a metric to record how many request at a given time
   // every time this function is triggered.
-  absl::optional<TrainingRequestId> request_id;
+  std::optional<TrainingRequestId> request_id;
   auto it = cache.find(std::make_pair(segment_id, model_source));
   if (it == cache.end() or it->second.size() == 0) {
     return request_id;

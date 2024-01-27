@@ -39,6 +39,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_SCHEDULER_POST_TASK;
     case TaskAttributionTracker::TaskScopeType::kRequestIdleCallback:
       return ProtoType::TASK_SCOPE_REQUEST_IDLE_CALLBACK;
+    case TaskAttributionTracker::TaskScopeType::kXMLHttpRequest:
+      return ProtoType::TASK_SCOPE_XML_HTTP_REQUEST;
   }
 }
 

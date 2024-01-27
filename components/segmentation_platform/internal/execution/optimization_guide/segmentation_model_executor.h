@@ -40,7 +40,7 @@ class SegmentationModelExecutor : public optimization_guide::BaseModelExecutor<
   // optimization_guide::BaseModelExecutor overrides.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelProvider::Request& input) override;
-  absl::optional<ModelProvider::Response> Postprocess(
+  std::optional<ModelProvider::Response> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };
 

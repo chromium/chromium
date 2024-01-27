@@ -846,7 +846,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, {NAME_FIRST, NAME_LAST},
-          /*last_targeted_fields=*/absl::nullopt, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt, NAME_FIRST,
           /*trigger_field_max_length=*/0),
       SuggestionVectorMainTextsAre(Suggestion::Text(
           profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
@@ -900,7 +900,7 @@ TEST_P(
   EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
                   {&profile},
                   {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-                  /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+                  /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
                   /*trigger_field_max_length=*/0),
               ElementsAre(AllOf(testing::Field(
                   &Suggestion::labels,
@@ -926,7 +926,7 @@ TEST_P(
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+          /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(
@@ -959,7 +959,7 @@ TEST_P(
   EXPECT_THAT(
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+          /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
           /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(testing::Field(

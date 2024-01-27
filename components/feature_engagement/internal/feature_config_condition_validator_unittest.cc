@@ -248,24 +248,24 @@ class TestAvailabilityModel : public AvailabilityModel {
 
   void SetIsReady(bool ready) { ready_ = ready; }
 
-  absl::optional<uint32_t> GetAvailability(
+  std::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const override {
     auto search = availabilities_.find(feature.name);
     if (search == availabilities_.end())
-      return absl::nullopt;
+      return std::nullopt;
 
     return search->second;
   }
 
   void SetAvailability(const base::Feature* feature,
-                       absl::optional<uint32_t> availability) {
+                       std::optional<uint32_t> availability) {
     availabilities_[feature->name] = availability;
   }
 
  private:
   bool ready_;
 
-  std::map<std::string, absl::optional<uint32_t>> availabilities_;
+  std::map<std::string, std::optional<uint32_t>> availabilities_;
 };
 
 class TestDisplayLockController : public DisplayLockController {
@@ -500,14 +500,14 @@ TEST_F(FeatureConfigConditionValidatorTest, PriorityNotification) {
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.priority_notification_ok);
 
-  validator_.SetPriorityNotification(absl::nullopt);
+  validator_.SetPriorityNotification(std::nullopt);
   validator_.SetPriorityNotification(kFeatureConfigTestFeatureBar.name);
   EXPECT_FALSE(
       GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
       GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
-  validator_.SetPriorityNotification(absl::nullopt);
+  validator_.SetPriorityNotification(std::nullopt);
   EXPECT_TRUE(
       GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(

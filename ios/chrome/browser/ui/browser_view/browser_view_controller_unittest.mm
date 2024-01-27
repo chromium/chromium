@@ -11,6 +11,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
@@ -410,12 +411,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   SideSwipeMediator* side_swipe_mediator_;
   BookmarksCoordinator* bookmarks_coordinator_;
-  FullscreenController* fullscreen_controller_;
+  raw_ptr<FullscreenController> fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
   NewTabPageCoordinator* NTPCoordinator_;
-  TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
+  raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
-  PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
+  raw_ptr<PagePlaceholderBrowserAgent> page_placeholder_browser_agent_;
   id mockApplicationCommandHandler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

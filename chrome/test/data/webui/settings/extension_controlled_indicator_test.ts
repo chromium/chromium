@@ -4,7 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl, ExtensionControlledIndicatorElement} from 'chrome://settings/settings.js';
+import type {ExtensionControlledIndicatorElement} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, ExtensionControlBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 

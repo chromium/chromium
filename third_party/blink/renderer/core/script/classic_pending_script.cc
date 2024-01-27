@@ -104,8 +104,8 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
   }
 
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
-                        ScriptResource::kAllowStreaming, compile_hints_producer,
-                        compile_hints_consumer);
+                        context->GetIsolate(), ScriptResource::kAllowStreaming,
+                        compile_hints_producer, compile_hints_consumer);
   pending_script->CheckState();
   return pending_script;
 }

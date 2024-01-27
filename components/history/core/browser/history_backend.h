@@ -10,6 +10,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -39,7 +40,6 @@
 #include "components/history/core/browser/visit_tracker.h"
 #include "components/sync/service/sync_service.h"
 #include "sql/init_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SkBitmap;
@@ -164,7 +164,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     virtual void NotifyURLVisited(
         const URLRow& url_row,
         const VisitRow& visit_row,
-        absl::optional<int64_t> local_navigation_id) = 0;
+        std::optional<int64_t> local_navigation_id) = 0;
 
     // Notify HistoryService that some URLs have been modified. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
@@ -637,8 +637,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations)
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations)
       override;
 
   // Updates a visit coming from another device (typically to update its
@@ -653,8 +653,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations)
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations)
       override;
 
   // Updates the `referring_visit` and `opener_visit` fields for the visit with
@@ -841,16 +841,16 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool should_increment_typed_count,
       VisitID opener_visit,
       bool consider_for_ntp_most_visited,
-      absl::optional<int64_t> local_navigation_id = absl::nullopt,
-      absl::optional<std::u16string> title = absl::nullopt,
-      absl::optional<GURL> top_level_url = absl::nullopt,
-      absl::optional<GURL> frame_url = absl::nullopt,
-      absl::optional<std::string> app_id = absl::nullopt,
-      absl::optional<base::TimeDelta> visit_duration = absl::nullopt,
-      absl::optional<std::string> originator_cache_guid = absl::nullopt,
-      absl::optional<VisitID> originator_visit_id = absl::nullopt,
-      absl::optional<VisitID> originator_referring_visit = absl::nullopt,
-      absl::optional<VisitID> originator_opener_visit = absl::nullopt,
+      std::optional<int64_t> local_navigation_id = std::nullopt,
+      std::optional<std::u16string> title = std::nullopt,
+      std::optional<GURL> top_level_url = std::nullopt,
+      std::optional<GURL> frame_url = std::nullopt,
+      std::optional<std::string> app_id = std::nullopt,
+      std::optional<base::TimeDelta> visit_duration = std::nullopt,
+      std::optional<std::string> originator_cache_guid = std::nullopt,
+      std::optional<VisitID> originator_visit_id = std::nullopt,
+      std::optional<VisitID> originator_referring_visit = std::nullopt,
+      std::optional<VisitID> originator_opener_visit = std::nullopt,
       bool is_known_to_sync = false);
 
   // Returns a redirect-or-referral chain in `redirects` for the VisitID
@@ -975,7 +975,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              const GURL& icon_url) override;
   void NotifyURLVisited(const URLRow& url_row,
                         const VisitRow& visit_row,
-                        absl::optional<int64_t> local_navigation_id) override;
+                        std::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;

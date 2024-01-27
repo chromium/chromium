@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/file_clustering_backend.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -18,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/filter_cluster_processor.h"
 #include "components/history_clusters/core/history_clusters_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
 
@@ -35,19 +35,19 @@ namespace {
 //
 // Note that this does not validate that a valid path is specified, as that
 // requires opening the file.
-absl::optional<base::FilePath> GetClustersOverrideFilePath() {
+std::optional<base::FilePath> GetClustersOverrideFilePath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kClustersOverrideFile)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::FilePath file_path =
       command_line->GetSwitchValuePath(switches::kClustersOverrideFile);
-  return file_path.empty() ? absl::nullopt : absl::make_optional(file_path);
+  return file_path.empty() ? std::nullopt : std::make_optional(file_path);
 }
 
 // Reads the override file and builds the clusters from the file contents.
 std::vector<history::Cluster> GetClustersFromFile() {
-  absl::optional<base::FilePath> file_path = GetClustersOverrideFilePath();
+  std::optional<base::FilePath> file_path = GetClustersOverrideFilePath();
   DCHECK(file_path);
   if (!file_path) {
     return {};
@@ -59,8 +59,7 @@ std::vector<history::Cluster> GetClustersFromFile() {
     return {};
   }
 
-  absl::optional<base::Value> json_value =
-      base::JSONReader::Read(file_contents);
+  std::optional<base::Value> json_value = base::JSONReader::Read(file_contents);
   if (!json_value) {
     LOG(ERROR) << "Clusters override file is not valid JSON";
     return {};
@@ -88,7 +87,7 @@ std::vector<history::Cluster> GetClustersFromFile() {
     for (const auto& json_visit : *visits) {
       const auto& json_visit_dict = json_visit.GetDict();
 
-      absl::optional<double> score = json_visit_dict.FindDouble("score");
+      std::optional<double> score = json_visit_dict.FindDouble("score");
       if (!score) {
         continue;
       }
@@ -136,7 +135,7 @@ std::vector<history::Cluster> GetClustersFromFile() {
     }
 
     // Get whether it should be shown on prominent UI surfaces.
-    absl::optional<bool> should_show_on_prominent_ui_surfaces =
+    std::optional<bool> should_show_on_prominent_ui_surfaces =
         json_cluster_dict.FindBool("shouldShowOnProminentUiSurfaces");
     if (should_show_on_prominent_ui_surfaces) {
       cluster.should_show_on_prominent_ui_surfaces =

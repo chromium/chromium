@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -36,7 +37,6 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -380,7 +380,7 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
-    const absl::optional<VideoCaptureTarget>& target,
+    const std::optional<VideoCaptureTarget>& target,
     uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
@@ -571,9 +571,8 @@ void FrameSinkVideoCapturerImpl::RefreshInternal(
 
   // Detect whether the source size changed before attempting capture.
   DCHECK(target_);
-  const absl::optional<CapturableFrameSink::RegionProperties>
-      region_properties =
-          resolved_target_->GetRequestRegionProperties(target_->sub_target);
+  const std::optional<CapturableFrameSink::RegionProperties> region_properties =
+      resolved_target_->GetRequestRegionProperties(target_->sub_target);
   if (!region_properties) {
     MaybeInformConsumerOfEmptyRegion();
     // If the capture region is empty, it means one of two things: the first
@@ -610,9 +609,8 @@ void FrameSinkVideoCapturerImpl::OnFrameDamaged(
   DCHECK(resolved_target_);
   DCHECK(target_);
 
-  const absl::optional<CapturableFrameSink::RegionProperties>
-      region_properties =
-          resolved_target_->GetRequestRegionProperties(target_->sub_target);
+  const std::optional<CapturableFrameSink::RegionProperties> region_properties =
+      resolved_target_->GetRequestRegionProperties(target_->sub_target);
   if (!region_properties) {
     MaybeInformConsumerOfEmptyRegion();
     return;
@@ -722,9 +720,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
 
-  const absl::optional<CapturableFrameSink::RegionProperties>
-      region_properties =
-          resolved_target_->GetRequestRegionProperties(target_->sub_target);
+  const std::optional<CapturableFrameSink::RegionProperties> region_properties =
+      resolved_target_->GetRequestRegionProperties(target_->sub_target);
   if (!region_properties) {
     // We should have valid properties even if there is no sub target. There is
     // nothing to capture right now.
@@ -1014,7 +1011,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
       pixel_format_ == media::PIXEL_FORMAT_NV12;
 
-  absl::optional<BlitRequest> blit_request;
+  std::optional<BlitRequest> blit_request;
   if (use_nv12_with_textures) {
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
@@ -1047,7 +1044,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         media::VideoPixelFormat::PIXEL_FORMAT_NV12};
 
     for (const VideoCaptureOverlay* overlay : GetOverlaysInOrder()) {
-      absl::optional<VideoCaptureOverlay::BlendInformation> blend_information =
+      std::optional<VideoCaptureOverlay::BlendInformation> blend_information =
           overlay->CalculateBlendInformation(frame_properties);
       if (!blend_information)
         continue;

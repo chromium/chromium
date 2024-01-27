@@ -31,7 +31,7 @@ void OnGetRecentImageFromClipboard(
     ClipboardRecentContent::GetRecentImageCallback callback,
     const std::vector<uint8_t>& png_data) {
   if (png_data.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -62,10 +62,9 @@ bool HasRecentTextFromClipboard() {
 ClipboardRecentContentGeneric::ClipboardRecentContentGeneric() = default;
 ClipboardRecentContentGeneric::~ClipboardRecentContentGeneric() = default;
 
-absl::optional<GURL>
-ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
+std::optional<GURL> ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get and clean up the clipboard before processing.
   std::string gurl_string;
@@ -88,7 +87,7 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   // "http://example.com extra words" into "http://example.com%20extra%20words",
   // which is not likely to be a useful or intended destination.)
   if (gurl_string.find_first_of(base::kWhitespaceASCII) != std::string::npos)
-    return absl::nullopt;
+    return std::nullopt;
   if (!gurl_string.empty()) {
     url = GURL(gurl_string);
   } else {
@@ -101,20 +100,20 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
                          &gurl_string16);
     if (gurl_string16.find_first_of(base::kWhitespaceUTF16) !=
         std::string::npos)
-      return absl::nullopt;
+      return std::nullopt;
     if (!gurl_string16.empty())
       url = GURL(gurl_string16);
   }
   if (!url.is_valid() || !IsAppropriateSuggestion(url)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return url;
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::u16string text_from_clipboard;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
@@ -124,7 +123,7 @@ ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
   base::TrimWhitespace(text_from_clipboard, base::TrimPositions::TRIM_ALL,
                        &text_from_clipboard);
   if (text_from_clipboard.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return text_from_clipboard;
@@ -142,10 +141,10 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
 
-absl::optional<std::set<ClipboardContentType>>
+std::optional<std::set<ClipboardContentType>>
 ClipboardRecentContentGeneric::GetCachedClipboardContentTypes() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::set<ClipboardContentType> clipboard_content_types;

@@ -14,8 +14,6 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/prefs/pref_service.h"
 
 PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
     : profile_(profile) {
@@ -37,8 +35,6 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
 }
 
 PerformanceControlsHatsService::~PerformanceControlsHatsService() {
-  local_pref_registrar_.RemoveAll();
-
   // Can't used ScopedObservation because sometimes the
   // UserPerformanceTuningManager is destroyed before this service.
   if (performance_manager::user_tuning::UserPerformanceTuningManager::

@@ -441,7 +441,7 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
 
     contains_valid_model_type = true;
     RecordInvalidationPerModelType(model_type);
-    absl::optional<int64_t> version;
+    std::optional<int64_t> version;
     if (payload_message.has_version()) {
       version = payload_message.version();
     }

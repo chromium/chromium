@@ -7,7 +7,8 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {StorageAccessSiteException, StorageAccessSiteListElement, ContentSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {StorageAccessSiteException, StorageAccessSiteListElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

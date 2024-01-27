@@ -13,7 +13,7 @@ bool ShouldInheritActivation(const GURL& url) {
 }
 
 blink::mojom::FilterListResult InterpretLoadPolicyAsEvidence(
-    const absl::optional<LoadPolicy>& load_policy) {
+    const std::optional<LoadPolicy>& load_policy) {
   if (!load_policy.has_value()) {
     return blink::mojom::FilterListResult::kNotChecked;
   }

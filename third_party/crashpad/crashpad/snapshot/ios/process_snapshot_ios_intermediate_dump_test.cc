@@ -775,6 +775,22 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
   EXPECT_TRUE(process_snapshot4.InitializeWithFilePath(fuzz_path, {}));
 }
 
+TEST_F(ProcessSnapshotIOSIntermediateDumpTest, WriteNoThreads) {
+  {
+    IOSIntermediateDumpWriter::ScopedRootMap rootMap(writer());
+    uint8_t version = 1;
+    EXPECT_TRUE(writer()->AddProperty(Key::kVersion, &version));
+    WriteSystemInfo(writer());
+    WriteProcessInfo(writer());
+    WriteMachException(writer());
+  }
+  CloseWriter();
+  ProcessSnapshotIOSIntermediateDump process_snapshot;
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
+  EXPECT_FALSE(IsRegularFile(path()));
+  EXPECT_TRUE(DumpSnapshot(process_snapshot));
+}
+
 }  // namespace
 }  // namespace test
 }  // namespace crashpad

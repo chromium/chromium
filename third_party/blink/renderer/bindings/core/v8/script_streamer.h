@@ -46,7 +46,7 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
     kAlreadyLoaded,  // DEPRECATED
     kNotHTTP,
     kRevalidate,
-    kContextNotValid,  // DEPRECATED
+    kContextNotValid,
     kEncodingNotSupported,
     kThreadBusy,  // DEPRECATED
     kV8CannotStream,
@@ -291,6 +291,7 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
     : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
  public:
   BackgroundInlineScriptStreamer(
+      v8::Isolate* isolate,
       const String& text,
       v8::ScriptCompiler::CompileOptions compile_options);
 

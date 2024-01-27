@@ -75,7 +75,7 @@ bool SkiaOutputDeviceWebView::Reshape(const SkImageInfo& image_info,
 }
 
 void SkiaOutputDeviceWebView::Present(
-    const absl::optional<gfx::Rect>& update_rect,
+    const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   DCHECK(!update_rect);

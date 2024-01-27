@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -153,8 +153,8 @@ using LoadIconCallback = base::OnceCallback<void(IconValuePtr)>;
 // Merges `delta` to `state`, and  returns's the merge result. If `delta`'s
 // `update_version` is true, increase `state`'s `update_version`.
 COMPONENT_EXPORT(APP_TYPES)
-absl::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
-                                           const apps::IconKey* delta);
+std::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
+                                          const apps::IconKey* delta);
 
 }  // namespace apps
 

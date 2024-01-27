@@ -22,7 +22,7 @@ namespace context_menu {
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     const content::ContextMenuParams& params,
     int initiator_process_id,
-    absl::optional<base::UnguessableToken> initiator_frame_token) {
+    std::optional<base::UnguessableToken> initiator_frame_token) {
   GURL sanitizedReferrer =
       (params.frame_url.is_empty() ? params.page_url : params.frame_url)
           .GetAsReferrer();
@@ -32,8 +32,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   std::u16string title_text =
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
-  absl::optional<base::UnguessableToken> attribution_src_token;
-  absl::optional<network::AttributionReportingRuntimeFeatures> runtime_features;
+  std::optional<base::UnguessableToken> attribution_src_token;
+  std::optional<network::AttributionReportingRuntimeFeatures> runtime_features;
   if (initiator_frame_token && params.impression) {
     attribution_src_token = params.impression->attribution_src_token.value();
     runtime_features = params.impression->runtime_features;

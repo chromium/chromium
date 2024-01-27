@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/wrapped_rate_limiter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -147,7 +147,7 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Actual |ReportQueue| once successfully created (immutable after that).
-  absl::optional<std::unique_ptr<ReportQueue>> actual_report_queue_
+  std::optional<std::unique_ptr<ReportQueue>> actual_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Queue of the pending record producers, collected before actual queue has

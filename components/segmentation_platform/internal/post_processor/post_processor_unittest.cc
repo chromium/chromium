@@ -57,7 +57,7 @@ proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
     int top_k_outputs,
-    absl::optional<float> threshold) {
+    std::optional<float> threshold) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
@@ -156,7 +156,7 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKLessThanElements) {
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/2,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   std::vector<std::string> top_k_labels =
       post_processor.GetClassifierResults(prediction_result);
@@ -170,7 +170,7 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKEqualToElements) {
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/4,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   std::vector<std::string> top_k_labels =
       post_processor.GetClassifierResults(prediction_result);
@@ -318,7 +318,7 @@ TEST(PostProcessorTest,
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/2,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   ClassificationResult classification_result =
       post_processor.GetPostProcessedClassificationResult(

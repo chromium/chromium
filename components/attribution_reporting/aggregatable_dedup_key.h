@@ -7,12 +7,13 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -22,7 +23,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableDedupKey {
 
   // Key specified for deduplication against existing trigger with the same
   // source. If absent, no deduplication is performed.
-  absl::optional<uint64_t> dedup_key;
+  std::optional<uint64_t> dedup_key;
 
   // The filters used to determine whether this `AggregatableDedupKey`'s dedup
   // key is used.
@@ -30,7 +31,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableDedupKey {
 
   AggregatableDedupKey();
 
-  AggregatableDedupKey(absl::optional<uint64_t> dedup_key, FilterPair);
+  AggregatableDedupKey(std::optional<uint64_t> dedup_key, FilterPair);
 
   base::Value::Dict ToJson() const;
 

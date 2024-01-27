@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -21,6 +22,10 @@ namespace ui {
 class DialogModelLabel;
 class ImageModel;
 }  // namespace ui
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace web_app {
 
@@ -58,6 +63,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   // `views::View`:
   gfx::Size GetMaximumSize() const override;
 
+  views::Widget* GetChildWidgetForTesting() override;
+
  private:
   template <class T, class... Args>
   T* MakeAndAddChildView(Args&&... args) {
@@ -74,6 +81,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
 
   void ShowChildView(views::View* view);
 
+  void OnChildDialogDestroying();
+
   raw_ptr<IsolatedWebAppInstallerView::Delegate> delegate_;
 
   raw_ptr<DisabledView> disabled_view_;
@@ -83,6 +92,10 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<InstallSuccessView> install_success_view_;
 
   bool dialog_visible_;
+
+  raw_ptr<views::Widget> child_widget_;
+
+  base::WeakPtrFactory<IsolatedWebAppInstallerViewImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

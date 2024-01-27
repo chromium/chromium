@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/feature_config_condition_validator.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -148,12 +148,12 @@ bool FeatureConfigConditionValidator::EventConfigMeetsConditions(
 }
 
 void FeatureConfigConditionValidator::SetPriorityNotification(
-    const absl::optional<std::string>& feature) {
+    const std::optional<std::string>& feature) {
   DCHECK(!pending_priority_notification_.has_value() || !feature.has_value());
   pending_priority_notification_ = feature;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 FeatureConfigConditionValidator::GetPendingPriorityNotification() {
   return pending_priority_notification_;
 }
@@ -166,7 +166,7 @@ bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
   if (comparator.type == ANY)
     return true;
 
-  absl::optional<uint32_t> availability_day =
+  std::optional<uint32_t> availability_day =
       availability_model.GetAvailability(feature);
   if (!availability_day.has_value())
     return false;

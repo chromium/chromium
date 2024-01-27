@@ -60,7 +60,7 @@ class BaseBlockingPage
   // |blocked_page_shown_timestamp|.
   static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
       const UnsafeResourceList& unsafe_resources,
-      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   // Can be used by implementations of SafeBrowsingBlockingPageFactory.
   static std::unique_ptr<
@@ -72,7 +72,7 @@ class BaseBlockingPage
       PrefService* pref_service,
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper,
-      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   BaseSafeBrowsingErrorUI* sb_error_ui() const;
 

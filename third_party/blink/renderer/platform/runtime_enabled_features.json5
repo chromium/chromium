@@ -388,7 +388,7 @@
       // If enabled, lazy loaded images can be auto sized if the sizes
       // attribute is missing or set to auto.
       name: "AutoSizeLazyLoadedImages",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "AvoidCaretVisibleSelectionAdjuster",
@@ -1197,6 +1197,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5064894363992064
+      name: "CSSViewTransitionClass",
+      status: "test"
+    },
+    {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
       status: "stable",
@@ -1220,6 +1225,13 @@
       // inline-block for cross-browser compatibility. Enabled in M122, should
       // be safe to remove in M126.
       name: "DateInputInlineBlock",
+      status: "stable",
+    },
+    {
+      // This is a killswitch for the `serializable` attribute on declarative
+      // shadow roots. It should be removed in M125 (March 18, 2024) assuming
+      // no issues are encountered.
+      name: "DeclarativeShadowDOMSerializable",
       status: "stable",
     },
     {
@@ -4125,7 +4137,7 @@
     // as the 'publickey-credentials-create' permissions policy is set).
     {
       name: "WebAuthAllowCreateInCrossOriginFrame",
-      status: "experimental",
+      status: "stable",
       // This feature is controlled from the Blink side, unless there is a
       // Finch override of it for a kill-switch.
       base_feature_status: "enabled",

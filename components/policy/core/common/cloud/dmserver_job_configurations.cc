@@ -151,7 +151,7 @@ DMServerJobConfiguration::CreateParams::WithParams(
     const std::string& client_id,
     bool critical,
     DMAuth auth_data,
-    absl::optional<std::string> oauth_token,
+    std::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     Callback callback) {
   DMServerJobConfiguration::CreateParams params;
@@ -200,7 +200,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     const std::string& client_id,
     bool critical,
     DMAuth auth_data,
-    absl::optional<std::string>&& oauth_token,
+    std::optional<std::string>&& oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     Callback callback)
     : DMServerJobConfiguration(CreateParams::WithParams(service,
@@ -217,7 +217,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
     CloudPolicyClient* client,
     bool critical,
     DMAuth auth_data,
-    absl::optional<std::string>&& oauth_token,
+    std::optional<std::string>&& oauth_token,
     Callback callback)
     : DMServerJobConfiguration(
           CreateParams::WithParams(client->service(),

@@ -86,6 +86,30 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementToggleRow) {
   RunSettingsTest("app_management/toggle_row_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ControlledButton) {
+  RunSettingsTest("controls/controlled_button_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ControlledRadioButton) {
+  RunSettingsTest("controls/controlled_radio_button_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ExtensionControlledIndicator) {
+  RunSettingsTest("controls/extension_controlled_indicator_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DropdownMenu) {
+  RunSettingsTest("controls/dropdown_menu_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSlider) {
+  RunSettingsTest("controls/settings_slider_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsToggleButton) {
+  RunSettingsTest("controls/settings_toggle_button_test.js");
+}
+
 class OSSettingsCrostiniTestRevampEnabled
     : public OSSettingsMochaTestRevampEnabled {
  protected:
@@ -1342,6 +1366,45 @@ class OSSettingsPrivacyTestPrivacyHubAndV0Enabled : public OSSettingsMochaTest {
 IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
                        OsPrivacyPagePrivacyHubGeolocationSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_geolocation_subpage_test.js");
+}
+
+class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrivacyTestPrivacyHubV0Enabled() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHubV0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+using OsPrivacyPagePrivacyHubSubpage = OSSettingsPrivacyTestPrivacyHubV0Enabled;
+
+IN_PROC_BROWSER_TEST_F(OsPrivacyPagePrivacyHubSubpage, AllBuilds) {
+  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
+          "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(OsPrivacyPagePrivacyHubSubpage, OfficialBuild) {
+  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
+          "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsInput) {
+  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
+          "runMochaSuite('SettingsSecureDnsInput')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDns) {
+  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
+          "runMochaSuite('SettingsSecureDns')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsDialog) {
+  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
+          "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSmartPrivacySubpage) {

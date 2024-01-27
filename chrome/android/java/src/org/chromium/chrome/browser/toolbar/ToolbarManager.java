@@ -882,6 +882,7 @@ public class ToolbarManager
             omnibox.addUrlFocusChangeListener(mStatusBarColorController);
             omnibox.addUrlFocusChangeListener(mLocationBarFocusHandler);
         }
+        mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =
                 new LoadProgressCoordinator(
@@ -1397,7 +1398,8 @@ public class ToolbarManager
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
                         !ReturnToChromeUtil.moveDownLogo(),
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        mTabObscuringHandler);
 
         mHomepageStateListener =
                 () -> {
@@ -1852,6 +1854,7 @@ public class ToolbarManager
             omnibox.removeUrlFocusChangeListener(mStatusBarColorController);
             omnibox.removeUrlFocusChangeListener(mLocationBarFocusHandler);
         }
+        mLocationBar.removeOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         if (mInitializedWithNative) {
             mFindToolbarManager.removeObserver(mFindToolbarObserver);

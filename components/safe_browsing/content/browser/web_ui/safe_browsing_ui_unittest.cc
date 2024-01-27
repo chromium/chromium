@@ -78,7 +78,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   std::string relay_url_spec = "testing_relay_url_spec";
   std::string ohttp_key = "testing_ohttp_key";
   // Add request to pings.
-  absl::optional<int> token =
+  std::optional<int> token =
       WebUIInfoSingleton::GetInstance()->AddToHPRTLookupPings(
           inner_request.get(), relay_url_spec, ohttp_key);
   // Validate request call_data.

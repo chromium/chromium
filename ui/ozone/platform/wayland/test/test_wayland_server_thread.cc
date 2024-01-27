@@ -179,11 +179,19 @@ bool TestWaylandServerThread::Start() {
   protocol_logger_ = wl_display_add_protocol_logger(
       display_.get(), TestWaylandServerThread::ProtocolLogger, this);
 
+  // Setup a runloop that will be stopped when the message pump is finally
+  // created. This is required as getenv that a libevent calls internally is
+  // not thread-safe and may result in very rare crashes.
+  base::RunLoop run_loop;
+
   base::Thread::Options options;
-  options.message_pump_factory = base::BindRepeating(
-      &TestWaylandServerThread::CreateMessagePump, base::Unretained(this));
+  options.message_pump_factory =
+      base::BindRepeating(&TestWaylandServerThread::CreateMessagePump,
+                          base::Unretained(this), run_loop.QuitClosure());
   if (!base::Thread::StartWithOptions(std::move(options)))
     return false;
+
+  run_loop.Run();
 
   setenv("WAYLAND_SOCKET", base::NumberToString(client_fd.release()).c_str(),
          1);
@@ -279,13 +287,14 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
   return false;
 }
 
-std::unique_ptr<base::MessagePump>
-TestWaylandServerThread::CreateMessagePump() {
+std::unique_ptr<base::MessagePump> TestWaylandServerThread::CreateMessagePump(
+    base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto pump = std::make_unique<base::MessagePumpLibevent>();
   pump->WatchFileDescriptor(wl_event_loop_get_fd(event_loop_), true,
                             base::MessagePumpLibevent::WATCH_READ, &controller_,
                             this);
+  std::move(closure).Run();
   return std::move(pump);
 }
 

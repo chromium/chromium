@@ -37,9 +37,9 @@ class InMemoryTextEmbeddingManagerTest : public testing::Test {
 TEST_F(InMemoryTextEmbeddingManagerTest, DoNotQueryInvalidEmbeddings) {
   // Create InMemoryTextEmbeddings.
   text_embedding_manager_->AddEmbeddingForVisit(
-      GURL("https://cat.com"), "cat", base::Time::Now(), absl::nullopt);
+      GURL("https://cat.com"), "cat", base::Time::Now(), std::nullopt);
   text_embedding_manager_->AddEmbeddingForVisit(
-      GURL("https://dog.com"), "dog", base::Time::Now(), absl::nullopt);
+      GURL("https://dog.com"), "dog", base::Time::Now(), std::nullopt);
 
   // Query embeddings.
   std::vector<float> input_embedding = {6.6554, 4.7054, 9.8516, 2.589, 5.8918};

@@ -24,6 +24,7 @@
 #include "components/download/public/common/download_item_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -63,7 +64,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
@@ -242,7 +242,7 @@ DownloadItemImpl::RequestInfo::RequestInfo(
     const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
-    const absl::optional<url::Origin>& request_initiator,
+    const std::optional<url::Origin>& request_initiator,
     const std::string& suggested_filename,
     const base::FilePath& forced_file_path,
     ui::PageTransition transition_type,
@@ -250,7 +250,7 @@ DownloadItemImpl::RequestInfo::RequestInfo(
     const std::string& remote_address,
     base::Time start_time,
     ::network::mojom::CredentialsMode credentials_mode,
-    const absl::optional<net::IsolationInfo>& isolation_info,
+    const std::optional<net::IsolationInfo>& isolation_info,
     int64_t range_request_from,
     int64_t range_request_to)
     : url_chain(url_chain),
@@ -317,7 +317,7 @@ DownloadItemImpl::DownloadItemImpl(
     const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_refererr_url,
-    const absl::optional<url::Origin>& request_initiator,
+    const std::optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -353,7 +353,7 @@ DownloadItemImpl::DownloadItemImpl(
                     std::string(),
                     start_time,
                     ::network::mojom::CredentialsMode::kInclude,
-                    absl::nullopt,
+                    std::nullopt,
                     range_request_from,
                     range_request_to),
       guid_(guid),
@@ -894,7 +894,7 @@ const GURL& DownloadItemImpl::GetTabReferrerUrl() const {
   return request_info_.tab_referrer_url;
 }
 
-const absl::optional<url::Origin>& DownloadItemImpl::GetRequestInitiator()
+const std::optional<url::Origin>& DownloadItemImpl::GetRequestInitiator()
     const {
   return request_info_.request_initiator;
 }
@@ -1183,7 +1183,7 @@ DownloadItem::DownloadCreationType DownloadItemImpl::GetDownloadCreationType()
   return request_info_.credentials_mode;
 }
 
-const absl::optional<net::IsolationInfo>& DownloadItemImpl::GetIsolationInfo()
+const std::optional<net::IsolationInfo>& DownloadItemImpl::GetIsolationInfo()
     const {
   return request_info_.isolation_info;
 }
@@ -2193,7 +2193,7 @@ void DownloadItemImpl::InterruptWithPartialState(
 
   base::TimeDelta time_since_start = base::Time::Now() - GetStartTime();
   int resulting_file_size = GetReceivedBytes();
-  absl::optional<int> change_in_file_size;
+  std::optional<int> change_in_file_size;
   if (total_bytes_ >= 0) {
     change_in_file_size = total_bytes_ - resulting_file_size;
   }

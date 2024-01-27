@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
@@ -13,7 +14,6 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -77,7 +77,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   bool sync_started_ = false;
   int clear_metadata_count_ = 0;
   DataTypeActivationResponse activation_response_;
-  absl::optional<ModelError> model_error_;
+  std::optional<ModelError> model_error_;
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;
   base::WeakPtrFactory<FakeModelTypeControllerDelegate> weak_ptr_factory_{this};

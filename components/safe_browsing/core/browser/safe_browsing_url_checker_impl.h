@@ -121,7 +121,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
           render_frame_token,
       security_interstitials::UnsafeResource::FrameTreeNodeId
           frame_tree_node_id,
-      absl::optional<int64_t> navigation_id,
+      std::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       bool can_check_db,
@@ -199,14 +199,14 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   void OnUrlResultAndMaybeDeleteSelf(
       PerformedCheck performed_check,
       bool timed_out,
-      absl::optional<std::unique_ptr<CompleteCheckResult>> result);
+      std::optional<std::unique_ptr<CompleteCheckResult>> result);
 
   // Helper function to handle deciding whether or not to show a blocking page.
   void OnUrlResultInternalAndMaybeDeleteSelf(
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      absl::optional<ThreatSource> threat_source,
+      std::optional<ThreatSource> threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response,
       bool timed_out,
       PerformedCheck performed_check);
@@ -297,7 +297,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const security_interstitials::UnsafeResource::FrameTreeNodeId
       frame_tree_node_id_ =
           security_interstitials::UnsafeResource::kNoFrameTreeNodeId;
-  const absl::optional<int64_t> navigation_id_;
+  const std::optional<int64_t> navigation_id_;
   base::WeakPtr<web::WebState> weak_web_state_;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;

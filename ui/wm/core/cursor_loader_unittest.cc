@@ -66,7 +66,7 @@ TEST(CursorLoaderTest, GetCursorData) {
         ASSERT_TRUE(cursor_loader_data);
         const auto cursor_data =
             GetCursorData(cursor.type(), cursor_size, resource_scale,
-                          display.panel_rotation());
+                          absl::nullopt, display.panel_rotation());
         ASSERT_TRUE(cursor_data);
         ASSERT_EQ(cursor_loader_data->bitmaps.size(),
                   cursor_data->bitmaps.size());

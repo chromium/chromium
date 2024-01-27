@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -59,11 +59,11 @@ class Ed25519PublicKey {
 
   explicit Ed25519PublicKey(std::array<uint8_t, kLength> bytes);
 
-  // This field is `absl::nullopt` only when the default constructor is used,
+  // This field is `std::nullopt` only when the default constructor is used,
   // which only happens as part of mojom `StructTraits`. All methods of this
-  // class can safely assume that this field is never `absl::nullopt` and should
+  // class can safely assume that this field is never `std::nullopt` and should
   // `CHECK` if it is.
-  absl::optional<std::array<uint8_t, kLength>> bytes_;
+  std::optional<std::array<uint8_t, kLength>> bytes_;
 };
 
 }  // namespace web_package

@@ -95,7 +95,7 @@ namespace {
 // TODO(crbug.com/1221083): If a user switched tabs, do not include that time as
 // "shown".
 bool ShouldShowQuietRequestAgainIfPreempted(
-    absl::optional<base::Time> request_display_start_time) {
+    std::optional<base::Time> request_display_start_time) {
   if (request_display_start_time->is_null()) {
     return true;
   }
@@ -227,7 +227,7 @@ void PermissionRequestManager::AddRequest(
   bool is_main_frame =
       url::IsSameOriginWith(main_frame_origin, request->requesting_origin());
 
-  absl::optional<url::Origin> auto_approval_origin =
+  std::optional<url::Origin> auto_approval_origin =
       PermissionsClient::Get()->GetAutoApprovalOrigin();
   if (auto_approval_origin) {
     if (url::Origin::Create(request->requesting_origin()) ==
@@ -581,7 +581,7 @@ void PermissionRequestManager::Accept() {
                                          /*is_one_time=*/false);
 
 #if !BUILDFLAG(IS_ANDROID)
-    absl::optional<ContentSettingsType> content_settings_type =
+    std::optional<ContentSettingsType> content_settings_type =
         RequestTypeToContentSettingsType((*requests_iter)->request_type());
     if (content_settings_type.has_value()) {
       PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
@@ -803,9 +803,9 @@ bool PermissionRequestManager::RecreateView() {
   return true;
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
-  return view_ ? view_->GetViewBoundsInScreen() : absl::nullopt;
+  return view_ ? view_->GetViewBoundsInScreen() : std::nullopt;
 }
 
 PermissionRequestManager::PermissionRequestManager(
@@ -964,10 +964,10 @@ void PermissionRequestManager::ShowPrompt() {
     }
 
     PermissionsClient::Get()->TriggerPromptHatsSurveyIfEnabled(
-        web_contents(), requests_[0]->request_type(), absl::nullopt,
+        web_contents(), requests_[0]->request_type(), std::nullopt,
         DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(),
-        requests_[0]->GetGestureType(), absl::nullopt, false,
+        requests_[0]->GetGestureType(), std::nullopt, false,
         web_contents()->GetLastCommittedURL(),
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
@@ -1040,11 +1040,11 @@ void PermissionRequestManager::CurrentRequestsDecided(
   }
 
   std::optional<permissions::PermissionIgnoredReason> ignore_reason =
-      absl::nullopt;
+      std::nullopt;
 #if !BUILDFLAG(IS_ANDROID)
   // ignore reason metric currently not supported on android
   if (permission_action == PermissionAction::IGNORED) {
-    ignore_reason = absl::make_optional(
+    ignore_reason = std::make_optional(
         PermissionsClient::Get()->DetermineIgnoreReason(web_contents()));
   }
 #endif
@@ -1058,7 +1058,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
       prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
       did_show_prompt_, did_click_manage_, did_click_learn_more_);
 
-  absl::optional<QuietUiReason> quiet_ui_reason;
+  std::optional<QuietUiReason> quiet_ui_reason;
   if (ShouldCurrentRequestUseQuietUI())
     quiet_ui_reason = ReasonForUsingQuietUi();
 
@@ -1263,14 +1263,14 @@ bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
   // ContentSettingImageModel might call into this method if the user switches
   // between tabs while the |notification_permission_ui_selectors_| are
   // pending.
-  return ReasonForUsingQuietUi() != absl::nullopt;
+  return ReasonForUsingQuietUi() != std::nullopt;
 }
 
-absl::optional<PermissionRequestManager::QuietUiReason>
+std::optional<PermissionRequestManager::QuietUiReason>
 PermissionRequestManager::ReasonForUsingQuietUi() const {
   if (!IsRequestInProgress() || !current_request_ui_to_use_ ||
       !current_request_ui_to_use_->quiet_ui_reason)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *(current_request_ui_to_use_->quiet_ui_reason);
 }
@@ -1295,7 +1295,7 @@ void PermissionRequestManager::RestorePrompt() {
 
 bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
     const {
-  absl::optional<QuietUiReason> quiet_ui_reason = ReasonForUsingQuietUi();
+  std::optional<QuietUiReason> quiet_ui_reason = ReasonForUsingQuietUi();
   if (quiet_ui_reason.has_value()) {
     switch (quiet_ui_reason.value()) {
       case QuietUiReason::kEnabledInPrefs:
@@ -1351,7 +1351,7 @@ void PermissionRequestManager::StorePermissionActionForUMA(
     const GURL& origin,
     RequestType request_type,
     PermissionAction permission_action) {
-  absl::optional<ContentSettingsType> content_settings_type =
+  std::optional<ContentSettingsType> content_settings_type =
       RequestTypeToContentSettingsType(request_type);
   if (content_settings_type.has_value()) {
     PermissionsClient::Get()

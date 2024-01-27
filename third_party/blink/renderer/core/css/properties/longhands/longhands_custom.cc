@@ -93,6 +93,15 @@ void AppendIntegerOrAutoIfZero(unsigned value, CSSValueList* list) {
       value, CSSPrimitiveValue::UnitType::kInteger));
 }
 
+CSSCustomIdentValue* ConsumeCustomIdentExcludingNone(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return nullptr;
+  }
+  return css_parsing_utils::ConsumeCustomIdent(range, context);
+}
+
 }  // namespace
 
 namespace css_longhand {
@@ -6605,6 +6614,34 @@ const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(style.ViewTransitionName());
+}
+
+const CSSValue* ViewTransitionClass::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  // The valid syntax is `none | <<custom-ident>>*` where the list of custom
+  // idents can't include `none`. So handle `none` separately, and then consume
+  // a list without `none`s.
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+  return css_parsing_utils::ConsumeSpaceSeparatedList(
+      ConsumeCustomIdentExcludingNone, range, context);
+}
+
+const CSSValue* ViewTransitionClass::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (style.ViewTransitionClass().empty()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  CSSValueList* ident_list = CSSValueList::CreateSpaceSeparated();
+  for (const auto& class_name : style.ViewTransitionClass()) {
+    ident_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(class_name));
+  }
+  return ident_list;
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

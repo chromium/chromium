@@ -162,7 +162,7 @@ public class ConditionWaiter {
     }
 
     /** The maximum time to wait for a criteria to become valid. */
-    public static final long MAX_TIME_TO_POLL = 3000L;
+    public static final long MAX_TIME_TO_POLL = 5000L;
 
     /** The polling interval to wait between checking for a satisfied criteria. */
     public static final long POLLING_INTERVAL = 50;

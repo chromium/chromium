@@ -10,21 +10,9 @@ build_webui("build") {
   grd_prefix = "settings_shared"
   grd_resource_path_prefix = "shared/settings"
 
-  web_component_files = [
-    "controls/controlled_button.ts",
-    "controls/controlled_radio_button.ts",
-    "controls/extension_controlled_indicator.ts",
-    "controls/settings_dropdown_menu.ts",
-    "controls/settings_radio_group.ts",
-    "controls/settings_slider.ts",
-    "controls/settings_toggle_button.ts",
-    "privacy_page/secure_dns.ts",
-    "privacy_page/secure_dns_input.ts",
-  ]
-
-  if (is_chromeos_ash) {
-    web_component_files += [ "privacy_page/secure_dns_dialog.ts" ]
-  }
+  # Used by browser settings and password manager. Do not use from Ash
+  # settings, use the version in c/b/r/ash/settings/controls instead.
+  web_component_files = [ "controls/extension_controlled_indicator.ts" ]
 
   non_web_component_files = [
     "extension_control_browser_proxy.ts",

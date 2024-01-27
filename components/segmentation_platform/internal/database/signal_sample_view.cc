@@ -39,7 +39,7 @@ SignalSampleView::Iterator::Iterator(Iterator& other) = default;
 
 SignalSampleView::SignalSampleView(
     const std::vector<SignalDatabase::DbEntry>& samples,
-    const absl::optional<Query>& query)
+    const std::optional<Query>& query)
     : samples_(samples), query_(query) {}
 SignalSampleView::~SignalSampleView() = default;
 

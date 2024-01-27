@@ -686,7 +686,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
         /*min=*/base::Seconds(1), /*max=*/base::Days(24), /*buckets=*/100);
   }
 
-  absl::optional<EpochTopics> maybe_removed_epoch =
+  std::optional<EpochTopics> maybe_removed_epoch =
       browsing_topics_state_.AddEpoch(std::move(epoch_topics));
   if (maybe_removed_epoch.has_value()) {
     site_data_manager_->ExpireDataBefore(

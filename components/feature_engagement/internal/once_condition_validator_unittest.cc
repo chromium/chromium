@@ -215,7 +215,7 @@ TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.priority_notification_ok);
 
-  validator_.SetPriorityNotification(absl::nullopt);
+  validator_.SetPriorityNotification(std::nullopt);
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,

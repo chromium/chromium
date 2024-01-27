@@ -32,8 +32,8 @@ class TestEntityMetadataProvider : public EntityMetadataProvider {
               EntityMetadata metadata;
               metadata.human_readable_name = entity_id;
               std::move(callback).Run(entity_id == "nometadata"
-                                          ? absl::nullopt
-                                          : absl::make_optional(metadata));
+                                          ? std::nullopt
+                                          : std::make_optional(metadata));
             },
             entity_id, std::move(callback)));
   }

@@ -87,7 +87,7 @@ std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value::List* block,
 }
 
 const base::Value::List* GetPrefList(const PrefService* pref_service,
-                                     absl::optional<std::string> pref_path) {
+                                     std::optional<std::string> pref_path) {
   DCHECK(pref_service);
 
   if (!pref_path)
@@ -134,8 +134,8 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
 class DefaultBlocklistSource : public BlocklistSource {
  public:
   DefaultBlocklistSource(PrefService* pref_service,
-                         absl::optional<std::string> blocklist_pref_path,
-                         absl::optional<std::string> allowlist_pref_path)
+                         std::optional<std::string> blocklist_pref_path,
+                         std::optional<std::string> allowlist_pref_path)
       : blocklist_pref_path_(blocklist_pref_path),
         allowlist_pref_path_(allowlist_pref_path) {
     pref_change_registrar_.Init(pref_service);
@@ -166,8 +166,8 @@ class DefaultBlocklistSource : public BlocklistSource {
   }
 
  private:
-  absl::optional<std::string> blocklist_pref_path_;
-  absl::optional<std::string> allowlist_pref_path_;
+  std::optional<std::string> blocklist_pref_path_;
+  std::optional<std::string> allowlist_pref_path_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 
@@ -257,8 +257,8 @@ bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
 
 URLBlocklistManager::URLBlocklistManager(
     PrefService* pref_service,
-    absl::optional<std::string> blocklist_pref_path,
-    absl::optional<std::string> allowlist_pref_path)
+    std::optional<std::string> blocklist_pref_path,
+    std::optional<std::string> allowlist_pref_path)
     : blocklist_(new URLBlocklist) {
   DCHECK(blocklist_pref_path || allowlist_pref_path);
 

@@ -201,7 +201,7 @@ class CopyOutputScalingPixelTest
         copy_output::ComputeResultRect(copy_rect, scale_from_, scale_to_);
     EXPECT_EQ(expected_result_rect, result->rect());
     EXPECT_EQ(result_format_, result->format());
-    absl::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
+    std::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
     SkBitmap result_bitmap;
     if (result_format_ == CopyOutputResult::Format::I420_PLANES) {
       result_bitmap = ReadI420ResultToSkBitmap(*result);

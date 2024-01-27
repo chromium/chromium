@@ -613,7 +613,7 @@ TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsWhenStartedHandling) {
 
 TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsOnTokenUpdate) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   InitializeBackend(/*expect_success=*/true);
   fake_manager_->WaitForSyncThread();
 

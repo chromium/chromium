@@ -59,16 +59,16 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations)
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations)
       override;
   VisitID UpdateSyncedVisit(
       const GURL& url,
       const std::u16string& title,
       bool hidden,
       const VisitRow& visit,
-      const absl::optional<VisitContextAnnotations>& context_annotations,
-      const absl::optional<VisitContentAnnotations>& content_annotations)
+      const std::optional<VisitContextAnnotations>& context_annotations,
+      const std::optional<VisitContentAnnotations>& content_annotations)
       override;
   bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
                                     VisitID referrer_id,

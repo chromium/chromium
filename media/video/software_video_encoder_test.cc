@@ -159,7 +159,8 @@ class SoftwareVideoEncoderTest
       case media::VideoCodec::kVP8:
       case media::VideoCodec::kVP9:
 #if BUILDFLAG(ENABLE_LIBVPX)
-        if (profile_ == VP9PROFILE_PROFILE2) {
+        if (profile_ == VP9PROFILE_PROFILE2 ||
+            profile_ == VP9PROFILE_PROFILE3) {
           vpx_codec_caps_t codec_caps = vpx_codec_get_caps(vpx_codec_vp9_cx());
           if ((codec_caps & VPX_CODEC_CAP_HIGHBITDEPTH) == 0) {
             return nullptr;
@@ -281,8 +282,16 @@ class SoftwareVideoEncoderTest
   }
 
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
-    return profile == VP9PROFILE_PROFILE2 ? PIXEL_FORMAT_YUV420P10
-                                          : PIXEL_FORMAT_I420;
+    switch (profile) {
+      case VP9PROFILE_PROFILE1:
+        return PIXEL_FORMAT_I444;
+      case VP9PROFILE_PROFILE2:
+        return PIXEL_FORMAT_YUV420P10;
+      case VP9PROFILE_PROFILE3:
+        return PIXEL_FORMAT_YUV444P10;
+      default:
+        return PIXEL_FORMAT_I420;
+    }
   }
 
   std::pair<int, int> GetQpRange(VideoCodec codec) {
@@ -295,7 +304,13 @@ class SoftwareVideoEncoderTest
     }
   }
 
-  VideoEncoder::Options CreateDefaultOptions() { return {}; }
+  VideoEncoder::Options CreateDefaultOptions() {
+    VideoEncoder::Options default_options;
+    if (profile_ == VP9PROFILE_PROFILE1 || profile_ == VP9PROFILE_PROFILE3) {
+      default_options.subsampling = VideoChromaSampling::k444;
+    }
+    return default_options;
+  }
 
  protected:
   VideoCodec codec_;
@@ -1077,9 +1092,15 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_I444},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_NV12},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_I444},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_NV12},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 

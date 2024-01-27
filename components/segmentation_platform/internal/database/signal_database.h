@@ -6,13 +6,13 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_DATABASE_H_
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -35,7 +35,7 @@ class SignalDatabase {
   // to delta from UTC midnight for efficient storage.
   virtual void WriteSample(proto::SignalType signal_type,
                            uint64_t name_hash,
-                           absl::optional<int32_t> value,
+                           std::optional<int32_t> value,
                            SuccessCallback callback) = 0;
 
   // Called to get signals collected between any two timestamps (including both

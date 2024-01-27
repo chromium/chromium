@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 struct FeatureConfig;
@@ -116,10 +116,10 @@ class ConditionValidator {
   // Called to notify that we have a priority notification to be shown next. All
   // other IPHs will be blocked until then.
   virtual void SetPriorityNotification(
-      const absl::optional<std::string>& feature) = 0;
+      const std::optional<std::string>& feature) = 0;
 
   // Called to get if there is a pending priority notification to be shown next.
-  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+  virtual std::optional<std::string> GetPendingPriorityNotification() = 0;
 
  protected:
   ConditionValidator() = default;

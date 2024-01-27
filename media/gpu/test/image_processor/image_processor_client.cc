@@ -55,14 +55,15 @@ absl::optional<VideoFrameLayout> CreateLayout(
 
 // static
 std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
+    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto ip_client =
       base::WrapUnique(new ImageProcessorClient(std::move(frame_processors)));
-  if (!ip_client->CreateImageProcessor(input_config, output_config,
-                                       num_buffers)) {
+  if (!ip_client->CreateImageProcessor(create_backend_cb, input_config,
+                                       output_config, num_buffers)) {
     LOG(ERROR) << "Failed to create ImageProcessor";
     return nullptr;
   }
@@ -92,6 +93,7 @@ ImageProcessorClient::~ImageProcessorClient() {
 }
 
 bool ImageProcessorClient::CreateImageProcessor(
+    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers) {
@@ -103,7 +105,8 @@ bool ImageProcessorClient::CreateImageProcessor(
   // blocking.
   image_processor_client_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ImageProcessorClient::CreateImageProcessorTask,
-                                base::Unretained(this), std::cref(input_config),
+                                base::Unretained(this), create_backend_cb,
+                                std::cref(input_config),
                                 std::cref(output_config), num_buffers, &done));
   done.Wait();
   if (!image_processor_) {
@@ -114,6 +117,7 @@ bool ImageProcessorClient::CreateImageProcessor(
 }
 
 void ImageProcessorClient::CreateImageProcessorTask(
+    absl::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
@@ -121,18 +125,29 @@ void ImageProcessorClient::CreateImageProcessorTask(
   DCHECK_CALLED_ON_VALID_THREAD(image_processor_client_thread_checker_);
   // base::Unretained(this) for ErrorCB is safe here because the callback is
   // executed on |image_processor_client_thread_| which is owned by this class.
-  ImageProcessorFactory::PickFormatCB pick_format_cb =
-      base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
-                             absl::optional<Fourcc> fourcc) {
-        return absl::make_optional<Fourcc>(fourcc_config[0]);
-      });
+  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
+      &ImageProcessorClient::NotifyError, base::Unretained(this));
 
-  image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
-      {}, gfx::Rect(input_config.size), output_config.size, num_buffers,
-      image_processor_client_thread_.task_runner(), pick_format_cb,
-      base::BindRepeating(&ImageProcessorClient::NotifyError,
-                          base::Unretained(this)),
-      input_config, output_config);
+  if (create_backend_cb) {
+    // Note: We aren't really missing anything by using the callback directly
+    // versus calling ImageProcessorFactory::CreateWithInputCandidates since the
+    // candidates list is empty in the else branch.
+    image_processor_ =
+        ImageProcessor::Create(*create_backend_cb, input_config, output_config,
+                               ImageProcessor::OutputMode::IMPORT, error_cb,
+                               image_processor_client_thread_.task_runner());
+  } else {
+    ImageProcessorFactory::PickFormatCB pick_format_cb =
+        base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
+                               absl::optional<Fourcc> fourcc) {
+          return absl::make_optional<Fourcc>(fourcc_config[0]);
+        });
+
+    image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
+        {}, gfx::Rect(input_config.size), output_config.size, num_buffers,
+        image_processor_client_thread_.task_runner(), pick_format_cb, error_cb,
+        input_config, output_config);
+  }
 
   done->Signal();
 }

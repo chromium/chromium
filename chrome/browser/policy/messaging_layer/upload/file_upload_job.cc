@@ -600,17 +600,18 @@ void FileUploadJob::AddRecordToStorage(
     Priority priority,
     Record record_copy,
     base::OnceCallback<void(Status)> done_cb) {
-  ReportingClient::GetInstance()->sequenced_task_runner()->PostTask(
+  ReportQueueProvider::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](Priority priority, Record record_copy,
                         base::OnceCallback<void(Status)> done_cb) {
                        // We can only get to here from upload, which originates
                        // from Storage Module, so `storage()` below cannot be
                        // null.
-                       CHECK(ReportingClient::GetInstance()->storage());
-                       ReportingClient::GetInstance()->storage()->AddRecord(
-                           priority, std::move(record_copy),
-                           std::move(done_cb));
+                       const auto storage =
+                           ReportQueueProvider::GetInstance()->storage();
+                       CHECK(storage);
+                       storage->AddRecord(priority, std::move(record_copy),
+                                          std::move(done_cb));
                      },
                      priority, std::move(record_copy), std::move(done_cb)));
 }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_AGGREGATOR_H_
 #define COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_AGGREGATOR_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/viz/service/hit_test/hit_test_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -73,8 +73,8 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // the given |surface_id| if it is different than when it was last queried.
   // This is used in order to ensure that the flow between receiving hit-test
   // data and aggregating is included only once per submission.
-  absl::optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
-                                              uint64_t active_frame_index);
+  std::optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
+                                             uint64_t active_frame_index);
 
   const raw_ptr<const HitTestManager> hit_test_manager_;
 

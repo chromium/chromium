@@ -4707,6 +4707,67 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_NE(rph_id_1, rph_id_2);
 }
 
+// Tests the behavior around COOP BrowsingInstance swap when prerendering a COOP
+// page.
+// Regression test for crbug.com/1519131.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       COOPSwapForPrerenderingCOOPPage) {
+  GURL initial_page(https_server()->GetURL("a.test", "/empty.html"));
+  GURL prerender_page(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  // Navigate to an initial non-COOP page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_page));
+  RenderFrameHostImpl* rfh_1 = current_frame_host();
+  scoped_refptr<SiteInstanceImpl> si_1 = rfh_1->GetSiteInstance();
+  base::UnguessableToken bi_token_1 =
+      rfh_1->GetSiteInstance()->browsing_instance_token();
+  int rph_id_1 = rfh_1->GetProcess()->GetID();
+
+  // Start prerendering a COOP page.
+  TestNavigationManager navigation_manager(web_contents(), prerender_page);
+  prerender_helper().AddPrerenderAsync(prerender_page);
+
+  // Up to this stage, PrerenderHost has been created and prerender navigation
+  // has been started. Per PrerenderHost creation, new FrameTree is initialized
+  // with new BrowsingInstance / SiteInstance, and a new process will be
+  // assigned to it accordingly.
+  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
+  int prerender_host_id = prerender_helper().GetHostForUrl(prerender_page);
+  RenderFrameHostImpl* rfh_2 =
+      web_contents()->UnsafeFindFrameByFrameTreeNodeId(prerender_host_id);
+  ASSERT_TRUE(rfh_2);
+  scoped_refptr<SiteInstanceImpl> si_2 = rfh_2->GetSiteInstance();
+  base::UnguessableToken bi_token_2 =
+      rfh_2->GetSiteInstance()->browsing_instance_token();
+  int rph_id_2 = rfh_2->GetProcess()->GetID();
+  ASSERT_NE(rfh_1, rfh_2);
+  ASSERT_NE(si_1, si_2);
+  ASSERT_NE(bi_token_1, bi_token_2);
+  ASSERT_NE(rph_id_1, rph_id_2);
+
+  // After receiving a response, BrowsingInstance swap occurs by COOP, resulting
+  // in the force recreation of another new RenderFrameHost in a new
+  // SiteInstance and renderer process.
+  // TODO(crbug.com/1519131): Avoid swapping these twice by reusing an
+  // unlocked renderer process or unassigned SiteInstance, which are
+  // guaranteed to always be newly created during PrerenderHost creation as
+  // mentioned above.
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager.was_successful());
+  RenderFrameHostImpl* rfh_3 =
+      web_contents()->UnsafeFindFrameByFrameTreeNodeId(prerender_host_id);
+  ASSERT_TRUE(rfh_3);
+  scoped_refptr<SiteInstanceImpl> si_3 = rfh_3->GetSiteInstance();
+  base::UnguessableToken bi_token_3 =
+      rfh_3->GetSiteInstance()->browsing_instance_token();
+  int rph_id_3 = rfh_3->GetProcess()->GetID();
+  EXPECT_NE(rfh_2, rfh_3);
+  EXPECT_NE(si_2, si_3);
+  EXPECT_NE(bi_token_2, bi_token_3);
+  EXPECT_NE(rph_id_2, rph_id_3);
+}
+
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.

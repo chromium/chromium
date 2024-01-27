@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 
 #include "base/debug/stack_trace.h"
@@ -33,7 +34,6 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace {
@@ -175,7 +175,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeed(
   EnqueueInFlightChange(/*subscribing=*/true,
                         WebFeedInFlightChangeStrategy::kNotDurableRequest,
                         change_reason, page_info,
-                        /*info=*/absl::nullopt);
+                        /*info=*/std::nullopt);
   WithModel(base::BindOnce(
       &WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart,
       base::Unretained(this), page_info, change_reason, std::move(callback)));
@@ -219,7 +219,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedInternal(
   feedstore::WebFeedInfo info;
   info.set_web_feed_id(web_feed_id);
   EnqueueInFlightChange(/*subscribing=*/true, strategy, change_reason,
-                        /*page_information=*/absl::nullopt, info);
+                        /*page_information=*/std::nullopt, info);
   WithModel(
       base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart,
                      base::Unretained(this), web_feed_id, strategy,
@@ -348,7 +348,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
   feedstore::WebFeedInfo info = info_lookup.web_feed_info;
   info.set_web_feed_id(web_feed_id);
   EnqueueInFlightChange(/*subscribing=*/false, strategy, change_reason,
-                        /*page_information=*/absl::nullopt, info);
+                        /*page_information=*/std::nullopt, info);
 
   feed_stream_->GetTaskQueue().AddTask(
       FROM_HERE,
@@ -596,8 +596,8 @@ void WebFeedSubscriptionCoordinator::EnqueueInFlightChange(
     bool subscribing,
     WebFeedInFlightChangeStrategy strategy,
     feedwire::webfeed::WebFeedChangeReason change_reason,
-    absl::optional<WebFeedPageInformation> page_information,
-    absl::optional<feedstore::WebFeedInfo> info) {
+    std::optional<WebFeedPageInformation> page_information,
+    std::optional<feedstore::WebFeedInfo> info) {
   WebFeedInFlightChange change;
   change.token = token_generator_.Token();
   change.subscribing = subscribing;

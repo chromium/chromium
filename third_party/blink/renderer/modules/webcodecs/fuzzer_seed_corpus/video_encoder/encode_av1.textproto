@@ -78,6 +78,15 @@ invocations: [
     }
   },
   {
+    configure {
+      codec: 'av01.1.00M.08.0.000',
+      acceleration: ALLOW,
+      framerate: 25,
+      width: 200,
+      height: 50
+    }
+  },
+  {
     flush {}
   },
   {

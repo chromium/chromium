@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync_device_info/device_info_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 enum SharingSpecificFields_EnabledFeatures : int;
@@ -78,7 +78,7 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // DeviceInfo stored here are not necessarily owned.
   std::vector<raw_ptr<const DeviceInfo, VectorExperimental>> devices_;
   std::string local_device_cache_guid_;
-  absl::optional<std::map<DeviceInfo::FormFactor, int>>
+  std::optional<std::map<DeviceInfo::FormFactor, int>>
       device_count_per_type_override_;
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;

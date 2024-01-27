@@ -4,12 +4,12 @@
 
 #include "components/sync/base/user_selectable_type.h"
 
+#include <optional>
 #include <ostream>
 
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -132,7 +132,7 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).type_name;
 }
 
-absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
+std::optional<UserSelectableType> GetUserSelectableTypeFromString(
     const std::string& type) {
   if (type == kBookmarksTypeName) {
     return UserSelectableType::kBookmarks;
@@ -167,7 +167,7 @@ absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
   if (type == kSavedTabGroupsTypeName) {
     return UserSelectableType::kSavedTabGroups;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
@@ -205,7 +205,7 @@ std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
   return result;
 }
 
-absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
+std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type) {
   if (type == kOsAppsTypeName) {
     return UserSelectableOsType::kOsApps;
@@ -232,7 +232,7 @@ absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
   if (type == kPreferencesTypeName) {
     return UserSelectableOsType::kOsPreferences;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {

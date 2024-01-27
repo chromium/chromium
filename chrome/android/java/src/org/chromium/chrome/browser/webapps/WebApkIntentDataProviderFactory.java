@@ -389,7 +389,9 @@ public class WebApkIntentDataProviderFactory {
                 scope,
                 new WebappIcon(
                         webApkPackageName,
-                        isPrimaryIconMaskable ? primaryMaskableIconId : primaryIconId),
+                        isPrimaryIconMaskable ? primaryMaskableIconId : primaryIconId,
+                        res,
+                        shellApkVersion),
                 new WebappIcon(webApkPackageName, splashIconId),
                 name,
                 shortName,

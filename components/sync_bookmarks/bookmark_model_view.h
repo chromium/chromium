@@ -80,16 +80,16 @@ class BookmarkModelView {
       size_t index,
       const std::u16string& title,
       const bookmarks::BookmarkNode::MetaInfoMap* meta_info,
-      absl::optional<base::Time> creation_time,
-      absl::optional<base::Uuid> uuid);
+      std::optional<base::Time> creation_time,
+      std::optional<base::Uuid> uuid);
   const bookmarks::BookmarkNode* AddURL(
       const bookmarks::BookmarkNode* parent,
       size_t index,
       const std::u16string& title,
       const GURL& url,
       const bookmarks::BookmarkNode::MetaInfoMap* meta_info,
-      absl::optional<base::Time> creation_time,
-      absl::optional<base::Uuid> uuid);
+      std::optional<base::Time> creation_time,
+      std::optional<base::Uuid> uuid);
   void ReorderChildren(
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& ordered_nodes);

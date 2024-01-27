@@ -102,7 +102,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
           !base::HexStringToUInt64(string_piece.substr(16, 16), &low)) {
         continue;
       }
-      absl::optional<base::UnguessableToken> token =
+      std::optional<base::UnguessableToken> token =
           base::UnguessableToken::Deserialize(high, low);
       if (!token.has_value()) {
         continue;

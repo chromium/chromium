@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -26,27 +27,26 @@ void ModelExecutionSession::BindReceiver(
 
 void ModelExecutionSession::ModelExecutionCallback(
     mojo::RemoteSetElementId responder_id,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
     return;
   }
 
-  if (!result.has_value()) {
+  if (!result.response.has_value()) {
     responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kError,
                           std::nullopt);
     return;
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::StringValue>(result->response);
+      optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
     responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
                           response->value());
   }
-  if (result->is_complete) {
+  if (result.response->is_complete) {
     responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
                           std::nullopt);
   }

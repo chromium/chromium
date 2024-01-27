@@ -996,17 +996,17 @@ std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
   return ancestor_topics;
 }
 
-absl::optional<int> SemanticTree::GetLatestLocalizedNameMessageId(
+std::optional<int> SemanticTree::GetLatestLocalizedNameMessageId(
     const Topic& topic) {
   return SemanticTree::GetLocalizedNameMessageId(
       topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
 }
 
-absl::optional<int> SemanticTree::GetLocalizedNameMessageId(
+std::optional<int> SemanticTree::GetLocalizedNameMessageId(
     const Topic& topic,
     int taxonomy_version) {
   if (!IsTopicValid(topic) || !IsTaxonomySupported(taxonomy_version)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Get the most recent name for a topic by iterating through the taxonomy
   // updates backwards.
@@ -1024,7 +1024,7 @@ absl::optional<int> SemanticTree::GetLocalizedNameMessageId(
       return renamed_topics_iterator->second;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace browsing_topics

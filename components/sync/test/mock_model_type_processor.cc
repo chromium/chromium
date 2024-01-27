@@ -66,7 +66,7 @@ void MockModelTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
 void MockModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList response_list,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   pending_tasks_.push_back(base::BindOnce(
       &MockModelTypeProcessor::OnUpdateReceivedImpl, base::Unretained(this),
       type_state, std::move(response_list), std::move(gc_directive)));
@@ -295,7 +295,7 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
 void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList response_list,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   type_states_received_on_update_.push_back(type_state);
   for (const UpdateResponseData& response : response_list) {
     const ClientTagHash& client_tag_hash = response.entity.client_tag_hash;

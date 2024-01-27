@@ -10,6 +10,8 @@ source_set("privacy_guide") {
     "privacy_guide_main_coordinator.h",
     "privacy_guide_main_coordinator.mm",
     "privacy_guide_main_coordinator_delegate.h",
+    "privacy_guide_safe_browsing_coordinator.h",
+    "privacy_guide_safe_browsing_coordinator.mm",
     "privacy_guide_url_usage_coordinator.h",
     "privacy_guide_url_usage_coordinator.mm",
     "privacy_guide_url_usage_mediator.h",

@@ -16,10 +16,10 @@ namespace syncer {
 
 namespace {
 
-absl::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
+std::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
     const SyncService& sync_service) {
   if (sync_service.GetTransportState() != SyncService::TransportState::ACTIVE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const SyncUserSettings* user_settings = sync_service.GetUserSettings();
@@ -43,12 +43,12 @@ absl::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PassphraseTypeForMetrics GetPassphraseTypeForAllProfiles(
     const std::vector<const SyncService*>& sync_services) {
-  base::flat_set<absl::optional<PassphraseTypeForMetrics>> passphrase_types;
+  base::flat_set<std::optional<PassphraseTypeForMetrics>> passphrase_types;
   for (const SyncService* sync_service : sync_services) {
     DCHECK(sync_service);
     passphrase_types.insert(GetPassphraseTypeForSingleProfile(*sync_service));

@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Потрібен пароль</translation>
 <translation id="1156303062776767266">Ви переглядаєте локальний або спільний файл</translation>
 <translation id="1158211211994409885">Хост <ph name="HOST_NAME" /> неочікувано розірвав з’єднання.</translation>
-<translation id="115926840831309955">Перевірте код CVC й повторіть спробу або оновіть дату закінчення терміну дії</translation>
 <translation id="1161325031994447685">знову під’єднати пристрій до мережі Wi-Fi</translation>
 <translation id="11635448457105324">Кнопка "Керувати адресами"; активуйте, щоб додати адреси й керувати ними в налаштуваннях Chrome</translation>
 <translation id="1165039591588034296">Помилка</translation>
@@ -2036,7 +2035,6 @@
 <translation id="4989809363548539747">Цей плагін не підтримується</translation>
 <translation id="4990241977441916452">Конверт A2</translation>
 <translation id="4992066212339426712">Увімкнути звук</translation>
-<translation id="4995216769782533993">Підтвердьте код безпеки, щоб повідомляти дані картки цьому сайту</translation>
 <translation id="4995474875135717171">Змінено:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати пошуком на сайті та пошуковою системою за умовчанням</translation>
 <translation id="4998950033665438990">Односторонній друк</translation>

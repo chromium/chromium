@@ -4,6 +4,8 @@
 
 #include "components/desks_storage/core/fake_desk_sync_bridge.h"
 
+#include <optional>
+
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -18,7 +20,6 @@
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

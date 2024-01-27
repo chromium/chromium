@@ -5,20 +5,20 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
 #define COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 struct ComponentRegistration;
 
-absl::optional<ComponentRegistration> GetComponent(
+std::optional<ComponentRegistration> GetComponent(
     const base::flat_map<std::string, ComponentRegistration>& components,
     const std::string& id);
 
-std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
+std::vector<std::optional<ComponentRegistration>> GetCrxComponents(
     const base::flat_map<std::string, ComponentRegistration>&
         registered_components,
     const std::vector<std::string>& ids);

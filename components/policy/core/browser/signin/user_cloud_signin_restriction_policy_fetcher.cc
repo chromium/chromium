@@ -171,7 +171,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
-  absl::optional<int> response_code;
+  std::optional<int> response_code;
   if (url_loader) {
     if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
       response_code = url_loader->ResponseInfo()->headers->response_code();

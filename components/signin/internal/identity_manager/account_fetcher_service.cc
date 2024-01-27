@@ -408,7 +408,7 @@ void AccountFetcherService::OnUserInfoFetchFailure(
 
 void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
     const CoreAccountId& account_id,
-    const absl::optional<AccountCapabilities>& account_capabilities) {
+    const std::optional<AccountCapabilities>& account_capabilities) {
   if (account_capabilities.has_value()) {
     account_tracker_service_->SetAccountCapabilities(account_id,
                                                      *account_capabilities);

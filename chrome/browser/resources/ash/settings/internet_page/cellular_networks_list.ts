@@ -289,7 +289,10 @@ export class CellularNetworksListElement extends
     const response = await profile.getProperties();
 
     const eSimPendingProfileItem = this.eSimPendingProfileItems_.find(item => {
-      return item.customData.iccid === response.properties.iccid;
+      if (typeof item.customData === 'object') {
+        return item.customData!.iccid === response.properties.iccid;
+      }
+      return false;
     });
     if (!eSimPendingProfileItem) {
       return;

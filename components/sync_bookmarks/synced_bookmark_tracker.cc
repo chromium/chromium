@@ -74,9 +74,9 @@ std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new SyncedBookmarkTracker(
       std::move(model_type_state), /*bookmarks_reuploaded=*/false,
-      /*num_ignored_updates_due_to_missing_parent=*/absl::optional<int64_t>(0),
+      /*num_ignored_updates_due_to_missing_parent=*/std::optional<int64_t>(0),
       /*max_version_among_ignored_updates_due_to_missing_parent=*/
-      absl::nullopt));
+      std::nullopt));
 }
 
 // static
@@ -97,13 +97,13 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
       model_metadata.bookmarks_hierarchy_fields_reuploaded() &&
       base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks);
 
-  absl::optional<int64_t> num_ignored_updates_due_to_missing_parent;
+  std::optional<int64_t> num_ignored_updates_due_to_missing_parent;
   if (model_metadata.has_num_ignored_updates_due_to_missing_parent()) {
     num_ignored_updates_due_to_missing_parent =
         model_metadata.num_ignored_updates_due_to_missing_parent();
   }
 
-  absl::optional<int64_t>
+  std::optional<int64_t>
       max_version_among_ignored_updates_due_to_missing_parent;
   if (model_metadata
           .has_max_version_among_ignored_updates_due_to_missing_parent()) {
@@ -391,8 +391,8 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges() const {
 SyncedBookmarkTracker::SyncedBookmarkTracker(
     sync_pb::ModelTypeState model_type_state,
     bool bookmarks_reuploaded,
-    absl::optional<int64_t> num_ignored_updates_due_to_missing_parent,
-    absl::optional<int64_t>
+    std::optional<int64_t> num_ignored_updates_due_to_missing_parent,
+    std::optional<int64_t>
         max_version_among_ignored_updates_due_to_missing_parent)
     : model_type_state_(std::move(model_type_state)),
       bookmarks_reuploaded_(bookmarks_reuploaded),
@@ -631,12 +631,12 @@ void SyncedBookmarkTracker::RecordIgnoredServerUpdateDueToMissingParent(
   }
 }
 
-absl::optional<int64_t>
+std::optional<int64_t>
 SyncedBookmarkTracker::GetNumIgnoredUpdatesDueToMissingParentForTest() const {
   return num_ignored_updates_due_to_missing_parent_;
 }
 
-absl::optional<int64_t> SyncedBookmarkTracker::
+std::optional<int64_t> SyncedBookmarkTracker::
     GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest() const {
   return max_version_among_ignored_updates_due_to_missing_parent_;
 }

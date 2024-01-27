@@ -366,7 +366,7 @@ TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
                       bucket_duration, IsEmpty(), _))
       .Times(2)
       .WillOnce(Return(std::vector<float>{3}))
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
 
   // The next step should be to run the feature processor.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6});

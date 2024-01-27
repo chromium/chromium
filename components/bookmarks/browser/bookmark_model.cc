@@ -260,7 +260,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   DCHECK(!is_root_node(node));
   const BookmarkNode* parent = node->parent();
   DCHECK(parent);
-  absl::optional<size_t> index = parent->GetIndexOf(node);
+  std::optional<size_t> index = parent->GetIndexOf(node);
   DCHECK(index.has_value());
 
   // Removing a permanent node is problematic and can cause crashes elsewhere
@@ -290,7 +290,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   CHECK(dest_parent->HasAncestor(dest_model->root_node()));
   const BookmarkNode* parent = node->parent();
   CHECK(parent);
-  absl::optional<size_t> index = parent->GetIndexOf(node);
+  std::optional<size_t> index = parent->GetIndexOf(node);
   CHECK(index.has_value());
   // Can't move permanent nodes.
   CHECK(!is_permanent_node(node)) << "for type " << node->type();
@@ -876,8 +876,8 @@ const BookmarkNode* BookmarkModel::AddFolder(
     size_t index,
     const std::u16string& title,
     const BookmarkNode::MetaInfoMap* meta_info,
-    absl::optional<base::Time> creation_time,
-    absl::optional<base::Uuid> uuid) {
+    std::optional<base::Time> creation_time,
+    std::optional<base::Uuid> uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(parent);
@@ -917,8 +917,8 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const BookmarkNode::MetaInfoMap* meta_info) {
   metrics::RecordUrlBookmarkAdded(GetFolderType(parent),
                                   client_->GetStorageStateForUma());
-  return AddURL(parent, index, title, url, meta_info, absl::nullopt,
-                absl::nullopt, true);
+  return AddURL(parent, index, title, url, meta_info, std::nullopt,
+                std::nullopt, true);
 }
 
 const BookmarkNode* BookmarkModel::AddURL(
@@ -927,8 +927,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info,
-    absl::optional<base::Time> creation_time,
-    absl::optional<base::Uuid> uuid,
+    std::optional<base::Time> creation_time,
+    std::optional<base::Uuid> uuid,
     bool added_by_user) {
   // TODO(b/294100289): We should ensure that the specified UUID does not
   //                    conflict with a reserved folder ID.
@@ -1233,7 +1233,7 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
   DCHECK(!is_root_node(node));
   const BookmarkNode* parent = node->parent();
   DCHECK(parent);
-  absl::optional<size_t> index = parent->GetIndexOf(node);
+  std::optional<size_t> index = parent->GetIndexOf(node);
   DCHECK(index.has_value());
 
   const NodeTypeForUuidLookup type_for_uuid_lookup =

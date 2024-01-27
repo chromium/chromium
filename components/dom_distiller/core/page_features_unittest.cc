@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {
@@ -26,26 +26,26 @@ struct SiteDerivedFeatures {
   std::vector<double> derived_features;
 };
 
-// Returns absl::nullopt in case of failure.
-absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
+// Returns std::nullopt in case of failure.
+std::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
     const base::Value& json) {
   if (!json.is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string* url = json.GetDict().FindString("url");
   if (!url)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::List* derived_features_json =
       json.GetDict().FindList("features");
   if (!derived_features_json)
-    return absl::nullopt;
+    return std::nullopt;
 
   // For every feature name at index 2*N, their value is at 2*N+1. In particular
   // the size must be an even number.
   size_t size = derived_features_json->size();
   if (size % 2 != 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<double> derived_features;
   for (size_t i = 1; i < size; i += 2) {
@@ -57,7 +57,7 @@ absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
     else if (feature_value.is_bool())
       numerical_feature_value = feature_value.GetBool();
     else
-      return absl::nullopt;
+      return std::nullopt;
 
     derived_features.push_back(numerical_feature_value);
   }
@@ -80,7 +80,7 @@ base::Value::List ReadJsonList(const std::string& file_name) {
   if (!read_success)
     return base::Value::List();
 
-  absl::optional<base::Value> parsed_content =
+  std::optional<base::Value> parsed_content =
       base::JSONReader::Read(raw_content);
   if (!parsed_content)
     return base::Value::List();
@@ -100,7 +100,7 @@ TEST(DomDistillerPageFeaturesTest, TestCalculateDerivedFeatures) {
       "components/test/data/dom_distiller/derived_features.json";
   std::vector<SiteDerivedFeatures> expected_sites_feature_info;
   for (const base::Value& site_info : ReadJsonList(kExpectationsFile)) {
-    absl::optional<SiteDerivedFeatures> parsed =
+    std::optional<SiteDerivedFeatures> parsed =
         ParseSiteDerivedFeatures(site_info);
     ASSERT_TRUE(parsed) << "Invalid expectation file";
     expected_sites_feature_info.push_back(*parsed);

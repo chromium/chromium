@@ -554,6 +554,40 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
   return font_urls;
 }
 
+std::vector<GURL> PredictPreconnectableOrigins(const LcppData& data) {
+  std::vector<std::pair<double, std::string>>
+      preconnect_origins_with_frequency = ConvertToFrequencyStringPair(
+          data.lcpp_stat().preconnect_origin_stat());
+
+  const double frequency_threshold =
+      blink::features::kLCPPAutoPreconnectFrequencyThreshold.Get();
+  int preconnects_allowed =
+      blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.Get();
+  if (preconnects_allowed <= 0) {
+    return std::vector<GURL>();
+  }
+
+  std::vector<GURL> preconnect_origins;
+  for (const auto& [frequency, preconnect_url] :
+       preconnect_origins_with_frequency) {
+    // The frequencies are reverse sorted by `ConvertToFrequencyStringPair`.
+    // No need to see later frequencies if the frequency is smaller than the
+    // frequency_threshold.
+    if (frequency < frequency_threshold) {
+      break;
+    }
+    GURL parsed_url(preconnect_url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    preconnect_origins.emplace_back(std::move(parsed_url));
+    if (--preconnects_allowed <= 0) {
+      break;
+    }
+  }
+  return preconnect_origins;
+}
+
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
   std::vector<GURL> subresource_urls;
   for (const auto& [frequency, subresource_url] : ConvertToFrequencyStringPair(
@@ -603,6 +637,10 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
   }
   if (lcpp_stat.has_fetched_subresource_url_stat() &&
       !IsValidLcpUrlsHistogram(lcpp_stat.fetched_subresource_url_stat())) {
+    return false;
+  }
+  if (lcpp_stat.has_preconnect_origin_stat() &&
+      !IsValidLcpUrlsHistogram(lcpp_stat.preconnect_origin_stat())) {
     return false;
   }
   return true;

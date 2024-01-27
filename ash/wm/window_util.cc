@@ -45,6 +45,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -754,6 +755,11 @@ float GetSnapRatioForWindow(aura::Window* window) {
   return window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
 }
 
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  // TODO(sophiewen): Determine whether to enable the setting by default.
+  registry->RegisterBooleanPref(prefs::kSnapWindowSuggestions, true);
+}
+
 bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {
   return !Shell::Get()->IsInTabletMode() &&
          (features::IsFasterSplitScreenSetupEnabled() ||
@@ -781,6 +787,12 @@ chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
 void MaybeStartSplitViewOverview(aura::Window* window,
                                  WindowSnapActionSource snap_action_source) {
   if (!IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return;
+  }
+
+  if (PrefService* pref =
+          Shell::Get()->session_controller()->GetActivePrefService();
+      pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
     return;
   }
 

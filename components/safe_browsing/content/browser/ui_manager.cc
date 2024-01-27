@@ -435,7 +435,7 @@ SafeBrowsingUIManager::CreateBlockingPage(
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource,
     bool forward_extension_event,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   security_interstitials::SecurityInterstitialPage* blocking_page = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   if (unsafe_resource.threat_type ==

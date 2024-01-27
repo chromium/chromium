@@ -34,6 +34,7 @@
 #include <cmath>
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -96,10 +97,11 @@ void EscapeStringForJSON(const String& str, StringBuilder* dst) {
   for (unsigned i = 0; i < str.length(); ++i) {
     UChar c = str[i];
     if (!EscapeChar(c, dst)) {
-      if (c < 32 || c > 126 || c == '<' || c == '>') {
+      if (c < 32 ||
+          (!RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
+           c > 126) ||
+          c == '<' || c == '>') {
         // 1. Escaping <, > to prevent script execution.
-        // 2. Technically, we could also pass through c > 126 as UTF8, but this
-        //    is also optional. It would also be a pain to implement here.
         AppendUnsignedAsHex(c, dst);
       } else {
         dst->Append(c);

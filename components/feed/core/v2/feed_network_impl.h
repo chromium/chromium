@@ -79,7 +79,7 @@ class FeedNetworkImpl : public FeedNetwork {
       base::StringPiece method,
       std::string request_bytes,
       const AccountInfo& account_info,
-      absl::optional<RequestMetadata> request_metadata,
+      std::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   void SendAsyncDataRequest(

@@ -49,7 +49,7 @@ struct UiControls::UiControlsState {
   // Keeps track of the original display spec to be restored on destroy.
   std::vector<display::ManagedDisplayInfo> original_displays_;
   // Pending display info to be added with display_info_done.
-  absl::optional<display::ManagedDisplayInfo> pending_display_;
+  std::optional<display::ManagedDisplayInfo> pending_display_;
   // Pending display info lists to be committed with display_info_list_done.
   std::vector<display::ManagedDisplayInfo> pending_display_info_list_;
 };

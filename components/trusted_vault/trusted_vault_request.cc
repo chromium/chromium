@@ -121,7 +121,7 @@ TrustedVaultRequest::TrustedVaultRequest(
     const CoreAccountId& account_id,
     HttpMethod http_method,
     const GURL& request_url,
-    const absl::optional<std::string>& serialized_request_proto,
+    const std::optional<std::string>& serialized_request_proto,
     base::TimeDelta max_retry_duration,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,

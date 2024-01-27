@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_FILESYSTEM_FILESYSTEM_PROXY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
 
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.
-  absl::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
+  std::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
 
   // Retrieves information about access rights for a path in the filesystem.
   // Returns a valid PathAccessInfo on success, or null on failure.
@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     bool can_read = false;
     bool can_write = false;
   };
-  absl::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
+  std::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
 
   // Renames a file from |old_path| to |new_path|. Must be atomic.
   base::File::Error RenameFile(const base::FilePath& old_path,

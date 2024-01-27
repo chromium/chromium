@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_REPORTING_JOB_CONFIGURATION_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,7 +15,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -45,7 +45,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
       base::OnceCallback<void(DeviceManagementService::Job* job,
                               DeviceManagementStatus status,
                               int response_code,
-                              absl::optional<base::Value::Dict>)>;
+                              std::optional<base::Value::Dict>)>;
 
   // Builds a Device dictionary for uploading information about the device to
   // the server.
@@ -159,7 +159,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   // being generated can be seen with the ::reporting::GetContext function. Once
   // |GetPayload| is called, |context_| will be merged into the payload and
   // reset.
-  absl::optional<base::Value::Dict> context_;
+  std::optional<base::Value::Dict> context_;
 
   UploadCompleteCallback callback_;
 

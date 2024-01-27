@@ -114,14 +114,14 @@ void SharedHighlightingDataDrivenTest::GenerateResults(const std::string& input,
   std::string html_file_name;
   std::string* start_parent_id;
   int start_offset_in_parent;
-  absl::optional<int> start_text_offset;
+  std::optional<int> start_text_offset;
   std::string* end_parent_id;
   int end_offset_in_parent;
-  absl::optional<int> end_text_offset;
+  std::optional<int> end_text_offset;
   std::string selected_text;
   std::string* highlight_text;
 
-  absl::optional<base::Value> parsed_input = base::JSONReader::Read(input);
+  std::optional<base::Value> parsed_input = base::JSONReader::Read(input);
   ASSERT_TRUE(parsed_input.has_value() && parsed_input->is_dict());
 
   base::Value::Dict& input_dict = parsed_input->GetDict();

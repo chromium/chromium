@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -26,7 +27,6 @@
 #include "components/gwp_asan/client/gwp_asan_features.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"
@@ -237,15 +237,15 @@ bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
 }  // namespace
 
 // Exported for testing.
-GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
+GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
     bool boost_sampling,
     const char* process_type) {
   if (!base::FeatureList::IsEnabled(feature))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!IsMutuallyExclusiveFeatureAllowed(feature)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static_assert(
@@ -263,7 +263,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
   if (total_pages < 1 || total_pages > kMaxRequestedSlots) {
     DLOG(ERROR) << feature.name
                 << " TotalPages is out-of-range: " << total_pages;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int max_metadata = GetFieldTrialParamByFeatureAsInt(feature, "MaxMetadata",
@@ -272,7 +272,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
     DLOG(ERROR) << feature.name
                 << " MaxMetadata is out-of-range: " << max_metadata
                 << " with TotalPages = " << total_pages;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int max_allocations = GetFieldTrialParamByFeatureAsInt(
@@ -281,15 +281,15 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
     DLOG(ERROR) << feature.name
                 << " MaxAllocations is out-of-range: " << max_allocations
                 << " with MaxMetadata = " << max_metadata;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t alloc_sampling_freq = AllocationSamplingFrequency(feature);
   if (!alloc_sampling_freq)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!SampleProcess(feature, boost_sampling))
-    return absl::nullopt;
+    return std::nullopt;
 
   return AllocatorSettings{
       static_cast<size_t>(max_allocations), static_cast<size_t>(max_metadata),

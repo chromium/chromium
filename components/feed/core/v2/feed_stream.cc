@@ -363,7 +363,7 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   // is called bypassing the task queue. In this case WaitForStoreInitialize
   // task is not completed first and the metadata is not populated. Thus, we
   // dont need to track content_lifetime.
-  absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
+  std::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
   if (metadata_populated_) {
     feedstore::Metadata metadata = GetMetadata();
     stream_metadata =
@@ -465,7 +465,7 @@ void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
   }
 }
 
-bool FeedStream::SetMetadata(absl::optional<feedstore::Metadata> metadata) {
+bool FeedStream::SetMetadata(std::optional<feedstore::Metadata> metadata) {
   if (metadata) {
     SetMetadata(std::move(*metadata));
     return true;

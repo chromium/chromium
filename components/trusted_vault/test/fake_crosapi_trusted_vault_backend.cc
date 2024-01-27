@@ -129,7 +129,7 @@ void FakeCrosapiTrustedVaultBackend::ClearLocalDataForAccount(
 
 bool FakeCrosapiTrustedVaultBackend::ValidateAccountKeyIsPrimaryAccount(
     const crosapi::mojom::AccountKeyPtr& mojo_account_key) const {
-  const absl::optional<account_manager::AccountKey> account_key =
+  const std::optional<account_manager::AccountKey> account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   return account_key.has_value() &&
          account_key->account_type() == account_manager::AccountType::kGaia &&

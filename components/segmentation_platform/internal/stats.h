@@ -6,6 +6,8 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 
 #include <list>
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -20,7 +22,6 @@
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::stats {
 
@@ -65,7 +66,7 @@ void RecordModelUpdateTimeDifference(SegmentId segment_id,
 void RecordSegmentSelectionComputed(
     const Config& config,
     SegmentId new_selection,
-    absl::optional<SegmentId> previous_selection);
+    std::optional<SegmentId> previous_selection);
 
 // Records the post processed result whenever computed. This is recorded when
 // results are obtained by eithier executing the model or getting a valid score

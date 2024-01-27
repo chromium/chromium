@@ -98,7 +98,7 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
   bool IsClipboardReadAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size) override {
+      const std::optional<size_t> size) override {
     if (data_src.has_value()) {
       last_src_type_ = data_src->type();
     }

@@ -4,6 +4,7 @@
 
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
@@ -288,7 +288,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     client_ = nullptr;
   }
 
-  absl::optional<CapturableFrameSink::RegionProperties>
+  std::optional<CapturableFrameSink::RegionProperties>
   GetRequestRegionProperties(
       const VideoCaptureSubTarget& sub_target) const override {
     if (size_set_.source_size.IsEmpty()) {
@@ -437,13 +437,13 @@ class InstrumentedVideoCaptureOracle : public media::VideoCaptureOracle {
     return media::VideoCaptureOracle::capture_size();
   }
 
-  void set_forced_capture_size(absl::optional<gfx::Size> size) {
+  void set_forced_capture_size(std::optional<gfx::Size> size) {
     forced_capture_size_ = size;
   }
 
  private:
   bool return_false_on_complete_capture_;
-  absl::optional<gfx::Size> forced_capture_size_;
+  std::optional<gfx::Size> forced_capture_size_;
 };
 
 // Matcher that returns true if the content region of a letterboxed VideoFrame
@@ -1768,7 +1768,7 @@ TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesCaptureSizeForOverlay) {
 
   // First, create the overlay.
   mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
-  absl::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
+  std::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
   auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
       capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
       base::BindLambdaForTesting(
@@ -1836,7 +1836,7 @@ TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesSubtreeSizeForOverlay) {
 
   // First, create the overlay.
   mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
-  absl::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
+  std::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
   auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
       capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
       base::BindLambdaForTesting(

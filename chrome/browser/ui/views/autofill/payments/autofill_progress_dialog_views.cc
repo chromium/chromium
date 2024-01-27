@@ -6,12 +6,13 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -83,16 +84,6 @@ AutofillProgressDialogViews::~AutofillProgressDialogViews() {
   }
 }
 
-// static
-AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
-    AutofillProgressDialogController* controller) {
-  AutofillProgressDialogViews* dialog_view =
-      new AutofillProgressDialogViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view,
-                                              controller->GetWebContents());
-  return dialog_view;
-}
-
 void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
                                           bool is_canceled_by_user) {
   is_canceled_by_user_ = is_canceled_by_user;
@@ -147,6 +138,15 @@ void AutofillProgressDialogViews::CloseWidget() {
 
 void AutofillProgressDialogViews::OnDialogCanceled() {
   is_canceled_by_user_ = true;
+}
+
+AutofillProgressDialogView* CreateAndShowProgressDialog(
+    AutofillProgressDialogController* controller,
+    content::WebContents* web_contents) {
+  AutofillProgressDialogViews* dialog_view =
+      new AutofillProgressDialogViews(controller);
+  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  return dialog_view;
 }
 
 }  // namespace autofill

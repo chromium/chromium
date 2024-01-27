@@ -14,6 +14,7 @@
 
 namespace views {
 class DialogDelegate;
+class Widget;
 }  // namespace views
 
 namespace web_app {
@@ -73,6 +74,8 @@ class IsolatedWebAppInstallerView : public views::View {
 
   virtual void ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog) = 0;
+
+  virtual views::Widget* GetChildWidgetForTesting() = 0;
 };
 
 }  // namespace web_app

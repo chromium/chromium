@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -55,8 +56,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/renderers/video_resource_updater.h"
-#include "media/video/half_float_maker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -191,7 +190,7 @@ SharedQuadState* CreateTestSharedQuadState(
   int sorting_context_id = 0;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
-                       mask_filter_info, /**clip_rect=*/absl::nullopt,
+                       mask_filter_info, /**clip_rect=*/std::nullopt,
                        are_contents_opaque, opacity, blend_mode,
                        sorting_context_id,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
@@ -447,7 +446,7 @@ void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
   video_resource_updater->ObtainFrameResources(video_frame);
   video_resource_updater->AppendQuads(
       render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
-      /*clip_rect=*/absl::nullopt, contents_opaque, draw_opacity,
+      /*clip_rect=*/std::nullopt, contents_opaque, draw_opacity,
       sorting_context_id);
 
   // Get the appended quad and map resource ids for transfer.
@@ -487,7 +486,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
   video_resource_updater->ObtainFrameResources(video_frame);
   video_resource_updater->AppendQuads(render_pass, video_frame, transform, rect,
                                       visible_rect, gfx::MaskFilterInfo(),
-                                      /*clip_rect=*/absl::nullopt,
+                                      /*clip_rect=*/std::nullopt,
                                       contents_opaque, draw_opacity,
                                       sorting_context_id);
 
@@ -857,7 +856,7 @@ void CreateTestYUVVideoDrawQuad_NV12(
                    ya_tex_size, video_frame_visible_rect, uv_sample_size,
                    mapped_resource_y, mapped_resource_u, mapped_resource_v,
                    resource_a, color_space, 0.0f, 1.0f, 8,
-                   gfx::ProtectedVideoType::kClear, absl::nullopt);
+                   gfx::ProtectedVideoType::kClear, std::nullopt);
 }
 
 // Create two quads of specified colors on half-pixel boundaries.
@@ -3776,7 +3775,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
 
   AggregatedRenderPassList pass_list_;
   cc::FilterOperations backdrop_filters_;
-  absl::optional<gfx::RRectF> backdrop_filter_bounds_;
+  std::optional<gfx::RRectF> backdrop_filter_bounds_;
   bool include_backdrop_mask_ = false;
   gfx::Transform filter_pass_to_target_transform_;
   gfx::Rect filter_pass_layer_rect_;

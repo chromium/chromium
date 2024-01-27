@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -22,7 +23,7 @@ namespace {
 const char kContentTypeKey[] = "Content-Type";
 const char kDeveloperKey[] = "X-Developer-Key";
 const int kNumRetries = 3;
-const int64_t kDefaultTimeOutMs = 30000;
+constexpr base::TimeDelta kDefaultTimeOut = base::Milliseconds(30000);
 }  // namespace
 
 EndpointFetcher::EndpointFetcher(
@@ -32,7 +33,7 @@ EndpointFetcher::EndpointFetcher(
     const std::string& http_method,
     const std::string& content_type,
     const std::vector<std::string>& scopes,
-    int64_t timeout_ms,
+    const base::TimeDelta& timeout,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     signin::IdentityManager* identity_manager,
@@ -42,7 +43,7 @@ EndpointFetcher::EndpointFetcher(
                       http_method,
                       content_type,
                       scopes,
-                      timeout_ms,
+                      timeout,
                       post_data,
                       annotation_tag,
                       url_loader_factory,
@@ -54,7 +55,7 @@ EndpointFetcher::EndpointFetcher(
     const GURL& url,
     const std::string& http_method,
     const std::string& content_type,
-    int64_t timeout_ms,
+    const base::TimeDelta& timeout,
     const std::string& post_data,
     const std::vector<std::string>& headers,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
@@ -63,13 +64,13 @@ EndpointFetcher::EndpointFetcher(
       url_(url),
       http_method_(http_method),
       content_type_(content_type),
-      timeout_ms_(timeout_ms),
+      timeout_(timeout),
       post_data_(post_data),
       headers_(headers),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true),
       is_stable_channel_(is_stable_channel) {}
 
@@ -81,12 +82,12 @@ EndpointFetcher::EndpointFetcher(
       url_(url),
       http_method_("GET"),
       content_type_(std::string()),
-      timeout_ms_(0),
+      timeout_(base::Milliseconds(0)),
       post_data_(std::string()),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(false) {}
 
 EndpointFetcher::EndpointFetcher(
@@ -95,7 +96,7 @@ EndpointFetcher::EndpointFetcher(
     const std::string& http_method,
     const std::string& content_type,
     const std::vector<std::string>& scopes,
-    int64_t timeout_ms,
+    const base::TimeDelta& timeout,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -106,7 +107,7 @@ EndpointFetcher::EndpointFetcher(
       url_(url),
       http_method_(http_method),
       content_type_(content_type),
-      timeout_ms_(timeout_ms),
+      timeout_(timeout),
       post_data_(post_data),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
@@ -122,7 +123,7 @@ EndpointFetcher::EndpointFetcher(
     const GURL& url,
     const std::string& http_method,
     const std::string& content_type,
-    int64_t timeout_ms,
+    const base::TimeDelta& timeout,
     const std::string& post_data,
     const std::vector<std::string>& headers,
     const std::vector<std::string>& cors_exempt_headers,
@@ -133,22 +134,22 @@ EndpointFetcher::EndpointFetcher(
       url_(url),
       http_method_(http_method),
       content_type_(content_type),
-      timeout_ms_(timeout_ms),
+      timeout_(timeout),
       post_data_(post_data),
       headers_(headers),
       cors_exempt_headers_(cors_exempt_headers),
       annotation_tag_(annotation_tag),
       url_loader_factory_(url_loader_factory),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true) {}
 
 EndpointFetcher::EndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag)
-    : timeout_ms_(kDefaultTimeOutMs),
+    : timeout_(kDefaultTimeOut),
       annotation_tag_(annotation_tag),
       identity_manager_(nullptr),
-      consent_level_(absl::nullopt),
+      consent_level_(std::nullopt),
       sanitize_response_(true) {}
 
 EndpointFetcher::~EndpointFetcher() = default;
@@ -165,7 +166,7 @@ void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
     VLOG(1) << __func__ << " No primary accounts found";
     response->response = "No primary accounts found";
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -193,7 +194,7 @@ void EndpointFetcher::OnAuthTokenFetched(
     auto response = std::make_unique<EndpointResponse>();
     response->response = "There was an authentication error";
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
@@ -249,7 +250,7 @@ void EndpointFetcher::PerformRequest(
   }
   simple_url_loader_->SetRetryOptions(kNumRetries,
                                       network::SimpleURLLoader::RETRY_ON_5XX);
-  simple_url_loader_->SetTimeoutDuration(base::Milliseconds(timeout_ms_));
+  simple_url_loader_->SetTimeoutDuration(timeout_);
   simple_url_loader_->SetAllowHttpErrorResults(true);
   network::SimpleURLLoader::BodyAsStringCallbackDeprecated
       body_as_string_callback = base::BindOnce(
@@ -282,7 +283,7 @@ void EndpointFetcher::OnResponseFetched(
   if (http_status_code == net::HTTP_UNAUTHORIZED ||
       http_status_code == net::HTTP_FORBIDDEN) {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // We cannot assume that the response was in JSON, and hence cannot sanitize
     // the response. Send the respond as-is. For error cases, we may not have a
     // valid string pointer -- if we don't, send a simple message indicating
@@ -296,7 +297,7 @@ void EndpointFetcher::OnResponseFetched(
 
   if (net_error_code != net::OK) {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kNetError);
   }
 
   if (response_body) {
@@ -326,7 +327,7 @@ void EndpointFetcher::OnSanitizationResult(
     response->response = result.value();
   } else {
     response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
+        std::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
     response->response = "There was a sanitization error: " + result.error();
   }
   // The EndpointFetcher and its members will be destroyed after

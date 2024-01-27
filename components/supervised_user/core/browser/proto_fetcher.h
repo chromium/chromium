@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -40,7 +41,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
@@ -172,7 +172,7 @@ class Metrics {
   };
 
   Metrics() = delete;
-  static absl::optional<Metrics> FromConfig(const FetcherConfig& config);
+  static std::optional<Metrics> FromConfig(const FetcherConfig& config);
 
   void RecordStatus(const ProtoFetcherStatus& status) const;
   void RecordLatency() const;
@@ -227,7 +227,7 @@ class Metrics {
 class OverallMetrics final : public Metrics {
  public:
   OverallMetrics() = delete;
-  static absl::optional<OverallMetrics> FromConfig(const FetcherConfig& config);
+  static std::optional<OverallMetrics> FromConfig(const FetcherConfig& config);
 
   // Per-status latency is not defined for OverallMetrics.
   void RecordStatusLatency(const ProtoFetcherStatus& status) const override;
@@ -282,13 +282,13 @@ class AbstractProtoFetcher {
 
  private:
   // Returns payload when it's eligible for the request type.
-  absl::optional<std::string> GetRequestPayload() const;
+  std::optional<std::string> GetRequestPayload() const;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   const std::string payload_;
   const FetcherConfig config_;
   const FetcherConfig::PathArgs args_;
-  absl::optional<Metrics> metrics_;
+  std::optional<Metrics> metrics_;
 
   // Entrypoint of the fetch process, which starts with ApiAccessToken access
   // followed by a request made with SimpleURLLoader. Purposely made last field
@@ -476,7 +476,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
   net::BackoffEntry backoff_entry_;
   int retry_count_{0};
 
-  const absl::optional<OverallMetrics> metrics_;
+  const std::optional<OverallMetrics> metrics_;
 };
 
 // Component for managing multiple fetches at once.

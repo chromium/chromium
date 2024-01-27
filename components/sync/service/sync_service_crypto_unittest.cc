@@ -119,7 +119,7 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
   MOCK_METHOD(void, PassphraseTypeChanged, (PassphraseType), (override));
-  MOCK_METHOD(absl::optional<PassphraseType>,
+  MOCK_METHOD(std::optional<PassphraseType>,
               GetPassphraseType,
               (),
               (const override));
@@ -167,7 +167,7 @@ class SyncServiceCryptoTest : public testing::Test {
         kSyncingAccount.gaia, &trusted_vault_client_);
   }
 
-  absl::optional<PassphraseType> passphrase_type_;
+  std::optional<PassphraseType> passphrase_type_;
 
   testing::NiceMock<MockDelegate> delegate_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;

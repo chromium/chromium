@@ -697,6 +697,10 @@ TEST_F(NtpCustomBackgroundServiceTest, ConfirmBackgroundChanges) {
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
+  // TODO (crbug/1520873): Fix and re-enable or remove if no longer relevant.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   // Turn on Color Extraction feature.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

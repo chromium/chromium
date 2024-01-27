@@ -268,7 +268,7 @@ void ImageFetcherBridge::OnImageDataFetched(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     const std::string& image_data,
     const RequestMetadata& request_metadata) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_bytes =
       base::android::ToJavaByteArray(env, image_data);
 

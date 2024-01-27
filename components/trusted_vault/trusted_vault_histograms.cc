@@ -59,7 +59,7 @@ enum class SecurityDomainIdOrInvalidForUma {
 };
 
 SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
-    absl::optional<SecurityDomainId> security_domain) {
+    std::optional<SecurityDomainId> security_domain) {
   if (!security_domain) {
     return SecurityDomainIdOrInvalidForUma::kInvalid;
   }
@@ -160,7 +160,7 @@ void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
 }
 
 void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
-    absl::optional<SecurityDomainId> security_domain,
+    std::optional<SecurityDomainId> security_domain,
     IsOffTheRecord is_off_the_record) {
   SecurityDomainIdOrInvalidForUma domain_for_uma =
       GetSecurityDomainIdOrInvalidForUma(security_domain);
@@ -176,7 +176,7 @@ void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
 }
 
 void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
-    absl::optional<SecurityDomainId> security_domain) {
+    std::optional<SecurityDomainId> security_domain) {
   SecurityDomainIdOrInvalidForUma domain_for_uma =
       GetSecurityDomainIdOrInvalidForUma(security_domain);
   base::UmaHistogramEnumeration(

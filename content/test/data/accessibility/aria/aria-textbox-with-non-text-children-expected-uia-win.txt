@@ -5,7 +5,7 @@ Document
 ++++Hyperlink Name='link'
 ++++++Text Name='link' IsControlElement=false
 ++++Text Name=' '
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='name: '
 ++++++Edit Name='name:'
 ++Edit Name='editable' Value.Value='focusable: oklink name: <newline>'
@@ -14,7 +14,7 @@ Document
 ++++Hyperlink Name='link'
 ++++++Text Name='link' IsControlElement=false
 ++++Text Name=' '
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='name: '
 ++++++Edit Name='name:'
 ++Edit Name='not editable or focusable' Value.Value='focusable: oklink name: <newline>'
@@ -23,7 +23,7 @@ Document
 ++++Hyperlink Name='link'
 ++++++Text Name='link' IsControlElement=false
 ++++Text Name=' '
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='name: '
 ++++++Edit Name='name:'
 ++Edit Name='not editable, img child'

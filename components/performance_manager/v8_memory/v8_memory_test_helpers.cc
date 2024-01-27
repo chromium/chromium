@@ -243,14 +243,14 @@ int WebMemoryTestHarness::GetNextUniqueId() {
 }
 
 FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
-    absl::optional<std::string> url,
+    std::optional<std::string> url,
     int browsing_instance_id,
     Bytes memory_usage,
     FrameNodeImpl* parent,
     FrameNodeImpl* opener,
     ProcessNodeImpl* process,
-    absl::optional<std::string> id_attribute,
-    absl::optional<std::string> src_attribute,
+    std::optional<std::string> id_attribute,
+    std::optional<std::string> src_attribute,
     Bytes canvas_memory_usage) {
   // If there's an opener, the new frame is also a new page.
   auto* page = pages_.front().get();

@@ -17,8 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 TestWaitForNetworkCallbackHelper::TestWaitForNetworkCallbackHelper() = default;
@@ -139,19 +140,19 @@ void TestSigninClient::OnPrimaryAccountChangedWithEventSource(
         event_source) {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-absl::optional<account_manager::Account>
+std::optional<account_manager::Account>
 TestSigninClient::GetInitialPrimaryAccount() {
   return initial_primary_account_;
 }
 
-absl::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
+std::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
   return is_initial_primary_account_child_;
 }
 
 void TestSigninClient::SetInitialPrimaryAccountForTests(
     const account_manager::Account& account,
-    const absl::optional<bool>& is_child) {
-  initial_primary_account_ = absl::make_optional(account);
+    const std::optional<bool>& is_child) {
+  initial_primary_account_ = std::make_optional(account);
   is_initial_primary_account_child_ = is_child;
 }
 

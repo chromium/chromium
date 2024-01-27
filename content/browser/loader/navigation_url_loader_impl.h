@@ -18,7 +18,6 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/weak_document_ptr.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_timing_info.h"
 #include "net/url_request/url_request.h"
@@ -38,6 +37,10 @@
 namespace net {
 struct RedirectInfo;
 }
+
+namespace network {
+class URLLoaderFactoryBuilder;
+}  // namespace network
 
 namespace content {
 
@@ -90,17 +93,18 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // for schemes not handled by network service (e.g. files). This must be
   // called on the UI thread or before threads start.
   using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
+      network::URLLoaderFactoryBuilder& factory_builder)>;
   static void SetURLLoaderFactoryInterceptorForTesting(
       const URLLoaderFactoryInterceptor& interceptor);
 
   // Creates a URLLoaderFactory for a navigation. The factory uses
   // `header_client`. This should have the same settings as the factory from
   // the URLLoaderFactoryGetter. Called on the UI thread.
-  static void CreateURLLoaderFactoryWithHeaderClient(
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateURLLoaderFactoryWithHeaderClient(
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
           header_client,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+      network::URLLoaderFactoryBuilder factory_builder,
       StoragePartitionImpl* partition);
 
  private:
@@ -122,12 +126,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void StartImpl(
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
+      scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui,
       std::string accept_langs);
 
-  void BindNonNetworkURLLoaderFactoryReceiver(
-      const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
   void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);

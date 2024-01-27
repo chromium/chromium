@@ -14,9 +14,12 @@
 #include "ui/base/x/x11_display_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/event.h"
+#include "ui/ozone/public/platform_screen.h"
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/device_scale_factor_observer.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/ozone/public/platform_screen.h"
+#endif
 
 namespace ui {
 
@@ -25,8 +28,12 @@ class X11WindowManager;
 // A PlatformScreen implementation for X11.
 class X11ScreenOzone : public PlatformScreen,
                        public x11::EventObserver,
-                       public XDisplayManager::Delegate,
-                       public DeviceScaleFactorObserver {
+                       public XDisplayManager::Delegate
+#if BUILDFLAG(IS_LINUX)
+    ,
+                       public DeviceScaleFactorObserver
+#endif
+{
  public:
   X11ScreenOzone();
 
@@ -90,8 +97,10 @@ class X11ScreenOzone : public PlatformScreen,
   // ui::XDisplayManager::Delegate:
   void OnXDisplayListUpdated() override;
 
+#if BUILDFLAG(IS_LINUX)
   // DeviceScaleFactorObserver:
   void OnDeviceScaleFactorChanged() override;
+#endif
 
   const raw_ptr<x11::Connection> connection_;
   const raw_ptr<X11WindowManager> window_manager_;

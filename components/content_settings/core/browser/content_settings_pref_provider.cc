@@ -339,13 +339,13 @@ bool PrefProvider::UpdateLastVisitTime(
                           GetCoarseVisitedTime(clock_->Now()), partition_key);
 }
 
-absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
+std::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    absl::optional<ContentSetting> setting_to_match,
+    std::optional<ContentSetting> setting_to_match,
     const PartitionKey& partition_key) {
-  absl::optional<base::TimeDelta> delta_to_expiration;
+  std::optional<base::TimeDelta> delta_to_expiration;
   UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {

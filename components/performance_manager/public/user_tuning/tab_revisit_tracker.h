@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_TAB_REVISIT_TRACKER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/time/time.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -13,7 +14,6 @@
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -51,7 +51,7 @@ class TabRevisitTracker : public GraphOwned,
 
   struct StateBundle {
     State state;
-    absl::optional<base::TimeTicks> last_active_time;
+    std::optional<base::TimeTicks> last_active_time;
     base::TimeDelta total_time_active;
     base::TimeTicks last_state_change_time;
     int64_t num_revisits;
@@ -60,7 +60,7 @@ class TabRevisitTracker : public GraphOwned,
     // histograms, so the connectedness score (expressed as a foat in the range
     // [0, 1]) is remapped as an int in the range [0, 1000]. Can possibly be
     // `nullopt` if the tab was never connected to the active tab.
-    absl::optional<int64_t> connectedness_to_last_switch_active_tab;
+    std::optional<int64_t> connectedness_to_last_switch_active_tab;
   };
 
   virtual StateBundle GetStateForTabHandle(

@@ -4,13 +4,14 @@
 
 #include "components/unexportable_keys/unexportable_key_tasks.h"
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace unexportable_keys {
 
@@ -37,7 +38,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
   return key_provider->FromWrappedSigningKeySlowly(wrapped_key);
 }
 
-absl::optional<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
+std::optional<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data,
     void* task_ptr_for_tracing) {

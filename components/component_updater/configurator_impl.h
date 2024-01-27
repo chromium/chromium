@@ -6,6 +6,7 @@
 #define COMPONENTS_COMPONENT_UPDATER_CONFIGURATOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/update_client/configurator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -94,7 +94,7 @@ class ConfiguratorImpl {
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const;
 
-  absl::optional<bool> IsMachineExternallyManaged() const;
+  std::optional<bool> IsMachineExternallyManaged() const;
 
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const;
 

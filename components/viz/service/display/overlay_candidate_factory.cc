@@ -490,7 +490,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
   }
 
   OverlayCandidate::ApplyClip(candidate, clip_to_apply);
-  candidate.clip_rect = absl::nullopt;
+  candidate.clip_rect = std::nullopt;
 
   return CandidateStatus::kSuccess;
 }

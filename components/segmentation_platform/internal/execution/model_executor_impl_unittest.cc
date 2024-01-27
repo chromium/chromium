@@ -215,7 +215,7 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_model_, ExecuteModelWithInput(inputs, _))
       .WillOnce(
-          RunOnceCallback<1>(absl::optional<ModelProvider::Response>{{0.8}}));
+          RunOnceCallback<1>(std::optional<ModelProvider::Response>{{0.8}}));
 
   ExecuteModel(
       *segment_database_->FindOrCreateSegment(kSegmentId), &mock_model_,

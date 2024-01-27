@@ -67,8 +67,10 @@ void HistoryClustersBridge::QueryClusters(JNIEnv* env,
                                           const JavaRef<jstring>& j_query,
                                           const JavaRef<jobject>& j_callback) {
   query_task_tracker_.TryCancelAll();
+  // The Android history clusters UI doesn't support also showing ungrouped
+  // history inline, so there's no reason to pass in `history_service`.
   query_clusters_state_ = std::make_unique<QueryClustersState>(
-      history_clusters_service_->GetWeakPtr(),
+      history_clusters_service_->GetWeakPtr(), /*history_service=*/nullptr,
       base::android::ConvertJavaStringToUTF8(env, j_query));
   LoadMoreClusters(env, j_this, j_query, j_callback);
 }

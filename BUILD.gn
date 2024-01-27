@@ -19,7 +19,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/gn_logs.gni")
 import("//build/util/generate_wrapper.gni")
-import("//chrome/browser/buildflags.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -46,6 +45,8 @@ if (is_fuchsia) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
+} else {
+  import("//chrome/browser/buildflags.gni")
 }
 
 if (is_linux) {
@@ -161,7 +162,7 @@ group("gn_all") {
       deps += [ "//chrome/installer" ]
     }
 
-    if (enable_updater) {
+    if (!is_fuchsia && enable_updater) {
       deps += [ "//chrome/updater" ]
     }
 

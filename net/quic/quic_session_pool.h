@@ -168,14 +168,6 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // ERR_IO_PENDING.
   bool WaitForHostResolution(CompletionOnceCallback callback);
 
-  // Tells QuicSessionRequest it should expect OnHostResolutionComplete()
-  // to be called in the future.
-  void ExpectOnHostResolution();
-
-  // Will be called by the associated QuicSessionPool::Job when host
-  // resolution completes asynchronously after Request().
-  void OnHostResolutionComplete(int rv);
-
   // This function must be called after Request() returns ERR_IO_PENDING.
   // Returns true if no QUIC session has been created yet. If true is returned,
   // `callback` will be run when the QUIC session has been created and will be
@@ -184,12 +176,31 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // `callback` will be run with ERR_IO_PENDING.
   bool WaitForQuicSessionCreation(CompletionOnceCallback callback);
 
-  // Tells QuicSessionRequest it should expect OnQuicSessionCreationComplete()
-  // to be called in the future.
+  // QuicSessionPool::Jobs may notify associated requests at two points in the
+  // connection process before completion: host resolution and session creation.
+  // The `Expect` methods below inform the request whether it should expect
+  // these notifications.
+
+  // Tells QuicSessionRequest that `QuicSessionPool::Job` will call
+  // `OnHostResolutionComplete()` in the future. Must be called before
+  // `WaitForHostResolution()`
+  void ExpectOnHostResolution();
+
+  // Will be called by the associated `QuicSessionPool::Job` when host
+  // resolution completes asynchronously after Request(), if
+  // `ExpectOnHostResolution()` was called. This is called after the Job can
+  // make no further progress, and includes the result of that progress, perhaps
+  // `ERR_IO_PENDING`.
+  void OnHostResolutionComplete(int rv);
+
+  // Tells QuicSessionRequest that `QuicSessionPool::Job` will call
+  // `OnQuicSessionCreationComplete()` in the future. Must be called before
+  // `WaitForQuicSessionCreation()`.
   void ExpectQuicSessionCreation();
 
-  // Will be called by the associated QuicSessionPool::Job when session
-  // creation completes asynchronously after Request().
+  // Will be called by the associated `QuicSessionPool::Job` when session
+  // creation completes asynchronously after Request(), if
+  // `ExpectQuicSessionCreation` was called.
   void OnQuicSessionCreationComplete(int rv);
 
   void OnRequestComplete(int rv);

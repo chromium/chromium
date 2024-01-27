@@ -337,14 +337,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
-  absl::optional<std::string> GetDMTokenString() const override {
-    return absl::nullopt;
+  std::optional<std::string> GetDMTokenString() const override {
+    return std::nullopt;
   }
   std::string GetMetricSuffix() const override { return ""; }
   bool ShouldIncludeCredentials() const override { return false; }
-  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::flat_map<std::string, UrlDetail> url_details_;
@@ -364,7 +364,7 @@ class MockHashRealTimeService : public HashRealTimeService {
   }
 
   struct UrlDetail {
-    absl::optional<SBThreatType> threat_type;
+    std::optional<SBThreatType> threat_type;
     bool should_fail_lookup;
   };
 
@@ -372,7 +372,7 @@ class MockHashRealTimeService : public HashRealTimeService {
   // want to test time-sensitive things like timeouts. Setting it to false will
   // avoid calling into |response_callback| in |StartLookup|.
   void SetThreatTypeForUrl(const GURL& gurl,
-                           absl::optional<SBThreatType> threat_type,
+                           std::optional<SBThreatType> threat_type,
                            bool should_fail_lookup) {
     url_details_[gurl.spec()].threat_type = threat_type;
     url_details_[gurl.spec()].should_fail_lookup = should_fail_lookup;
@@ -432,7 +432,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
         UnsafeResource::kNoRenderProcessId, std::nullopt,
-        UnsafeResource::kNoFrameTreeNodeId, /*navigation_id=*/absl::nullopt,
+        UnsafeResource::kNoFrameTreeNodeId, /*navigation_id=*/std::nullopt,
         url_real_time_lookup_enabled,
         optional_args.can_urt_check_subresource_url, can_check_safe_browsing_db,
         /*can_check_high_confidence_allowlist=*/true,
@@ -447,10 +447,9 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   }
 
  protected:
-  void CheckHashRealTimeMetrics(
-      absl::optional<bool> expected_local_match_result,
-      absl::optional<bool> expected_is_service_found,
-      bool expected_can_check_reputation) {
+  void CheckHashRealTimeMetrics(std::optional<bool> expected_local_match_result,
+                                std::optional<bool> expected_is_service_found,
+                                bool expected_can_check_reputation) {
     if (!expected_local_match_result.has_value()) {
       histogram_tester_.ExpectTotalCount(
           /*name=*/"SafeBrowsing.HPRT.LocalMatch.Result", /*expected_count=*/0);
@@ -477,9 +476,9 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*expected_bucket_count=*/1);
   }
   void CheckUrlRealTimeLocalMatchMetrics(
-      absl::optional<bool> expected_local_match_result,
-      absl::optional<bool> expected_mainframe_log,
-      absl::optional<bool> expect_url_lookup_service_metric_suffix) {
+      std::optional<bool> expected_local_match_result,
+      std::optional<bool> expected_mainframe_log,
+      std::optional<bool> expect_url_lookup_service_metric_suffix) {
     ASSERT_EQ(expected_local_match_result.has_value(),
               expected_mainframe_log.has_value());
     ASSERT_EQ(expected_local_match_result.has_value(),
@@ -1063,9 +1062,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   task_environment_.RunUntilIdle();
   CheckUrlRealTimeLocalMatchMetrics(
-      /*expected_local_match_result=*/absl::nullopt,
-      /*expected_mainframe_log=*/absl::nullopt,
-      /*expect_url_lookup_service_metric_suffix=*/absl::nullopt);
+      /*expected_local_match_result=*/std::nullopt,
+      /*expected_mainframe_log=*/std::nullopt,
+      /*expect_url_lookup_service_metric_suffix=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1245,8 +1244,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_InvalidUrl) {
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
-                           /*expected_is_service_found=*/absl::nullopt,
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/std::nullopt,
+                           /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/false);
 }
 
@@ -1279,7 +1278,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
 }
 
@@ -1309,7 +1308,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
 }
 
@@ -1416,7 +1415,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
-  hash_realtime_service_->SetThreatTypeForUrl(url, absl::nullopt,
+  hash_realtime_service_->SetThreatTypeForUrl(url, std::nullopt,
                                               /*should_fail_lookup=*/true);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
@@ -1493,8 +1492,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
-                           /*expected_is_service_found=*/absl::nullopt,
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/std::nullopt,
+                           /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
 }
 

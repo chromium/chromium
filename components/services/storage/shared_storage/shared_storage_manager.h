@@ -108,7 +108,7 @@ class SharedStorageManager {
   void OnOperationResult(OperationResult result);
 
   // Retrieves the `value` for `context_origin` and `key`. `callback` is called
-  // with a string `value` if one is found, absl::nullopt otherwise.
+  // with a string `value` if one is found, std::nullopt otherwise.
   //
   // `key` must be of length at most
   // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the

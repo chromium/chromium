@@ -4,12 +4,13 @@
 
 #include "components/omnibox/browser/suggestion_group_util.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -18,7 +19,7 @@ namespace {
 GroupConfig CreateGroup(GroupSection section,
                         GroupConfig::RenderType render_type =
                             GroupConfig_RenderType_DEFAULT_VERTICAL,
-                        absl::optional<int32_t> header_text = {}) {
+                        std::optional<int32_t> header_text = {}) {
   GroupConfig group;
   group.set_section(section);
   group.set_render_type(render_type);

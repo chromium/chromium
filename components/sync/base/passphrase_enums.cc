@@ -4,9 +4,10 @@
 
 #include "components/sync/base/passphrase_enums.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -32,7 +33,7 @@ sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
              : sync_pb::NigoriSpecifics::UNKNOWN;
 }
 
-absl::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
+std::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
     ::google::protobuf::int32 type) {
   switch (ProtoPassphraseInt32ToProtoEnum(type)) {
     case sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE:
@@ -51,7 +52,7 @@ absl::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
@@ -73,7 +74,7 @@ sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
   return sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE;
 }
 
-absl::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
+std::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
     ::google::protobuf::int32 method) {
   DCHECK_GE(method, 0);
 
@@ -90,7 +91,7 @@ absl::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
 
   // We do not know about this value. It is likely a method added in a newer
   // version of Chrome.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(

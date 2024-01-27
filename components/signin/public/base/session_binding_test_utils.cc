@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/session_binding_test_utils.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/base64url.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_split.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
@@ -30,11 +30,11 @@ constexpr uint8_t kJwtSeparatorArray[] = {'.'};
 // JWT parts listed in the order they appear in JWT.
 enum class JwtPart : size_t { kHeader = 0, kPayload = 1, kSignature = 2 };
 
-absl::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
+std::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
     base::span<const uint8_t> raw_signature) {
   const size_t kMaxBytesPerBN = 32;
   if (raw_signature.size() != 2 * kMaxBytesPerBN) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::span<const uint8_t> r_bytes = raw_signature.first(kMaxBytesPerBN);
   base::span<const uint8_t> s_bytes = raw_signature.subspan(kMaxBytesPerBN);
@@ -42,24 +42,24 @@ absl::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
   bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
   if (!ecdsa_sig || !BN_bin2bn(r_bytes.data(), r_bytes.size(), ecdsa_sig->r) ||
       !BN_bin2bn(s_bytes.data(), s_bytes.size(), ecdsa_sig->s)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint8_t* signature_bytes;
   size_t signature_len;
   if (!ECDSA_SIG_to_bytes(&signature_bytes, &signature_len, ecdsa_sig.get())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Frees memory allocated by `ECDSA_SIG_to_bytes()`.
   bssl::UniquePtr<uint8_t> delete_signature(signature_bytes);
   return std::vector<uint8_t>(signature_bytes, signature_bytes + signature_len);
 }
 
-absl::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
+std::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
   std::vector<std::string_view> encoded_parts = base::SplitStringPiece(
       jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (encoded_parts.size() != kJwtPartsCount) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t part_index = static_cast<size_t>(part);
@@ -68,7 +68,7 @@ absl::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
   if (!base::Base64UrlDecode(encoded_parts[part_index],
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &decoded_part)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return decoded_part;
@@ -96,7 +96,7 @@ testing::AssertionResult VerifyJwtSignature(
   }
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
-    absl::optional<std::vector<uint8_t>> der_signature =
+    std::optional<std::vector<uint8_t>> der_signature =
         ConvertRawSignatureToDER(base::as_bytes(base::make_span(signature)));
     if (!der_signature) {
       return testing::AssertionFailure()
@@ -120,19 +120,19 @@ testing::AssertionResult VerifyJwtSignature(
              : (testing::AssertionFailure() << "Invalid signature");
 }
 
-absl::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
-  absl::optional<std::string> header = ExtractJwtPart(jwt, JwtPart::kHeader);
+std::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
+  std::optional<std::string> header = ExtractJwtPart(jwt, JwtPart::kHeader);
   if (!header) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::JSONReader::ReadDict(*header);
 }
 
-absl::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
-  absl::optional<std::string> payload = ExtractJwtPart(jwt, JwtPart::kPayload);
+std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
+  std::optional<std::string> payload = ExtractJwtPart(jwt, JwtPart::kPayload);
   if (!payload) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::JSONReader::ReadDict(*payload);

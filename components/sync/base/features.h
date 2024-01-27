@@ -208,6 +208,10 @@ BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
 BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, custom passphrase will be remembered after sign-out. Otherwise,
+// it is cleared on sign-out.
+BASE_DECLARE_FEATURE(kSyncRememberCustomPassphraseAfterSignout);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

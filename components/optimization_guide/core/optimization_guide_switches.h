@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SWITCHES_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -101,7 +101,7 @@ bool ShouldPurgeModelAndFeaturesStoreOnStartup();
 // of the first hints fetch and forces it to occur immediately. If no hosts are
 // provided, nullopt is returned.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 ParseHintsFetchOverrideFromCommandLine();
 
 // Whether the hints fetcher timer should be overridden.
@@ -144,11 +144,11 @@ bool ShouldValidateModelExecution();
 
 // Returns the model override command line switch.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<std::string> GetModelOverride();
+std::optional<std::string> GetModelOverride();
 
 // Returns the on-device model execution override command line switch.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<std::string> GetOnDeviceModelExecutionOverride();
+std::optional<std::string> GetOnDeviceModelExecutionOverride();
 
 // Returns true if debug logs are enabled for the optimization guide.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -161,12 +161,12 @@ bool ShouldLogPageContentAnnotationsInput();
 // Returns the delay to use for page content annotations validation, if given
 // and valid on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<base::TimeDelta> PageContentAnnotationsValidationStartupDelay();
+std::optional<base::TimeDelta> PageContentAnnotationsValidationStartupDelay();
 
 // Returns the size of the batch to use for page content annotations validation,
 // if given and valid on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<size_t> PageContentAnnotationsValidationBatchSize();
+std::optional<size_t> PageContentAnnotationsValidationBatchSize();
 
 // Whether the result of page content annotations validation should be sent to
 // the console. True when any one of the corresponding command line flags is
@@ -177,12 +177,12 @@ bool LogPageContentAnnotationsValidationToConsole();
 // Returns a set on inputs to run the validation on for the given |type|,
 // using comma separated input from the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 PageContentAnnotationsValidationInputForType(AnnotationType type);
 
 // Returns the file path to write page content annotation validation results to.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-absl::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile();
+std::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile();
 
 }  // namespace switches
 }  // namespace optimization_guide

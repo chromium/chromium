@@ -100,7 +100,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
-  absl::optional<std::string> GetOwnerEmail() override;
+  std::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;

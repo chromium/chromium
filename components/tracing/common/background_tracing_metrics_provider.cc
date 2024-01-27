@@ -79,8 +79,8 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
              base::OnceCallback<void(bool)> done_callback,
              metrics::ChromeUserMetricsExtension* uma_proto,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             absl::optional<std::string> compressed_trace,
-             absl::optional<std::string> serialized_system_profile) {
+             std::optional<std::string> compressed_trace,
+             std::optional<std::string> serialized_system_profile) {
             if (!compressed_trace ||
                 !std::move(provide_embedder_metrics)
                      .Run(uma_proto, std::move(*compressed_trace))) {

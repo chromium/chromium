@@ -45,8 +45,8 @@ constexpr int32_t IconKey::kInvalidVersion = -1;
 IconValue::IconValue() = default;
 IconValue::~IconValue() = default;
 
-absl::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
-                                           const apps::IconKey* delta) {
+std::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
+                                          const apps::IconKey* delta) {
   //`state` should have int32_t `update_version` only.
   CHECK(!state || absl::holds_alternative<int32_t>(state->update_version));
 
@@ -57,7 +57,7 @@ absl::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
     if (state) {
       return std::move(*state->Clone());
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   IconKey icon_key = IconKey(delta->resource_id, delta->icon_effects);

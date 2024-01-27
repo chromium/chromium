@@ -348,7 +348,7 @@ class FormStructure {
     if (randomized_encoder_) {
       return randomized_encoder_.get();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const LanguageCode& current_page_language() const {

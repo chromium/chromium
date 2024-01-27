@@ -1524,11 +1524,11 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
     ASSERT_EQ(1u, frame.render_pass_list.size());
     ASSERT_EQ(2u, frame.render_pass_list.back()->quad_list.size());
     const auto& quad_list = frame.render_pass_list[0]->quad_list;
-    EXPECT_EQ(absl::nullopt, quad_list.front()->shared_quad_state->clip_rect);
+    EXPECT_EQ(std::nullopt, quad_list.front()->shared_quad_state->clip_rect);
   }
 
   int clip_size = 10;
-  absl::optional<gfx::RectF> clip_rect =
+  std::optional<gfx::RectF> clip_rect =
       gfx::RectF(clip_size, clip_size, clip_size, clip_size);
   sub_surface->SetClipRect(clip_rect);
   child_surface->Attach(child_buffer.get());
@@ -1538,7 +1538,7 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
 
   {
     // Subsurface has a clip applied.
-    absl::optional<gfx::Rect> clip_rect_px =
+    std::optional<gfx::Rect> clip_rect_px =
         gfx::Rect(clip_size, clip_size, clip_size, clip_size);
 
     const viz::CompositorFrame& frame =

@@ -41,7 +41,7 @@ class AutocompleteScoringModelExecutorTest : public testing::Test {
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     model_executor_ = std::make_unique<AutocompleteScoringModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
-        /*model_inference_timeout=*/absl::nullopt,
+        /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
         execution_task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
   }
@@ -72,10 +72,10 @@ TEST_F(AutocompleteScoringModelExecutorTest, ExecuteModel) {
 
   // Execute model.
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  base::OnceCallback<void(const absl::optional<ModelOutput>&)>
+  base::OnceCallback<void(const std::optional<ModelOutput>&)>
       execution_callback = base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<ModelOutput>& output) {
+             const std::optional<ModelOutput>& output) {
             ASSERT_EQ(1, static_cast<int>(output.value().size()));
             // 1 + 2 = 3
             EXPECT_NEAR(3, output.value().front(), 1e-1);

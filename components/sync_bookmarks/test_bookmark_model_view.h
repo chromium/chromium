@@ -40,8 +40,8 @@ class TestBookmarkModelView
       size_t index,
       const std::u16string& title,
       const bookmarks::BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt) {
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt) {
     return BookmarkModelView::AddFolder(parent, index, title, meta_info,
                                         creation_time, uuid);
   }
@@ -52,8 +52,8 @@ class TestBookmarkModelView
       const std::u16string& title,
       const GURL& url,
       const bookmarks::BookmarkNode::MetaInfoMap* meta_info = nullptr,
-      absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> uuid = absl::nullopt) {
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Uuid> uuid = std::nullopt) {
     return BookmarkModelView::AddURL(parent, index, title, url, meta_info,
                                      creation_time, uuid);
   }

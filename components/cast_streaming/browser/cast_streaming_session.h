@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_CAST_STREAMING_SESSION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/receiver.h"
 #include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
 #include "third_party/openscreen/src/cast/streaming/receiver_session.h"
@@ -45,8 +45,8 @@ class CastStreamingSession {
     // |video_stream_info| will be set.
     virtual void OnSessionInitialization(
         StreamingInitializationInfo initialization_info,
-        absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
-        absl::optional<mojo::ScopedDataPipeConsumerHandle>
+        std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+        std::optional<mojo::ScopedDataPipeConsumerHandle>
             video_pipe_consumer) = 0;
 
     // Called on every new audio buffer after OnSessionInitialization(). The
@@ -67,8 +67,8 @@ class CastStreamingSession {
     // least one of |audio_stream_info| or |video_stream_info| will be set.
     virtual void OnSessionReinitialization(
         StreamingInitializationInfo initialization_info,
-        absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
-        absl::optional<mojo::ScopedDataPipeConsumerHandle>
+        std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+        std::optional<mojo::ScopedDataPipeConsumerHandle>
             video_pipe_consumer) = 0;
 
     // Called when the Cast Streaming Session has ended.
@@ -97,7 +97,7 @@ class CastStreamingSession {
   // |av_constraints| specifies the supported media codecs and limitations
   // surrounding this support.
   void Start(Client* client,
-             absl::optional<RendererControllerConfig> renderer_controls,
+             std::optional<RendererControllerConfig> renderer_controls,
              ReceiverConfig av_constraints,
              ReceiverSession::MessagePortProvider message_port_provider,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -130,7 +130,7 @@ class CastStreamingSession {
    public:
     ReceiverSessionClient(
         CastStreamingSession::Client* client,
-        absl::optional<RendererControllerConfig> renderer_controls,
+        std::optional<RendererControllerConfig> renderer_controls,
         ReceiverConfig av_constraints,
         ReceiverSession::MessagePortProvider message_port_provider,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -162,9 +162,9 @@ class CastStreamingSession {
 
     // Initializes the audio or video consumer, returning the data pipe to
     // be used to pass DecoderBuffer data to the Renderer process on success.
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> InitializeAudioConsumer(
+    std::optional<mojo::ScopedDataPipeConsumerHandle> InitializeAudioConsumer(
         const StreamingInitializationInfo& initialization_info);
-    absl::optional<mojo::ScopedDataPipeConsumerHandle> InitializeVideoConsumer(
+    std::optional<mojo::ScopedDataPipeConsumerHandle> InitializeVideoConsumer(
         const StreamingInitializationInfo& initialization_info);
 
     // Called upon completion of a Flush call initiated by this class.
@@ -220,10 +220,10 @@ class CastStreamingSession {
     std::unique_ptr<StreamConsumer> video_consumer_;
 
     // The currently pre-loaded audio or video buffer, if any exists.
-    absl::optional<media::mojom::DecoderBufferPtr> preloaded_audio_buffer_ =
-        absl::nullopt;
-    absl::optional<media::mojom::DecoderBufferPtr> preloaded_video_buffer_ =
-        absl::nullopt;
+    std::optional<media::mojom::DecoderBufferPtr> preloaded_audio_buffer_ =
+        std::nullopt;
+    std::optional<media::mojom::DecoderBufferPtr> preloaded_video_buffer_ =
+        std::nullopt;
 
     base::WeakPtrFactory<ReceiverSessionClient> weak_factory_;
   };

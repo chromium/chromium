@@ -309,6 +309,158 @@ ci.thin_tester(
 )
 
 ci.builder(
+    name = "win-arm64-rel",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Windows ARM64 Release Builder.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
+    builderless = False,
+    cores = 16,
+    os = os.WINDOWS_DEFAULT,
+    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|builder",
+        short_name = "a64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
+
+ci.thin_tester(
+    name = "win11-arm64-rel-tests",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Windows11 ARM64 Release Tester.",
+    triggered_by = ["ci/win-arm64-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|tester",
+        short_name = "a64",
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
+
+ci.builder(
+    name = "win-arm64-dbg",
+    description_html = "Windows ARM64 Debug Builder.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "a64",
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
+
+ci.thin_tester(
+    name = "win11-arm64-dbg-tests",
+    description_html = "Windows11 ARM64 Debug Tester.",
+    triggered_by = ["ci/win-arm64-dbg"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|tester",
+        short_name = "a64",
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
+
+ci.builder(
     name = "Windows deterministic",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(

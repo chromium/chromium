@@ -40,6 +40,12 @@ struct AutoEnrollmentSystemClockSyncError {
       default;
 };
 
+// Represents an error while retrieving state keys.
+struct AutoEnrollmentStateKeysRetrievalError {
+  constexpr bool operator==(
+      const AutoEnrollmentStateKeysRetrievalError&) const = default;
+};
+
 // Represents an error during state determination request to DMServer. May
 // be caused by connection error, server error, or invalid request.
 struct AutoEnrollmentDMServerError {
@@ -73,6 +79,7 @@ struct AutoEnrollmentStateRetrievalResponseError {
 using AutoEnrollmentError =
     absl::variant<AutoEnrollmentSafeguardTimeoutError,
                   AutoEnrollmentSystemClockSyncError,
+                  AutoEnrollmentStateKeysRetrievalError,
                   AutoEnrollmentDMServerError,
                   AutoEnrollmentStateAvailabilityResponseError,
                   AutoEnrollmentPsmError,

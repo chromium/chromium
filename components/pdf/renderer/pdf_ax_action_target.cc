@@ -89,7 +89,7 @@ bool PdfAXActionTarget::Click() const {
     return false;
   }
 
-  absl::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
+  std::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
       pdf_accessibility_tree_source_->GetPdfAnnotationInfoFromAXNode(
           target_plugin_node_->data().id);
   if (!annotation_info_result.has_value())

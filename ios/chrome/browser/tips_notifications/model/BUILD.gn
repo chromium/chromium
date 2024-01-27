@@ -12,7 +12,12 @@ source_set("client") {
     "//base",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 
@@ -21,7 +26,11 @@ source_set("utils") {
     "utils.h",
     "utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
 }
 
 source_set("unit_tests") {
@@ -35,7 +44,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
     "//third_party/ocmock",
   ]
 }

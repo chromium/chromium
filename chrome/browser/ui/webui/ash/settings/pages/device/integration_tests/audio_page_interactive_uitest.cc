@@ -54,6 +54,7 @@ constexpr char kInputSliderSelector[] = "#audioInputGainVolumeSlider";
 constexpr uint64_t fake_internal_speaker = 0x100000001;
 constexpr uint64_t fake_headphone = 0x200000001;
 constexpr uint64_t fake_internal_mic = 0x100000002;
+constexpr uint64_t fake_usb_mic = 0x200000002;
 
 // ActiveAudioNodeStateObserver tracks when primary input or output device
 // changes. Returns state change with primary active device ID depending for
@@ -277,9 +278,10 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
       Log("Expected input controls exist"));
 }
 
-// Verify changing output device is reflected in UI.
-IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
+// Verify changing active input and output device is reflected in UI.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeActiveDevice) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeHeadphoneActiveEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeUsbMicActiveEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
   SetupContextWidget();
 
@@ -293,17 +295,31 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
       "el => el.children[1].text.includes('Headphone') && "
       "el.children[1].selected";
 
+  StateChange fake_usb_mic_active;
+  fake_usb_mic_active.type = StateChange::Type::kExistsAndConditionTrue;
+  fake_usb_mic_active.event = kFakeUsbMicActiveEvent;
+  fake_usb_mic_active.where =
+      CreateAudioPageDeepQueryForSelector(kInputDeviceDropdownSelector);
+  // Fake usb mic is the second dropdown option.
+  fake_usb_mic_active.test_function =
+      "el => el.children[1].text.includes('Mic (USB)') && "
+      "el.children[1].selected";
+
   RunTestSequence(
-      // Set fake headphone as active output device.
+      // Set fake headphone and usb mic as active output and input device.
       DoSetActiveDevice(fake_headphone),
       Log("Expected headphone output device configured"),
+      DoSetActiveDevice(fake_usb_mic),
+      Log("Expected usb mic input device configured"),
 
       Log("Open audio settings page and ensure it exists"),
       LoadAudioSettingsPage(),
 
-      // Test that headphone is selected.
+      // Test that headphone and usb mic is selected.
       WaitForStateChange(kOsSettingsElementId, fake_headphone_active),
-      Log("Expected headphone is selected in the active output dropdown"));
+      Log("Expected headphone is selected in the active output dropdown"),
+      WaitForStateChange(kOsSettingsElementId, fake_usb_mic_active),
+      Log("Expected usb mic is selected in the active input dropdown"));
 }
 
 // Verify changing mute state in UI is reflected in cras.

@@ -42,15 +42,14 @@ class ModelObserverTracker
  public:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     registered_model_metadata_.insert_or_assign(target, model_metadata);
   }
 
   bool DidRegisterForTarget(
       optimization_guide::proto::OptimizationTarget target,
-      absl::optional<optimization_guide::proto::Any>* out_model_metadata)
-      const {
+      std::optional<optimization_guide::proto::Any>* out_model_metadata) const {
     auto it = registered_model_metadata_.find(target);
     if (it == registered_model_metadata_.end()) {
       return false;
@@ -61,7 +60,7 @@ class ModelObserverTracker
 
  private:
   base::flat_map<optimization_guide::proto::OptimizationTarget,
-                 absl::optional<optimization_guide::proto::Any>>
+                 std::optional<optimization_guide::proto::Any>>
       registered_model_metadata_;
 };
 
@@ -70,14 +69,14 @@ class TestAnnotatorImpl : public AnnotatorImpl {
   TestAnnotatorImpl(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata)
+      const std::optional<optimization_guide::proto::Any>& model_metadata)
       : AnnotatorImpl(model_provider, background_task_runner, model_metadata) {}
   ~TestAnnotatorImpl() override = default;
 
   void ExecuteModelWithInput(ExecutionCallback callback,
                              const std::string& input) override {
     inputs_.push_back(input);
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 
   const std::vector<std::string>& inputs() const { return inputs_; }
@@ -101,7 +100,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
     annotator_ = std::make_unique<TestAnnotatorImpl>(
         model_observer_tracker_.get(),
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        /*model_metadata=*/absl::nullopt);
+        /*model_metadata=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -111,7 +110,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
   }
 
   void SendModelToAnnotatorSkipWaiting(
-      const absl::optional<optimization_guide::proto::Any>& model_metadata) {
+      const std::optional<optimization_guide::proto::Any>& model_metadata) {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
@@ -131,7 +130,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
   }
 
   void SendModelToAnnotator(
-      const absl::optional<optimization_guide::proto::Any>& model_metadata) {
+      const std::optional<optimization_guide::proto::Any>& model_metadata) {
     SendModelToAnnotatorSkipWaiting(model_metadata);
 
     base::RunLoop run_loop;
@@ -177,7 +176,7 @@ TEST_F(
       {"0", 0.0001}, {"1", 0.1}, {"not an int", 0.9}, {"2", 0.2}, {"3", 0.3},
   };
 
-  absl::optional<std::vector<int32_t>> categories =
+  std::optional<std::vector<int32_t>> categories =
       annotator()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories, testing::UnorderedElementsAre(1, 2, 3));
@@ -207,7 +206,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
       {"1", 0.2},
   };
 
-  absl::optional<std::vector<int32_t>> categories =
+  std::optional<std::vector<int32_t>> categories =
       annotator()->ExtractCategoriesFromModelOutput(model_output);
   EXPECT_FALSE(categories);
 }
@@ -234,7 +233,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
       {"-2", 0.1}, {"0", 0.3}, {"1", 0.2}, {"2", 0.4}, {"3", 0.05},
   };
 
-  absl::optional<std::vector<int32_t>> categories =
+  std::optional<std::vector<int32_t>> categories =
       annotator()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories, testing::UnorderedElementsAre(0, 1, 2));
@@ -265,7 +264,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
       {"3", 0.05},
   };
 
-  absl::optional<std::vector<int32_t>> categories =
+  std::optional<std::vector<int32_t>> categories =
       annotator()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories, testing::UnorderedElementsAre(0, 1, 2));
@@ -293,7 +292,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest, NoneCategoryBelowMinWeight) {
       {"-2", 0.001}, {"0", 0.001}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05},
   };
 
-  absl::optional<std::vector<int32_t>> categories =
+  std::optional<std::vector<int32_t>> categories =
       annotator()->ExtractCategoriesFromModelOutput(model_output);
   ASSERT_TRUE(categories);
   EXPECT_THAT(*categories, testing::UnorderedElementsAre(1, 2));
@@ -463,7 +462,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
 
   SendModelToAnnotatorSkipWaiting(any_metadata);
 
-  absl::optional<optimization_guide::ModelInfo> model_info =
+  std::optional<optimization_guide::ModelInfo> model_info =
       annotator()->GetBrowsingTopicsModelInfo();
   EXPECT_TRUE(model_info);
 }
@@ -487,7 +486,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
 
   SendModelToAnnotatorSkipWaiting(any_metadata);
 
-  absl::optional<optimization_guide::ModelInfo> model_info =
+  std::optional<optimization_guide::ModelInfo> model_info =
       annotator()->GetBrowsingTopicsModelInfo();
   EXPECT_TRUE(model_info);
 }

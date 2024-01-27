@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -21,7 +22,6 @@
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
 #include "components/policy/test_support/remote_commands_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 /*
 A bare-bones test server for testing cloud policy support.
@@ -97,14 +97,14 @@ Example:
 
 namespace fakedms {
 
-void InitLogging(const absl::optional<std::string>& log_path,
+void InitLogging(const std::optional<std::string>& log_path,
                  bool log_to_console,
                  int min_log_level);
 void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
                 std::string& grpc_unix_socket_path,
-                absl::optional<std::string>& log_path,
+                std::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
                 int& min_log_level);
@@ -170,7 +170,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   static base::Value::Dict GetValueFromClient(
       const policy::ClientStorage::ClientInfo& c);
   // Converts the value to Client.
-  static absl::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
+  static std::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
       const base::Value& v);
 
   // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
@@ -236,7 +236,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // functions called by HandleRequest
   SEQUENCE_CHECKER(embedded_server_sequence_checker_);
 
-  absl::optional<cast::utils::GrpcServer> grpc_server_;
+  std::optional<cast::utils::GrpcServer> grpc_server_;
   // Callback to shut down the grpc server.
   base::OnceClosure shut_down_on_main_task_runner_;
   // Callback to reset the grpc server then shut down the fake_dmserver main.

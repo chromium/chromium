@@ -36,13 +36,13 @@ SignalsAggregationRequest CreateRequest(SignalName signal_name,
     options1.path = "test_path1";
     options1.key = "test_setting1";
     options1.get_value = true;
-    options1.hive = absl::nullopt;
+    options1.hive = std::nullopt;
 
     GetSettingsOptions options2;
     options2.path = "test_path2";
     options2.key = "test_setting2";
     options2.get_value = false;
-    options2.hive = absl::nullopt;
+    options2.hive = std::nullopt;
 
     request.settings_signal_parameters.push_back(options1);
     request.settings_signal_parameters.push_back(options2);
@@ -125,8 +125,8 @@ TEST_F(SettingsSignalsCollectorTest, GetSignal_SettingsInfo) {
   retrieved_item.path = "test_path";
   retrieved_item.key = "test_key";
   retrieved_item.presence = PresenceValue::kFound;
-  retrieved_item.hive = absl::nullopt;
-  retrieved_item.setting_json_value = absl::nullopt;
+  retrieved_item.hive = std::nullopt;
+  retrieved_item.setting_json_value = std::nullopt;
 
   std::vector<SettingsItem> settings_items;
   settings_items.push_back(retrieved_item);

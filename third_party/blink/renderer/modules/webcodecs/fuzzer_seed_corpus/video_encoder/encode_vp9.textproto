@@ -77,6 +77,33 @@ invocations: [
     }
   },
   {
+    configure {
+      codec: 'vp09.01.10.08.03',
+      acceleration: ALLOW,
+      framerate: 25,
+      width: 200,
+      height: 50
+    }
+  },
+  {
+    configure {
+      codec: 'vp09.01.10.10.03',
+      acceleration: ALLOW,
+      framerate: 25,
+      width: 200,
+      height: 50
+    }
+  },
+  {
+    configure {
+      codec: 'vp09.03.10.10.03',
+      acceleration: ALLOW,
+      framerate: 25,
+      width: 200,
+      height: 50
+    }
+  },
+  {
     flush {}
   },
   {

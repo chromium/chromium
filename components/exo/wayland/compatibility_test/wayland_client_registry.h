@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_EXO_WAYLAND_COMPATIBILITY_TEST_WAYLAND_CLIENT_REGISTRY_H_
 #define COMPONENTS_EXO_WAYLAND_COMPATIBILITY_TEST_WAYLAND_CLIENT_REGISTRY_H_
 
-#include <memory>
-#include <string>
-#include <unordered_map>
-
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <unordered_map>
+
 #include "components/exo/wayland/compatibility_test/generated-wayland-client-helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 namespace wayland {
@@ -47,7 +47,7 @@ class WaylandClientRegistry {
     uint32_t server_version;
   };
 
-  absl::optional<Entry> GetEntry(const char* interface_name) const noexcept;
+  std::optional<Entry> GetEntry(const char* interface_name) const noexcept;
   bool Has(const char* interface_name, uint32_t client_version) const noexcept;
   void* Bind(const char* interface_name,
              const struct wl_interface* protocol_interface,

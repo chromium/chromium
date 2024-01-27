@@ -65,7 +65,7 @@ bool VerifyLargeBlobArrayIntegrity(base::span<const uint8_t> large_blob_array) {
   }
   const size_t trail_offset = large_blob_array.size() - kTruncatedHashBytes;
   std::array<uint8_t, crypto::kSHA256Length> large_blob_hash =
-      crypto::SHA256Hash(large_blob_array.subspan(0, trail_offset));
+      crypto::SHA256Hash(large_blob_array.first(trail_offset));
 
   base::span<const uint8_t> large_blob_trail =
       large_blob_array.subspan(trail_offset);

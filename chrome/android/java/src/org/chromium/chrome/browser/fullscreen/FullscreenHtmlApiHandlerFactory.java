@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.fullscreen;
 import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 public class FullscreenHtmlApiHandlerFactory {
 
@@ -15,6 +16,10 @@ public class FullscreenHtmlApiHandlerFactory {
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop) {
+        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+            return new FullscreenHtmlApiHandlerCompat(
+                    activity, areControlsHidden, exitFullscreenOnStop);
+        }
         return new FullscreenHtmlApiHandlerLegacy(
                 activity, areControlsHidden, exitFullscreenOnStop);
     }

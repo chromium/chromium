@@ -10,10 +10,10 @@
 #include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
 #include "base/android/jni_string.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 namespace android_webview {
 

@@ -4,6 +4,8 @@
 
 #include "components/exo/seat.h"
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +24,6 @@
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/test_data_device_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -63,7 +64,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
 
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const absl::optional<std::string>& mime_type) override {}
+  void OnTarget(const std::optional<std::string>& mime_type) override {}
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
     if (data_map_.empty()) {
       const char kTestData[] = "TestData";
@@ -118,10 +119,10 @@ class TestSeat : public Seat {
 TEST_F(SeatTest, OnSurfaceFocused) {
   TestSeat seat;
   int callback_counter = 0;
-  absl::optional<int> observer1_counter;
+  std::optional<int> observer1_counter;
   TestSeatObserver observer1(base::BindLambdaForTesting(
       [&]() { observer1_counter = callback_counter++; }));
-  absl::optional<int> observer2_counter;
+  std::optional<int> observer2_counter;
   TestSeatObserver observer2(base::BindLambdaForTesting(
       [&]() { observer2_counter = callback_counter++; }));
 
@@ -195,7 +196,7 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  absl::optional<ui::DataTransferEndpoint> source_dte =
+  std::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 
@@ -241,7 +242,7 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  absl::optional<ui::DataTransferEndpoint> source_dte =
+  std::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 

@@ -13,6 +13,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -84,7 +85,7 @@ struct Wrapper {
       return std::move(callback_).Run(std::move(args)...);
     }
 
-    Wrapper* owner_;
+    raw_ptr<Wrapper<Ret, Args...>> owner_;
     Callback callback_;
   };
 
@@ -219,7 +220,7 @@ class FileModificationTracker {
 // Structure storing a WebState and whether the native session is supposed
 // to be available. Used by ExpectedStorageFilesForWebStates.
 struct WebStateReference {
-  const web::WebState* web_state = nullptr;
+  raw_ptr<const web::WebState> web_state = nullptr;
   bool is_native_session_available = false;
 };
 

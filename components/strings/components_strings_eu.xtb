@@ -85,7 +85,6 @@
 <translation id="1151972924205500581">Pasahitza behar da</translation>
 <translation id="1156303062776767266">Fitxategi lokal edo partekatu bat ari zara ikusten</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> webguneak konexioa eten du ustekabean.</translation>
-<translation id="115926840831309955">Egiaztatu CVCa eta saiatu berriro, edo eguneratu iraungitze-data</translation>
 <translation id="1161325031994447685">Wifi-sarera berriro konektatu.</translation>
 <translation id="11635448457105324">Helbideak kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta helbideak gehitzeko eta kudeatzeko</translation>
 <translation id="1165039591588034296">Errorea</translation>
@@ -2032,7 +2031,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4989809363548539747">Ez da onartzen plugin hau</translation>
 <translation id="4990241977441916452">A2 gutun-azala</translation>
 <translation id="4992066212339426712">Aktibatu audioa</translation>
-<translation id="4995216769782533993">Berretsi segurtasun-kodea txartelaren xehetasunak webgune honekin partekatzeko</translation>
 <translation id="4995474875135717171">Aldatze-data:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" webguneen bilaketa eta bilatzaile lehenetsia kudeatzeko</translation>
 <translation id="4998950033665438990">Aurpegi bakarrekoa</translation>
@@ -4140,7 +4138,7 @@ Xehetasun gehiago:
 <translation id="9144951720726881238">Iraungitze-data:</translation>
 <translation id="9148507642005240123">&amp;Desegin editatzea</translation>
 <translation id="9148599396704355100">Prezioa baxua da</translation>
-<translation id="9150025764986957246">Honakoak idatz ditzakezu:</translation>
+<translation id="9150025764986957246">Honako hauek idatz ditzakezu:</translation>
 <translation id="9150045010208374699">Erabili zure kamera</translation>
 <translation id="9150685862434908345">Administratzaileak urrunetik alda dezake arakatzailearen konfigurazioa. Baliteke gailu honetako jarduera Chrome-tik kanpo ere kudeatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Eguneratuta</translation>

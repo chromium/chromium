@@ -379,7 +379,7 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
   std::string encoded;
   // Don't set the close_time param since this is an initial stability log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  /*close_time=*/absl::nullopt, &encoded);
+                  /*close_time=*/std::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -398,7 +398,7 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
   std::string encoded;
   // Don't set the close_time param since this is an independent log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  /*close_time=*/absl::nullopt, &encoded);
+                  /*close_time=*/std::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());

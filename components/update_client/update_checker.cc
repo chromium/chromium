@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -70,7 +70,7 @@ class UpdateCheckerImpl : public UpdateChecker {
       const std::set<std::string>& active_ids);
 
   void OnRequestSenderComplete(scoped_refptr<UpdateContext> context,
-                               absl::optional<base::OnceClosure> fallback,
+                               std::optional<base::OnceClosure> fallback,
                                int error,
                                const std::string& response,
                                int retry_after_sec);
@@ -218,7 +218,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         }(crx_component->install_data_index),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
-        absl::nullopt));
+        std::nullopt));
   }
 
   if (sent_ids.empty()) {
@@ -247,18 +247,18 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       base::BindOnce(&UpdateCheckerImpl::OnRequestSenderComplete,
                      base::Unretained(this), context,
                      urls.size() > 1
-                         ? absl::optional<base::OnceClosure>(base::BindOnce(
+                         ? std::optional<base::OnceClosure>(base::BindOnce(
                                &UpdateCheckerImpl::CheckForUpdatesHelper,
                                base::Unretained(this), context,
                                std::vector<GURL>(urls.begin() + 1, urls.end()),
                                additional_attributes, updater_state_attributes,
                                active_ids))
-                         : absl::nullopt));
+                         : std::nullopt));
 }
 
 void UpdateCheckerImpl::OnRequestSenderComplete(
     scoped_refptr<UpdateContext> context,
-    absl::optional<base::OnceClosure> fallback,
+    std::optional<base::OnceClosure> fallback,
     int error,
     const std::string& response,
     int retry_after_sec) {
@@ -311,7 +311,7 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
 
   base::OnceClosure reply =
       base::BindOnce(std::move(update_check_callback_),
-                     absl::make_optional<ProtocolParser::Results>(results),
+                     std::make_optional<ProtocolParser::Results>(results),
                      ErrorCategory::kNone, 0, retry_after_sec);
 
   if (daynum != ProtocolParser::kNoDaystart) {
@@ -331,9 +331,8 @@ void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
   CHECK_NE(0, error);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(update_check_callback_), absl::nullopt,
-                     error_category, error, retry_after_sec));
+      FROM_HERE, base::BindOnce(std::move(update_check_callback_), std::nullopt,
+                                error_category, error, retry_after_sec));
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define COMPONENTS_ZOOM_ZOOM_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ZoomControllerTest;
 
@@ -208,7 +208,7 @@ class ZoomController : public content::WebContentsObserver,
   bool last_page_scale_factor_was_one_ = true;
 
   // If set, this value is returned in PageScaleFactorIsOne.
-  absl::optional<bool> page_scale_factor_is_one_for_testing_;
+  std::optional<bool> page_scale_factor_is_one_for_testing_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/background_task_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -50,8 +51,8 @@ class BackgroundTask {
   virtual base::TimeDelta GetElapsedTimeSinceCreation() const = 0;
 
   // Returns the elapsed time since the task was run.
-  // Returns absl::nullopt if the task hasn't been run yet.
-  virtual absl::optional<base::TimeDelta> GetElapsedTimeSinceRun() const = 0;
+  // Returns std::nullopt if the task hasn't been run yet.
+  virtual std::optional<base::TimeDelta> GetElapsedTimeSinceRun() const = 0;
 };
 
 }  // namespace unexportable_keys

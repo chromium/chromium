@@ -54,8 +54,8 @@ class ContentSettingsAgentImpl
     virtual bool AllowReadFromClipboard();
     virtual bool AllowWriteToClipboard();
     // If an optional value is
-    // returned, return absl::nullopt to use the default logic.
-    virtual absl::optional<bool> AllowMutationEvents();
+    // returned, return std::nullopt to use the default logic.
+    virtual std::optional<bool> AllowMutationEvents();
   };
 
   // Set `should_allowlist` to true if `render_frame()` contains content that

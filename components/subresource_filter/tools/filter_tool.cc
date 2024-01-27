@@ -162,7 +162,7 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
     if (line.empty())
       continue;
 
-    absl::optional<base::Value> dictionary = base::JSONReader::Read(line);
+    std::optional<base::Value> dictionary = base::JSONReader::Read(line);
     CHECK(dictionary);
 
     DCHECK(dictionary->is_dict());

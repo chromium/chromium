@@ -5764,15 +5764,18 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
-  if (!CanHaveChildren()) {
-    SetNeedsToUpdateChildren(false);
-    return;
-  }
-
   CHECK(!AXObjectCache().IsFrozen())
       << "Object should have already had its children updated in "
          "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
       << ToString(true, true);
+
+  if (!CanHaveChildren()) {
+    // Clear any children in case the node previously allowed children.
+    ClearChildren();
+    SetNeedsToUpdateChildren(false);
+    child_cached_values_need_update_ = false;
+    return;
+  }
 
   UpdateCachedAttributeValuesIfNeeded();
 

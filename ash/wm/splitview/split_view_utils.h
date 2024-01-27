@@ -251,6 +251,12 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
     int divider_width,
     bool is_resizing_with_divider);
 
+// Returns true `SplitViewOverviewSession` is allowed to start for the given
+// `window` and `snap_action_source`. Returns false otherwise.
+bool CanStartSplitViewOverviewSessionInClamshell(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source);
+
 // Returns true if the snap group is enabled in clamshell mode. The
 // `split_view_divider_` will show to indicate that the two windows are in a
 // snap-group state.

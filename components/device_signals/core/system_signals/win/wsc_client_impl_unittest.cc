@@ -8,7 +8,9 @@
 #include <windows.h>
 #include <wrl/client.h>
 #include <wscapi.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -21,7 +23,6 @@
 #include "components/device_signals/core/system_signals/win/com_fakes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -90,7 +91,7 @@ TEST_F(WscClientImplTest, GetAntiVirusProducts_AllStates) {
   auto response = wsc_client_.GetAntiVirusProducts();
 
   ExpectAvInitialized();
-  EXPECT_EQ(response.query_error, absl::nullopt);
+  EXPECT_EQ(response.query_error, std::nullopt);
 
   EXPECT_EQ(response.parsing_errors.size(), 0U);
 

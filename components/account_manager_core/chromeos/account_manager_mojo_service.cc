@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -25,7 +26,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -101,7 +101,7 @@ void AccountManagerMojoService::GetAccounts(
 void AccountManagerMojoService::GetPersistentErrorForAccount(
     mojom::AccountKeyPtr mojo_account_key,
     mojom::AccountManager::GetPersistentErrorForAccountCallback callback) {
-  absl::optional<account_manager::AccountKey> maybe_account_key =
+  std::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   DCHECK(maybe_account_key)
       << "Can't unmarshal account of type: " << mojo_account_key->account_type;
@@ -182,7 +182,7 @@ void AccountManagerMojoService::CreateAccessTokenFetcher(
 void AccountManagerMojoService::ReportAuthError(
     mojom::AccountKeyPtr mojo_account_key,
     mojom::GoogleServiceAuthErrorPtr mojo_error) {
-  absl::optional<account_manager::AccountKey> maybe_account_key =
+  std::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
   base::UmaHistogramBoolean("AccountManager.ReportAuthError.IsAccountKeyEmpty",
                             !maybe_account_key.has_value());
@@ -192,7 +192,7 @@ void AccountManagerMojoService::ReportAuthError(
     return;
   }
 
-  absl::optional<GoogleServiceAuthError> maybe_error =
+  std::optional<GoogleServiceAuthError> maybe_error =
       account_manager::FromMojoGoogleServiceAuthError(mojo_error);
   if (!maybe_error) {
     // Newer version of Lacros may have reported an error that older version of

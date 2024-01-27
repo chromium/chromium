@@ -48,7 +48,7 @@ gfx::Size NotificationSurface::GetContentSize() const {
 }
 
 void NotificationSurface::SetApplicationId(const char* application_id) {
-  SetShellApplicationId(host_window(), absl::make_optional(application_id));
+  SetShellApplicationId(host_window(), std::make_optional(application_id));
 }
 
 void NotificationSurface::OnSurfaceCommit() {

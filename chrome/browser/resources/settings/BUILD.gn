@@ -92,8 +92,14 @@ build_webui("build") {
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
+    "controls/controlled_button.ts",
+    "controls/controlled_radio_button.ts",
     "controls/settings_checkbox_list_entry.ts",
     "controls/settings_checkbox.ts",
+    "controls/settings_dropdown_menu.ts",
+    "controls/settings_radio_group.ts",
+    "controls/settings_slider.ts",
+    "controls/settings_toggle_button.ts",
     "downloads_page/downloads_page.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",
@@ -138,6 +144,8 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/privacy_page.ts",
+    "privacy_page/secure_dns.ts",
+    "privacy_page/secure_dns_input.ts",
     "privacy_page/security_keys_bio_enroll_dialog.ts",
     "privacy_page/security_keys_credential_management_dialog.ts",
     "privacy_page/security_keys_pin_field.ts",
@@ -326,6 +334,7 @@ build_webui("build") {
   ]
 
   if (is_chromeos_ash) {
+    web_component_files += [ "privacy_page/secure_dns_dialog.ts" ]
     non_web_component_files +=
         [ "people_page/account_manager_browser_proxy.ts" ]
   } else {

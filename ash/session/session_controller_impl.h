@@ -153,8 +153,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   void HideLockScreen();
 
   // Requests signing out all users, ending the current session.
-  // NOTE: This should only be called from LockStateController, other callers
-  // should use LockStateController::RequestSignOut() instead.
   void RequestSignOut();
 
   // Requests a system restart to apply an OS update.

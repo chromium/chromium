@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -192,10 +192,10 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   // Publisher-specific identifier for the activity which registered this
   // filter. Used to determine what action to take when Intents are launched
   // through this filter.
-  absl::optional<std::string> activity_name;
+  std::optional<std::string> activity_name;
 
   // The label shown to the user for this activity.
-  absl::optional<std::string> activity_label;
+  std::optional<std::string> activity_label;
 };
 
 using IntentFilterPtr = std::unique_ptr<IntentFilter>;

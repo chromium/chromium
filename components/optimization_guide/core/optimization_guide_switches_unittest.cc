@@ -4,12 +4,13 @@
 
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace switches {
@@ -20,7 +21,7 @@ TEST(OptimizationGuideSwitchesTest, ParseHintsFetchOverrideFromCommandLine) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kFetchHintsOverride,
                                                             "whatever.com");
 
-  absl::optional<std::vector<std::string>> parsed_hosts =
+  std::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_TRUE(parsed_hosts.has_value());
@@ -33,7 +34,7 @@ TEST(OptimizationGuideSwitchesTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kFetchHintsOverride, "whatever.com, whatever-2.com, ,");
 
-  absl::optional<std::vector<std::string>> parsed_hosts =
+  std::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_TRUE(parsed_hosts.has_value());
@@ -44,7 +45,7 @@ TEST(OptimizationGuideSwitchesTest,
 
 TEST(OptimizationGuideSwitchesTest,
      ParseHintsFetchOverrideFromCommandLineNoSwitch) {
-  absl::optional<std::vector<std::string>> parsed_hosts =
+  std::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_FALSE(parsed_hosts.has_value());

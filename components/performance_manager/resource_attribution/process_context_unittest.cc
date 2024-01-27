@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
@@ -23,7 +24,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
@@ -36,7 +36,7 @@ using ResourceAttrProcessContextNoPMTest = content::RenderViewHostTestHarness;
 TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
   // PerformanceManager creates a browser ProcessNode when the test harness
   // initializes it.
-  const absl::optional<ProcessContext> process_context =
+  const std::optional<ProcessContext> process_context =
       ProcessContext::FromBrowserProcess();
   ASSERT_TRUE(process_context.has_value());
   EXPECT_TRUE(process_context->IsBrowserProcessContext());
@@ -71,7 +71,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
   RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(absl::nullopt, ProcessContext::FromWeakProcessNode(process_node));
+    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
   });
 }
 
@@ -87,7 +87,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   ASSERT_TRUE(rph);
   const auto rph_id = RenderProcessHostId(rph->GetID());
 
-  absl::optional<ProcessContext> process_context =
+  std::optional<ProcessContext> process_context =
       ProcessContext::FromRenderProcessHost(rph);
   ASSERT_TRUE(process_context.has_value());
   EXPECT_TRUE(process_context->IsRenderProcessContext());
@@ -125,14 +125,14 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   content::RenderProcessHost* rph2 = rfh2->GetProcess();
   ASSERT_TRUE(rph2);
   EXPECT_NE(rph, rph2);
-  absl::optional<ProcessContext> process_context2 =
+  std::optional<ProcessContext> process_context2 =
       ProcessContext::FromRenderProcessHost(rph2);
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
 
   web_contents.reset();
 
-  EXPECT_EQ(absl::nullopt, ProcessContext::FromRenderProcessHost(rph));
+  EXPECT_EQ(std::nullopt, ProcessContext::FromRenderProcessHost(rph));
   EXPECT_TRUE(process_context->IsRenderProcessContext());
   EXPECT_EQ(nullptr, process_context->GetRenderProcessHost());
   EXPECT_EQ(rph_id, process_context->GetRenderProcessHostId());
@@ -140,7 +140,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(absl::nullopt, ProcessContext::FromWeakProcessNode(process_node));
+    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
   });
 }
 
@@ -149,7 +149,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
       std::make_unique<TestBrowserChildProcess>(content::PROCESS_TYPE_UTILITY);
   utility_process->SimulateLaunch();
 
-  absl::optional<ProcessContext> process_context =
+  std::optional<ProcessContext> process_context =
       ProcessContext::FromBrowserChildProcessHost(utility_process->host());
   ASSERT_TRUE(process_context.has_value());
   EXPECT_TRUE(process_context->IsBrowserChildProcessContext());
@@ -184,7 +184,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   // Make sure a second process gets a different context.
   TestBrowserChildProcess gpu_process(content::PROCESS_TYPE_GPU);
   gpu_process.SimulateLaunch();
-  absl::optional<ProcessContext> process_context2 =
+  std::optional<ProcessContext> process_context2 =
       ProcessContext::FromBrowserChildProcessHost(gpu_process.host());
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
@@ -199,14 +199,14 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(absl::nullopt, ProcessContext::FromWeakProcessNode(process_node));
+    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
   });
 }
 
 TEST_F(ResourceAttrProcessContextNoPMTest, ProcessContextWithoutPM) {
   // When PerformanceManager isn't initialized, factory functions should return
   // nullopt, not a context that's missing PM info.
-  EXPECT_EQ(absl::nullopt, ProcessContext::FromBrowserProcess());
+  EXPECT_EQ(std::nullopt, ProcessContext::FromBrowserProcess());
 
   // Navigate to an initial page to create a renderer process.
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
@@ -216,11 +216,11 @@ TEST_F(ResourceAttrProcessContextNoPMTest, ProcessContextWithoutPM) {
   ASSERT_TRUE(rfh);
   content::RenderProcessHost* rph = rfh->GetProcess();
   ASSERT_TRUE(rph);
-  EXPECT_EQ(absl::nullopt, ProcessContext::FromRenderProcessHost(rph));
+  EXPECT_EQ(std::nullopt, ProcessContext::FromRenderProcessHost(rph));
 
   TestBrowserChildProcess utility_process(content::PROCESS_TYPE_UTILITY);
-  EXPECT_EQ(absl::nullopt, ProcessContext::FromBrowserChildProcessHost(
-                               utility_process.host()));
+  EXPECT_EQ(std::nullopt, ProcessContext::FromBrowserChildProcessHost(
+                              utility_process.host()));
 }
 
 }  // namespace

@@ -378,7 +378,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Pending GC directive if received during the current sync cycle. If there
   // are several pending GC directives, the latest one will be stored.
-  absl::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
+  std::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
 
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.

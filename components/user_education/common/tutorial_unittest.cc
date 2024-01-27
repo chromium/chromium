@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/tutorial.h"
 
+#include <optional>
 #include <string>
 
 #include "base/test/bind.h"
@@ -21,7 +22,6 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -1041,7 +1041,7 @@ class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
   }
 
   auto VerifyHelpBubble(std::map<int, int> expected_strings,
-                        absl::optional<std::pair<int, int>> progress) {
+                        std::optional<std::pair<int, int>> progress) {
     const int id = expected_strings.size() == 1U
                        ? expected_strings.begin()->second
                        : expected_strings[GetParam()];
@@ -1111,7 +1111,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtStartOfTutorial) {
       Do([&]() { el2.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
@@ -1134,7 +1134,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
@@ -1152,7 +1152,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
       Do([&]() { el2.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::nullopt),
       CloseHelpBubble());
 }
 
@@ -1178,7 +1178,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorialUnevenSteps) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::nullopt),
       CloseHelpBubble());
 }
 
@@ -1202,7 +1202,7 @@ TEST_P(ConditionalTutorialTest1, OptionalStep) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
@@ -1233,7 +1233,7 @@ TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
       Do([&]() { el4.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 using ConditionalTutorialTest2 = ConditionalTutorialTest;
@@ -1272,7 +1272,7 @@ TEST_P(ConditionalTutorialTest2, NestedConditionals) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_SAVE}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_SAVE}}, std::nullopt), CloseHelpBubble());
 }
 
 }  // namespace user_education

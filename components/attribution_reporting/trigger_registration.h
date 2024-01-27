@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -52,13 +52,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
                          const TriggerRegistration&) = default;
 
   FilterPair filters;
-  absl::optional<uint64_t> debug_key;
+  std::optional<uint64_t> debug_key;
   std::vector<AggregatableDedupKey> aggregatable_dedup_keys;
   std::vector<EventTriggerData> event_triggers;
   std::vector<AggregatableTriggerData> aggregatable_trigger_data;
   AggregatableValues aggregatable_values;
   bool debug_reporting = false;
-  absl::optional<SuitableOrigin> aggregation_coordinator_origin;
+  std::optional<SuitableOrigin> aggregation_coordinator_origin;
   AggregatableTriggerConfig aggregatable_trigger_config;
 };
 

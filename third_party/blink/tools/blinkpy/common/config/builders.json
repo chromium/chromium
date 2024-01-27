@@ -55,15 +55,6 @@
         "is_try_builder": true,
         "is_cq_builder": true
     },
-    "linux-wpt-chromium-rel": {
-        "main": "tryserver.blink",
-        "port_name": "chrome",
-        "specifiers": ["Chrome", "Release"],
-        "is_try_builder": true,
-        "steps": {
-            "chrome_wpt_tests (with patch)": {}
-        }
-    },
     "linux-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "linux",

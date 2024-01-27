@@ -144,19 +144,19 @@ std::unique_ptr<Intent> Intent::Clone() const {
   return intent;
 }
 
-absl::optional<std::string> Intent::GetIntentConditionValueByType(
+std::optional<std::string> Intent::GetIntentConditionValueByType(
     ConditionType condition_type) {
   switch (condition_type) {
     case ConditionType::kAction: {
       return action;
     }
     case ConditionType::kScheme: {
-      return url.has_value() ? absl::optional<std::string>(url->scheme())
-                             : absl::nullopt;
+      return url.has_value() ? std::optional<std::string>(url->scheme())
+                             : std::nullopt;
     }
     case ConditionType::kPath: {
-      return url.has_value() ? absl::optional<std::string>(url->path())
-                             : absl::nullopt;
+      return url.has_value() ? std::optional<std::string>(url->path())
+                             : std::nullopt;
     }
     case ConditionType::kMimeType: {
       return mime_type;
@@ -166,7 +166,7 @@ absl::optional<std::string> Intent::GetIntentConditionValueByType(
     // Handled in MatchFileCondition.
     case ConditionType::kFile: {
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
@@ -178,7 +178,7 @@ bool Intent::MatchAuthorityCondition(const ConditionPtr& condition) {
     return false;
   }
 
-  absl::optional<std::string> port =
+  std::optional<std::string> port =
       apps_util::AuthorityView::PortToString(url.value());
   return base::ranges::any_of(
       condition->condition_values,
@@ -220,7 +220,7 @@ bool Intent::MatchCondition(const ConditionPtr& condition) {
     return MatchFileCondition(condition);
   }
 
-  absl::optional<std::string> value_to_match =
+  std::optional<std::string> value_to_match =
       GetIntentConditionValueByType(condition->condition_type);
   return value_to_match.has_value() &&
          base::ranges::any_of(condition->condition_values,

@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_WEBAPPS_SERVICES_WEB_APP_ORIGIN_ASSOCIATION_WEB_APP_ORIGIN_ASSOCIATION_PARSER_H_
 #define COMPONENTS_WEBAPPS_SERVICES_WEB_APP_ORIGIN_ASSOCIATION_WEB_APP_ORIGIN_ASSOCIATION_PARSER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -37,7 +37,7 @@ class WebAppOriginAssociationParser {
  private:
   std::vector<mojom::AssociatedWebAppPtr> ParseAssociatedWebApps(
       const base::Value::Dict& root_dict);
-  absl::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
+  std::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
       const base::Value::Dict& app_dict);
   void AddErrorInfo(const std::string& error_msg,
                     int error_line = 0,

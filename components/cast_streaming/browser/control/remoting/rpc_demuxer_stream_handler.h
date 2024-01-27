@@ -98,11 +98,11 @@ class RpcDemuxerStreamHandler
     ~MessageProcessor() override;
 
     bool OnRpcInitializeCallback(
-        absl::optional<media::AudioDecoderConfig> audio_config,
-        absl::optional<media::VideoDecoderConfig> video_config);
+        std::optional<media::AudioDecoderConfig> audio_config,
+        std::optional<media::VideoDecoderConfig> video_config);
     bool OnRpcReadUntilCallback(
-        absl::optional<media::AudioDecoderConfig> audio_config,
-        absl::optional<media::VideoDecoderConfig> video_config,
+        std::optional<media::AudioDecoderConfig> audio_config,
+        std::optional<media::VideoDecoderConfig> video_config,
         uint32_t total_frames_received);
     void OnBitstreamConverterEnabled(bool success);
 
@@ -182,12 +182,12 @@ class RpcDemuxerStreamHandler
   // RpcDemuxerStreamCBMessageHandler overrides.
   void OnRpcInitializeCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config) override;
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config) override;
   void OnRpcReadUntilCallback(
       openscreen::cast::RpcMessenger::Handle handle,
-      absl::optional<media::AudioDecoderConfig> audio_config,
-      absl::optional<media::VideoDecoderConfig> video_config,
+      std::optional<media::AudioDecoderConfig> audio_config,
+      std::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) override;
   void OnRpcEnableBitstreamConverterCallback(
       openscreen::cast::RpcMessenger::Handle handle,

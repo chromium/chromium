@@ -206,13 +206,6 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryGetter::GetURLLoaderFactory(
   return factory->get();
 }
 
-void URLLoaderFactoryGetter::CloneNetworkFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        network_factory_receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetURLLoaderFactory(false)->Clone(std::move(network_factory_receiver));
-}
-
 void URLLoaderFactoryGetter::SetNetworkFactoryForTesting(
     network::mojom::URLLoaderFactory* test_factory,
     bool is_corb_enabled) {

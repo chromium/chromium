@@ -33,7 +33,7 @@ base::WeakPtr<CpuProbe> FakeCpuProbe::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void FakeCpuProbe::SetLastSample(absl::optional<PressureSample> sample) {
+void FakeCpuProbe::SetLastSample(std::optional<PressureSample> sample) {
   base::AutoLock auto_lock(lock_);
   last_sample_ = sample;
 }

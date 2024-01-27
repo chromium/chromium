@@ -127,7 +127,7 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
   }
 
   void SaveSegmentResult(SegmentId segment_id,
-                         absl::optional<proto::PredictionResult> result) {
+                         std::optional<proto::PredictionResult> result) {
     const std::string key = base::NumberToString(static_cast<int>(segment_id));
     auto& segment_info = segment_db_entries_[key];
     // Assume that test already created the segment info, this method only

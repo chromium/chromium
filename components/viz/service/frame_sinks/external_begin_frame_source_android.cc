@@ -51,7 +51,7 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
       void* data);
 
   void OnVSync(int64_t frame_time_nanos,
-               absl::optional<PossibleDeadlines> possible_deadlines,
+               std::optional<PossibleDeadlines> possible_deadlines,
                base::WeakPtr<AChoreographerImpl>* self);
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
@@ -129,8 +129,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::FrameCallback64(
     delete self;
     return;
   }
-  (*self)->OnVSync(frame_time_nanos, /*possible_deadlines=*/absl::nullopt,
-                   self);
+  (*self)->OnVSync(frame_time_nanos, /*possible_deadlines=*/std::nullopt, self);
 }
 
 // static
@@ -187,7 +186,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback(
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
     int64_t frame_time_nanos,
-    absl::optional<PossibleDeadlines> possible_deadlines,
+    std::optional<PossibleDeadlines> possible_deadlines,
     base::WeakPtr<AChoreographerImpl>* self) {
   DCHECK(!self_for_frame_callback_);
   DCHECK(self);
@@ -254,14 +253,14 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
     jlong period_micros) {
   OnVSyncImpl(time_micros * 1000, (time_micros + period_micros) * 1000,
               base::Microseconds(period_micros),
-              /*possible_deadlines=*/absl::nullopt);
+              /*possible_deadlines=*/std::nullopt);
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
     int64_t time_nanos,
     int64_t deadline_nanos,
     base::TimeDelta vsync_period,
-    absl::optional<PossibleDeadlines> possible_deadlines) {
+    std::optional<PossibleDeadlines> possible_deadlines) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time = ToTimeTicks(time_nanos);

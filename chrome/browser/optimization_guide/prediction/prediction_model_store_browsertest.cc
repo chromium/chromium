@@ -79,8 +79,6 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
       const PredictionModelStoreBrowserTestBase&) = delete;
 
   void SetUp() override {
-    InitializeFeatureList();
-
     models_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig models_server_cert_config;
@@ -231,9 +229,6 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
     return std::move(response);
   }
 
-  // Virtualize for testing different feature configurations.
-  virtual void InitializeFeatureList() = 0;
-
   base::test::ScopedFeatureList scoped_feature_list_;
   GURL model_file_url_;
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
@@ -253,11 +248,6 @@ class PredictionModelStoreBrowserTest
       delete;
   PredictionModelStoreBrowserTest& operator=(
       const PredictionModelStoreBrowserTest&) = delete;
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {{features::kOptimizationGuideInstallWideModelStore}}, {});
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestRegularProfile) {

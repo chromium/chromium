@@ -98,7 +98,7 @@ TEST_F(AndroidPaymentAppFactoryTest, NullRenderFrameHost) {
             apps.back()->activities.back()->name = "com.example.app.Activity2";
             apps.back()->activities.back()->default_payment_method =
                 "https://play.google.com/billing";
-            std::move(callback).Run(absl::nullopt, std::move(apps));
+            std::move(callback).Run(std::nullopt, std::move(apps));
           });
 
   // Now trigger app finding. This should near immediately bail in

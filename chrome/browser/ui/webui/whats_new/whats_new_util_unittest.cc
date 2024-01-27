@@ -92,6 +92,10 @@ class WhatsNewUtilTests : public testing::Test {
 };
 
 TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
+  // TODO (crbug/1520881): Is this test still relevant post Cr2023 rollout?
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   // Set version to a refresh-compatible version.
   whats_new::SetChromeVersionForTests(119);
 

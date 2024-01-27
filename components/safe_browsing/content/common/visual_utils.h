@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 

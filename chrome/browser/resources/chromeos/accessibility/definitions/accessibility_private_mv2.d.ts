@@ -320,12 +320,21 @@ declare global {
         es_es_pumpkin_config_binarypb: ArrayBuffer;
       }
 
+      export interface FaceGazeAssets {
+        model: ArrayBuffer;
+        wasm: ArrayBuffer;
+      }
+
       export function getDisplayNameForLocale(
           localeCodeToTranslate: string, displayLocaleCode: string): string;
 
       type GetBatteryDescriptionCallback = (description: string) => void;
       export function getBatteryDescription(
           callback: GetBatteryDescriptionCallback): void;
+
+      type InstallFaceGazeAssetsCallback = (assets: FaceGazeAssets) => void;
+      export function installFaceGazeAssets(
+          callback: InstallFaceGazeAssetsCallback): void;
 
       type InstallPumpkinForDictationCallback = (data: PumpkinData) => void;
       export function installPumpkinForDictation(

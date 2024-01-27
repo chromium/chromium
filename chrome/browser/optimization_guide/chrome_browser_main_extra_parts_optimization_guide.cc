@@ -16,9 +16,6 @@
 #include "components/optimization_guide/core/prediction_model_store.h"
 
 void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
-  if (!optimization_guide::features::IsInstallWideModelStoreEnabled())
-    return;
-
   base::FilePath model_downloads_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(

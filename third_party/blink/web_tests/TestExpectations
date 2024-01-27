@@ -1488,7 +1488,6 @@ crbug.com/1234841 external/wpt/html/semantics/grouping-content/the-li-element/gr
 crbug.com/1234841 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-skip-no-boxes.html [ Failure ]
 crbug.com/1234841 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-reftest-007.html [ Failure ]
 crbug.com/1167095 external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Timeout ]
 crbug.com/1232504 [ Win ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/1234199 [ Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Crash Failure Pass Timeout ]
 crbug.com/1234199 [ Mac ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Crash Failure Pass Timeout ]
@@ -2592,7 +2591,6 @@ crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/basic/requ
 crbug.com/626703 [ Mac ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Crash ]
-crbug.com/626703 external/wpt/focus/focus-large-element-in-overflow-hidden-container.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-button-overflow.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-text-input-overflow.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/input-type-button-clip.html [ Failure ]
@@ -2771,14 +2769,6 @@ crbug.com/626703 [ Mac13 Release ] external/wpt/IndexedDB/idbcursor_iterating.ht
 crbug.com/626703 [ Mac12 ] external/wpt/IndexedDB/idbobjectstore_getAllKeys.any.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/idbobjectstore_getAllKeys.any.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-prioritization-003.html [ Failure ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/css-module/content-type-checking.html [ Timeout ]
-crbug.com/626703 [ Debug ] external/wpt/html/semantics/scripting-1/the-script-element/css-module/load-error-events.html [ Timeout ]
-crbug.com/626703 [ Release ] external/wpt/html/semantics/scripting-1/the-script-element/css-module/load-error-events.html [ Timeout ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module-assertions/parse-error.html [ Timeout ]
-crbug.com/626703 [ Debug ] external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
-crbug.com/626703 [ Release ] external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/operators/embellished-op-1-4.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/operators/embellished-op-1-5.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/operators/embellished-op-5-1.html [ Failure ]
@@ -2796,20 +2786,8 @@ crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/b
 crbug.com/626703 [ Win10.20h2 ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/match.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/update-ui.https.window.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/css-module/content-type-checking.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/css-module/load-error-events.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/json-module-assertions/parse-error.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
-crbug.com/626703 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/reading-autoincrement-indexes-cursors.any.serviceworker.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/reading-autoincrement-indexes.any.sharedworker.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/css-module/content-type-checking.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/css-module/load-error-events.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module-assertions/parse-error.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/load-error-events.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.html [ Timeout ]
-crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/sharedworker-multiple.tentative.https.html [ Skip Timeout ]
 crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-rect-interpolation-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/border-color-currentcolor.html [ Failure ]
@@ -5965,6 +5943,8 @@ crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Fai
 
 # Sheriff 2022-11-23
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure Pass ]
+# TODO(crbug.com/1522264): Re-enable this test
+crbug.com/1522264 [ Linux ] virtual/gpu-rasterization/images/182.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
 
@@ -6484,9 +6464,6 @@ crbug.com/1469087 virtual/fenced-frame-mparch/external/wpt/fetch/private-network
 
 
 # Fix importer 2023-08-04
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.html [ Failure Pass ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.sharedworker.html [ Failure Pass ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.worker.html [ Failure Pass ]
 crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Failure Pass ]
 
 crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
@@ -6706,12 +6683,6 @@ crbug.com/1515743 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semant
 
 # Gardener 2024-01-08
 crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
-
-# These tests are timing out when the V8 flag --harmony-import-attributes is not provided (it is enabled in the virtual tests).
-crbug.com/v8/13856 external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html [ Timeout ]
-crbug.com/v8/13856 external/wpt/content-security-policy/style-src/import-style-blocked.sub.html [ Timeout ]
-crbug.com/v8/13856 virtual/import-attributes-json-css-modules/external/wpt/content-security-policy/connect-src/connect-src-json-import-blocked.sub.html [ Pass ]
-crbug.com/v8/13856 virtual/import-attributes-json-css-modules/external/wpt/content-security-policy/style-src/import-style-blocked.sub.html [ Pass ]
 
 # DevTools roll
 crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]

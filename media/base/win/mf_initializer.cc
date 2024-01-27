@@ -39,6 +39,28 @@ bool LoadMediaFoundationLibraries() {
   return kDidLoadSucceed;
 }
 
+// This is a helper for creating a global D3D mutex prior to sandbox startup,
+// ensures Intel hardware encoding MFTs will successfully reuse the existing
+// mutex instead of getting denied by the system and leads to fail to activate
+// encoders. See https://crbug.com/1491893
+class MediaFoundationCreateMutexHelper {
+ public:
+  static MediaFoundationCreateMutexHelper* GetInstance() {
+    return base::Singleton<MediaFoundationCreateMutexHelper,
+                           base::StaticMemorySingletonTraits<
+                               MediaFoundationCreateMutexHelper>>::get();
+  }
+  ~MediaFoundationCreateMutexHelper() = default;
+
+ private:
+  friend struct base::StaticMemorySingletonTraits<
+      MediaFoundationCreateMutexHelper>;
+  MediaFoundationCreateMutexHelper()
+      : mutex_handle_(CreateMutex(nullptr, false, L"mfx_d3d_mutex")) {}
+
+  base::win::ScopedHandle mutex_handle_;
+};
+
 // MFShutdown() is sometimes very expensive if it's the last instance and
 // shouldn't result in excessive memory usage to leave around, so only start it
 // once and only shut it down at process exit. See https://crbug.com/1069603#c90
@@ -75,8 +97,7 @@ class MediaFoundationSession {
  private:
   friend struct base::StaticMemorySingletonTraits<MediaFoundationSession>;
 
-  MediaFoundationSession()
-      : mutex_handle_(CreateMutex(nullptr, false, L"mfx_d3d_mutex")) {
+  MediaFoundationSession() {
     const auto hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
     has_media_foundation_ = hr == S_OK;
 
@@ -85,10 +106,6 @@ class MediaFoundationSession {
         << logging::SystemErrorCodeToString(hr);
   }
 
-  // Creating a global D3D mutex prior to sandbox startup ensures Intel hardware
-  // encoding MFTs will reuse the existing mutex instead of failing to create a
-  // new one inside the sandbox later. See https://crbug.com/1491893
-  base::win::ScopedHandle mutex_handle_;
   bool has_media_foundation_ = false;
 };
 
@@ -102,6 +119,7 @@ bool InitializeMediaFoundation() {
 }
 
 bool PreSandboxMediaFoundationInitialization() {
+  MediaFoundationCreateMutexHelper::GetInstance();
   return LoadMediaFoundationLibraries();
 }
 

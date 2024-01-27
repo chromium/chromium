@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -153,7 +154,7 @@ class FakeWebState : public web::FakeWebState {
   }
 
  private:
-  web::WebStatePolicyDecider* decider_;
+  raw_ptr<web::WebStatePolicyDecider> decider_;
 };
 
 }  // namespace
@@ -304,7 +305,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
     network::mojom::CookieDeletionFilterPtr filter =
         network::mojom::CookieDeletionFilter::New();
     filter->including_domains =
-        absl::optional<std::vector<std::string>>({kGoogleDomain});
+        std::optional<std::vector<std::string>>({kGoogleDomain});
     cookie_manager->DeleteCookies(std::move(filter),
                                   base::OnceCallback<void(uint)>());
   }

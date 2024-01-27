@@ -7,6 +7,7 @@
 
 #include <map>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -84,7 +85,7 @@ class InfobarBadgeTabHelper
     void InfobarDestroyed(InfoBarIOS* infobar) override;
 
     // The owning tab helper.
-    InfobarBadgeTabHelper* tab_helper_ = nullptr;
+    raw_ptr<InfobarBadgeTabHelper> tab_helper_ = nullptr;
     // Scoped observer that facilitates observing InfoBarIOS objects.
     base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>
         scoped_observations_{this};
@@ -108,10 +109,10 @@ class InfobarBadgeTabHelper
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
     // The owning tab helper.
-    InfobarBadgeTabHelper* tab_helper_ = nullptr;
+    raw_ptr<InfobarBadgeTabHelper> tab_helper_ = nullptr;
     // The infobar acceptance observer for `tab_helper_`.  Added to each infobar
     // in the observed manager.
-    InfobarAcceptanceObserver* infobar_accept_observer_ = nullptr;
+    raw_ptr<InfobarAcceptanceObserver> infobar_accept_observer_ = nullptr;
     // Scoped observer that facilitates observing an InfoBarManager.
     base::ScopedObservation<infobars::InfoBarManager,
                             infobars::InfoBarManager::Observer>
@@ -125,7 +126,7 @@ class InfobarBadgeTabHelper
   // The infobar manager observer.
   InfobarManagerObserver infobar_manager_observer_;
   // The WebState this TabHelper is scoped to.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   // Map storing the BadgeState for each InfobarType.
   std::map<InfobarType, BadgeState> infobar_badge_states_;
   // Vector storing infobars that are added when prerendering.

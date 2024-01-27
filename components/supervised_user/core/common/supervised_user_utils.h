@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_UTILS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -90,7 +90,7 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service);
 
 // Gets the supervision status of the given account, suitable for passing in to
 // EmitLogSegmentHistogram.
-absl::optional<LogSegment> SupervisionStatusForUser(
+std::optional<LogSegment> SupervisionStatusForUser(
     const signin::IdentityManager* identity_manager);
 
 // Emits a single merged FamilyLink supervision metric, from a list of

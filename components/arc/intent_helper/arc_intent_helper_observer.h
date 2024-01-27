@@ -19,7 +19,7 @@ class ArcIntentHelperObserver {
   virtual ~ArcIntentHelperObserver() = default;
 
   // Called when intent filters are added, removed or updated.
-  // A absl::nullopt |package_name| indicates that intent filters were updated
+  // A std::nullopt |package_name| indicates that intent filters were updated
   // for all packages. Otherwise, |package_name| contains the name of the
   // package whose filters were changed.
   virtual void OnIntentFiltersUpdated(

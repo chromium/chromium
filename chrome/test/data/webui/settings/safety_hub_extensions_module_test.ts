@@ -6,7 +6,8 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {SafetyHubEvent, SettingsSafetyHubExtensionsModuleElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSafetyHubExtensionsModuleElement} from 'chrome://settings/lazy_load.js';
+import {SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {SettingsPluralStringProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

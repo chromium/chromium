@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
@@ -31,7 +31,7 @@ bool AutocompleteScoringModelExecutor::Preprocess(
   return true;
 }
 
-absl::optional<AutocompleteScoringModelExecutor::ModelOutput>
+std::optional<AutocompleteScoringModelExecutor::ModelOutput>
 AutocompleteScoringModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   DCHECK_EQ(1u, output_tensors.size());
@@ -43,7 +43,7 @@ AutocompleteScoringModelExecutor::Postprocess(
       tflite::task::core::PopulateVector<float>(output_tensors[0], &output);
   if (!status.ok()) {
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK_EQ(1u, output.size());
   return output;

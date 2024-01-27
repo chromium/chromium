@@ -58,7 +58,7 @@ class CORE_EXPORT HTMLTokenName {
  public:
   explicit HTMLTokenName(html_names::HTMLTag tag) : tag_(tag) {
     if (tag != html_names::HTMLTag::kUnknown)
-      local_name_ = html_names::TagToQualifedName(tag).LocalName();
+      local_name_ = html_names::TagToQualifiedName(tag).LocalName();
   }
 
   // Returns an HTMLTokenName for the specified string. This function looks up

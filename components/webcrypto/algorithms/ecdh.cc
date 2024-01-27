@@ -48,7 +48,7 @@ class EcdhImplementation : public EcAlgorithm {
 
   Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                     const blink::WebCryptoKey& base_key,
-                    absl::optional<unsigned int> length_bits,
+                    std::optional<unsigned int> length_bits,
                     std::vector<uint8_t>* derived_bytes) const override {
     if (base_key.GetType() != blink::kWebCryptoKeyTypePrivate)
       return Status::ErrorUnexpectedKeyType();

@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -51,6 +52,11 @@ using ::base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
 using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
+using optimization_guide::OptimizationGuideModelExecutionError;
+using optimization_guide::
+    OptimizationGuideModelExecutionResultStreamingCallback;
+using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using optimization_guide::StreamingResponse;
 
 namespace {
 
@@ -184,12 +190,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                   FROM_HERE,
                   base::BindOnce(
                       std::move(callback),
-                      OptimizationGuideResponse(
-                          ComposeResponse(true, "Cucumbers")),
-                      std::make_unique<
-                          optimization_guide::ModelQualityLogEntry>(
+                      OptimizationGuideModelStreamingExecutionResult(
+                          base::ok(OptimizationGuideResponse(
+                              ComposeResponse(true, "Cucumbers"))),
+                          /*provided_by_on_device=*/false,
                           std::make_unique<
-                              optimization_guide::proto::LogAiDataRequest>())));
+                              optimization_guide::ModelQualityLogEntry>(
+                              std::make_unique<optimization_guide::proto::
+                                                   LogAiDataRequest>()))));
             })));
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
@@ -332,16 +340,28 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return response;
   }
 
-  optimization_guide::StreamingResponse OptimizationGuideResponse(
+  StreamingResponse OptimizationGuideResponse(
       const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true) {
     optimization_guide::proto::Any any;
     any.set_type_url(kTypeURL);
     compose_response.SerializeToString(any.mutable_value());
-    return optimization_guide::StreamingResponse{
+    return StreamingResponse{
         .response = any,
         .is_complete = is_complete,
     };
+  }
+
+  OptimizationGuideModelStreamingExecutionResult
+  OptimizationGuideStreamingResult(
+      const optimization_guide::proto::ComposeResponse compose_response,
+      bool is_complete = true,
+      bool provided_by_on_device = false,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+          nullptr) {
+    return OptimizationGuideModelStreamingExecutionResult(
+        base::ok(OptimizationGuideResponse(compose_response, is_complete)),
+        provided_by_on_device, std::move(log_entry));
   }
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
@@ -417,8 +437,13 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   // Check that a request result OK metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
+  histograms().ExpectUniqueSample("Compose.Server.Request.Status",
+                                  compose::mojom::ComposeStatus::kOk, 1);
+
   // Check that a request duration OK metric was emitted.
   histograms().ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
+  histograms().ExpectTotalCount("Compose.Server.Duration.Ok", 1);
+
   // Check that a no request duration Error metric was emitted.
   histograms().ExpectTotalCount(compose::kComposeRequestDurationError, 0);
   // Check that the request metadata had a valid node offset.
@@ -447,7 +472,6 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -456,8 +480,6 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
       ukm_entries[0].metrics,
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1)));
@@ -517,7 +539,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -527,8 +548,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
                         1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
-                        0),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 
@@ -541,7 +560,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
   ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 2UL);
@@ -551,8 +569,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
                         2),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
-                        0),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 }
@@ -572,7 +588,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
@@ -581,8 +596,6 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
       ukm_entries[0].metrics,
       testing::UnorderedElementsAre(
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
@@ -605,11 +618,9 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             // Start with a partial response.
-            auto opt_guide_response =
-                OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
-                                          /*is_complete=*/false);
-            opt_guide_response.provided_by_on_device = true;
-            callback.Run(std::move(opt_guide_response), nullptr);
+            callback.Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucu"), /*is_complete=*/false,
+                /*provided_by_on_device=*/true));
             saved_callback = callback;
           })));
   ShowDialogAndBindMojo();
@@ -641,10 +652,9 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   EXPECT_TRUE(initial_state->compose_state->has_pending_request);
 
   // Then send the full response.
-  auto full_response =
-      OptimizationGuideResponse(ComposeResponse(true, "Cucumbers"));
-  full_response.provided_by_on_device = true;
-  saved_callback.Run(full_response, nullptr);
+  saved_callback.Run(OptimizationGuideStreamingResult(
+      ComposeResponse(true, "Cucumbers"), /*is_complete=*/true,
+      /*provided_by_on_device=*/true));
   auto complete_result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, complete_result->status);
   EXPECT_EQ("Cucumbers", complete_result->result);
@@ -680,9 +690,8 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
             original_callback = callback;
             // Start with a partial response.
             callback.Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
-                                          /*is_complete=*/false),
-                nullptr);
+                OptimizationGuideStreamingResult(ComposeResponse(true, "Cucu"),
+                                                 /*is_complete=*/false));
           })));
   EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input2)), _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -691,12 +700,10 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
                       callback) {
             // First call the original callback. This should be ignored.
             original_callback.Run(
-                OptimizationGuideResponse(ComposeResponse(true, "old")),
-                nullptr);
+                OptimizationGuideStreamingResult(ComposeResponse(true, "old")));
             // Start with a partial response.
-            callback.Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            callback.Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
   ShowDialogAndBindMojo();
 
@@ -742,9 +749,8 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -770,16 +776,16 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             std::move(callback).Run(
-                base::unexpected(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        FromModelExecutionError(
-                            optimization_guide::
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
-
-                std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                    std::make_unique<
-                        optimization_guide::proto::LogAiDataRequest>()));
+                    false,
+                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                        std::make_unique<
+                            optimization_guide::proto::LogAiDataRequest>())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -829,12 +835,11 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   ShowDialogAndBindMojo();
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
+          [&](OptimizationGuideModelExecutionResultStreamingCallback callback) {
             std::move(callback).Run(
-                optimization_guide::StreamingResponse{.is_complete = true},
-                nullptr);
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::ok(StreamingResponse{.is_complete = true}),
+                    /*provided_by_on_device=*/false));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -907,12 +912,12 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
 
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
+          [&](OptimizationGuideModelExecutionResultStreamingCallback callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::ok(OptimizationGuideResponse(
+                        ComposeResponse(true, "Cucumbers"))),
+                    false));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -969,9 +974,8 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr>
@@ -1006,9 +1010,8 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -1306,9 +1309,8 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
   EXPECT_CALL(compose_dialog(), ResponseReceived(_));
 
@@ -1444,22 +1446,26 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
+
+  // Expect that three total Compose calls were recorded.
+  histograms().ExpectBucketCount("Compose.Session.ComposeCount.Ignored", 3, 1);
+  histograms().ExpectBucketCount("Compose.Server.Session.ComposeCount.Ignored",
+                                 3, 1);
+
+  // Expect that two of the Compose calls were from edits.
+  histograms().ExpectBucketCount("Compose.Session.SubmitEditCount.Ignored", 2,
+                                 1);
   histograms().ExpectBucketCount(
-      compose::kComposeSessionComposeCount + std::string(".Ignored"),
-      3,  // Expect that three total Compose calls were recorded.
-      1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionUpdateInputCount + std::string(".Ignored"),
-      2,  // Expect that two of the Compose calls were from edits.
-      1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionUndoCount + std::string(".Ignored"),
-      2,  // Expect that two undos were done.
-      1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
-      2,  // Expect that the dialog was shown twice.
-      1);
+      "Compose.Server.Session.SubmitEditCount.Ignored", 2, 1);
+
+  // Expect that two undos were done.
+  histograms().ExpectBucketCount("Compose.Session.UndoCount.Ignored", 2, 1);
+  histograms().ExpectBucketCount("Compose.Server.Session.UndoCount.Ignored", 2,
+                                 1);
+
+  // Expect that the dialog was shown twice.
+  histograms().ExpectBucketCount("Compose.Session.DialogShownCount.Ignored", 2,
+                                 1);
 
   // Check expected session duration metrics
   histograms().ExpectTotalCount(
@@ -2057,16 +2063,16 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             std::move(callback).Run(
-                base::unexpected(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        FromModelExecutionError(
-                            optimization_guide::
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
-
-                std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                    std::make_unique<
-                        optimization_guide::proto::LogAiDataRequest>()));
+                    /*provided_by_on_device=*/false,
+                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                        std::make_unique<
+                            optimization_guide::proto::LogAiDataRequest>())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
@@ -2290,9 +2296,8 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
   auto regen_matcher =
       EqualsProto(RegenerateRequest(/*previous_response=*/"Cucumbers"));
@@ -2301,9 +2306,8 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Tomatoes")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -2368,9 +2372,8 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
   // Rewrite with Formal.
   optimization_guide::proto::ComposeRequest request;
@@ -2383,9 +2386,8 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Tomatoes")));
           })));
   // Rewrite with Casual.
   request.mutable_rewrite_params()->set_previous_response("Tomatoes");
@@ -2397,9 +2399,8 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Potatoes")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -2436,6 +2437,23 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kFormalClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCasualClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kElaborateClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kShortenClicked, 0);
+
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_SessionProgress::kEntryName,
@@ -2462,9 +2480,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Cucumbers")));
           })));
 
   // Rewrite with Elaborate
@@ -2478,9 +2495,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Tomatoes")));
           })));
 
   // Rewrite with Shorten
@@ -2493,9 +2509,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
-                nullptr);
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Potatoes")));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -2532,6 +2547,23 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kFormalClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCasualClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kElaborateClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kShortenClicked, 1);
+
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_SessionProgress::kEntryName,
@@ -2557,16 +2589,17 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             std::move(callback).Run(
-                base::unexpected(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        FromModelExecutionError(
-                            optimization_guide::
-                                OptimizationGuideModelExecutionError::
-                                    ModelExecutionError::kGenericFailure)),
-
-                std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                    std::make_unique<
-                        optimization_guide::proto::LogAiDataRequest>()));
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
+                                optimization_guide::
+                                    OptimizationGuideModelExecutionError::
+                                        ModelExecutionError::kGenericFailure)),
+                    /*provided_by_on_device=*/false,
+                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                        std::make_unique<
+                            optimization_guide::proto::LogAiDataRequest>())));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;

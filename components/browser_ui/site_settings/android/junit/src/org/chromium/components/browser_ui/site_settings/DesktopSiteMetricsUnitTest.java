@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.content_settings.ContentSettingValues;
 
@@ -32,12 +30,6 @@ public class DesktopSiteMetricsUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mSite = new Website(mOrigin, mEmbedder);
-        UmaRecorderHolder.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

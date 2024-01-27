@@ -59,7 +59,7 @@ class MockTrainingDataCollector : public TrainingDataCollector {
                TrainingRequestId(proto::SegmentId id,
                                  scoped_refptr<InputContext> input_context,
                                  DecisionType type,
-                                 absl::optional<ModelProvider::Request> inputs,
+                                 std::optional<ModelProvider::Request> inputs,
                                  bool decision_result_update_trigger));
   MOCK_METHOD4(CollectTrainingData,
                void(SegmentId segment_id,
@@ -164,7 +164,7 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
       *training_data_collector_,
       OnDecisionTime(
           kSegmentId, _, proto::TrainingOutputs::TriggerConfig::ONDEMAND,
-          absl::make_optional(ModelProvider::Request{1, 2, 3}), false))
+          std::make_optional(ModelProvider::Request{1, 2, 3}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke(
@@ -206,7 +206,7 @@ TEST_F(RequestHandlerTest, ExecuteOndemandAsFallbackCase) {
       *training_data_collector_,
       OnDecisionTime(
           kSegmentId, _, proto::TrainingOutputs::TriggerConfig::ONDEMAND,
-          absl::make_optional(ModelProvider::Request{1, 2, 3}), false))
+          std::make_optional(ModelProvider::Request{1, 2, 3}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke([](std::unique_ptr<
@@ -238,7 +238,7 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
       *training_data_collector_,
       OnDecisionTime(kSegmentId, _,
                      proto::TrainingOutputs::TriggerConfig::ONDEMAND,
-                     absl::make_optional(ModelProvider::Request{1}), false))
+                     std::make_optional(ModelProvider::Request{1}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke(

@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/filters.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -169,9 +169,9 @@ base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
 }  // namespace
 
 // static
-absl::optional<FilterData> FilterData::Create(FilterValues filter_values) {
+std::optional<FilterData> FilterData::Create(FilterValues filter_values) {
   if (!IsValidForSource(filter_values)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return FilterData(std::move(filter_values));
@@ -338,17 +338,17 @@ bool FilterData::Matches(mojom::SourceType source_type,
 
 FilterConfig::FilterConfig() = default;
 
-absl::optional<FilterConfig> FilterConfig::Create(
+std::optional<FilterConfig> FilterConfig::Create(
     FilterValues filter_values,
-    absl::optional<base::TimeDelta> lookback_window) {
+    std::optional<base::TimeDelta> lookback_window) {
   if (lookback_window && !lookback_window->is_positive()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return FilterConfig(std::move(filter_values), lookback_window);
 }
 
 FilterConfig::FilterConfig(FilterValues filter_values,
-                           absl::optional<base::TimeDelta> lookback_window)
+                           std::optional<base::TimeDelta> lookback_window)
     : lookback_window_(lookback_window),
       filter_values_(std::move(filter_values)) {
   DCHECK(!lookback_window_.has_value() || lookback_window_->is_positive());
@@ -398,10 +398,10 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       return base::unexpected(TriggerRegistrationError::kFiltersWrongType);
     }
 
-    absl::optional<base::TimeDelta> lookback_window;
-    if (absl::optional<base::Value> lookback_window_value =
+    std::optional<base::TimeDelta> lookback_window;
+    if (std::optional<base::Value> lookback_window_value =
             dict->Extract(FilterConfig::kLookbackWindowKey)) {
-      if (absl::optional<int> int_val = lookback_window_value->GetIfInt()) {
+      if (std::optional<int> int_val = lookback_window_value->GetIfInt()) {
         lookback_window = base::Seconds(*int_val);
       } else {
         return base::unexpected(

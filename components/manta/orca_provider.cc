@@ -5,6 +5,7 @@
 #include "components/manta/orca_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace manta {
 
@@ -33,11 +33,11 @@ constexpr char kAutopushEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
-constexpr base::TimeDelta kTimeoutMs = base::Seconds(30);
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 using Tone = proto::RequestConfig::Tone;
 
-absl::optional<Tone> GetTone(const std::string& tone) {
+std::optional<Tone> GetTone(const std::string& tone) {
   static constexpr auto tone_map =
       base::MakeFixedFlatMap<base::StringPiece, Tone>({
           {"UNSPECIFIED", proto::RequestConfig::UNSPECIFIED},
@@ -52,8 +52,8 @@ absl::optional<Tone> GetTone(const std::string& tone) {
       });
   const auto* iter = tone_map.find(tone);
 
-  return iter != tone_map.end() ? absl::optional<Tone>(iter->second)
-                                : absl::nullopt;
+  return iter != tone_map.end() ? std::optional<Tone>(iter->second)
+                                : std::nullopt;
 }
 
 std::string GetEndpointUrl() {
@@ -61,18 +61,18 @@ std::string GetEndpointUrl() {
                                                 : kAutopushEndpointUrl;
 }
 
-absl::optional<proto::Request> ComposeRequest(
+std::optional<proto::Request> ComposeRequest(
     const std::map<std::string, std::string>& input) {
   const auto& tone_iter = input.find("tone");
   if (tone_iter == input.end()) {
     DVLOG(1) << "Tone not found in the parameters";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto tone = GetTone(tone_iter->second);
-  if (tone == absl::nullopt) {
+  if (tone == std::nullopt) {
     DVLOG(1) << "Invalid tone";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   proto::Request request;
@@ -140,8 +140,8 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
     return;
   }
 
-  absl::optional<proto::Request> request = ComposeRequest(input);
-  if (request == absl::nullopt) {
+  std::optional<proto::Request> request = ComposeRequest(input);
+  if (request == std::nullopt) {
     std::move(done_callback)
         .Run(base::Value::Dict(),
              {MantaStatusCode::kInvalidInput, std::string()});
@@ -183,7 +183,7 @@ std::unique_ptr<EndpointFetcher> OrcaProvider::CreateEndpointFetcher(
       /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*scopes=*/scopes,
-      /*timeout_ms=*/kTimeoutMs.InMilliseconds(),
+      /*timeout=*/kTimeout,
       /*post_data=*/post_data,
       /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
       /*identity_manager=*/identity_manager_observation_.GetSource(),

@@ -73,14 +73,14 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const absl::optional<VideoCaptureTarget>& target) {
+    const std::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ChangeTarget(target, sub_capture_target_version_);
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const absl::optional<VideoCaptureTarget>& target,
+    const std::optional<VideoCaptureTarget>& target,
     uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);

@@ -133,7 +133,7 @@ class OverlayProposedCandidateTest
         /*transform=*/quad_to_target_transform, quad_rect,
         /*visible_layer_rect=*/quad_rect,
         /*filter_info=*/gfx::MaskFilterInfo(),
-        /*clip=*/absl::nullopt,
+        /*clip=*/std::nullopt,
         /*are contents opaque=*/true,
         /*opacity_f=*/1.f,
         /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,

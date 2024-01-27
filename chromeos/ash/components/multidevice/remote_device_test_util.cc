@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+
 #include <map>
 #include <string>
-
-#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/base64url.h"
@@ -46,7 +47,7 @@ std::string InstanceIdFromInt64(int64_t number) {
 
   std::string iid;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(bytes), sizeof(bytes)),
+      std::string_view(reinterpret_cast<const char*>(bytes), sizeof(bytes)),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &iid);
 
   return iid;

@@ -168,7 +168,7 @@ TEST(
 
   NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span("should encrypt this message")),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
@@ -192,7 +192,7 @@ TEST(NigoriStateTest,
 
   NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span("should encrypt this message")),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()

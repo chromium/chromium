@@ -155,7 +155,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
   std::vector<TitledUrlMatch> matches;
   for (TitledUrlNodes::const_iterator i = nodes.begin();
        i != nodes.end() && matches.size() < max_count; ++i) {
-    absl::optional<TitledUrlMatch> match =
+    std::optional<TitledUrlMatch> match =
         MatchTitledUrlNodeWithQuery(*i, query_nodes, query_terms);
     if (match)
       matches.emplace_back(std::move(match).value());
@@ -163,12 +163,12 @@ std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
   return matches;
 }
 
-absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
+std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
     const query_parser::QueryNodeVector& query_nodes,
     const std::vector<std::u16string>& query_terms) {
   if (!node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Check that the result matches the query.  The previous search
   // was a simple per-word search, while the more complex matching
@@ -209,7 +209,7 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
         return false;
       });
   if (!approximate_match)
-    return absl::nullopt;
+    return std::nullopt;
 
   // If `node` passed the approximate check above, to the more accurate check.
   query_parser::QueryWordVector title_words, url_words, ancestor_words;
@@ -232,7 +232,7 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     query_has_ancestor_matches =
         query_has_ancestor_matches || has_ancestor_matches;
     if (!has_title_matches && !has_url_matches && !has_ancestor_matches)
-      return absl::nullopt;
+      return std::nullopt;
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&title_matches);
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&url_matches);
   }

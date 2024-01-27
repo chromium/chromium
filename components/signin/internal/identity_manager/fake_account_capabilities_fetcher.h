@@ -27,7 +27,7 @@ class FakeAccountCapabilitiesFetcher : public AccountCapabilitiesFetcher {
       const FakeAccountCapabilitiesFetcher&) = delete;
 
   void CompleteFetch(
-      const absl::optional<AccountCapabilities>& account_capabilities);
+      const std::optional<AccountCapabilities>& account_capabilities);
 
  protected:
   // AccountCapabilitiesFetcher:

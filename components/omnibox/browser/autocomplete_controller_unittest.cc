@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AutocompleteControllerTest : public testing::Test {
  public:
@@ -85,7 +85,7 @@ class AutocompleteControllerTest : public testing::Test {
     auto match =
         CreateAutocompleteMatch(name, AutocompleteMatchType::SEARCH_SUGGEST,
                                 allowed_to_be_default_match, false,
-                                traditional_relevance, absl::nullopt);
+                                traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
     return match;
   }
@@ -112,7 +112,7 @@ class AutocompleteControllerTest : public testing::Test {
                                            int traditional_relevance) {
     auto match = CreateAutocompleteMatch(
         name, AutocompleteMatchType::SEARCH_SUGGEST, false, false,
-        traditional_relevance, absl::nullopt);
+        traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
     match.associated_keyword = std::make_unique<AutocompleteMatch>(
         nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
@@ -123,7 +123,7 @@ class AutocompleteControllerTest : public testing::Test {
                                               int traditional_relevance) {
     return CreateAutocompleteMatch(name, AutocompleteMatchType::HISTORY_CLUSTER,
                                    false, false, traditional_relevance,
-                                   absl::nullopt);
+                                   std::nullopt);
   }
 
   AutocompleteMatch CreateAutocompleteMatch(std::string name,
@@ -131,7 +131,7 @@ class AutocompleteControllerTest : public testing::Test {
                                             bool allowed_to_be_default_match,
                                             bool shortcut_boosted,
                                             int traditional_relevance,
-                                            absl::optional<float> ml_output) {
+                                            std::optional<float> ml_output) {
     AutocompleteMatch match{nullptr, traditional_relevance, false, type};
     match.shortcut_boosted = shortcut_boosted;
     match.allowed_to_be_default_match = allowed_to_be_default_match;

@@ -175,7 +175,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   }
 }
 
-absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
+std::optional<int> HistoryQuickProvider::MaxMatchScore() {
   // Figure out if HistoryURL provider has a URL-what-you-typed match
   // that ought to go first and what its score will be.
   bool will_have_url_what_you_typed_match_first = false;
@@ -262,8 +262,8 @@ absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
     }
   }
   return will_have_url_what_you_typed_match_first
-             ? absl::optional<int>{url_what_you_typed_match_score - 1}
-             : absl::nullopt;
+             ? std::optional<int>{url_what_you_typed_match_score - 1}
+             : std::nullopt;
 }
 
 AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(

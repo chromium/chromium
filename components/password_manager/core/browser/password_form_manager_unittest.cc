@@ -4296,7 +4296,7 @@ TEST_P(PasswordFormManagerTest, ClientShouldNotShowKeychainErrorMessage) {
   feature_list.InitAndEnableFeature(
       password_manager::features::kRestartToGainAccessToKeychain);
 
-  fetcher_->SetProfileStoreBackendError(absl::nullopt);
+  fetcher_->SetProfileStoreBackendError(std::nullopt);
 
   EXPECT_CALL(client_, NotifyKeychainError).Times(0);
   fetcher_->NotifyFetchCompleted();

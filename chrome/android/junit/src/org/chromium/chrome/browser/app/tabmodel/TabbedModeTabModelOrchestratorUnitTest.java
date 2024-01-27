@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 
@@ -40,6 +41,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -86,6 +88,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
                 0);
         List<Pair<AsyncTask<DataInputStream>, String>> tabStatesToMerge;
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
@@ -101,6 +104,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
                 1);
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());

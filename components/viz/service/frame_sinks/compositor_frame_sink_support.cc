@@ -86,7 +86,7 @@ gfx::Rect IntersectInSpace(const gfx::Rect& rect,
   const gfx::Rect intersected_in_space =
       gfx::IntersectRects(rect_in_space, intersectee_in_space);
 
-  const absl::optional<gfx::Rect> intersected =
+  const std::optional<gfx::Rect> intersected =
       transform_to_space.InverseMapRect(intersected_in_space);
 
   return intersected.value_or(gfx::Rect{});
@@ -619,7 +619,7 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
 void CompositorFrameSinkSupport::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   const auto result = MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),
@@ -677,7 +677,7 @@ void CompositorFrameSinkSupport::SubmitCompositorFrameLocally(
 SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    absl::optional<HitTestRegionList> hit_test_region_list,
+    std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   if (!client_needs_begin_frame_ && auto_needs_begin_frame_) {
@@ -1229,7 +1229,7 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
   }
 }
 
-absl::optional<CapturableFrameSink::RegionProperties>
+std::optional<CapturableFrameSink::RegionProperties>
 CompositorFrameSinkSupport::GetRequestRegionProperties(
     const VideoCaptureSubTarget& sub_target) const {
   if (!last_activated_surface_id_.is_valid())

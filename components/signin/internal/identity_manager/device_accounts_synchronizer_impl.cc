@@ -21,7 +21,7 @@ DeviceAccountsSynchronizerImpl::~DeviceAccountsSynchronizerImpl() = default;
 
 void DeviceAccountsSynchronizerImpl::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const absl::optional<CoreAccountId>& primary_account_id) {
+        const std::optional<CoreAccountId>& primary_account_id) {
   token_service_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
       primary_account_id);
 }
@@ -30,7 +30,7 @@ void DeviceAccountsSynchronizerImpl::
 void DeviceAccountsSynchronizerImpl::
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
         const std::vector<CoreAccountInfo>& core_account_infos,
-        const absl::optional<CoreAccountId>& primary_account_id) {
+        const std::optional<CoreAccountId>& primary_account_id) {
   token_service_delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       core_account_infos, primary_account_id);
 }

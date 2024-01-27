@@ -412,6 +412,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Invalid Manifest Id"/>
 </enum>
 
+<enum name="WebAppSystemMediaControlsEvent">
+  <summary>
+    Event relating to web apps playing media. These correlate with
+    system_media_controls_observer.h interface. Not all of these are common.
+    This event is only fired from system media controls interactions and not
+    direct interactions with playing media in PWAs. PlayingMedia is fired more
+    frequently, e.g. when audio goes to the next track after finishing one
+    track.
+  </summary>
+  <int value="0" label="PlayingMedia"/>
+  <int value="1" label="Next"/>
+  <int value="2" label="Previous"/>
+  <int value="3" label="Play"/>
+  <int value="4" label="Pause"/>
+  <int value="5" label="PlayPause"/>
+  <int value="6" label="Stop"/>
+  <int value="7" label="Seek"/>
+  <int value="8" label="SeekTo"/>
+</enum>
+
 <enum name="WebappUninstallDialogAction">
   <int value="0" label="Uninstall only"/>
   <int value="1" label="Uninstall and remove data"/>

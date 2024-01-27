@@ -112,34 +112,6 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
 #endif
 
-  // Returns the next valid AXNodePosition.
-  ui::AXNodePosition::AXPositionInstance
-  GetNextValidPositionFromCurrentPosition(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
-
-  // Uses the current AXNodePosition to return the next node that should be
-  // spoken by Read Aloud.
-  ui::AXNode* GetNodeFromCurrentPosition();
-
-  // Returns true if the node was previously spoken or we expect to speak it
-  // to be spoken once the current run of #GetNextText which called
-  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
-  // sometimes returns leaf nodes, we sometimes need to use the parent of a
-  // node returned by AXPosition instead of the node itself. Because of this,
-  // we need to double-check that the node has not been used or currently
-  // in use.
-  // Example:
-  // parent node: id=5
-  //    child node: id=6
-  //    child node: id =7
-  // node: id = 10
-  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
-  // process them as 5, 10. Without checking for previously spoken nodes,
-  // id 5 will be spoken twice.
-  bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-      ui::AXNodeID id);
-
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -251,10 +223,6 @@ class ReadAnythingAppController
   // should be referenced within the node.
   std::vector<ui::AXNodeID> GetNextText(int max_text_length);
 
-  // Helper method for GetNextText.
-  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes(
-      int max_text_length);
-
   // Returns a list of triples representing the previous nodes that should be
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
   // the AXNodeID, the starting text index, and the ending text index. This
@@ -313,24 +281,6 @@ class ReadAnythingAppController
       page_handler_factory_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
-
-  // TODO(crbug.com/1474951): Move Read Aloud state to Read Anything App Model.
-  // Read Aloud state
-  ui::AXNodePosition::AXPositionInstance ax_position_;
-  // The current text index within the given node.
-  int current_text_index_ = 0;
-
-  // TODO(crbug.com/1474951): Clear this when granularity changes.
-  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
-  // backwards.
-  // Previously processed granularities on the current page.
-  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
-      processed_granularities_on_current_page_;
-
-  // Our current index within processed_granularities_on_current_page_. If it is
-  // equal to the size of the triples - 1, we're not navigating through
-  // previously processed text.
-  size_t processed_granularity_index_ = -1;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;

@@ -208,18 +208,12 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
     return MigrationType::kInitialForSyncUsers;
   }
 
-  // TODO(crbug.com/1445497): Re-evaluate migration code for local passwords.
-  bool upm_for_local_active = base::FeatureList::IsEnabled(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-
   // If the user enables or disables password sync, the new active backend needs
   // non-syncable data from the previously active backend, as logins are
   // already transmitted through sync.
   // Once the local storage is supported, android backend becomes the only
   // active backend and there is no need to do this migration.
-  if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      !upm_for_local_active) {
+  if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange)) {
     // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
     // Android.
     return IsSyncFeatureEnabledIncludingPasswords(sync_service_)

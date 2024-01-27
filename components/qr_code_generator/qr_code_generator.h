@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace qr_code_generator {
 
@@ -97,9 +97,9 @@ class QRCodeGenerator {
   // The generator will attempt to choose a version that fits the data and which
   // is >= |min_version|, if given. The returned span's length is
   // input-dependent and not known at compile-time.
-  absl::optional<GeneratedCode> Generate(
+  std::optional<GeneratedCode> Generate(
       base::span<const uint8_t> in,
-      absl::optional<int> min_version = absl::nullopt);
+      std::optional<int> min_version = std::nullopt);
 
   // kMaxInputSize is the maximum number of bytes that `Generate` will try to
   // process. Inputs larger than this will certainly fail, but could otherwise

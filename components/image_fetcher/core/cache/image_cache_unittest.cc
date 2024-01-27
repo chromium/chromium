@@ -84,7 +84,7 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
     InitializeImageCache();
 
     image_cache()->SaveImage(kImageUrl, kImageData, needs_transcoding,
-                             absl::nullopt /* expiration_interval */);
+                             std::nullopt /* expiration_interval */);
     RunUntilIdle();
 
     ASSERT_TRUE(IsMetadataPresent(kImageUrlHashed));
@@ -160,7 +160,7 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
 
   void InjectMetadata(std::string key, int data_size, bool needs_transcoding) {
     metadata_store_->SaveImageMetadata(key, data_size, needs_transcoding,
-                                       absl::nullopt /* expiration_interval */);
+                                       std::nullopt /* expiration_interval */);
   }
 
   void InjectData(std::string key, std::string data, bool needs_transcoding) {
@@ -206,7 +206,7 @@ TEST_F(CachedImageFetcherImageCacheTest, SanityTest) {
 
   image_cache()->SaveImage(kImageUrl, kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   RunUntilIdle();
 
   LoadImage(kImageUrl, kImageData);
@@ -228,7 +228,7 @@ TEST_F(CachedImageFetcherImageCacheTest, SaveCallsInitialization) {
   ASSERT_FALSE(IsCacheInitialized());
   image_cache()->SaveImage(kImageUrl, kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   RunUntilIdle();
 
@@ -241,7 +241,7 @@ TEST_F(CachedImageFetcherImageCacheTest, Save) {
 
   image_cache()->SaveImage(kImageUrl, kImageData,
                            /* needs_transcoding */ false,
-                           /* expiration_interval */ absl::nullopt);
+                           /* expiration_interval */ std::nullopt);
   LoadImage(kImageUrl, kImageData);
 }
 
