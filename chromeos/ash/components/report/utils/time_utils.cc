@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/report/utils/time_utils.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -162,7 +163,7 @@ std::string TimeToYYYYMMString(base::Time ts) {
 }
 
 std::optional<base::Time> GetFirstActiveWeek() {
-  std::optional<base::StringPiece> first_active_week_val =
+  std::optional<std::string_view> first_active_week_val =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kActivateDateKey);
   std::string first_active_week_str =

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/report/utils/device_metadata_utils.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/version_info/channel.h"
@@ -39,7 +41,7 @@ std::string GetChromeMilestone() {
 }
 
 std::string GetFullHardwareClass() {
-  const std::optional<base::StringPiece> full_hardware_class =
+  const std::optional<std::string_view> full_hardware_class =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kHardwareClassKey);
 
