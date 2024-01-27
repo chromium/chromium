@@ -83,12 +83,23 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     bool was_controller_destroyed() const { return was_controller_destroyed_; }
 
     void WatchForControllerDestruction() {
-      DCHECK(!controller_->was_destroyed_);
-      controller_->was_destroyed_ = &was_controller_destroyed_;
+      DCHECK_GE(nested_controller_destruction_watchers_, 0);
+      if (nested_controller_destruction_watchers_ == 0) {
+        DCHECK(!controller_->was_destroyed_);
+        controller_->was_destroyed_ = &was_controller_destroyed_;
+      } else {
+        // If this is a nested event we should already be watching `controller_`
+        // for destruction from an outer event handler.
+        DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
+      }
+      ++nested_controller_destruction_watchers_;
     }
 
     void StopWatchingForControllerDestruction() {
-      if (!was_controller_destroyed_) {
+      --nested_controller_destruction_watchers_;
+      DCHECK_GE(nested_controller_destruction_watchers_, 0);
+      if (nested_controller_destruction_watchers_ == 0 &&
+          !was_controller_destroyed_) {
         DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
         controller_->was_destroyed_ = nullptr;
       }
@@ -102,6 +113,10 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     const EpollInterestParams params_;
     bool active_ = true;
     bool was_controller_destroyed_ = false;
+
+    // Avoid resetting `controller_->was_destroyed` when nested destruction
+    // watchers are active.
+    int nested_controller_destruction_watchers_ = 0;
   };
 
   // Note that this class is used as the FdWatchController for both
