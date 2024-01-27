@@ -868,6 +868,10 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
       for (const auto& child_axid : child_axids) {
         if (AXObject* owned_child = ObjectFromAXID(child_axid)) {
           owned_child->DetachFromParent();
+          DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree())
+              << "Removing owned child at a bad time, which leads to "
+                 "parentless objects at a bad time: "
+              << owned_child->ToString(true, true);
           MaybeRestoreParentOfOwnedChild(owned_child);
         }
       }
@@ -881,6 +885,7 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
 void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
   // Another id owned |obj_id|.
   if (aria_owned_child_to_owner_mapping_.Contains(obj_id)) {
+    DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree());
     // Previous owner no longer relevant to this child.
     // Also, remove |obj_id| from previous owner's owned child list:
     AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
@@ -892,8 +897,16 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
         break;
       }
     }
-    if (AXObject* owned_child = ObjectFromAXID(obj_id))
+    if (AXObject* owner = ObjectFromAXID(owner_id)) {
+      if (object_cache_->IsProcessingDeferredEvents()) {
+        object_cache_->ChildrenChangedWithCleanLayout(owner);
+      } else {
+        object_cache_->ChildrenChanged(owner);
+      }
+    }
+    if (AXObject* owned_child = ObjectFromAXID(obj_id)) {
       owned_child->DetachFromParent();
+    }
   }
 }
 
