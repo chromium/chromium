@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -374,7 +375,11 @@ class InstallSuccessView : public InstallerDialogView {
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
-            IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {}
+            IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {
+    auto image = std::make_unique<NonAccessibleImageView>();
+    image->SetImage(ui::ImageModel::FromResourceId(IDR_IWA_INSTALL_SUCCESS));
+    SetContentsView(std::move(image));
+  }
 };
 
 BEGIN_METADATA(InstallSuccessView)
