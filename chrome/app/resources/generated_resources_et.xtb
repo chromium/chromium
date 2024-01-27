@@ -3827,7 +3827,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3903187154317825986">Sisseehitatud klaviatuur</translation>
 <translation id="3904326018476041253">Asukohateenused</translation>
 <translation id="3905761538810670789">Paranda rakendust</translation>
-<translation id="3908288065506437185">Kolmanda osapoole küpsisefailide blokeerimine inkognito režiimis</translation>
+<translation id="3908288065506437185">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="3908501907586732282">Luba laiendus</translation>
 <translation id="3909701002594999354">Kuva kõik &amp;juhtelemendid</translation>
 <translation id="3909791450649380159">Lõ&amp;ika</translation>
@@ -4472,7 +4472,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4412547955014928315">Kas kustutada saidi <ph name="SITE_NAME" /> ja kõigi selle alamsaitide andmed ja load?</translation>
 <translation id="4412632005703201014">Chrome'i rakendustest saavad progressiivsed veebirakendused. Selle Chrome'i rakenduse installis teie brauserisse teie organisatsioon. Rakenduste loendist progressiivse veebirakenduse avamiseks võtke esmalt ühendust administraatoriga ja paluge tal Chrome'i rakendus desinstallida. Seni võite külastada saiti <ph name="EXTENSION_LAUNCH_URL" />, et laiendus <ph name="EXTENSION_NAME" /> veebis avada.</translation>
 <translation id="4412698727486357573">Abikeskus</translation>
-<translation id="4412992751769744546">Kolmanda osapoole küpsiste lubamine</translation>
+<translation id="4412992751769744546">Luba kolmanda osapoole küpsisefailid</translation>
 <translation id="4413087696295876280">ChromeOS Flexi seadme teabe ja andmete lugemine</translation>
 <translation id="44141919652824029">Kas lubate rakendusel „<ph name="APP_NAME" />” hankida ühendatud USB-seadmete loendi?</translation>
 <translation id="4414232939543644979">Uus &amp;inkognito aken</translation>

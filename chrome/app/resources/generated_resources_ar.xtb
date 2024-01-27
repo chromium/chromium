@@ -1576,7 +1576,7 @@
 <translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />تم قفل هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />لم تعد إدارة جهاز Chrome باستخدام "<ph name="MS_AD_NAME" />" متاحة. لتسجيل الدخول، يُرجى استخدام جهاز مختلف أو التواصل مع مشرف الجهاز.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
-<translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت</translation>
+<translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2173801458090845390">إضافة معرّف الطلبات إلى هذا الجهاز</translation>
 <translation id="2175384018164129879">&amp;إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="217576141146192373">تتعذّر إضافة طابعة. يُرجى التحقق من ضبط الطابعة والمحاولة مرة أخرى.</translation>
@@ -4420,7 +4420,7 @@
 <translation id="4378556263712303865">طلب الجهاز</translation>
 <translation id="4379097572583973456">يمكن أن يتضمّن الموقع الإلكتروني أيضًا محتوى من مواقع إلكترونية أخرى، مثل الصور والإعلانات والنصوص. وبإمكان هذه المواقع الأخرى حفظ البيانات كذلك.</translation>
 <translation id="4379281552162875326">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
-<translation id="4380055775103003110">في حال استمرار ظهور هذه المشكلة، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
+<translation id="4380055775103003110">في حال استمرار حدوث هذه المشكلة، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="4380648069038809855">الدخول إلى وضع ملء الشاشة</translation>
 <translation id="4381902252848068865">عدم السماح للموقع الإلكتروني بحفظ البيانات</translation>
 <translation id="4383048856908088702">عندما كانت علامة التبويب هذه غير نشطة، نجحت ميزة "توفير الذاكرة" في تفريغ <ph name="MEMORY_VALUE" /> من الذاكرة لتنفيذ مهام أخرى. يمكنك تغيير إعدادات هذه الميزة في أي وقت من خلال <ph name="SETTINGS_LINK" />.</translation>
@@ -6066,7 +6066,7 @@
 <translation id="5696143504434933566">الإبلاغ عن إساءة الاستخدام من "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">‏الملف الحالي بتنسيق PPD قيد الاستخدام: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">أداة اختيار الرموز التعبيرية</translation>
-<translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته متوفّرًا.</translation>
+<translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
 <translation id="570043786759263127">‏تطبيقات Google Play وخدماته</translation>
 <translation id="5700761515355162635">ملفات تعريف الارتباط التابعة لجهات خارجية مسموح بها.</translation>
 <translation id="5700836101007545240">تم إيقاف إضافة اتصال بواسطة المشرف</translation>
@@ -6898,7 +6898,7 @@
 <translation id="635609604405270300">يُرجى إبقاء الجهاز مشغَّلاً</translation>
 <translation id="63566973648609420">‏لا يمكن لأحد قراءة بياناتك المشفرة سوى من لديه عبارة المرور التي تستخدمها. ولا يتم إرسال عبارة المرور إلى شركة Google أو تخزينها لديها. إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، فسيلزمك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">التمرير للأعلى لتحريك الصفحة للأسفل</translation>
-<translation id="6356893102071098867">التأكّد من اختيار الحساب الصحيح</translation>
+<translation id="6356893102071098867">يُرجى التأكّد من اختيار الحساب الصحيح.</translation>
 <translation id="6357305427698525450">ستظل بعض الروابط المتوافقة مفتوحة في تطبيق <ph name="APP_NAME" /> أو <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">‏المعرّفات الثابتة الأخرى (مثل قيم التجزئة أو أرقام التعريف الفريدة العالمية (UUID))</translation>
 <translation id="6358884629796491903">تنين</translation>
@@ -8071,7 +8071,7 @@
 <translation id="7288676996127329262">‏<ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> نقطة لكل بوصة</translation>
 <translation id="7288761372977133974">‏تم مؤخرًا إنشاء المظهر رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" باستخدام الذكاء الاصطناعي (AI).</translation>
 <translation id="7289049772085228972">‏يوفِّر لك Chrome أعلى مستويات الأمان.</translation>
-<translation id="7289303553784750393">في حالة استمرار ظهور هذه المشكلة أثناء اتصالك بالإنترنت، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
+<translation id="7289303553784750393">في حالة استمرار حدوث هذه المشكلة أثناء اتصالك بالإنترنت، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على مفتاح F6 للاستجابة للطلب</translation>
 <translation id="7290242001003353852">تحاول خدمة تسجيل الدخول هذه، المُستضافة من قبل <ph name="SAML_DOMAIN" />، الدخول إلى الكاميرا.</translation>
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
@@ -9563,7 +9563,7 @@
 <translation id="8413795581997394485">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيَّن أنها ضارة. عند زيارة موقع إلكتروني، يرسل متصفِّح Chrome جزءًا مشفّرًا من عنوان URL إلى Google من خلال خادم لحماية الخصوصية يخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="8413956290606243087">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟</translation>
 <translation id="8414249071344507766">ذكريات تم إخفاؤها لمدة يومين</translation>
-<translation id="8414396119627470038">يُرجى تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="8414396119627470038">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">ملاحظات</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
 <translation id="8417065541337558100">معاينة الكاميرا</translation>

@@ -257,6 +257,7 @@
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1446396933673057385">精確度檢查</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">如果字典中有「<ph name="DATA_CONTROLS_SECOND_KEY_SET" />」鍵，就無法設定「<ph name="DATA_CONTROLS_FIRST_KEY_SET" />」鍵</translation>
 <translation id="1452803302401719440">家長選擇的設定現在會保護您的網上安全</translation>
 <translation id="1455413310270022028">擦膠</translation>
 <translation id="1458140305240870199">內衣</translation>
@@ -768,6 +769,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">登入時連接至此裝置的周邊裝置</translation>
 <translation id="2450021089947420533">瀏覽過程</translation>
+<translation id="2452837234288608067">無法提供協助，請再試一次。</translation>
 <translation id="2456755709261364512">請務必將電池充電至 <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2462599289530201834">搜尋「<ph name="KEYWORD_SHORT_NAME" />」</translation>
 <translation id="2463739503403862330">填寫</translation>
@@ -909,6 +911,7 @@
 <translation id="2725927759457695883">填寫完整姓名</translation>
 <translation id="2726001110728089263">側匣</translation>
 <translation id="2728127805433021124">伺服器憑證以防護力較弱的簽章演算法簽署。</translation>
+<translation id="272937284275742856">正在安全地驗證付款資料…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />執行連線診斷<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">古典音樂</translation>
 <translation id="2731382536835015353">44 x 68 吋</translation>
@@ -1008,6 +1011,7 @@
 <translation id="2958544468932521864">板球</translation>
 <translation id="2959113999220720579">臉部和身體護理</translation>
 <translation id="2962073860865348475">12 x 18 吋</translation>
+<translation id="2967098518029543669">將密碼儲存在 Google 帳戶中</translation>
 <translation id="2968103128155246731">貨車和小貨車</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
@@ -1381,6 +1385,7 @@
 <translation id="3678914302246317895">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="3681007416295224113">憑證資料</translation>
 <translation id="3681421644246505351">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。</translation>
+<translation id="3682094733650754138">揀咗填入地址選項</translation>
 <translation id="3689867156802445220">門牌號碼</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
 <translation id="3698629142018988477">建立網站按鈕，啟動之後就可以喺「Google 協作平台」度快速建立新網站</translation>
@@ -2207,7 +2212,6 @@
 <translation id="5331585574693522196">設定為預設</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5332769172018416402">透過訊息詢問</translation>
-<translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
@@ -2787,6 +2791,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> 要求使用你的 MIDI 裝置</translation>
 <translation id="6493924760403974580">此應用程式只支援此大小。</translation>
 <translation id="6494750904506170417">彈出式視窗和重新導向</translation>
+<translation id="6495664197699704593">此密碼只會儲存至此裝置。如要在其他裝置上使用密碼，請<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="6497295192259406877">商業營運</translation>
 <translation id="6499038740797743453">要重設密碼嗎？</translation>
 <translation id="6502510275417601303">閂咗新付款設定嘅警示</translation>
@@ -2901,6 +2906,7 @@
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6737708609449480586">烘焙品</translation>
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
+<translation id="6740851646645036700">「幫我寫」功能目前已達使用上限，請稍後再試。</translation>
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>
 <translation id="6744009308914054259">等待連線時，您可以前往「下載」閱讀離線文章。</translation>
 <translation id="6745592621698551453">立即更新</translation>
@@ -2957,6 +2963,7 @@
 <translation id="6860888819347870819">可要求進入畫中畫</translation>
 <translation id="6864189428899665393">267 x 389 毫米</translation>
 <translation id="686485648936420384">消費者資源</translation>
+<translation id="6865166112578825782">填入地址</translation>
 <translation id="6865412394715372076">目前無法驗證此信用卡</translation>
 <translation id="6868573634057275953">繼續更新</translation>
 <translation id="6869334554832814367">私人貸款</translation>
@@ -3426,6 +3433,7 @@
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7701544340847569275">更新完成但有錯誤</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /> 網站 (不安全) <ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">幫我寫</translation>
 <translation id="7705992072972338699">光碟 (高光面)</translation>
 <translation id="770607638235926858">滑雪和滑雪板</translation>
 <translation id="7706689436519265630">您複製或移動的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，並可能會根據公司政策儲存這些檔案。</translation>
@@ -3645,6 +3653,7 @@
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8164078261547504572">想在降價時收到電郵嗎？</translation>
+<translation id="8169175551046720804">無法在相同字典中設定「<ph name="DATA_CONTROLS_KEYS" />」鍵</translation>
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="817820454357658398">女性衛生產品</translation>
@@ -4040,6 +4049,7 @@
 <translation id="8949410982325929394">語氣</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律和政府</translation>
+<translation id="8952569554322479410">剛才有網站要求存取你的<ph name="REQUEST_TYPE" />。請花 1 分鐘填寫此問卷，協助我們改善網站要求存取權的方式。</translation>
 <translation id="8954252855949068147">服飾</translation>
 <translation id="8956124158020778855">開啟此設定後，請返回此分頁開始輸入內容。</translation>
 <translation id="8957210676456822347">網頁驗證入口授權</translation>

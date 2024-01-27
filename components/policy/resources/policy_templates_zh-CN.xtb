@@ -7375,13 +7375,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已停用或未配置，WebDriver 将无法覆盖与之冲突的政策。</translation>
 <translation id="7145335384492396213">默认 PIN 码打印模式</translation>
-<translation id="7145764791559889135">此政策用于禁止特定网址向剪贴板中复制数据。
-
-<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 网址列表用于控制允许哪些网站向剪贴板中写入内容。如果相应网址与“enable”中的格式相匹配，但不与“disable”中的格式相匹配，系统将会禁止该网址向剪贴板中写入内容。如果相应网址不与任何格式相匹配，系统将不会禁止该网址向剪贴板中复制内容。
-
-用于与来源进行匹配的网址格式和“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式类似，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果此字段未设置，默认值为 100 字节。</translation>
 <translation id="7146198347561863646">如果此政策已启用或未设置，系统就会允许使用唤醒锁定，以便进行电源管理。扩展程序可通过 Power Management Extension API 和 ARC 应用请求唤醒锁定。
 
       如果此政策已停用，唤醒锁定请求会被忽略。</translation>

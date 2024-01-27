@@ -7681,13 +7681,6 @@ Se esta política for desativada, as senhas nunca serão lembradas e todas as se
 
       Se ela for desativada ou não for configurada, o WebDriver não terá permissão para substituir as políticas incompatíveis.</translation>
 <translation id="7145335384492396213">Modo padrão de impressão com PIN</translation>
-<translation id="7145764791559889135">Esta política bloqueia a cópia de dados para a área de transferência em URLs específicos.
-
-As listas de URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlam quais sites têm permissão para gravar dados na área de transferência. A gravação é bloqueada quando o URL corresponde a um padrão na lista "enable" (ativar) e não a um padrão em "disable" (desativar). A cópia não é bloqueada quando o URL não corresponde a nenhum padrão.
-
-Os padrões de correspondência de origem usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a gravação na área de transferência de um URL bloqueado é autorizada quando o tamanho dos dados copiados é menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.</translation>
 <translation id="7146198347561863646">Se a política for definida como "Ativada" ou não for definida, wake locks serão permitidos para gerenciamento de energia. Extensões podem solicitar wake locks pela API da extensão de gerenciamento de energia e por apps ARC.
 
       Se a política for definida como "Desativada", as solicitações de wake locks serão ignoradas.</translation>

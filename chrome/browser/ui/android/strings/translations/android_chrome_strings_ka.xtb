@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">პროგრამის ვერსია</translation>
 <translation id="1428770807407000502">გამოირთოს სინქრონიზაცია?</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
+<translation id="1435593198351412143">PDF-ების ავტომატურად გახსნა</translation>
 <translation id="1436784010935106834">წაშლილი</translation>
 <translation id="1437543266176261764">გაშვებულია <ph name="APP_NAME" />-ში</translation>
 <translation id="1448440926884431741">ორგანიზებულად დაალაგეთ თვალმიდევნებული პროდუქტები „სანიშნეებში“</translation>
@@ -341,6 +342,7 @@
 <translation id="2894821468041866720">საგრძნობლად არ ანელებს თქვენს ბრაუზერსა თუ მოწყობილობას.</translation>
 <translation id="2900528713135656174">მოვლენის შექმნა</translation>
 <translation id="2901411048554510387">ნაჩვენებია შემოთავაზებები <ph name="WEBSITE_TITLE" />-ისთვის</translation>
+<translation id="2904300462646366554">ჩამოტვირთული PDF-ები ავტომატურად გაიხსნება თქვენს მოწყობილობაზე არსებული PDF-ფაილების ერთ-ერთი მნახველით.</translation>
 <translation id="2904414404539560095">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="2908243544703713905">წაუკითხავი ამბები მზადაა</translation>
 <translation id="2909615210195135082">Google შეტყობინებების პლატფორმა</translation>
@@ -896,9 +898,11 @@
 <translation id="5810288467834065221">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="5814749351757353073">თვალყური ადევნეთ თქვენს რჩეულ საიტებს</translation>
 <translation id="5822875253699806474">მონახულებულ საიტებს სწრაფად რომ დაუბრუნდეთ, დაასინქრონეთ ჩანართები და ისტორია</translation>
+<translation id="5829586821381540080">შენახულია <ph name="FOLDER_NAME" />-ში</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5833984609253377421">ბმულის გაზიარება</translation>
 <translation id="5839058148541733625">Chrome დინოზავრი</translation>
+<translation id="5848257610304005265">გსურთ, PDF გახსნათ <ph name="APP_NAME" />-ით?</translation>
 <translation id="5853623416121554550">დაპაუზებულია</translation>
 <translation id="5855546874025048181">დახვეწა: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">რაღაც შეცდომა მოხდა. ფასისთვის თვალის მიდევნება ვერ მოხერხდა.</translation>
@@ -1381,6 +1385,7 @@
 <translation id="8127542551745560481">მთავარი გვერდის რედაქტირება</translation>
 <translation id="8130309322784422030">სისტემაში შესვლის თქვენ მიერ შენახული ინფორმაცია, შესაძლოა, მოძველებული იყოს</translation>
 <translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
+<translation id="8135406045838672858">ჩამოტვირთული PDF-ები ავტომატურად გაიხსნება <ph name="APP_NAME" />-ით</translation>
 <translation id="8137562778192957619">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში.</translation>
 <translation id="8186512483418048923">დარჩენილია <ph name="FILES" /> ფაილი</translation>
 <translation id="8190358571722158785">დარჩენილია 1 დღე</translation>

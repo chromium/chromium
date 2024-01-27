@@ -7681,13 +7681,6 @@ Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi
 
       Jika kebijakan ini disetel ke nonaktif atau tidak dikonfigurasi, WebDriver tidak akan diizinkan menggantikan kebijakan yang tidak kompatibel.</translation>
 <translation id="7145335384492396213">Mode pencetakan PIN default</translation>
-<translation id="7145764791559889135">Kebijakan ini memblokir penyalinan data ke papan klip pada URL tertentu.
-
-Daftar URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> mengontrol situs mana yang diizinkan untuk menulis ke papan klip. Penulisan di papan klip diblokir jika URL cocok dengan pola di daftar 'aktifkan' dan tidak cocok dengan pola di daftar 'nonaktifkan'. Penyalinan tidak diblokir jika URL tidak cocok dengan pola apa pun.
-
-Pola yang cocok dengan origin akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.</translation>
 <translation id="7146198347561863646">Jika kebijakan disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
 
       Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan diabaikan.</translation>

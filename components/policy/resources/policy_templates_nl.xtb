@@ -7380,13 +7380,6 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
 
       Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
 <translation id="7145335384492396213">Standaardmodus voor afdrukken met pincode</translation>
-<translation id="7145764791559889135">Met dit beleid blokkeer je het kopiëren van gegevens naar het klembord voor specifieke URL's.
-
-De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> bepalen welke sites naar het klembord mogen schrijven. Een schrijfactie naar het klembord wordt geblokkeerd als de URL overeenkomt met een patroon in 'enable' en niet overeenkomt met een patroon in 'disable'. Een kopieeractie wordt niet geblokkeerd als de URL met geen enkel patroon overeenkomt.
-
-De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze worden gedocumenteerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.</translation>
 <translation id="7146198347561863646">Als je het beleid toepast of niet instelt, zijn wake locks voor stroombeheer toegestaan. Extensies kunnen wake locks aanvragen via de API voor de stroombeheerextensie en via ARC-apps.
 
       Als je het beleid niet toepast, worden wake lock-verzoeken genegeerd.</translation>

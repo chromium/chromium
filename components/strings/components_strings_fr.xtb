@@ -1811,7 +1811,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Numéro de carte virtuelle :</translation>
 <translation id="4535523368173457420">Ces moteurs de recherche sont populaires dans votre région et s'affichent dans un ordre aléatoire</translation>
-<translation id="4540780316273593836">Un problème est survenu</translation>
+<translation id="4540780316273593836">Un problème est survenu.</translation>
 <translation id="4541810033354695636">réalité augmentée</translation>
 <translation id="4542971377163063093">Bac 6</translation>
 <translation id="4543072026714825470">Pour régler vos achats plus rapidement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans votre compte Google</translation>
@@ -2208,7 +2208,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
-<translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
 <translation id="534295439873310000">Appareils NFC</translation>

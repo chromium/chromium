@@ -7417,13 +7417,6 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 
       Si elle est désactivée ou n'est pas configurée, WebDriver ne sera pas autorisé à ignorer les règles non compatibles.</translation>
 <translation id="7145335384492396213">Mode d'impression par code défini par défaut</translation>
-<translation id="7145764791559889135">Cette règle permet de bloquer ou non la copie de données dans le presse-papiers sur des URL précises.
-
-Les listes de formats d'URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> déterminent quels sites sont autorisés ou non à écrire dans le presse-papiers. L'écriture dans le presse-papiers est bloquée si le format d'URL concerné figure dans la liste "enable" et pas dans la liste "disable". La copie n'est pas bloquée si le format d'URL n'est dans aucune liste.
-
-Les formats correspondant à l'origine dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantité minimale de données en octets à partir de laquelle le format est vérifié. Autrement dit, l'écriture dans le presse-papiers sur une URL bloquée serait autorisée si la taille des données copiées est inférieure à la valeur indiquée dans ce champ. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.</translation>
 <translation id="7146198347561863646">Si cette règle est activée ou qu'elle n'est pas configurée, les wakelocks sont autorisés pour la gestion de l'alimentation. Des extensions peuvent demander des wakelocks par le biais de l'API d'extension de gestion de l'alimentation et par les applications ARC.
 
       Si cette règle est désactivée, les demandes de wakelocks sont ignorées.</translation>

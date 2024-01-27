@@ -7451,13 +7451,6 @@ Si se inhabilita esta política, nunca se recordarán las contraseñas y se elim
 
       Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="7145335384492396213">Modo predeterminado de impresión con PIN</translation>
-<translation id="7145764791559889135">Esta política impide copiar datos en el portapapeles en URLs específicas.
-
-Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios en los que se puede escribir en el portapapeles. Se bloquea la escritura en el portapapeles si la URL coincide con un patrón en la lista de URLs permitidas y no coincide con un patrón en la lista de bloqueadas. No se impide copiar si la URL no coincide con ningún patrón.
-
-Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (en bytes) que activa la comprobación de patrones. Esto significa que la escritura en el portapapeles desde una URL bloqueada se permitiría si el tamaño de los datos copiados es inferior al valor especificado en este campo. El valor predeterminado es 100 bytes si el campo se deja sin establecer.</translation>
 <translation id="7146198347561863646">Si se habilita esta política o no se le asigna ningún valor, se permitirán los wake locks para la gestión de energía. Las extensiones pueden solicitar los wake locks a través de la API de extensión de gestión de energía y las aplicaciones de ARC.
 
       Si se inhabilita esta política, se ignorarán las solicitudes de wake locks.</translation>

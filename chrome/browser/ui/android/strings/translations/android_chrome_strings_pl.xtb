@@ -23,7 +23,7 @@
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
 <translation id="1126013303640354461">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. To hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz go lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1129510026454351943">Szczegóły: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Nie proponuj tłumaczenia tych witryn</translation>
@@ -366,7 +366,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
 <translation id="2992473221983447149">Opisy obrazów</translation>
-<translation id="2996291259634659425">Utwórz hasło</translation>
+<translation id="2996291259634659425">Utwórz hasło wielowyrazowe</translation>
 <translation id="2996809686854298943">Wymagany adres URL</translation>
 <translation id="2996932914629936323">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2997081575621687554">Gdy witryna Google prosi o prywatne wstępne wczytanie linków z jej stron, Chrome szyfruje i wstępnie wczytuje te strony przy użyciu serwerów Google, ale bez plików cookie. Pozwala to na ukrycie Twojej tożsamości przed wstępnie wczytywaną witryną.</translation>
@@ -405,7 +405,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3211426585530211793">Usunięto: <ph name="ITEM_TITLE" /></translation>
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Historia wyszukiwania<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />inne formy aktywności<ph name="END_LINK2" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
-<translation id="321773570071367578">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" /></translation>
+<translation id="321773570071367578">Jeśli nie pamiętasz hasła wielowyrazowego lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Aby zsynchronizować hasła, potwierdź swoją tożsamość</translation>
 <translation id="3226612997184048185">Jeśli zapisujesz też zakładki na koncie Google, możesz śledzić ceny produktów w Chrome i otrzymywać powiadomienia o obniżkach</translation>
 <translation id="3227557059438308877">Google Chrome jako klucz bezpieczeństwa</translation>
@@ -693,7 +693,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4778653490315793244">Nie ma nic do wyświetlenia</translation>
 <translation id="4787736314074622408">Na pewno usunąć <ph name="ITEM_TITLE" />?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
-<translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
+<translation id="4802417911091824046">Szyfrowanie za pomocą hasła wielowyrazowego nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
@@ -1069,7 +1069,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="666731172850799929">Otwórz w <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6672917148207387131">Dodaj <ph name="DOMAIN" /></translation>
-<translation id="6674571176963658787">Aby rozpocząć synchronizację, wpisz hasło</translation>
+<translation id="6674571176963658787">Aby rozpocząć synchronizację, wpisz hasło wielowyrazowe</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
 <translation id="6676927815633975364">Zaloguj się w tej witrynie i w Chrome.</translation>
 <translation id="6684809838922667136">Ulepsz Chrome</translation>
@@ -1079,7 +1079,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6715020873764921614">Czy mimo wszystko chcesz pobrać plik <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Połączyć za pomocą kodu QR?</translation>
 <translation id="6723740634201835758">Na Twoim koncie Google</translation>
-<translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
+<translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6738867403308150051">Pobieram…</translation>
 <translation id="674388916582496364">Odwiedzane witryny często zapamiętują rzeczy, które Cię interesują, żeby spersonalizować sposób działania. Informacje o Twoich zainteresowaniach witryny mogą również przechowywać w Chrome.</translation>
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
@@ -1262,7 +1262,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7619072057915878432">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z siecią.</translation>
 <translation id="7626032353295482388">Witamy w Chrome</translation>
 <translation id="7630202231528827509">Adres URL dostawcy</translation>
-<translation id="7638584964844754484">Nieprawidłowe hasło</translation>
+<translation id="7638584964844754484">Nieprawidłowe hasło wielowyrazowe</translation>
 <translation id="7641339528570811325">Wyczyść dane przeglądania…</translation>
 <translation id="7646772052135772216">Synchronizacja haseł nie działa</translation>
 <translation id="7655240423373329753">ostatnich 7 dni</translation>
@@ -1289,7 +1289,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
 <translation id="7766587497031415281">Więcej opcji czyszczenia danych przeglądania</translation>
-<translation id="7772032839648071052">Potwierdź hasło</translation>
+<translation id="7772032839648071052">Potwierdź hasło wielowyrazowe</translation>
 <translation id="7772375229873196092">Zamknij aplikację <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Gdy się zalogujesz, chroni Cię we wszystkich usługach Google.</translation>
@@ -1436,7 +1436,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8453310803815879010">Rozpocznij grę z dinozaurem</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
-<translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
+<translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem wielowyrazowym do synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="847433688444405067">Przeglądaj na różnych urządzeniach</translation>
@@ -1556,7 +1556,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9086455579313502267">Nie można uzyskać dostępu do sieci</translation>
 <translation id="9099220545925418560">Na podstawie Twojej historii przeglądania. To ustawienie jest wyłączone.</translation>
-<translation id="9100610230175265781">Wymagane jest hasło</translation>
+<translation id="9100610230175265781">Wymagane jest hasło wielowyrazowe</translation>
 <translation id="9101137867221042551">Zarządzanie</translation>
 <translation id="9102803872260866941">Karta podglądu jest otwarta</translation>
 <translation id="9102864637938129124">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest włączone.</translation>
@@ -1586,7 +1586,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="928550791203542716">Obserwujesz: <ph name="SITE_NAME" /></translation>
 <translation id="93533588269984624">Wszystkie hasła zostaną pobrane na urządzenie i usunięte z <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Błąd: <ph name="ERROR_CODE" /></translation>
-<translation id="939598580284253335">Wpisz hasło</translation>
+<translation id="939598580284253335">Wpisz hasło wielowyrazowe</translation>
 <translation id="952301137339791907">Plansza dolna ze statystykami strony jest otwarta</translation>
 <translation id="95817756606698420">Chrome może używać <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> do wyszukiwania w Chinach. Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Zainstaluj tę aplikację</translation>

@@ -7576,13 +7576,6 @@ Nếu bạn tắt chính sách này, thì hệ thống sẽ không bao giờ ghi
 
       Nếu bạn tắt hoặc không thiết lập chính sách này, thì WebDriver sẽ không được phép ghi đè các chính sách không tương thích.</translation>
 <translation id="7145335384492396213">Chế độ in mã PIN mặc định</translation>
-<translation id="7145764791559889135">Chính sách này chặn việc sao chép dữ liệu vào bảng nhớ tạm đối với các URL cụ thể.
-
-Các danh sách URL <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> quy định trang web nào được phép ghi vào bảng nhớ tạm. Sẽ chặn việc ghi dữ liệu vào bảng nhớ tạm nếu URL khớp với một mẫu trong "enable" và không khớp với một mẫu trong "disable". Sẽ không chặn việc sao chép nếu URL không khớp với bất kỳ mẫu nào.
-
-Mẫu so khớp nguồn sẽ có định dạng giống với các mẫu của chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />" được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượng dữ liệu tối thiểu tính bằng byte sẽ kích hoạt quá trình kiểm tra mẫu. Điều này có nghĩa là một URL bị chặn sẽ được phép ghi dữ liệu vào bảng nhớ tạm nếu kích thước của dữ liệu sao chép nhỏ hơn giá trị được chỉ định trong trường này. Giá trị mặc định là 100 byte nếu bạn không đặt trường này.</translation>
 <translation id="7146198347561863646">Việc đặt thành Bật hoặc không đặt chính sách này sẽ cho phép khóa chế độ thức để quản lý nguồn điện. Các tiện ích có thể yêu cầu khóa chế độ thức thông qua API tiện ích quản lý nguồn điện và các ứng dụng dùng App Runtime for Chrome (ARC).
 
       Khi đặt chính sách này thành Tắt, các yêu cầu khóa chế độ thức sẽ bị bỏ qua.</translation>

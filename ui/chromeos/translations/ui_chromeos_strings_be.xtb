@@ -95,7 +95,7 @@
 <translation id="1742316578210444689">Іўрыт (транслітарацыя)</translation>
 <translation id="1747761757048858544">Нідэрландская (Нідэрланды)</translation>
 <translation id="174937106936716857">Агульная колькасць файлаў</translation>
-<translation id="1755345808328621801">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
+<translation id="1755345808328621801">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Chrome Web Store адпаведную праграму на замену.</translation>
 <translation id="1757915090001272240">Шырокая лацініца</translation>
 <translation id="1761091787730831947">Абагуліць з <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертыфікат аўтэнтыфікацыі адхілены ў лакальнай сетцы</translation>
@@ -167,7 +167,7 @@
 <translation id="2305020378527873881">Носьбіт <ph name="VOLUME_NAME" /> выняты.</translation>
 <translation id="2307462900900812319">Наладзіць сетку</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{Пашырэнне з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}one{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}few{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}many{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}other{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}}</translation>
-<translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Вэб-краме Chrome.</translation>
+<translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Chrome Web Store.</translation>
 <translation id="2326539130272988168">Балгарская</translation>
 <translation id="233822363739146957">Недастаткова месца ў сховішчы для сінхранізацыі ўсіх файлаў</translation>
 <translation id="23721837607121582">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
@@ -243,7 +243,7 @@
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
 <translation id="2958458230122209142">У вашым індывідуальным сховішчы мала месца. Застаецца <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" />.</translation>
-<translation id="2977940621473452797">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
+<translation id="2977940621473452797">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Chrome Web Store адпаведную праграму на замену.</translation>
 <translation id="2984337792991268709">Сёння <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">Французская (Канада)</translation>
 <translation id="3003189754374775221">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцеся да сеткі</translation>

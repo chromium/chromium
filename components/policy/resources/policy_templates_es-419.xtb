@@ -7669,13 +7669,6 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 
       Si inhabilitas la política o no la configuras, WebDriver no podrá anular las políticas incompatibles.</translation>
 <translation id="7145335384492396213">Modo de impresión con PIN predeterminado</translation>
-<translation id="7145764791559889135">Esta política bloquea la copia de datos al portapapeles en URLs específicas.
-
-Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios que pueden escribir en el portapapeles. Si la URL coincide con un patrón del campo "enable" y no coincide con ningún patrón del campo "disable", se bloqueará una escritura en el portapapeles. Si la URL no coincide con ningún patrón, no se bloqueará la copia.
-
-Los patrones de coincidencia de orígenes usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (expresada en bytes) que activa la revisión de patrones. Esto significa que se permitiría una escritura en el portapapeles de parte de una URL bloqueada si el tamaño de los datos copiados es menor al valor especificado en este campo. Si no estableces el campo, el valor predeterminado es 100 bytes.</translation>
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>

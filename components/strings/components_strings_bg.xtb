@@ -257,6 +257,7 @@
 <translation id="1442987760062738829">Перфориране</translation>
 <translation id="1446396933673057385">Проверка на точността</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">Ключовете <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> не могат да бъдат зададени в същия речник като <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
 <translation id="1452803302401719440">Избраните от родителя ви настройки вече ви осигуряват по-голяма безопасност онлайн</translation>
 <translation id="1455413310270022028">Гума</translation>
 <translation id="1458140305240870199">Долни дрехи</translation>
@@ -768,6 +769,7 @@
 <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферните устройства, свързани с това устройство, докато сте в профила си</translation>
 <translation id="2450021089947420533">Пътешествия</translation>
+<translation id="2452837234288608067">Не успях да помогна с това. Опитайте отново.</translation>
 <translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2462599289530201834">Търсене на <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Попълване</translation>
@@ -909,6 +911,7 @@
 <translation id="2725927759457695883">Попълване на пълното име</translation>
 <translation id="2726001110728089263">Странична тава</translation>
 <translation id="2728127805433021124">Сертификатът на сървъра е подписан със слаб алгоритъм.</translation>
+<translation id="272937284275742856">Подробностите за начина на плащане се потвърждават по сигурен начин...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Стартирайте диагностика на свързаността<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Класическа музика</translation>
 <translation id="2731382536835015353">44 x 68 инча</translation>
@@ -1008,6 +1011,7 @@
 <translation id="2958544468932521864">Крикет</translation>
 <translation id="2959113999220720579">Грижи за лицето и тялото</translation>
 <translation id="2962073860865348475">12 x 18 инча</translation>
+<translation id="2967098518029543669">запазете я в профила си в Google</translation>
 <translation id="2968103128155246731">Ванове и миниванове</translation>
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
@@ -1382,6 +1386,7 @@
 <translation id="3678914302246317895">Въведете <ph name="OTP_LENGTH" />-цифрения код за потвърждение</translation>
 <translation id="3681007416295224113">Информация за сертификата</translation>
 <translation id="3681421644246505351">Chrome отбелязва темите, които ви интересуват, въз основа на скорошната ви история на сърфиране.</translation>
+<translation id="3682094733650754138">Избрана бе опцията за попълване на адреса</translation>
 <translation id="3689867156802445220">Номер на сградата</translation>
 <translation id="3693327506115126094">Изберете как да потвърдите, че сте вие</translation>
 <translation id="3698629142018988477">Бутон за създаване на сайт. Активирайте, за да създадете бързо сайт в Google Сайтове</translation>
@@ -2208,7 +2213,6 @@
 <translation id="5331585574693522196">Задаване като основен избор</translation>
 <translation id="5332219387342487447">Начин за доставка</translation>
 <translation id="5332769172018416402">Запитване в съобщение</translation>
-<translation id="5334013548165032829">Подробните системни регистрационни файлове</translation>
 <translation id="5334145288572353250">Да се запази ли адресът?</translation>
 <translation id="5340250774223869109">Приложението е блокирано</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
@@ -2788,6 +2792,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> иска да използва MIDI устройствата ви</translation>
 <translation id="6493924760403974580">Това приложение поддържа само този размер.</translation>
 <translation id="6494750904506170417">изскачащи прозорци и пренасочвания</translation>
+<translation id="6495664197699704593">Паролата е запазена само на това устройство. За да я използвате на другите си устройства, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Бизнес дейности</translation>
 <translation id="6499038740797743453">Да се зададе ли повторно паролата?</translation>
 <translation id="6502510275417601303">Сигналът за нова настройка за плащане е затворен</translation>
@@ -2902,6 +2907,7 @@
 <translation id="6732087373923685049">камера</translation>
 <translation id="6737708609449480586">Печива</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
+<translation id="6740851646645036700">Достигнахте моментното ограничение за помощ при писане. Опитайте отново по-късно.</translation>
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>
 <translation id="6744009308914054259">Докато чакате да се установи връзка, можете да посетите страницата „Изтегляния“, за да четете офлайн статии.</translation>
 <translation id="6745592621698551453">Актуализиране сега</translation>
@@ -2958,6 +2964,7 @@
 <translation id="6860888819347870819">Може да извежда запитвания за преминаване в режим „картина в картината“</translation>
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Потребителски ресурси</translation>
+<translation id="6865166112578825782">Попълване на адреса</translation>
 <translation id="6865412394715372076">Тази карта не може да бъде потвърдена в момента</translation>
 <translation id="6868573634057275953">Възобновяване на актуализирането</translation>
 <translation id="6869334554832814367">Потребителски заеми</translation>
@@ -3427,6 +3434,7 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701544340847569275">Актуализирането завърши с грешки</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Продължаване към <ph name="SITE" /> (опасно)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Помощ при писане</translation>
 <translation id="7705992072972338699">Оптичен диск (силно гланциран)</translation>
 <translation id="770607638235926858">Ски и сноуборд</translation>
 <translation id="7706689436519265630">Файловете, които копирате или местите, се изпращат до Google Cloud или до трети страни за анализ. Възможно е например файловете да бъдат сканирани за чувствителни данни или злонамерен софтуер и да се съхраняват въз основа на правилата на компанията.</translation>
@@ -3646,6 +3654,7 @@
 <translation id="8161095570253161196">Възобновяване на сърфирането</translation>
 <translation id="8163866351304776260">Четворно перфориране отляво</translation>
 <translation id="8164078261547504572">Искате ли да получавате имейли при понижения на цени?</translation>
+<translation id="8169175551046720804">Ключовете <ph name="DATA_CONTROLS_KEYS" /> не могат да бъдат зададени в един и същ речник</translation>
 <translation id="8175796834047840627">Chrome предлага да запази картите ви в профила ви в Google, защото сте влезли в него. Можете да промените това поведение от настройките.</translation>
 <translation id="8176440868214972690">Администраторът на това устройство изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="817820454357658398">Дамски хигиенни продукти</translation>
@@ -4041,6 +4050,7 @@
 <translation id="8949410982325929394">Интонация</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Законови и правителствени органи</translation>
+<translation id="8952569554322479410">Уебсайт току-що поиска достъп до следното: <ph name="REQUEST_TYPE" />. Помогнете ни да подобрим начина, по който уебсайтовете искат достъп, като попълните тази едноминутна анкета.</translation>
 <translation id="8954252855949068147">Облекло</translation>
 <translation id="8956124158020778855">След като включите съответната настройка, върнете се в този раздел, за да започнете да пишете.</translation>
 <translation id="8957210676456822347">Упълномощаване в портал за удостоверяване</translation>

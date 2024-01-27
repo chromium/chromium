@@ -7389,13 +7389,6 @@ Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle
 
       Ist sie deaktiviert oder nicht konfiguriert, kann WebDriver inkompatible Richtlinien nicht überschreiben.</translation>
 <translation id="7145335384492396213">Standardmodus PIN-Druck</translation>
-<translation id="7145764791559889135">Mit dieser Richtlinie wird das Kopieren von Daten in die Zwischenablage auf bestimmten URLs blockiert.
-
-      Mit den URL-Listen <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> und <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> wird gesteuert, welche Websites in die Zwischenablage schreiben dürfen. Wenn ein URL-Muster in der Liste „Enable“ enthalten und in der Liste „Disable“ nicht enthalten ist, kann die betreffende Website nicht in die Zwischenablage schreiben. Ist die URL in keiner der beiden Listen enthalten, ist das Kopieren nicht blockiert.
-
-Es werden ähnliche URL-Muster wie in der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> verwendet. Sie sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben.
-
-Unter <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> ist die minimale Datenmenge in Byte angegeben, die die Musterprüfung auslöst. Das bedeutet, dass ein Schreibvorgang in die Zwischenablage auf einer blockierten URL zulässig ist, wenn die Menge der kopierten Daten unter dem Wert in diesem Feld liegt. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.</translation>
 <translation id="7146198347561863646">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, sind Wakelocks für die Energieverwaltung zugelassen. Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
 
       Wenn die Richtlinie deaktiviert wird, werden Wakelock-Anfragen ignoriert.</translation>

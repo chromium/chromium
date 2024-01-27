@@ -7517,13 +7517,6 @@ Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve
 
       Politika devre dışı bırakılır veya yapılandırılmazsa WebDriver'ın uyumlu olmayan politikaları geçersiz kılmasına izin verilmez.</translation>
 <translation id="7145335384492396213">Varsayılan PIN ile yazdırma modu</translation>
-<translation id="7145764791559889135">Bu politika, belirli URL'lerdeki verilerin panoya kopyalanmasını engeller.
-
-      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> URL listeleri, hangi sitelerin panoya yazmasına izin verildiğini kontrol eder. URL, "etkinleştir" seçeneğindeki bir kalıpla eşleşiyor ancak "devre dışı bırak" seçeneğindeki bir kalıpla eşleşmiyorsa panoya yazma engellenir. URL hiçbir kalıpla eşleşmiyorsa kopyalama işlemi engellenmez.
-
-Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
-
-<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />, kalıp kontrolünü tetikleyen bayt cinsinden minimum veri miktarını gösterir. Bu da kopyalanan verilerin boyutunun bu alanda belirtilen değerden küçük olması halinde, engellenen bir URL'den panoya yazmaya izin verileceği anlamına gelir. Alan ayarlanmadan bırakılırsa varsayılan değer 100 bayttır.</translation>
 <translation id="7146198347561863646">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa güç yönetimi için uyanık kalma kilitlerine izin verilir. Uzantılar, güç yönetimi uzantı API'si ve ARC uygulamaları aracılığıyla uyandırma kilitleri isteyebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa uyanık kalma kilidi istekleri yok sayılır.</translation>

@@ -96,17 +96,17 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="3833326979834193417">Chromium codziennie automatycznie uruchamia kontrolę zabezpieczeń, aby chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami i innymi zagrożeniami. Więcej informacji o kontroli zabezpieczeń znajdziesz w Ustawieniach.</translation>
 <translation id="3886689467633467988">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>
-<translation id="394413318816989199">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
+<translation id="394413318816989199">Szyfrowanie za pomocą hasła wielowyrazowego nie obejmuje form płatności ani adresów.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Otwieraj Chromium z dowolnej aplikacji</translation>
 <translation id="4005283307739974863">Otwiera i uruchamia kontrolę zabezpieczeń w Chromium.</translation>
 <translation id="4043291146360695975">Hasła są zapisywane w Menedżerze haseł tylko na tym urządzeniu.</translation>
-<translation id="4076589763479456892">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
+<translation id="4076589763479456892">Jeśli zapomnisz swoje hasło wielowyrazowe lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nieobsługiwane w Chromium Beta</translation>
 <translation id="4106512142782407609">Zalogowano jako <ph name="EMAIL" />.
 
-Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
+Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
 <translation id="4195557071150719219">Zobacz ostatnie karty w Chromium</translation>
 <translation id="4200712796753248893">Korzystaj z Działań w Chromium na iOS</translation>
 <translation id="420541179527342563">Aby wyłączyć tryb blokady w Chromium, wyłącz go na iPadzie.</translation>
@@ -175,7 +175,7 @@ Pamiętaj, że:
 <translation id="6062449165341879460">Twoja organizacja (<ph name="DOMAIN" />) będzie miała dostęp do danych, zakładek, historii, haseł i innych ustawień Chromium, które przechowujesz na tym koncie. Gdy się wylogujesz, dane zostaną usunięte z tego urządzenia.  Pozostaną one jednak zapisane na zarządzanym koncie Google i organizacja będzie miała do nich dostęp. Organizacja może też ustawiać na tym koncie zasady dotyczące użytkowników, które mogą zmieniać działanie Chromium.</translation>
 <translation id="6093744543579359059">Zarządzaj hasłami w Chromium</translation>
 <translation id="6104024151682120539">Otwórz w Chromium</translation>
-<translation id="61109258320235597">Aby móc zapisywać dane z Chromium na koncie Google i ich używać, wpisz hasło.</translation>
+<translation id="61109258320235597">Aby móc zapisywać dane z Chromium na koncie Google i ich używać, wpisz hasło wielowyrazowe.</translation>
 <translation id="6119647025869519954">Aby ustawić Chromium jako przeglądarkę domyślną:
 1. Otwórz Ustawienia.
 2. Kliknij Domyślna przeglądarka.
@@ -193,7 +193,7 @@ Pamiętaj, że:
 <translation id="6348483005826990855">3. Wybierz Chromium</translation>
 <translation id="6407399265324739055">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chromium nie będzie synchronizowana.
 
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. To hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6502321914804101924">Wylogowano z Chromium</translation>
 <translation id="6563921047760808519">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chromium dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
@@ -246,7 +246,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="7980860476903281594">Chromium udostępnia Twoją lokalizację witrynom, którym zgadzasz się ją ujawnić.</translation>
 <translation id="7990085102929105708">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chromium nie będzie synchronizowana.
 
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. To hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło wielowyrazowe lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7995166854192397899">Sugestie są tworzone na podstawie Twojej aktywności związanej z przeglądaniem na innych urządzeniach. Aby otrzymywać sugestie, zaloguj się w Chromium na wszystkich swoich urządzeniach.</translation>
 <translation id="800195749539500647">Wykorzystaj maksymalnie potencjał Chromium</translation>
 <translation id="8013573822802650211">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, zaloguj się na wszystkich urządzeniach</translation>
@@ -264,7 +264,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="8458950033462118672">Ustaw Chromium jako przeglądarkę domyślną, aby linki otwierały się w niej automatycznie.</translation>
 <translation id="858114650497379505">Haseł zapisanych w menedżerze haseł możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
-<translation id="8618440443578628179">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
+<translation id="8618440443578628179">Szyfrowanie za pomocą haseł wielowyrazowych nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
@@ -293,7 +293,7 @@ Pamiętaj, że:
 <translation id="8963279154877372067">Zezwalaj na powiadomienia Chromium, aby otrzymywać alerty o obniżkach cen</translation>
 <translation id="900560297598578021">Zalogowano jako <ph name="EMAIL" />.
 
-Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
+Dane zostały zaszyfrowane hasłem wielowyrazowym <ph name="TIME" />. Podaj to hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
 <translation id="9050790730841755540">Używaj Chromium, zawsze gdy klikasz linki w innych aplikacjach.</translation>
 <translation id="9059693977935746710">Nie musisz go zapamiętywać. Menedżer haseł zapisze je na koncie <ph name="EMAIL" /></translation>

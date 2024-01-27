@@ -7459,13 +7459,6 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
 
       Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
 <translation id="7145335384492396213">Modalità di stampa PIN predefinita</translation>
-<translation id="7145764791559889135">Questo criterio impedisce la copia dei dati negli appunti per URL specifici.
-
-      Gli elenchi di URL<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> consentono di controllare a quali siti è consentito scrivere negli appunti. La scrittura negli appunti viene bloccata se l'URL corrisponde a un pattern in "enable" e non corrisponde a un pattern in "disable". La copia non viene bloccata se l'URL non corrisponde ad alcun pattern.
-
-Per i pattern corrispondenti alle origini viene usato un formato simile a quello usato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la quantità minima di dati in byte che attiva il controllo dei pattern. Ciò significa che la scrittura negli appunti da un URL bloccato sarebbe consentita se la dimensione dei dati copiati fosse inferiore al valore specificato in questo campo. Se il campo non viene impostato, il valore predefinito è 100 byte.</translation>
 <translation id="7146198347561863646">Se il criterio viene impostato su Attivato o se non viene configurato, sono consentiti wakelock per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock vengono ignorate.</translation>
