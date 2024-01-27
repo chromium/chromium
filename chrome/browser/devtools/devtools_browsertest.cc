@@ -3600,7 +3600,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
       "a.test", "/devtools/pause_when_loading_devtools.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), hello_url));
-  DevToolsWindow* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+  DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetWebContentsAt(0), true);
 
   Browser* another_browser = CreateBrowser(browser()->profile());
@@ -3612,8 +3612,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 
   histograms.ExpectBucketCount(
       "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer", true, 1);
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
-  DevToolsWindowTesting::CloseDevToolsWindowSync(another_window);
 }
 
 // According to DevToolsTest.AutoAttachToWindowOpen, using
@@ -3647,8 +3645,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 
   histograms.ExpectBucketCount(
       "DevTools.IsSameOriginDebuggerPausedInAnotherRenderer", true, 1);
-  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
-  DevToolsWindowTesting::CloseDevToolsWindowSync(another_window);
 }
 
 class DevToolsSyncTest : public SyncTest {

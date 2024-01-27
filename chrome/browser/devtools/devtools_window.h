@@ -13,12 +13,10 @@
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Browser;
-class BrowserList;
 class BrowserWindow;
 class DevToolsWindowTesting;
 class DevToolsEventForwarder;
@@ -78,8 +76,7 @@ enum class DevToolsClosedByAction {
 };
 
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
-                       public content::WebContentsDelegate,
-                       public ::BrowserListObserver {
+                       public content::WebContentsDelegate {
  public:
   static const char kDevToolsApp[];
 
@@ -438,9 +435,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   int GetOpenedByForLogging() override;
   int GetClosedByForLogging() override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
-
   void ColorPickedInEyeDropper(int r, int g, int b, int a);
 
   // This method creates a new Browser object (if possible), and passes
@@ -518,9 +512,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   class Throttle;
   Throttle* throttle_ = nullptr;
   bool open_new_window_for_popups_ = false;
-
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 
   base::OnceCallback<void()> reattach_complete_callback_;
 

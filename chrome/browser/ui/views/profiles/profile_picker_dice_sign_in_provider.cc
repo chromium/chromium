@@ -68,18 +68,12 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // called yet).
   if (callback_) {
     if (IsInitialized()) {
-      CleanupContents();
+      contents()->SetDelegate(nullptr);
     }
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
         ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedBeforeSignIn);
   }
-}
-
-void ProfilePickerDiceSignInProvider::CleanupContents() {
-  contents()->SetDelegate(nullptr);
-  web_modal::WebContentsModalDialogManager::FromWebContents(contents())
-      ->SetDelegate(nullptr);
 }
 
 void ProfilePickerDiceSignInProvider::SwitchToSignIn(
@@ -276,7 +270,7 @@ void ProfilePickerDiceSignInProvider::FinishFlow(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
-  CleanupContents();
+  contents()->SetDelegate(nullptr);
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 

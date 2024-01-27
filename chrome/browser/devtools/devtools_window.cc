@@ -443,17 +443,6 @@ void DevToolsWindow::RemoveCreationCallbackForTest(
   }
 }
 
-void DevToolsWindow::OnBrowserRemoved(Browser* browser) {
-  // If the modal dialog manager has this browser as its delegate, clear the
-  // reference.
-  web_modal::WebContentsModalDialogManager* dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          main_web_contents_);
-  if (dialog_manager && dialog_manager->delegate() == browser) {
-    dialog_manager->SetDelegate(nullptr);
-  }
-}
-
 DevToolsWindow::~DevToolsWindow() {
   if (throttle_)
     throttle_->ResumeThrottle();
@@ -467,8 +456,6 @@ DevToolsWindow::~DevToolsWindow() {
 
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
-
-  browser_list_observation_.Reset();
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
   auto it = base::ranges::find(*instances, this);
@@ -1914,11 +1901,6 @@ void DevToolsWindow::RegisterModalDialogManager(Browser* browser) {
       main_web_contents_);
   web_modal::WebContentsModalDialogManager::FromWebContents(main_web_contents_)
       ->SetDelegate(browser);
-  // Observe the BrowserList so that we can correctly reset the delegate if
-  // it is destroyed. Only need to add this once.
-  if (!browser_list_observation_.IsObserving()) {
-    browser_list_observation_.Observe(BrowserList::GetInstance());
-  }
 }
 
 void DevToolsWindow::OnReattachMainTargetComplete(base::Value) {
