@@ -141,6 +141,10 @@ public class MenuItem extends FrameLayout {
         mPlayButton.setContentDescription(
                 context.getResources().getString(R.string.readaloud_play) + " " + mLabel);
         mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
+        mPlayButtonSpinner.setContentDescription(
+                context.getResources().getString(R.string.readaloud_playback_loading)
+                        + " "
+                        + mLabel);
     }
 
     private void onLayoutInflated(LinearLayout layout) {

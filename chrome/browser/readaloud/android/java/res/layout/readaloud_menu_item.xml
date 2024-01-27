@@ -27,7 +27,8 @@ found in the LICENSE file.
         android:layout_width="@dimen/preview_play_button_diameter"
         android:layout_height="@dimen/preview_play_button_diameter"
         android:layout_marginEnd="@dimen/preview_play_button_margin_end"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:focusable="true"/>
     <ImageView
         android:id="@+id/play_button"
         android:layout_width="@dimen/preview_play_button_diameter"
