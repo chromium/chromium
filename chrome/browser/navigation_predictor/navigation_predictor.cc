@@ -60,26 +60,31 @@ bool IsBoldFont(uint32_t font_weight) {
 }
 
 struct PathLengthDepthAndHash {
-  int64_t path_length;
-  int64_t path_depth;
-  uint32_t hash;
+  // `path_length` caps at 100.
+  uint8_t path_length;
+  // `path_depth` caps at 5.
+  uint8_t path_depth;
+  // 10-bucket hash.
+  uint8_t hash_bucket;
 };
 
 PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
-  base::StringPiece path = target_url.path_piece();
+  std::string_view path = target_url.path_piece();
   int64_t path_length = path.length();
   path_length = ukm::GetLinearBucketMin(path_length, 10);
   // Truncate at 100 characters.
   path_length = std::min(path_length, static_cast<int64_t>(100));
 
-  int64_t num_slashes = base::ranges::count(path, '/');
+  int num_slashes = base::ranges::count(path, '/');
   // Truncate at 5.
-  int64_t path_depth = std::min(num_slashes, static_cast<int64_t>(5));
+  int path_depth = std::min(num_slashes, 5);
 
   // 10-bucket hash of the URL's path.
   uint32_t hash = base::PersistentHash(path);
-  hash = hash % 10;
-  return {path_length, path_depth, hash};
+  uint8_t hash_bucket = hash % 10;
+
+  return {static_cast<uint8_t>(path_length), static_cast<uint8_t>(path_depth),
+          hash_bucket};
 }
 
 base::TimeDelta MLModelExecutionTimerStartDelay() {
@@ -660,11 +665,11 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     metrics.navigation_start_to_link_logged =
         element->navigation_start_to_entered_viewport;
 
-    metrics.font_size_ = anchor.font_size;
+    metrics.font_size_bucket_ = anchor.font_size;
     auto path_info = GetUrlPathLengthDepthAndHash(anchor.target_url);
     metrics.path_length_ = path_info.path_length;
     metrics.path_depth_ = path_info.path_depth;
-    metrics.bucketed_path_hash_ = path_info.hash;
+    metrics.bucketed_path_hash_ = path_info.hash_bucket;
 
     int percent_ratio_area = anchor.ratio_area;
     metrics.percent_clickable_area_ =

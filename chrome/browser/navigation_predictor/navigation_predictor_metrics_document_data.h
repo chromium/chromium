@@ -39,19 +39,19 @@ class NavigationPredictorMetricsDocumentData
 
     AnchorElementMetricsData& operator=(AnchorElementMetricsData&&);
 
-    size_t bucketed_path_hash_;
-    bool contains_image_;
-    size_t font_size_;
-    bool has_text_sibling_;
-    bool is_bold_;
-    bool is_in_iframe_;
-    bool is_url_incremented_by_one_;
+    uint8_t font_size_bucket_;
+    bool contains_image_ : 1;
+    bool has_text_sibling_ : 1;
+    bool is_bold_ : 1;
+    bool is_in_iframe_ : 1;
+    bool is_url_incremented_by_one_ : 1;
+    bool is_same_origin_ : 1;
     base::TimeDelta navigation_start_to_link_logged;
-    size_t path_depth_;
-    size_t path_length_;
-    int percent_clickable_area_;
+    uint8_t path_length_;
+    uint8_t path_depth_;
+    uint8_t bucketed_path_hash_;
+    uint8_t percent_clickable_area_;
     int percent_vertical_distance_;
-    bool is_same_origin_;
   };
 
   // This structure holds the user interactions with a given anchor element.
