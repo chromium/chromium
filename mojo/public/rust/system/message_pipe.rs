@@ -19,7 +19,7 @@ use ffi::c_void;
 use super::UntypedHandle;
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct CreateMessageFlags: u32 {
             /// Do not enforce size restrictions on this message, allowing its serialized
     /// payload to grow arbitrarily large. If this flag is NOT specified, Mojo will
@@ -30,7 +30,7 @@ bitflags::bitflags! {
 }
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct AppendMessageFlags: u32 {
     /// If set, this comments the resulting (post-append) message size as the final
     /// size of the message payload, in terms of both bytes and attached handles.
@@ -39,7 +39,7 @@ bitflags::bitflags! {
 }
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     pub struct ReadMessageFlags: u32 {
             /// Ignores attached handles when retrieving message data. This leaves any
     /// attached handles intact and owned by the message object.
