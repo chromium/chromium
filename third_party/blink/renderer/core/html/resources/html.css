@@ -156,11 +156,6 @@ video, canvas, img {
   overflow-clip-margin: content-box;
 }
 
-img:is([sizes="auto" i], [sizes^="auto," i]) {
-    contain: size !important;
-    contain-intrinsic-size: 300px 150px;
-}
-
 iframe, embed, object, fencedframe {
    overflow: clip !important;
    overflow-clip-margin: content-box !important;

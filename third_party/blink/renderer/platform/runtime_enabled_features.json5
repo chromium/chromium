@@ -388,7 +388,7 @@
       // If enabled, lazy loaded images can be auto sized if the sizes
       // attribute is missing or set to auto.
       name: "AutoSizeLazyLoadedImages",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "AvoidCaretVisibleSelectionAdjuster",
