@@ -107,7 +107,7 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
-crbug.com/1368785 [ android-pixel-6 android-t arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
+crbug.com/1368785 [ android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
