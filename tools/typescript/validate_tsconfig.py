@@ -214,11 +214,15 @@ def isMigratedAshFolder(path):
 
 
 def isBrowserOnlyDep(dep):
-  return dep == '//ui/webui/resources/cr_elements'
+  browser_only_deps = [
+      '//ui/webui/resources/cr_elements',
+      '//ui/webui/resources/cr_components/localized_link',
+  ]
+  return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
+
 
 def isDependencyAllowed(is_ash_target, raw_dep, target_path):
-  if isMigratedAshFolder(target_path) and \
-          raw_dep.startswith('//ui/webui/resources/cr_elements'):
+  if isMigratedAshFolder(target_path) and isBrowserOnlyDep(raw_dep):
     return False
 
   is_ash_dep = isInAshFolder(raw_dep[2:])

@@ -38,6 +38,7 @@ build_webui("build") {
     "cr_toolbar/cr_toolbar_search_field.ts",
     "cr_toolbar/cr_toolbar_selection_overlay.ts",
     "cr_view_manager/cr_view_manager.ts",
+    "localized_link/localized_link.ts",
     "policy/cr_policy_indicator.ts",
     "policy/cr_policy_pref_indicator.ts",
     "policy/cr_tooltip_icon.ts",
