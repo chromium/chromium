@@ -96,6 +96,7 @@ bool IbanSaveManager::IsIbanUploadEnabled(
 
 bool IbanSaveManager::AttemptToOfferSave(Iban& import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  UpdateRecordType(import_candidate);
   switch (DetermineHowToSaveIban(import_candidate)) {
     case TypeOfOfferToSave::kDoNotOfferToSave:
       return false;
@@ -110,11 +111,23 @@ bool IbanSaveManager::AttemptToOfferSave(Iban& import_candidate) {
 #endif
 }
 
+void IbanSaveManager::UpdateRecordType(Iban& import_candidate) {
+  if (MatchesExistingServerIban(import_candidate)) {
+    import_candidate.set_record_type(Iban::RecordType::kServerIban);
+    return;
+  }
+  if (MatchesExistingLocalIban(import_candidate)) {
+    import_candidate.set_record_type(Iban::RecordType::kLocalIban);
+    return;
+  }
+  import_candidate.set_record_type(Iban::RecordType::kUnknown);
+}
+
 IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
     const Iban& import_candidate) const {
   // Server IBANs are ideal and should not offer to resave to the server or
   // locally.
-  if (MatchesExistingServerIban(import_candidate)) {
+  if (import_candidate.record_type() == Iban::kServerIban) {
     return TypeOfOfferToSave::kDoNotOfferToSave;
   }
 
@@ -125,7 +138,7 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
                           client_->GetPersonalDataManager()
                               ->GetPaymentsSigninStateForMetrics())) {
     return TypeOfOfferToSave::kOfferServerSave;
-  } else if (!MatchesExistingLocalIban(import_candidate)) {
+  } else if (import_candidate.record_type() != Iban::kLocalIban) {
     return TypeOfOfferToSave::kOfferLocalSave;
   }
   return TypeOfOfferToSave::kDoNotOfferToSave;
@@ -168,6 +181,11 @@ bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
 }
 
 bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
+  autofill_metrics::LogUploadIbanMetric(
+      import_candidate.record_type() == Iban::kLocalIban
+          ? autofill_metrics::UploadIbanOriginMetric::kLocalIban
+          : autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      autofill_metrics::UploadIbanActionMetric::kOffered);
   bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
   client_->GetPaymentsNetworkInterface()->GetIbanUploadDetails(
@@ -229,6 +247,7 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
     bool show_save_prompt,
     AutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
+  CHECK_NE(import_candidate.record_type(), Iban::kServerIban);
   if (!nickname.empty()) {
     std::u16string trimmed_nickname;
     base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
@@ -237,15 +256,28 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
     }
   }
 
+  autofill_metrics::UploadIbanActionMetric action_metric;
   switch (user_decision) {
     case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
-      return SendUploadRequest(import_candidate, show_save_prompt);
+      action_metric = autofill_metrics::UploadIbanActionMetric::kAccepted;
+      SendUploadRequest(import_candidate, show_save_prompt);
+      break;
     case AutofillClient::SaveIbanOfferUserDecision::kIgnored:
-    case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
+      action_metric = autofill_metrics::UploadIbanActionMetric::kIgnored;
       GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
           base::UTF16ToUTF8(import_candidate.value())));
-      return;
+      break;
+    case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
+      action_metric = autofill_metrics::UploadIbanActionMetric::kDeclined;
+      GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
+          base::UTF16ToUTF8(import_candidate.value())));
+      break;
   }
+  autofill_metrics::LogUploadIbanMetric(
+      import_candidate.record_type() == Iban::kLocalIban
+          ? autofill_metrics::UploadIbanOriginMetric::kLocalIban
+          : autofill_metrics::UploadIbanOriginMetric::kNewIban,
+      action_metric);
 }
 
 void IbanSaveManager::OnDidGetUploadDetails(

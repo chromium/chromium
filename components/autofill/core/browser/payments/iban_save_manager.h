@@ -97,13 +97,16 @@ class IbanSaveManager {
   }
 
   TypeOfOfferToSave DetermineHowToSaveIbanForTesting(
-      Iban& import_candidate) const {
+      const Iban& import_candidate) {
     return DetermineHowToSaveIban(import_candidate);
   }
 
   bool HasContextTokenForTesting() const { return !context_token_.empty(); }
 
  private:
+  // Sets the `record_type` of this given `import_candidate`.
+  void UpdateRecordType(Iban& import_candidate);
+
   // Returns whether the given `import_candidate` should be offered to be saved
   // to GPay, locally, or not at all.
   TypeOfOfferToSave DetermineHowToSaveIban(const Iban& import_candidate) const;

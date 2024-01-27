@@ -67,6 +67,26 @@ void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
       "Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes", metric);
 }
 
+void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
+                         UploadIbanActionMetric action_metric) {
+  std::string histogram_name = "Autofill.UploadIban.";
+  switch (action_metric) {
+    case UploadIbanActionMetric::kOffered:
+      histogram_name += "Offered";
+      break;
+    case UploadIbanActionMetric::kAccepted:
+      histogram_name += "Accepted";
+      break;
+    case UploadIbanActionMetric::kDeclined:
+      histogram_name += "Declined";
+      break;
+    case UploadIbanActionMetric::kIgnored:
+      histogram_name += "Ignored";
+      break;
+  }
+  base::UmaHistogramEnumeration(histogram_name, origin_metric);
+}
+
 void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save) {
