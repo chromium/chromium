@@ -21,7 +21,7 @@ import java.util.Set;
 public class ChromeHomeModulesConfigSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.home_modules_context_menu_customize);
+        getActivity().setTitle(R.string.home_modules_configuration);
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         ChromeHomeModulesConfigManager chromeHomeModulesConfigManager =
                 ChromeHomeModulesConfigManager.getInstance();
