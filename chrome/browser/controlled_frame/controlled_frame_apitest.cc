@@ -128,6 +128,67 @@ const content::EvalJsResult RemoveAllContextMenuItems(
   )");
 }
 
+const content::EvalJsResult SetBackgroundColorToWhite(
+    content::WebContents* app_contents) {
+  return content::EvalJs(app_contents, content::JsReplace(
+                                           R"(
+    (function() {
+      document.body.style.backgroundColor = 'white';
+      return 'SUCCESS';
+    })();
+  )"));
+}
+
+const content::EvalJsResult ExecuteScriptRedBackgroundCode(
+    content::WebContents* app_contents) {
+  return content::EvalJs(app_contents, content::JsReplace(
+                                           R"(
+    (async function() {
+      return await new Promise((resolve, reject) => {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame || !frame.request) {
+          reject('FAIL');
+        }
+        frame.executeScript(
+          {code: "document.body.style.backgroundColor = 'red';"},
+          () => { resolve('SUCCESS') });
+      });
+    })();
+  )"));
+}
+
+const content::EvalJsResult ExecuteScriptRedBackgroundFile(
+    content::WebContents* app_contents) {
+  return content::EvalJs(app_contents, content::JsReplace(
+                                           R"(
+    (async function() {
+      return await new Promise((resolve, reject) => {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame || !frame.request) {
+          reject('FAIL');
+        }
+        frame.executeScript(
+          {file: "/execute_script.input.js"},
+          () => { resolve('SUCCESS') });
+      });
+    })();
+  )"));
+}
+
+const content::EvalJsResult VerifyBackgroundColorIsRed(
+    content::WebContents* app_contents) {
+  return content::EvalJs(app_contents, content::JsReplace(
+                                           R"(
+    (function() {
+      if (document.body.style.backgroundColor === 'red') {
+        return 'SUCCESS';
+      } else {
+        return 'FAIL';
+      }
+    })();
+  )"));
+}
+
 }  // namespace
 
 class ControlledFrameApiTest
@@ -747,6 +808,26 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, Basic) {
       extensions::browsertest_util::AddTab(browser(), url);
   EXPECT_TRUE(new_web_contents);
   EXPECT_TRUE(newtab_listener.WaitUntilSatisfied());
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
+  const GURL& kOriginalControlledFrameUrl =
+      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
+  ASSERT_TRUE(
+      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+
+  auto* web_view_guest = GetWebViewGuest(app_contents());
+  content::WebContents* guest_web_contents = web_view_guest->web_contents();
+
+  // Verify that executeScript() using JS code can change the background color.
+  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(guest_web_contents));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_contents()));
+  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(guest_web_contents));
+
+  // Verify that executeScript() using a JS file changes the background color.
+  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(guest_web_contents));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
+  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(guest_web_contents));
 }
 
 }  // namespace controlled_frame
