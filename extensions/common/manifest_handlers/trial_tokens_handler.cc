@@ -32,7 +32,9 @@ const TrialTokens* GetTokens(const Extension& extension) {
 
 }  // namespace
 
-TrialTokens::TrialTokens() = default;
+TrialTokens::TrialTokens(std::set<std::string> tokens)
+    : tokens_(std::move(tokens)) {}
+
 TrialTokens::TrialTokens(TrialTokens&& other) = default;
 TrialTokens::~TrialTokens() = default;
 
@@ -43,7 +45,8 @@ const std::set<std::string>* TrialTokens::GetTrialTokens(
   if (!tokens) {
     return nullptr;
   }
-  return &tokens->tokens;
+  DCHECK(!tokens->tokens_.empty());
+  return &tokens->tokens_;
 }
 
 // static
@@ -56,18 +59,20 @@ TrialTokensHandler::~TrialTokensHandler() = default;
 
 bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* trial_tokens = nullptr;
+  // 'trial_tokens' must be a non-empty list. Otherwise, log a benign warning
   if (!extension->manifest()->GetList(manifest_keys::kTrialTokens,
                                       &trial_tokens) ||
       trial_tokens->GetList().empty()) {
-    *error = manifest_errors::kInvalidTrialTokensNonEmptyList;
-    return false;
+    extension->AddInstallWarning(
+        InstallWarning(manifest_errors::kInvalidTrialTokensNonEmptyList,
+                       manifest_keys::kTrialTokens));
+    return true;
   }
 
-  size_t processedTokenCount = 0;
-  auto tokens = std::make_unique<TrialTokens>();
+  std::set<std::string> tokens;
   for (const auto& token : trial_tokens->GetList()) {
-    // Avoid processing an arbitrarily large number of trial tokens.
-    if (++processedTokenCount > kMaxTokenCount) {
+    // Avoid processing an arbitrarily large number of trial tokens
+    if (tokens.size() >= kMaxTokenCount) {
       extension->AddInstallWarning(extensions::InstallWarning(
           base::StringPrintf(manifest_errors::kInvalidTrialTokensTooManyTokens,
                              kMaxTokenCount),
@@ -75,12 +80,15 @@ bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
       break;
     }
 
-    // Error out on non-string token or empty string
+    // Skip non-string token or empty string and add a benign warning
     if (!token.is_string() || token.GetString().empty()) {
-      *error = manifest_errors::kInvalidTrialTokensValue;
-      return false;
+      extension->AddInstallWarning(
+          InstallWarning(manifest_errors::kInvalidTrialTokensValue,
+                         manifest_keys::kTrialTokens));
+      continue;
     }
-    // Add a warning for a long token and skip it
+
+    // Skip excessively long long token and add a benign warning
     if (token.GetString().length() > kMaxTokenSize) {
       extension->AddInstallWarning(extensions::InstallWarning(
           base::StringPrintf(manifest_errors::kInvalidTrialTokensValueTooLong,
@@ -89,10 +97,28 @@ bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
       continue;
     }
 
-    tokens->tokens.insert(token.GetString());
+    // Warn about duplicate tokens
+    if (tokens.contains(token.GetString())) {
+      extension->AddInstallWarning(extensions::InstallWarning(
+          base::StringPrintf(manifest_errors::kInvalidTrialTokensValueDuplicate,
+                             token.GetString().c_str()),
+          manifest_keys::kTrialTokens));
+      continue;
+    }
+
+    // TODO(crbug.com/1484767): Add validation of trial token contents, log an
+    // InstallWarning and skip the token here
+
+    tokens.insert(token.GetString());
   }
 
-  extension->SetManifestData(manifest_keys::kTrialTokens, std::move(tokens));
+  if (tokens.empty()) {
+    // If we did not find a single valid token, do not save anything
+    return true;
+  }
+
+  extension->SetManifestData(manifest_keys::kTrialTokens,
+                             std::make_unique<TrialTokens>(std::move(tokens)));
   return true;
 }
 

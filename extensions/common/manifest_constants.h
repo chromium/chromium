@@ -589,10 +589,12 @@ inline constexpr char kInvalidThemeImagesMissing[] =
     "An image specified in the theme is missing.";
 inline constexpr char16_t kInvalidThemeTints[] =
     u"Invalid value for theme images - tints must be decimal numbers.";
-inline constexpr char16_t kInvalidTrialTokensNonEmptyList[] =
-    u"Invalid value for 'trial_tokens'. Must be a non-empty list.";
-inline constexpr char16_t kInvalidTrialTokensValue[] =
-    u"Invalid element in 'trial_tokens'. Must be a non-empty string.";
+inline constexpr char kInvalidTrialTokensNonEmptyList[] =
+    "Invalid value for 'trial_tokens'. Must be a non-empty list.";
+inline constexpr char kInvalidTrialTokensValue[] =
+    "Invalid element in 'trial_tokens'. Must be a non-empty string.";
+inline constexpr char kInvalidTrialTokensValueDuplicate[] =
+    "Duplicate element in 'trial_tokens': '%s'.";
 inline constexpr char kInvalidTrialTokensValueTooLong[] =
     "Invalid element in 'trial_tokens'. Token must not be longer than %zu.";
 inline constexpr char kInvalidTrialTokensTooManyTokens[] =
