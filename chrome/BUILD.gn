@@ -31,6 +31,10 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
+# TODO(jam): remove is_fuchsia below
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_linux || is_chromeos) {

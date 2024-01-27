@@ -10,6 +10,9 @@ import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(enable_extensions)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //extensions")
+
+# TODO(jam): remove is_fuchsia below
 
 if (is_component_build) {
   component("extensions") {

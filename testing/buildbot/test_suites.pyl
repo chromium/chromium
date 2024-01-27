@@ -2163,7 +2163,6 @@
 
     'fuchsia_chrome_small_gtests': {
       'courgette_unittests': {},
-      'extensions_unittests': {},
       'headless_unittests': {},
       'message_center_unittests': {},
       'views_examples_unittests': {

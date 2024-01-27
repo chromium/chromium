@@ -3493,3 +3493,15 @@ group("gpu_pytype") {
     "//testing:pytype_dependencies",
   ]
 }
+
+if (is_fuchsia) {
+  group("telemetry_gpu_integration_test_fuchsia") {
+    testonly = true
+    data = [ "//content/test/gpu/run_gpu_integration_test_fuchsia.py" ]
+    data_deps = [
+      "//content/test:fuchsia_telemetry_test_data",
+      "//content/test:telemetry_gpu_integration_test_support",
+      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+    ]
+  }
+}

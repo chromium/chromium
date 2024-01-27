@@ -1926,7 +1926,6 @@ targets.legacy_basic_suite(
     name = "fuchsia_chrome_small_gtests",
     tests = {
         "courgette_unittests": targets.legacy_test_config(),
-        "extensions_unittests": targets.legacy_test_config(),
         "headless_unittests": targets.legacy_test_config(),
         "message_center_unittests": targets.legacy_test_config(),
         "views_examples_unittests": targets.legacy_test_config(

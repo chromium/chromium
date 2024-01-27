@@ -55,6 +55,9 @@ import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
+# TODO(jam): remove is_fuchsia below
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -1073,17 +1076,7 @@ if (is_android) {
       telemetry_target_suffix = _target_suffix
     }
   }
-} else if (is_fuchsia) {
-  group("telemetry_gpu_integration_test_fuchsia") {
-    testonly = true
-    data = [ "//content/test/gpu/run_gpu_integration_test_fuchsia.py" ]
-    data_deps = [
-      "//content/test:fuchsia_telemetry_test_data",
-      "//content/test:telemetry_gpu_integration_test_support",
-      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-    ]
-  }
-} else {
+} else if (!is_fuchsia) {
   group("telemetry_gpu_integration_test") {
     testonly = true
     data_deps = [
