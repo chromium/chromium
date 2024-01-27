@@ -1106,6 +1106,7 @@ struct Cluster {
     kSearch,
     kContentDerivedEntity,
     kHostname,
+    kUngroupedVisits,
   };
 
   Cluster();
@@ -1147,6 +1148,7 @@ struct Cluster {
   std::optional<std::u16string> raw_label;
 
   // Where the label came from. Determines in which ways we can use `raw_label`.
+  // This value may also be used by code to determine the type of the cluster.
   LabelSource label_source = LabelSource::kUnknown;
 
   // The positions within the label that match the search query, if it exists.

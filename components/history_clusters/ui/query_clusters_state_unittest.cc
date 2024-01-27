@@ -4,18 +4,27 @@
 
 #include "components/history_clusters/ui/query_clusters_state.h"
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Invoke;
+using ::testing::SaveArg;
 
 namespace history_clusters {
 
@@ -27,6 +36,21 @@ struct OnGotClustersResult {
   std::vector<history::Cluster> cluster_batch;
   bool can_load_more;
   bool is_continuation;
+};
+
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  ~MockHistoryService() override = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetAnnotatedVisits,
+              (const history::QueryOptions& options,
+               bool compute_redirect_chain_start_properties,
+               bool get_unclustered_visits_only,
+               GetAnnotatedVisitsCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (const override));
 };
 
 }  // namespace
@@ -94,7 +118,7 @@ TEST_F(QueryClustersStateTest, FilterParamsSetForZeroStateSyncedVisits) {
   config.include_synced_visits = true;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -111,7 +135,7 @@ TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
   config.include_synced_visits = false;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -129,7 +153,7 @@ TEST_F(QueryClustersStateTest,
   config.include_synced_visits = true;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -148,7 +172,7 @@ TEST_F(
   config.include_synced_visits = true;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -166,7 +190,7 @@ TEST_F(QueryClustersStateTest,
   config.include_synced_visits = true;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "query");
+  QueryClustersState state(nullptr, nullptr, "query");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -184,7 +208,7 @@ TEST_F(QueryClustersStateTest,
   config.include_synced_visits = false;
   SetConfigForTesting(config);
 
-  QueryClustersState state(nullptr, "query");
+  QueryClustersState state(nullptr, nullptr, "query");
 
   QueryClustersFilterParams filter_params =
       GetQueryClustersFilterParamsForState(&state);
@@ -195,7 +219,7 @@ TEST_F(QueryClustersStateTest,
 
 TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
   base::HistogramTester histogram_tester;
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   std::vector<history::Cluster> raw_clusters;
   raw_clusters.push_back(history::Cluster(
@@ -226,7 +250,7 @@ TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
 }
 
 TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
-  QueryClustersState state(nullptr, "myquery");
+  QueryClustersState state(nullptr, nullptr, "myquery");
 
   {
     std::vector<history::Cluster> raw_clusters;
@@ -298,7 +322,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
       2, {GetHardcodedClusterVisit(3), GetHardcodedClusterVisit(4)}, {}, true};
 
   {
-    QueryClustersState state(nullptr, "");
+    QueryClustersState state(nullptr, nullptr, "");
 
     // If the response clusters is empty, the callback should not be invoked.
     InjectRawClustersAndExpectNoCallback(
@@ -337,7 +361,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
   }
 
   {
-    QueryClustersState state(nullptr, "");
+    QueryClustersState state(nullptr, nullptr, "");
 
     // `is_continuation` should be false on the first callback.
     // `can_load_more` should be true on non-last callback.
@@ -383,7 +407,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
 }
 
 TEST_F(QueryClustersStateTest, UniqueRawLabels) {
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   std::vector<history::ClusterVisit> cluster_visits = {
       GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(2)};
@@ -416,6 +440,103 @@ TEST_F(QueryClustersStateTest, UniqueRawLabels) {
               ElementsAre(std::make_pair(u"rawlabel1", 2),
                           std::make_pair(u"rawlabel2", 2),
                           std::make_pair(u"rawlabel3", 1)));
+}
+
+TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
+  base::test::ScopedFeatureList scoped_list(kSearchesFindUngroupedVisits);
+
+  MockHistoryService mock_history_service;
+
+  history::QueryOptions get_annotated_visits_options;
+  base::RunLoop get_ungrouped_visits_loop_1;
+  base::RunLoop get_ungrouped_visits_loop_2;
+  EXPECT_CALL(mock_history_service, GetAnnotatedVisits)
+      .Times(2)
+      .WillOnce([&](const history::QueryOptions& options,
+                    bool compute_redirect_chain_start_properties,
+                    bool get_unclustered_visits_only,
+                    MockHistoryService::GetAnnotatedVisitsCallback callback,
+                    base::CancelableTaskTracker* tracker) {
+        get_annotated_visits_options = options;
+        get_ungrouped_visits_loop_1.Quit();
+        return base::CancelableTaskTracker::kBadTaskId;
+      })
+      .WillOnce([&](const history::QueryOptions& options,
+                    bool compute_redirect_chain_start_properties,
+                    bool get_unclustered_visits_only,
+                    MockHistoryService::GetAnnotatedVisitsCallback callback,
+                    base::CancelableTaskTracker* tracker) {
+        get_annotated_visits_options = options;
+        get_ungrouped_visits_loop_2.Quit();
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  QueryClustersState state(nullptr, /*history_service=*/&mock_history_service,
+                           /*query=*/"Code");
+
+  base::RunLoop result_loop;
+  std::vector<history::Cluster> final_result;
+  auto result_callback = [&](const std::string& query,
+                             std::vector<history::Cluster> cluster_batch,
+                             bool can_load_more, bool is_continuation) {
+    final_result = std::move(cluster_batch);
+    result_loop.Quit();
+  };
+
+  QueryClustersContinuationParams fake_continuation_params;
+  fake_continuation_params.is_continuation = false;
+  base::Time continuation_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("14 Feb 2021 10:00", &continuation_time));
+  fake_continuation_params.continuation_time = continuation_time;
+
+  // Verify that `QueryClustersState` makes an initial call to the
+  // HistoryService that makes sense.
+  {
+    state.GetUngroupedVisits(base::TimeTicks(),
+                             base::BindLambdaForTesting(result_callback), {},
+                             fake_continuation_params);
+    // Will quit the loop once GetAnnotatedVisits is run.
+    get_ungrouped_visits_loop_1.Run();
+
+    EXPECT_EQ(get_annotated_visits_options.begin_time, continuation_time);
+    EXPECT_EQ(get_annotated_visits_options.end_time, base::Time());
+  }
+
+  // Verify that the ungrouped visits can be searched over and returned as part
+  // of a special ungrouped cluster.
+  {
+    std::vector<history::AnnotatedVisit> annotated_visits;
+    state.OnGotUngroupedVisits(base::TimeTicks(),
+                               base::BindLambdaForTesting(result_callback), {},
+                               fake_continuation_params,
+                               /*ungrouped_visits*/ GetHardcodedTestVisits());
+    result_loop.Run();
+    ASSERT_EQ(final_result.size(), 1U);
+    EXPECT_EQ(final_result[0].label_source,
+              history::Cluster::LabelSource::kUngroupedVisits);
+    EXPECT_EQ(final_result[0].visits[0].annotated_visit.url_row.id(), 2);
+  }
+
+  // Verify that the followup search for ungrouped visits spans the correct
+  // continuation times.
+  {
+    QueryClustersContinuationParams new_fake_continuation_params;
+    new_fake_continuation_params.is_continuation = true;
+    base::Time new_continuation_time;
+    ASSERT_TRUE(
+        base::Time::FromUTCString("12 Feb 2021 10:00", &new_continuation_time));
+    new_fake_continuation_params.continuation_time = new_continuation_time;
+
+    state.GetUngroupedVisits(base::TimeTicks(),
+                             base::BindLambdaForTesting(result_callback), {},
+                             new_fake_continuation_params);
+    // Will quit the loop once GetAnnotatedVisits is run.
+    get_ungrouped_visits_loop_2.Run();
+
+    EXPECT_EQ(get_annotated_visits_options.begin_time, new_continuation_time);
+    EXPECT_EQ(get_annotated_visits_options.end_time, continuation_time);
+  }
 }
 
 }  // namespace history_clusters

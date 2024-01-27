@@ -6,17 +6,24 @@
 
 #include <set>
 #include <string>
+#include <unordered_set>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
+#include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
+#include "components/history_clusters/core/similar_visit.h"
 #include "url/gurl.h"
 
 namespace history_clusters {
@@ -96,9 +103,11 @@ class QueryClustersState::PostProcessor
 
 QueryClustersState::QueryClustersState(
     base::WeakPtr<HistoryClustersService> service,
+    history::HistoryService* history_service,
     const std::string& query,
     bool recluster)
     : service_(service),
+      history_service_(history_service),
       query_(query),
       filter_params_(GetFilterParamsFromFlags(query)),
       recluster_(recluster),
@@ -114,20 +123,112 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
   if (!service_)
     return;
 
+  auto query_clusters_callback = &QueryClustersState::OnGotRawClusters;
+  if (!query_.empty() && history_service_ &&
+      base::FeatureList::IsEnabled(kSearchesFindUngroupedVisits)) {
+    // If there's a search query, we also want to first tack on ungrouped
+    // visits.
+    query_clusters_callback = &QueryClustersState::GetUngroupedVisits;
+  }
+
   base::TimeTicks query_start_time = base::TimeTicks::Now();
   query_clusters_task_ = service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage, filter_params_,
       /*begin_time=*/base::Time(), continuation_params_, recluster_,
-      base::BindOnce(&QueryClustersState::OnGotRawClusters,
+      base::BindOnce(query_clusters_callback, weak_factory_.GetWeakPtr(),
+                     query_start_time, std::move(callback)));
+}
+
+void QueryClustersState::GetUngroupedVisits(
+    base::TimeTicks query_start_time,
+    ResultCallback callback,
+    std::vector<history::Cluster> clusters,
+    QueryClustersContinuationParams new_continuation_params) {
+  DCHECK(history_service_);
+
+  // Find ungrouped visits within the timespan bounded by the batch of clusters
+  // we have just received.
+  history::QueryOptions options;
+  options.end_time = continuation_params_.continuation_time;
+  options.begin_time = new_continuation_params.continuation_time;
+
+  // No need to use BrowsingHistoryService, because history is now fully synced.
+  history_service_->GetAnnotatedVisits(
+      options,
+      /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/true,
+      base::BindOnce(&QueryClustersState::OnGotUngroupedVisits,
                      weak_factory_.GetWeakPtr(), query_start_time,
-                     std::move(callback)));
+                     std::move(callback), clusters, new_continuation_params),
+      &history_task_tracker_);
+}
+
+void QueryClustersState::OnGotUngroupedVisits(
+    base::TimeTicks query_start_time,
+    ResultCallback callback,
+    std::vector<history::Cluster> clusters,
+    QueryClustersContinuationParams new_continuation_params,
+    std::vector<history::AnnotatedVisit> ungrouped_visits) {
+  std::unordered_set<SimilarVisit, SimilarVisit::Hash, SimilarVisit::Equals>
+      seen_visits;
+  // Load all the visits in `clusters` into `seen_visits` using similarity key.
+  for (auto& cluster : clusters) {
+    for (auto& visit : cluster.visits) {
+      seen_visits.insert(SimilarVisit(visit));
+    }
+  }
+
+  std::vector<history::ClusterVisit> unique_ungrouped_visits;
+  for (auto& visit : ungrouped_visits) {
+    history::ClusterVisit cluster_visit;
+    cluster_visit.annotated_visit = visit;
+    if (!visit.content_annotations.search_normalized_url.is_empty()) {
+      cluster_visit.normalized_url =
+          visit.content_annotations.search_normalized_url;
+      cluster_visit.url_for_deduping = cluster_visit.normalized_url;
+    } else {
+      cluster_visit.normalized_url = visit.url_row.url();
+      cluster_visit.url_for_deduping =
+          ComputeURLForDeduping(cluster_visit.url_for_deduping);
+    }
+
+    auto [ignored_iterator, inserted] =
+        seen_visits.insert(SimilarVisit(cluster_visit));
+    if (inserted) {
+      // Fill in these fields here to avoid doing so unless we're inserting this
+      // visit.
+      cluster_visit.url_for_display =
+          ComputeURLForDisplay(cluster_visit.normalized_url);
+      // Give every fake cluster visit a generic 1.0 score to ensure visibility.
+      cluster_visit.score = 1.0;
+
+      unique_ungrouped_visits.push_back(std::move(cluster_visit));
+    }
+  }
+
+  if (!unique_ungrouped_visits.empty()) {
+    history::Cluster ungrouped_cluster;
+    ungrouped_cluster.visits = std::move(unique_ungrouped_visits);
+    // Setting this for correctness, but should have no effect since the user
+    // should be searching.
+    ungrouped_cluster.should_show_on_prominent_ui_surfaces = false;
+    ungrouped_cluster.label_source =
+        history::Cluster::LabelSource::kUngroupedVisits;
+    // TODO(crbug.com/1519988): Localize this string before enabling the flag.
+    ungrouped_cluster.label = u"Ungrouped Visits";
+    ungrouped_cluster.raw_label = ungrouped_cluster.label;
+    clusters.push_back(std::move(ungrouped_cluster));
+  }
+
+  OnGotRawClusters(query_start_time, std::move(callback), std::move(clusters),
+                   std::move(new_continuation_params));
 }
 
 void QueryClustersState::OnGotRawClusters(
     base::TimeTicks query_start_time,
     ResultCallback callback,
     std::vector<history::Cluster> clusters,
-    QueryClustersContinuationParams continuation_params) const {
+    QueryClustersContinuationParams new_continuation_params) {
   // Post-process the clusters (expensive task) on an anonymous thread to
   // prevent janks.
   base::ElapsedTimer post_processing_timer;  // Create here to time the task.
@@ -140,7 +241,7 @@ void QueryClustersState::OnGotRawClusters(
       base::BindOnce(
           &QueryClustersState::OnGotClusters, weak_factory_.GetMutableWeakPtr(),
           std::move(post_processing_timer), clusters_from_backend_count,
-          query_start_time, std::move(callback), continuation_params));
+          query_start_time, std::move(callback), new_continuation_params));
 }
 
 void QueryClustersState::OnGotClusters(
@@ -148,7 +249,7 @@ void QueryClustersState::OnGotClusters(
     size_t clusters_from_backend_count,
     base::TimeTicks query_start_time,
     ResultCallback callback,
-    QueryClustersContinuationParams continuation_params,
+    QueryClustersContinuationParams new_continuation_params,
     std::vector<history::Cluster> clusters) {
   base::UmaHistogramTimes("History.Clusters.ProcessClustersDuration",
                           post_processing_timer.Elapsed());
@@ -162,7 +263,7 @@ void QueryClustersState::OnGotClusters(
                                 (1.0 * clusters_from_backend_count) * 100)));
   }
 
-  continuation_params_ = continuation_params;
+  continuation_params_ = new_continuation_params;
 
   // In case no clusters came back, recursively ask for more here. We do this
   // to fulfill the mojom contract where we always return at least one cluster,
@@ -174,7 +275,7 @@ void QueryClustersState::OnGotClusters(
   // This is distinct from the "tall monitor" case because the page may already
   // be full of clusters. In that case, the WebUI would not know to make another
   // request for clusters.
-  if (clusters.empty() && !continuation_params.exhausted_all_visits) {
+  if (clusters.empty() && !new_continuation_params.exhausted_all_visits) {
     LoadNextBatchOfClusters(std::move(callback));
     return;
   }
@@ -188,7 +289,7 @@ void QueryClustersState::OnGotClusters(
   size_t clusters_size = clusters.size();
   bool is_continuation = number_clusters_sent_to_page_ > 0;
   std::move(callback).Run(query_, std::move(clusters),
-                          !continuation_params.exhausted_all_visits,
+                          !new_continuation_params.exhausted_all_visits,
                           is_continuation);
 
   number_clusters_sent_to_page_ += clusters_size;

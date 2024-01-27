@@ -126,17 +126,19 @@ class HistoryClustersHandler : public mojom::PageHandler,
   mojo::Remote<mojom::Page> page_;
   mojo::Receiver<mojom::PageHandler> page_handler_;
 
-  // Encapsulates the currently loaded clusters state on the page.
-  std::unique_ptr<QueryClustersState> query_clusters_state_;
-
-  // Used only for hiding History visits. It's not used for querying History,
-  // because we do our querying with HistoryClustersService.
+  // Used only for hiding History visits and finding ungrouped visits matching
+  // user searches.
   raw_ptr<history::HistoryService> history_service_;
 
   // Used only for deleting History properly, and observing deletions that occur
-  // from other tabs. It's not used for querying History, because we do our
-  // querying with HistoryClustersService.
+  // from other tabs. It's not used for querying History. We do our querying
+  // using QueryClustersState which hits the HistoryClustersService and
+  // HistoryService directly, without using BrowsingHistoryService.
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
+
+  // Encapsulates the currently loaded clusters state on the page. This member
+  // is below the history services so it is deleted first.
+  std::unique_ptr<QueryClustersState> query_clusters_state_;
 
   // The visits requested to be hidden and related request fields.
   // `HistoryClustersHandler` can only handle 1 hide request at a time.
