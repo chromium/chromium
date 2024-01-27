@@ -17,6 +17,8 @@
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
+class PrefRegistrySimple;
+
 namespace gfx {
 class Point;
 class Rect;
@@ -204,6 +206,10 @@ ASH_EXPORT bool ShouldRoundThumbnailWindow(
 // Returns the target snap ratio for the given `window` or
 // `chromeos::kDefaultSnapRatio` if the target snap ratio doesn't exist.
 float GetSnapRatioForWindow(aura::Window* window);
+
+// Registers the per-profile preferences for whether faster splitscreen setup is
+// enabled.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns true if either `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
 // When this is true, snapping one window will automatically start

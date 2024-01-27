@@ -85,6 +85,10 @@ inline constexpr char kManagedCellularIccidSmdpPair[] =
 // A boolean pref for whether playing charging sounds is enabled.
 inline constexpr char kChargingSoundsEnabled[] = "ash.charging_sounds.enabled";
 
+// A boolean pref indicating whether a user has enabled window snap suggestions.
+inline constexpr char kSnapWindowSuggestions[] =
+    "ash.snap_window_suggestions.enabled";
+
 // A boolean pref for whether playing a low battery sound is enabled.
 inline constexpr char kLowBatterySoundEnabled[] =
     "ash.low_battery_sound.enabled";
