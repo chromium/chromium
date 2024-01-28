@@ -5459,29 +5459,16 @@ void RenderFrameImpl::BeginNavigation(
       !is_history_navigation_in_new_child_frame &&
       // Fullscreen navigation requests must go to the browser (for permission
       // checks and other security measures).
-      !info->is_fullscreen_requested;
-
-  if (should_do_synchronous_about_blank_navigation) {
-    if (!IsMainFrame()) {
+      !info->is_fullscreen_requested &&
       // Synchronous about:blank commits on iframes should only be triggered
       // when first creating the iframe with an unset/about:blank URL, which
       // means the origin should inherit from the parent.
-      WebLocalFrame* parent = static_cast<WebLocalFrame*>(frame_->Parent());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "parent_origin",
-          url::Origin(parent->GetDocument().GetSecurityOrigin())
-              .GetDebugString());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "request_origin",
-          url::Origin(info->url_request.RequestorOrigin()).GetDebugString());
-      SCOPED_CRASH_KEY_STRING256(
-          "sync_about_blank", "current_origin",
-          url::Origin(frame_->GetSecurityOrigin()).GetDebugString());
-      CHECK(parent);
-      CHECK(parent->GetDocument().GetSecurityOrigin().IsSameOriginWith(
-          info->url_request.RequestorOrigin()));
-    }
+      (IsMainFrame() || info->url_request.RequestorOrigin().IsSameOriginWith(
+                            static_cast<WebLocalFrame*>(frame_->Parent())
+                                ->GetDocument()
+                                .GetSecurityOrigin()));
 
+  if (should_do_synchronous_about_blank_navigation) {
     for (auto& observer : observers_)
       observer.DidStartNavigation(url, info->navigation_type);
     SynchronouslyCommitAboutBlankForBug778318(std::move(info));
