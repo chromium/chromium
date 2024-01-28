@@ -552,6 +552,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // the storage partition's Network Context. Note that the URLLoaderFactory
   // returned by this method does NOT support auto-reconnect after a crash of
   // Network Service.
+  // TODO(crbug.com/1506871): Remove this.
   virtual void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       network::mojom::URLLoaderFactoryParamsPtr params) = 0;

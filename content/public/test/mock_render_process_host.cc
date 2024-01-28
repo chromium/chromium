@@ -92,8 +92,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       keep_alive_ref_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
-      foreground_service_worker_count_(0),
-      url_loader_factory_(std::make_unique<FakeNetworkURLLoaderFactory>()) {
+      foreground_service_worker_count_(0) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -518,18 +517,25 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
   return renderer_interface_->get();
 }
 
+// TODO(crbug.com/1506871): This is mostly duplicate of
+// RenderProcessHostImpl::CreateURLLoaderFactory(). Dedup and remove this.
 void MockRenderProcessHost::CreateURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     network::mojom::URLLoaderFactoryParamsPtr params) {
-  if (GetNetworkFactoryCallback().is_null()) {
-    url_loader_factory_->Clone(std::move(receiver));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(params);
+  DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
 
-  mojo::Remote<network::mojom::URLLoaderFactory> original_factory;
-  url_loader_factory_->Clone(original_factory.BindNewPipeAndPassReceiver());
-  GetNetworkFactoryCallback().Run(std::move(receiver), GetID(),
-                                  original_factory.Unbind());
+  if (GetNetworkFactoryCallback().is_null()) {
+    GetStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
+        std::move(receiver), std::move(params));
+  } else {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
+    GetStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
+        original_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
+    GetNetworkFactoryCallback().Run(std::move(receiver), GetID(),
+                                    std::move(original_factory));
+  }
 }
 
 bool MockRenderProcessHost::MayReuseHost() {
