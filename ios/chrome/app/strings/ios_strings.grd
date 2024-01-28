@@ -5771,6 +5771,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
           Tabs were closed and browsing data was deleted. You were signed out
       </message>
+      <message name="IDS_IOS_DOCKING_EDIT_HOME_SCREEN_LOTTIE_INSTRUCTION" desc="Title of the instruction shown in the Docking Promo Lottie, which describes the Edit Home Screen text when the user long presses on the Chrome app.">
+        Edit Home Screen
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE" desc="Title of the primary button in the Docking Promo, which confirms the promo has been seen by the user.">
+        Got It
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SECOND_INSTRUCTION" desc="Title of the second step instruction shown in the Docking Promo, which tells users to drag the app icon to their iOS dock.">
+        Drag it to the dock at the bottom of your Home Screen
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE" desc="Title of the secondary button in the Docking Promo, which schedules the Docking Promo for display at a later time, i.e. Remind Me Later functionality.">
+        Remind Me Later
+      </message>
     </messages>
   </release>
 </grit>

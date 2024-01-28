@@ -314,6 +314,12 @@
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
       </message>
+      <message name="IDS_IOS_DOCKING_PROMO_FIRST_INSTRUCTION" desc="Title of the first step instruction shown in the Docking Promo, which tells users to hold down on the Chrome icon to put their iOS device into Edit Mode.">
+        Press and hold the Chrome icon and click "Edit Home Screen"
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_TITLE" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
+        Access Chrome faster from your Home Screen Dock
+      </message>
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
           Your organization requires you to sign in to use Chrome.
       </message>

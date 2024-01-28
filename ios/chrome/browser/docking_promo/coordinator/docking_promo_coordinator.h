@@ -10,6 +10,8 @@
 
 @protocol PromosManagerUIHandler;
 
+// Presents a fullscreen, animated, instructional promo informing users how to
+// drag the Chrome icon to their iOS homescreen dock.
 @interface DockingPromoCoordinator : ChromeCoordinator <DockingPromoCommands>
 
 // The promos manager UI handler to alert about UI changes.

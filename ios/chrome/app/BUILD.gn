@@ -347,9 +347,11 @@ source_set("docking_promo_app_agent") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/docking_promo/model:utils",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/start_surface",
   ]
 }
 

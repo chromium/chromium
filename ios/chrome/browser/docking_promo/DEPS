@@ -1,4 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/ui/promos_manager",
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/promos_manager",
+  "+ios/chrome/browser/ui/promos_manager",
+  "+ios/chrome/browser/ui/start_surface/start_surface_util.h",
 ]
