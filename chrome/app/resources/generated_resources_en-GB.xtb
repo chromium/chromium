@@ -3260,7 +3260,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3519564332031442870">Print backend service</translation>
 <translation id="3519938335881974273">Save page as…</translation>
 <translation id="3520824492621090923">Confirm kiosk and signage device enrolment?</translation>
-<translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3521405806571557477">Delete saved data for <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Change disk size</translation>
 <translation id="3522088408596898827">Disk space is critically low. Free up disk space and try again.</translation>
@@ -6785,7 +6785,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scroll up to move the page down</translation>
-<translation id="6356893102071098867">Check that you chose the right account</translation>
+<translation id="6356893102071098867">Check that you chose the right account.</translation>
 <translation id="6357305427698525450">Some supported links will still open in <ph name="APP_NAME" /> or <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Other Stable Identifiers (e.g., Hashes or UUIDs)</translation>
 <translation id="6358884629796491903">Dragon</translation>

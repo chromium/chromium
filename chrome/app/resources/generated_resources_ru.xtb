@@ -1539,7 +1539,7 @@
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Это устройство (серийный номер: <ph name="SERIAL_NUMBER" />) было заблокировано.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Управление устройствами Chrome с <ph name="MS_AD_NAME" /> больше не поддерживается. Чтобы войти в аккаунт, используйте другое устройство или обратитесь к администратору.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Выполнить вход</translation>
-<translation id="2173302385160625112">Проверьте подключение к Интернету</translation>
+<translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2173801458090845390">Добавить к устройству идентификатор заявки</translation>
 <translation id="2175384018164129879">&amp;Управление поисковыми системами и поиском по сайту</translation>
 <translation id="217576141146192373">Не удалось добавить принтер. Проверьте его настройки и повторите попытку.</translation>
