@@ -407,8 +407,11 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
       /*navigation_response_task_runner=*/nullptr);
 
-  devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
-      this, &factory_params->factory_override);
+  if (auto param = devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+          ForSharedWorker(this)) {
+    param->Run(/*is_navigation=*/false, /*is_download=*/false, factory_builder,
+               &factory_params->factory_override);
+  }
 
   return std::move(factory_builder)
       .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(

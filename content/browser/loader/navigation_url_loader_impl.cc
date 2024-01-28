@@ -1492,10 +1492,11 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       content::GetUIThreadTaskRunner(
           {content::BrowserTaskType::kNavigationNetworkResponse}));
-  devtools_instrumentation::WillCreateURLLoaderFactory(
-      frame_tree_node->current_frame_host(), /*is_navigation=*/true,
-      /*is_download=*/false, factory_builder,
-      /*factory_override=*/nullptr);
+  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+      frame_tree_node->current_frame_host())
+      .Run(/*is_navigation=*/true,
+           /*is_download=*/false, factory_builder,
+           /*factory_override=*/nullptr);
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory;
   if (header_client) {
@@ -1701,9 +1702,11 @@ void NavigationURLLoaderImpl::
   // interception.  Let's try to be more consistent / less ad-hoc.
   if (url.SchemeIs(url::kFileScheme)) {
     if (frame_tree_node) {  // May be nullptr in some unit tests.
-      devtools_instrumentation::WillCreateURLLoaderFactory(
-          frame, /*is_navigation=*/true, /*is_download=*/false, factory_builder,
-          /*factory_override=*/nullptr);
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          frame)
+          .Run(
+              /*is_navigation=*/true, /*is_download=*/false, factory_builder,
+              /*factory_override=*/nullptr);
     }
   }
 

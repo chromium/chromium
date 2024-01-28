@@ -220,9 +220,11 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
 
   if (rfh) {
     // Allow DevTools to potentially inject itself into `factory_builder`.
-    devtools_instrumentation::WillCreateURLLoaderFactory(
-        static_cast<RenderFrameHostImpl*>(rfh), /*is_navigation=*/true,
-        /*is_download=*/true, factory_builder, nullptr /* factory_override */);
+    devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+        static_cast<RenderFrameHostImpl*>(rfh))
+        .Run(/*is_navigation=*/true,
+             /*is_download=*/true, factory_builder,
+             nullptr /* factory_override */);
 
     // Also allow the Content embedder to inject itself if it wants to.
     GetContentClient()->browser()->WillCreateURLLoaderFactory(

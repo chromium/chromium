@@ -1872,10 +1872,11 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
   // If we have a version_id, we are fetching a worker main script. We have a
   // DevtoolsAgentHost ready for the worker and we can add the devtools override
   // before instantiating the URLFactoryLoader.
-  if (version_id.has_value()) {
-    devtools_instrumentation::
-        WillCreateURLLoaderFactoryForServiceWorkerMainScript(
-            this, version_id.value(), factory_builder);
+  if (auto params = devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+          ForServiceWorkerMainScript(this, version_id)) {
+    params->Run(
+        /*is_navigation=*/true, /*is_download=*/false, factory_builder,
+        /*factory_override=*/nullptr);
   }
 
   bool use_client_header_factory = header_client.is_valid();

@@ -440,9 +440,10 @@ void WorkerScriptFetcher::CreateScriptLoader(
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
 
-    devtools_instrumentation::WillCreateURLLoaderFactoryForWorkerMainScript(
-        devtools_agent_host, devtools_worker_token,
-        &factory_params->factory_override);
+    devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+        ForWorkerMainScript(devtools_agent_host, devtools_worker_token)
+            .Run(/*is_navigation=*/false, /*is_download=*/false,
+                 factory_builder, &factory_params->factory_override);
     std::move(factory_builder)
         .Finish(factory_bundle_for_browser_info->pending_default_factory()
                     .InitWithNewPipeAndPassReceiver(),

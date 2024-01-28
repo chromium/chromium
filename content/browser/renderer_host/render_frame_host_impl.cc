@@ -11528,9 +11528,10 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
       disable_secure_dns, factory_override, /*navigation_task_runner=*/nullptr);
 
   // Keep DevTools proxy last, i.e. closest to the network.
-  devtools_instrumentation::WillCreateURLLoaderFactory(
-      this, /*is_navigation=*/false, /*is_download=*/false, factory_builder,
-      factory_override);
+  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(this)
+      .Run(
+          /*is_navigation=*/false, /*is_download=*/false, factory_builder,
+          factory_override);
 }
 
 bool RenderFrameHostImpl::CanExecuteJavaScript() {

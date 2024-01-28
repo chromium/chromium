@@ -905,8 +905,10 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
       &bypass_redirect_checks, nullptr /* disable_secure_dns */,
       &factory_params->factory_override,
       /*navigation_response_task_runner=*/nullptr);
-  devtools_instrumentation::WillCreateURLLoaderFactoryForServiceWorker(
-      rph, routing_id, &factory_params->factory_override);
+  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForServiceWorker(
+      *rph, routing_id)
+      .Run(/*is_navigation=*/false, /*is_download=*/false, factory_builder,
+           &factory_params->factory_override);
 
   std::move(factory_builder)
       .Finish(std::move(default_factory_receiver), rph,
