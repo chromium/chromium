@@ -39,6 +39,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "media/media_buildflags.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -526,16 +527,13 @@ void MockRenderProcessHost::CreateURLLoaderFactory(
   DCHECK(params);
   DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
 
-  if (GetNetworkFactoryCallback().is_null()) {
-    GetStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
-        std::move(receiver), std::move(params));
-  } else {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
-    GetStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
-        original_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-    GetNetworkFactoryCallback().Run(std::move(receiver), GetID(),
-                                    std::move(original_factory));
+  network::URLLoaderFactoryBuilder factory_builder;
+  if (GetNetworkFactoryCallback()) {
+    GetNetworkFactoryCallback().Run(GetID(), factory_builder);
   }
+  std::move(factory_builder)
+      .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),
+              std::move(params));
 }
 
 bool MockRenderProcessHost::MayReuseHost() {

@@ -191,6 +191,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -2874,16 +2875,13 @@ void RenderProcessHostImpl::CreateURLLoaderFactory(
   DCHECK(params);
   DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
 
-  if (GetCreateNetworkFactoryCallback().is_null()) {
-    storage_partition_impl_->GetNetworkContext()->CreateURLLoaderFactory(
-        std::move(receiver), std::move(params));
-  } else {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
-    storage_partition_impl_->GetNetworkContext()->CreateURLLoaderFactory(
-        original_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-    GetCreateNetworkFactoryCallback().Run(std::move(receiver), GetID(),
-                                          std::move(original_factory));
+  network::URLLoaderFactoryBuilder factory_builder;
+  if (GetCreateNetworkFactoryCallback()) {
+    GetCreateNetworkFactoryCallback().Run(GetID(), factory_builder);
   }
+  std::move(factory_builder)
+      .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),
+              std::move(params));
 }
 
 bool RenderProcessHostImpl::MayReuseHost() {

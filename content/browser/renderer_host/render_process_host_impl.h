@@ -114,6 +114,10 @@ class AssociatedInterfaceRegistry;
 class StorageKey;
 }  // namespace blink
 
+namespace network {
+class URLLoaderFactoryBuilder;
+}  // namespace network
+
 namespace perfetto {
 namespace protos {
 namespace pbzero {
@@ -795,10 +799,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Passing a null callback will restore the default behavior.
   // This method must be called either on the UI thread or before threads start.
   // This |url_loader_factory_callback| is run on the UI thread.
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      int worker_process_id,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory)>;
+  using CreateNetworkFactoryCallback = base::RepeatingCallback<
+      void(int process_id, network::URLLoaderFactoryBuilder& factory_builder)>;
   static void SetNetworkFactoryForTesting(
       const CreateNetworkFactoryCallback& url_loader_factory_callback);
 

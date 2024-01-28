@@ -43,6 +43,8 @@ class StorageKey;
 }  // namespace blink
 
 namespace network {
+class URLLoaderFactoryBuilder;
+
 namespace mojom {
 
 class URLLoaderFactory;
@@ -92,10 +94,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   // Simulates async launch happening.
   void SimulateReady();
 
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      int process_id,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory)>;
+  using CreateNetworkFactoryCallback = base::RepeatingCallback<
+      void(int process_id, network::URLLoaderFactoryBuilder& factory_builder)>;
   static void SetNetworkFactory(
       const CreateNetworkFactoryCallback& url_loader_factory_callback);
 
