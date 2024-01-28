@@ -85,18 +85,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   ~NavigationURLLoaderImpl() override;
 
-  // TODO(kinuko): Some method parameters can probably be just kept as
-  // member variables rather than being passed around.
-
-  // Intercepts loading of frame requests when network service is enabled and
-  // either a network::mojom::TrustedURLLoaderHeaderClient is being used or
-  // for schemes not handled by network service (e.g. files). This must be
-  // called on the UI thread or before threads start.
-  using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      network::URLLoaderFactoryBuilder& factory_builder)>;
-  static void SetURLLoaderFactoryInterceptorForTesting(
-      const URLLoaderFactoryInterceptor& interceptor);
-
   // Creates a URLLoaderFactory for a navigation. The factory uses
   // `header_client`. This should have the same settings as the factory from
   // the URLLoaderFactoryGetter. Called on the UI thread.

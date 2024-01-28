@@ -35,6 +35,7 @@
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -185,9 +186,6 @@ class NavigationTimingThrottle : public blink::URLLoaderThrottle {
   bool is_outermost_main_frame_;
   base::TimeTicks start_;
 };
-
-base::LazyInstance<NavigationURLLoaderImpl::URLLoaderFactoryInterceptor>::Leaky
-    g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
 
 const net::NetworkTrafficAnnotationTag kNavigationUrlLoaderTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("navigation_url_loader", R"(
@@ -748,8 +746,9 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
   scoped_refptr<network::SharedURLLoaderFactory> factory;
   network::URLLoaderFactoryBuilder factory_builder;
 
-  if (g_loader_factory_interceptor.Get()) {
-    g_loader_factory_interceptor.Get().Run(factory_builder);
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(
+        network::mojom::kBrowserProcessId, factory_builder);
   }
 
   if (!base::Contains(known_schemes_, resource_request_->url.scheme())) {
@@ -1643,14 +1642,6 @@ void NavigationURLLoaderImpl::NotifyRequestFailed(
 }
 
 // static
-void NavigationURLLoaderImpl::SetURLLoaderFactoryInterceptorForTesting(
-    const URLLoaderFactoryInterceptor& interceptor) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-  g_loader_factory_interceptor.Get() = interceptor;
-}
-
-// static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
@@ -1659,8 +1650,10 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     StoragePartitionImpl* partition) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (g_loader_factory_interceptor.Get())
-    g_loader_factory_interceptor.Get().Run(factory_builder);
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(
+        network::mojom::kBrowserProcessId, factory_builder);
+  }
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();

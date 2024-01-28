@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -60,8 +59,6 @@ class IsolationInfo;
 }  // namespace net
 
 namespace network {
-class URLLoaderFactoryBuilder;
-
 namespace mojom {
 class SharedDictionaryAccessObserver;
 }  // namespace mojom
@@ -128,16 +125,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // StoragePartition uses. This method generates that representation.
   static storage::QuotaClientTypes GenerateQuotaClientTypes(
       uint32_t remove_mask);
-
-  // Allows overriding the URLLoaderFactory creation for
-  // GetURLLoaderFactoryForBrowserProcess.
-  // Passing a null callback will restore the default behavior.
-  // This method must be called either on the UI thread or before threads start.
-  // This callback is run on the UI thread.
-  using CreateNetworkFactoryCallback = base::RepeatingCallback<void(
-      network::URLLoaderFactoryBuilder& factory_builder)>;
-  static void SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-      CreateNetworkFactoryCallback url_loader_factory_callback);
 
   // Forces Storage Service instances to be run in-process.
   static void ForceInProcessStorageServiceForTesting();

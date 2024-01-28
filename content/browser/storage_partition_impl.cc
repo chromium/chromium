@@ -28,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -79,6 +78,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network/shared_dictionary_util.h"
@@ -271,14 +271,6 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
     }
   }
   return remote;
-}
-
-// A callback to create a URLLoaderFactory that is used in tests.
-StoragePartitionImpl::CreateNetworkFactoryCallback&
-GetCreateURLLoaderFactoryCallback() {
-  static base::NoDestructor<StoragePartitionImpl::CreateNetworkFactoryCallback>
-      create_factory_callback;
-  return *create_factory_callback;
 }
 
 void OnClearedCookies(base::OnceClosure callback, uint32_t num_deleted) {
@@ -851,18 +843,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
   }
   return quota_client_types;
-}
-
-// static
-void StoragePartitionImpl::
-    SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-        CreateNetworkFactoryCallback url_loader_factory_callback) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(!url_loader_factory_callback || !GetCreateURLLoaderFactoryCallback())
-      << "It is not expected that this is called with non-null callback when "
-      << "another overriding callback is already set.";
-  GetCreateURLLoaderFactoryCallback() = std::move(url_loader_factory_callback);
 }
 
 // static
@@ -3398,16 +3378,17 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal() {
   if (url_loader_factory_for_browser_process_ &&
       url_loader_factory_for_browser_process_.is_connected() &&
       is_test_url_loader_factory_for_browser_process_ ==
-          !!GetCreateURLLoaderFactoryCallback()) {
+          !!url_loader_factory::GetTestingInterceptor()) {
     return url_loader_factory_for_browser_process_.get();
   }
 
   is_test_url_loader_factory_for_browser_process_ =
-      !!GetCreateURLLoaderFactoryCallback();
+      !!url_loader_factory::GetTestingInterceptor();
 
   network::URLLoaderFactoryBuilder factory_builder;
-  if (GetCreateURLLoaderFactoryCallback()) {
-    GetCreateURLLoaderFactoryCallback().Run(factory_builder);
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(
+        network::mojom::kBrowserProcessId, factory_builder);
   }
   url_loader_factory_for_browser_process_ =
       mojo::Remote<network::mojom::URLLoaderFactory>(

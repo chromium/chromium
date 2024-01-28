@@ -20,12 +20,9 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
-#include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -336,7 +333,7 @@ class URLLoaderInterceptor::Wrapper final {
 
   ~Wrapper() = default;
 
-  Interceptor& GetInterceptor() { return interceptor_; }
+  Interceptor& GetTestingInterceptor() { return interceptor_; }
 
  private:
   network::mojom::URLLoaderFactory* GetOriginalFactory() {
@@ -363,26 +360,8 @@ URLLoaderInterceptor::URLLoaderInterceptor(
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
          BrowserThread::CurrentlyOn(BrowserThread::UI));
   use_runloop_ = !ready_callback;
-  RenderProcessHostImpl::SetNetworkFactoryForTesting(base::BindRepeating(
+  url_loader_factory::SetInterceptorForTesting(base::BindRepeating(
       &URLLoaderInterceptor::InterceptorCallback, base::Unretained(this)));
-  MockRenderProcessHost::SetNetworkFactory(base::BindRepeating(
-      &URLLoaderInterceptor::InterceptorCallback, base::Unretained(this)));
-
-  StoragePartitionImpl::
-      SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-          base::BindRepeating(&URLLoaderInterceptor::InterceptorCallback,
-                              base::Unretained(this),
-                              network::mojom::kBrowserProcessId));
-
-  NavigationURLLoaderImpl::SetURLLoaderFactoryInterceptorForTesting(
-      base::BindRepeating(&URLLoaderInterceptor::InterceptorCallback,
-                          base::Unretained(this),
-                          network::mojom::kBrowserProcessId));
-
-  ServiceWorkerContextWrapper::SetURLLoaderFactoryInterceptorForTesting(
-      base::BindRepeating(&URLLoaderInterceptor::InterceptorCallback,
-                          base::Unretained(this),
-                          network::mojom::kBrowserProcessId));
 
   if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
     if (use_runloop_) {
@@ -416,21 +395,7 @@ URLLoaderInterceptor::~URLLoaderInterceptor() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   io_thread_->UnsetParent();
 
-  RenderProcessHostImpl::SetNetworkFactoryForTesting(
-      RenderProcessHostImpl::CreateNetworkFactoryCallback());
-
-  StoragePartitionImpl::
-      SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
-          StoragePartitionImpl::CreateNetworkFactoryCallback());
-
-  NavigationURLLoaderImpl::SetURLLoaderFactoryInterceptorForTesting(
-      NavigationURLLoaderImpl::URLLoaderFactoryInterceptor());
-
-  ServiceWorkerContextWrapper::SetURLLoaderFactoryInterceptorForTesting(
-      ServiceWorkerContextWrapper::URLLoaderFactoryInterceptor());
-
-  MockRenderProcessHost::SetNetworkFactory(
-      MockRenderProcessHost::CreateNetworkFactoryCallback());
+  url_loader_factory::SetInterceptorForTesting({});
 
   if (use_runloop_) {
     base::RunLoop run_loop;
@@ -667,7 +632,7 @@ void URLLoaderInterceptor::IOState::CreateURLLoaderFactoryForRenderProcess(
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
   auto wrapper = std::make_unique<Wrapper>(
       this, std::move(receiver), process_id, std::move(original_factory));
-  wrapper->GetInterceptor().SetConnectionErrorHandler(
+  wrapper->GetTestingInterceptor().SetConnectionErrorHandler(
       base::BindOnce(&URLLoaderInterceptor::IOState::WrapperBindingError,
                      base::Unretained(this), base::Unretained(wrapper.get())));
   subresource_wrappers_.emplace(std::move(wrapper));

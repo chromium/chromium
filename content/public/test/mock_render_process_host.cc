@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +22,7 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -46,13 +46,6 @@
 namespace content {
 
 namespace {
-
-MockRenderProcessHost::CreateNetworkFactoryCallback&
-GetNetworkFactoryCallback() {
-  static base::NoDestructor<MockRenderProcessHost::CreateNetworkFactoryCallback>
-      callback;
-  return *callback;
-}
 
 StoragePartitionConfig GetOrCreateStoragePartitionConfig(
     BrowserContext* browser_context,
@@ -134,12 +127,6 @@ void MockRenderProcessHost::SimulateReady() {
   is_ready_ = true;
   for (auto& observer : observers_)
     observer.RenderProcessReady(this);
-}
-
-// static
-void MockRenderProcessHost::SetNetworkFactory(
-    const CreateNetworkFactoryCallback& create_network_factory_callback) {
-  GetNetworkFactoryCallback() = create_network_factory_callback;
 }
 
 bool MockRenderProcessHost::Init() {
@@ -528,8 +515,8 @@ void MockRenderProcessHost::CreateURLLoaderFactory(
   DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
 
   network::URLLoaderFactoryBuilder factory_builder;
-  if (GetNetworkFactoryCallback()) {
-    GetNetworkFactoryCallback().Run(GetID(), factory_builder);
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(GetID(), factory_builder);
   }
   std::move(factory_builder)
       .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),

@@ -1287,6 +1287,8 @@ source_set("browser") {
     "loader/subresource_proxying_url_loader.h",
     "loader/subresource_proxying_url_loader_service.cc",
     "loader/subresource_proxying_url_loader_service.h",
+    "loader/url_loader_factory_utils.cc",
+    "loader/url_loader_factory_utils.h",
     "loader/url_loader_throttles.cc",
     "locks/lock_manager.cc",
     "locks/lock_manager.h",

@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,6 +30,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
@@ -89,9 +89,6 @@ BASE_FEATURE(kServiceWorkerStorageControlOnThreadPool,
 
 const base::FeatureParam<int> kUpdateDelayParam{
     &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
-
-base::LazyInstance<ServiceWorkerContextWrapper::URLLoaderFactoryInterceptor>::
-    Leaky g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
 
 void DidFindRegistrationForStartActiveWorker(
     ServiceWorkerContextWrapper::StatusCallback callback,
@@ -1826,14 +1823,6 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(
       /*version_id=*/std::nullopt, std::move(client_security_state));
 }
 
-// static
-void ServiceWorkerContextWrapper::SetURLLoaderFactoryInterceptorForTesting(
-    const URLLoaderFactoryInterceptor& interceptor) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-  g_loader_factory_interceptor.Get() = interceptor;
-}
-
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
     const GURL& scope,
@@ -1898,8 +1887,9 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     DCHECK(storage_partition());
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
-      if (g_loader_factory_interceptor.Get()) {
-        g_loader_factory_interceptor.Get().Run(factory_builder);
+      if (url_loader_factory::GetTestingInterceptor()) {
+        url_loader_factory::GetTestingInterceptor().Run(
+            network::mojom::kBrowserProcessId, factory_builder);
       }
 
       network::mojom::URLLoaderFactoryParamsPtr params =

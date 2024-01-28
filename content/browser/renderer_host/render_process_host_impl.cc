@@ -99,6 +99,7 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
@@ -987,13 +988,6 @@ GetBindHostReceiverInterceptor() {
   static base::NoDestructor<RenderProcessHost::BindHostReceiverInterceptor>
       interceptor;
   return *interceptor;
-}
-
-RenderProcessHostImpl::CreateNetworkFactoryCallback&
-GetCreateNetworkFactoryCallback() {
-  static base::NoDestructor<RenderProcessHostImpl::CreateNetworkFactoryCallback>
-      s_callback;
-  return *s_callback;
 }
 
 RenderProcessHostImpl::BadMojoMessageCallbackForTesting&
@@ -2856,18 +2850,6 @@ ProcessLock RenderProcessHostImpl::GetProcessLock() const {
   return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
 }
 
-// static
-void RenderProcessHostImpl::SetNetworkFactoryForTesting(
-    const CreateNetworkFactoryCallback& create_network_factory_callback) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(create_network_factory_callback.is_null() ||
-         GetCreateNetworkFactoryCallback().is_null())
-      << "It is not expected that this is called with non-null callback when "
-      << "another overriding callback is already set.";
-  GetCreateNetworkFactoryCallback() = create_network_factory_callback;
-}
-
 void RenderProcessHostImpl::CreateURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     network::mojom::URLLoaderFactoryParamsPtr params) {
@@ -2876,8 +2858,8 @@ void RenderProcessHostImpl::CreateURLLoaderFactory(
   DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
 
   network::URLLoaderFactoryBuilder factory_builder;
-  if (GetCreateNetworkFactoryCallback()) {
-    GetCreateNetworkFactoryCallback().Run(GetID(), factory_builder);
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(GetID(), factory_builder);
   }
   std::move(factory_builder)
       .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),
