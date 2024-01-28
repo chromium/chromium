@@ -258,6 +258,7 @@
 <translation id="1442987760062738829">पंच</translation>
 <translation id="1446396933673057385">अचूकतेची तपासणी</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" या की "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" कीच्या समान डिक्शनरीमध्ये सेट केल्या जाऊ शकत नाहीत</translation>
 <translation id="1452803302401719440">तुमच्या पालकांनी निवडलेल्या सेटिंग्ज आता तुम्हाला ऑनलाइन आणखी सुरक्षित ठेवत आहेत</translation>
 <translation id="1455413310270022028">खोडरबर</translation>
 <translation id="1458140305240870199">अंतर्वस्‍त्रे</translation>
@@ -769,6 +770,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">तुम्ही लॉग इन केलेले असताना या डिव्हाइसला अटॅच केलेली उपकरणे</translation>
 <translation id="2450021089947420533">प्रवास</translation>
+<translation id="2452837234288608067">त्याबाबतीत मदत करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="2456755709261364512">तुमची बॅटरी <ph name="REQUIRED_BATTERY_PRECENT" />% पेक्षा जास्त चार्ज असणे आवश्यक आहे</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> शोधा</translation>
 <translation id="2463739503403862330">भरून टाका</translation>
@@ -910,6 +912,7 @@
 <translation id="2725927759457695883">संपूर्ण नाव भरा</translation>
 <translation id="2726001110728089263">बाजूचा ट्रे</translation>
 <translation id="2728127805433021124">एक कमकुवत स्वाक्षरी अल्गोरिदम वापरून सर्व्हरचे सर्टिफिकेट साइन केले आहे.</translation>
+<translation id="272937284275742856">तुमच्या पेमेंट तपशिलांची सुरक्षितरीत्या पडताळणी करत आहे...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />कनेक्टिव्हिटी निदान चालविणे<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">शास्त्रीय संगीत</translation>
 <translation id="2731382536835015353">44 x 68 in</translation>
@@ -1009,6 +1012,7 @@
 <translation id="2958544468932521864">क्रिकेट</translation>
 <translation id="2959113999220720579">चेहरा आणि शरीराची निगा</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
+<translation id="2967098518029543669">तो तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="2968103128155246731">व्हॅन आणि मिनीव्हॅन</translation>
 <translation id="2972581237482394796">&amp;पुन्हा करा</translation>
 <translation id="2977665033722899841">सध्या निवडलेली <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
@@ -1382,6 +1386,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> अंकी पडताळणी कोड एंटर करा</translation>
 <translation id="3681007416295224113">सर्टिफिकेट माहिती</translation>
 <translation id="3681421644246505351">Chrome हे तुमच्या अलीकडील ब्राउझिंग इतिहासावर आधारित विषयांची नोंद ठेवते.</translation>
+<translation id="3682094733650754138">पत्ता भरा हा पर्याय निवडला होता</translation>
 <translation id="3689867156802445220">इमारत क्रमांक</translation>
 <translation id="3693327506115126094">हे तुम्हीच आहात याची पडताळणी कशी कराल ते निवडा</translation>
 <translation id="3698629142018988477">साइट तयार करा बटण, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
@@ -2790,6 +2795,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> ला तुमची MIDI डिव्हाइस वापरायची आहेत</translation>
 <translation id="6493924760403974580">हे अ‍ॅप फक्त या आकाराला सपोर्ट करते.</translation>
 <translation id="6494750904506170417">पॉप-अप आणि रीडिरेक्ट</translation>
+<translation id="6495664197699704593">हा पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">व्यवसायासंबंधित कामकाज</translation>
 <translation id="6499038740797743453">पासवर्ड रीसेट करायचा?</translation>
 <translation id="6502510275417601303">नवीन पेमेंट सेटिंगबद्दलची सूचना बंद केली आहे</translation>
@@ -2904,6 +2910,7 @@
 <translation id="6732087373923685049">कॅमेरा</translation>
 <translation id="6737708609449480586">बेक केलेले खाद्यपदार्थ</translation>
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
+<translation id="6740851646645036700">तुम्ही सध्या तुमच्या लिहिण्याची मर्यादा गाठली आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="674375294223700098">अज्ञात सर्व्हर सर्टिफिकेट एरर.</translation>
 <translation id="6744009308914054259">कनेक्शनची वाट पाहत असताना, तुम्ही ऑफलाइन लेख वाचण्यासाठी डाउनलोडवर जाऊ शकता.</translation>
 <translation id="6745592621698551453">आता अपडेट करा</translation>
@@ -2960,6 +2967,7 @@
 <translation id="6860888819347870819">चित्रात-चित्र यामध्ये प्रवेश करण्याची विनंती करू शकते</translation>
 <translation id="6864189428899665393">२६७ x ३८९ मिमी</translation>
 <translation id="686485648936420384">ग्राहक संसाधने</translation>
+<translation id="6865166112578825782">पत्ता भरा</translation>
 <translation id="6865412394715372076">या कार्डची पडताळणी आता करू शकत नाही</translation>
 <translation id="6868573634057275953">अपडेट पुन्‍हा सुरू करा</translation>
 <translation id="6869334554832814367">वैयक्तिक कर्ज</translation>
@@ -3429,6 +3437,7 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701544340847569275">अपडेट हे एररसह पूर्ण झाले</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> (असुरक्षित) वर सुरू ठेवा<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">मला लिहिण्यात मदत कर</translation>
 <translation id="7705992072972338699">ऑप्टिकल डिस्क (हाय-ग्लॉस)</translation>
 <translation id="770607638235926858">स्कीइंग आणि स्नोबोर्डिंग</translation>
 <translation id="7706689436519265630">तुम्ही कॉपी केलेल्या किंवा हलवलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांनुसार स्टोअर केल्या जाऊ शकतात.</translation>
@@ -3648,6 +3657,7 @@
 <translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>
 <translation id="8163866351304776260">क्वाड पंच लेफ्ट</translation>
 <translation id="8164078261547504572">किमतीमध्ये घट झाल्यावर ईमेल मिळवायची आहेत का?</translation>
+<translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" या की समान डिक्शनरीमध्ये सेट केल्या जाऊ शकत नाहीत</translation>
 <translation id="8175796834047840627">तुम्ही साइन इन केले असल्यामुळे Chrome तुमच्या Google खात्यामध्ये तुमची कार्डे सेव्ह करत आहे. तुम्‍ही हे वर्तन सेटिंग्‍जमध्‍ये बदलू शकता.</translation>
 <translation id="8176440868214972690">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
 <translation id="817820454357658398">महिलांसाठी स्वच्छतेसंबंधित उत्पादने</translation>
@@ -4043,6 +4053,7 @@
 <translation id="8949410982325929394">टोन</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कायदा आणि सरकार</translation>
+<translation id="8952569554322479410">वेबसाइटने नुकतीच तुमचा <ph name="REQUEST_TYPE" /> अ‍ॅक्सेस करण्याची विनंती केली. हे १ मिनिटाचे सर्वेक्षण पूर्ण करून वेबसाइट या अ‍ॅक्सेस कशा मागतात यामध्ये सुधारणा करण्यात आम्हाला मदत करा.</translation>
 <translation id="8954252855949068147">पोशाख</translation>
 <translation id="8956124158020778855">तुम्ही हे सेटिंग सुरू केल्यानंतर, लिहिणे सुरू करण्यासाठी या टॅबवर परत या.</translation>
 <translation id="8957210676456822347">बंद पोर्टल प्राधिकृतता</translation>

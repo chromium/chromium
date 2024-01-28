@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">गुणा</translation>
 <translation id="1145018782460575098">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट करण्याची विंडो खुली आहे. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध आहेत.</translation>
 <translation id="1145516343487477149">मदतपर लेख आणि Chromebook शी संबंधित सामान्य प्रश्नांची उत्तरे पहा</translation>
 <translation id="1154390310959620237">तुम्ही फक्त ५ शॉर्टकट कस्टमाइझ करू शकता. नवीन शॉर्टकट जोडण्यासाठी आधीचा शॉर्टकट हटवा.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कॅन क्षेत्रावर फिट करा</translation>
 <translation id="1367951781824006909">फाइल निवडा</translation>
+<translation id="1371650399987522809">Google AI द्वारे सक्षम केलेल्या वॉलपेपरसाठी फीडबॅक</translation>
 <translation id="1387854245479784695">हे सर्व कोअरचे एकत्रीकरण आहे</translation>
 <translation id="1394661041439318933">डिव्हाइसच्या केसच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">बॅकलिटचा रंग</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट करू शकत नाही</translation>
+<translation id="1566493343215789965">भाग</translation>
 <translation id="1567064801249837505">अल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर म्हणून सेट करा</translation>
 <translation id="1578784163189013834">स्क्रीन सेव्हर बॅकग्राउंड निवडा</translation>
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
+<translation id="1615576200479539465">इमेज जनरेट करत आहे...</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1626590945318984973">शॉर्टकट उपलब्ध नाही. फंक्शन आणि <ph name="META_KEY" /> की न वापरता नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रीन सेव्हर</translation>
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
+<translation id="2938573842839598578">अंदाजे परिणामासाठी, <ph name="CATEGORY_TEXT" /> ही <ph name="CONVERSION_RATE" /> ने <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लिड पुन्हा उघडा.</translation>
 <translation id="2941112035454246133">निम्न</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
+<translation id="3547264467365135390">फॉर्म्युला</translation>
 <translation id="3557205324756024651">स्थानिक आयडेंटिटी (पर्यायी)</translation>
 <translation id="3565064564551103223">आयपीना अनुमती दिली</translation>
 <translation id="3569407787324516067">स्क्रीन सेव्हर</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7184043045742675738">तुमचे बटण कस्टमाइझ करण्यासाठी कोणत्याही कीवर क्लिक करा. माउस आणि अ‍ॅरो की वापरून कीची स्थिती पुन्हा बदला.</translation>
+<translation id="7206979415662233817">सेवा अटी</translation>
 <translation id="7212547870105584639">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेटदरम्यान कनेक्शन तयार करतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">कीबोर्डचा रंग</translation>
 <translation id="7317831949569936035">शाळेशी संबंधित नोंदणी</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">तुमचे वय किमान १८ वर्षे असणे आणि तुमचा AI वॉलपेपरचा वापर हा <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google सेवा अटी<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> व <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जनरेटिव्ह AI अतिरिक्त सेवा अटी<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> यांच्या अधीन असल्याची सहमती दर्शवणे आवश्यक आहे.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          तुम्ही फक्त वैयक्तिक आणि अव्यावसायिक वापरासाठी AI सह वॉलपेपर तयार करू शकता. तुम्ही वॉलपेपरसंबंधित मदत मिळवता, तेव्हा <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google चे गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> याच्या अधीन वॉलपेपर सूचना जनरेट करण्यासाठी Google AI सर्व्हरना मजकूर पाठवला जातो. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> पैकी <ph name="LIST_POSITION" /> शोध परिणाम: <ph name="SEARCH_RESULT_TEXT" />. शॉर्टकटवर नेव्हिगेट करण्यासाठी एंटर प्रेस करा.</translation>

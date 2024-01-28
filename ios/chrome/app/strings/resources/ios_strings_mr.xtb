@@ -163,6 +163,7 @@
 <translation id="1847795903283049083">तुम्ही हे आयटम तुमचे बुकमार्क, वाचन सूची किंवा पासवर्ड व्यवस्थापक यांमध्येदेखील पाहू आणि व्यवस्थापित करू शकता.</translation>
 <translation id="1870148520156231997">पासवर्ड दाखवा</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">हा आयटम दिसतो</translation>
 <translation id="1882901927376062252">{count,plural, =1{बुकमार्क तुमच्या Google खाते मध्ये सेव्ह केला आहे, {email}}other{{count} बुकमार्क तुमच्या Google खाते मध्ये सेव्ह केले आहेत, {email}}}</translation>
 <translation id="1883255238294161206">सूची कोलॅप्स</translation>
@@ -181,6 +182,7 @@
 <translation id="1956138802718275401">होम स्क्रीनवरून पासवर्ड मिळवा</translation>
 <translation id="1959441496380398824">तारखेला स्पर्श करून धरून ठेवा.</translation>
 <translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
+<translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> यांनी तुमच्यासोबत <ph name="WEBSITE" /> चा पासवर्ड शेअर केला आहे</translation>
 <translation id="1967461193809857427">{count,plural, =1{तुम्ही Android वर सोडलेला टॅब निवडायचा आहे का?}other{तुम्ही Android वर सोडलेले टॅब निवडायचे आहेत का?}}</translation>
 <translation id="1972325230031091483">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
@@ -215,6 +217,7 @@
 <translation id="2139502497535990641">किमतीविषयी सूचना सुरू करायच्या आहेत का?</translation>
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
 <translation id="214201757571129614">साइन इन करा…</translation>
+<translation id="2147127444698817042">फक्त iPhone वर उपलब्ध</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2175927920773552910">QR कोड</translation>
@@ -227,6 +230,7 @@
 <translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
 <translation id="2251686759395008410">मेनू → इतिहास</translation>
 <translation id="2252674110805316998">वेब शोध</translation>
+<translation id="2252749852083403809"><ph name="USER_EMAIL" /> साठी Drive मध्ये सेव्ह करत आहे.</translation>
 <translation id="2256933947031277845">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते.</translation>
 <translation id="2258326562203545455">{count,plural, =1{तुम्ही तुमचा बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह करू शकता.}other{तुम्ही तुमचे बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह करू शकता.}}</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
@@ -388,6 +392,7 @@
 <translation id="2982481275546140226">डेटा साफ करा</translation>
 <translation id="298306318844797842">पेमेंट पद्धत जोडा…</translation>
 <translation id="2989805286512600854">नवीन टॅबमध्ये उघडा</translation>
+<translation id="300455800299409273">"या टॅब वर पुढे सुरू ठेवा" हे लपवा</translation>
 <translation id="3010025794097054078">डेटा भंग, असुरक्षित वेबसाइट आणि बऱ्याच गोष्टींपासून सुरक्षित रहा.</translation>
 <translation id="3010171936431626919">मला कसे ते दाखवा</translation>
 <translation id="3020183492814296499">शॉर्टकट</translation>
@@ -535,6 +540,7 @@
 <translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3832419617903252251">पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="3835964409414434850">पुढील टॅब वर जा</translation>
+<translation id="383781833195845844">या टॅब वर पुढे सुरू ठेवा</translation>
 <translation id="3838691874161539578">तुमची सुरक्षा मजबूत करण्यासाठी आणि ऑनलाइन सुरक्षित राहण्यासाठी तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> आणि <ph name="NUMBER_OF_ACCOUNTS" /> इतर खात्यांचे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
@@ -753,6 +759,7 @@
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
+<translation id="4989065233040279145"><ph name="FILENAME" /> कुठे सेव्ह करायची आहे हे निवडा</translation>
 <translation id="4996567535980789550">तुम्हाला दिसत असलेला आशय व्यवस्थापित करण्यासाठी सिंक सुरू करा</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ला पाठवा</translation>
@@ -878,6 +885,7 @@
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">तुमच्या Google खाते मध्ये पासवर्ड वापरण्यासाठी आणि ते सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="5684761169742812828">हा पासवर्ड इंटरनेटवरील डेटा भंगामध्ये उघड झाला होता. तुम्‍हाला आता ते बदलण्‍यासाठी वेळ नसल्यास, नंतर आठवण करून देण्‍यासाठी Google ही चेतावणी ठेवण्‍याची शिफारस करते.</translation>
+<translation id="5694848685995373177"><ph name="USER_EMAIL" /> साठी Drive मध्ये सेव्ह केली आहे.</translation>
 <translation id="5701270923492462699">कॅमेरा अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="5702108177581350218">तुम्ही तुमचे वापरकर्ता नाव आणि पासवर्डची प्रत शेअर करता, तेव्हा तुमचा कुटुंब सदस्य Google Password Manager वापरून ते भरू शकतो.</translation>
 <translation id="5704908597376970822">साइन-इन करू शकत नाही.</translation>
@@ -1217,6 +1225,7 @@
 <translation id="7409985198648820906">न वाचलेले <ph name="UNREAD_COUNT" /> लेख.</translation>
 <translation id="7412027924265291969">पुढे सुरू ठेवा</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
+<translation id="7418640008860669073">यामध्ये सेव्ह करा...</translation>
 <translation id="7425346204213733349">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज मधील बदल यापुढे आपल्या Google खात्यावर संकालित केले जाणार नाहीत. तथापि, तुमचा विद्यमान डेटा आपल्या Google खात्यामध्ये संचयित केलेला असेल.</translation>
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
@@ -1235,6 +1244,7 @@
 <translation id="750149195207506638">बुकमार्क लपवलेले आहेत</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध नाहीत</translation>
 <translation id="750493650310597496">0 निवडले</translation>
+<translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">तुमचे गुप्त टॅब लॉक करण्यासाठी, टच आयडी, फेस आयडी किंवा पासकोड सेट करा.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7524055474074101597">सर्व अ‍ॅप्सवर तुमचे पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
@@ -1248,6 +1258,7 @@
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7561196759112975576">नेहमी</translation>
+<translation id="7564917801238348224">सेव्ह करा...</translation>
 <translation id="7582857256643797524">तुमच्या डिव्हाइसवर हे सेटिंग सुरू केलेले आहे</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
@@ -1414,6 +1425,7 @@
 <translation id="8428045167754449968">शहर / नगर</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428634594422941299">समजले</translation>
+<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) कुठे सेव्ह करायची आहे हे निवडा</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8449347986464073209">हटवा आणि साइन आउट करा</translation>
 <translation id="8459333855531264009">सुरक्षित नाही</translation>

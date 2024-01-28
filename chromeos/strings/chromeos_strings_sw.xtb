@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Hitilafu ya ndani</translation>
 <translation id="1124772482545689468">Mtumiaji</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">zidisha</translation>
 <translation id="1145018782460575098">Sasisho la programu dhibiti kwa ajili ya dirisha la vifaa vinavyochomekwa lipo wazi. Masasisho <ph name="NUM_UPDATES" /> yanapatikana.</translation>
 <translation id="1145516343487477149">Pata makala ya usaidizi na majibu ya maswali ya kawaida yanayohusu Chromebook</translation>
 <translation id="1154390310959620237">Unaweza kuweka mapendeleo ya njia 5 pekee za mkato. Futa njia ya mkato ili uweke nyingine mpya.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tosheza kwenye sehemu ya kuchanganua</translation>
 <translation id="1367951781824006909">Chagua faili</translation>
+<translation id="1371650399987522809">Maoni kuhusu mandhari yanayoendeshwa na Google AI</translation>
 <translation id="1387854245479784695">Huu ni ujumlisho wa viini vyote</translation>
 <translation id="1394661041439318933">Kiwango cha chaji cha kipochi ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">Lango linaweza Kuitwa</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">rangi ya mwangaza wa nyuma</translation>
 <translation id="1565038567006703504">Imeshindwa kusasisha <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">gawanya</translation>
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1578784163189013834">Chagua mandharinyuma ya taswira ya skrini</translation>
 <translation id="160633243685262989">Kagua kwanza Picha</translation>
 <translation id="1611649489706141841">sambaza</translation>
 <translation id="1615335640928990664">Matumizi ya data tangu <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Inazalisha picha...</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
 <translation id="1626590945318984973">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato bila kutumia vitufe vya utendaji na vya <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Inapakia</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="2880569433548999039">Taswira ya skrini kulingana mwelekeo wa mawingu</translation>
 <translation id="2926057806159140518">Weka neno lako la mtumiaji na nenosiri au uchanganue msimbo wako wa QR</translation>
+<translation id="2938573842839598578">Ili upate kadirio la matokeo, <ph name="OPERATOR_TEXT" /> thamani ya <ph name="CATEGORY_TEXT" /> kwa <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Huwezi kujaribu kifaa. Fungua tena kifuniko ili ujaribu.</translation>
 <translation id="2941112035454246133">Chini</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Sasisho la ChromeOS</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
+<translation id="3547264467365135390">Fomula</translation>
 <translation id="3557205324756024651">Utambulisho kutoka eneo ulipo (si lazima)</translation>
 <translation id="3565064564551103223">IP zilizoruhusiwa</translation>
 <translation id="3569407787324516067">Taswira ya skrini</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7180865173735832675">Binafsisha</translation>
 <translation id="7184043045742675738">Bofya kitufe chochote ili kuweka mapendeleo katika kitufe chako. Badilisha nafasi ya kitufe ukitumia kipanya au vitufe vya vishale.</translation>
+<translation id="7206979415662233817">Sheria na masharti</translation>
 <translation id="7212547870105584639">Dhibiti mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na intaneti. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Masasisho ya programu dhibiti kwa vifaa vya nje</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">rangi ya kibodi</translation>
 <translation id="7317831949569936035">Uandikishaji wa kifaa cha shuleni</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Ni lazima uwe na umri wa angalau miaka 18 na ukubali kuwa matumizi yako ya mandhari ya AI yanategemea <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Sheria na Masharti ya Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> na <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Sheria na Masharti ya Ziada ya AI Zalishi<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Unaweza tu kutayarisha mandhari ukitumia AI kwa matumizi binafsi na yasiyo ya kibiashara. Unapopata usaidizi wa mandhari, maandishi hutumwa kwenye seva za Google AI ili kuzalisha mapendekezo ya mandhari, yanayotegemea <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
 <translation id="7353413232959255829">Tokeo la utafutaji la <ph name="LIST_POSITION" /> kati ya <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Bonyeza "Enter" ili uende kwenye njia ya mkato.</translation>
