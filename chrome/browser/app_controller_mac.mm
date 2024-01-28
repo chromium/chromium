@@ -1951,13 +1951,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (const ui::ColorProvider&)lastActiveColorProvider {
-  // In rare situation the last active color provider is not properly tracked,
-  // probably because -windowDidBecomeMain: is not fired.
-  // TODO(crbug.com/1364279): DCHECK(_lastActiveColorProvider). If this is not
-  // possible, investigate if we should make a GetDefaultColorProvider(), or
-  // GetColorProviderForProfile().
+  // During the browser startup the creation of Browser and AppController is
+  // a race condition. The color provider will be missing if the browser is
+  // created later than the AppController.
   if (!_lastActiveColorProvider) {
-    base::debug::DumpWithoutCrashing();
     return *ui::ColorProviderManager::Get().GetColorProviderFor(
         ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
             nullptr));
