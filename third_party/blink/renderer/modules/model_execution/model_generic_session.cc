@@ -94,6 +94,7 @@ class ModelGenericSession::StreamingResponder final
                   const WTF::String& text) override {
     switch (status) {
       case mojom::blink::ModelStreamingResponseStatus::kOngoing: {
+        v8::HandleScope handle_scope(script_state_->GetIsolate());
         Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
         break;
       }
@@ -102,8 +103,8 @@ class ModelGenericSession::StreamingResponder final
         break;
       }
       case mojom::blink::ModelStreamingResponseStatus::kError: {
-        // TODO(leimy): raise the proper exception based on the spec after the
-        // prototype phase.
+        // TODO(crbug.com/1520700): raise the proper exception based on the spec
+        // after the prototype phase.
         Controller()->Error(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotReadableError, "Model execution error"));
       }
