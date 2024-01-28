@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ॲप्लिकेशन आवृत्ती</translation>
 <translation id="1428770807407000502">सिंक बंद करायचे आहे का?</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
+<translation id="1435593198351412143">PDFs आपोआप उघडा</translation>
 <translation id="1436784010935106834">काढली</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> मध्ये रन होत आहे</translation>
 <translation id="1448440926884431741">तुमची माग ठेवलेली उत्पादने Bookmarks मध्ये व्यवस्थापित करा</translation>
@@ -341,6 +342,7 @@
 <translation id="2894821468041866720">तुमचा ब्राउझर किंवा डिव्हाइस लक्षणीयरीत्या धीमे करत नाही.</translation>
 <translation id="2900528713135656174">इव्हेंट तयार करा</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> साठी सूचना दाखवत आहे</translation>
+<translation id="2904300462646366554">डाउनलोड केलेल्या PDFs तुमच्या डिव्हाइसवरील एखाद्या PDF व्ह्यूअरमध्ये उघडतात</translation>
 <translation id="2904414404539560095">पूर्ण उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="2908243544703713905">न वाचलेल्या बातम्या तयार आहेत</translation>
 <translation id="2909615210195135082">Google सूचना प्लॅटफॉर्म</translation>
@@ -896,9 +898,11 @@
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="5814749351757353073">तुमच्या आवडत्या साइटचा माग ठेवा</translation>
 <translation id="5822875253699806474">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> मध्ये सेव्ह केला आहे</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> वापरून PDF उघडायची आहे का?</translation>
 <translation id="5853623416121554550">थांबवले</translation>
 <translation id="5855546874025048181">सुधारित करा: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">काहीतरी चूक झाली. माग ठेवलेली किंमत अपडेट करता आली नाही.</translation>
@@ -1381,6 +1385,7 @@
 <translation id="8127542551745560481">होमपेज संपादित करा</translation>
 <translation id="8130309322784422030">तुमची स्टोअर केलेली साइन-इनशी संबंधित माहिती कदाचित कालबाह्य झाली आहे</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
+<translation id="8135406045838672858">डाउनलोड केलेल्या PDFs <ph name="APP_NAME" /> सह आपोआप उघडतात</translation>
 <translation id="8137562778192957619">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फाइल शिल्लक</translation>
 <translation id="8190358571722158785">1 दिवस शिल्लक</translation>

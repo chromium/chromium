@@ -91,6 +91,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="1416550906796893042">Versi aplikasi</translation>
 <translation id="1428770807407000502">Matikan penyegerakan?</translation>
 <translation id="1430915738399379752">Cetak</translation>
+<translation id="1435593198351412143">Buka PDF secara automatik</translation>
 <translation id="1436784010935106834">Dibuang</translation>
 <translation id="1437543266176261764">Dijalankan dalam <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
@@ -341,6 +342,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="2894821468041866720">Tidak memperlahankan penyemak imbas atau peranti dengan ketara.</translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2901411048554510387">Memaparkan cadangan untuk <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">PDF yang dimuat turun akan dibuka secara automatik dengan salah satu pemapar PDF pada peranti anda</translation>
 <translation id="2904414404539560095">Senarai peranti untuk berkongsi tab dibuka pada ketinggian penuh.</translation>
 <translation id="2908243544703713905">Cerita belum dibaca sudah sedia</translation>
 <translation id="2909615210195135082">Platform Pemberitahuan Google</translation>
@@ -896,9 +898,11 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5810288467834065221">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="5814749351757353073">Ikuti perkembangan laman kegemaran anda</translation>
 <translation id="5822875253699806474">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda</translation>
+<translation id="5829586821381540080">Disimpan dalam <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5833984609253377421">Kongsi pautan</translation>
 <translation id="5839058148541733625">Dino Chrome</translation>
+<translation id="5848257610304005265">Buka PDF dengan <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">dijeda</translation>
 <translation id="5855546874025048181">Perhalusi: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Ralat telah berlaku. Tidak dapat mengemas kini Penjejakan harga.</translation>
@@ -1381,6 +1385,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8127542551745560481">Edit halaman utama</translation>
 <translation id="8130309322784422030">Maklumat log masuk anda yang disimpan mungkin sudah lapuk</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
+<translation id="8135406045838672858">PDF yang dimuat turun akan dibuka secara automatik dengan <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Google Password Manager.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fail lagi</translation>
 <translation id="8190358571722158785">1 hari lagi</translation>

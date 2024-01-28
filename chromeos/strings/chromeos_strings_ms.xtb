@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">darab</translation>
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
 <translation id="1145516343487477149">Cari artikel bantuan dan jawapan kepada soalan lazim Chromebook</translation>
 <translation id="1154390310959620237">Anda hanya boleh menyesuaikan 5 pintasan. Padam satu pintasan untuk menambahkan pintasan baharu.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Muatkan mengikut kawasan imbasan</translation>
 <translation id="1367951781824006909">Pilih fail</translation>
+<translation id="1371650399987522809">Maklum balas untuk hiasan latar yang dikuasakan oleh Google AI</translation>
 <translation id="1387854245479784695">Ini ialah pengagregatan bagi semua teras</translation>
 <translation id="1394661041439318933">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri sarung.</translation>
 <translation id="1397738625398125236">Get laluan boleh Ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1561927818299383735">warna cahaya belakang</translation>
 <translation id="1565038567006703504">Tidak dapat mengemas kini <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">bahagi</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Tetapkan sebagai kertas dinding</translation>
 <translation id="1578784163189013834">Pilih latar penyelamat skrin</translation>
 <translation id="160633243685262989">Pratonton Imej</translation>
 <translation id="1611649489706141841">ke hadapan</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Menjana imej...</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1626590945318984973">Pintasan tidak tersedia. Tekan pintasan baharu tanpa menggunakan kekunci fungsi dan <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="2880569433548999039">Penyelamat skrin aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
+<translation id="2938573842839598578">Untuk jawapan anggaran, <ph name="OPERATOR_TEXT" /> nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
 <translation id="2941112035454246133">Rendah</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identiti setempat (pilihan)</translation>
 <translation id="3565064564551103223">IP dibenarkan</translation>
 <translation id="3569407787324516067">Penyelamat skrin</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7184043045742675738">Klik sebarang kekunci untuk menyesuaikan butang anda. Ubah kedudukan kekunci dengan tetikus atau kekunci anak panah.</translation>
+<translation id="7206979415662233817">Syarat perkhidmatan</translation>
 <translation id="7212547870105584639">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dengan Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">warna papan kekunci</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Anda mestilah berumur sekurang-kurangnya 18 tahun dan bersetuju bahawa penggunaan anda berkenaan dengan hiasan latar AI tertakluk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Syarat Perkhidmatan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Syarat Perkhidmatan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Anda boleh membuat hiasan latar dengan AI untuk kegunaan peribadi dan bukan komersial sahaja. Apabila anda mendapatkan bantuan hiasan latar, teks akan dihantar kepada pelayan Google AI untuk menjana cadangan hiasan latar, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan Cari dan Ruang untuk melihat hasil carian dalam Google Search.</translation>
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7353413232959255829">Hasil carian <ph name="LIST_POSITION" /> daripada <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk menavigasi kepada pintasan.</translation>

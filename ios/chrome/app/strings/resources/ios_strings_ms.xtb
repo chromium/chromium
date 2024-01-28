@@ -163,6 +163,7 @@
 <translation id="1847795903283049083">Anda juga boleh melihat dan mengurus item ini dalam penanda halaman, Senarai Bacaan atau Password Manager anda.</translation>
 <translation id="1870148520156231997">Dedahkan Kata Laluan</translation>
 <translation id="1872096359983322073">Lampu suluh</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">Menunjukkan item ini</translation>
 <translation id="1882901927376062252">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} Penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="1883255238294161206">Runtuhkan senarai</translation>
@@ -182,6 +183,7 @@
 <translation id="1956138802718275401">Akses kata laluan daripada skrin utama</translation>
 <translation id="1959441496380398824">Sentuh &amp; tahan tarikh.</translation>
 <translation id="1959679933317802873">Menunggu kandungan</translation>
+<translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> telah berkongsi kata laluan dengan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="1967461193809857427">{count,plural, =1{Sambung semula daripada tab tempat anda berhenti pada Android?}other{Sambung semula daripada tab tempat anda berhenti pada Android?}}</translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="1973912524893600642">Kekalkan Data</translation>
@@ -216,6 +218,7 @@
 <translation id="2139502497535990641">Hidupkan Makluman Harga?</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="214201757571129614">Log Masuk…</translation>
+<translation id="2147127444698817042">Hanya tersedia pada iPhone</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -228,6 +231,7 @@
 <translation id="2239626343334228536">Mengosongkan data semakan imbas...</translation>
 <translation id="2251686759395008410">Menu → Sejarah</translation>
 <translation id="2252674110805316998">Carian Web</translation>
+<translation id="2252749852083403809">Menyimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Anda boleh menyimpan penanda halaman anda dalam Google Account anda, {email}.}other{Anda boleh menyimpan penanda halaman anda dalam Google Account anda, {email}.}}</translation>
 <translation id="225943865679747347">Kod ralat: <ph name="ERROR_CODE" /></translation>
@@ -390,6 +394,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2982481275546140226">Kosongkan Data</translation>
 <translation id="298306318844797842">Tambahkan Kaedah Pembayaran...</translation>
 <translation id="2989805286512600854">Buka dalam Tab Baharu</translation>
+<translation id="300455800299409273">Sembunyikan "Teruskan dengan Tab Ini"</translation>
 <translation id="3010025794097054078">Kekal selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="3010171936431626919">Tunjukkan Caranya</translation>
 <translation id="3020183492814296499">Pintasan</translation>
@@ -537,6 +542,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3819183753496523827">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
 <translation id="3832419617903252251">Kata laluan hanya disimpan pada peranti ini</translation>
 <translation id="3835964409414434850">Pergi ke Tab Seterusnya</translation>
+<translation id="383781833195845844">Teruskan dengan Tab Ini</translation>
 <translation id="3838691874161539578">Semak kata laluan anda yang disimpan untuk mengukuhkan keselamatan anda dan kekal lebih selamat dalam talian</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3851938967634752633">Kata laluan untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />dan <ph name="NUMBER_OF_ACCOUNTS" /> yang lain akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
@@ -755,6 +761,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4958444002117714549">Kembangkan senarai</translation>
 <translation id="4971735654804503942">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya. Memberi anda amaran tentang pelanggaran kata laluan. Menghendaki data semakan imbas dihantar kepada Google.</translation>
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
+<translation id="4989065233040279145">Pilih lokasi untuk menyimpan <ph name="FILENAME" /></translation>
 <translation id="4996567535980789550">Hidupkan penyegerakan untuk mengurus kandungan yang anda lihat</translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5016420433031926653">Hantar kepada <ph name="USER_EMAIL" /></translation>
@@ -881,6 +888,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="567881659373499783">Versi <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Untuk menggunakan dan menyimpan kata laluan dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="5684761169742812828">Kata laluan ini terdedah kepada pelanggaran data pada Internet. Jika anda tiada masa untuk menukar kata laluan sekarang, Google mengesyorkan untuk amaran ini mengingatkan anda semula nanti.</translation>
+<translation id="5694848685995373177">Disimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="5701270923492462699">Akses Kamera Dibenarkan</translation>
 <translation id="5702108177581350218">Apabila anda berkongsi salinan nama pengguna dan kata laluan anda, ahli keluarga anda boleh mengisi nama pengguna dan kata laluan tersebut menggunakan Google Password Manager.</translation>
 <translation id="5704908597376970822">Tidak dapat log masuk.</translation>
@@ -1220,6 +1228,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikel belum dibaca.</translation>
 <translation id="7412027924265291969">Teruskan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7418640008860669073">Simpan dalam...</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
@@ -1238,6 +1247,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="750149195207506638">Penanda halaman tersembunyi</translation>
 <translation id="750228856503700085">Kemaskinian Tidak Tersedia</translation>
 <translation id="750493650310597496">0 dipilih</translation>
+<translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7524055474074101597">Akses kata laluan anda dan pelbagai lagi merentas apl.</translation>
@@ -1251,6 +1261,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7554791636758816595">Tab Baharu</translation>
 <translation id="7557508262441527045">Dilog keluar</translation>
 <translation id="7561196759112975576">Sentiasa</translation>
+<translation id="7564917801238348224">SIMPAN...</translation>
 <translation id="7582857256643797524">Tetapan ini didayakan pada peranti anda</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
@@ -1416,6 +1427,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8428045167754449968">Bandar / Pekan</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8430694217306051839">Pilih lokasi untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
 <translation id="8449347986464073209">Padam dan Log Keluar</translation>
 <translation id="8459333855531264009">Tidak Selamat</translation>

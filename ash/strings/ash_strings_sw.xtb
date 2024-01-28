@@ -1500,6 +1500,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6981291220124935078">Washa ufikiaji</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="698231206551913481">Faili na data zote zilizo kwenye kifaa zinazohusishwa na mtumiaji zitafutwa kabisa pindi tu mtumiaji huyu atakapoondolewa.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> haitumii <ph name="SPECIFIED_RESOLUTION" /> (Hz <ph name="SPECIFIED_REFRESH_RATE" />). Ubora umebadilishwa kuwa <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Pata maelezo ya haraka kuhusu jinsi ya kutumia Chromebook yako. Kamilisha kuweka mipangilio kwa kufuata hatua 6.</translation>
 <translation id="7004910047186208204">Unganisha kwenye data ya mtandao wa simu</translation>
 <translation id="7005239792648594238">Fungua programu ili uanze kuitumia</translation>
