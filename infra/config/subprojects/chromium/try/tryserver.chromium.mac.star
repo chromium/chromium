@@ -193,9 +193,6 @@ This builder shadows mac-rel builder to compare between Siso builds and Ninja bu
 This builder should be removed after migrating mac-rel from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/mac-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
     gn_args = "try/mac-rel",
     compilator = "mac-siso-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
@@ -207,7 +204,7 @@ This builder should be removed after migrating mac-rel from Ninja to Siso. b/277
     main_list_view = "try",
     siso_enabled = True,
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 5,
     ),
     use_clang_coverage = True,
 )
