@@ -177,8 +177,8 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         this.statusMessage = this.i18n('editViewStatusMessage');
       }
     }
-    this.hasWarning =
-        this.statusMessage === this.i18n('warningSearchNotIncluded');
+    this.hasWarning = this.statusMessage ===
+        this.i18n('warningSearchNotIncluded', this.getMetaKeyDisplay());
   }
 
   protected onEditButtonClicked(): void {
@@ -265,6 +265,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     const viewElement = strictQuery(
         'accelerator-view', this.shadowRoot, AcceleratorViewElement);
     viewElement.endCapture(/*should_delay=*/ false);
+  }
+
+  private getMetaKeyDisplay(): string {
+    return this.lookupManager.getHasLauncherButton() ?
+        this.i18n('iconLabelOpenLauncher') :
+        this.i18n('iconLabelOpenSearch');
   }
 
   getStatusMessageForTesting(): string {
