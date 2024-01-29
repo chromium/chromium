@@ -73,11 +73,6 @@ export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
 }
 
-// Reset page
-export function isSanitizeAllowed(): boolean {
-  return loadTimeData.getBoolean('allowSanitize');
-}
-
 // Search page
 export function isAssistantAllowed(): boolean {
   return loadTimeData.getBoolean('isAssistantAllowed');

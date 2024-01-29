@@ -131,7 +131,6 @@ import './os_privacy_page/secure_dns.js';
 import './os_privacy_page/secure_dns_input.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
-import './os_reset_page/os_sanitize_dialog.js';
 
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {NetworkListElement} from 'chrome://resources/ash/common/network/network_list.js';
@@ -325,7 +324,6 @@ export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpa
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsResetPageElement} from './os_reset_page/os_reset_page.js';
-export {OsSettingsSanitizeDialogElement} from './os_reset_page/os_sanitize_dialog.js';
 export {ResetSettingsCardElement} from './os_reset_page/reset_settings_card.js';
 export {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState, SettingsGoogleAssistantSubpageElement} from './os_search_page/google_assistant_subpage.js';

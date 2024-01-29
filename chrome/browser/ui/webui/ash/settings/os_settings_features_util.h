@@ -19,11 +19,6 @@ bool IsDeviceEnterpriseManaged();
 // for guest users, child users, and managed users.
 bool IsPowerwashAllowed();
 
-// Determines whether Sanitize is allowed for the user. Managed users, guest
-// users, and child users cannot use the sanitize feature. Also Sanitize is
-// initially only enabled through a flag.
-bool IsSanitizeAllowed();
-
 // Determines whether the Parental Controls section of People settings should be
 // shown for `profile`.
 bool ShouldShowParentalControlSettings(const Profile* profile);

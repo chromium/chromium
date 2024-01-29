@@ -7,16 +7,6 @@ export interface OsResetBrowserProxy {
    * Initiates a factory reset and restarts.
    */
   requestFactoryResetRestart(): void;
-
-  /**
-   * A method to be called when the reset sanitize dialog is shown.
-   */
-  onShowSanitizeDialog(): void;
-
-  /**
-   * Sanitizes settings.
-   */
-  performSanitizeSettings(): void;
 }
 
 let instance: OsResetBrowserProxy|null = null;
@@ -32,13 +22,5 @@ export class OsResetBrowserProxyImpl implements OsResetBrowserProxy {
 
   requestFactoryResetRestart(): void {
     chrome.send('requestFactoryResetRestart');
-  }
-
-  onShowSanitizeDialog(): void {
-    chrome.send('onShowSanitizeDialog');
-  }
-
-  performSanitizeSettings(): void {
-    chrome.send('performSanitizeSettings');
   }
 }
