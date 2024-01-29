@@ -6024,6 +6024,12 @@
             "experiments": [
                 {
                     "name": "DevToolsConsoleInsights_Enabled_Dogfood",
+                    "params": {
+                        "aida_api_key": "someRandomAPIKey",
+                        "aida_endpoint": "https://www.example.com/aida",
+                        "aida_model_id": "aida_model_id",
+                        "aida_scope": "https://www.example.com/auth/"
+                    },
                     "enable_features": [
                         "DevToolsConsoleInsights"
                     ]
