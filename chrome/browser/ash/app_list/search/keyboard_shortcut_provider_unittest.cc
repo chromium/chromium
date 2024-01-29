@@ -308,7 +308,9 @@ INSTANTIATE_TEST_SUITE_P(ManateeForProviders,
                          KeyboardShortcutProviderManateeTest,
                          testing::Bool());
 
-TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
+// TODO (b/314868265): Re-enable after finding more robust way to reference
+// |description_message_id| and |shortcut_message_id|.
+TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_EmbeddingsSet) {
   Wait();
   StartSearch(u"example query");
   Wait();
@@ -332,7 +334,9 @@ TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
   }
 }
 
-TEST_P(KeyboardShortcutProviderManateeTest, ManateeSearch) {
+// TODO (b/314868265): Re-enable after finding more robust way to reference
+// |description_message_id| and |shortcut_message_id|.
+TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_ManateeSearch) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
@@ -355,9 +359,11 @@ TEST_P(KeyboardShortcutProviderManateeTest, ManateeSearch) {
   }
 }
 
+// TODO (b/314868265): Re-enable after finding more robust way to reference
+// |description_message_id| and |shortcut_message_id|.
 // System will default back to fuzzy-match when response from the model is
 // an invalid length.
-TEST_P(KeyboardShortcutProviderManateeTest, InvalidResponseLength) {
+TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_InvalidResponseLength) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
@@ -380,7 +386,9 @@ TEST_P(KeyboardShortcutProviderManateeTest, InvalidResponseLength) {
   }
 }
 
-TEST_P(KeyboardShortcutProviderManateeTest, MultipleQueries) {
+// TODO (b/314868265): Re-enable after finding more robust way to reference
+// |description_message_id| and |shortcut_message_id|.
+TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_MultipleQueries) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
