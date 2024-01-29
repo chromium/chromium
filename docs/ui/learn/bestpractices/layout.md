@@ -994,12 +994,11 @@ periodically [requests a LayerTreeHost update][].
 This ultimately calls back to [`Widget::LayoutRootViewIfNecessary()`][],
 recursively laying out invalidated `View`s within the `Widget`. In unittests,
 this compositor-driven sequence never occurs, so it's necessary to
-[call LayoutRootViewIfNecessary() manually][] when a test needs to ensure a
-`View`'s layout is up-to-date.  Many tests fail to do this, but currently pass
-because something triggers Layout() directly;
-accordingly, changing existing code from synchronous to asynchronous layout may
-require adding `LayoutRootViewIfNecessary()` calls to (possibly many) tests,
-and this is not a sign that the change is wrong.
+[call RunScheduledLayout() manually][] when a test needs to ensure a `View`'s
+layout is up-to-date.  Many tests fail to do this, but currently pass because
+something triggers Layout() directly; accordingly, changing existing code from
+synchronous to asynchronous layout may require adding `RunScheduledLayout()`
+calls to (possibly many) tests, and this is not a sign that the change is wrong.
 
 [the preferred size changing]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=1673;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
 [a child needing layout]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=777;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
@@ -1008,7 +1007,7 @@ and this is not a sign that the change is wrong.
 [`ViewObserver`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view_observer.h;l=17;drc=eb20fd77330dc4a89eecf17459263e5895e7f177
 [requests a LayerTreeHost update]: https://source.chromium.org/chromium/chromium/src/+/main:cc/trees/layer_tree_host.cc;l=304;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
 [`Widget::LayoutRootViewIfNecessary()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget.h;l=946;drc=b1dcb398c454a576092d38d0d67db3709b2b2a9b
-[call LayoutRootViewIfNecessary() manually]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget_unittest.cc;l=3110;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[call RunScheduledLayout() manually]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/test/views_test_utils.h;l=17;drc=3e1a26c44c024d97dc9a4c09bbc6a2365398ca2c
 
 |||---|||
 
