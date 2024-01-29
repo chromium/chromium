@@ -246,7 +246,7 @@ template("generate_jni_impl") {
 
       # Depending on the action name to avoid cross-toolchain native deps.
       public_deps = [ ":$_jni_zero_action_target_name($default_toolchain)" ]
-      deps = [ "//third_party/jni_zero:jni_zero_utils" ]
+      deps = [ "//third_party/jni_zero:jni_zero" ]
       metadata = {
         shared_libraries_barrier = []
       }
@@ -378,7 +378,7 @@ template("generate_jni_impl") {
     # files included in their executables without explicitly depending on our
     # targets in jni_zero/BUILD.gn.
     group(_final_target_name) {
-      deps = [ "//third_party/jni_zero:jni_zero_utils" ]
+      deps = [ "//third_party/jni_zero:jni_zero" ]
       public_deps = [ ":$_jni_zero_action_target_name" ]
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (defined(visibility)) {
@@ -416,6 +416,7 @@ template("generate_jni") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     metadata = {
       jni_source_files = sources
+
       # This field is only used by Cronet team during the translation
       # of the GN build targets to Soong modules. From a pure
       # GN perspective, it is unused.

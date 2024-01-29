@@ -25,38 +25,26 @@ source_set("jni_export") {
 # Base depends on this transitively, so we have to avoid deps onto base.
 # Eventually, it will make sense to merge this with :jni_zero once it also no
 # longer depends on //base.
-component("jni_zero_utils") {
+component("jni_zero") {
   sources = [
     "core.cc",
     "core.h",
+    "jni_int_wrapper.h",
+    "jni_zero_helper.h",
     "logging.cc",
     "logging.h",
     "scoped_java_ref.cc",
     "scoped_java_ref.h",
   ]
   public_deps = [ ":jni_export" ]
-  configs += [ ":toolchain_define" ]
   if (is_android) {
     libs = [ "log" ]
   }
-  if (is_robolectric) {
-    public_configs = [ "//third_party/jdk:jdk" ]
-  }
-}
-
-source_set("jni_zero") {
-  sources = [
-    "jni_int_wrapper.h",
-    "jni_zero_helper.h",
-  ]
-
-  public_deps = [
-    ":jni_export",
-    ":jni_zero_utils",
-    "//base",
-  ]
-
   public_configs = [ ":use_chromium_base_define" ]
+  if (is_robolectric) {
+    public_configs += [ "//third_party/jdk:jdk" ]
+  }
+  configs += [ ":toolchain_define" ]
 }
 
 if (enable_java_templates && is_android) {

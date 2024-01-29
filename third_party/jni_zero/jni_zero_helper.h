@@ -7,7 +7,6 @@
 
 #include <jni.h>
 
-#include "base/android/jni_android.h"
 #if defined(USE_CHROMIUM_BASE)
 // Used for ARCH_CPU_X86 - embedder must define this correctly if they want
 // 16-byte stack alignment on x86.
@@ -26,6 +25,20 @@
 
 #define CHECK_CLAZZ(env, jcaller, clazz, ...) JNI_ZERO_DCHECK(clazz);
 
+#if defined(__clang__) && __has_attribute(noinline)
+#define JNI_ZERO_NOINLINE [[clang::noinline]]
+#elif __has_attribute(noinline)
+#define JNI_ZERO_NOINLINE __attribute__((noinline))
+#endif
+
+#if defined(__clang__) && defined(NDEBUG) && __has_attribute(always_inline)
+#define JNI_ZERO_ALWAYS_INLINE [[clang::always_inline]] inline
+#elif defined(NDEBUG) && __has_attribute(always_inline)
+#define JNI_ZERO_ALWAYS_INLINE inline __attribute__((__always_inline__))
+#else
+#define JNI_ZERO_ALWAYS_INLINE inline
+#endif
+
 namespace jni_zero {
 
 inline void HandleRegistrationError(JNIEnv* env,
@@ -40,7 +53,7 @@ constexpr uint64_t kJniStackMarkerValue = 0xbdbdef1bebcade1b;
 
 // Context about the JNI call with exception checked to be stored in stack.
 struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
-  ALWAYS_INLINE JniJavaCallContextUnchecked() {
+  JNI_ZERO_ALWAYS_INLINE JniJavaCallContextUnchecked() {
 // TODO(ssid): Implement for other architectures.
 #if defined(__arm__) || defined(__aarch64__)
     // This assumes that this method does not increment the stack pointer.
@@ -52,11 +65,11 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
 
   // Force no inline to reduce code size.
   template <MethodID::Type type>
-  NOINLINE void Init(JNIEnv* env,
-                     jclass clazz,
-                     const char* method_name,
-                     const char* jni_signature,
-                     std::atomic<jmethodID>* atomic_method_id) {
+  JNI_ZERO_NOINLINE void Init(JNIEnv* env,
+                              jclass clazz,
+                              const char* method_name,
+                              const char* jni_signature,
+                              std::atomic<jmethodID>* atomic_method_id) {
     env1 = env;
 
     // Make sure compiler doesn't optimize out the assignment.
@@ -68,7 +81,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
                                         atomic_method_id);
   }
 
-  NOINLINE ~JniJavaCallContextUnchecked() {
+  JNI_ZERO_NOINLINE ~JniJavaCallContextUnchecked() {
     // Reset so that spurious marker finds are avoided.
     memset(&marker, 0, sizeof(marker));
   }
@@ -85,17 +98,17 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
 struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextChecked {
   // Force no inline to reduce code size.
   template <MethodID::Type type>
-  NOINLINE void Init(JNIEnv* env,
-                     jclass clazz,
-                     const char* method_name,
-                     const char* jni_signature,
-                     std::atomic<jmethodID>* atomic_method_id) {
+  JNI_ZERO_NOINLINE void Init(JNIEnv* env,
+                              jclass clazz,
+                              const char* method_name,
+                              const char* jni_signature,
+                              std::atomic<jmethodID>* atomic_method_id) {
     base.Init<type>(env, clazz, method_name, jni_signature, atomic_method_id);
     // Reset |pc| to correct caller.
     base.pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
   }
 
-  NOINLINE ~JniJavaCallContextChecked() { CheckException(base.env1); }
+  JNI_ZERO_NOINLINE ~JniJavaCallContextChecked() { CheckException(base.env1); }
 
   JniJavaCallContextUnchecked base;
 };
