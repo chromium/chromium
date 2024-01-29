@@ -143,15 +143,8 @@ test("sql_unittests") {
   ]
 }
 
-fuzzer_test("sql_recovery_fuzzer") {
-  sources = [ "recovery_fuzzer.cc" ]
-  deps = [
-    ":sql",
-    "//base",
-    "//base/test:test_support",
-  ]
-}
-
+# Why "built in"? Chromium used to have bespoke recovery code before SQLite
+# had a built-in recovery module. See crbug.com/1513310
 fuzzer_test("sql_built_in_recovery_fuzzer") {
   sources = [ "built_in_recovery_fuzzer.cc" ]
   deps = [
