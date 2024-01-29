@@ -36,7 +36,7 @@ bool ScreenshotDelegate::IsScreenshotAllowed() {
   // shutdown (and unit tests) - don't allow screenshots unless we have a
   // StatusUploader that can confirm that screenshots are allowed.
   return manager && manager->GetStatusUploader() &&
-         manager->GetStatusUploader()->IsSessionDataUploadAllowed();
+         manager->GetStatusUploader()->IsScreenshotAllowed();
 }
 
 void ScreenshotDelegate::TakeSnapshot(
