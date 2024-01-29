@@ -50,6 +50,9 @@ if (!is_android) {
     sources = [ "html_in_process_fuzzer.cc" ]
     dict = "html_in_process_fuzzer.dictionary"
   }
+  in_process_fuzzer("js_in_process_fuzzer") {
+    sources = [ "js_in_process_fuzzer.cc" ]
+  }
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]
     proto_source = "page_load_in_process_fuzzer.proto"
