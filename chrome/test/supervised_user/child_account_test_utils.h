@@ -9,7 +9,7 @@
 
 namespace supervised_user {
 
-// Returns a base64-encoded dummy token for child log-in.
+// Returns a base64-encoded placeholder token for child log-in.
 std::string GetChildAccountOAuthIdToken();
 
 }  // namespace supervised_user
