@@ -149,9 +149,9 @@ class SidePanelBorder : public views::Border {
   gfx::Insets GetInsets() const override {
     // This additional inset matches the growth inside BorderView::Layout()
     // below to let us paint on top of the toolbar separator. This additional
-    // inset is outside the SidePanel itself, but not outside the BorderView.
-    // If there is a header we want to increase the top inset to give room for
-    // the header to paint on top of the border area.
+    // inset is outside the SidePanel itself, but not outside the BorderView. If
+    // there is a header we want to increase the top inset to give room for the
+    // header to paint on top of the border area.
     int top_inset = views::Separator::kThickness + header_height_;
     if (features::IsSidePanelPinningEnabled()) {
       top_inset -= kBorderThickness;

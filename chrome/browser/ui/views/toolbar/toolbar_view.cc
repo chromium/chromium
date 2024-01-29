@@ -816,14 +816,14 @@ void ToolbarView::Layout() {
     }
   }
 
-  // Use two-pass solution to avoid overflow button being interfere with
-  // toolbar elements space allocation. The button itself should just be an
-  // indicator of overflow not the cause. (See crbug.com/1484294)
-  // In the first pass hide overflow button and calculate other buttons'
-  // visibility to determine if overflow button should show. Do NOT explicit
-  // call Layout() in the first pass to prevent an animation conflicts with the
-  // 2nd pass kicks off (crbug.com/1517065) 2nd pass layout will account for the
-  // visibility of the overflow button determined by the 1st pass.
+  // Use two-pass solution to avoid the overflow button interfering with toolbar
+  // element space allocation. The button itself should just be an indicator of
+  // overflow, not the cause (see crbug.com/1484294). In the first pass, hide
+  // the overflow button and calculate other buttons' visibility to determine if
+  // overflow occurs. Do NOT explicitly call Layout() in the first pass to
+  // prevent animation conflicts with the second pass (see crbug.com/1517065).
+  // The second pass will set the overflow button visibility to the overflow
+  // state determined by the first pass.
   // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
     // TODO(crbug.com/1499021) Move this logic into LayoutManager.

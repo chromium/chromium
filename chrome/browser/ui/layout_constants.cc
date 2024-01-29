@@ -60,9 +60,9 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING:
       // TODO(manukh): See comment in `LocationBarView::Layout()`. We have too
       //   many feature permutations that would affect this and other layout
-      //   constants. So instead of spreading the permutation logic here and
-      //   elsewhere, its consolidated in `Layout()` and will be moved back here
-      //   once we decide on a permutation.
+      //   constants, so instead of spreading the permutation logic here and
+      //   elsewhere, it's consolidated in `Layout()` and will be moved back
+      //   here once we decide on a permutation.
       NOTREACHED_NORETURN();
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
