@@ -43,12 +43,23 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// view.
 @property(nonatomic, copy) CallbackWithIPHDismissalReasonType dismissCallback;
 
-/// Starts the view animation immediately. View will be dismissed when animation
-/// completes. This should only be called when the view is in the view
+/// Number of animation repeats until the user intervenes; should be set before
+/// calling `startAnimation(WithDelay):`. Optional; Defaults to 3.
+@property(nonatomic, assign) int animationRepeatCount;
+
+/// This should be set to `YES` if the swipe can happen in both the initial
+/// arrow direction and the direction opposite to it; should be set before
+/// calling `startAnimation(WithDelay):`. Optional; Defaults to `NO`.
+@property(nonatomic, assign) BOOL bidirectional;
+
+/// Starts the view animation immediately in its original direction. The
+/// animation will be repeated 3 times, and the view will be dismissed when
+/// animation completes. This should only be called when the view is in the view
 /// hierarchy.
 - (void)startAnimation;
 
-/// Starts the view animation after `delay`. View will be dismissed when
+/// Starts the view animation after `delay` in its original direction. The
+/// animation will be repeated 3 times, and the view will be dismissed when
 /// animation completes. This should only be called when the view is in the view
 /// hierarchy. Note: `delay` would NOT be honored with reduced animation.
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay;

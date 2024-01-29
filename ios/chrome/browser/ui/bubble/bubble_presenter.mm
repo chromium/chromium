@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
@@ -97,7 +98,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     BubbleViewControllerPresenter* lensKeyboardPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* parcelTrackingTipBubblePresenter;
-@property(nonatomic, strong) GestureInProductHelpView* pullToRefreshGesturalIPH;
+@property(nonatomic, strong) GestureInProductHelpView* pullToRefreshGestureIPH;
+@property(nonatomic, strong)
+    GestureInProductHelpView* swipeBackForwardGestureIPH;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -168,10 +171,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)hideAllGestureInProductHelpViews {
-  // TODO(crbug.com/1467873):
-  // - 1. Add a new reason type and use that.
-  // - 2. Remove the fugure `self.backForwardSwipeGestureIPH`.
-  [self.pullToRefreshGesturalIPH
+  // TODO(crbug.com/1467873): Add a new reason type and use that.
+  [self.pullToRefreshGestureIPH
+      dismissWithReason:IPHDismissalReasonType::kUnknown];
+  [self.swipeBackForwardGestureIPH
       dismissWithReason:IPHDismissalReasonType::kUnknown];
 }
 
@@ -565,24 +568,54 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (UIAccessibilityIsVoiceOverRunning() || (![self canPresentBubble])) {
     return;
   }
+  const base::Feature& pullToRefreshFeature =
+      feature_engagement::kIPHiOSPullToRefreshFeature;
+  BOOL userEligibleForPullToRefreshIPH =
+      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher) &&
+      self.engagementTracker->WouldTriggerHelpUI(pullToRefreshFeature);
+  if (!userEligibleForPullToRefreshIPH) {
+    return;
+  }
   __weak BubblePresenter* weakSelf = self;
-  NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
-                                           view:self.rootViewController.view];
   NSString* text = l10n_util::GetNSString(IDS_IOS_PULL_TO_REFRESH_IPH);
-  ProceduralBlock resetPullToRefreshGesturalIPH = ^{
-    weakSelf.pullToRefreshGesturalIPH = nil;
+  ProceduralBlock resetPullToRefreshGestureIPH = ^{
+    weakSelf.pullToRefreshGestureIPH = nil;
   };
-  self.pullToRefreshGesturalIPH =
-      [self presentGestureInProductHelpForFeature:
-                feature_engagement::kIPHiOSPullToRefreshFeature
+  self.pullToRefreshGestureIPH =
+      [self presentGestureInProductHelpForFeature:pullToRefreshFeature
                                         direction:BubbleArrowDirectionUp
                                              text:text
-                                    dismissAction:resetPullToRefreshGesturalIPH
-                                          toGuide:guide];
+                                    dismissAction:resetPullToRefreshGestureIPH];
+  [self.pullToRefreshGestureIPH startAnimation];
 }
 
 - (void)presentBackForwardSwipeGestureInProductHelp {
-  // TODO(crbug.com/1467873): Draw and display bubble.
+  if (UIAccessibilityIsVoiceOverRunning() ||
+      (![self canPresentBubbleWithCheckTabScrolledToTop:NO])) {
+    return;
+  }
+  const base::Feature& backForwardSwipeFeature =
+      feature_engagement::kIPHiOSSwipeBackForwardFeature;
+  BOOL userEligible =
+      IsFirstRunRecent(base::Days(60)) &&
+      self.engagementTracker->WouldTriggerHelpUI(backForwardSwipeFeature);
+  if (!userEligible) {
+    return;
+  }
+  __weak BubblePresenter* weakSelf = self;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_BACK_FORWARD_SWIPE_IPH);
+  ProceduralBlock resetSwipeBackForwardGestureIPH = ^{
+    weakSelf.swipeBackForwardGestureIPH = nil;
+  };
+  self.swipeBackForwardGestureIPH = [self
+      presentGestureInProductHelpForFeature:backForwardSwipeFeature
+                                  direction:BubbleArrowDirectionLeading
+                                       text:text
+                              dismissAction:resetSwipeBackForwardGestureIPH];
+  self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
+  self.swipeBackForwardGestureIPH.bidirectional = YES;
+  [self.swipeBackForwardGestureIPH startAnimation];
 }
 
 #pragma mark - Private
@@ -744,37 +777,32 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   return nil;
 }
 
-// Present a screen-covering side swipe bubble associated with an in-product
-// help promotion if it is valid to show the promotion, and return the view.
-// `feature` is the base::Feature object associated with the given promotion.
-// `direction` is the direction the bubble's arrow is pointing. `text` is the
-// text displayed by the bubble. `dismissAction` is the callback function
-// invoked when the IPH is dismissed, and `guide` is used for the initial
-// positioning of the side swipe bubble.
+// If an in-product help message should be shown for `feature`, presents an IPH
+// view covering the content area and return the view, otherwise return `nil`
+// and do nothing. `direction` is the direction the bubble's arrow is pointing.
+// `text` is the text displayed by the bubble. `dismissAction` is the callback
+// function invoked when the IPH is dismissed.
 //
-// TODO(crbug.com/1450600): Once kContentAreaGuide is moved to
-// LayoutGuideCenter, replace the parameter `guide` with a string `guideName`.
+// Note that this method does NOT start the animation. The caller should start
+// the animation of the returned `GestureInProductHelpView` accordingly. This
+// allows the caller to make modifications to the view before animating.
 - (GestureInProductHelpView*)
     presentGestureInProductHelpForFeature:(const base::Feature&)feature
                                 direction:(BubbleArrowDirection)direction
                                      text:(NSString*)text
-                            dismissAction:(ProceduralBlock)dismissAction
-                                  toGuide:(UILayoutGuide*)guide {
+                            dismissAction:(ProceduralBlock)dismissAction {
   DCHECK(self.engagementTracker);
-  BOOL userEligibleForPullToRefreshIPH =
-      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
-          _deviceSwitcherResultDispatcher) &&
-      self.engagementTracker->WouldTriggerHelpUI(
-          feature_engagement::kIPHiOSPullToRefreshFeature);
-  if (!(userEligibleForPullToRefreshIPH && guide)) {
+  NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
+                                           view:self.rootViewController.view];
+  if (!guide) {
     return nil;
   }
-  GestureInProductHelpView* gesturalIPHView =
+  GestureInProductHelpView* gestureIPHView =
       [[GestureInProductHelpView alloc] initWithText:text
                                   bubbleBoundingSize:guide.layoutFrame.size
                                       arrowDirection:direction];
-  [gesturalIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
-  if (CanGestureInProductHelpViewFitInGuide(gesturalIPHView, guide) &&
+  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
+  if (CanGestureInProductHelpViewFitInGuide(gestureIPHView, guide) &&
       self.engagementTracker->ShouldTriggerHelpUI(feature)) {
     __weak BubblePresenter* weakSelf = self;
     CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
@@ -785,11 +813,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
           }
           [weakSelf featureDismissed:feature withSnooze:snoozeAction];
         };
-    gesturalIPHView.dismissCallback = dismissalCallbackWithSnoozeAction;
-    [self.rootViewController.view addSubview:gesturalIPHView];
-    AddSameConstraints(gesturalIPHView, guide);
-    [gesturalIPHView startAnimation];
-    return gesturalIPHView;
+    gestureIPHView.dismissCallback = dismissalCallbackWithSnoozeAction;
+    [self.rootViewController.view addSubview:gestureIPHView];
+    AddSameConstraints(gestureIPHView, guide);
+    return gestureIPHView;
   }
   return nil;
 }
