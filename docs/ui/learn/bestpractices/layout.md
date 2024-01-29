@@ -831,7 +831,7 @@ FindBarView::FindBarView(FindBarHost* host)
 }
 
 void FindBarView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   // The focus forwarder view is a hidden view that
   // should cover the area between the find text box
   // and the find button so that when the user clicks
