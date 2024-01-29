@@ -3070,8 +3070,7 @@ const char kTestThirdPartyCookiePhaseoutName[] =
     "Test Third Party Cookie Phaseout";
 const char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
-    "Enabling this flag also enables FedCM and third-party storage "
-    "partitioning.";
+    "Learn more: https://goo.gle/3pcd-flags";
 
 const char kThirdPartyStoragePartitioningName[] =
     "Third-party Storage Partitioning";
