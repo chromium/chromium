@@ -979,6 +979,11 @@ const char kEnableBookmarkFoldersForAccountStorageName[] =
 const char kEnableBookmarkFoldersForAccountStorageDescription[] =
     "Enables account bookmark folders to be made available to users.";
 
+const char kEnterpriseProfileBadgingName[] =
+    "Enable enterprise profile badging";
+const char kEnterpriseProfileBadgingDescription[] =
+    "Enable enterprise profile badging on the toolbar avatar and profile menu";
+
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

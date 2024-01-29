@@ -18519,6 +18519,7 @@ from previous Chrome versions.
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
   <int value="-962233051" label="PasspointSettings:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
+  <int value="-962004315" label="EnterpriseProfileBadging:disabled"/>
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
@@ -22356,6 +22357,7 @@ from previous Chrome versions.
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
+  <int value="825301017" label="EnterpriseProfileBadging:enabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="828678083" label="DynamicTopChrome:disabled"/>

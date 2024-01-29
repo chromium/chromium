@@ -350,6 +350,12 @@ const base::FeatureParam<int> kUpdateTextOptionNumber{
     &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
 #endif
 
+// Enables enterprise profile badging on the toolbar avatar and in the profile
+// menu.
+BASE_FEATURE(kEnterpriseProfileBadging,
+             "EnterpriseProfileBadging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
 BASE_FEATURE(kWebUIBubblePerProfilePersistence,

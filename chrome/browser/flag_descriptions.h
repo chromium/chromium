@@ -569,6 +569,9 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableBookmarkFoldersForAccountStorageName[];
 extern const char kEnableBookmarkFoldersForAccountStorageDescription[];
 
+extern const char kEnterpriseProfileBadgingName[];
+extern const char kEnterpriseProfileBadgingDescription[];
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 
