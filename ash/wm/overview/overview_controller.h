@@ -52,6 +52,11 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   bool EndOverview(OverviewEndAction end_action,
                    OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
+  // Returns true if it's possible to enter overview mode in the current
+  // configuration. This can be false at certain times, such as when the lock
+  // screen is visible we can't enter overview mode.
+  bool CanEnterOverview() const;
+
   // Returns true if overview mode is active.
   bool InOverviewSession() const;
 
@@ -124,11 +129,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   void set_pine_callback_for_test(base::OnceClosure callback) {
     pine_callback_for_test_ = std::move(callback);
   }
-
-  // Returns true if it's possible to enter overview mode in the current
-  // configuration. This can be false at certain times, such as when the lock
-  // screen is visible we can't overview mode.
-  bool CanEnterOverview() const;
 
   // Called when `OverviewGrid::pine_widget_` is shown.
   void OnPineWidgetShown();

@@ -3506,8 +3506,8 @@ bool IsForceReSyncDriveEnabled() {
 }
 
 bool IsForestFeatureEnabled() {
-  return switches::IsForestSecretKeyMatched() &&
-         base::FeatureList::IsEnabled(kForestFeature);
+  return base::FeatureList::IsEnabled(kForestFeature) &&
+         switches::IsForestSecretKeyMatched();
 }
 
 bool IsFullscreenAfterUnlockAllowed() {

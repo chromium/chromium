@@ -98,12 +98,11 @@ bool CanPerformRestore(const AccountId& account_id) {
 class FullRestoreServiceTest : public testing::Test {
  public:
   FullRestoreServiceTest() = default;
-
-  ~FullRestoreServiceTest() override = default;
-
   FullRestoreServiceTest(const FullRestoreServiceTest&) = delete;
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
+  ~FullRestoreServiceTest() override = default;
 
+  // testing::Test:
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -151,14 +150,14 @@ class FullRestoreServiceTest : public testing::Test {
 
   bool HasNotificationFor(const std::string& notification_id) {
     std::optional<message_center::Notification> message_center_notification =
-        display_service()->GetNotification(notification_id);
+        display_service_->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
 
   void VerifyRestoreNotificationTitle(const std::string& notification_id,
                                       bool is_reboot_notification) {
     std::optional<message_center::Notification> message_center_notification =
-        display_service()->GetNotification(notification_id);
+        display_service_->GetNotification(notification_id);
     ASSERT_TRUE(message_center_notification.has_value());
     const std::u16string& title = message_center_notification.value().title();
     if (is_reboot_notification) {
@@ -189,7 +188,7 @@ class FullRestoreServiceTest : public testing::Test {
 
   void SimulateClick(const std::string& notification_id,
                      RestoreNotificationButtonIndex action_index) {
-    display_service()->SimulateClick(
+    display_service_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
         static_cast<int>(action_index), std::nullopt);
   }
@@ -265,10 +264,6 @@ class FullRestoreServiceTest : public testing::Test {
   TestingProfile* profile() const { return profile_.get(); }
 
   const AccountId& account_id() const { return account_id_; }
-
-  NotificationDisplayServiceTester* display_service() const {
-    return display_service_.get();
-  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -414,7 +409,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
 
 // For an existing user, if re-image, don't show notifications for the first
 // run.
-TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
   // Set the restore pref setting to simulate sync for the first time.
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
@@ -795,7 +790,7 @@ class FullRestoreServiceMultipleUsersTest
 
   bool HasNotificationForProfile2(const std::string& notification_id) {
     std::optional<message_center::Notification> message_center_notification =
-        display_service2()->GetNotification(notification_id);
+        display_service2_->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
 
@@ -814,13 +809,9 @@ class FullRestoreServiceMultipleUsersTest
 
   void SimulateClickForProfile2(const std::string& notification_id,
                                 RestoreNotificationButtonIndex action_index) {
-    display_service2()->SimulateClick(
+    display_service2_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
         static_cast<int>(action_index), std::nullopt);
-  }
-
-  NotificationDisplayServiceTester* display_service2() const {
-    return display_service2_.get();
   }
 
   TestingProfile* profile2() const { return profile2_.get(); }

@@ -161,6 +161,32 @@ bool OverviewController::EndOverview(OverviewEndAction end_action,
   return true;
 }
 
+bool OverviewController::CanEnterOverview() const {
+  if (!DesksController::Get()->CanEnterOverview()) {
+    return false;
+  }
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
+    return false;
+  }
+
+  // Don't allow entering overview if there is a system modal dialog or chromeOS
+  // is running in kiosk app session.
+  Shell* shell = Shell::Get();
+  if (Shell::IsSystemModalWindowOpen() ||
+      shell->screen_pinning_controller()->IsPinned()) {
+    return false;
+  }
+
+  // Don't allow a window overview if the user session is not active or
+  // transitioning to active.
+  const session_manager::SessionState session_state =
+      shell->session_controller()->GetSessionState();
+  return session_state == session_manager::SessionState::ACTIVE ||
+         session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE;
+}
+
 bool OverviewController::InOverviewSession() const {
   return overview_session_ && !overview_session_->is_shutting_down();
 }
@@ -278,26 +304,6 @@ void OverviewController::OnWindowActivating(ActivationReason reason,
                                             aura::Window* lost_active) {
   if (InOverviewSession())
     overview_session_->OnWindowActivating(reason, gained_active, lost_active);
-}
-
-bool OverviewController::CanEnterOverview() const {
-  if (!DesksController::Get()->CanEnterOverview()) {
-    return false;
-  }
-
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
-      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
-    return false;
-  }
-
-  // Don't allow a window overview if the user session is not active (e.g.
-  // locked or in user-adding screen) or a modal dialog is open or running in
-  // kiosk app session.
-  Shell* shell = Shell::Get();
-  return shell->session_controller()->GetSessionState() ==
-             session_manager::SessionState::ACTIVE &&
-         !Shell::IsSystemModalWindowOpen() &&
-         !shell->screen_pinning_controller()->IsPinned();
 }
 
 void OverviewController::OnPineWidgetShown() {

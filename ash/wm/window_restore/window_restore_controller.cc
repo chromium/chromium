@@ -499,21 +499,10 @@ bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
 }
 
 void WindowRestoreController::MaybeStartPineOverviewSession() {
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
+  CHECK(features::IsForestFeatureEnabled());
 
   OverviewController* overview_controller = OverviewController::Get();
   if (overview_controller->InOverviewSession()) {
-    return;
-  }
-
-  // TODO(sammiequon|zxdan): Need to check "Ask every time" preference, the
-  // pref needs to be moved to ash_pref_names.h.
-
-  aura::Window::Windows windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  if (!windows.empty()) {
     return;
   }
 

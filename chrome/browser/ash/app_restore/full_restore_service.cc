@@ -13,6 +13,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -457,6 +458,20 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   if (id == kRestoreForCrashNotificationId && exit_type_service)
     crashed_lock_ = exit_type_service->CreateCrashedLock();
 
+  if (Shell::HasInstance()) {
+    Shell::Get()
+        ->post_login_glanceables_metrics_reporter()
+        ->RecordPostLoginFullRestoreShown();
+  }
+
+  if (features::IsForestFeatureEnabled()) {
+    CHECK(Shell::HasInstance());
+    Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
+    // Set to true as we might want to show the post reboot notification.
+    show_notification = true;
+    return;
+  }
+
   auto* accelerator_controller = AcceleratorController::Get();
   if (accelerator_controller) {
     DCHECK(!accelerator_controller_observer_.IsObserving());
@@ -517,12 +532,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                         *notification_,
                                         /*metadata=*/nullptr);
   show_notification = true;
-
-  if (Shell::HasInstance()) {
-    Shell::Get()
-        ->post_login_glanceables_metrics_reporter()
-        ->RecordPostLoginFullRestoreShown();
-  }
 }
 
 void FullRestoreService::RecordRestoreAction(const std::string& notification_id,

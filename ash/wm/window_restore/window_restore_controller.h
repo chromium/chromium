@@ -100,7 +100,7 @@ class ASH_EXPORT WindowRestoreController
   bool IsRestoringWindow(aura::Window* window) const;
 
   // Starts an overview session with the pine contents view if certain
-  // conditions are met. Triggered by developer accelerator.
+  // conditions are met. Triggered by developer accelerator or on login.
   // TODO(sammiequon): This function is temporary and should be repurposed or
   // removed for production.
   void MaybeStartPineOverviewSession();
