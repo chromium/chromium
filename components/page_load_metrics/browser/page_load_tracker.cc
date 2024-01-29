@@ -266,9 +266,7 @@ internal::PageLoadTrackerPageType CalculatePageType(
              content::FrameType::kFencedFrameRoot) {
     return internal::PageLoadTrackerPageType::kFencedFramesPage;
   }
-  content::WebContentsDelegate* delegate =
-      navigation_handle->GetWebContents()->GetDelegate();
-  return (delegate && delegate->IsInPreviewMode())
+  return navigation_handle->GetWebContents()->IsInPreviewMode()
              ? internal::PageLoadTrackerPageType::kPreviewPrimaryPage
              : internal::PageLoadTrackerPageType::kPrimaryPage;
 }

@@ -580,6 +580,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded) override;
+  bool IsInPreviewMode() const override;
+  void WillActivatePreviewPage() override;
   void ActivatePreviewPage() override;
 
   // Implementation of PageNavigator.
@@ -1065,7 +1067,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnVirtualKeyboardModeChanged(PageImpl& page) override;
   void NotifyPageBecamePrimary(PageImpl& page) override;
 
-  bool IsInPreviewMode() const override;
+  bool IsPageInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
   void OnCanResizeFromWebAPIChanged() override;
@@ -2423,6 +2425,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::WeakPtr<FileChooserImpl> active_file_chooser_;
 
   std::optional<base::Location> ownership_location_;
+
+  // Indicates if the instance is hosted in a preview window.
+  // This will be set in Init() and will be reset in WillActivatePreviewPage().
+  bool is_in_preview_mode_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

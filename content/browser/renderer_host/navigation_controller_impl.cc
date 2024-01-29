@@ -4857,7 +4857,7 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
   // The preview mode appears as prerendered page in renderers, and
   // GetDocument()->IsPrerendering() covers the case together.
   return frame_tree_->is_prerendering() ||
-         frame_tree_->page_delegate()->IsInPreviewMode() ||
+         frame_tree_->page_delegate()->IsPageInPreviewMode() ||
          frame_tree_node->IsInFencedFrameTree();
 }
 

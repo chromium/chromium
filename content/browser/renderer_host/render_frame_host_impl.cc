@@ -1627,7 +1627,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
             &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
             base::Unretained(this)));
     broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
-  } else if (frame_tree_->page_delegate()->IsInPreviewMode()) {
+  } else if (frame_tree_->page_delegate()->IsPageInPreviewMode()) {
     mojo_binder_policy_applier_ = MojoBinderPolicyApplier::CreateForPreview(
         base::BindOnce(&RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy,
                        base::Unretained(this)));

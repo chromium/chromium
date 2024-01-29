@@ -772,9 +772,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // intercept.
   virtual void DidChangeCloseSignalInterceptStatus() {}
 
-  // Whether the WebContents is running in preview mode.
-  virtual bool IsInPreviewMode() const;
-
   // Report that cancellation occurred in preview navigation.
   virtual void CancelPreview(PreviewCancelReason reason) {}
 

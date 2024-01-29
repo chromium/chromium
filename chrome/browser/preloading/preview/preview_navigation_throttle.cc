@@ -27,8 +27,8 @@ PreviewNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
   auto* web_contents = content::WebContents::FromFrameTreeNodeId(
       navigation_handle->GetFrameTreeNodeId());
-  if (web_contents->GetDelegate() &&
-      web_contents->GetDelegate()->IsInPreviewMode()) {
+  CHECK(web_contents);
+  if (web_contents->IsInPreviewMode()) {
     return base::WrapUnique(new PreviewNavigationThrottle(navigation_handle));
   }
 

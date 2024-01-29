@@ -34,7 +34,7 @@ class PageDelegate {
   virtual void NotifyPageBecamePrimary(PageImpl& page) = 0;
 
   // Tells if `page` should be handled as in preview mode.
-  virtual bool IsInPreviewMode() const = 0;
+  virtual bool IsPageInPreviewMode() const = 0;
 
   // Notifies `BrowserView` about the resizable boolean having been set vith
   // `window.setResizable(bool)` API.

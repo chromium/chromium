@@ -283,13 +283,9 @@ class WebContents : public PageNavigator,
     std::optional<blink::mojom::PictureInPictureWindowOptions>
         picture_in_picture_options;
 
-    // WebContentsDelegate given for the case early initialization code depends
-    // on the delegate callbacks.
-    // For instance, WebContentsDelegate::IsInPreviewMode() will be called in
-    // RenderFrameHostImpl::ctor for the initial instance that is constructed
-    // in WebContents::Create() call, and callers have no chance to set their
-    // delegates.
-    raw_ptr<WebContentsDelegate> delegate = nullptr;
+    // Enable preview mode that shows a page with a capability restriction
+    // for previewing the page.
+    bool preview_mode = false;
   };
 
   // Token that causes input to be blocked on this WebContents for at least as
@@ -1434,13 +1430,22 @@ class WebContents : public PageNavigator,
   virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
                                      bool destination_is_loaded) = 0;
 
+  // Checks if the WebContents host pages in preview mode.
+  virtual bool IsInPreviewMode() const = 0;
+
+  // Called before ActivatePreviewPage() to prepare the activation. This will
+  // end the preview mode and IsInPreviewMode() will start returning false after
+  // the call. This allows embedders to run preparation steps on the activating
+  // WebContents (e.g. attach TabHelpers) before activating the page shown by
+  // the WebContents through ActivatePreviewPage().
+  virtual void WillActivatePreviewPage() = 0;
+
   // Activates the primary page that is shown in preview mode. This will relax
   // capability restriction in the browser process, and notify the renderer to
   // process the prerendering activation algorithm.
   // This all processes happens asynchronously, and
   // `WebContentsDelegate::DidActivatePreviewedPage` will be called once it's
   // done.
-  // Should be called while WebContentsDelegate::IsInPreviewMode returns true.
   virtual void ActivatePreviewPage() = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and

@@ -1314,7 +1314,6 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
   std::unique_ptr<WebContentsImpl> new_contents(
       new WebContentsImpl(params.browser_context));
   new_contents->SetOpenerForNewContents(opener, params.opener_suppressed);
-  new_contents->SetDelegate(params.delegate);
 
   // If the opener is sandboxed, a new popup must inherit the opener's sandbox
   // flags, and these flags take effect immediately.  An exception is if the
@@ -3430,6 +3429,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
                            blink::FramePolicy primary_main_frame_policy) {
   TRACE_EVENT0("content", "WebContentsImpl::Init");
 
+  is_in_preview_mode_ = params.preview_mode;
   creator_location_ = params.creator_location;
 #if BUILDFLAG(IS_ANDROID)
   java_creator_location_ = params.java_creator_location;
@@ -10273,11 +10273,8 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
 
-bool WebContentsImpl::IsInPreviewMode() const {
-  if (delegate_) {
-    return delegate_->IsInPreviewMode();
-  }
-  return false;
+bool WebContentsImpl::IsPageInPreviewMode() const {
+  return IsInPreviewMode();
 }
 
 void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
@@ -10420,8 +10417,20 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
       /*show_reason_bfcache_restore=*/false);
 }
 
+bool WebContentsImpl::IsInPreviewMode() const {
+  return is_in_preview_mode_;
+}
+
+void WebContentsImpl::WillActivatePreviewPage() {
+  CHECK(is_in_preview_mode_);
+  is_in_preview_mode_ = false;
+}
+
 void WebContentsImpl::ActivatePreviewPage() {
   TRACE_EVENT0("content", "WebContentsImpl::ActivatePreviewPage");
+
+  // WillActivatePreviewPage() should be called to reset it beforehand.
+  CHECK(!is_in_preview_mode_);
 
   PageImpl& preview_page = GetPrimaryPage();
   preview_page.SetActivationStartTime(base::TimeTicks::Now());

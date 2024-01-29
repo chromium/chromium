@@ -427,7 +427,9 @@ void AddAdditionalRequestHeaders(
   if (frame_tree_node->frame_tree().is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
-  } else if (frame_tree_node->frame_tree().page_delegate()->IsInPreviewMode()) {
+  } else if (frame_tree_node->frame_tree()
+                 .page_delegate()
+                 ->IsPageInPreviewMode()) {
     // Preview mode sends similar request so that it is compatible with
     // prerendering as we can as possible, but adds `preview` for sites that
     // need to identify the preview case from prerendering.
