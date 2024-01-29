@@ -11614,6 +11614,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "eea_country_only": "true"
+                    },
                     "enable_features": [
                         "NewTabSearchEngineUrlAndroid"
                     ]
