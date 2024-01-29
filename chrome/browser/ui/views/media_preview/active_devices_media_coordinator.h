@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/views/media_preview/media_coordinator.h"
 #include "content/public/browser/web_contents.h"
@@ -44,7 +45,7 @@ class ActiveDevicesMediaCoordinator
 
   std::vector<std::string> GetMediaCoordinatorKeys();
 
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
   MediaCoordinator::ViewType view_type_;
   raw_ptr<views::View> parent_view_;
   blink::mojom::MediaStreamType stream_type_;
