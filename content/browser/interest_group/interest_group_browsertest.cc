@@ -7080,6 +7080,31 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidAdditionalBidsMalformattedNonce) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      additionalBids: Promise.resolve([1, 2, 3]),
+      auctionNonce: "invalid",
+      interestGroupBuyers: [$1]
+  })";
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionNonce for AuctionAdConfig with seller '%s' must be a "
+                "valid UUIDv4, but got, 'invalid'.",
+                test_origin.Serialize().c_str()),
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAdditionalBidsNoInterestGroupBuyers) {
   GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
