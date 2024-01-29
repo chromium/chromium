@@ -491,6 +491,12 @@ class OrderfileGenerator:
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
+    # TODO(https://crbug.com/1517659): We are testing if arm64 can improve perf
+    #     while not regressing arm32 memory or perf by too much. For now we are
+    #     keeping the fake arch as 'arm' to avoid needing to change the path. In
+    #     the future we should consider either generating multiple orderfiles,
+    #     one per architecture, or remove the fake arch as it would no longer be
+    #     accurate.
     # Build GN files use the ".arm" orderfile irrespective of the actual
     # architecture. Fake it, otherwise the orderfile we generate here is not
     # going to be picked up by builds.
@@ -1167,17 +1173,6 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   """
   logging.basicConfig(level=logging.INFO)
   devil_chromium.Initialize(adb_path=options.adb_path)
-
-  # TODO(https://crbug.com/1517659): We are testing if arm64 can improve perf
-  #     while not regressing arm32 memory or perf by too much. Keeping the file
-  #     extension as is temporarily to make the change as small as possible.
-  ## Since we generate a ".arm" orderfile irrespective of the architecture (see
-  ## comment in _GetPathToOrderfile()), make sure that we don't commit it.
-  #if options.arch != 'arm':
-  #  assert not options.buildbot, (
-  #      'ARM is the only supported architecture on bots')
-  #  assert not options.upload_ready_orderfiles, (
-  #      'ARM is the only supported architecture on bots')
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
   try:
