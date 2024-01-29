@@ -113,7 +113,8 @@ class LaunchCommand(object):
                use_clang_coverage=False,
                env=None,
                test_plugin_service=None,
-               cert_path=None):
+               cert_path=None,
+               erase_simulators=True):
     """Initialize launch command.
 
     Args:
@@ -127,6 +128,8 @@ class LaunchCommand(object):
         By default it is a current directory.
       env: (dict) Environment variables.
       cert_path: (str) A path for cert to install.
+      erase_simulators: (bool) Whether to erase all simulators before all
+        tests launch or not.
 
     Raises:
       AppNotFoundError: At incorrect egtests_app parameter type.
@@ -144,6 +147,7 @@ class LaunchCommand(object):
     self.env = env
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
+    self.erase_simulators = erase_simulators
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -174,12 +178,13 @@ class LaunchCommand(object):
         self.test_plugin_service.reset()
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
-        # kill all running simulators to prevent possible memory leaks
-        test_runner.SimulatorTestRunner.kill_simulators()
-        shutdown_all_simulators()
-        shutdown_all_simulators(XTDEVICE_FOLDER)
-        erase_all_simulators()
-        erase_all_simulators(XTDEVICE_FOLDER)
+        if self.erase_simulators:
+          # kill all running simulators to prevent possible memory leaks
+          test_runner.SimulatorTestRunner.kill_simulators()
+          shutdown_all_simulators()
+          shutdown_all_simulators(XTDEVICE_FOLDER)
+          erase_all_simulators()
+          erase_all_simulators(XTDEVICE_FOLDER)
         if self.cert_path:
           iossim_util.copy_trusted_certificate(self.cert_path, self.udid)
 
