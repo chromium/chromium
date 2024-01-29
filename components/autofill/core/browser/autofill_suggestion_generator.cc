@@ -1486,6 +1486,7 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     bool& with_offer,
@@ -1493,7 +1494,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   std::vector<Suggestion> suggestions;
   // Manual fallback entries are shown for all non credit card fields.
-  const bool is_manual_fallback =
+  const bool is_manual_fallback_for_non_credit_card_field =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
   const std::string& app_locale = personal_data_->app_locale();
 
@@ -1505,8 +1506,11 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // data.
   auto field_contents = SanitizeCreditCardFieldValue(trigger_field.value);
 
-  std::vector<CreditCard> cards_to_suggest =
-      GetOrderedCardsToSuggest(*autofill_client_, field_contents.empty());
+  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
+      *autofill_client_,
+      field_contents.empty() &&
+          trigger_source !=
+              AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
@@ -1517,16 +1521,18 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     // The value of the stored data for this field type in the |credit_card|.
     std::u16string creditcard_field_value =
         credit_card.GetInfo(trigger_field_type, app_locale);
-    if (!is_manual_fallback && creditcard_field_value.empty()) {
+    if (!is_manual_fallback_for_non_credit_card_field &&
+        creditcard_field_value.empty()) {
       continue;
     }
     // Manual fallback suggestions aren't filtered based on the field's content.
-    if (is_manual_fallback || IsValidPaymentsSuggestionForFieldContents(
-                                  base::i18n::ToLower(creditcard_field_value),
-                                  field_contents_lower, trigger_field_type,
-                                  credit_card.record_type() ==
-                                      CreditCard::RecordType::kMaskedServerCard,
-                                  trigger_field.is_autofilled)) {
+    if (is_manual_fallback_for_non_credit_card_field ||
+        IsValidPaymentsSuggestionForFieldContents(
+            base::i18n::ToLower(creditcard_field_value), field_contents_lower,
+            trigger_field_type,
+            credit_card.record_type() ==
+                CreditCard::RecordType::kMaskedServerCard,
+            trigger_field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
       if (ShouldShowVirtualCardOption(&credit_card)) {

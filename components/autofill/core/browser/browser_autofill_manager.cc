@@ -2987,7 +2987,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-          trigger_field, trigger_field_type,
+          trigger_field, trigger_field_type, trigger_source,
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
           with_offer, with_cvc, context);

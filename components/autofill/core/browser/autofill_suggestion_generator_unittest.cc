@@ -60,6 +60,9 @@ using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
 
+constexpr auto kDefaultTriggerSource =
+    AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
 Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
   return Field(&Suggestion::popup_item_id, id);
 }
@@ -1903,8 +1906,7 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForProfiles(
           {NAME_FIRST}, field, NAME_FIRST,
-          /*last_targeted_fields=*/std::nullopt,
-          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+          /*last_targeted_fields=*/std::nullopt, kDefaultTriggerSource);
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
                           EqualsSuggestion(PopupItemId::kSeparator),
@@ -2095,6 +2097,29 @@ TEST_F(AutofillSuggestionGeneratorTest,
   }
 }
 
+TEST_F(AutofillSuggestionGeneratorTest,
+       ManualFallback_UnusedExpiredCardsAreNotSuppressed) {
+  CreditCard local_card = test::GetCreditCard();
+  local_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"04");
+  local_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2000");
+  local_card.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
+                          base::Days(1));
+  personal_data().AddCreditCard(local_card);
+
+  bool with_offer;
+  bool with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), UNKNOWN_TYPE,
+          AutofillSuggestionTriggerSource::kManualFallbackPayments,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
+
+  EXPECT_FALSE(suggestions.empty());
+}
+
 TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
   CreditCard server_card = CreateServerCard();
   server_card.SetNumber(u"4111111111111111");
@@ -2148,7 +2173,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER,
+          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -2262,7 +2287,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER,
+          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -2290,7 +2315,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER,
+            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, with_offer, with_cvc,
             metadata_logging_context);
@@ -2319,7 +2344,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER,
+            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, with_offer, with_cvc,
             metadata_logging_context);
@@ -2350,7 +2375,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     std::vector<Suggestion> suggestions =
         suggestion_generator()->GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER,
+            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, with_offer, with_cvc,
             metadata_logging_context);
@@ -2369,7 +2394,7 @@ TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   field.is_autofilled = true;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER,
+          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/true, with_offer, with_cvc,
           metadata_logging_context);
@@ -2384,7 +2409,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER,
+          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -2407,7 +2432,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER,
+          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/true, with_offer, with_cvc,
           metadata_logging_context);
@@ -2436,7 +2461,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   field.is_autofilled = true;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER,
+          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -2460,7 +2485,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   field.is_autofilled = true;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER,
+          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -3331,7 +3356,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          field_data, UNKNOWN_TYPE, /*should_show_scan_credit_card=*/false,
+          field_data, UNKNOWN_TYPE,
+          AutofillSuggestionTriggerSource::kManualFallbackPayments,
+          /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
 
@@ -3359,7 +3386,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -3395,7 +3422,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -3421,7 +3448,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -3461,7 +3488,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   const std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, with_offer, with_cvc,
           metadata_logging_context);
@@ -3680,7 +3707,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER,
+        FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, with_offer, with_cvc,
         metadata_logging_context);
@@ -3714,7 +3741,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     bool with_cvc;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER,
+        FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, with_offer, with_cvc,
         metadata_logging_context);
