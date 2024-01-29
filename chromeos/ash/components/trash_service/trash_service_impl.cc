@@ -6,6 +6,7 @@
 
 #include <linux/limits.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -52,7 +53,7 @@ void InvokeCallbackWithFailed(
 
 // Validates the supplied path and on success updates the `restore_path`
 // parameter. On failure function returns false.
-base::FilePath ValidateAndCreateRestorePath(base::StringPiece piece) {
+base::FilePath ValidateAndCreateRestorePath(std::string_view piece) {
   if (!base::StartsWith(piece, kPathToken)) {
     return base::FilePath();
   }
@@ -75,7 +76,7 @@ base::FilePath ValidateAndCreateRestorePath(base::StringPiece piece) {
 
 // Validates the supplied deletion date and on success updates the
 // `deletion_date` parameter. On failure function returns false.
-base::Time ValidateAndCreateDeletionDate(base::StringPiece piece) {
+base::Time ValidateAndCreateDeletionDate(std::string_view piece) {
   if (!base::StartsWith(piece, kDeletionDateToken)) {
     return base::Time();
   }
@@ -133,7 +134,7 @@ void TrashServiceImpl::ParseTrashInfoFile(base::File trash_info_file,
 
   // Split the lines up and ignoring any empty lines in between. Only the first
   // 3 non-empty lines are useful to validate again.
-  std::vector<base::StringPiece> lines = base::SplitStringPiece(
+  std::vector<std::string_view> lines = base::SplitStringPiece(
       file_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (lines.size() < 3) {
     InvokeCallbackWithFailed(std::move(callback));
