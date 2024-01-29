@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
-    enum="DxgiFramePresentationMode" expires_after="2024-02-04">
+    enum="DxgiFramePresentationMode" expires_after="2025-02-04">
   <owner>sunnyps@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
