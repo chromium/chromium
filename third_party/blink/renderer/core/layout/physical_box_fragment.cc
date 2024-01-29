@@ -281,7 +281,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
     : PhysicalFragment(builder,
                        block_or_line_writing_mode,
                        kFragmentBox,
-                       builder->BoxType()),
+                       builder->GetBoxType()),
       bit_field_(ConstHasFragmentItemsFlag::encode(has_fragment_items) |
                  HasDescendantsForTablePartFlag::encode(false) |
                  IsFragmentationContextRootFlag::encode(

@@ -168,7 +168,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   const LayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
     DCHECK(new_algorithm);
     auto& new_builder = new_algorithm->container_builder_;
-    new_builder.SetBoxType(container_builder_.BoxType());
+    new_builder.SetBoxType(container_builder_.GetBoxType());
     // We're not going to run out of space in the next layout pass, since we're
     // breaking earlier, so no space shortage will be detected. Repeat what we
     // found in this pass.
@@ -199,7 +199,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
                                  new_space, GetBreakToken());
     Algorithm algorithm_without_fragmentation(params);
     auto& new_builder = algorithm_without_fragmentation.container_builder_;
-    new_builder.SetBoxType(container_builder_.BoxType());
+    new_builder.SetBoxType(container_builder_.GetBoxType());
     return algorithm_without_fragmentation.Layout();
   }
 

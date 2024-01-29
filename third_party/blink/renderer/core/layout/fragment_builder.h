@@ -78,10 +78,10 @@ class CORE_EXPORT FragmentBuilder {
   // Either this function or SetBoxType must be called before ToBoxFragment().
   void SetIsNewFormattingContext(bool is_new_fc) { is_new_fc_ = is_new_fc; }
 
-  PhysicalFragment::BoxType BoxType() const;
+  PhysicalFragment::BoxType GetBoxType() const;
   void SetBoxType(PhysicalFragment::BoxType box_type) { box_type_ = box_type; }
   bool IsFragmentainerBoxType() const {
-    PhysicalFragment::BoxType box_type = BoxType();
+    PhysicalFragment::BoxType box_type = GetBoxType();
     return box_type == PhysicalFragment::kColumnBox ||
            box_type == PhysicalFragment::kPageBox;
   }

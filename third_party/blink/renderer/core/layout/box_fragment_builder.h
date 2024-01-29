@@ -146,7 +146,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit IntrinsicBlockSize() const { return intrinsic_block_size_; }
   const BoxStrut& Borders() const {
     DCHECK(initial_fragment_geometry_);
-    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_NE(GetBoxType(), PhysicalFragment::kInlineBox);
     return initial_fragment_geometry_->border;
   }
   const BoxStrut& Scrollbar() const {
@@ -433,14 +433,14 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Creates the fragment. Can only be called once.
   const LayoutResult* ToBoxFragment() {
-    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_NE(GetBoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(GetWritingMode());
   }
   const LayoutResult* ToInlineBoxFragment() {
     // The logical coordinate for inline box uses line-relative writing-mode,
     // not
     // flow-relative.
-    DCHECK_EQ(BoxType(), PhysicalFragment::kInlineBox);
+    DCHECK_EQ(GetBoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(ToLineWritingMode(GetWritingMode()));
   }
 

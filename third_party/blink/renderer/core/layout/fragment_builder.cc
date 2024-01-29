@@ -60,7 +60,7 @@ LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
-PhysicalFragment::BoxType FragmentBuilder::BoxType() const {
+PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (box_type_ != PhysicalFragment::BoxType::kNormalBox) {
     return box_type_;
   }
