@@ -24,7 +24,7 @@ namespace gpu {
 
 // The state associated with an EGL texture representation of an IOSurface.
 // This is used by the representations GLTextureIOSurfaceRepresentation and
-// SkiaIOSurfaceRepresentation (when the underlying GrContext uses GL).
+// SkiaGaneshIOSurfaceRepresentation (when the underlying GrContext uses GL).
 struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   // The interface through which IOSurfaceBackingEGLState calls into
   // IOSurfaceImageBacking.
@@ -97,142 +97,6 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   ~IOSurfaceBackingEGLState();
 };
 
-// Representation of an IOSurfaceImageBacking as a GL TexturePassthrough.
-class GLTextureIOSurfaceRepresentation
-    : public GLTexturePassthroughImageRepresentation {
- public:
-  GLTextureIOSurfaceRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      scoped_refptr<IOSurfaceBackingEGLState> egl_state,
-      MemoryTypeTracker* tracker);
-  ~GLTextureIOSurfaceRepresentation() override;
-
- private:
-  // GLTexturePassthroughImageRepresentation:
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
-  scoped_refptr<IOSurfaceBackingEGLState> egl_state_;
-  GLenum mode_ = 0;
-};
-
-class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
- public:
-  SkiaIOSurfaceRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      scoped_refptr<IOSurfaceBackingEGLState> egl_state,
-      scoped_refptr<SharedContextState> context_state,
-      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
-      MemoryTypeTracker* tracker);
-  ~SkiaIOSurfaceRepresentation() override;
-
-  void SetBeginReadAccessCallback(
-      base::RepeatingClosure begin_read_access_callback);
-
- private:
-  // SkiaGaneshImageRepresentation:
-  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
-  std::vector<sk_sp<GrPromiseImageTexture>> BeginWriteAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphore,
-      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
-  void EndWriteAccess() override;
-  std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<skgpu::MutableTextureState>* end_state) override;
-  void EndReadAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
-
-  void CheckContext();
-
-  scoped_refptr<IOSurfaceBackingEGLState> egl_state_;
-  scoped_refptr<SharedContextState> context_state_;
-  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
-  std::vector<sk_sp<SkSurface>> write_surfaces_;
-#if DCHECK_IS_ON()
-  raw_ptr<gl::GLContext> context_ = nullptr;
-#endif
-};
-
-// Overlay representation for a IOSurfaceImageBacking.
-class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
- public:
-  OverlayIOSurfaceRepresentation(SharedImageManager* manager,
-                                 SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker,
-                                 gfx::ScopedIOSurface io_surface);
-  ~OverlayIOSurfaceRepresentation() override;
-
- private:
-  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
-  void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
-  gfx::ScopedIOSurface GetIOSurface() const override;
-  bool IsInUseByWindowServer() const override;
-
-  gfx::ScopedIOSurface io_surface_;
-};
-
-#if BUILDFLAG(USE_DAWN)
-// Representation of a IOSurfaceImageBacking as a Dawn Texture.
-class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
- public:
-  DawnIOSurfaceRepresentation(SharedImageManager* manager,
-                              SharedImageBacking* backing,
-                              MemoryTypeTracker* tracker,
-                              wgpu::Device device,
-                              wgpu::SharedTextureMemory shared_texture_memory,
-                              const gfx::Size& io_surface_size,
-                              wgpu::TextureFormat wgpu_format,
-                              std::vector<wgpu::TextureFormat> view_formats);
-  ~DawnIOSurfaceRepresentation() override;
-
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) final;
-  void EndAccess() final;
-
- private:
-  const wgpu::Device device_;
-  wgpu::SharedTextureMemory shared_texture_memory_;
-  const gfx::Size io_surface_size_;
-  const wgpu::TextureFormat wgpu_format_;
-  const std::vector<wgpu::TextureFormat> view_formats_;
-  wgpu::Texture texture_;
-};
-#endif  // BUILDFLAG(USE_DAWN)
-
-// This class is only put into unique_ptrs and is never copied or assigned.
-class SharedEventAndSignalValue : public BackpressureMetalSharedEvent {
- public:
-  SharedEventAndSignalValue(id<MTLSharedEvent> shared_event,
-                            uint64_t signaled_value);
-  ~SharedEventAndSignalValue() override;
-  SharedEventAndSignalValue(const SharedEventAndSignalValue& other) = delete;
-  SharedEventAndSignalValue(SharedEventAndSignalValue&& other) = delete;
-  SharedEventAndSignalValue& operator=(const SharedEventAndSignalValue& other) =
-      delete;
-
-  bool HasCompleted() const override;
-
-  id<MTLSharedEvent> shared_event() const { return shared_event_.get(); }
-
-  // This is the value which will be signaled on the associated MTLSharedEvent.
-  uint64_t signaled_value() const { return signaled_value_; }
-
- private:
-  base::apple::scoped_nsprotocol<id<MTLSharedEvent>> shared_event_;
-  uint64_t signaled_value_;
-};
-
 class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
       public IOSurfaceBackingEGLState::Client {
@@ -266,12 +130,13 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
-  void AddSharedEventAndSignalValue(id<MTLSharedEvent> sharedEvent,
-                                    uint64_t signalValue);
-  std::vector<std::unique_ptr<SharedEventAndSignalValue>> TakeSharedEvents();
-
  private:
+  class SharedEventAndSignalValue;
+  class GLTextureIOSurfaceRepresentation;
+  class DawnIOSurfaceRepresentation;
+  class SkiaGaneshIOSurfaceRepresentation;
   class SkiaGraphiteIOSurfaceRepresentation;
+  class OverlayIOSurfaceRepresentation;
 
   // SharedImageBacking:
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
@@ -381,8 +246,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
 
-  std::vector<std::unique_ptr<SharedEventAndSignalValue>>
-      shared_events_and_signal_values_;
+  std::vector<std::unique_ptr<SharedEventAndSignalValue>> shared_events_;
 
   base::WeakPtrFactory<IOSurfaceImageBacking> weak_factory_;
 };
