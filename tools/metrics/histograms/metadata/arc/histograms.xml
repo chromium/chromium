@@ -610,6 +610,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.ArcOnDemand.ActivationIsDelayed" enum="Boolean"
+    expires_after="2025-01-26">
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Records whether ARC activation is delayed by ARC on Demand or not. Recorded
+    on a regular boot.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Auth.AccountCheck.Status{ArcUserTypes}"
     enum="ArcAuthAccountCheckStatus" expires_after="never">
 <!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
