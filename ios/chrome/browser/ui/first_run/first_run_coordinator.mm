@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
@@ -77,10 +78,18 @@
       [weakSelf.delegate didFinishPresentingScreens];
     };
   }
-
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
-
+  if (self.childCoordinator) {
+    // If the child coordinator is not nil, then the FRE is stopped because
+    // Chrome is being shutdown.
+    InterruptibleChromeCoordinator* interruptibleChildCoordinator =
+        base::apple::ObjCCast<InterruptibleChromeCoordinator>(
+            self.childCoordinator);
+    [interruptibleChildCoordinator
+        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
+                 completion:completion];
+    [self.childCoordinator stop];
+    self.childCoordinator = nil;
+  }
   [self.baseViewController dismissViewControllerAnimated:YES
                                               completion:completion];
   _navigationController = nil;

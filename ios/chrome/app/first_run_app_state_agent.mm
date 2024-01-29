@@ -71,6 +71,7 @@
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   [self.firstRunCoordinator stop];
+  self.firstRunCoordinator = nil;
 
   [sceneState removeObserver:self];
   self.presentingSceneState = nil;
@@ -188,6 +189,7 @@
   _firstRunUIBlocker.reset();
 
   [self.firstRunCoordinator stop];
+  self.firstRunCoordinator = nil;
 }
 
 - (void)didFinishPresentingScreens {
