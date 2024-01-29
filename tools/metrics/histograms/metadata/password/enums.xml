@@ -704,6 +704,9 @@ chromium-metrics-reviews@google.com.
     The user explicitly asked to move a password to account store from password
     details page.
   </int>
+  <int value="5" label="kExplicitlyTriggeredInPasswordsManagementBubble">
+    The user clicked a link in a footer of the manage passwords bubble.
+  </int>
 </enum>
 
 <enum name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult">

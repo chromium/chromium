@@ -135,10 +135,13 @@ void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {
   }
 }
 
-// TODO(1503146): Add implementation of this method.
 void ManagePasswordsBubbleController::OnMovePasswordLinkClicked() {
+  CHECK(currently_selected_password_.has_value());
   password_manager::metrics_util::LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kMovePasswordLinkClicked);
+  if (delegate_) {
+    delegate_->ShowMovePasswordBubble(currently_selected_password_.value());
+  }
 }
 
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&

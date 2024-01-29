@@ -31,6 +31,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -169,6 +170,12 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
               (override));
   MOCK_METHOD(bool, HasBrowserWindow, (), (override, const));
   MOCK_METHOD(void, OnUpdateBubbleAndIconVisibility, (), ());
+  MOCK_METHOD(
+      std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>,
+      CreateMovePasswordToAccountStoreHelper,
+      (password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+       base::OnceCallback<void()>),
+      ());
 
  private:
   void UpdateBubbleAndIconVisibility() override;
@@ -1605,7 +1612,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenBubbleForMovableForm) {
   controller()->OnShowMoveToAccountBubble(std::move(test_form_manager));
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+      password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
 
   // A user confirms the move which closes the dialog.
   EXPECT_CALL(*form_manager, MoveCredentialsToAccountStore);
@@ -1617,6 +1624,36 @@ TEST_F(ManagePasswordsUIControllerTest, OpenBubbleForMovableForm) {
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kSuccessfulLoginWithProfileStorePassword,
       1);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, OpenMoveBubbleFromManagementBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+  const PasswordForm* test_form_ptr = &test_local_form();
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> forms = {
+      test_form_ptr};
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(test_form_ptr->url), nullptr);
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
+  controller()->ShowMovePasswordBubble(test_local_form());
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
+
+  EXPECT_CALL(*controller(),
+              CreateMovePasswordToAccountStoreHelper(
+                  password_manager::metrics_util::MoveToAccountStoreTrigger::
+                      kExplicitlyTriggeredInPasswordsManagementBubble,
+                  _));
+
+  // A user confirms the move which closes the dialog.
+  controller()->MovePasswordToAccountStore();
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {

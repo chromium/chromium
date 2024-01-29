@@ -108,6 +108,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
       (),
       (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
+  MOCK_METHOD(void,
+              ShowMovePasswordBubble,
+              (const password_manager::PasswordForm& form),
+              (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
   MOCK_METHOD(void,
               OnAddUsernameSaveClicked,

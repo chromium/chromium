@@ -445,6 +445,21 @@ void ManagePasswordsUIController::ShowBiometricActivationConfirmation() {
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::ShowMovePasswordBubble(
+    const password_manager::PasswordForm& form) {
+  CHECK_EQ(GetState(), password_manager::ui::MANAGE_STATE);
+  // Existing dialog shouldn't be closed.
+  if (dialog_controller_) {
+    return;
+  }
+  passwords_data_.set_selected_password(
+      std::make_unique<password_manager::PasswordForm>(form));
+  passwords_data_.TransitionToState(
+      password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::OnBiometricAuthBeforeFillingDeclined() {
   CHECK(!dialog_controller_);
   passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
@@ -568,11 +583,18 @@ ManagePasswordsUIController::GetPendingPassword() const {
   if (GetState() == password_manager::ui::AUTO_SIGNIN_STATE)
     return *GetCurrentForms()[0];
 
+  if (GetState() ==
+      password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
+    password_manager::PasswordForm* selected_password_form =
+        passwords_data_.selected_password();
+    return *selected_password_form;
+  }
+
   CHECK(
       GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
       GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
       GetState() == password_manager::ui::SAVE_CONFIRMATION_STATE ||
-      GetState() == password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE ||
+      GetState() == password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE ||
       GetState() == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE)
       << GetState();
   password_manager::PasswordFormManagerForUI* form_manager =
@@ -628,6 +650,7 @@ void ManagePasswordsUIController::OnBubbleShown() {
 }
 
 void ManagePasswordsUIController::OnBubbleHidden() {
+  passwords_data_.clear_selected_password();
   bool update_icon =
       (bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE);
   bubble_status_ = BubbleStatus::NOT_SHOWN;
@@ -776,18 +799,34 @@ void ManagePasswordsUIController::DiscardUnsyncedCredentials() {
 }
 
 void ManagePasswordsUIController::MovePasswordToAccountStore() {
-  DCHECK_EQ(GetState(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE)
-      << GetState();
-  passwords_data_.form_manager()->MoveCredentialsToAccountStore();
+  CHECK(GetState() ==
+            password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE ||
+        GetState() ==
+            password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
+
+  // TODO(1503146): After this feature lands, clean this up and use only
+  // MovePendingPasswordToAccountStoreUsingHelper() to move passwords.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)) {
+    MovePendingPasswordToAccountStoreUsingHelper(
+        GetState() == password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE
+            ? password_manager::metrics_util::MoveToAccountStoreTrigger::
+                  kSuccessfulLoginWithProfileStorePassword
+            : password_manager::metrics_util::MoveToAccountStoreTrigger::
+                  kExplicitlyTriggeredInPasswordsManagementBubble);
+  } else {
+    passwords_data_.form_manager()->MoveCredentialsToAccountStore();
+  }
+
   ClearPopUpFlagForBubble();
   passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
+  passwords_data_.clear_selected_password();
   UpdateBubbleAndIconVisibility();
 }
 
 void ManagePasswordsUIController::BlockMovingPasswordToAccountStore() {
   DCHECK_EQ(GetState(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE)
+            password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE)
       << GetState();
   passwords_data_.form_manager()->BlockMovingCredentialsToAccountStore();
   ClearPopUpFlagForBubble();
@@ -845,6 +884,7 @@ void ManagePasswordsUIController::OnDialogHidden() {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
     UpdateBubbleAndIconVisibility();
   }
+  passwords_data_.clear_selected_password();
 }
 
 void ManagePasswordsUIController::OnLeakDialogHidden() {
@@ -986,6 +1026,29 @@ bool ManagePasswordsUIController::HasBrowserWindow() const {
   return chrome::FindBrowserWithTab(web_contents()) != nullptr;
 }
 
+std::unique_ptr<MovePasswordToAccountStoreHelper>
+ManagePasswordsUIController::CreateMovePasswordToAccountStoreHelper(
+    password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+    base::OnceCallback<void()> on_move_finished) {
+  return std::make_unique<MovePasswordToAccountStoreHelper>(
+      GetPendingPassword(), passwords_data_.client(), trigger,
+      std::move(on_move_finished));
+}
+
+void ManagePasswordsUIController::MovePendingPasswordToAccountStoreUsingHelper(
+    password_manager::metrics_util::MoveToAccountStoreTrigger trigger) {
+  // Insert nullptr first to obtain the iterator passed to the callback.
+  auto helper_it = move_to_account_store_helpers_.insert(
+      move_to_account_store_helpers_.begin(), nullptr);
+  // This class owns and thus outlives the helper so base::Unretained is safe.
+  auto on_move_finished =
+      base::BindOnce(&ManagePasswordsUIController::
+                         OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted,
+                     base::Unretained(this), helper_it);
+  *helper_it = CreateMovePasswordToAccountStoreHelper(
+      trigger, std::move(on_move_finished));
+}
+
 void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
   CancelAnyOngoingBiometricAuth();
 
@@ -1114,18 +1177,9 @@ void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
   // Successful opt-in means that the just-saved password should be moved to the
   // account.
   if (reauth_succeeded) {
-    // Insert nullptr first to obtain the iterator passed to the callback.
-    auto helper_it = move_to_account_store_helpers_.insert(
-        move_to_account_store_helpers_.begin(), nullptr);
-    // This class owns and thus outlives the helper so base::Unretained is safe.
-    *helper_it = std::make_unique<MovePasswordToAccountStoreHelper>(
-        form, passwords_data_.client(),
+    MovePendingPasswordToAccountStoreUsingHelper(
         password_manager::metrics_util::MoveToAccountStoreTrigger::
-            kUserOptedInAfterSavingLocally,
-        base::BindOnce(
-            &ManagePasswordsUIController::
-                OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted,
-            base::Unretained(this), helper_it));
+            kUserOptedInAfterSavingLocally);
   } else {
     // Failed or canceled opt-in means the user has (implicitly) chosen to save
     // locally. This is already the default value, but setting it explicitly

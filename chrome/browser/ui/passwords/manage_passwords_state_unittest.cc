@@ -682,7 +682,7 @@ TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
       passwords_data().GetCurrentForms(),
       ElementsAre(Pointee(saved_match()), Pointee(local_federated_form())));
   EXPECT_EQ(passwords_data().state(),
-            password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+            password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
   EXPECT_EQ(passwords_data().origin(), url::Origin::Create(GURL(kTestOrigin)));
 
   TestAllUpdates();

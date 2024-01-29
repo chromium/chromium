@@ -113,6 +113,8 @@ class ManagePasswordsUIController
       override;
   void OnBiometricAuthenticationForFilling(PrefService* prefs) override;
   void ShowBiometricActivationConfirmation() override;
+  void ShowMovePasswordBubble(
+      const password_manager::PasswordForm& form) override;
   void OnBiometricAuthBeforeFillingDeclined() override;
   void OnAddUsernameSaveClicked(const std::u16string& username) override;
   void OnKeychainError() override;
@@ -229,6 +231,13 @@ class ManagePasswordsUIController
   // Check if |web_contents()| is attached to some Browser. Mocked in tests.
   virtual bool HasBrowserWindow() const;
 
+  // Creates new MovePasswordToAccountStoreHelper object and thus starts the
+  // moving process for the pending password.
+  virtual std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>
+  CreateMovePasswordToAccountStoreHelper(
+      password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+      base::OnceCallback<void()> on_move_finished);
+
   // Returns whether the bubble is currently open.
   bool IsShowingBubbleForTest() const { return IsShowingBubble(); }
 
@@ -321,6 +330,10 @@ class ManagePasswordsUIController
   // Returns true if the password that is about to be changed was previously
   // phished.
   bool IsPendingPasswordPhished() const;
+
+  // Moves pending password to the account storage.
+  void MovePendingPasswordToAccountStoreUsingHelper(
+      password_manager::metrics_util::MoveToAccountStoreTrigger trigger);
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;

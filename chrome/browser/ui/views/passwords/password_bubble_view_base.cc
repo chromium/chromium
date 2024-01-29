@@ -111,7 +111,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     view = new PasswordSaveUnsyncedCredentialsLocallyView(web_contents,
                                                           anchor_view);
   } else if (model_state ==
-             password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE) {
+                 password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE ||
+             model_state == password_manager::ui::
+                                MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
     view = new MoveToAccountStoreBubbleView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
              model_state ==

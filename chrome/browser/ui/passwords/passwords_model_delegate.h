@@ -125,7 +125,7 @@ class PasswordsModelDelegate {
   virtual void DiscardUnsyncedCredentials() = 0;
 
   // Called from the dialog controller when a user confirms moving the recently
-  // used credential to their account store.
+  // used or selected credential to their account store.
   virtual void MovePasswordToAccountStore() = 0;
 
   // Called from the dialog controller when a user rejects moving the recently
@@ -183,6 +183,11 @@ class PasswordsModelDelegate {
   // Called from Biometric Authentication promo dialog when the feature is
   // enabled.
   virtual void ShowBiometricActivationConfirmation() = 0;
+
+  // Called from the Management bubble when user wants to save local password in
+  // the account. It opens the Move bubble for the selected password.
+  virtual void ShowMovePasswordBubble(
+      const password_manager::PasswordForm& form) = 0;
 
   // Called when user clicked "No thanks" button on Biometric Authentication
   // before filling promo dialog.

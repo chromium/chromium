@@ -218,7 +218,7 @@ void ManagePasswordsState::OnPasswordMovable(
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
-  SetState(password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+  SetState(password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE);
 }
 
 void ManagePasswordsState::OnKeychainError() {
@@ -236,7 +236,8 @@ void ManagePasswordsState::TransitionToState(
             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
         state ==
             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
-        state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS)
+        state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS ||
+        state == password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {

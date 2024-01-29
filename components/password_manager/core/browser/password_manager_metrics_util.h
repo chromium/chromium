@@ -459,7 +459,9 @@ enum class MoveToAccountStoreTrigger {
   // The user explicitly asked to move a password to account store from password
   // details page.
   kExplicitlyTriggeredForSinglePasswordInDetailsInSettings = 4,
-  kMaxValue = kExplicitlyTriggeredForSinglePasswordInDetailsInSettings,
+  // The user clicked a link in a footer of the manage passwords bubble.
+  kExplicitlyTriggeredInPasswordsManagementBubble = 5,
+  kMaxValue = kExplicitlyTriggeredInPasswordsManagementBubble,
 };
 
 // Used to record what exactly was updated during password editing flow.
