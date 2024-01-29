@@ -204,9 +204,6 @@
 # crbug.com/1513573
 -org.chromium.chrome.features.start_surface.ShowNtpAtStartupTest.testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed
 
-# crbug.com/1517108
--org.chromium.chrome.features.start_surface.ShowNtpAtStartupTest.test1RowMvtMarginOnNtpHomePage
-
 # crbug.com/1513740
 -org.chromium.chrome.browser.signin.SigninManagerIntegrationTest.testUpdateAccountListTwoAccountsThenRemoveAll
 
