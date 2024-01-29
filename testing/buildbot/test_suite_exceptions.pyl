@@ -1387,6 +1387,14 @@
       },
     },
   },
+  'check_network_annotations': {
+    'modifications': {
+      'linux-chromeos-rel': {
+        # TODO(crbug.com/1521126): Re-enable.
+        'ci_only': True,
+      },
+    },
+  },
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
