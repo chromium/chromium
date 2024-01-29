@@ -93,7 +93,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 containerView,
                 multiWindowModeStateDispatcher,
                 scrimCoordinator,
-                TabUiFeatureUtilities.shouldUseListMode(activity)
+                TabUiFeatureUtilities.shouldUseListMode()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
                 rootView,

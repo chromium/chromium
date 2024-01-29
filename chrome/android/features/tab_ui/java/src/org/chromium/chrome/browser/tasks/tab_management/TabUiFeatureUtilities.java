@@ -95,11 +95,8 @@ public class TabUiFeatureUtilities {
                 && ChromeFeatureList.sDelayTempStripRemoval.isEnabled();
     }
 
-    /**
-     * @return Whether the Grid Tab Switcher UI should use list mode.
-     * @param context The activity context.
-     */
-    public static boolean shouldUseListMode(Context context) {
+    /** Returns whether the Grid Tab Switcher UI should use list mode. */
+    public static boolean shouldUseListMode() {
         // Low-end forces list mode.
         return SysUtils.isLowEndDevice();
     }
@@ -117,7 +114,7 @@ public class TabUiFeatureUtilities {
                         ChromeFeatureList.sTabToGTSAnimation.isEnabled()
                                 && SysUtils.amountOfPhysicalMemoryKB() / 1024
                                         >= ZOOMING_MIN_MEMORY.getValue()
-                                && !shouldUseListMode(context);
+                                && !shouldUseListMode();
             }
         }
         return sIsTabToGtsAnimationEnabled;

@@ -92,7 +92,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mMode =
-                TabUiFeatureUtilities.shouldUseListMode(activity)
+                TabUiFeatureUtilities.shouldUseListMode()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID;
     }
