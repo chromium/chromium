@@ -1904,8 +1904,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "DevToolsTabTargetEnabled"
                                              : "DevToolsTabTargetDisabled";
                          });
-
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CanInspectExtensionOffscreenDoc) {
+// TODO(https://crbug.com/1522927): Re-enable on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CanInspectExtensionOffscreenDoc \
+  DISABLED_CanInspectExtensionOffscreenDoc
+#else
+#define MAYBE_CanInspectExtensionOffscreenDoc CanInspectExtensionOffscreenDoc
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       MAYBE_CanInspectExtensionOffscreenDoc) {
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",
