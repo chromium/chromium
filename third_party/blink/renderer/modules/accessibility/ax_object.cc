@@ -3272,10 +3272,13 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DCHECK(!cached_values_need_update_)
+  // TODO(crbug.com/1522716): Figure out how this can happen:
+  // "Check failed: !cached_values_need_update_. Tried to compute ignored value
+  // without up-to-date hidden/inert values on SELECT".
+  DUMP_WILL_BE_CHECK(!cached_values_need_update_)
       << "Tried to compute ignored value without up-to-date hidden/inert "
          "values on "
-      << GetNode();
+      << ToString(true, true);
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
