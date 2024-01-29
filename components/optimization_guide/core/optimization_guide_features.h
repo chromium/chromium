@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -95,6 +96,11 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyClassifier);
+
+typedef base::EnumSet<proto::RequestContext,
+                      proto::RequestContext_MIN,
+                      proto::RequestContext_MAX>
+    RequestContextSet;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -287,10 +293,9 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target);
 
-// Returns whether personalized metadata should be enabled for
-// |request_context|.
+// Returns requests contexts for which personalized metadata should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
+RequestContextSet GetAllowedContextsForPersonalizedMetadata();
 
 // Returns the minimum random delay before starting to fetch for prediction
 // models and host model features.
