@@ -49,7 +49,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                         surface_origin, alpha_type, usage,
                         gpu_memory_buffer->CloneHandle());
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage());
+        gpu::Mailbox::GenerateForSharedImage(), nullptr);
   }
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -62,7 +62,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     DoCreateSharedImage(gpu_memory_buffer, plane, color_space, surface_origin,
                         alpha_type, usage);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage());
+        gpu::Mailbox::GenerateForSharedImage(), nullptr);
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,

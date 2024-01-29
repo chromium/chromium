@@ -236,7 +236,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
             MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
-  return base::MakeRefCounted<ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
@@ -295,7 +295,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                                    std::move(pixel_data_copy)),
                     {});
   }
-  return base::MakeRefCounted<ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
@@ -356,7 +356,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, GetGpuMemoryBufferHandleInfo(mailbox));
+      mailbox, GetGpuMemoryBufferHandleInfo(mailbox), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
@@ -469,8 +469,10 @@ SharedImageInterfaceInProcess::CreateSharedImage(
           ->mailbox();
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                         format, size, buffer_usage));
+      mailbox,
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), format, size,
+                                buffer_usage),
+      holder_);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -506,7 +508,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                     {});
   }
 
-  return base::MakeRefCounted<ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
 }
 SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
@@ -568,7 +570,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
         {});
   }
   shared_image_mapping.shared_image =
-      base::MakeRefCounted<ClientSharedImage>(mailbox);
+      base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
 
   return shared_image_mapping;
 }
@@ -639,7 +641,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
         {});
   }
 
-  return base::MakeRefCounted<ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(

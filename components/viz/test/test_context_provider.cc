@@ -169,7 +169,7 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = size;
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -185,7 +185,7 @@ TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -214,14 +214,16 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
         size, SinglePlaneSharedImageFormatToBufferFormat(format), buffer_usage,
         surface_handle, nullptr);
     return gpu::ClientSharedImage::CreateForTesting(
-        mailbox, std::move(gpu_memory_buffer));
+        mailbox, std::move(gpu_memory_buffer), holder_);
   }
 
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 
   return base::MakeRefCounted<gpu::ClientSharedImage>(
-      mailbox, gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format,
-                                              size, buffer_usage));
+      mailbox,
+      gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format, size,
+                                     buffer_usage),
+      holder_);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -243,8 +245,10 @@ TestSharedImageInterface::CreateSharedImage(
           ->mailbox();
 
   return base::MakeRefCounted<gpu::ClientSharedImage>(
-      mailbox, gpu::GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                              format, size, buffer_usage));
+      mailbox,
+      gpu::GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), format,
+                                     size, buffer_usage),
+      holder_);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -261,7 +265,7 @@ TestSharedImageInterface::CreateSharedImage(
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = size;
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_);
 }
 
 gpu::SharedImageInterface::SharedImageMapping
@@ -276,7 +280,7 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = size;
-  return {base::MakeRefCounted<gpu::ClientSharedImage>(mailbox),
+  return {base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_),
           base::WritableSharedMemoryMapping()};
 }
 
@@ -294,7 +298,7 @@ TestSharedImageInterface::CreateSharedImage(
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = gpu_memory_buffer->GetSize();
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_);
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
@@ -318,7 +322,7 @@ TestSharedImageInterface::AddReferenceToSharedImage(
     const gpu::Mailbox& mailbox,
     uint32_t usage) {
   shared_images_.insert(mailbox);
-  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox, holder_);
 }
 
 void TestSharedImageInterface::DestroySharedImage(
@@ -347,8 +351,8 @@ TestSharedImageInterface::CreateSwapChain(SharedImageFormat format,
   auto back_buffer = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(front_buffer);
   shared_images_.insert(back_buffer);
-  return {base::MakeRefCounted<gpu::ClientSharedImage>(front_buffer),
-          base::MakeRefCounted<gpu::ClientSharedImage>(back_buffer)};
+  return {base::MakeRefCounted<gpu::ClientSharedImage>(front_buffer, holder_),
+          base::MakeRefCounted<gpu::ClientSharedImage>(back_buffer, holder_)};
 }
 
 void TestSharedImageInterface::PresentSwapChain(
