@@ -29,9 +29,10 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -165,7 +166,7 @@ void EnrollmentFwmpHelper::RequestFirmwareManagementParameters(
     return std::move(result_callback).Run(false);
   }
 
-  user_data_auth::GetFirmwareManagementParametersRequest request;
+  device_management::GetFirmwareManagementParametersRequest request;
   install_attributes_client_->GetFirmwareManagementParameters(
       request,
       base::BindOnce(
@@ -175,10 +176,11 @@ void EnrollmentFwmpHelper::RequestFirmwareManagementParameters(
 
 void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
     ResultCallback result_callback,
-    std::optional<user_data_auth::GetFirmwareManagementParametersReply> reply) {
-  if (!reply.has_value() ||
-      reply->error() !=
-          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    std::optional<device_management::GetFirmwareManagementParametersReply>
+        reply) {
+  if (!reply.has_value() || reply->error() !=
+                                device_management::DeviceManagementErrorCode::
+                                    DEVICE_MANAGEMENT_ERROR_NOT_SET) {
     LOG(ERROR) << "Failed to retrieve firmware management parameters.";
     return std::move(result_callback).Run(false);
   }
@@ -576,7 +578,7 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     return;
   }
 
-  user_data_auth::RemoveFirmwareManagementParametersRequest request;
+  device_management::RemoveFirmwareManagementParametersRequest request;
   ash::InstallAttributesClient::Get()->RemoveFirmwareManagementParameters(
       request,
       base::BindOnce(
@@ -585,11 +587,11 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
 }
 
 void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
-    std::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+    std::optional<device_management::RemoveFirmwareManagementParametersReply>
         reply) {
-  if (!reply.has_value() ||
-      reply->error() !=
-          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+  if (!reply.has_value() || reply->error() !=
+                                device_management::DeviceManagementErrorCode::
+                                    DEVICE_MANAGEMENT_ERROR_NOT_SET) {
     LOG(ERROR) << "Failed to remove firmware management parameters.";
   }
 

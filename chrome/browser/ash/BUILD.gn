@@ -3703,6 +3703,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/device_management:device_management_proto",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/hermes",

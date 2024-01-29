@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
+#include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -173,21 +173,21 @@ void SetDevBootFlag(ash::FakeInstallAttributesClient* client,
                     bool is_disabled) {
   const int fwmp_flags =
       is_disabled ? cryptohome::DEVELOPER_DISABLE_BOOT : cryptohome::NONE;
-  ::user_data_auth::SetFirmwareManagementParametersRequest request;
+  ::device_management::SetFirmwareManagementParametersRequest request;
   request.mutable_fwmp()->set_flags(fwmp_flags);
   base::test::TestFuture<
-      std::optional<::user_data_auth::SetFirmwareManagementParametersReply>>
+      std::optional<::device_management::SetFirmwareManagementParametersReply>>
       future_fwmp;
   client->SetFirmwareManagementParameters(request, future_fwmp.GetCallback());
   ASSERT_TRUE(future_fwmp.Get());
 }
 
 void ClearDevBootFlag(ash::FakeInstallAttributesClient* client) {
-  base::test::TestFuture<
-      std::optional<::user_data_auth::RemoveFirmwareManagementParametersReply>>
+  base::test::TestFuture<std::optional<
+      ::device_management::RemoveFirmwareManagementParametersReply>>
       future_removed_fwmp;
   client->RemoveFirmwareManagementParameters(
-      ::user_data_auth::RemoveFirmwareManagementParametersRequest(),
+      ::device_management::RemoveFirmwareManagementParametersRequest(),
       future_removed_fwmp.GetCallback());
 
   ASSERT_TRUE(future_removed_fwmp.Get());

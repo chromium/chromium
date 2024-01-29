@@ -54,6 +54,9 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cros_disks:unit_tests",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/device_management:device_management_proto",
+    "//chromeos/ash/components/dbus/device_management:unit_tests",
     "//chromeos/ash/components/dbus/dlcservice:unit_tests",
     "//chromeos/ash/components/dbus/easy_unlock:unit_tests",
     "//chromeos/ash/components/dbus/featured:unit_tests",
@@ -88,7 +91,6 @@ source_set("unit_tests") {
     "hiberman/hiberman_client_unittest.cc",
     "userdataauth/cryptohome_misc_client_unittest.cc",
     "userdataauth/cryptohome_pkcs11_client_unittest.cc",
-    "userdataauth/install_attributes_client_unittest.cc",
     "userdataauth/userdataauth_client_unittest.cc",
   ]
 }

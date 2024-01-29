@@ -176,7 +176,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Invoked after the firmware management partition in TPM is updated.
   void OnFirmwareManagementParametersDataSet(
-      std::optional<user_data_auth::SetFirmwareManagementParametersReply>
+      std::optional<device_management::SetFirmwareManagementParametersReply>
           reply);
 
   // Calls InstallAttributes::LockDevice() for enterprise enrollment and

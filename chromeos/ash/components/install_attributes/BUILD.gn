@@ -10,14 +10,14 @@ component("install_attributes") {
   defines = [ "IS_ASH_INSTALL_ATTRIBUTES_IMPL" ]
   public_deps = [
     "//base",
-    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/device_management",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/policy/core/common:common_constants",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/dbus/device_management:device_management_proto",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
     "//components/policy/proto:proto",
@@ -49,7 +49,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/device_management",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
     "//components/policy/proto:proto",
