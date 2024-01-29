@@ -12,7 +12,7 @@ module chromeos.wilco_dtc_supportd.mojom;
 
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom";
 
-[Stable, Extensible]
+[Extensible]
 // NextMinVersion: 2, NextIndex: 6
 enum WilcoDtcSupportdWebRequestHttpMethod {
   // This is required for backwards compatibility, should not be used.
@@ -24,7 +24,7 @@ enum WilcoDtcSupportdWebRequestHttpMethod {
   kPatch = 4,
 };
 
-[Stable, Extensible]
+[Extensible]
 // NextMinVersion: 2, NextIndex: 4
 enum WilcoDtcSupportdWebRequestStatus {
   // This is required for backwards compatibility, should not be used.
@@ -39,7 +39,7 @@ enum WilcoDtcSupportdWebRequestStatus {
   kHttpError = 2,
 };
 
-[Stable, Extensible]
+[Extensible]
 // NextMinVersion: 2, NextIndex: 8
 enum WilcoDtcSupportdEvent {
   // This is required for backwards compatibility, should not be used.
@@ -78,7 +78,6 @@ interface WilcoDtcSupportdServiceFactory {
 // Interface exposed by the wilco_dtc_supportd daemon.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 interface WilcoDtcSupportdService {
   // Sends a message, originating from the wilco_dtc UI extension (hosted by
   // the browser), to the wilco_dtc daemon. The message contents are serialized
@@ -117,7 +116,6 @@ interface WilcoDtcSupportdService {
 // this is the browser.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable]
 interface WilcoDtcSupportdClient {
   // Performs a web request, originating from the wilco_dtc daemon, using the
   // browser's network stack.
