@@ -20,6 +20,11 @@ dependencies.constraints {
             attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
         }
     }
+    compile("androidx.room:room-runtime") {
+        attributes {
+            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
+        }
+    }
 }
 
 dependencies {
@@ -71,6 +76,7 @@ dependencies {
     compile 'androidx.privacysandbox.ads:ads-adservices:1.0.0-alpha01'
     compile 'androidx.privacysandbox.ads:ads-adservices-java:1.0.0-alpha01'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
