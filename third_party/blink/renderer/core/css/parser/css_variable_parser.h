@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -38,7 +39,7 @@ class CORE_EXPORT CSSVariableParser {
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);
-  static bool IsValidVariableName(const String&);
+  static bool IsValidVariableName(StringView);
 
   // NOTE: We have to strip both leading and trailing whitespace (and comments)
   // from values as per spec, but we assume the tokenizer has already done the
