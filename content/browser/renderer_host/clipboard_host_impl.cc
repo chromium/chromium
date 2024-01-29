@@ -139,10 +139,9 @@ ClipboardHostImpl::ClipboardHostImpl(
     : DocumentService(render_frame_host, std::move(receiver)) {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste,
-      render_frame_host.GetBrowserContext()->IsOffTheRecord()
-          ? nullptr
-          : std::make_unique<ui::DataTransferEndpoint>(
-                render_frame_host.GetMainFrame()->GetLastCommittedURL()));
+      std::make_unique<ui::DataTransferEndpoint>(
+          render_frame_host.GetMainFrame()->GetLastCommittedURL(),
+          render_frame_host.GetBrowserContext()->IsOffTheRecord()));
 }
 
 void ClipboardHostImpl::Create(
@@ -661,7 +660,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
           ClipboardEndpoint(ui::Clipboard::GetForCurrentThread()->GetSource(
               clipboard_buffer)),
           ClipboardEndpoint(
-              CreateDataEndpoint(/*include_otr=*/true).get(),
+              CreateDataEndpoint().get(),
               base::BindRepeating(
                   [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
                     auto* rfh = RenderFrameHost::FromID(rfh_id);
@@ -718,14 +717,11 @@ void ClipboardHostImpl::CleanupObsoleteRequests() {
   }
 }
 
-std::unique_ptr<ui::DataTransferEndpoint> ClipboardHostImpl::CreateDataEndpoint(
-    bool include_otr) {
-  if (render_frame_host().GetBrowserContext()->IsOffTheRecord() &&
-      !include_otr) {
-    return nullptr;
-  }
+std::unique_ptr<ui::DataTransferEndpoint>
+ClipboardHostImpl::CreateDataEndpoint() {
   return std::make_unique<ui::DataTransferEndpoint>(
       render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+      render_frame_host().GetBrowserContext()->IsOffTheRecord(),
       render_frame_host().HasTransientUserActivation());
 }
 }  // namespace content

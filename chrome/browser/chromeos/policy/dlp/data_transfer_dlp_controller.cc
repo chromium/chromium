@@ -234,61 +234,71 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     const std::optional<size_t> size) {
+  // To simplify logic that would have to check OTR in every sub-call of DLP
+  // checks, simply null the endpoints so that subsequent code never misuses
+  // data.
+  base::optional_ref<const ui::DataTransferEndpoint> source =
+      data_src.has_value() && !data_src->off_the_record() ? data_src
+                                                          : absl::nullopt;
+  base::optional_ref<const ui::DataTransferEndpoint> destination =
+      data_dst.has_value() && !data_dst->off_the_record() ? data_dst
+                                                          : absl::nullopt;
+
   std::string src_pattern;
   std::string dst_pattern;
   DlpRulesManager::RuleMetadata rule_metadata;
 
   DlpRulesManager::Level level = IsDataTransferAllowed(
-      *dlp_rules_manager_, data_src.as_ptr(), data_dst.as_ptr(), size,
+      *dlp_rules_manager_, source.as_ptr(), destination.as_ptr(), size,
       &src_pattern, &dst_pattern, &rule_metadata);
 
-  MaybeReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+  MaybeReportEvent(source.as_ptr(), destination.as_ptr(), src_pattern,
                    dst_pattern, level,
                    /*is_clipboard_event=*/true, rule_metadata);
 
-  bool notify_on_paste = ShouldNotifyOnPaste(data_dst.as_ptr());
+  bool notify_on_paste = ShouldNotifyOnPaste(destination.as_ptr());
 
   bool is_read_allowed = true;
 
   switch (level) {
     case DlpRulesManager::Level::kBlock:
       if (notify_on_paste) {
-        NotifyBlockedPaste(data_src.as_ptr(), data_dst.as_ptr());
+        NotifyBlockedPaste(source.as_ptr(), destination.as_ptr());
       }
       is_read_allowed = false;
       break;
     case DlpRulesManager::Level::kWarn:
 
-      if (data_dst.has_value() && IsVM(data_dst->type())) {
+      if (destination.has_value() && IsVM(destination->type())) {
         if (notify_on_paste) {
-          ReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+          ReportEvent(source.as_ptr(), destination.as_ptr(), src_pattern,
                       dst_pattern, DlpRulesManager::Level::kWarn,
                       /*is_clipboard_event=*/true, rule_metadata);
 
           auto reporting_cb = base::BindOnce(
               &DataTransferDlpController::ReportWarningProceededEvent,
-              weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
-              data_dst.CopyAsOptional(), src_pattern, dst_pattern,
+              weak_ptr_factory_.GetWeakPtr(), source.CopyAsOptional(),
+              destination.CopyAsOptional(), src_pattern, dst_pattern,
               /*is_clipboard_event=*/true, rule_metadata);
 
-          WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
+          WarnOnPaste(source, destination, std::move(reporting_cb));
         }
-      } else if (ShouldCancelOnWarn(data_dst.as_ptr())) {
+      } else if (ShouldCancelOnWarn(destination.as_ptr())) {
         is_read_allowed = false;
       } else if (notify_on_paste &&
-                 !(data_dst.has_value() && data_dst->IsUrlType()) &&
-                 !ShouldPasteOnWarn(data_dst.as_ptr())) {
-        ReportEvent(data_src.as_ptr(), data_dst.as_ptr(), src_pattern,
+                 !(destination.has_value() && destination->IsUrlType()) &&
+                 !ShouldPasteOnWarn(destination.as_ptr())) {
+        ReportEvent(source.as_ptr(), destination.as_ptr(), src_pattern,
                     dst_pattern, DlpRulesManager::Level::kWarn,
                     /*is_clipboard_event=*/true, rule_metadata);
 
         auto reporting_cb = base::BindOnce(
             &DataTransferDlpController::ReportWarningProceededEvent,
-            weak_ptr_factory_.GetWeakPtr(), data_src.CopyAsOptional(),
-            data_dst.CopyAsOptional(), src_pattern, dst_pattern,
+            weak_ptr_factory_.GetWeakPtr(), source.CopyAsOptional(),
+            destination.CopyAsOptional(), src_pattern, dst_pattern,
             /*is_clipboard_event=*/true, rule_metadata);
 
-        WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
+        WarnOnPaste(source, destination, std::move(reporting_cb));
         is_read_allowed = false;
       }
       break;
@@ -306,21 +316,31 @@ void DataTransferDlpController::PasteIfAllowed(
     absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
+  // To simplify logic that would have to check OTR in every sub-call of DLP
+  // checks, simply null the endpoints so that subsequent code never misuses
+  // data.
+  base::optional_ref<const ui::DataTransferEndpoint> source =
+      data_src.has_value() && !data_src->off_the_record() ? data_src
+                                                          : absl::nullopt;
+  base::optional_ref<const ui::DataTransferEndpoint> destination =
+      data_dst.has_value() && !data_dst->off_the_record() ? data_dst
+                                                          : absl::nullopt;
+
   if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
-      !IsFilesApp(data_dst)) {
+      !IsFilesApp(destination)) {
     auto pasted_files =
         std::move(absl::get<std::vector<base::FilePath>>(pasted_content));
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       files_controller->CheckIfPasteOrDropIsAllowed(
-          pasted_files, data_dst.as_ptr(), std::move(paste_cb));
+          pasted_files, destination.as_ptr(), std::move(paste_cb));
     }
     return;
   }
 
   if (absl::holds_alternative<size_t>(pasted_content)) {
     size_t size = absl::get<size_t>(pasted_content);
-    ContinuePasteIfClipboardRestrictionsAllow(data_src, data_dst, size, rfh,
+    ContinuePasteIfClipboardRestrictionsAllow(source, destination, size, rfh,
                                               std::move(paste_cb));
     return;
   }
@@ -333,14 +353,20 @@ void DataTransferDlpController::DropIfAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
   DCHECK(drag_data);
+  // To simplify logic that would have to check OTR in every sub-call of DLP
+  // checks, simply null the endpoints so that subsequent code never misuses
+  // data.
+  base::optional_ref<const ui::DataTransferEndpoint> destination =
+      data_dst.has_value() && !data_dst->off_the_record() ? data_dst
+                                                          : absl::nullopt;
 
-  if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
+  if (drag_data->HasFile() && !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       std::vector<ui::FileInfo> dropped_files;
       drag_data->GetFilenames(&dropped_files);
       files_controller->CheckIfPasteOrDropIsAllowed(
-          GetFilePathsFromFileInfos(dropped_files), data_dst.as_ptr(),
+          GetFilePathsFromFileInfos(dropped_files), destination.as_ptr(),
           base::BindOnce(
               [](base::OnceClosure drop_cb, bool is_allowed) {
                 if (is_allowed) {
@@ -351,7 +377,8 @@ void DataTransferDlpController::DropIfAllowed(
       return;
     }
   }
-  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb));
+  ContinueDropIfAllowed(*drag_data->GetSource(), destination,
+                        std::move(drop_cb));
 }
 
 DataTransferDlpController::DataTransferDlpController(

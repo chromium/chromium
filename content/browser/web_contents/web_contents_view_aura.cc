@@ -1132,11 +1132,9 @@ void WebContentsViewAura::StartDragging(
   PrepareDragData(drop_data, source_origin, provider.get(), web_contents_);
 
   auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
-  data->SetSource(
-      web_contents_->GetBrowserContext()->IsOffTheRecord()
-          ? nullptr
-          : std::make_unique<ui::DataTransferEndpoint>(
-                web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL()));
+  data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      web_contents_->GetBrowserContext()->IsOffTheRecord()));
   WebContentsDelegate* delegate = web_contents_->GetDelegate();
   if (delegate && delegate->IsPrivileged())
     data->MarkAsFromPrivileged();
@@ -1492,7 +1490,8 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   auto* focused_frame = web_contents_->GetFocusedFrame();
   if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
-        web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
+        web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+        web_contents_->GetBrowserContext()->IsOffTheRecord());
   }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();

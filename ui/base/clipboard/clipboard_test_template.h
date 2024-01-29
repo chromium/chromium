@@ -577,8 +577,8 @@ void WriteBitmap(Clipboard* clipboard,
                  const void* bitmap_data) {
   {
     ScopedClipboardWriter clipboard_writer(
-        ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL()));
+        ClipboardBuffer::kCopyPaste, std::make_unique<DataTransferEndpoint>(
+                                         GURL(), /*off_the_record=*/false));
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
     bitmap.setPixels(const_cast<void*>(bitmap_data));
@@ -1121,7 +1121,8 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com")));
+        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com"),
+                                               /*off_the_record=*/false));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1139,8 +1140,11 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
       ui::ClipboardFormatType::DataTransferEndpointDataType(),
       /* data_dst = */ nullptr, &actual_json);
 
-  EXPECT_EQ(R"({"endpoint_type":"url","url":"https://www.google.com/"})",
-            actual_json);
+  EXPECT_EQ(
+      "{\"endpoint_type\":\"url\","
+      "\"off_the_record\":false,"
+      "\"url\":\"https://www.google.com/\"}",
+      actual_json);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
@@ -1152,9 +1156,9 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   auto policy_controller = std::make_unique<MockPolicyController>();
   const std::u16string kTestText(u"World");
   {
-    ScopedClipboardWriter writer(
-        ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL()));
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste,
+                                 std::make_unique<DataTransferEndpoint>(
+                                     GURL(), /*off_the_record=*/false));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)

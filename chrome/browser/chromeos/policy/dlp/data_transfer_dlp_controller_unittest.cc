@@ -105,6 +105,7 @@ std::optional<ui::DataTransferEndpoint> CreateEndpoint(
   if (type && *type == ui::EndpointType::kUrl) {
     return ui::DataTransferEndpoint(
         (GURL(kExample2Url)),
+        /*off_the_record=*/false,
         /*notify_if_restricted=*/notify_if_restricted);
   } else if (type) {
     return ui::DataTransferEndpoint(

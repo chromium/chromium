@@ -220,10 +220,7 @@ class CONTENT_EXPORT ClipboardHostImpl
                  const std::vector<uint8_t>& data);
 
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
-  // Returns null if the browser context is OTR, unless `include_otr` is set to
-  // true.
-  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
-      bool include_otr = false);
+  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
