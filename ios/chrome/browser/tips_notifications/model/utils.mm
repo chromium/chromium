@@ -11,8 +11,6 @@
 
 namespace {
 
-using tips_notifications::NotificationType;
-
 // Holds the l10n string ids for tips notification content.
 struct ContentIDs {
   int title;
@@ -20,15 +18,15 @@ struct ContentIDs {
 };
 
 // Returns the ContentIDs for the given `type`.
-ContentIDs ContentIDsForType(NotificationType type) {
+ContentIDs ContentIDsForType(TipsNotificationType type) {
   switch (type) {
-    case NotificationType::kDefaultBrowser:
+    case TipsNotificationType::kDefaultBrowser:
       return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
-    case NotificationType::kWhatsNew:
+    case TipsNotificationType::kWhatsNew:
       return {IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_BODY};
-    case NotificationType::kSignin:
+    case TipsNotificationType::kSignin:
       return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
   }
@@ -36,52 +34,51 @@ ContentIDs ContentIDsForType(NotificationType type) {
 
 }  // namespace
 
-namespace tips_notifications {
-
-NSString* const kIdentifier = @"kTipsNotificationId";
-NSString* const kNotificationTypeKey = @"kNotificationTypeKey";
-const base::TimeDelta kDefaultTriggerDelta = base::Hours(72);
+NSString* const kTipsNotificationId = @"kTipsNotificationId";
+NSString* const kTipsNotificationTypeKey = @"kTipsNotificationTypeKey";
+const base::TimeDelta kTipsNotificationDefaultTriggerDelta = base::Hours(72);
 
 bool IsTipsNotification(UNNotificationRequest* request) {
-  return [request.identifier isEqualToString:kIdentifier];
+  return [request.identifier isEqualToString:kTipsNotificationId];
 }
 
-NSDictionary* UserInfoForType(NotificationType type) {
+NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type) {
   return @{
-    kIdentifier : @YES,
-    kNotificationTypeKey : @(static_cast<int>(type)),
+    kTipsNotificationId : @YES,
+    kTipsNotificationTypeKey : @(static_cast<int>(type)),
   };
 }
 
-std::optional<NotificationType> ParseType(UNNotificationRequest* request) {
+std::optional<TipsNotificationType> ParseTipsNotificationType(
+    UNNotificationRequest* request) {
   NSDictionary* user_info = request.content.userInfo;
-  NSNumber* type = user_info[kNotificationTypeKey];
+  NSNumber* type = user_info[kTipsNotificationTypeKey];
   if (type == nil) {
     return std::nullopt;
   }
-  return static_cast<NotificationType>(type.integerValue);
+  return static_cast<TipsNotificationType>(type.integerValue);
 }
 
-UNNotificationRequest* Request(NotificationType type) {
-  return [UNNotificationRequest requestWithIdentifier:kIdentifier
-                                              content:ContentForType(type)
-                                              trigger:Trigger()];
+UNNotificationRequest* TipsNotificationRequest(TipsNotificationType type) {
+  return [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(type)
+                    trigger:TipsNotificationTrigger()];
 }
 
-UNNotificationContent* ContentForType(NotificationType type) {
+UNNotificationContent* ContentForTipsNotificationType(
+    TipsNotificationType type) {
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
   ContentIDs content_ids = ContentIDsForType(type);
   content.title = l10n_util::GetNSString(content_ids.title);
   content.body = l10n_util::GetNSString(content_ids.body);
-  content.userInfo = UserInfoForType(type);
+  content.userInfo = UserInfoForTipsNotificationType(type);
   return content;
 }
 
-UNNotificationTrigger* Trigger() {
+UNNotificationTrigger* TipsNotificationTrigger() {
   return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:kDefaultTriggerDelta.InSecondsF()
+      triggerWithTimeInterval:kTipsNotificationDefaultTriggerDelta.InSecondsF()
                       repeats:NO];
 }
-
-}  // namespace tips_notifications

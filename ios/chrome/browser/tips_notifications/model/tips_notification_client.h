@@ -12,11 +12,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
 class Browser;
-
-namespace tips_notifications {
-enum class NotificationType;
-}
-using tips_notifications::NotificationType;
+enum class TipsNotificationType;
 
 // A notification client responsible for registering notification requests and
 // handling the receiving of user notifications that are user-ed "Tips".
@@ -34,7 +30,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void OnSceneActiveForegroundBrowserReady() override;
 
   // Handles a tips notification interaction by opening the appropriate UI.
-  void HandleNotificationInteraction(NotificationType type);
+  void HandleNotificationInteraction(TipsNotificationType type);
 
  private:
   // Clears any previously requested notification(s).
@@ -45,10 +41,10 @@ class TipsNotificationClient : public PushNotificationClient {
   void MaybeRequestNotification();
 
   // Request a notification of the given `type`.
-  void RequestNotification(NotificationType type);
+  void RequestNotification(TipsNotificationType type);
 
   // Returns true if a notification of the given `type` should be sent.
-  bool ShouldSendNotification(NotificationType type);
+  bool ShouldSendNotification(TipsNotificationType type);
 
   // Returns the first "foreground active" browser, if any.
   Browser* GetSceneLevelForegroundActiveBrowser();
@@ -63,7 +59,7 @@ class TipsNotificationClient : public PushNotificationClient {
   // When the user interacts with a Tips notification but there are no
   // foreground scenes, this will store the notification type so it can
   // be handled when there is a foreground scene.
-  std::optional<NotificationType> interacted_type_;
+  std::optional<TipsNotificationType> interacted_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_TIPS_NOTIFICATION_CLIENT_H_

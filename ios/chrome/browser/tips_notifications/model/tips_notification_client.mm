@@ -18,9 +18,6 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
-using tips_notifications::IsTipsNotification;
-using tips_notifications::NotificationType;
-
 TipsNotificationClient::TipsNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kTips) {}
 
@@ -32,8 +29,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
     return;
   }
 
-  interacted_type_ =
-      tips_notifications::ParseType(response.notification.request);
+  interacted_type_ = ParseTipsNotificationType(response.notification.request);
   if (!interacted_type_.has_value()) {
     // TODO(crbug.com/1519157): Add logging for this error condition.
     return;
@@ -47,15 +43,15 @@ void TipsNotificationClient::HandleNotificationInteraction(
 }
 
 void TipsNotificationClient::HandleNotificationInteraction(
-    NotificationType type) {
+    TipsNotificationType type) {
   switch (type) {
-    case NotificationType::kDefaultBrowser:
+    case TipsNotificationType::kDefaultBrowser:
       ShowDefaultBrowserPromo();
       break;
-    case NotificationType::kWhatsNew:
+    case TipsNotificationType::kWhatsNew:
       ShowWhatsNew();
       break;
-    case NotificationType::kSignin:
+    case TipsNotificationType::kSignin:
       // TODO(crbug.com/1517912) implement Signin interaction.
       break;
   }
@@ -84,7 +80,7 @@ void TipsNotificationClient::ClearNotification() {
   UNUserNotificationCenter* notificationCenter =
       [UNUserNotificationCenter currentNotificationCenter];
   [notificationCenter removePendingNotificationRequestsWithIdentifiers:@[
-    tips_notifications::kIdentifier
+    kTipsNotificationId
   ]];
 }
 
@@ -95,13 +91,13 @@ void TipsNotificationClient::MaybeRequestNotification() {
 
   // The types of notifications that could be sent will be evaluated in the
   // order they appear in this array.
-  static const NotificationType kTypes[] = {
-      NotificationType::kDefaultBrowser,
-      NotificationType::kWhatsNew,
-      NotificationType::kSignin,
+  static const TipsNotificationType kTypes[] = {
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kSignin,
   };
 
-  for (NotificationType type : kTypes) {
+  for (TipsNotificationType type : kTypes) {
     if (ShouldSendNotification(type)) {
       RequestNotification(type);
       break;
@@ -109,10 +105,10 @@ void TipsNotificationClient::MaybeRequestNotification() {
   }
 }
 
-void TipsNotificationClient::RequestNotification(NotificationType type) {
+void TipsNotificationClient::RequestNotification(TipsNotificationType type) {
   UNUserNotificationCenter* notificationCenter =
       [UNUserNotificationCenter currentNotificationCenter];
-  UNNotificationRequest* request = tips_notifications::Request(type);
+  UNNotificationRequest* request = TipsNotificationRequest(type);
   [notificationCenter
       addNotificationRequest:request
        withCompletionHandler:^(NSError* error){
@@ -121,13 +117,13 @@ void TipsNotificationClient::RequestNotification(NotificationType type) {
        }];
 }
 
-bool TipsNotificationClient::ShouldSendNotification(NotificationType type) {
+bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
   switch (type) {
-    case NotificationType::kDefaultBrowser:
+    case TipsNotificationType::kDefaultBrowser:
       return !IsChromeLikelyDefaultBrowser();
-    case NotificationType::kWhatsNew:
+    case TipsNotificationType::kWhatsNew:
       return true;
-    case NotificationType::kSignin:
+    case TipsNotificationType::kSignin:
       return true;
   }
 }
