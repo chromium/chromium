@@ -31,6 +31,7 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "auto_scan_manager.ts",
+  "cache.ts",
   "commands.ts",
   "focus_ring_manager.ts",
   "history.ts",
@@ -43,7 +44,6 @@ ts_modules = [
 # JS files needed to compile TS.
 js_modules = [
   "action_manager.js",
-  "cache.js",
   "item_scan_manager.js",
   "menu_manager.js",
   "metrics.js",
