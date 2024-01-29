@@ -87,13 +87,13 @@ gfx::FontList GetFontListFromType(SystemTextfield::Type type) {
 class SystemTextfield::EventHandler : public ui::EventHandler {
  public:
   explicit EventHandler(SystemTextfield* textfield) : textfield_(textfield) {
-    aura::Env::GetInstance()->AddPostTargetHandler(this);
+    aura::Env::GetInstance()->AddPreTargetHandler(this);
   }
 
   EventHandler(const EventHandler&) = delete;
   EventHandler& operator=(const EventHandler&) = delete;
   ~EventHandler() override {
-    aura::Env::GetInstance()->RemovePostTargetHandler(this);
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
   }
 
   // ui::EventHandler:
@@ -108,6 +108,11 @@ class SystemTextfield::EventHandler : public ui::EventHandler {
 
     const ui::EventType event_type = event->type();
     if (event_type != ui::ET_MOUSE_PRESSED) {
+      return;
+    }
+
+    // Do not handle the pre-target event if the context menu is showing.
+    if (textfield_->IsMenuShowing()) {
       return;
     }
 
