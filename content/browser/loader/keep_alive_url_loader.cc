@@ -4,6 +4,7 @@
 
 #include "content/browser/loader/keep_alive_url_loader.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/loader/keep_alive_attribution_request_helper.h"
 #include "content/browser/renderer_host/mixed_content_checker.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -348,7 +350,9 @@ KeepAliveURLLoader::KeepAliveURLLoader(
     WeakDocumentPtr weak_document_ptr,
     BrowserContext* browser_context,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-    base::PassKey<KeepAliveURLLoaderService>)
+    base::PassKey<KeepAliveURLLoaderService>,
+    std::unique_ptr<KeepAliveAttributionRequestHelper>
+        attribution_request_helper)
     : request_id_(request_id),
       devtools_request_id_(base::UnguessableToken::Create().ToString()),
       options_(options),
@@ -361,7 +365,8 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       weak_document_ptr_(std::move(weak_document_ptr)),
       browser_context_(browser_context),
       initial_url_(resource_request.url),
-      last_url_(resource_request.url) {
+      last_url_(resource_request.url),
+      attribution_request_helper_(std::move(attribution_request_helper)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(network_loader_factory_);
   CHECK(policy_container_host_);
@@ -592,6 +597,12 @@ void KeepAliveURLLoader::OnReceiveRedirect(
     }
   }
 
+  if (attribution_request_helper_) {
+    attribution_request_helper_->OnReceiveRedirect(head->headers.get(),
+                                                   head->trigger_verifications,
+                                                   redirect_info.new_url);
+  }
+
   // Stores the redirect data for later use by renderer.
   stored_url_load_->redirects.emplace(
       std::make_unique<StoredURLLoad::RedirectData>(redirect_info,
@@ -689,15 +700,16 @@ void KeepAliveURLLoader::OnReceiveResponse(
     }
   }
 
+  if (attribution_request_helper_) {
+    attribution_request_helper_->OnReceiveResponse(
+        response->headers.get(), response->trigger_verifications);
+    attribution_request_helper_.reset();
+  }
+
   // In case the renderer is alive, the stored response data will be forwarded
   // at the end of `ForwardURLLoad()`.
   stored_url_load_->response = std::make_unique<StoredURLLoad::ResponseData>(
       std::move(response), std::move(body), std::move(cached_metadata));
-
-  // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
-  // migrated to browser process here so that it works even when renderer is
-  // disconnected.
-  // For now, it happens in the renderer after response is forwarded.
 
   if (IsRendererConnected()) {
     // Starts to forward the stored redirects/response to renderer.
