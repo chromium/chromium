@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -180,6 +181,22 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   input_protector_->VisibilityChanged(is_visible);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
+  DCHECK(GetWidget());
+
+  const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+
+  // Chromeos has rounded windows. A dialog can use native frame i.e look like
+  // a top-level window. For ChromeOS, dialogs use `NonClientFrameViewAsh`
+  // as native frame. The top corners will be rounded by the frame_view and
+  // client-view is responsible for rounding the bottom corners.
+  SetBackgroundRadii(radii);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void DialogClientView::Layout() {
   button_row_container_->SetSize(
       gfx::Size(width(), button_row_container_->GetHeightForWidth(width())));
@@ -242,14 +259,8 @@ void DialogClientView::ViewHierarchyChanged(
 
 void DialogClientView::OnThemeChanged() {
   ClientView::OnThemeChanged();
-  // The old dialog style needs an explicit background color, while the new
-  // dialog style simply inherits the bubble's frame view color.
-  const DialogDelegate* dialog = GetDialogDelegate();
 
-  if (dialog && !dialog->use_custom_frame()) {
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(ui::kColorDialogBackground)));
-  }
+  UpdateBackground();
 }
 
 void DialogClientView::UpdateInputProtectorTimeStamp() {
@@ -266,6 +277,27 @@ bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event) {
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
   return GetWidget()->widget_delegate()->AsDialogDelegate();
+}
+
+void DialogClientView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
+  background_radii_ = radii;
+  UpdateBackground();
+}
+
+void DialogClientView::UpdateBackground() {
+  // The old dialog style needs an explicit background color, while the new
+  // dialog style simply inherits the bubble's frame view color.
+  const DialogDelegate* dialog = GetDialogDelegate();
+
+  if (dialog && !dialog->use_custom_frame()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorDialogBackground),
+        background_radii_));
+  }
 }
 
 void DialogClientView::OnButtonVisibilityChanged(View* child) {
