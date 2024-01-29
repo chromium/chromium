@@ -10,13 +10,11 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -24,8 +22,6 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/fake_event_rewriter_ash_delegate.h"
 #include "ui/events/ash/keyboard_capability.h"
-#include "ui/events/ash/keyboard_device_id_event_rewriter.h"
-#include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -121,29 +117,6 @@ class EventCapturer : public ui::EventHandler {
   std::unique_ptr<ui::KeyEvent> last_key_event_;
 };
 
-class KeyboardModifierEventRewriterDelegate
-    : public ui::KeyboardModifierEventRewriter::Delegate {
- public:
-  explicit KeyboardModifierEventRewriterDelegate(
-      ui::EventRewriterAsh::Delegate* delegate)
-      : delegate_(delegate) {}
-
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    return delegate_->GetKeyboardRemappedModifierValue(device_id, modifier_key,
-                                                       pref_name);
-  }
-
-  bool RewriteModifierKeys() override {
-    return delegate_->RewriteModifierKeys();
-  }
-
- private:
-  raw_ptr<ui::EventRewriterAsh::Delegate> delegate_;
-};
-
 // Common set up for AccessibilityEventRewriter related unit tests.
 class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
  protected:
@@ -168,20 +141,12 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
         accessibility_event_rewriter_.get());
 
     auto* event_source = GetContext()->GetHost()->GetEventSource();
-    if (ash::features::IsKeyboardRewriterFixEnabled()) {
-      event_source->AddEventRewriter(&keyboard_device_id_event_rewriter_);
-      event_source->AddEventRewriter(&keyboard_modifier_event_rewriter_);
-    }
     event_source->AddEventRewriter(accessibility_event_rewriter_.get());
   }
 
   void TearDown() override {
     auto* event_source = GetContext()->GetHost()->GetEventSource();
     event_source->RemoveEventRewriter(accessibility_event_rewriter_.get());
-    if (ash::features::IsKeyboardRewriterFixEnabled()) {
-      event_source->RemoveEventRewriter(&keyboard_modifier_event_rewriter_);
-      event_source->RemoveEventRewriter(&keyboard_device_id_event_rewriter_);
-    }
 
     GetAccessibilityController()->SetAccessibilityEventRewriter(nullptr);
 
@@ -222,13 +187,6 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_{
       ui::KeyboardCapability::CreateStubKeyboardCapability()};
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-
-  ui::KeyboardDeviceIdEventRewriter keyboard_device_id_event_rewriter_{
-      keyboard_capability_.get()};
-  ui::KeyboardModifierEventRewriter keyboard_modifier_event_rewriter_{
-      std::make_unique<KeyboardModifierEventRewriterDelegate>(
-          &event_rewriter_ash_delegate_),
-      keyboard_capability_.get(), &fake_ime_keyboard_};
   ui::EventRewriterAsh event_rewriter_ash_{&event_rewriter_ash_delegate_,
                                            keyboard_capability_.get(), nullptr,
                                            false, &fake_ime_keyboard_};
@@ -243,19 +201,8 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
 }  // namespace
 
 class ChromeVoxAccessibilityEventRewriterTest
-    : public AccessibilityEventRewriterTestBase,
-      public testing::WithParamInterface<bool> {
+    : public AccessibilityEventRewriterTestBase {
  public:
-  ChromeVoxAccessibilityEventRewriterTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    }
-  }
-
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
 
@@ -318,18 +265,12 @@ class ChromeVoxAccessibilityEventRewriterTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeVoxAccessibilityEventRewriterTest,
-                         testing::Bool());
-
 // The delegate should not intercept events when spoken feedback is disabled.
-TEST_P(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
+TEST_F(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
   AccessibilityController* controller = GetAccessibilityController();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
@@ -350,7 +291,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
 }
 
 // The delegate should intercept key events when spoken feedback is enabled.
-TEST_P(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
+TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -376,7 +317,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
 }
 
 // Asynchronously unhandled events should be sent to subsequent rewriters.
-TEST_P(ChromeVoxAccessibilityEventRewriterTest,
+TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        UnhandledEventsSentToOtherRewriters) {
   // Before it can forward unhandled events, AccessibilityEventRewriter
   // must have seen at least one event in the first place.
@@ -395,7 +336,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
   EXPECT_EQ(4, event_recorder().events_seen());
 }
 
-TEST_P(ChromeVoxAccessibilityEventRewriterTest,
+TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeysNotEatenWithChromeVoxDisabled) {
   AccessibilityController* controller = GetAccessibilityController();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
@@ -426,7 +367,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
   EXPECT_EQ(0U, delegate_chromevox_recorded_event_count());
 }
 
-TEST_P(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
+TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -469,7 +410,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 }
 
-TEST_P(ChromeVoxAccessibilityEventRewriterTest,
+TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeyEventsCapturedWithModifierRemapping) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
@@ -526,7 +467,7 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
   ExpectCounts(++recorded_count, ++delegate_count, captured_count);
 }
 
-TEST_P(ChromeVoxAccessibilityEventRewriterTest,
+TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        PositionalInputMethodKeysMightBeRewritten) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
@@ -559,19 +500,8 @@ TEST_P(ChromeVoxAccessibilityEventRewriterTest,
 }
 
 class SwitchAccessAccessibilityEventRewriterTest
-    : public AccessibilityEventRewriterTestBase,
-      public testing::WithParamInterface<bool> {
+    : public AccessibilityEventRewriterTestBase {
  public:
-  SwitchAccessAccessibilityEventRewriterTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    }
-  }
-
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
 
@@ -607,16 +537,9 @@ class SwitchAccessAccessibilityEventRewriterTest
     return accessibility_event_rewriter()
         .key_code_to_switch_access_command_map_for_test();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SwitchAccessAccessibilityEventRewriterTest,
-                         testing::Bool());
-
-TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
+TEST_F(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
   // Set keys for Switch Access to capture.
   SetKeyCodesForSwitchAccessCommand(
       {{ui::VKEY_1, {kSwitchAccessInternalDevice}},
@@ -670,7 +593,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
       accessibility_event_rewriter_delegate().switch_access_commands().size());
 }
 
-TEST_P(SwitchAccessAccessibilityEventRewriterTest,
+TEST_F(SwitchAccessAccessibilityEventRewriterTest,
        KeysNoLongerCaptureAfterUpdate) {
   // Set Switch Access to capture the keys {1, 2, 3}.
   SetKeyCodesForSwitchAccessCommand(
@@ -720,7 +643,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest,
       accessibility_event_rewriter_delegate().switch_access_commands().back());
 }
 
-TEST_P(SwitchAccessAccessibilityEventRewriterTest,
+TEST_F(SwitchAccessAccessibilityEventRewriterTest,
        SetKeyCodesForSwitchAccessCommand) {
   // Both the key codes to capture and the command map should be empty.
   EXPECT_EQ(0u, GetKeyCodesToCapture().size());
@@ -799,7 +722,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest,
   EXPECT_EQ(command_map.end(), command_map.find(48));
 }
 
-TEST_P(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
+TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
   // Set Control to be Switch Access' next button.
   SetKeyCodesForSwitchAccessCommand(
       {{ui::VKEY_CONTROL, {kSwitchAccessInternalDevice}}},
@@ -842,7 +765,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
       accessibility_event_rewriter_delegate().switch_access_commands().back());
 }
 
-TEST_P(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
+TEST_F(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
   // Set BrowserForward to be Switch Access' next button.
   SetKeyCodesForSwitchAccessCommand(
       {{ui::VKEY_BROWSER_FORWARD, {kSwitchAccessInternalDevice}}},
@@ -882,19 +805,8 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
 }
 
 class MagnifierAccessibilityEventRewriterTest
-    : public AccessibilityEventRewriterTestBase,
-      public testing::WithParamInterface<bool> {
+    : public AccessibilityEventRewriterTestBase {
  public:
-  MagnifierAccessibilityEventRewriterTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kEnableKeyboardRewriterFix);
-    }
-  }
-
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
 
@@ -905,21 +817,11 @@ class MagnifierAccessibilityEventRewriterTest
 
     GetAccessibilityController()->fullscreen_magnifier().SetEnabled(true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MagnifierAccessibilityEventRewriterTest,
-                         testing::Bool());
-
-TEST_P(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
+TEST_F(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
   // Press and release Ctrl+Alt+Up.
   // Verify that the events are captured by AccessibilityEventRewriter.
-  generator().PressModifierKeys(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  event_capturer().Reset();
-
   generator().PressKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
   EXPECT_FALSE(event_capturer().last_key_event());
   EXPECT_EQ(
@@ -945,9 +847,6 @@ TEST_P(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
   EXPECT_EQ(
       MagnifierCommand::kMoveStop,
       accessibility_event_rewriter_delegate().magnifier_commands().back());
-
-  generator().ReleaseModifierKeys(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  event_capturer().Reset();
 
   // Press and release the "3" key.
   // Verify that the events are not captured by AccessibilityEventRewriter.

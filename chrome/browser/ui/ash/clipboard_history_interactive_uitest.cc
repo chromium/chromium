@@ -80,8 +80,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   // history menu shows, the process of HTML rendering starts.
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       ash::Shell::GetPrimaryRootWindow());
-  event_generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                     ui::EF_COMMAND_DOWN);
+  event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
   // Render HTML with auto-resize mode enabled. Wait until the rendering
   // finishes.
@@ -119,8 +118,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   ASSERT_EQ(2u, item_lists.size());
 
   // Show the clipboard history menu.
-  event_generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                     ui::EF_COMMAND_DOWN);
+  event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
   // Render HTML with auto-resize mode disabled. Wait until the rendering
   // finishes.
@@ -172,8 +170,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   // history menu shows, the process of HTML rendering starts.
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       ash::Shell::GetPrimaryRootWindow());
-  event_generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                     ui::EF_COMMAND_DOWN);
+  event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
   ImageModelRequestTestParams test_params(
       /*callback=*/base::NullCallback());

@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
@@ -260,11 +259,11 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   }
 
   void Press(ui::KeyboardCode key, int modifiers = ui::EF_NONE) {
-    event_generator_->PressKeyAndModifierKeys(key, modifiers);
+    event_generator_->PressKey(key, modifiers);
   }
 
   void Release(ui::KeyboardCode key, int modifiers = ui::EF_NONE) {
-    event_generator_->ReleaseKeyAndModifierKeys(key, modifiers);
+    event_generator_->ReleaseKey(key, modifiers);
   }
 
   void PressAndRelease(ui::KeyboardCode key, int modifiers = ui::EF_NONE) {
@@ -1902,8 +1901,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryUrlTitleFetcherBrowserTest, UrlTitles) {
 
   // Show the clipboard history menu and verify that the unvisited URL's item
   // has no title label.
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                    ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
       ash::clipboard_history_util::kSecondaryDisplayTextLabelID));
   event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -1917,8 +1915,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryUrlTitleFetcherBrowserTest, UrlTitles) {
 
   // Show the clipboard history menu and verify that the visited URL's item has
   // a title label iff the clipboard history URL titles feature is enabled.
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
-                                                    ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_EQ(!!GetMenuItemViewForClipboardHistoryItemAtIndex(0u)->GetViewByID(
                 ash::clipboard_history_util::kSecondaryDisplayTextLabelID),
             IsClipboardHistoryUrlTitlesEnabled());

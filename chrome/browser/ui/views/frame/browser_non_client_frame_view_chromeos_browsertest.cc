@@ -1564,8 +1564,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   // Float the window; the title bar is visible.
   ui::test::EventGenerator event_generator(
       widget->GetNativeWindow()->GetRootWindow());
-  event_generator.PressAndReleaseKeyAndModifierKeys(
-      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
@@ -1615,8 +1615,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   // Float a window. Immersive mode is disabled so its title bar is visible.
   ui::test::EventGenerator event_generator(
       widget2->GetNativeWindow()->GetRootWindow());
-  event_generator.PressAndReleaseKeyAndModifierKeys(
-      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(frame_view2->caption_button_container()->GetVisible());
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
@@ -1636,13 +1636,11 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   // Pressing accelerator once should show the multitask menu.
   ui::test::EventGenerator event_generator(
       browser_view->GetWidget()->GetNativeWindow()->GetRootWindow());
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_Z,
-                                                    ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(size_button->IsMultitaskMenuShown());
 
   // Pressing accelerator a second time should close the menu.
-  event_generator.PressAndReleaseKeyAndModifierKeys(ui::VKEY_Z,
-                                                    ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   ASSERT_FALSE(size_button->IsMultitaskMenuShown());
 }
 

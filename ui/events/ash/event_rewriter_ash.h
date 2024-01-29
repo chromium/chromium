@@ -13,9 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/events/ash/event_rewriter_utils.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -379,8 +377,6 @@ class EventRewriterAsh : public EventRewriter {
   int last_keyboard_device_id_;
 
   const raw_ptr<Delegate, DanglingUntriaged> delegate_;
-
-  base::flat_map<internal::PhysicalKey, MutableKeyState> pressed_physical_keys_;
 
   // For each pair, the first element is the rewritten key state and the second
   // one is the original key state. If no key event rewriting happens, the first
