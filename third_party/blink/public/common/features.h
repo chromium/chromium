@@ -807,6 +807,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // enabled for this to work.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam;
+enum class AsyncScriptPrioritisationType {
+  kHigh,
+  kLow,
+  kBestEffort,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AsyncScriptPrioritisationType>
+    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);

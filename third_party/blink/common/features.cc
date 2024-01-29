@@ -1352,6 +1352,21 @@ const base::FeatureParam<bool>
         &kLowPriorityAsyncScriptExecution,
         "low_pri_async_exec_disable_when_lcp_not_in_html", false};
 
+// kLowPriorityAsyncScriptExecution will use the specified priority as a lower
+// task priority.
+const base::FeatureParam<AsyncScriptPrioritisationType>::Option
+    async_script_prioritisation_types[] = {
+        {AsyncScriptPrioritisationType::kHigh, "high"},
+        {AsyncScriptPrioritisationType::kLow, "low"},
+        {AsyncScriptPrioritisationType::kBestEffort, "best_effort"},
+};
+const base::FeatureParam<AsyncScriptPrioritisationType>
+    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_lower_task_priority",
+        AsyncScriptPrioritisationType::kBestEffort,
+        &async_script_prioritisation_types};
+
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
