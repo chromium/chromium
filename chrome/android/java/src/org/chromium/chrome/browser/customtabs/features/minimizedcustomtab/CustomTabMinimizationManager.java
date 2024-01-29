@@ -179,7 +179,9 @@ public class CustomTabMinimizationManager
         // rethrow so we don't inadvertently hide other crashes.
         try {
             mMinimized = mActivity.enterPictureInPictureMode(builder.build());
+            recordMinimizeSuccess(/* success= */ true);
         } catch (NullPointerException e) {
+            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
                 String msg = "NullPointerException";
                 incrementExceptionImpressionAndReport(TASK_DISPLAY_AREA_NPE_STR, msg, e);
@@ -187,6 +189,7 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         } catch (IllegalStateException e) {
+            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg = "Device doesn't support picture-in-picture mode.";
                 incrementExceptionImpressionAndReport(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
@@ -199,6 +202,7 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         } catch (IllegalArgumentException e) {
+            recordMinimizeSuccess(/* success= */ false);
             if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
                 String msg = "IllegalArgumentException";
                 incrementExceptionImpressionAndReport(ROOT_TASK_IAE_STR, msg, e);
@@ -449,7 +453,9 @@ public class CustomTabMinimizationManager
 
     private void incrementExceptionImpressionAndReport(String key, String msg, Exception e) {
         incrementExceptionImpression(key);
-        Log.e(TAG, msg, e);
+        String msgWithState =
+                msg + " -- ActivityState: " + mLifecycleDispatcher.getCurrentActivityState();
+        Log.e(TAG, msgWithState, e);
         reportJavaException(new Exception(msg, e));
     }
 
@@ -498,5 +504,9 @@ public class CustomTabMinimizationManager
     private boolean shouldRecordSuccessAfterException(String key) {
         return !mMinimizeSuccessAfterException.contains(key)
                 && mExceptionImpressions.containsKey(key);
+    }
+
+    private void recordMinimizeSuccess(boolean success) {
+        RecordHistogram.recordBooleanHistogram("CustomTabs.Minimized.MinimizeSuccess", success);
     }
 }

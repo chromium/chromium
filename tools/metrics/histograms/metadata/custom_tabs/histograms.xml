@@ -351,6 +351,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Minimized.MinimizeSuccess" enum="Boolean"
+    expires_after="2024-06-01">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Emitted when the the user clicks the minimize button and we request to be
+    put in picture-in-picture from the framework. Records true if it was
+    successful; false if there was an exception thrown. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Minimized.ReceivedIntentReusingSession"
     enum="Boolean" expires_after="2024-06-01">
   <owner>sinansahin@google.com</owner>
