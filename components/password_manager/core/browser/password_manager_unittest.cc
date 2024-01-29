@@ -380,10 +380,6 @@ base::flat_map<FieldGlobalId, ServerPrediction> CreateServerPredictions(
 // PasswordManagerTest and PasswordManagerWithOtpVariationsTest have different
 // parameter types.
 class PasswordManagerTestBase : public testing::Test {
- public:
-  PasswordManagerTestBase() : task_runner_(new TestMockTimeTaskRunner) {}
-  ~PasswordManagerTestBase() override = default;
-
  protected:
   void SetUp() override {
     store_ = base::MakeRefCounted<TestPasswordStore>();
@@ -454,7 +450,8 @@ class PasswordManagerTestBase : public testing::Test {
 #endif
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(prefs_.get()));
 
-    field_info_manager_ = std::make_unique<FieldInfoManager>(task_runner_);
+    field_info_manager_ = std::make_unique<FieldInfoManager>(
+        task_environment_.GetMainThreadTaskRunner());
     ON_CALL(client_, GetFieldInfoManager())
         .WillByDefault(Return(field_info_manager_.get()));
 
@@ -782,7 +779,6 @@ class PasswordManagerTestBase : public testing::Test {
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
   std::unique_ptr<PasswordManager> manager_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
-  scoped_refptr<TestMockTimeTaskRunner> task_runner_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -3875,8 +3871,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string username = u"newusername@gmail.com";
   ASSERT_NE(saved_form.username_value, username);
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillOnce(ReturnRef(username_form.url));
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(username_form.url));
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       /*value=*/username,
@@ -4403,8 +4399,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string username = u"newusername@gmail.com";
   ASSERT_TRUE(saved_form.username_value != username);
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillOnce(ReturnRef(username_form.url));
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(username_form.url));
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       /*value=*/username,
@@ -4555,8 +4551,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowOTPPasswordForm) {
   // Simulate the user typed a previously not saved username in username form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string kUsername = u"newusername@gmail.com";
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillOnce(ReturnRef(username_form.url));
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(username_form.url));
   manager()->OnUserModifiedNonPasswordField(
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       /*value=*/kUsername,
@@ -4604,48 +4600,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowOTPPasswordForm) {
                       driver_.GetId(),
                       username_form.form_data.fields[0].unique_renderer_id),
                   _)));
-}
-
-// Checks that possible single username value is not used to build pending
-// credentials if a navigation that cannot be a result of form submission
-// happens between submitting single password and single username forms.
-TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
-  // Simulate the user typed a previously not saved username in username form.
-  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillOnce(ReturnRef(username_form.url));
-  manager()->OnUserModifiedNonPasswordField(
-      &driver_, username_form.form_data.fields[0].unique_renderer_id,
-      /*value=*/u"newusername@gmail.com",
-      /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
-
-  // Setup a server prediction for the single username field to
-  // allow using possible username value for pending credentials.
-  manager()->ProcessAutofillPredictions(
-      &driver_, username_form.form_data,
-      CreateServerPredictions(username_form.form_data,
-                              {{0, FieldType::SINGLE_USERNAME}}));
-
-  // Simulate navigation to a single password form that cannot be a result of a
-  // form submisison.
-  manager()->DidNavigateMainFrame(/*form_may_be_submitted=*/false);
-  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
-  FormData password_form_data = password_form.form_data;
-  manager()->OnPasswordFormsParsed(&driver_, {password_form_data});
-  task_environment_.RunUntilIdle();
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
-      .WillRepeatedly(Return(true));
-
-  // Simulate that the user typed previously not saved password.
-  password_form_data.fields[0].value = u"new_password";
-  manager()->OnInformAboutUserInput(&driver_, password_form_data);
-
-  // Check that single username is not used to build pending credentials.
-  PasswordFormManager* submitted_form_manager =
-      manager()->GetSubmittedManagerForTest();
-  ASSERT_TRUE(submitted_form_manager);
-  EXPECT_TRUE(
-      submitted_form_manager->GetPendingCredentials().username_value.empty());
 }
 
 TEST_P(PasswordManagerTest, FormSubmittedOnPrimaryMainFrame) {

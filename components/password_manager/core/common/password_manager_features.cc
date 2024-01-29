@@ -30,7 +30,7 @@ BASE_FEATURE(kForceInitialSyncWhenDecryptionFails,
 // and filled.
 BASE_FEATURE(kForgotPasswordFormSupport,
              "ForgotPasswordFormSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // Enables password bottom sheet to be displayed (on iOS) when a user is
