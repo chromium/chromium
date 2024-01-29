@@ -106,7 +106,9 @@ class VirtualDesktopHelper
 
 VirtualDesktopHelper::VirtualDesktopHelper(const std::string& initial_workspace)
     : base::RefCountedDeleteOnSequence<VirtualDesktopHelper>(
-          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
+          base::ThreadPool::CreateCOMSTATaskRunner(
+              {base::MayBlock(),
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       initial_workspace_(initial_workspace) {}
 
 void VirtualDesktopHelper::Init(HWND hwnd) {
