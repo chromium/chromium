@@ -623,8 +623,8 @@ void NotificationViewBase::CreateOrUpdateIconView(
   }
 
   if (!icon_view_) {
-    icon_view_ = new ProportionalImageView(GetIconViewSize());
-    right_content_->AddChildView(icon_view_.get());
+    icon_view_ = right_content_->AddChildView(
+        std::make_unique<ProportionalImageView>(GetIconViewSize()));
   }
 
   bool apply_rounded_corners = false;

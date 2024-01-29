@@ -145,7 +145,7 @@ TEST_F(AshNotificationViewPixelTest, CollapsedNoMessage) {
   // Verify with a pixel test that the notification's title is vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "collapsed_no_message", /*revision_number=*/6, notification_view));
+      "collapsed_no_message", /*revision_number=*/7, notification_view));
 }
 
 // Tests that a progress notification does not have its title vertically
@@ -212,6 +212,57 @@ TEST_F(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "settings_and_close_control_buttons", /*revision_number=*/4,
       notification_view));
+}
+
+// Tests that a notification's icon is sized and positioned correctly at
+// different sizes.
+class AshNotificationViewIconPixelTest
+    : public AshNotificationViewPixelTest,
+      public testing::WithParamInterface<int> {
+ public:
+  int GetIconSize() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(IconTest,
+                         AshNotificationViewIconPixelTest,
+                         testing::ValuesIn({
+                             16,
+                             32,
+                             128,
+                             512,
+                         }));
+
+TEST_P(AshNotificationViewIconPixelTest, NotificationIcon) {
+  int size = GetIconSize();
+  // Create a notification with an icon with the given `size`.
+  const std::string id = test_api()->AddCustomNotification(
+      u"Notification title", u"Notification message",
+      ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
+          gfx::Size(/*width=*/size, /*height=*/size), SK_ColorGREEN)));
+
+  test_api()->ToggleBubble();
+
+  // Make sure the notification is expanded.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  ASSERT_TRUE(notification_view->IsExpanded());
+
+  // Verify with a pixel test that the notification's title is vertically
+  // centered.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::StringPrintf("expanded_icon_size_%u", size),
+      /*revision_number=*/1, notification_view));
+
+  notification_view->ToggleExpand();
+  ASSERT_FALSE(notification_view->IsExpanded());
+
+  notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  // Verify with a pixel test that the notification's title is vertically
+  // centered.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::StringPrintf("collapsed_icon_size_%u", size),
+      /*revision_number=*/1, notification_view));
 }
 
 class AshNotificationViewTitlePixelTest
