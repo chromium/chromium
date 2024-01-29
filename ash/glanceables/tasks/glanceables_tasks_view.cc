@@ -328,6 +328,7 @@ void GlanceablesTasksView::UpdateTasksList(
     const std::string& task_list_id,
     const std::string& task_list_title,
     bool initial_update,
+    bool fetch_success,
     const ui::ListModel<api::Task>* tasks) {
   const gfx::Size old_preferred_size = GetPreferredSize();
 

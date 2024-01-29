@@ -43,11 +43,11 @@ FakeTasksClient::~FakeTasksClient() = default;
 
 void FakeTasksClient::GetTaskLists(GetTaskListsCallback callback) {
   if (!paused_) {
-    std::move(callback).Run(task_lists_.get());
+    std::move(callback).Run(/*succes=*/true, task_lists_.get());
   } else {
     pending_get_task_lists_callbacks_.push_back(base::BindOnce(
         [](ui::ListModel<TaskList>* task_lists, GetTaskListsCallback callback) {
-          std::move(callback).Run(task_lists);
+          std::move(callback).Run(/*success=*/true, task_lists);
         },
         task_lists_.get(), std::move(callback)));
   }
@@ -59,11 +59,11 @@ void FakeTasksClient::GetTasks(const std::string& task_list_id,
   CHECK(iter != tasks_in_task_lists_.end());
 
   if (!paused_) {
-    std::move(callback).Run(iter->second.get());
+    std::move(callback).Run(/*success=*/true, iter->second.get());
   } else {
     pending_get_tasks_callbacks_.push_back(base::BindOnce(
         [](ui::ListModel<Task>* tasks, GetTasksCallback callback) {
-          std::move(callback).Run(tasks);
+          std::move(callback).Run(/*success=*/true, tasks);
         },
         iter->second.get(), std::move(callback)));
   }

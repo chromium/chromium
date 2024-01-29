@@ -64,6 +64,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   // role is active).
   void AddClassroomBubbleStudentViewIfNeeded(bool is_role_active);
   void AddTaskBubbleViewIfNeeded(
+      bool fetch_success,
       const ui::ListModel<api::TaskList>* task_lists);
 
   void OnGlanceablesContainerPreferredSizeChanged();
