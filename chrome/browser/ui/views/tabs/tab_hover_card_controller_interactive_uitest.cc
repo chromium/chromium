@@ -720,16 +720,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 // The hover card should display tab memory usage in the footer. When the user
 // hovers over a tab without memory data available, the footer should update
 // accordingly and stop showing memory usage
-// TODO(crbug.com/1483255): Flaky on mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HoverCardShowsMemoryWhenAvailable \
-  DISABLED_HoverCardShowsMemoryWhenAvailable
-#else
-#define MAYBE_HoverCardShowsMemoryWhenAvailable \
-  HoverCardShowsMemoryWhenAvailable
-#endif
+// TODO(crbug.com/1483255): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       MAYBE_HoverCardShowsMemoryWhenAvailable) {
+                       DISABLED_HoverCardShowsMemoryWhenAvailable) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),
