@@ -298,16 +298,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Update.RequestQueued" enum="WebApkUpdateRequestQueued"
-    expires_after="2024-02-11">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the number of times that a WebAPK update request was queued (i.e.
-    waiting for the WebAPK to be backgrounded) before being sent to the server.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Update.RequestSent" enum="WebApkUpdateRequestSent"
     expires_after="2024-02-20">
   <owner>hartmanng@chromium.org</owner>
