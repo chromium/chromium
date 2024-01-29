@@ -199,9 +199,19 @@ ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(FontSelectionValue desired_weight,
   ScopedCFTypeRef<CTFontRef> ct_font(
       CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, size, nullptr));
 
+  CTFontSymbolicTraits desired_traits = 0;
+
   if (desired_slant != kNormalSlopeValue) {
+    desired_traits |= kCTFontItalicTrait;
+  }
+
+  if (desired_weight >= kBoldThreshold) {
+    desired_traits |= kCTFontBoldTrait;
+  }
+
+  if (desired_traits) {
     ct_font.reset(CTFontCreateCopyWithSymbolicTraits(
-        ct_font.get(), size, nullptr, kCTFontItalicTrait, kCTFontItalicTrait));
+        ct_font.get(), size, nullptr, desired_traits, desired_traits));
   }
 
   if (desired_weight == kNormalWeightValue &&
