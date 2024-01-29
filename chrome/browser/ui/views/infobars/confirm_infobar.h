@@ -42,8 +42,8 @@ class ConfirmInfoBar : public InfoBarView {
   void CancelButtonPressed();
   void ExtraButtonPressed();
 
-  // Returns the width of all content other than the label and link.  Layout()
-  // uses this to determine how much space the label and link can take.
+  // Returns the width of all content other than the label and link.
+  // Layout uses this to determine how much space the label and link can take.
   int NonLabelWidth() const;
 
   raw_ptr<views::Label> label_ = nullptr;

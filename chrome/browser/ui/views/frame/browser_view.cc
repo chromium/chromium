@@ -4695,8 +4695,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
   // Reduce jankiness during the following position changes by:
   //   * Hiding the window until it's in the final position
-  //   * Ignoring all intervening Layout() calls, which resize the webpage and
-  //     thus are slow and look ugly (enforced via |in_process_fullscreen_|).
+  //   * Ignoring all intervening layout attempts, which would resize the
+  //     webpage and thus are slow and look ugly (enforced via
+  //     |in_process_fullscreen_|).
   if (fullscreen) {
     // Move focus out of the location bar if necessary.
     views::FocusManager* focus_manager = GetFocusManager();

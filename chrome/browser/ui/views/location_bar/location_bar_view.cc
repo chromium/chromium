@@ -948,7 +948,7 @@ void LocationBarView::Update(WebContents* contents) {
   if (qr_generator_icon)
     qr_generator_icon->SetVisible(false);
 
-  OnChanged();  // NOTE: Calls Layout().
+  OnChanged();  // NOTE: Triggers layout.
 
   // A permission prompt may be suspended due to an invalid state (empty or
   // editing location bar). Restore the suspended prompt if possible.

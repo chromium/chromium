@@ -307,8 +307,8 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
 std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
-  // Set the space between the icon and title similar to the default behavior in
-  // BubbleFrameView::Layout().
+  // Set the space between the icon and title similar to the default
+  // BubbleFrameView layout.
   header->SetBetweenChildSpacing(
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).left());
   header->AddChildView(

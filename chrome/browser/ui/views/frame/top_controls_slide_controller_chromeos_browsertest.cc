@@ -1082,9 +1082,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   // `top_controls_shown_ratio_` (which is initialized to 0.f) will be sent to
   // the browser when a new compositor frame gets generated. If this shown ratio
   // value is not ignored, top-chrome will immediately hide, which will result
-  // in a BrowserView's Layout() and the immediate closure of the drop-down
-  // menu.
-  // We verify below that this doesn't happen, the menu remains open, and it's
+  // in a BrowserView layout and the immediate closure of the drop-down menu. We
+  // verify below that this doesn't happen, the menu remains open, and it's
   // possible to select another option in the drop-down menu.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

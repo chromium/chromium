@@ -1627,8 +1627,8 @@ bool BookmarkBarView::BookmarkNodeAddedImpl(BookmarkModel* model,
     return true;
   }
   // If the new node was added after the last button we've created we may be
-  // able to fit it. Assume we can by returning true, which forces a Layout()
-  // and creation of the button (if it fits).
+  // able to fit it. Assume we can by returning true, which forces a layout and
+  // creation of the button (if it fits).
   return index == bookmark_buttons_.size();
 }
 

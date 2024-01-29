@@ -391,10 +391,9 @@ void AddSignedInChipToProfileMenuItem(
                              .left()))))
           .Build();
 
-  // MenuItemView has specific layout logic for child views in
-  // MenuItemView::Layout() which does not work very well with more
-  // custom menu items. We use this view to add the correct spacing
-  // between the profile chip and the edge of the menu.
+  // MenuItemView has specific layout logic for child views which does not work
+  // very well with more custom menu items. We use this view to add the correct
+  // spacing between the profile chip and the edge of the menu.
   auto profile_chip_edge_spacing_view =
       views::Builder<views::View>()
           .SetPreferredSize(gfx::Size(horizontal_padding, 0))

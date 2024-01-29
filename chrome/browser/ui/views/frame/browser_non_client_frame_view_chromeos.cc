@@ -802,8 +802,8 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In Lacros, when entering in immersive fullscreen, it is possible
-  // that chromeos::FrameHeader::painted_height_ is set to '0', when
-  // Layout() is called. This is because the tapstrip gets hidden.
+  // that chromeos::FrameHeader::painted_height_ is set to '0', when layout
+  // occurs. This is because the tapstrip gets hidden.
   //
   // When it happens, PaintFrameImagesInRoundRect() has an empty rect
   // to paint onto, and the TabStrip's new theme is not painted.
