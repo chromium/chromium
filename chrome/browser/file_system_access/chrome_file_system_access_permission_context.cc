@@ -118,15 +118,6 @@ const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
 
-// TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-// flag after FSA Persistent Permissions feature launch.
-bool UseOneTimePermissionNavigationHandler() {
-  return base::FeatureList::IsEnabled(
-             features::kFileSystemAccessPersistentPermissions) &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kOneTimePermission);
-}
-
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
@@ -1120,11 +1111,9 @@ ChromeFileSystemAccessPermissionContext::
   }
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kOneTimePermission)) {
-      one_time_permissions_tracker_.Observe(
-          OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
-    }
+    one_time_permissions_tracker_.Observe(
+        OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
+
     // Deprecated persisted permission objects contains a timestamp key, used
     // in old implementation. Revoke them so that the state is reset for the new
     // persisted permission implementation.
@@ -2084,8 +2073,6 @@ void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
   // flag after FSA Persistent Permissions feature launch.
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions) ||
-      !base::FeatureList::IsEnabled(
-          permissions::features::kOneTimePermission) ||
       expiry_type != BackgroundExpiryType::kLongTimeout) {
     return;
   }
@@ -2220,7 +2207,8 @@ void ChromeFileSystemAccessPermissionContext::
 void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!UseOneTimePermissionNavigationHandler()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     auto it = active_permissions_map_.find(origin);
     // If we have no permissions for the origin, there is nothing to do.
     if (it == active_permissions_map_.end()) {
