@@ -54,6 +54,7 @@ enum class SqlFullScanReason {
 class SqlQueryPlanExplainer {
  public:
   enum class Error {
+    kCommandFailed,
     kInvalidOutput,
     kMissingFullScanAnnotation,
     kExtraneousFullScanAnnotation,
