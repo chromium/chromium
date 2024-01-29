@@ -33,6 +33,10 @@ constexpr CGFloat kColoredButtonSize = 24;
 constexpr CGFloat kColorSelectionImageSize = 13;
 constexpr CGFloat kColorListViewHeight = 44;
 constexpr CGFloat kColorListBottomMargin = 16;
+constexpr CGFloat kSnapshotViewRatio = 0.83;
+constexpr CGFloat kSnapshotViewMaxHeight = 190;
+constexpr CGFloat kSnapshotViewCornerRadius = 18;
+constexpr CGFloat kSnapshotViewVerticalMargin = 25;
 }  // namespace
 
 @implementation CreateTabGroupViewController {
@@ -140,10 +144,14 @@ constexpr CGFloat kColorListBottomMargin = 16;
   }
 
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
+  UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
+  UIView* snapshotsContainer = [self configuredSnapshotsContainer];
   UIView* colorsView = [self listOfColorView];
   UIButton* creationButton = [self configuredCreateGroupButton];
   UIButton* cancelButton = [self configuredCancelButton];
   [self.view addSubview:dotAndFieldContainer];
+  [self.view addSubview:snapshotsContainer];
+  [self.view addLayoutGuide:snapshotsContainerLayoutGuide];
   [self.view addSubview:colorsView];
   [self.view addSubview:creationButton];
   [self.view addSubview:cancelButton];
@@ -188,6 +196,29 @@ constexpr CGFloat kColorListBottomMargin = 16;
     [colorsView.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
+    [snapshotsContainerLayoutGuide.topAnchor
+        constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
+                       constant:kSnapshotViewVerticalMargin],
+    [snapshotsContainerLayoutGuide.bottomAnchor
+        constraintEqualToAnchor:colorsView.topAnchor
+                       constant:-kSnapshotViewVerticalMargin],
+    [snapshotsContainerLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalMargin],
+    [snapshotsContainerLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kHorizontalMargin],
+
+    [snapshotsContainer.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [snapshotsContainer.centerYAnchor
+        constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerYAnchor],
+    [snapshotsContainer.topAnchor
+        constraintGreaterThanOrEqualToAnchor:snapshotsContainerLayoutGuide
+                                                 .topAnchor],
+    [snapshotsContainer.bottomAnchor
+        constraintLessThanOrEqualToAnchor:snapshotsContainerLayoutGuide
+                                              .bottomAnchor],
   ]];
 
   // To force display the keyboard when the view is shown.
@@ -454,6 +485,32 @@ constexpr CGFloat kColorListBottomMargin = 16;
 
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color {
   _defaultColor = color;
+}
+
+// Returns the view which contains all the selected tabs' snapshot which will be
+// included in the tab group.
+- (UIView*)configuredSnapshotsContainer {
+  UIView* snapshotsBackground = [[UIView alloc] init];
+  snapshotsBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  snapshotsBackground.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+  snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
+  snapshotsBackground.opaque = NO;
+
+  NSLayoutConstraint* backgroundHeightConstraint =
+      [snapshotsBackground.heightAnchor
+          constraintEqualToConstant:kSnapshotViewMaxHeight];
+  // Lower the priority of the constraint so for smaller device, snapshot are
+  // reduced instead of other elements where the user can interact with.
+  backgroundHeightConstraint.priority = UILayoutPriorityDefaultLow;
+
+  [NSLayoutConstraint activateConstraints:@[
+    backgroundHeightConstraint,
+    [snapshotsBackground.widthAnchor
+        constraintEqualToAnchor:snapshotsBackground.heightAnchor
+                     multiplier:kSnapshotViewRatio],
+  ]];
+
+  return snapshotsBackground;
 }
 
 @end
