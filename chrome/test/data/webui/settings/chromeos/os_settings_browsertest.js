@@ -10,7 +10,6 @@ GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
-GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
@@ -48,10 +47,6 @@ var OSSettingsBrowserTest = class extends PolymerTest {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- [
-   'OsSettingsSearchBox',
-   'os_settings_search_box/os_settings_search_box_test.js'
  ],
  [
    'OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
@@ -97,19 +92,6 @@ function registerTest(testName, module, featureList) {
     GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
     TEST_F(className, 'OfficialBuild' || 'All', () => {
       mocha.grep('AboutPageTest_OfficialBuild').run();
-    });
-    GEN('#endif');
-  } else if (testName === 'OsSettingsSearchBox') {
-    TEST_F(className, 'AllBuilds' || 'All', () => {
-      mocha
-          .grep(
-              '/^(?!(<os-settings-search-box> SearchFeedback_OfficialBuild)).*$/')
-          .run();
-    });
-
-    GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-    TEST_F(className, 'OfficialBuild' || 'All', () => {
-      mocha.grep('SearchFeedback_OfficialBuild').run();
     });
     GEN('#endif');
   } else {
