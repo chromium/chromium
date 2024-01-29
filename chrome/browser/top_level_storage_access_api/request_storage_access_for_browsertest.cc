@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   // The request comes from `kHostA`, which is in a First-Party Set with
-  // `khostB`. Note that `kHostB` would not be auto-granted access if it were
+  // `kHostB`. Note that `kHostB` would not be auto-granted access if it were
   // the requestor, because it is a service domain.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
@@ -515,6 +515,29 @@ IN_PROC_BROWSER_TEST_F(
               Gt(0));
 }
 
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_NoUserGestureAfterPermissionGranted) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  // The request comes from `kHostA`, which is in a Related Website Set with
+  // `kHostB`. Note that `kHostB` would not be auto-granted access if it were
+  // the requestor, because it is a service domain.
+  ASSERT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  // Repeated calls for the same origin should also return true, without
+  // requiring a user gesture.
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec(),
+      /*omit_user_gesture=*/true));
+}
+
 // Validate that a user gesture is required.
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_DeniedWithoutUserGesture) {
@@ -529,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   // The request comes from `kHostA`, which is in a First-Party Set with
-  // `khostB`. (Note that `kHostB` would not be auto-granted access if it were
+  // `kHostB`. (Note that `kHostB` would not be auto-granted access if it were
   // the requestor, because it is a service domain.)
   //
   // kHostA would be autogranted access if the request has a user gesture, but
@@ -597,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostA,
                                             /*cors_enabled=*/true),
             "");
-  // The promise should be rejected; `khostB` is a service domain.
+  // The promise should be rejected; `kHostB` is a service domain.
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostA).spec()));
 
