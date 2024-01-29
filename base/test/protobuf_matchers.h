@@ -12,6 +12,10 @@
 
 namespace base::test {
 
+// Parses a binary proto and returns a raw TextProto, where all fields are
+// unnamed. The input must be a valid serialized protobuf message.
+std::string BinaryProtoToRawTextProto(const std::string& binary_message);
+
 // Matcher that verifies two protobufs contain the same data.
 MATCHER_P(EqualsProto,
           message,
@@ -28,8 +32,10 @@ MATCHER_P(EqualsProto,
   }
   if (expected_serialized != actual_serialized) {
     *result_listener << "Provided proto did not match the expected proto"
-                     << "\n Serialized Expected Proto: " << expected_serialized
-                     << "\n Serialized Provided Proto: " << actual_serialized;
+                     << "\n Expected Raw TextProto:\n"
+                     << BinaryProtoToRawTextProto(expected_serialized)
+                     << "\n Provided Raw TextProto:\n"
+                     << BinaryProtoToRawTextProto(actual_serialized);
     return false;
   }
   return true;
