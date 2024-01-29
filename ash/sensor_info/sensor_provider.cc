@@ -387,7 +387,7 @@ void SensorProvider::CreateSensorSamplesObserver(DeviceType device_type,
   DCHECK(!sensor.ignored);
   DCHECK(sensor.scale.has_value() && sensor.location.has_value());
   if (device_type == DeviceType::ACCEL || device_type == DeviceType::ANGLVEL) {
-    sensor.samples_observer = std::make_unique<AccelGryoSamplesObserver>(
+    sensor.samples_observer = std::make_unique<AccelGyroSamplesObserver>(
         id, std::move(sensor.remote), sensor.scale.value(),
         base::BindRepeating(&SensorProvider::OnSampleUpdatedCallback,
                             weak_ptr_factory_.GetWeakPtr(), device_type),

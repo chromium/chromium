@@ -585,7 +585,7 @@ void AccelerometerProviderMojo::CreateAccelerometerSamplesObserver(int32_t id) {
     return;
   }
 
-  accelerometer.samples_observer = std::make_unique<AccelGryoSamplesObserver>(
+  accelerometer.samples_observer = std::make_unique<AccelGyroSamplesObserver>(
       id, std::move(accelerometer.remote), accelerometer.scale.value(),
       base::BindRepeating(&AccelerometerProviderMojo::OnSampleUpdatedCallback,
                           this));
