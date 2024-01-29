@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultIdleDetectionSetting"
-    enum="ContentSetting" expires_after="2024-02-03">
+    enum="ContentSetting" expires_after="2025-01-24">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
