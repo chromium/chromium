@@ -21,7 +21,7 @@ namespace autofill::payments {
 class UploadCardRequest : public PaymentsRequest {
  public:
   UploadCardRequest(
-      const PaymentsNetworkInterface::UploadRequestDetails& request_details,
+      const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
       const bool full_sync_enabled,
       base::OnceCallback<
           void(AutofillClient::PaymentsRpcResult,
@@ -40,7 +40,7 @@ class UploadCardRequest : public PaymentsRequest {
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
 
  private:
-  const PaymentsNetworkInterface::UploadRequestDetails request_details_;
+  const PaymentsNetworkInterface::UploadCardRequestDetails request_details_;
   const bool full_sync_enabled_;
   base::OnceCallback<void(
       AutofillClient::PaymentsRpcResult,

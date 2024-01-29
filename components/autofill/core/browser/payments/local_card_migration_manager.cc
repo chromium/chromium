@@ -153,7 +153,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
   if (observer_for_testing_)
     observer_for_testing_->OnDecideToRequestLocalCardMigration();
 
-  payments_network_interface->GetUploadDetails(
+  payments_network_interface->GetCardUploadDetails(
       std::vector<AutofillProfile>(), GetDetectedValues(),
       /*client_behavior_signals=*/std::vector<ClientBehaviorConstants>(),
       app_locale_,

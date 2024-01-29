@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments/payments_requests/get_upload_details_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 
 #include <string>
 
@@ -16,11 +16,11 @@
 namespace autofill::payments {
 
 namespace {
-const char kGetUploadDetailsRequestPath[] =
+const char kGetCardUploadDetailsRequestPath[] =
     "payments/apis/chromepaymentsservice/getdetailsforsavecard";
 }  // namespace
 
-GetUploadDetailsRequest::GetUploadDetailsRequest(
+GetCardUploadDetailsRequest::GetCardUploadDetailsRequest(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -43,17 +43,17 @@ GetUploadDetailsRequest::GetUploadDetailsRequest(
       upload_card_source_(upload_card_source),
       billing_customer_number_(billing_customer_number) {}
 
-GetUploadDetailsRequest::~GetUploadDetailsRequest() = default;
+GetCardUploadDetailsRequest::~GetCardUploadDetailsRequest() = default;
 
-std::string GetUploadDetailsRequest::GetRequestUrlPath() {
-  return kGetUploadDetailsRequestPath;
+std::string GetCardUploadDetailsRequest::GetRequestUrlPath() {
+  return kGetCardUploadDetailsRequestPath;
 }
 
-std::string GetUploadDetailsRequest::GetRequestContentType() {
+std::string GetCardUploadDetailsRequest::GetRequestContentType() {
   return "application/json";
 }
 
-std::string GetUploadDetailsRequest::GetRequestContent() {
+std::string GetCardUploadDetailsRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   base::Value::Dict context;
   context.Set("language_code", app_locale_);
@@ -118,7 +118,8 @@ std::string GetUploadDetailsRequest::GetRequestContent() {
   return request_content;
 }
 
-void GetUploadDetailsRequest::ParseResponse(const base::Value::Dict& response) {
+void GetCardUploadDetailsRequest::ParseResponse(
+  const base::Value::Dict& response) {
   const auto* context_token = response.FindString("context_token");
   context_token_ =
       context_token ? base::UTF8ToUTF16(*context_token) : std::u16string();
@@ -136,18 +137,18 @@ void GetUploadDetailsRequest::ParseResponse(const base::Value::Dict& response) {
                                        : base::EmptyString());
 }
 
-bool GetUploadDetailsRequest::IsResponseComplete() {
+bool GetCardUploadDetailsRequest::IsResponseComplete() {
   return !context_token_.empty() && legal_message_;
 }
 
-void GetUploadDetailsRequest::RespondToDelegate(
+void GetCardUploadDetailsRequest::RespondToDelegate(
     AutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, context_token_, std::move(legal_message_),
                            supported_card_bin_ranges_);
 }
 
 std::vector<std::pair<int, int>>
-GetUploadDetailsRequest::ParseSupportedCardBinRangesString(
+GetCardUploadDetailsRequest::ParseSupportedCardBinRangesString(
     const std::string& supported_card_bin_ranges_string) {
   std::vector<std::pair<int, int>> supported_card_bin_ranges;
   std::vector<std::string> range_strings =

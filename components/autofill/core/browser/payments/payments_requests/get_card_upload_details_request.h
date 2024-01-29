@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_UPLOAD_DETAILS_REQUEST_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_UPLOAD_DETAILS_REQUEST_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_CARD_UPLOAD_DETAILS_REQUEST_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_CARD_UPLOAD_DETAILS_REQUEST_H_
 
 #include <string>
 
@@ -16,9 +16,9 @@
 
 namespace autofill::payments {
 
-class GetUploadDetailsRequest : public PaymentsRequest {
+class GetCardUploadDetailsRequest : public PaymentsRequest {
  public:
-  GetUploadDetailsRequest(
+  GetCardUploadDetailsRequest(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -31,9 +31,10 @@ class GetUploadDetailsRequest : public PaymentsRequest {
       const int billable_service_number,
       const int64_t billing_customer_number,
       PaymentsNetworkInterface::UploadCardSource upload_card_source);
-  GetUploadDetailsRequest(const GetUploadDetailsRequest&) = delete;
-  GetUploadDetailsRequest& operator=(const GetUploadDetailsRequest&) = delete;
-  ~GetUploadDetailsRequest() override;
+  GetCardUploadDetailsRequest(const GetCardUploadDetailsRequest&) = delete;
+  GetCardUploadDetailsRequest& operator=(
+    const GetCardUploadDetailsRequest&) = delete;
+  ~GetCardUploadDetailsRequest() override;
 
   // PaymentsRequest:
   std::string GetRequestUrlPath() override;
@@ -71,4 +72,4 @@ class GetUploadDetailsRequest : public PaymentsRequest {
 
 }  // namespace autofill::payments
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_UPLOAD_DETAILS_REQUEST_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_CARD_UPLOAD_DETAILS_REQUEST_H_

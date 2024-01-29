@@ -54,7 +54,7 @@ void TestPaymentsNetworkInterface::UnmaskCard(
   unmask_request_ = unmask_request;
 }
 
-void TestPaymentsNetworkInterface::GetUploadDetails(
+void TestPaymentsNetworkInterface::GetCardUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
@@ -81,10 +81,11 @@ void TestPaymentsNetworkInterface::GetUploadDetails(
 }
 
 void TestPaymentsNetworkInterface::UploadCard(
-    const payments::PaymentsNetworkInterface::UploadRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const PaymentsNetworkInterface::UploadCardResponseDetails&)>
-        callback) {
+    const payments::PaymentsNetworkInterface::UploadCardRequestDetails&
+        request_details,
+    base::OnceCallback<void(
+        AutofillClient::PaymentsRpcResult,
+        const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback) {
   upload_card_addresses_ = request_details.profiles;
   client_behavior_signals_ = request_details.client_behavior_signals;
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
