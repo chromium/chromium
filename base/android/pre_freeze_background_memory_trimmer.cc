@@ -106,9 +106,16 @@ void PostMetricsTask(std::optional<uint64_t> pmf_before) {
   if (!IsAndroidUPlus()) {
     return;
   }
-  base::ThreadPool::PostDelayedTask(FROM_HERE, {MayBlock()},
-                                    base::BindOnce(&RecordMetrics, pmf_before),
-                                    kDelayForMetrics);
+  // The posted task will be more likely to survive background killing in
+  // experiments that change the memory trimming behavior. Run as USER_BLOCKING
+  // to reduce this sample imbalance in experiment groups. Normally tasks
+  // collecting metrics should use BEST_EFFORT, but when running in background a
+  // number of subtle effects may influence the real delay of those tasks. The
+  // USER_BLOCKING will allow to estimate the number of better-survived tasks
+  // more precisely.
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, MayBlock()},
+      base::BindOnce(&RecordMetrics, pmf_before), kDelayForMetrics);
 }
 
 }  // namespace
