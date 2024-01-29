@@ -220,8 +220,11 @@ TEST_F(SizesAttributeParserTest, AutoSizesNonLazyImg) {
   ASSERT_TRUE(parser.IsAuto());
   ASSERT_EQ(500, parser.Size());
 }
-
-TEST_F(SizesAttributeParserTest, AutoSizesLazyImgNoWidth) {
+// TODO(tcaptan):
+// Disabled the size check for images with no width for now because of:
+// crbug.com/1522175
+// Will re-enable or modify after the UA style sheet issue is resolved.
+TEST_F(SizesAttributeParserTest, DISABLED_AutoSizesLazyImgNoWidth) {
   SetBodyInnerHTML(R"HTML(
     <img id="target" sizes="auto" loading="lazy">
   )HTML");
