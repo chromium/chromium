@@ -2469,7 +2469,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      blink::mojom::DragEventSourceInfoPtr event_info) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason,
+                                 blink::mojom::BlockingDetailsPtr) override;
 
   void DidChangeBackForwardCacheDisablingFeatures(
       BackForwardCacheBlockingDetails details) override;

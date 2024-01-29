@@ -262,7 +262,8 @@ class CORE_EXPORT LocalFrame final
 
   // BackForwardCacheLoaderHelperImpl::Delegate:
   void EvictFromBackForwardCache(
-      mojom::blink::RendererEvictionReason reason) override;
+      mojom::blink::RendererEvictionReason reason,
+      std::unique_ptr<SourceLocation> source_location) override;
   void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
                                             size_t num_bytes) override;
 

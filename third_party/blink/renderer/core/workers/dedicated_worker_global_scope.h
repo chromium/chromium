@@ -51,6 +51,7 @@ class DedicatedWorkerObjectProxy;
 class DedicatedWorkerThread;
 class PostMessageOptions;
 class ScriptState;
+class SourceLocation;
 class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 
@@ -135,7 +136,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       BlockingDetails details) override;
   // Implements BackForwardCacheLoaderHelperImpl::Delegate.
   void EvictFromBackForwardCache(
-      mojom::blink::RendererEvictionReason reason) override;
+      mojom::blink::RendererEvictionReason reason,
+      std::unique_ptr<SourceLocation> source_location) override;
   void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
                                             size_t num_bytes) override;
 

@@ -58,6 +58,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1029,14 +1030,27 @@ DedicatedWorkerHost::GetWorkerCoepReporter() {
 }
 
 void DedicatedWorkerHost::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
+    blink::mojom::RendererEvictionReason reason,
+    blink::mojom::BlockingDetailsPtr details) {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
     // The frame may have already been closed.
     return;
   }
-  ancestor_render_frame_host->EvictFromBackForwardCache(reason);
+  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
+    if (details.is_null()) {
+      mojo::ReportBadMessage(
+          "Details must be provided if it's JavaScript execution");
+    };
+    if (details->feature.has_value()) {
+      mojo::ReportBadMessage(
+          "Feature for scheduler shouldn't be provided if it's JavaScript "
+          "execution");
+    }
+  }
+  ancestor_render_frame_host->EvictFromBackForwardCache(std::move(reason),
+                                                        std::move(details));
 }
 
 void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
@@ -1101,8 +1115,10 @@ blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   blink::scheduler::WebSchedulerTrackedFeatures features;
   for (auto& details : bfcache_blocking_details_) {
-    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        details->feature));
+    if (details->feature.has_value()) {
+      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+          details->feature.value()));
+    }
   }
   return features;
 }

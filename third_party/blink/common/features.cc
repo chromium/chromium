@@ -492,6 +492,12 @@ BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
              "CanvasFreeMemoryWhenHidden",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to capture the source location of JavaScript execution, which is one
+// of the renderer eviction reasons for Back/Forward Cache.
+BASE_FEATURE(kCaptureJSExecutionLocation,
+             "CaptureJSExecutionLocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
              "CheckHTMLParserBudgetLessOften",
              base::FEATURE_DISABLED_BY_DEFAULT);

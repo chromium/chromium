@@ -266,6 +266,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
@@ -4842,8 +4843,10 @@ RenderFrameHostImpl::BackForwardCacheDisablingFeatures
 RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
   BackForwardCacheDisablingFeatures features;
   for (const auto& details : GetBackForwardCacheBlockingDetails()) {
-    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-        details->feature));
+    if (details->feature.has_value()) {
+      features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+          details->feature.value()));
+    }
   }
   return features;
 }
@@ -7285,7 +7288,21 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
+    blink::mojom::RendererEvictionReason reason,
+    blink::mojom::BlockingDetailsPtr details) {
+  if (reason == blink::mojom::RendererEvictionReason::kJavaScriptExecution) {
+    if (details.is_null()) {
+      mojo::ReportBadMessage(
+          "Details must be provided if it's JavaScript execution");
+    };
+    if (details->feature.has_value()) {
+      mojo::ReportBadMessage(
+          "Feature for scheduler shouldn't be provided if it's JavaScript "
+          "execution");
+    }
+  }
+  // TODO(crbug.com/1513120): Use `details` to report the source location of
+  // JavaScript execution.
   EvictFromBackForwardCacheWithReason(
       RendererEvictionReasonToNotRestoredReason(reason));
 }

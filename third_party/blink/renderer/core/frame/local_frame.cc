@@ -60,6 +60,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -1053,8 +1054,16 @@ void LocalFrame::HookBackForwardCacheEviction() {
             DCHECK(window);
             LocalFrame* frame = window->GetFrame();
             if (frame) {
+              std::unique_ptr<SourceLocation> source_location = nullptr;
+              if (base::FeatureList::IsEnabled(
+                      features::kCaptureJSExecutionLocation)) {
+                // Capture the source location of the JS execution if the flag
+                // is enabled.
+                source_location = CaptureSourceLocation();
+              }
               frame->EvictFromBackForwardCache(
-                  mojom::blink::RendererEvictionReason::kJavaScriptExecution);
+                  mojom::blink::RendererEvictionReason::kJavaScriptExecution,
+                  std::move(source_location));
               if (base::FeatureList::IsEnabled(
                       features::kBackForwardCacheDWCOnJavaScriptExecution)) {
                 // Adding |DumpWithoutCrashing()| here to make sure this is not
@@ -3133,11 +3142,21 @@ void LocalFrame::WasAttachedAsLocalMainFrame() {
 }
 
 void LocalFrame::EvictFromBackForwardCache(
-    mojom::blink::RendererEvictionReason reason) {
+    mojom::blink::RendererEvictionReason reason,
+    std::unique_ptr<SourceLocation> source_location) {
   if (!GetPage()->GetPageScheduler()->IsInBackForwardCache())
     return;
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
-  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(reason);
+  mojom::blink::BlockingDetailsPtr details =
+      mojom::blink::BlockingDetails::New();
+  if (source_location) {
+    details->url = source_location->Url();
+    details->function_name = source_location->Function();
+    details->line_number = source_location->LineNumber();
+    details->column_number = source_location->ColumnNumber();
+  }
+  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(
+      std::move(reason), std::move(details));
 }
 
 void LocalFrame::DidBufferLoadWhileInBackForwardCache(
