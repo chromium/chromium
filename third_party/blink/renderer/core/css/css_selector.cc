@@ -202,8 +202,10 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:
         case kPseudoViewTransitionOld:
-        case kPseudoViewTransitionNew:
-          return Argument().IsNull() ? 0 : kClassLikeSpecificity;
+        case kPseudoViewTransitionNew: {
+          CHECK(!IdentList().empty());
+          return IdentList()[0].IsNull() ? 0 : kClassLikeSpecificity;
+        }
         default:
           break;
       }
@@ -1056,13 +1058,30 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         builder.Append(')');
         break;
       }
-      case kPseudoHighlight:
+      case kPseudoHighlight: {
+        builder.Append('(');
+        builder.Append(Argument());
+        builder.Append(')');
+        break;
+      }
       case kPseudoViewTransitionGroup:
       case kPseudoViewTransitionImagePair:
       case kPseudoViewTransitionNew:
       case kPseudoViewTransitionOld: {
         builder.Append('(');
-        builder.Append(Argument());
+        bool first = true;
+        for (const AtomicString& name_or_class : IdentList()) {
+          if (!first) {
+            builder.Append('.');
+          }
+
+          first = false;
+          if (name_or_class == UniversalSelectorAtom()) {
+            builder.Append(g_star_atom);
+          } else {
+            SerializeIdentifier(name_or_class, builder);
+          }
+        }
         builder.Append(')');
         break;
       }

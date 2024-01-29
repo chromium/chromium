@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -292,7 +293,10 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     }
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
-    EXPECT_EQ(selector->Argument(), test_case.argument);
+    EXPECT_EQ(selector->GetPseudoType() == CSSSelector::kPseudoViewTransition
+                  ? selector->Argument()
+                  : selector->IdentList()[0],
+              test_case.argument);
   }
 }
 

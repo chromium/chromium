@@ -2147,9 +2147,14 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
-      return selector_pseudo_id == kPseudoIdViewTransition ||
-             selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
-             selector.Argument() == pseudo_argument_;
+      if (selector_pseudo_id == kPseudoIdViewTransition) {
+        return true;
+      }
+
+      CHECK(!selector.IdentList().empty());
+      const AtomicString& name_or_wildcard = selector.IdentList()[0];
+      return name_or_wildcard == CSSSelector::UniversalSelectorAtom() ||
+             name_or_wildcard == pseudo_argument_;
     }
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:

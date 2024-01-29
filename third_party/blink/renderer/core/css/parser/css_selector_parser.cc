@@ -1572,24 +1572,45 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
-      const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+      const CSSParserToken& ident = block.Consume();
+      absl::optional<AtomicString> name_or_wildcard;
+      if (ident.GetType() == kIdentToken) {
+        name_or_wildcard = ident.Value().ToAtomicString();
+      } else if (ident.GetType() == kDelimiterToken &&
+                 ident.Delimiter() == '*') {
+        name_or_wildcard = CSSSelector::UniversalSelectorAtom();
+      }
+
+      // TODO(https://github.com/w3c/csswg-drafts/issues/9874)
+      // Consider allowing (.class) without *.
+      if (!name_or_wildcard) {
+        return false;
+      }
+
+      std::unique_ptr<Vector<AtomicString>> name_and_classes =
+          std::make_unique<Vector<AtomicString>>();
+      name_and_classes->push_back(*name_or_wildcard);
+      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
+        while (!block.AtEnd() && block.Peek().GetType() != kWhitespaceToken) {
+          if (block.Peek().GetType() != kDelimiterToken ||
+              block.Consume().Delimiter() != '.') {
+            return false;
+          }
+
+          if (block.Peek().GetType() != kIdentToken) {
+            return false;
+          }
+          name_and_classes->push_back(block.Consume().Value().ToAtomicString());
+        }
+      }
+
+      block.ConsumeWhitespace();
+
       if (!block.AtEnd()) {
         return false;
       }
 
-      absl::optional<AtomicString> argument;
-      if (ident.GetType() == kIdentToken) {
-        argument = ident.Value().ToAtomicString();
-      } else if (ident.GetType() == kDelimiterToken &&
-                 ident.Delimiter() == '*') {
-        argument = CSSSelector::UniversalSelectorAtom();
-      }
-
-      if (!argument) {
-        return false;
-      }
-
-      selector.SetArgument(*argument);
+      selector.SetIdentList(std::move(name_and_classes));
       output_.push_back(std::move(selector));
       return true;
     }
