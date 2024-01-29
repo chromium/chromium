@@ -141,23 +141,30 @@ void ScreenAIServiceRouter::BindMainContentExtractor(
 
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
   ScreenAIInstallState::GetInstance()->SetLastUsageTime();
+  auto* state_instance = ScreenAIInstallState::GetInstance();
+  screen_ai::ScreenAIInstallState::State install_state =
+      state_instance->get_state();
 
   if (screen_ai_service_factory_.is_bound() ||
-      screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
-          screen_ai::ScreenAIInstallState::State::kFailed) {
+      install_state == screen_ai::ScreenAIInstallState::State::kFailed) {
     return;
   }
 
-  auto* screen_ai_install = ScreenAIInstallState::GetInstance();
+  // TODO(crbug.com/1508404): Remove after crash root cause is found, or replace
+  // above.
+  if (install_state != screen_ai::ScreenAIInstallState::State::kDownloaded &&
+      install_state != screen_ai::ScreenAIInstallState::State::kReady) {
+    return;
+  }
+
   // Callers of the service should ensure that the component is downloaded
   // before promising it to the users and triggering its launch.
-  // TODO(crbug.com/1443345): Add tests to cover this case.
-  CHECK(screen_ai_install->IsComponentAvailable())
+  CHECK(state_instance->IsComponentAvailable())
       << "ScreenAI service launch triggered when component is not "
          "available.";
 
 #if BUILDFLAG(IS_WIN)
-  base::FilePath library_path = screen_ai_install->get_component_binary_path();
+  base::FilePath library_path = state_instance->get_component_binary_path();
   std::vector<base::FilePath> preload_libraries = {library_path};
 #endif  // BUILDFLAG(IS_WIN)
 
