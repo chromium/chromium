@@ -301,22 +301,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_TABLETS)
-    @Config(qualifiers = "sw600dp")
-    public void testNoVisibleHintCalculationForTablets_noHistogramRecords() {
-        measureAndLayoutUrlBar();
-        mUrlBar.setText(mShortDomain + mLongPath);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Omnibox.CalculateVisibleHint.Duration")
-                        .expectNoRecords("Omnibox.NumberOfVisibleCharacters")
-                        .build();
-        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testSetLengthHistogram_noTruncation() {
         measureAndLayoutUrlBar();

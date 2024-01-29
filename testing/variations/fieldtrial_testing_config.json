@@ -479,21 +479,6 @@
             ]
         }
     ],
-    "AndroidNoVisibleHintForTablets": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidNoVisibleHintForTablets"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidOmniboxUxRevampPhase3": [
         {
             "platforms": [

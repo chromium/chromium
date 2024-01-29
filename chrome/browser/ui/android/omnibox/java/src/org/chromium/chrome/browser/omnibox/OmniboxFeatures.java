@@ -161,13 +161,4 @@ public class OmniboxFeatures {
     public static boolean shouldTruncateVisibleUrlV2() {
         return ChromeFeatureList.sVisibleUrlTruncationV2.isEnabled();
     }
-
-    /**
-     * @param context The activity context.
-     * @return Whether to calculate the visible hint. We always calculate the visible hint, except
-     *     on tablets that have sNoVisibleHintForTablets enabled.
-     */
-    public static boolean shouldCalculateVisibleHint(Context context) {
-        return !(isTablet(context) && ChromeFeatureList.sNoVisibleHintForTablets.isEnabled());
-    }
 }

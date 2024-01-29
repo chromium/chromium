@@ -867,9 +867,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // padding.
                     mVisibleTextPrefixHint = null;
                 } else {
-                    if (OmniboxFeatures.shouldCalculateVisibleHint(getContext())) {
-                        mVisibleTextPrefixHint = calculateVisibleHint();
-                    }
+                    mVisibleTextPrefixHint = calculateVisibleHint();
                 }
             }
         } else {
