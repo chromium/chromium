@@ -42,6 +42,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   ~TrayDetailedView() override;
 
+  // views::View:
+  void Layout() override;
+  int GetHeightForWidth(int width) const override;
+
   // ViewClickListener:
   // Don't override this --- override HandleViewClicked.
   void OnViewClicked(views::View* sender) final;
@@ -52,10 +56,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::ScrollView* scroll_view_for_testing() { return scroller_; }
 
  protected:
-  // views::View:
-  void Layout() override;
-  int GetHeightForWidth(int width) const override;
-
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
 
