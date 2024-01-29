@@ -2722,6 +2722,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.CrossOriginLcpImage" enum="Boolean"
+    expires_after="2024-04-30">
+  <owner>alexnj@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records if LCP image source is across a different origin from the root
+    origin.
+
+    The metric is emitted as LCP Critical Path Predictor finalizes LCP candidate
+    dependencies, and emitted only for the outermost frame. If the LCP is not an
+    image (or an image with a non-HTTP family URL), nothing should be recorded
+    in the histogram. A false is recorded when it is a valid HTTP(s) image that
+    is same origin.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.LCPElementLocatorSize" units="bytes"
     expires_after="2024-06-02">
   <owner>kouhei@chromium.org</owner>
@@ -2841,6 +2859,38 @@ chromium-metrics-reviews@google.com.
 
     This metric is emitted when predicted origins are appended to the
     PreconnectPrediction structure during PrepareForPageLoad.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.PreconnectPredictionMatchCount" units="count"
+    expires_after="2024-04-30">
+  <owner>alexnj@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of predicted preconnect origins that matched against the
+    LCP image.
+
+    The metric is emitted as LCP Critical Path Predictor finalizes LCP candidate
+    dependencies. This metric should indicate &quot;1&quot; in the ideal case,
+    i.e., exactly one prediction matched the actual LCP origin. Higher than one
+    would indicate duplicate predictions and should not be normal.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.PreconnectPredictionMatchPercent" units="%"
+    expires_after="2024-04-30">
+  <owner>alexnj@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the percent of LCP origins matched against the LCPP predicted
+    preconnect origins.
+
+    The metric is emitted as LCP Critical Path Predictor finalizes LCP candidate
+    dependencies.
   </summary>
 </histogram>
 

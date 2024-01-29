@@ -3237,6 +3237,14 @@ void WebLocalFrameImpl::SetLCPPHint(
     fetched_fonts.emplace_back(url);
   }
   lcpp->set_fetched_fonts(std::move(fetched_fonts));
+
+  Vector<url::Origin> preconnect_origins;
+  preconnect_origins.reserve(
+      base::checked_cast<wtf_size_t>(hint->preconnect_origins.size()));
+  for (const auto& origin_url : hint->preconnect_origins) {
+    preconnect_origins.emplace_back(url::Origin::Create(origin_url));
+  }
+  lcpp->set_preconnected_origins(preconnect_origins);
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
