@@ -11,8 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/menu/menu_item_view.h"
 
 namespace ash {
 
@@ -21,22 +19,6 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   METADATA_HEADER(DeskProfilesButton, views::ImageButton)
 
  public:
-  // TestApi is used for tests to get internal implementation details.
-  class TestApi {
-   public:
-    explicit TestApi(DeskProfilesButton* button) : button_(button) {}
-    TestApi(const TestApi&) = delete;
-    TestApi& operator=(const TestApi&) = delete;
-
-    ~TestApi() = default;
-
-    // Wrapper function for testing.
-    views::MenuItemView* GetMenuItemByID(int id);
-
-   private:
-    const raw_ptr<DeskProfilesButton> button_;
-  };
-
   explicit DeskProfilesButton(views::Button::PressedCallback callback,
                               Desk* desk);
   DeskProfilesButton(const DeskProfilesButton&) = delete;
@@ -48,22 +30,19 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   // This is non-null when the profile menu is visible.
   DeskActionContextMenu* menu() const { return context_menu_.get(); }
 
-  void UpdateIcon();
-
   // Desk::Observer:
   void OnContentChanged() override {}
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override {}
+  void OnDeskProfileChanged(uint64_t new_lacros_profile_id) override;
 
   // views::ImageButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
-  friend class DeskProfilesMenuModelAdapter;
-
-  // This class is the context menu controller used by `DeskProfilesButton`.
-  // class MenuController;
+  // Loads the icon that is currently associated with `desk_`.
+  void LoadIconForProfile();
 
   // Helper function to create context menu when needed.
   void CreateMenu(const ui::LocatedEvent& event);
@@ -76,8 +55,6 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
 
   // The associated desk.
   raw_ptr<Desk> desk_;  // Not owned.
-  raw_ptr<views::ImageView> icon_ = nullptr;
-  gfx::ImageSkia icon_image_;
 
   // The context menu used to change the profile associated with the desk.
   std::unique_ptr<DeskActionContextMenu> context_menu_;

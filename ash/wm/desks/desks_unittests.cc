@@ -11796,7 +11796,7 @@ TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
   DeskProfilesButton* desk_profile_button =
       DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[0]);
   ASSERT_NE(desk_profile_button, nullptr);
-  DeskProfilesButton::TestApi test_api(desk_profile_button);
+
   auto* event_generator = GetEventGenerator();
   // Test desk profile button click metrics.
   ClickOnView(desk_profile_button, event_generator);

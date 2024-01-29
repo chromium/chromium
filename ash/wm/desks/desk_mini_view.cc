@@ -632,16 +632,6 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
   Layout();
 }
 
-void DeskMiniView::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
-  if (!desk_) {
-    return;
-  }
-  if (desk_profile_button_) {
-    desk_profile_button_->UpdateIcon();
-    Layout();
-  }
-}
-
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
                                   const ui::KeyEvent& key_event) {
   DCHECK_EQ(sender, desk_name_view_);

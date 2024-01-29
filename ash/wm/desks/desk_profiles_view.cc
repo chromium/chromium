@@ -37,10 +37,7 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPreferredSize(kIconButtonSize);
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  icon_ = AddChildView(std::make_unique<views::ImageView>());
-  icon_->SetSize(kIconButtonSize);
-  icon_->SetImageSize(kIconButtonSize);
+
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -49,11 +46,8 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
   views::InstallCircleHighlightPathGenerator(this);
 
-  UpdateIcon();
-  icon_->SetPaintToLayer();
-  icon_->layer()->SetFillsBoundsOpaquely(false);
-  icon_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kIconButtonSize.width()));
+  LoadIconForProfile();
+
   // TODO(shidi):Update the accessible name if get any.
   SetAccessibleName(u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
@@ -64,28 +58,16 @@ DeskProfilesButton::~DeskProfilesButton() {
   }
 }
 
-void DeskProfilesButton::UpdateIcon() {
-  CHECK(desk_);
-  auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-  CHECK(delegate);
-
-  // Initialize Desk's Lacros profile id with primary profile id.
-  const uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
-  if (desk_->lacros_profile_id() == 0 && primary_profile_id != 0) {
-    desk_->SetLacrosProfileId(primary_profile_id);
-  }
-  if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
-          desk_->lacros_profile_id())) {
-    icon_image_ = summary->icon;
-    icon_->SetImage(icon_image_);
-    icon_->SetTooltipText(base::UTF8ToUTF16(summary->name));
-  }
-}
-
 void DeskProfilesButton::OnDeskDestroyed(const Desk* desk) {
   // Note that DeskProfilesButton's parent `DeskMiniView` might outlive the
   // `desk_`, so `desk_` need to be manually reset.
   desk_ = nullptr;
+}
+
+void DeskProfilesButton::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
+  if (desk_) {
+    LoadIconForProfile();
+  }
 }
 
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -99,6 +81,36 @@ bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
 void DeskProfilesButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
     CreateMenu(*event);
+  }
+}
+
+void DeskProfilesButton::LoadIconForProfile() {
+  CHECK(desk_);
+
+  auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
+  CHECK(delegate);
+
+  // Initialize Desk's Lacros profile id with primary profile id.
+  // TODO(dandersson): This shouldn't happen here.
+  const uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
+  if (desk_->lacros_profile_id() == 0 && primary_profile_id != 0) {
+    desk_->SetLacrosProfileId(primary_profile_id);
+  }
+
+  if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
+          desk_->lacros_profile_id())) {
+    gfx::ImageSkia icon = gfx::ImageSkiaOperations::CreateResizedImage(
+        summary->icon, skia::ImageOperations::RESIZE_BEST, kIconButtonSize);
+
+    auto image_model = ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+            kIconButtonSize.width(), icon));
+
+    SetImageModel(ButtonState::STATE_NORMAL, image_model);
+    SetTooltipText(base::UTF8ToUTF16(summary->name));
+  } else {
+    SetImageModel(ButtonState::STATE_NORMAL, ui::ImageModel());
+    SetTooltipText(u"");
   }
 }
 

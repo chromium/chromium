@@ -149,7 +149,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnContentChanged() override;
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
-  void OnDeskProfileChanged(uint64_t new_lacros_profile_id) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
