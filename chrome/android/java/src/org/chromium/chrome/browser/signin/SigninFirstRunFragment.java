@@ -296,7 +296,12 @@ public class SigninFirstRunFragment extends Fragment
         if (mDeviceLockCoordinator != null) {
             mDeviceLockCoordinator.destroy();
             mDeviceLockCoordinator = null;
-            mSigninFirstRunCoordinator.continueSignIn();
+
+            // Hold off on continuing sign-in if the delegate is null (due to the host activity
+            // being killed in the background.
+            if (getPageDelegate() != null) {
+                mSigninFirstRunCoordinator.continueSignIn();
+            }
         }
     }
 
