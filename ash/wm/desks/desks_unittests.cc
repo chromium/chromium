@@ -55,6 +55,8 @@
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
+#include "ash/wm/desks/desk_button/desk_switch_button.h"
 #include "ash/wm/desks/desk_button_base.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -9532,7 +9534,7 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kLeft,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {56, 254, 202, 98},
+       .desk_button_bar_widget_bounds = {56, 240, 202, 98},
        .desk_button_bar_view_bounds = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {48, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
@@ -9541,7 +9543,7 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kRight,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {542, 254, 202, 98},
+       .desk_button_bar_widget_bounds = {542, 240, 202, 98},
        .desk_button_bar_view_bounds = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
@@ -10915,14 +10917,16 @@ class DeskButtonTest
     return GetPrimaryShelf()->shelf_widget()->desk_button_widget();
   }
 
-  DeskButton* GetDeskButton() { return GetDeskButtonWidget()->GetDeskButton(); }
+  DeskButton* GetDeskButton() {
+    return GetDeskButtonWidget()->GetDeskButtonContainer()->desk_button();
+  }
 
   DeskSwitchButton* GetPrevDeskButton() {
-    return GetDeskButton()->prev_desk_button();
+    return GetDeskButtonWidget()->GetDeskButtonContainer()->prev_desk_button();
   }
 
   DeskSwitchButton* GetNextDeskButton() {
-    return GetDeskButton()->next_desk_button();
+    return GetDeskButtonWidget()->GetDeskButtonContainer()->next_desk_button();
   }
 
   // Switches to adjacent desk by clicking one of the desk switch buttons when
@@ -10977,7 +10981,7 @@ class DeskButtonTest
     ASSERT_TRUE(desk_button);
     event_generator->MoveMouseTo(
         desk_button->GetBoundsInScreen().CenterPoint());
-    if (desk_button->is_expanded_for_test()) {
+    if (!desk_button->zero_state()) {
       ASSERT_EQ(GetParam().alignment, ShelfAlignment::kBottom);
     }
   }
@@ -11011,57 +11015,90 @@ class DeskButtonTest
 
 // Tests functionalities for `DeskSwitchButton`s.
 TEST_P(DeskButtonTest, DeskSwitchButtons) {
-  NewDesk();
-
-  auto* controller = DesksController::Get();
-  auto* desk_1 = controller->GetDeskAtIndex(0);
-  auto* desk_2 = controller->GetDeskAtIndex(1);
-
-  // Check that we are on desk 1.
-  ASSERT_TRUE(desk_1->is_active());
-
-  // Desk switch buttons should not be visible at first.
+  // With only one desk, the previous desk button is hidden and the next
+  // desk button is visible but disabled.
   views::ImageButton* prev_desk_button = GetPrevDeskButton();
   views::ImageButton* next_desk_button = GetNextDeskButton();
   ASSERT_TRUE(prev_desk_button);
   ASSERT_TRUE(next_desk_button);
-  EXPECT_FALSE(prev_desk_button->GetEnabled());
-  EXPECT_FALSE(next_desk_button->GetEnabled());
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
 
-  // Hovering over the desk button should allow for the buttons to show.
-  auto* event_generator = GetEventGenerator();
-  auto* desk_button = GetDeskButton();
-  ASSERT_TRUE(desk_button);
-  event_generator->MoveMouseTo(desk_button->GetBoundsInScreen().CenterPoint());
+  // Create a new desk. The previous desk button should be hidden and
+  // the next desk button should be enabled.
+  NewDesk();
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_TRUE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
 
-  // We are on the leftmost desk, so hovering over the desk button should only
-  // show the next desk button.
-  EXPECT_FALSE(prev_desk_button->GetEnabled());
-  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom,
-            next_desk_button->GetEnabled());
-
-  // Move the mouse away from the button to make sure the switch buttons hide
-  // when the desk button is not hovered.
-  event_generator->MoveMouseTo(gfx::Point(0, 0));
-  EXPECT_FALSE(prev_desk_button->GetEnabled());
-  EXPECT_FALSE(next_desk_button->GetEnabled());
-
+  // Switch to desk 2. The previous desk button should be visible and enabled.
+  // The next desk button should be visible but disabled.
   SwitchToAdjacentDesk(/*next=*/true);
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_TRUE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(prev_desk_button->GetEnabled());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
 
-  // The previous desk button should now be visible since we are on the
-  // rightmost desk.
-  EXPECT_TRUE(desk_2->is_active());
-  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom,
-            prev_desk_button->GetEnabled());
-  EXPECT_FALSE(next_desk_button->GetEnabled());
+  // Create a new desk. Both buttons should be visible and enabled.
+  NewDesk();
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_TRUE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(prev_desk_button->GetEnabled());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_TRUE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
 
-  // Try going back to the first desk.
+  // Switch to desk 3. The previous desk button should be visible and enabled.
+  // The next desk button should be visible but disabled.
+  SwitchToAdjacentDesk(/*next=*/true);
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_TRUE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(prev_desk_button->GetEnabled());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
+
+  // Switch back to desk 2. Both buttons should be visible and enabled.
   SwitchToAdjacentDesk(/*next=*/false);
-  EXPECT_TRUE(desk_1->is_active());
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_TRUE(prev_desk_button->GetVisible());
+    EXPECT_TRUE(prev_desk_button->GetEnabled());
+    EXPECT_TRUE(next_desk_button->GetVisible());
+    EXPECT_TRUE(next_desk_button->GetEnabled());
+  } else {
+    EXPECT_FALSE(prev_desk_button->GetVisible());
+    EXPECT_FALSE(next_desk_button->GetVisible());
+  }
 }
 
 // Tests that button text updates when desk is changed.
 TEST_P(DeskButtonTest, DeskButtonTextReflectsDeskChange) {
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
+
   NewDesk();
 
   auto* controller = DesksController::Get();
@@ -11075,26 +11112,30 @@ TEST_P(DeskButtonTest, DeskButtonTextReflectsDeskChange) {
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
   EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Work" : u"W",
-            desk_button->GetTextForTest());
+            desk_button->desk_name_label()->GetText());
 
   desk_2->SetName(u"Fun", /*set_by_user=*/true);
   EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Work" : u"W",
-            desk_button->GetTextForTest());
+            desk_button->desk_name_label()->GetText());
 
   SwitchToAdjacentDesk(/*next=*/true);
   EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Fun" : u"F",
-            desk_button->GetTextForTest());
+            desk_button->desk_name_label()->GetText());
 
   // Add a third desk and don't name it to check how default desk names are
   // handled.
   NewDesk();
   SwitchToAdjacentDesk(/*next=*/true);
   EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Desk 3" : u"#3",
-            desk_button->GetTextForTest());
+            desk_button->desk_name_label()->GetText());
 }
 
 // Tests that emojis show up correctly for desk names.
 TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
+
   NewDesk();
 
   auto* controller = DesksController::Get();
@@ -11104,7 +11145,7 @@ TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
   ASSERT_TRUE(desk_button);
   EXPECT_EQ(
       GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"😃",
-      desk_button->GetTextForTest());
+      desk_button->desk_name_label()->GetText());
 }
 
 // Tests that the desk button is visible after changing desks from overview.
@@ -11122,6 +11163,10 @@ TEST_P(DeskButtonTest, OverviewDeskSwitch) {
 // Tests that switching the shelf alignment correctly repositions the desk
 // button.
 TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
+
   NewDesk();
   DesksController::Get()->GetDeskAtIndex(0)->SetName(u"school",
                                                      /*set_by_user=*/true);
@@ -11129,11 +11174,13 @@ TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   const bool bottom_at_start = GetParam().alignment == ShelfAlignment::kBottom;
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
-  ASSERT_EQ(bottom_at_start ? u"school" : u"s", desk_button->GetTextForTest());
+  ASSERT_EQ(bottom_at_start ? u"school" : u"s",
+            desk_button->desk_name_label()->GetText());
 
   GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
                                                   : ShelfAlignment::kBottom);
-  EXPECT_EQ(bottom_at_start ? u"s" : u"school", desk_button->GetTextForTest());
+  EXPECT_EQ(bottom_at_start ? u"s" : u"school",
+            desk_button->desk_name_label()->GetText());
 }
 
 // Tests that when the desk button is activated, shelf auto-hide should be
@@ -11183,13 +11230,17 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
 // Tests that the desk button and its child components are correctly positioned
 // in each phase of the desk button's desk switch process.
 TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
+
   NewDesk();
   NewDesk();
 
   auto* desk_button = GetDeskButton();
   auto* prev_desk_button = GetPrevDeskButton();
   auto* next_desk_button = GetNextDeskButton();
-  auto* desk_name_label = desk_button->desk_name_label_for_test();
+  auto* desk_name_label = desk_button->desk_name_label();
   auto* desk_controller = DesksController::Get();
   const int desk_count = desk_controller->GetNumberOfDesks();
 
@@ -11199,43 +11250,27 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
     const bool should_show_prev_desk_button =
         GetParam().alignment == ShelfAlignment::kBottom && i > 0;
     const bool should_show_next_desk_button =
+        GetParam().alignment == ShelfAlignment::kBottom;
+    const bool should_enable_next_desk_button =
         GetParam().alignment == ShelfAlignment::kBottom && i < desk_count - 1;
 
-    // Check the desk button when *not* hovered.
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(gfx::Point(0, 0));
-    ASSERT_FALSE(desk_button->GetHovered());
+    // Check the desk button and both desk switch buttons.
     EXPECT_EQ(desk_button->bounds(),
               GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(0, 0, 96, 36)
+                  ? gfx::Rect(4, 4, 128, 28)
                   : gfx::Rect(0, 0, 36, 36));
     EXPECT_EQ(desk_name_label->bounds(),
               GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(20, 0, 56, 36)
-                  : gfx::Rect(0, 0, 36, 36));
-    EXPECT_FALSE(prev_desk_button->GetShown());
-    EXPECT_FALSE(next_desk_button->GetShown());
-
-    // Check the desk button when hovered.
-    event_generator->MoveMouseTo(
-        desk_button->GetBoundsInScreen().CenterPoint());
-    ASSERT_TRUE(desk_button->GetHovered());
-    EXPECT_EQ(desk_button->bounds(),
-              GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(0, 0, 96, 36)
-                  : gfx::Rect(0, 0, 36, 36));
-    EXPECT_EQ(prev_desk_button->GetShown(), should_show_prev_desk_button);
-    EXPECT_EQ(next_desk_button->GetShown(), should_show_next_desk_button);
-    if (should_show_prev_desk_button) {
-      EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+                  ? gfx::Rect(12, 0, 104, 28)
+                  : gfx::Rect(4, 4, 28, 28));
+    EXPECT_EQ(prev_desk_button->GetVisible(), should_show_prev_desk_button);
+    if (prev_desk_button->GetVisible()) {
+      EXPECT_TRUE(prev_desk_button->GetEnabled());
     }
-    if (should_show_next_desk_button) {
-      EXPECT_EQ(prev_desk_button->bounds(), gfx::Rect(0, 0, 20, 36));
+    EXPECT_EQ(next_desk_button->GetVisible(), should_show_next_desk_button);
+    if (next_desk_button->GetVisible()) {
+      EXPECT_EQ(next_desk_button->GetEnabled(), should_enable_next_desk_button);
     }
-    EXPECT_EQ(desk_name_label->bounds(),
-              GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(20, 0, 56, 36)
-                  : gfx::Rect(0, 0, 36, 36));
   }
 }
 
@@ -11264,9 +11299,9 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   GetDeskButtonWidget()->HandleLocaleChange();
   GetPrimaryShelf()->shelf_layout_manager()->LayoutShelf();
 
-  // Set the display size since this test tests the location of elements in the
-  // display.
-  UpdateDisplay("1200x800");
+  // Desk button will be forced to be zero state for display that is narrower
+  // than 1280.
+  UpdateDisplay("1280x720");
 
   // Add an app icon to the shelf.
   SkBitmap app_bitmap;
@@ -11280,18 +11315,9 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   NewDesk();
   SwitchToAdjacentDesk(/*next=*/true);
 
-  auto* desk_button = GetDeskButton();
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(gfx::Point(600, 400));
-  ASSERT_TRUE(desk_button);
-  ASSERT_EQ(desk_button->is_expanded_for_test(),
-            GetParam().alignment == ShelfAlignment::kBottom);
-  ASSERT_FALSE(desk_button->GetHovered());
-  ASSERT_FALSE(desk_button->is_activated());
-
   // The desk button should show up to the right of the shelf apps in horizontal
   // and on top in vertical.
-  const gfx::Rect desk_button_bounds = desk_button->GetBoundsInScreen();
+  const gfx::Rect desk_button_bounds = GetDeskButton()->GetBoundsInScreen();
   const gfx::Rect app_icon_bounds = GetPrimaryShelf()
                                         ->hotseat_widget()
                                         ->GetShelfView()
@@ -11301,42 +11327,37 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   switch (GetParam().alignment) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      EXPECT_EQ(gfx::Rect(634, 758, 96, 36), desk_button_bounds);
+      EXPECT_EQ(gfx::Rect(698, 682, 128, 28), desk_button_bounds);
       EXPECT_LT(app_icon_bounds.x(), desk_button_bounds.x());
       break;
     case ShelfAlignment::kLeft:
-      EXPECT_EQ(gfx::Rect(6, 330, 36, 36), desk_button_bounds);
+      EXPECT_EQ(gfx::Rect(6, 282, 36, 36), desk_button_bounds);
       EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
       break;
     case ShelfAlignment::kRight:
-      EXPECT_EQ(gfx::Rect(1158, 330, 36, 36), desk_button_bounds);
+      EXPECT_EQ(gfx::Rect(1238, 282, 36, 36), desk_button_bounds);
       EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
       break;
   }
 
   // Hover over the button to show the desk switch buttons.
-  event_generator->MoveMouseTo(desk_button_bounds.CenterPoint());
-  ASSERT_TRUE(desk_button->GetHovered());
   auto* prev_desk_button = GetPrevDeskButton();
   auto* next_desk_button = GetNextDeskButton();
-  ASSERT_EQ(GetParam().alignment == ShelfAlignment::kBottom,
-            prev_desk_button->GetEnabled());
-  ASSERT_EQ(GetParam().alignment == ShelfAlignment::kBottom,
-            next_desk_button->GetEnabled());
-
   if (GetParam().alignment == ShelfAlignment::kBottom) {
-    // The previous desk button should be to the left of the next desk button.
-    EXPECT_LT(prev_desk_button->GetBoundsInScreen().CenterPoint().x(),
-              next_desk_button->GetBoundsInScreen().CenterPoint().x());
+    ASSERT_TRUE(prev_desk_button->GetVisible());
+    ASSERT_TRUE(prev_desk_button->GetEnabled());
+    ASSERT_TRUE(next_desk_button->GetVisible());
+    ASSERT_TRUE(next_desk_button->GetEnabled());
 
-    // The previous desk button should be to the left of the desk button label,
-    // and the next desk button should be to the right of it.
-    gfx::Rect desk_name_label_bounds =
-        GetDeskButton()->desk_name_label_for_test()->GetBoundsInScreen();
-    EXPECT_LT(prev_desk_button->GetBoundsInScreen().CenterPoint().x(),
-              desk_name_label_bounds.CenterPoint().x());
-    EXPECT_LT(desk_name_label_bounds.CenterPoint().x(),
-              next_desk_button->GetBoundsInScreen().CenterPoint().x());
+    // The previous desk button should be to the right of the desk button, and
+    // the next desk button should be to the right of the previous desk button.
+    EXPECT_GT(prev_desk_button->GetBoundsInScreen().x(),
+              desk_button_bounds.right());
+    EXPECT_GT(next_desk_button->GetBoundsInScreen().x(),
+              prev_desk_button->GetBoundsInScreen().right());
+  } else {
+    ASSERT_FALSE(prev_desk_button->GetVisible());
+    ASSERT_FALSE(next_desk_button->GetVisible());
   }
 
   // Clicking the previous desk button should take us to desk 1, and clicking
@@ -11476,13 +11497,13 @@ TEST_P(DeskButtonTest, TabOrder) {
     SendKey(ui::VKEY_TAB);
     ASSERT_TRUE(GetDeskButton()->HasFocus());
     SendKey(ui::VKEY_TAB);
-    ASSERT_TRUE(GetDeskButton()->next_desk_button()->HasFocus());
+    ASSERT_TRUE(GetNextDeskButton()->HasFocus());
 
     // Tabbing in the other direction should work too.
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     ASSERT_TRUE(GetDeskButton()->HasFocus());
     SendKey(ui::VKEY_TAB);
-    ASSERT_TRUE(GetDeskButton()->next_desk_button()->HasFocus());
+    ASSERT_TRUE(GetNextDeskButton()->HasFocus());
 
     // Pressing the next desk button should take us to the next desk, and
     // immediately pressing enter again should take us to the last desk.
@@ -11490,8 +11511,8 @@ TEST_P(DeskButtonTest, TabOrder) {
     SendKey(ui::VKEY_RETURN);
     waiter.Wait();
     ASSERT_THAT(desks_controller->GetActiveDeskIndex(), 1);
-    ASSERT_TRUE(GetDeskButton()->prev_desk_button()->GetEnabled());
-    ASSERT_TRUE(GetDeskButton()->next_desk_button()->GetEnabled());
+    ASSERT_TRUE(GetPrevDeskButton()->GetEnabled());
+    ASSERT_TRUE(GetNextDeskButton()->GetEnabled());
     DeskSwitchAnimationWaiter waiter2;
     SendKey(ui::VKEY_RETURN);
     waiter2.Wait();
@@ -11499,15 +11520,15 @@ TEST_P(DeskButtonTest, TabOrder) {
 
     // Focus should have been passed to the hotseat widget now that the next
     // desk button isn't visible.
-    ASSERT_FALSE(GetDeskButton()->next_desk_button()->GetEnabled());
+    ASSERT_FALSE(GetNextDeskButton()->GetEnabled());
   } else {
     // Desk button does not expand for side shelf.
     SendKey(ui::VKEY_TAB);
     ASSERT_TRUE(GetDeskButton()->HasFocus());
-    ASSERT_FALSE(GetDeskButton()->is_expanded_for_test());
+    ASSERT_TRUE(GetDeskButton()->zero_state());
     SendKey(ui::VKEY_TAB);
     ASSERT_FALSE(GetDeskButton()->HasFocus());
-    ASSERT_FALSE(GetDeskButton()->is_expanded_for_test());
+    ASSERT_TRUE(GetDeskButton()->zero_state());
   }
 }
 

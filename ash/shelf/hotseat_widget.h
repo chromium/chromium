@@ -192,6 +192,9 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // home to overview contextual nudge.
   ui::Layer* GetLayerForNudgeAnimation();
 
+  // Returns if the shelf is going to be overflown.
+  bool CalculateShelfOverflow(bool use_target_bounds) const;
+
  private:
   class DelegateView;
 

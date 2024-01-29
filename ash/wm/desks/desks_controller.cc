@@ -1171,7 +1171,6 @@ int DesksController::GetDeskIndex(const Desk* desk) const {
       return i;
   }
 
-  NOTREACHED();
   return -1;
 }
 

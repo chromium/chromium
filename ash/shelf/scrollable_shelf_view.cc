@@ -18,7 +18,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
@@ -1094,8 +1094,10 @@ bool ScrollableShelfView::ShouldShowTooltipForView(
   // outside of `ScrollableShelfView` now that it deals with views outside the
   // `ScrollableShelfView`.
   if (DeskButtonWidget* desk_button_widget = GetShelf()->desk_button_widget()) {
-    DeskButton* desk_button = desk_button_widget->GetDeskButton();
-    if (view == desk_button || view->parent() == desk_button) {
+    DeskButtonContainer* desk_button_container =
+        desk_button_widget->GetDeskButtonContainer();
+    if (view->parent() == desk_button_container && view->GetEnabled() &&
+        !desk_button_container->GetTitleForView(view).empty()) {
       return true;
     }
   }
@@ -1118,9 +1120,10 @@ bool ScrollableShelfView::ShouldShowTooltipForView(
 bool ScrollableShelfView::ShouldHideTooltip(const gfx::Point& cursor_location,
                                             views::View* delegate_view) const {
   if (DeskButtonWidget* desk_button_widget = GetShelf()->desk_button_widget()) {
-    DeskButton* desk_button = desk_button_widget->GetDeskButton();
-    if (delegate_view == desk_button) {
-      return !desk_button->GetLocalBounds().Contains(cursor_location);
+    DeskButtonContainer* desk_button_container =
+        desk_button_widget->GetDeskButtonContainer();
+    if (delegate_view == desk_button_container) {
+      return !desk_button_container->GetLocalBounds().Contains(cursor_location);
     }
   }
 
@@ -1157,9 +1160,10 @@ std::u16string ScrollableShelfView::GetTitleForView(
     return shelf_view_->GetTitleForView(view);
 
   if (DeskButtonWidget* desk_button_widget = GetShelf()->desk_button_widget()) {
-    DeskButton* desk_button = desk_button_widget->GetDeskButton();
-    if (view == desk_button || view->parent() == desk_button) {
-      return desk_button->GetTitleForView(view);
+    DeskButtonContainer* desk_button_container =
+        desk_button_widget->GetDeskButtonContainer();
+    if (view->parent() == desk_button_container) {
+      return desk_button_container->GetTitleForView(view);
     }
   }
 
@@ -1178,7 +1182,7 @@ views::View* ScrollableShelfView::GetViewForEvent(const ui::Event& event) {
 
   if (DeskButtonWidget* desk_button_widget = GetShelf()->desk_button_widget()) {
     if (event.target() == desk_button_widget->GetNativeWindow()) {
-      return desk_button_widget->GetDeskButton();
+      return desk_button_widget->GetDeskButtonContainer();
     }
   }
 
