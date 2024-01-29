@@ -1028,7 +1028,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
-IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams, ManageSync) {
+// TODO(https://crbug.com/1522934): Re-enable after Resolving flakiness.
+IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams,
+                       DISABLED_ManageSync) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
