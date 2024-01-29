@@ -475,7 +475,7 @@ void Widget::Init(InitParams params) {
     non_client_view_->SetFrameView(CreateNonClientFrameView());
     non_client_view_->SetOverlayView(widget_delegate_->CreateOverlayView());
 
-    // Bypass the Layout() that happens in Widget::SetContentsView(). Layout()
+    // Bypass the layout that happens in Widget::SetContentsView(). Layout()
     // will occur after setting the initial bounds below. The RootView's size is
     // not valid until that happens.
     root_view_->SetContentsView(non_client_view_);

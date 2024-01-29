@@ -133,7 +133,8 @@ TEST_F(NativeViewHostMacTest, Attach) {
   EXPECT_TRUE([native_view_ superview]);
   EXPECT_TRUE([native_view_ window]);
 
-  // Layout() is normally async, call it now to ensure bounds have been applied.
+  // Layout is normally async, trigger it now to ensure bounds have been
+  // applied.
   host()->Layout();
   // Expect the top-left to be 10 pixels below the titlebar.
   int bottom = toplevel()->GetClientAreaBoundsInScreen().height() - 10 - 60;
@@ -282,7 +283,7 @@ TEST_F(NativeViewHostMacTest, NativeViewHidden) {
   host()->SetVisible(true);
   EXPECT_TRUE([native_view_ isHidden]);  // Stays hidden.
   host()->Attach(native_view_);
-  // Layout() updates visibility, and is normally async, call it now to ensure
+  // Layout updates visibility, and is normally async, trigger it now to ensure
   // visibility updated.
   host()->Layout();
   EXPECT_FALSE([native_view_ isHidden]);  // Made visible when attached.

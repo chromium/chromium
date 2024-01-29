@@ -305,7 +305,7 @@ void AnimatingLayoutManager::FadeOut(View* child_view) {
   }
 
   // This handles a case where we are in the middle of an animation where we
-  // would have hidden the target view, but haven't hit Layout() yet, so haven't
+  // would have hidden the target view, but haven't laid out yet, so haven't
   // actually hidden it yet. Because we plan fade-outs off of the current layout
   // if the view the child view is visible it will not get a proper fade-out and
   // will remain visible but not properly laid out. We remedy this by hiding the

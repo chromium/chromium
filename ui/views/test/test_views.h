@@ -133,8 +133,8 @@ class EventCountView : public View {
   HandleMode handle_mode_ = PROPAGATE_EVENTS;
 };
 
-// A view which reacts to PreferredSizeChanged() from its children and calls
-// Layout().
+// A view which reacts to PreferredSizeChanged() from its children by doing
+// layout.
 class ResizeAwareParentView : public View {
   METADATA_HEADER(ResizeAwareParentView, View)
 

@@ -866,8 +866,8 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
 };
 }  // namespace
 
-// Ensure only one call to Layout() happens during Widget initialization, and
-// ensure it happens at the ContentView's preferred size.
+// Ensure only one layout happens during Widget initialization, and ensure it
+// happens at the ContentView's preferred size.
 TEST_F(RootViewTest, SingleLayoutDuringInit) {
   RootViewTestDialogDelegate* delegate = new RootViewTestDialogDelegate();
   Widget* widget =

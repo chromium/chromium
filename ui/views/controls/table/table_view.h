@@ -527,8 +527,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   int row_height_;
 
-  // Width of the ScrollView last time Layout() was invoked. Used to determine
-  // when we should invoke UpdateVisibleColumnSizes().
+  // Width of the ScrollView at last layout. Used to determine when we should
+  // invoke UpdateVisibleColumnSizes().
   int last_parent_width_ = 0;
 
   // The width we layout to. This may differ from |last_parent_width_|.

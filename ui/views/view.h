@@ -790,15 +790,28 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Layout --------------------------------------------------------------------
 
-  // Lay out the child Views (set their bounds based on sizing heuristics
-  // specific to the current Layout Manager)
+  // Lays out the child Views (sets their bounds based on sizing heuristics
+  // specific to the current LayoutManager).
+  //
+  // To customize layout behavior, use LayoutManagers; see
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#Use-LayoutManagers.
+  // For now, classes may override Layout() to customize this manually, but this
+  // will eventually be removed; see https://crbug.com/1005568.
+  //
+  // To cause a view to be laid out, use InvalidateLayout(), which will
+  // perform layout asynchronously; see
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#don_t-invoke-layout_directly.
+  // For now, classes may also call Layout() to synchronously lay out a view,
+  // but this will eventually be removed; see https://crbug.com/1521108. Neither
+  // of these methods should be called from Layout(); see
+  // https://crbug.com/1121681.
   virtual void Layout();
 
   bool needs_layout() const { return needs_layout_; }
 
   // Mark this view and all parents to require a relayout. This ensures the
-  // next call to Layout() will propagate to this view, even if the bounds of
-  // parent views do not change.
+  // next layout will propagate to this view, even if the bounds of parent views
+  // do not change.
   void InvalidateLayout();
 
   // TODO(kylixrd): Update comment once UseDefaultFillLayout is true by default.

@@ -867,12 +867,12 @@ void View::Layout() {
   if (HasLayoutManager())
     GetLayoutManager()->Layout(this);
 
-  // Make sure to propagate the Layout() call to any children that haven't
-  // received it yet through the layout manager and need to be laid out. This
-  // is needed for the case when the child requires a layout but its bounds
-  // weren't changed by the layout manager. If there is no layout manager, we
-  // just propagate the Layout() call down the hierarchy, so whoever receives
-  // the call can take appropriate action.
+  // Make sure to propagate layout to any children that haven't received it yet
+  // through the layout manager and need to be laid out. This is needed for the
+  // case when the child requires a layout but its bounds weren't changed by the
+  // layout manager. If there is no layout manager, we just propagate layout
+  // down the hierarchy, so whoever receives the call can take appropriate
+  // action.
   internal::ScopedChildrenLock lock(this);
   for (views::View* child : children_) {
     if (child->needs_layout_ || !HasLayoutManager()) {

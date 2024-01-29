@@ -238,8 +238,7 @@ class NotificationView::NotificationViewPathGenerator
   // This custom PathGenerator is used for the ink drop clipping bounds. By
   // setting |preferred_size_| we set the correct clip bounds in
   // GetRoundRect(). This is needed as the correct bounds for the ink drop are
-  // required before a Layout() on the view is run. See
-  // http://crbug.com/915222.
+  // required before the view does layout. See http://crbug.com/915222.
   gfx::Size preferred_size_;
 };
 

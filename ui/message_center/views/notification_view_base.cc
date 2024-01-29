@@ -238,14 +238,14 @@ NotificationViewBase::~NotificationViewBase() {
 void NotificationViewBase::Layout() {
   MessageView::Layout();
 
-  // We need to call IsExpandable() at the end of Layout() call, since whether
+  // We need to call IsExpandable() after doing superclass layout, since whether
   // we should show expand button or not depends on the current view layout.
   // (e.g. Show expand button when |message_label_| exceeds one line.)
   SetExpandButtonVisibility(IsExpandable());
   header_row_->Layout();
 
-  // The notification background is rounded in MessageView::Layout(),
-  // but we also have to round the actions row background here.
+  // The notification background is rounded in MessageView layout, but we also
+  // have to round the actions row background here.
   if (actions_row_->GetVisible()) {
     constexpr SkScalar kCornerRadius = SkIntToScalar(kNotificationCornerRadius);
 

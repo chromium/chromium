@@ -344,8 +344,8 @@ TEST_F(NativeViewHostAuraTest, InstallClip) {
 // a regression test for http://crbug.com/389261.
 TEST_F(NativeViewHostAuraTest, ParentAfterDetach) {
   CreateHost();
-  // Force a Layout() now so that the visibility is set to false (because the
-  // bounds is empty).
+  // Trigger layout so that the visibility is set to false (because the bounds
+  // is empty).
   test::RunScheduledLayout(host());
 
   aura::Window* child_win = child()->GetNativeView();
@@ -416,8 +416,7 @@ TEST_F(NativeViewHostAuraTest, Attach) {
 
   host()->Attach(child()->GetNativeView());
 
-  // Visibiliity is not updated until Layout() happens. This is normally async,
-  // but force a Layout() so this code doesn't have to wait.
+  // Visibiliity is not updated until layout happens.
   test::RunScheduledLayout(host());
 
   auto expected_bounds = client_bounds;
