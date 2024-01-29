@@ -872,7 +872,9 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   auto& sizing_data = grid_sizing_tree.TreeRootData();
   auto& layout_data = sizing_data.layout_data;
+
   const auto& node = Node();
+  const auto& container_style = Style();
 
   if (contain_intrinsic_block_size_) {
     *intrinsic_block_size = *contain_intrinsic_block_size_;
@@ -897,8 +899,12 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
     return;
   }
 
-  if (grid_available_size_.block_size == kIndefiniteSize) {
-    const auto& container_style = Style();
+  const bool applies_auto_min_size =
+      container_style.LogicalMinHeight().IsAuto() &&
+      container_style.OverflowBlockDirection() == EOverflow::kVisible &&
+      !container_style.AspectRatio().IsAuto();
+  if (grid_available_size_.block_size == kIndefiniteSize ||
+      applies_auto_min_size) {
     const auto block_size = ComputeBlockSizeForFragment(
         constraint_space, container_style, BorderPadding(),
         *intrinsic_block_size, container_builder_.InlineSize());
