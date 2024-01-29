@@ -610,8 +610,11 @@ bool EventTarget::AddEventListenerInternal(
     }
   }
 
-  // Consider `Permissions-Policy: unload`.
+  // Consider `Permissions-Policy: unload` unless the deprecation trial is in
+  // effect.
   if (event_type == event_type_names::kUnload &&
+      !RuntimeEnabledFeatures::DeprecateUnloadOptOutEnabled(
+          execution_context) &&
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {

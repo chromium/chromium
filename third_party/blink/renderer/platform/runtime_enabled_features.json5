@@ -1254,6 +1254,17 @@
       // This should be removed in M124 (Feb 20, 2024) assuming no issues.
       name: "DeprecatedTemplateShadowRoot",
     },
+    // This allows pages to opt out of the unload deprecation. Enabling this
+    // allows unload event handers to be used in the frame regardless of any
+    // Permissions-Policy setting.
+    // https://crbug.com/1432116
+    {
+      name: "DeprecateUnloadOptOut",
+      origin_trial_feature_name: "DeprecateUnloadOptOut",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_third_party: true,
+      origin_trial_allows_insecure: true,
+    },
     {
       name: "DesktopCaptureDisableLocalEchoControl",
       status: "experimental",
