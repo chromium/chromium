@@ -1442,7 +1442,7 @@ class CaptureLostTrackingWidget : public Widget {
 
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
-  raw_ptr<CaptureLostState, AcrossTasksDanglingUntriaged> capture_lost_state_;
+  raw_ptr<CaptureLostState> capture_lost_state_;
 };
 
 }  // namespace
@@ -1507,12 +1507,6 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
     DesktopWidgetTestInteractive::SetUp();
     capture_state1_ = std::make_unique<CaptureLostState>();
     capture_state2_ = std::make_unique<CaptureLostState>();
-  }
-
-  void TearDown() override {
-    capture_state1_.reset();
-    capture_state2_.reset();
-    DesktopWidgetTestInteractive::TearDown();
   }
 
  private:
@@ -2053,12 +2047,12 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 
   void TearDown() override {
     if (deactivate_widget_)
-      deactivate_widget_->CloseNow();
+      deactivate_widget_.ExtractAsDangling()->CloseNow();
     DesktopWidgetTestInteractive::TearDown();
   }
 
  private:
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> deactivate_widget_ = nullptr;
+  raw_ptr<Widget> deactivate_widget_ = nullptr;
 };
 
 #if BUILDFLAG(IS_MAC)
