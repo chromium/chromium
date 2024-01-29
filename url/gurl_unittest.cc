@@ -8,12 +8,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl_abstract_tests.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
-#include "url/url_features.h"
 #include "url/url_test_utils.h"
 
 namespace url {
@@ -325,16 +323,10 @@ TEST(GURLTest, Resolve) {
        "http://www.google.com/foo#com"},
       {"http://www.google.com/", "Https:images.google.com", true,
        "https://images.google.com/"},
-      // An opaque path URL can be replaced with a special absolute URL.
+      // A non-standard base can be replaced with a standard absolute URL.
       {"data:blahblah", "http://google.com/", true, "http://google.com/"},
       {"data:blahblah", "http:google.com", true, "http://google.com/"},
       {"data:blahblah", "https:google.com", true, "https://google.com/"},
-      // An opaque path URL can not be replaced with a relative URL.
-      {"git:opaque", "", false, ""},
-      {"git:opaque", "path", false, ""},
-      // A non-special URL which doesn't have a host can be replaced with a
-      // relative URL.
-      {"git:/a", "b", true, "git:/b"},
       // Filesystem URLs have different paths to test.
       {"filesystem:http://www.google.com/type/", "foo.html", true,
        "filesystem:http://www.google.com/type/foo.html"},
@@ -371,112 +363,6 @@ TEST(GURLTest, Resolve) {
     EXPECT_EQ(outputw.SchemeIsFileSystem(), outputw.inner_url() != NULL);
   }
 }
-
-class GURLTypedTest : public ::testing::TestWithParam<bool> {
- public:
-  GURLTypedTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  struct ResolveCase {
-    std::string_view base;
-    std::string_view relative;
-    std::optional<std::string_view> expected;
-  };
-
-  void TestResolve(const ResolveCase& resolve_case) {
-    SCOPED_TRACE(testing::Message() << "base: " << resolve_case.base
-                                    << ", relative: " << resolve_case.relative);
-    GURL input(resolve_case.base);
-    GURL output = input.Resolve(resolve_case.relative);
-    if (resolve_case.expected) {
-      ASSERT_TRUE(output.is_valid());
-      EXPECT_EQ(output.spec(), *resolve_case.expected);
-    } else {
-      EXPECT_FALSE(output.is_valid());
-    }
-  }
-
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(GURLTypedTest, Resolve) {
-  // Test flag-dependent behaviors.
-  // Existing tests in GURLTest::Resolve cover common cases.
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    ResolveCase cases[] = {
-        {"git://host", "", "git://host"},
-        {"git://host", ".", "git://host/"},
-        {"git://host", "..", "git://host/"},
-        {"git://host", "a", "git://host/a"},
-        {"git://host", "/a", "git://host/a"},
-
-        {"git://host/", "", "git://host/"},
-        {"git://host/", ".", "git://host/"},
-        {"git://host/", "..", "git://host/"},
-        {"git://host/", "a", "git://host/a"},
-        {"git://host/", "/a", "git://host/a"},
-
-        {"git://host/b", "a", "git://host/a"},
-        {"git://host/b/c", "a", "git://host/b/a"},
-        {"git://host/b/c", "../a", "git://host/a"},
-
-        {"git:/", "", "git:/"},
-        {"git:/", ".", "git:/"},
-        {"git:/", "..", "git:/"},
-        {"git:/", "a", "git:/a"},
-        {"git:/", "/a", "git:/a"},
-        {"git:/#ref", "", "git:/"},
-        {"git:/#ref", "a", "git:/a"},
-
-        {"git://", "", "git://"},
-        {"git://", ".", "git:///"},
-        {"git://", "..", "git:///"},
-        {"git://", "a", "git:///a"},
-        {"git://", "/a", "git:///a"},
-
-        {"git:///", "", "git:///"},
-        {"git:///", ".", "git:///"},
-        {"git:///", "..", "git:///"},
-        {"git:///", "a", "git:///a"},
-        {"git:///", "/a", "git:///a"},
-        {"git:///#ref", "", "git:///"},
-        {"git:///#ref", "a", "git:///a"},
-    };
-    for (const auto& i : cases) {
-      TestResolve(i);
-    }
-  } else {
-    ResolveCase cases[] = {
-        {"git:/", "", "git:/"},
-        {"git:/", "a", "git:/a"},
-        {"git:/path", "a", "git:/a"},
-        // All non-special base URLs which don't start with a *single* slash
-        // can not be resolved with a relative URL.
-        {"git:", "", std::nullopt},
-        {"git://host", "", std::nullopt},
-        {"git://host", "a", std::nullopt},
-        {"git://", "", std::nullopt},
-        {"git:///", "", std::nullopt},
-    };
-    for (const auto& i : cases) {
-      TestResolve(i);
-    }
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All, GURLTypedTest, ::testing::Bool());
 
 TEST(GURLTest, GetOrigin) {
   struct TestCase {
