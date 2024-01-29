@@ -18,9 +18,8 @@ class CORE_EXPORT StyleContainmentScopeTree final
  public:
   StyleContainmentScopeTree()
       : list_item_("list-item"),
-        root_scope_(MakeGarbageCollected<StyleContainmentScope>(nullptr, this)),
-        outermost_quotes_dirty_scope_(nullptr),
-        outermost_counters_dirty_scope_(nullptr) {}
+        root_scope_(
+            MakeGarbageCollected<StyleContainmentScope>(nullptr, this)) {}
   StyleContainmentScopeTree(const StyleContainmentScopeTree&) = delete;
   StyleContainmentScopeTree& operator=(const StyleContainmentScopeTree&) =
       delete;
@@ -35,8 +34,11 @@ class CORE_EXPORT StyleContainmentScopeTree final
   // It can change the layout tree by creating text fragments.
   void UpdateQuotes();
   void UpdateCounters();
+  void InvalidateAnchorNameReferences();
+
   void UpdateOutermostQuotesDirtyScope(StyleContainmentScope*);
   void UpdateOutermostCountersDirtyScope(StyleContainmentScope*);
+  void UpdateOutermostAnchorNameDirtyScope(StyleContainmentScope*);
 
   void AddCounterToObjectMap(LayoutObject& object,
                              const AtomicString& identifier,
@@ -64,6 +66,8 @@ class CORE_EXPORT StyleContainmentScopeTree final
   Member<StyleContainmentScope> outermost_quotes_dirty_scope_;
   // The outermost dirty scope for the counters update.
   Member<StyleContainmentScope> outermost_counters_dirty_scope_;
+  // The outermost dirty scope for the anchor-name update.
+  Member<StyleContainmentScope> outermost_anchor_name_dirty_scope_;
   // The map from element with style containment to the scope it creates.
   HeapHashMap<Member<const Element>, Member<StyleContainmentScope>> scopes_;
   // The cache of layout object <-> [identifier, counter] for correct removal of
