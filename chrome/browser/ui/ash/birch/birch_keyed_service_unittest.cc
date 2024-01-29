@@ -295,10 +295,12 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
           {FileSuggestionType::kDriveFile, file_path_1,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
+           /*secondary_timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kDriveFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
+           /*secondary_timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
 
   birch_keyed_service()
