@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <utility>
@@ -25,11 +26,13 @@
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -155,6 +158,11 @@ bool BackgroundRegistrationsEnabled() {
 
 constexpr size_t kMaxDeferredReceiversPerNavigation = 30;
 
+const base::FeatureParam<base::TimeDelta>
+    kWaitingOnNavigationRegistrationsTimeout{
+        &attribution_reporting::features::kConversionMeasurement,
+        "waiting_on_navigation_registrations_timeout", base::Seconds(20)};
+
 class RegistrationNavigationContext {
  public:
   RegistrationNavigationContext(int64_t navigation_id,
@@ -170,6 +178,10 @@ class RegistrationNavigationContext {
   RegistrationNavigationContext(RegistrationNavigationContext&&) = default;
   RegistrationNavigationContext& operator=(RegistrationNavigationContext&&) =
       default;
+
+  bool operator==(const RegistrationNavigationContext& other) const {
+    return navigation_id_ == other.navigation_id_;
+  }
 
   int64_t navigation_id() const { return navigation_id_; }
 
@@ -367,11 +379,13 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 
   ~RegistrationContext() = default;
 
-  RegistrationContext(const RegistrationContext&) = delete;
-  RegistrationContext& operator=(const RegistrationContext&) = delete;
+  RegistrationContext(const RegistrationContext&) = default;
+  RegistrationContext& operator=(const RegistrationContext&) = default;
 
   RegistrationContext(RegistrationContext&&) = default;
   RegistrationContext& operator=(RegistrationContext&&) = default;
+
+  bool operator==(const RegistrationContext& other) const = default;
 
   const SuitableOrigin& context_origin() const { return context_origin_; }
 
@@ -470,6 +484,8 @@ class AttributionDataHostManagerImpl::Registrations {
 
   Registrations(Registrations&&) = default;
   Registrations& operator=(Registrations&&) = default;
+
+  const RegistrationContext& context() const { return context_; }
 
   const SuitableOrigin& context_origin() const {
     return context_.context_origin();
@@ -743,6 +759,67 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
   }
 };
 
+class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
+ public:
+  explicit OsRegistrationsBuffer(int64_t navigation_id)
+      : navigation_id_(navigation_id) {}
+
+  bool operator<(const OsRegistrationsBuffer& other) const {
+    return navigation_id_ < other.navigation_id_;
+  }
+
+  friend bool operator<(int64_t navigation_id,
+                        const OsRegistrationsBuffer& other) {
+    return navigation_id < other.navigation_id_;
+  }
+
+  friend bool operator<(const OsRegistrationsBuffer& other,
+                        int64_t navigation_id) {
+    return other.navigation_id_ < navigation_id;
+  }
+
+  void Buffer(std::vector<attribution_reporting::OsRegistrationItem> items,
+              const RegistrationContext& registration_context) {
+    // Only navigation-tied OS registrations should be buffered.
+    CHECK(registration_context.navigation().has_value());
+    CHECK_EQ(registration_context.navigation()->navigation_id(),
+             navigation_id_);
+    if (!context_.has_value()) {
+      context_ = registration_context;
+    } else {
+      // TODO(anthonygarant): Convert to CHECK after validating that the
+      // contexts are always equal.
+      base::UmaHistogramBoolean(
+          "Conversions.OsRegistrationsBufferWithSameContext",
+          context_ == registration_context);
+    }
+
+    // TODO(anthonygarant): Limit the number of buffered registrations.
+    registrations_.reserve(registrations_.size() + items.size());
+    std::move(items.begin(), items.end(), std::back_inserter(registrations_));
+  }
+
+  bool IsEmpty() const { return registrations_.empty(); }
+
+  const RegistrationContext& context() const {
+    CHECK(context_.has_value());
+    return context_.value();
+  }
+
+  std::vector<attribution_reporting::OsRegistrationItem>
+  TakeRegistrationItems() {
+    std::vector<attribution_reporting::OsRegistrationItem> items =
+        std::exchange(registrations_, {});
+    return items;
+  }
+
+ private:
+  int64_t navigation_id_;
+
+  std::optional<RegistrationContext> context_;
+  std::vector<attribution_reporting::OsRegistrationItem> registrations_;
+};
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(
@@ -751,7 +828,8 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
           /*delay=*/base::Seconds(3)),
       navigations_waiting_on_background_registrations_timer_(
           /*delay=*/base::Seconds(3)),
-      navigation_registrations_timer_(/*delay=*/base::Seconds(10)) {
+      navigation_registrations_timer_(
+          /*delay=*/kWaitingOnNavigationRegistrationsTimeout.Get()) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &AttributionDataHostManagerImpl::OnReceiverDisconnected,
       base::Unretained(this)));
@@ -797,7 +875,6 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     case RegistrationEligibility::kSource:
       break;
   }
-
   RecordRegisterDataHostHostOutcome(
       RegisterDataHostOutcome::kProcessedImmediately);
   receivers_.Add(this, std::move(data_host), std::move(receiver_context));
@@ -1400,17 +1477,14 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
   if (!context) {
     return;
   }
-
-  AttributionInputEvent input_event;
   if (context->navigation().has_value()) {
-    input_event = context->navigation()->input_event();
+    MaybeBufferOsRegistrations(context->navigation()->navigation_id(),
+                               std::move(registration_items), *context);
+    return;
   }
-  for (auto& item : registration_items) {
-    attribution_manager_->HandleOsRegistration(OsRegistration(
-        std::move(item.url), item.debug_reporting, context->context_origin(),
-        input_event, context->is_within_fenced_frame(),
-        context->render_frame_id()));
-  }
+
+  SubmitOsRegistrations(std::move(registration_items), *context,
+                        AttributionInputEvent());
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
@@ -1421,12 +1495,8 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     return;
   }
 
-  for (auto& item : registration_items) {
-    attribution_manager_->HandleOsRegistration(OsRegistration(
-        std::move(item.url), item.debug_reporting, context->context_origin(),
-        /*input_event=*/std::nullopt, context->is_within_fenced_frame(),
-        context->render_frame_id()));
-  }
+  SubmitOsRegistrations(std::move(registration_items), *context,
+                        /*input_event=*/std::nullopt);
 }
 
 void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
@@ -1656,6 +1726,29 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
   }
 }
 
+void AttributionDataHostManagerImpl::MaybeBufferOsRegistrations(
+    int64_t navigation_id,
+    std::vector<attribution_reporting::OsRegistrationItem> items,
+    const RegistrationContext& registrations_context) {
+  auto it = os_buffers_.find(navigation_id);
+  if (it == os_buffers_.end()) {
+    // This can only happen if the buffer was cleared due to a timeout. Given
+    // the 20s timeout duration, we do not expect to receive registrations after
+    // a timeout. The OS would also eventually block them as they would use a
+    // duplicated input event. Yet, we still send the registrations to the OS
+    // and let the OS handle the duplication.
+    base::UmaHistogramCounts100(
+        "Conversions.OsRegistrationsSkipBufferRegistrationsSize", items.size());
+
+    SubmitOsRegistrations(std::move(items), registrations_context,
+                          registrations_context.navigation()->input_event());
+
+    return;
+  }
+
+  it->Buffer(std::move(items), registrations_context);
+}
+
 void AttributionDataHostManagerImpl::OnOsHeaderParsed(
     RegistrationsId id,
     RegistrationType registration_type,
@@ -1670,18 +1763,17 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
           registration_items =
               attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
 
-      std::optional<AttributionInputEvent> input_event;
-      if (registration_type == RegistrationType::kSource) {
-        input_event = registrations->input_event()
-                          ? *registrations->input_event()
-                          : AttributionInputEvent();
-      }
-      for (auto& item : registration_items) {
-        attribution_manager_->HandleOsRegistration(
-            OsRegistration(std::move(item.url), item.debug_reporting,
-                           registrations->context_origin(), input_event,
-                           registrations->is_within_fenced_frame(),
-                           registrations->render_frame_id()));
+      if (registrations->navigation_id().has_value()) {
+        MaybeBufferOsRegistrations(*registrations->navigation_id(),
+                                   std::move(registration_items),
+                                   registrations->context());
+      } else {
+        std::optional<AttributionInputEvent> input_event;
+        if (registration_type == RegistrationType::kSource) {
+          input_event.emplace();
+        }
+        SubmitOsRegistrations(std::move(registration_items),
+                              registrations->context(), std::move(input_event));
       }
     } else {
       const auto& pending_decode = registrations->pending_os_decodes().front();
@@ -1722,11 +1814,13 @@ void AttributionDataHostManagerImpl::MaybeStartNavigation(
     int64_t navigation_id) {
   auto [it, inserted] = deferred_receivers_.try_emplace(
       navigation_id, std::vector<DeferredReceiver>());
-
   if (!inserted) {
     // We already have deferred receivers linked to the navigation.
     return;
   }
+
+  auto [unused_it, buffer_inserted] = os_buffers_.emplace(navigation_id);
+  CHECK(buffer_inserted);
 
   navigation_registrations_timer_.Start(
       base::BindOnce(&AttributionDataHostManagerImpl::MaybeDoneWithNavigation,
@@ -1770,6 +1864,7 @@ void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
 
   // All expected registrations tied to the navigation have been received and
   // processed.
+  MaybeFlushOsRegistrationsBuffer(navigation_id, due_to_timeout);
   MaybeBindDeferredReceivers(navigation_id, due_to_timeout);
   ClearRegistrationsDeferUntilNavigation(navigation_id);
 }
@@ -1809,6 +1904,38 @@ void AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation(
         HandleNextOsDecode(registration);
       }
     }
+  }
+}
+
+void AttributionDataHostManagerImpl::MaybeFlushOsRegistrationsBuffer(
+    int64_t navigation_id,
+    bool due_to_timeout) {
+  auto it = os_buffers_.find(navigation_id);
+  if (it == os_buffers_.end()) {
+    return;
+  }
+
+  if (!it->IsEmpty()) {
+    base::UmaHistogramBoolean(
+        "Conversions.OsRegistrationsBufferFlushAfterTimeout", due_to_timeout);
+    SubmitOsRegistrations(it->TakeRegistrationItems(), it->context(),
+                          it->context().navigation()->input_event());
+  }
+
+  os_buffers_.erase(it);
+}
+
+void AttributionDataHostManagerImpl::SubmitOsRegistrations(
+    std::vector<attribution_reporting::OsRegistrationItem> items,
+    const RegistrationContext& registration_context,
+    std::optional<AttributionInputEvent> input_event) {
+  // TODO(https://crbug.com/1444525): Register all urls with a single call.
+  for (attribution_reporting::OsRegistrationItem& item : items) {
+    attribution_manager_->HandleOsRegistration(OsRegistration(
+        /*registration_url=*/std::move(item.url), item.debug_reporting,
+        /*top_level_origin=*/registration_context.context_origin(),
+        std::move(input_event), registration_context.is_within_fenced_frame(),
+        registration_context.render_frame_id()));
   }
 }
 

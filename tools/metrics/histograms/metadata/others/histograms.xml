@@ -3439,6 +3439,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.OsRegistrationsBufferFlushAfterTimeout"
+    enum="Boolean" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    When flushing an OS registrations buffer, this histogram emits whether it
+    was triggered by a timeout or not. It will only emit if there actually are
+    buffered registrations to flush.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsBufferWithSameContext"
+    enum="Boolean" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    Registrations buffered in one buffer should all have the same context. This
+    histogram emits a boolean indicating if the context match that of the first
+    buffered registration.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
+    units="count" expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    If we do receive registrations after a buffer has been flushed, we still
+    attempt to send them to the OS with a previously used input event and emit
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"
     expires_after="2024-07-14">
   <owner>anthonygarant@chromium.org</owner>
