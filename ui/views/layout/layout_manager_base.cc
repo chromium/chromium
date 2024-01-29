@@ -200,7 +200,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
       // it here.
       // TODO(dfried): figure out a better way to handle this.
       if (!size_changed && child_layout.available_size != SizeBounds())
-        child_view->Layout();
+        child_view->DeprecatedLayoutImmediately();
     }
   }
 

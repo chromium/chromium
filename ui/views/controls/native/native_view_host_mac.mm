@@ -203,7 +203,7 @@ void NativeViewHostMac::AddedToWidget() {
     return;
 
   AttachNativeView();
-  host_->Layout();
+  host_->DeprecatedLayoutImmediately();
 }
 
 void NativeViewHostMac::RemovedFromWidget() {

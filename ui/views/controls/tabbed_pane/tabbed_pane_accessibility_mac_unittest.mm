@@ -56,7 +56,7 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     // Create two tabs and position/size them.
     tabbed_pane->AddTab(u"Tab 1", std::make_unique<View>());
     tabbed_pane->AddTab(u"Tab 2", std::make_unique<View>());
-    tabbed_pane->Layout();
+    tabbed_pane->DeprecatedLayoutImmediately();
     tabbed_pane->SetID(kTabbedPaneID);
 
     widget_->GetContentsView()->AddChildView(std::move(tabbed_pane));

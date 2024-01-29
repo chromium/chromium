@@ -570,7 +570,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
     RemoveBackgroundAnimation();
 
   UpdateHeaderViewBackgroundColor();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 
   // Call DisableNotification() at the end, because |this| can be deleted at any
@@ -706,7 +706,7 @@ void NotificationView::HeaderRowPressed() {
   // cause |this| to be deleted.
   if (!weak_ptr)
     return;
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

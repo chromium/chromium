@@ -655,7 +655,7 @@ void ScrollView::Layout() {
   }
 
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   }
 
   gfx::Rect available_rect = GetContentsBounds();
@@ -699,14 +699,14 @@ void ScrollView::Layout() {
   gfx::Size viewport_size = viewport_bounds.size();
 
   // Assume both a vertical and horizontal scrollbar exist before calling
-  // contents_->Layout(). This is because some contents_ will set their own size
-  // to the contents_viewport_'s bounds. Failing to pre-allocate space for
-  // the scrollbars will [non-intuitively] cause scrollbars to appear in
-  // ComputeScrollBarsVisibility. This solution is also not perfect - if
-  // scrollbars turn out *not* to be necessary, the contents will have slightly
-  // less horizontal/vertical space than it otherwise would have had access to.
-  // Unfortunately, there's no way to determine this without introducing a
-  // circular dependency.
+  // contents_->DeprecatedLayoutImmediately(). This is because some contents_
+  // will set their own size to the contents_viewport_'s bounds. Failing to
+  // pre-allocate space for the scrollbars will [non-intuitively] cause
+  // scrollbars to appear in ComputeScrollBarsVisibility. This solution is also
+  // not perfect - if scrollbars turn out *not* to be necessary, the contents
+  // will have slightly less horizontal/vertical space than it otherwise would
+  // have had access to. Unfortunately, there's no way to determine this without
+  // introducing a circular dependency.
   const int horiz_sb_layout_height = GetScrollBarLayoutHeight();
   const int vert_sb_layout_width = GetScrollBarLayoutWidth();
   viewport_bounds.set_width(viewport_bounds.width() - vert_sb_layout_width);
@@ -718,7 +718,7 @@ void ScrollView::Layout() {
   // Give |contents_| a chance to update its bounds if it depends on the
   // viewport.
   if (contents_) {
-    contents_->Layout();
+    contents_->DeprecatedLayoutImmediately();
   }
 
   bool should_layout_contents = false;
@@ -784,7 +784,7 @@ void ScrollView::Layout() {
   // Update to the real client size with the visible scrollbars.
   contents_viewport_->SetBoundsRect(viewport_bounds);
   if (should_layout_contents && contents_) {
-    contents_->Layout();
+    contents_->DeprecatedLayoutImmediately();
   }
 
   // Even when |contents_| needs to scroll, it can still be narrower or wider
@@ -824,7 +824,7 @@ void ScrollView::Layout() {
   header_viewport_->SetBounds(contents_x, contents_y, viewport_bounds.width(),
                               header_height);
   if (header_) {
-    header_->Layout();
+    header_->DeprecatedLayoutImmediately();
   }
 
   ConstrainScrollToBounds(header_viewport_, header_,

@@ -127,7 +127,7 @@ ResizeAwareParentView::ResizeAwareParentView() {
 }
 
 void ResizeAwareParentView::ChildPreferredSizeChanged(View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(ResizeAwareParentView)

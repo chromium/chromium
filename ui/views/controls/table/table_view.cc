@@ -534,7 +534,7 @@ void TableView::Layout() {
                   gfx::Size(width, header_->GetPreferredSize().height())));
   }
 
-  views::FocusRing::Get(this)->Layout();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
 gfx::Size TableView::CalculatePreferredSize() const {

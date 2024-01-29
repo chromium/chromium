@@ -322,7 +322,7 @@ void NotificationViewBase::UpdateWithNotification(
   UpdateControlButtonsVisibilityWithNotification(notification);
 
   CreateOrUpdateViews(notification);
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -716,9 +716,10 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
   if (new_buttons && expanded_) {
     views::Widget* widget = GetWidget();
     if (widget && !widget->IsClosed()) {
-      // This Layout() is needed because button should be in the right location
-      // in the view hierarchy when SynthesizeMouseMoveEvent() is called.
-      Layout();
+      // This DeprecatedLayoutImmediately() is needed because button should be
+      // in the right location in the view hierarchy when
+      // SynthesizeMouseMoveEvent() is called.
+      DeprecatedLayoutImmediately();
       widget->SetSize(widget->GetContentsView()->GetPreferredSize());
       widget->SynthesizeMouseMoveEvent();
     }
@@ -743,7 +744,7 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
 
     // RequestFocus() should be called after SetVisible().
     inline_reply_->textfield()->RequestFocus();
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
 
     OnInlineReplyUpdated();

@@ -708,7 +708,7 @@ void MenuItemView::ChildrenChanged() {
       // as UpdateSubmenuSelection() looks at bounds. This handles the case of
       // the top level window's size remaining the same, resulting in no change
       // to the submenu's size and no layout.
-      submenu_->Layout();
+      submenu_->DeprecatedLayoutImmediately();
       submenu_->SchedulePaint();
       // Update the menu selection after layout.
       controller->UpdateSubmenuSelection(submenu_.get());

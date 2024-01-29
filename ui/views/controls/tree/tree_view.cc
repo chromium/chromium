@@ -1063,7 +1063,7 @@ void TreeView::LayoutEditor() {
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
-  editor_->Layout();
+  editor_->DeprecatedLayoutImmediately();
 }
 
 void TreeView::SchedulePaintForNode(InternalNode* node) {
