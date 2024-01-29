@@ -8,9 +8,13 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 namespace syncer {
@@ -23,13 +27,15 @@ class PersonalDataManager;
 
 // AddressDataCleaner is responsible for applying address cleanups on browser
 // startup, after sync is ready (if applicable).
-class AddressDataCleaner {
+class AddressDataCleaner : public PersonalDataManagerObserver,
+                           public syncer::SyncServiceObserver {
  public:
   AddressDataCleaner(
-      PersonalDataManager* personal_data_manager,
+      PersonalDataManager& personal_data_manager,
       AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
-      PrefService* pref_service);
-  ~AddressDataCleaner();
+      PrefService* pref_service,
+      syncer::SyncService* sync_service);
+  ~AddressDataCleaner() override;
   AddressDataCleaner(const AddressDataCleaner&) = delete;
   AddressDataCleaner& operator=(const AddressDataCleaner&) =
       delete;
@@ -37,7 +43,7 @@ class AddressDataCleaner {
   // Determines whether the cleanups should run depending on the sync state and
   // runs them if applicable. Ensures that the cleanups are run at most once
   // over multiple invocations of the functions.
-  void MaybeCleanupAddressData(syncer::SyncService* sync_service);
+  void MaybeCleanupAddressData();
 
  private:
   friend class AddressDataCleanerTestApi;
@@ -62,6 +68,12 @@ class AddressDataCleaner {
   // Tries to delete disused addresses on startup.
   void DeleteDisusedAddresses();
 
+  // PersonalDataManagerObserver
+  void OnPersonalDataFinishedProfileTasks() override;
+
+  // syncer::SyncServiceObserver
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+
   // True if autofill profile dedupe needs to be performed.
   bool is_autofill_profile_dedupe_pending_ = true;
 
@@ -70,15 +82,27 @@ class AddressDataCleaner {
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
+  const raw_ref<PersonalDataManager> personal_data_manager_;
 
-  // The PrefService used by this instance.
-  const raw_ptr<PrefService> pref_service_ = nullptr;
+  // The PrefService used to track that deduplication is only run once per
+  // milestone.
+  const raw_ptr<PrefService> pref_service_;
 
   // The AlternativeStateNameMapUpdater, used to populate
   // AlternativeStateNameMap with the geographical state data.
   const raw_ptr<AlternativeStateNameMapUpdater>
-      alternative_state_name_map_updater_ = nullptr;
+      alternative_state_name_map_updater_;
+
+  const raw_ptr<syncer::SyncService> sync_service_;
+
+  // Observe the PDM, so cleanups can run when the data was loaded from the DB.
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      pdm_observer_{this};
+
+  // Observer Sync, so cleanups are not run before any new data was synced down
+  // on startup.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observer_{this};
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.

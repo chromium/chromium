@@ -49,23 +49,28 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
 }  // namespace
 
 AddressDataCleaner::AddressDataCleaner(
-    PersonalDataManager* personal_data_manager,
+    PersonalDataManager& personal_data_manager,
     AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    syncer::SyncService* sync_service)
     : personal_data_manager_(personal_data_manager),
       pref_service_(pref_service),
-      alternative_state_name_map_updater_(alternative_state_name_map_updater) {
+      alternative_state_name_map_updater_(alternative_state_name_map_updater),
+      sync_service_(sync_service) {
   // Check if profile cleanup has already been performed this major version.
   is_autofill_profile_dedupe_pending_ =
       pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR;
+  pdm_observer_.Observe(&personal_data_manager_.get());
+  if (sync_service_) {
+    sync_observer_.Observe(sync_service_);
+  }
 }
 
 AddressDataCleaner::~AddressDataCleaner() = default;
 
-void AddressDataCleaner::MaybeCleanupAddressData(
-    syncer::SyncService* sync_service) {
-  if (!is_profile_cleanup_pending_ || ShouldWaitForSync(sync_service)) {
+void AddressDataCleaner::MaybeCleanupAddressData() {
+  if (!is_profile_cleanup_pending_ || ShouldWaitForSync(sync_service_)) {
     return;
   }
 
@@ -79,7 +84,7 @@ void AddressDataCleaner::MaybeCleanupAddressData(
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
-                       weak_ptr_factory_.GetWeakPtr(), sync_service));
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -244,6 +249,19 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
     personal_data_manager_->RemoveByGUID(guid);
   }
   AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(guids_to_delete.size());
+}
+
+void AddressDataCleaner::OnPersonalDataFinishedProfileTasks() {
+  MaybeCleanupAddressData();
+}
+
+void AddressDataCleaner::OnStateChanged(syncer::SyncService* sync_service) {
+  // After sync has started, it's possible that the PDM is still reloading any
+  // changed data from the database. In this case, delay the cleanups slightly
+  // longer until `OnPersonalDataFinishedProfileTasks()` is called.
+  if (!personal_data_manager_->IsAwaitingPendingChanges()) {
+    MaybeCleanupAddressData();
+  }
 }
 
 }  // namespace autofill

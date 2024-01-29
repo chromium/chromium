@@ -450,7 +450,8 @@ void PersonalDataManager::Init(
   Refresh();
 
   address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
-      this, alternative_state_name_map_updater_.get(), pref_service);
+      *this, alternative_state_name_map_updater_.get(), pref_service,
+      sync_service);
   payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(this);
 
   // Potentially import profiles for testing. `Init()` is called whenever the
@@ -480,6 +481,11 @@ void PersonalDataManager::Shutdown() {
   if (identity_manager_)
     identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
+
+  // Make sure that the `address_data_cleaner_` sync observer gets destroyed
+  // before the SyncService's `Shutdown()`.
+  address_data_cleaner_.reset();
+  payments_data_cleaner_.reset();
 }
 
 void PersonalDataManager::OnURLsDeleted(
@@ -637,7 +643,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   if (!is_data_loaded_) {
     is_data_loaded_ = true;
     LogStoredDataMetrics();
-    address_data_cleaner_->MaybeCleanupAddressData(sync_service_);
     payments_data_cleaner_->CleanupPaymentsData();
   }
   NotifyPersonalDataObserver();
@@ -653,11 +658,6 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
 
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataSyncStateChanged();
-  }
-
-  // TODO(b/321929498): During initialization, `address_data_cleaner_` is null.
-  if (address_data_cleaner_) {
-    address_data_cleaner_->MaybeCleanupAddressData(sync_service);
   }
 
   // Use the ephemeral account storage when the user didn't enable the sync
@@ -2556,10 +2556,7 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  // The PDM's state is inconsistent with the database in two cases:
-  // - When profile modifications are still pending: ProfileChangesAreOngoing().
-  // - When reads are still pending.
-  bool pending_changes = ProfileChangesAreOngoing() || HasPendingQueries();
+  bool pending_changes = IsAwaitingPendingChanges();
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
@@ -2667,13 +2664,13 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
   is_ongoing = true;
 }
 
-bool PersonalDataManager::ProfileChangesAreOngoing(const std::string& guid) {
-  return ongoing_profile_changes_.find(guid) !=
-             ongoing_profile_changes_.end() &&
-         !ongoing_profile_changes_[guid].empty();
+bool PersonalDataManager::ProfileChangesAreOngoing(
+    const std::string& guid) const {
+  auto it = ongoing_profile_changes_.find(guid);
+  return it != ongoing_profile_changes_.end() && !it->second.empty();
 }
 
-bool PersonalDataManager::ProfileChangesAreOngoing() {
+bool PersonalDataManager::ProfileChangesAreOngoing() const {
   for (const auto& [guid, change] : ongoing_profile_changes_) {
     if (ProfileChangesAreOngoing(guid)) {
       return true;
@@ -2688,7 +2685,7 @@ void PersonalDataManager::OnProfileChangeDone(const std::string& guid) {
   HandleNextProfileChange(guid);
 }
 
-bool PersonalDataManager::HasPendingQueries() {
+bool PersonalDataManager::HasPendingQueries() const {
   return pending_synced_local_profiles_query_ != 0 ||
          pending_account_profiles_query_ != 0 ||
          pending_creditcards_query_ != 0 ||

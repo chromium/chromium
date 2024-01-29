@@ -30,13 +30,15 @@ class AddressDataCleanerTest : public testing::Test {
  public:
   AddressDataCleanerTest()
       : prefs_(test::PrefServiceForTesting()),
-        data_cleaner_(&test_pdm_,
+        data_cleaner_(test_pdm_,
                       /*alternative_state_name_map_updater=*/nullptr,
-                      prefs_.get()) {}
+                      prefs_.get(),
+                      &sync_service_) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager test_pdm_;
   AddressDataCleaner data_cleaner_;
 };
@@ -44,28 +46,26 @@ class AddressDataCleanerTest : public testing::Test {
 // Tests that for non-syncing users `MaybeCleanupAddressData()` immediately
 // performs clean-ups.
 TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncing) {
-  syncer::TestSyncService sync_service;
-  sync_service.SetHasSyncConsent(false);
+  sync_service_.SetHasSyncConsent(false);
   ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
-  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  data_cleaner_.MaybeCleanupAddressData();
   EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
 }
 
 // Tests that for syncing users `MaybeCleanupAddressData()` doesn't perform
 // clean-ups, since it's expecting another call once sync is ready.
 TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_Syncing) {
-  syncer::TestSyncService sync_service;
-  sync_service.SetDownloadStatusFor(
+  sync_service_.SetDownloadStatusFor(
       {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
   ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
-  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  data_cleaner_.MaybeCleanupAddressData();
   EXPECT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
 
-  sync_service.SetDownloadStatusFor(
+  sync_service_.SetDownloadStatusFor(
       {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
-  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  data_cleaner_.MaybeCleanupAddressData();
   EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
 }
 
