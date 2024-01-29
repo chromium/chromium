@@ -320,11 +320,8 @@ bool ImagePaintTimingDetector::RecordImage(
   if (image_border.IsEmpty())
     return false;
 
-  if (RuntimeEnabledFeatures::
-          ExcludeBrokenImageIconFromBeingLcpEligibleEnabled()) {
-    if (media_timing.IsBroken()) {
-      return false;
-    }
+  if (media_timing.IsBroken()) {
+    return false;
   }
 
   MediaRecordId record_id(&object, &media_timing);

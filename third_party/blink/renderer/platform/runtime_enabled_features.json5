@@ -1531,10 +1531,6 @@
       status: "experimental",
       base_feature: "none",
     },
-     {
-      name: "ExcludeBrokenImageIconFromBeingLcpEligible",
-      status: "stable",
-    },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
