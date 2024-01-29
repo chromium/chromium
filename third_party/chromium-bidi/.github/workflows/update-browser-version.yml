@@ -35,7 +35,7 @@ jobs:
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-browser-version
-          base: origin/main
+          base: main
           delete-branch: true
           committer: Browser Automation Bot <browser-automation-bot@google.com>
           author: Browser Automation Bot <browser-automation-bot@google.com>
