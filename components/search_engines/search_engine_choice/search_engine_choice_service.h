@@ -37,16 +37,6 @@ class SearchEngineChoiceService : public KeyedService {
   // TODO(b/318824817): To be removed post-launch.
   bool ShouldShowUpdatedSettings();
 
-#if BUILDFLAG(IS_IOS)
-  // Returns whether the search engine choice screen can be displayed or not
-  // based on device policies and profile properties.
-  // TODO(b/318801987): Move the function to some iOS-specific location and
-  //                    consider removing `is_regular_profile`.
-  bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
-                              bool is_regular_profile,
-                              TemplateURLService* template_url_service);
-#endif
-
   // Returns the choice screen eligibility condition most relevant for the
   // profile associated with `profile_prefs` and `template_url_service`. Only
   // checks dynamic conditions, that can change from one call to the other

@@ -263,6 +263,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/safe_mode/model:unit_tests",
     "//ios/chrome/browser/safety_check/model:unit_tests",
     "//ios/chrome/browser/screenshot/model:unit_tests",
+    "//ios/chrome/browser/search_engine_choice/model:unit_tests",
     "//ios/chrome/browser/search_engines/model:unit_tests",
     "//ios/chrome/browser/segmentation_platform/model:unit_tests",
     "//ios/chrome/browser/send_tab_to_self/model:unit_tests",

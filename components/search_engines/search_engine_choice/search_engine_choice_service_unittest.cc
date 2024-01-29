@@ -182,14 +182,6 @@ TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenIfPoliciesAreNotSet) {
   EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
             expected_choice_screen_condition);
-
-#if BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowChoiceScreen(
-      policy_service(), /*is_regular_profile=*/true, &template_url_service()));
-  histogram_tester_.ExpectBucketCount(
-      kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      SearchEngineChoiceScreenConditions::kEligible, 1);
-#endif
 }
 
 // Test that the choice screen does not get displayed if the provider list is
@@ -642,14 +634,6 @@ TEST_F(SearchEngineChoiceServiceTest,
   EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
             SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
-#endif
-
-#if BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(search_engine_choice_service().ShouldShowChoiceScreen(
-      policy_service(), /*is_regular_profile=*/true, &template_url_service()));
-  histogram_tester_.ExpectBucketCount(
-      kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine, 1);
 #endif
 }
 

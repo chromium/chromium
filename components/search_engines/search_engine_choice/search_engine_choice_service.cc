@@ -132,24 +132,6 @@ bool SearchEngineChoiceService::ShouldShowUpdatedSettings() {
   return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
 }
 
-#if BUILDFLAG(IS_IOS)
-bool SearchEngineChoiceService::ShouldShowChoiceScreen(
-    const policy::PolicyService& policy_service,
-    bool is_regular_profile,
-    TemplateURLService* template_url_service) {
-  PreprocessPrefsForReprompt();
-  auto condition = GetStaticChoiceScreenConditions(
-      policy_service, is_regular_profile, CHECK_DEREF(template_url_service));
-
-  if (condition == SearchEngineChoiceScreenConditions::kEligible) {
-    condition = GetDynamicChoiceScreenConditions(*template_url_service);
-  }
-
-  RecordChoiceScreenProfileInitCondition(condition);
-  return condition == SearchEngineChoiceScreenConditions::kEligible;
-}
-#endif
-
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     const policy::PolicyService& policy_service,

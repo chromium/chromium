@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 
+#import "base/check_deref.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -38,14 +39,33 @@ bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
 bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
                                            search_engines::ChoicePromo promo) {
   if (!IsChoiceEnabled(promo)) {
+    // This build is not eligible for the choice screen.
     return false;
   }
+
+  // Getting data needed to check condition.
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       ios::SearchEngineChoiceServiceFactory::GetForBrowserState(&browser_state);
   BrowserStatePolicyConnector* policy_connector =
       browser_state.GetPolicyConnector();
-  return search_engine_choice_service->ShouldShowChoiceScreen(
-      *policy_connector->GetPolicyService(),
-      /*is_regular_profile=*/true,
-      ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state));
+  const policy::PolicyService& policy_service =
+      *policy_connector->GetPolicyService();
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state);
+  search_engine_choice_service->PreprocessPrefsForReprompt();
+
+  // Checking whether the user is eligible for the screen.
+  auto condition =
+      search_engine_choice_service->GetStaticChoiceScreenConditions(
+          policy_service, /*is_regular_profile=*/true,
+          CHECK_DEREF(template_url_service));
+  if (condition ==
+      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+    condition = search_engine_choice_service->GetDynamicChoiceScreenConditions(
+        *template_url_service);
+  }
+
+  RecordChoiceScreenProfileInitCondition(condition);
+  return condition ==
+         search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
