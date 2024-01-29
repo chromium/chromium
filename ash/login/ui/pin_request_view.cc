@@ -17,6 +17,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -438,31 +439,17 @@ std::u16string PinRequestView::GetAccessibleWindowTitle() const {
 }
 
 void PinRequestView::OnDisplayTabletStateChanged(display::TabletState state) {
-  switch (state) {
-    case display::TabletState::kEnteringTabletMode:
-    case display::TabletState::kExitingTabletMode:
-      break;
-    case display::TabletState::kInTabletMode:
-      if (!pin_keyboard_always_enabled_) {
-        VLOG(1) << "Showing PIN keyboard in PinRequestView";
-        pin_keyboard_view_->SetVisible(true);
-        // This will trigger ChildPreferredSizeChanged in parent view and
-        // Layout() in view. As the result whole hierarchy will go through
-        // re-layout.
-        UpdatePreferredSize();
-      }
-      break;
-    case display::TabletState::kInClamshellMode:
-      if (!pin_keyboard_always_enabled_) {
-        VLOG(1) << "Hiding PIN keyboard in PinRequestView";
-        DCHECK(pin_keyboard_view_);
-        pin_keyboard_view_->SetVisible(false);
-        // This will trigger ChildPreferredSizeChanged in parent view and
-        // Layout() in view. As the result whole hierarchy will go through
-        // re-layout.
-        UpdatePreferredSize();
-      }
-      break;
+  if (pin_keyboard_always_enabled_) {
+    return;
+  }
+  const bool show_pin_keyboard = state == display::TabletState::kInTabletMode;
+  if (show_pin_keyboard || state == display::TabletState::kInClamshellMode) {
+    VLOG(1) << base::StrCat({show_pin_keyboard ? "Showing" : "Hiding",
+                             " PIN keyboard in PinRequestView"});
+    pin_keyboard_view_->SetVisible(show_pin_keyboard);
+    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
+    // in view. As the result whole hierarchy will go through re-layout.
+    UpdatePreferredSize();
   }
 }
 

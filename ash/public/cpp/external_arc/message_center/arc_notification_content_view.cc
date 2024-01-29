@@ -662,10 +662,10 @@ void ArcNotificationContentView::Layout() {
 
   bool is_surface_visible = (surface_->GetWindow()->layer()->opacity() != 0.0f);
   if (is_surface_visible) {
-    // |views::NativeViewHost::Layout()| can be called only when the hosted
+    // views::NativeViewHost::Layout() can be triggered only when the hosted
     // window is opaque, because that method calls
-    // |views::NativeViewHostAura::ShowWidget()| and |aura::Window::Show()|
-    // which has DCHECK the opacity of the window.
+    // views::NativeViewHostAura::ShowWidget() and aura::Window::Show() which
+    // DCHECKs the opacity of the window.
     views::NativeViewHost::Layout();
     // Reinstall mask to update rounded mask insets. Set null mask unless radius
     // is set.
