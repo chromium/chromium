@@ -1298,6 +1298,8 @@ component("ash") {
     "style/rounded_label.h",
     "style/rounded_label_widget.cc",
     "style/rounded_label_widget.h",
+    "style/sparkle_colors.cc",
+    "style/sparkle_colors.h",
     "style/style_util.cc",
     "style/style_util.h",
     "style/style_viewer/checkbox_group_instances_grid_view_factory.cc",

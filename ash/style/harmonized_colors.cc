@@ -57,19 +57,6 @@ const base::flat_map<int, HarmonizedSeeds> MakeMap() {
                                               std::move(storage));
 }
 
-// Returns the hue angle for `seed_color`.
-int HueAngle(SkColor seed_color) {
-  SkScalar hsv[3];
-  SkColorToHSV(seed_color, hsv);
-
-  // Hue is in degrees.
-  int hue_angle = static_cast<int>(hsv[0]);
-  DCHECK_LE(hue_angle, 360);
-  DCHECK_GE(hue_angle, 0);
-
-  return hue_angle;
-}
-
 // Mappings of tones to ColorId as they comprise the tonal palette.
 // https://m3.material.io/styles/color/the-color-system/key-colors-tones
 constexpr std::array<std::pair<int, ui::ColorId>, 13> kRedIds{
@@ -148,6 +135,19 @@ void InsertIntoMixer(ui::ColorMixer& mixer,
 }
 
 }  // namespace
+
+// Returns the hue angle for `seed_color`.
+int HueAngle(SkColor seed_color) {
+  SkScalar hsv[3];
+  SkColorToHSV(seed_color, hsv);
+
+  // Hue is in degrees.
+  int hue_angle = static_cast<int>(hsv[0]);
+  DCHECK_LE(hue_angle, 360);
+  DCHECK_GE(hue_angle, 0);
+
+  return hue_angle;
+}
 
 void AddHarmonizedColors(ui::ColorMixer& mixer,
                          const ui::ColorProviderKey& key) {
