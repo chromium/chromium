@@ -3596,7 +3596,7 @@
 <translation id="37613671848467444">시크릿 창에서 열기(&amp;I)</translation>
 <translation id="3761390540041101668">문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다(가능한 경우).</translation>
 <translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
-<translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다.</translation>
+<translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 30일이 경과한 웹사이트는 목록에서 자동으로 삭제됩니다.</translation>
 <translation id="3763549179847864476">개인 정보 보호 가이드 뒤로 버튼</translation>
 <translation id="3764314093345384080">자세한 빌드 정보</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB 기기 1개와 통신}other{USB 기기 #개와 통신}}</translation>
