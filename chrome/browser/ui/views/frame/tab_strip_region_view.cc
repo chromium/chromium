@@ -338,7 +338,7 @@ void TabStripRegionView::Layout() {
     UpdateTabStripMargin();
   }
 
-  views::AccessiblePaneView::Layout();
+  LayoutSuperclass<views::AccessiblePaneView>(this);
 
   if (tab_search_container_before_tab_strip) {
     const gfx::Size tab_search_container_size =

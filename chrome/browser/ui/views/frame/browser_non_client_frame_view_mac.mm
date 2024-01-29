@@ -472,7 +472,7 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 void BrowserNonClientFrameViewMac::Layout() {
   if (browser_view()->IsWindowControlsOverlayEnabled())
     LayoutWindowControlsOverlay();
-  NonClientFrameView::Layout();
+  LayoutSuperclass<NonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

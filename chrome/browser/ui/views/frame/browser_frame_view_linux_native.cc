@@ -65,7 +65,7 @@ void BrowserFrameViewLinuxNative::Layout() {
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
   // layout any time the maximized and activation state changes, respectively.
   MaybeUpdateCachedFrameButtonImages();
-  OpaqueBrowserFrameView::Layout();
+  LayoutSuperclass<OpaqueBrowserFrameView>(this);
 }
 
 BrowserFrameViewLinuxNative::FrameButtonStyle

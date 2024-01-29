@@ -890,7 +890,7 @@ void LocationBarView::Layout() {
     position_view(omnibox_additional_text_view_, omnibox_additional_text_width);
   }
 
-  View::Layout();
+  LayoutSuperclass<View>(this);
 }
 
 void LocationBarView::OnThemeChanged() {

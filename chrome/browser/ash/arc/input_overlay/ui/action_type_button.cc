@@ -87,7 +87,7 @@ void ActionTypeButton::Layout() {
   image()->SetBoundsRect(gfx::Rect(
       image_origin, gfx::Size(kActionTypeIconSize, kActionTypeIconSize)));
   label->SetBoundsRect(gfx::Rect(label_origin, label_size));
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 gfx::ImageSkia ActionTypeButton::GetImage(ButtonState for_state) const {

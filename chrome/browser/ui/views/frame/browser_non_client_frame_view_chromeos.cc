@@ -472,7 +472,7 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
     UpdateBorderlessModeEnabled();
   }
 
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
   UpdateTopViewInset();
 
   if (frame_header_) {

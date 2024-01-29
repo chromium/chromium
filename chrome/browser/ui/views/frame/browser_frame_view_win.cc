@@ -467,7 +467,7 @@ void BrowserFrameViewWin::Layout() {
     LayoutTitleBar();
   }
   LayoutClientView();
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

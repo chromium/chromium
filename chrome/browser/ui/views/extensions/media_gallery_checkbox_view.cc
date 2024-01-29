@@ -56,7 +56,7 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
 MediaGalleryCheckboxView::~MediaGalleryCheckboxView() = default;
 
 void MediaGalleryCheckboxView::Layout() {
-  views::BoxLayoutView::Layout();
+  LayoutSuperclass<views::BoxLayoutView>(this);
   if (GetPreferredSize().width() <= GetLocalBounds().width())
     return;
 

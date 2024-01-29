@@ -150,7 +150,7 @@ class LayoutTrackingView : public views::View {
   // views::View:
   void Layout() override {
     ++layout_count_;
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
   }
 
  private:

@@ -464,7 +464,7 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
 }
 
 void OmniboxMatchCellView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   const bool two_line = layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION;
   const gfx::Rect child_area = GetContentsBounds();

@@ -52,7 +52,7 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
 ChromeLabsButton::~ChromeLabsButton() = default;
 
 void ChromeLabsButton::Layout() {
-  ToolbarButton::Layout();
+  LayoutSuperclass<ToolbarButton>(this);
   gfx::Rect dot_rect(8, 8);
   if (ui::TouchUiController::Get()->touch_ui()) {
     dot_rect = ScaleToEnclosingRect(

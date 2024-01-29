@@ -67,7 +67,7 @@ void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {
 }
 
 void AlternateNavInfoBarView::Layout() {
-  InfoBarView::Layout();
+  LayoutSuperclass<InfoBarView>(this);
 
   label_1_->SetText(label_1_text_);
   link_->SetText(link_text_);

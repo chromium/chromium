@@ -773,7 +773,7 @@ void PictureInPictureBrowserFrameView::Layout() {
   }
 #endif
 
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 void PictureInPictureBrowserFrameView::AddedToWidget() {

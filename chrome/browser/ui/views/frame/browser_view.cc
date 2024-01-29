@@ -4255,7 +4255,7 @@ void BrowserView::Layout() {
     did_first_layout_while_top_controls_are_sliding_ = false;
   }
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // TODO(jamescook): Why was this in the middle of layout code?
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(

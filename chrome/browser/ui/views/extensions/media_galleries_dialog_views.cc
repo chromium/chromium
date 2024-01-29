@@ -59,7 +59,7 @@ void ScrollableView::Layout() {
   }
   SetBounds(x(), y(), width, height);
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 BEGIN_METADATA(ScrollableView)

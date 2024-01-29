@@ -529,7 +529,7 @@ void DownloadToolbarButtonView::UpdateIcon() {
 }
 
 void DownloadToolbarButtonView::Layout() {
-  ToolbarButton::Layout();
+  LayoutSuperclass<ToolbarButton>(this);
   gfx::Size size = GetPreferredSize();
   // Badge width and height are the same.
   const int badge_height = std::min(size.width(), size.height()) / 2;

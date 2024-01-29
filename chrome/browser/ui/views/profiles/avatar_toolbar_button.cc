@@ -125,7 +125,7 @@ void AvatarToolbarButton::UpdateIcon() {
 }
 
 void AvatarToolbarButton::Layout() {
-  ToolbarButton::Layout();
+  LayoutSuperclass<ToolbarButton>(this);
 
   // TODO(crbug.com/1094566): this is a hack to avoid mismatch between avatar
   // bitmap scaling and DIP->canvas pixel scaling in fractional DIP scaling

@@ -470,7 +470,7 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void SavedTabGroupBar::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   const bool should_show_overflow = ShouldShowOverflowButtonForWidth(width());
   const int last_visible_button_index =
       CalculateLastVisibleButtonIndexForWidth(width());

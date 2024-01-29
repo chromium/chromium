@@ -282,7 +282,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 
 void OmniboxSuggestionButtonRowView::Layout() {
-  View::Layout();
+  LayoutSuperclass<View>(this);
 
   if (!OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())
     return;

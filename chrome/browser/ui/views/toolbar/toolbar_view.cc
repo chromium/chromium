@@ -820,10 +820,10 @@ void ToolbarView::Layout() {
   // element space allocation. The button itself should just be an indicator of
   // overflow, not the cause (see crbug.com/1484294). In the first pass, hide
   // the overflow button and calculate other buttons' visibility to determine if
-  // overflow occurs. Do NOT explicitly call Layout() in the first pass to
-  // prevent animation conflicts with the second pass (see crbug.com/1517065).
-  // The second pass will set the overflow button visibility to the overflow
-  // state determined by the first pass.
+  // overflow occurs. Do NOT explicitly call LayoutSuperclass() in the first
+  // pass to prevent animation conflicts with the second pass (see
+  // crbug.com/1517065). The second pass will set the overflow button visibility
+  // to the overflow state determined by the first pass.
   // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
     // TODO(crbug.com/1499021) Move this logic into LayoutManager.
@@ -851,7 +851,7 @@ void ToolbarView::Layout() {
 
   // Call super implementation to ensure layout manager and child layouts
   // happen.
-  AccessiblePaneView::Layout();
+  LayoutSuperclass<AccessiblePaneView>(this);
 }
 
 void ToolbarView::OnThemeChanged() {
