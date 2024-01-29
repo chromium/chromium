@@ -363,6 +363,86 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
 }
 
+// Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
+// updates the last interacted saved state when the <input>s have no containing
+// <form>.
+TEST_F(AutofillAgentTest,
+       FormlessApplyFormActionUpdatesLastInteractedSavedState) {
+  LoadHTML(R"(
+    <input id="text_id">
+  )");
+
+  blink::WebFormControlElement field =
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById("text_id")
+          .DynamicTo<blink::WebFormControlElement>();
+  ASSERT_FALSE(field.IsNull());
+
+  FormFieldData form_field;
+  form_util::WebFormControlElementToFormField(
+      blink::WebFormElement(), field, &autofill_agent().field_data_manager(),
+      {form_util::ExtractOption::kValue}, &form_field);
+
+  form_field.value = u"autofilled";
+  form_field.is_autofilled = true;
+
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+  FormData form;
+  form.fields = {form_field};
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kFill,
+                                   FormData::FillData(form));
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
+
+  std::optional<FormData> last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"autofilled", last_interacted_saved_state->fields[0].value);
+}
+
+// Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
+// updates the last interacted saved state when the <input>s have a containing
+// <form>.
+TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="text_id">
+    </form>
+  )");
+
+  blink::WebFormElement form = GetMainFrame()
+                                   ->GetDocument()
+                                   .GetElementById("form_id")
+                                   .DynamicTo<blink::WebFormElement>();
+  ASSERT_EQ(1u, form.GetFormControlElements().size());
+  blink::WebFormControlElement field = form.GetFormControlElements()[0];
+  ASSERT_FALSE(field.IsNull());
+  ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
+
+  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
+      form, blink::WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
+      {form_util::ExtractOption::kValue}, nullptr);
+
+  ASSERT_EQ(1u, form_data.fields.size());
+  form_data.fields[0].value = u"autofilled";
+  form_data.fields[0].is_autofilled = true;
+
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kFill,
+                                   FormData::FillData(form_data));
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
+
+  std::optional<FormData> last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"autofilled", last_interacted_saved_state->fields[0].value);
+}
+
 TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
   LoadHTML(R"(
     <form id="form_id">

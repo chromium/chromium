@@ -699,9 +699,8 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     }
     bool filled_some_fields = !filled_fields.empty();
 
-    if (!last_queried_element.Form().IsNull()) {
-      UpdateLastInteracted(last_queried_element.Form());
-    } else {
+    UpdateLastInteracted(last_queried_element.Form());
+    if (last_queried_element.Form().IsNull()) {
       formless_elements_were_autofilled_ |= filled_some_fields;
     }
 

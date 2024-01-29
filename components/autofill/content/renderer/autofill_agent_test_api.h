@@ -19,6 +19,10 @@ class AutofillAgentTestApi {
     agent_->form_tracker_ = std::move(form_tracker);
   }
 
+  std::optional<FormData> last_interacted_saved_state() {
+    return agent_->last_interacted_.saved_state;
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };
