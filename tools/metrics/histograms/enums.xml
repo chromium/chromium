@@ -22068,6 +22068,7 @@ from previous Chrome versions.
   <int value="695425272" label="ConvertTrackpadEventsToMouse:disabled"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>
   <int value="696600628" label="VibrateRequiresUserGesture:disabled"/>
+  <int value="696786796" label="EnableKeyboardRewriterFix:disabled"/>
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>
   <int value="698253616"
       label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:disabled"/>
@@ -22998,6 +22999,7 @@ from previous Chrome versions.
   <int value="1135728116" label="PluginVmShowCameraPermissions:enabled"/>
   <int value="1135813530" label="FileSystemObserver:enabled"/>
   <int value="1135893278" label="BruschettaAlphaMigrate:enabled"/>
+  <int value="1136409654" label="EnableKeyboardRewriterFix:enabled"/>
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>
   <int value="1138349838" label="EnableMDRoundedCornersOnDialogs:disabled"/>
   <int value="1138690502" label="PreconnectToSearch:enabled"/>

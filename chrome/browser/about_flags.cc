@@ -8980,6 +8980,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableKeyboardBacklightToggleName,
      flag_descriptions::kEnableKeyboardBacklightToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableKeyboardBacklightToggle)},
+    {"enable-keyboard-rewriter-fix",
+     flag_descriptions::kEnableKeyboardRewriterFixName,
+     flag_descriptions::kEnableKeyboardRewriterFixDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableKeyboardRewriterFix)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"align-wakeups", flag_descriptions::kAlignWakeUpsName,

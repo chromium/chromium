@@ -165,7 +165,7 @@ void SendKeyEvent(Browser* browser,
   auto* browser_window = GetBrowserWindow(browser);
   ui::test::EventGenerator event_generator{browser_window->GetRootWindow(),
                                            browser_window};
-  event_generator.PressAndReleaseKey(key_code, flags);
+  event_generator.PressAndReleaseKeyAndModifierKeys(key_code, flags);
 }
 
 std::unique_ptr<KeyedService> SetDlpRulesManager(

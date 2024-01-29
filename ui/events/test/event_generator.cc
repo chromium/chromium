@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,6 +86,18 @@ const int kAllButtonMask = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON;
 EventGeneratorDelegate::FactoryFunction g_event_generator_delegate_factory;
 
 bool g_event_generator_allowed = true;
+
+struct ModifierKey {
+  KeyboardCode key;
+  EventFlags flag;
+};
+
+constexpr ModifierKey kModifierKeys[] = {
+    {VKEY_SHIFT, EF_SHIFT_DOWN},
+    {VKEY_CONTROL, EF_CONTROL_DOWN},
+    {VKEY_MENU, EF_ALT_DOWN},
+    {VKEY_LWIN, EF_COMMAND_DOWN},
+};
 
 }  // namespace
 
@@ -665,6 +678,47 @@ void EventGenerator::PressAndReleaseKey(KeyboardCode key_code,
                                         int source_device_id) {
   PressKey(key_code, flags, source_device_id);
   ReleaseKey(key_code, flags, source_device_id);
+}
+
+void EventGenerator::PressModifierKeys(int flags, int source_device_id) {
+  EventFlags current_flags = 0;
+  for (const auto& modifier_key : kModifierKeys) {
+    if (flags & modifier_key.flag) {
+      current_flags |= modifier_key.flag;
+      PressKey(modifier_key.key, current_flags, source_device_id);
+    }
+  }
+}
+
+void EventGenerator::ReleaseModifierKeys(int flags, int source_device_id) {
+  EventFlags current_flags = flags;
+  for (const auto& modifier_key : base::Reversed(kModifierKeys)) {
+    if (flags & modifier_key.flag) {
+      current_flags &= ~modifier_key.flag;
+      ReleaseKey(modifier_key.key, current_flags, source_device_id);
+    }
+  }
+}
+
+void EventGenerator::PressKeyAndModifierKeys(KeyboardCode key_code,
+                                             int flags,
+                                             int source_device_id) {
+  PressModifierKeys(flags, source_device_id);
+  PressKey(key_code, flags, source_device_id);
+}
+
+void EventGenerator::ReleaseKeyAndModifierKeys(KeyboardCode key_code,
+                                               int flags,
+                                               int source_device_id) {
+  ReleaseKey(key_code, flags, source_device_id);
+  ReleaseModifierKeys(flags, source_device_id);
+}
+
+void EventGenerator::PressAndReleaseKeyAndModifierKeys(KeyboardCode key_code,
+                                                       int flags,
+                                                       int source_device_id) {
+  PressKeyAndModifierKeys(key_code, flags, source_device_id);
+  ReleaseKeyAndModifierKeys(key_code, flags, source_device_id);
 }
 
 void EventGenerator::Dispatch(ui::Event* event) {

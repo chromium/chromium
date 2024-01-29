@@ -6209,6 +6209,10 @@ const char kEnableKeyboardBacklightToggleDescription[] =
     "Enable toggling of the keyboard backlight. By "
     "default, this flag is enabled.";
 
+const char kEnableKeyboardRewriterFixName[] = "Use new Keyboard Rewriter.";
+const char kEnableKeyboardRewriterFixDescription[] =
+    "Enable new Keyboard Rewriter.";
+
 const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
 const char kEnableNeuralPalmAdaptiveHoldDescription[] =
     "Enable adaptive hold in palm rejection.  Not compatible with all devices.";

@@ -790,6 +790,11 @@ BASE_FEATURE(kEnableKeyboardBacklightToggle,
              "EnableKeyboardBacklightToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable keyboard rewriter fix.
+BASE_FEATURE(kEnableKeyboardRewriterFix,
+             "EnableKeyboardRewriterFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Login WebUI was always loaded for legacy reasons even when it was not needed.
 // When enabled, it will make login WebUI loaded only before showing it.
 BASE_FEATURE(kEnableLazyLoginWebUILoading,
@@ -3766,6 +3771,10 @@ bool IsKerberosRememberPasswordByDefaultEnabled() {
 
 bool IsKeyboardBacklightToggleEnabled() {
   return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
+}
+
+bool IsKeyboardRewriterFixEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKeyboardRewriterFix);
 }
 
 bool IsLanguagePacksEnabled() {

@@ -406,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
             kMailUrl, "*", DlpRulesManager::Restriction::kClipboard, kRuleName1,
             kRuleId1, DlpRulesManager::Level::kWarn),
         run_loop);
-    event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-    event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+    event_generator_->PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
+                                                        ui::EF_CONTROL_DOWN);
 
     EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
     ASSERT_TRUE(dlp_controller_->ObserveWidget());
@@ -454,8 +454,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
         std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
     textfield_->SetText(std::u16string());
     textfield_->RequestFocus();
-    event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
-    event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+    event_generator_->PressAndReleaseKeyAndModifierKeys(ui::VKEY_V,
+                                                        ui::EF_CONTROL_DOWN);
     EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
     ASSERT_TRUE(dlp_controller_->ObserveWidget());
     widget = helper_.GetWidget()->GetWeakPtr();

@@ -126,7 +126,12 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   if (event.IsKeyEvent()) {
     const ui::KeyEvent* key_event = event.AsKeyEvent();
     ui::EventRewriterAsh::MutableKeyState state(key_event);
-    event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+
+    // On new rewriter sequence, modifiers are already rewritten before
+    // this rewriter.
+    if (!features::IsKeyboardRewriterFixEnabled()) {
+      event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+    }
 
     // Remove the Search modifier before asking for function keys to be
     // rewritten, then restore the flags. This allows ChromeVox to receive keys
@@ -181,7 +186,11 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
   ui::EventRewriterAsh::MutableKeyState state(key_event);
-  event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+  // On new rewriter sequence, modifiers are already rewritten before
+  // this rewriter.
+  if (!features::IsKeyboardRewriterFixEnabled()) {
+    event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+  }
   event_rewriter_ash_->RewriteFunctionKeys(*key_event, &state);
 
   std::unique_ptr<ui::Event> rewritten_event;
