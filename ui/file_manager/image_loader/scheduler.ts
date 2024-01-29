@@ -1,9 +1,11 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {ImageRequestTask} from './image_request_task.js';
+
+/** Maximum download tasks to be run in parallel. */
+export const MAXIMUM_IN_PARALLEL = 5;
 
 /**
  * Scheduler for ImageRequestTask objects. Fetches tasks from a queue and
@@ -11,56 +13,35 @@ import {ImageRequestTask} from './image_request_task.js';
  * priority is 0.
  */
 export class Scheduler {
-  constructor() {
-    /**
-     * List of tasks waiting to be checked. If these items are available in
-     * cache, then they are processed immediately after starting the scheduler.
-     * However, if they have to be downloaded, then these tasks are moved
-     * to pendingTasks_.
-     *
-     * @type {Array<ImageRequestTask>}
-     * @private
-     */
-    this.newTasks_ = [];
+  /**
+   * List of tasks waiting to be checked. If these items are available in
+   * cache, then they are processed immediately after starting the scheduler.
+   * However, if they have to be downloaded, then these tasks are moved to
+   * pendingTasks_.
+   */
+  private newTasks_: ImageRequestTask[] = [];
 
-    /**
-     * List of pending tasks for images to be downloaded.
-     * @type {Array<ImageRequestTask>}
-     * @private
-     */
-    this.pendingTasks_ = [];
+  /** List of pending tasks for images to be downloaded. */
+  private pendingTasks_: ImageRequestTask[] = [];
 
-    /**
-     * List of tasks being processed.
-     * @type {Array<ImageRequestTask>}
-     * @private
-     */
-    this.activeTasks_ = [];
+  /** List of tasks being processed. */
+  private activeTasks_: ImageRequestTask[] = [];
 
-    /**
-     * Map of tasks being added to the queue, but not finalized yet. Keyed by
-     * the ImageRequestTask id.
-     * @type {Object<string, ImageRequestTask>}>
-     * @private
-     */
-    this.tasks_ = {};
+  /**
+   * Map of tasks being added to the queue, but not finalized yet. Keyed by
+   * the ImageRequestTask id.
+   */
+  private tasks_: Record<string, ImageRequestTask> = {};
 
-    /**
-     * If the scheduler has been started.
-     * @type {boolean}
-     * @private
-     */
-    this.started_ = false;
-  }
+  /** If the scheduler has been started. */
+  private started_: boolean = false;
 
   /**
    * Adds a task to the internal priority queue and executes it when tasks
    * with higher priorities are finished. If the result is cached, then it is
    * processed immediately once the scheduler is started.
-   *
-   * @param {ImageRequestTask} task A task to be run
    */
-  add(task) {
+  add(task: ImageRequestTask) {
     if (!this.started_) {
       this.newTasks_.push(task);
       this.tasks_[task.getId()] = task;
@@ -74,11 +55,8 @@ export class Scheduler {
     this.continue_();
   }
 
-  /**
-   * Removes a task from the scheduler (if exists).
-   * @param {string} taskId Unique ID of the task.
-   */
-  remove(taskId) {
+  /** Removes a task from the scheduler (if exists). */
+  remove(taskId: string) {
     const task = this.tasks_[taskId];
     if (!task) {
       return;
@@ -99,9 +77,7 @@ export class Scheduler {
     delete this.tasks_[taskId];
   }
 
-  /**
-   * Starts handling tasks.
-   */
+  /** Starts handling tasks. */
   start() {
     this.started_ = true;
 
@@ -114,11 +90,8 @@ export class Scheduler {
     this.continue_();
   }
 
-  /**
-   * Sorts pending tasks by priorities.
-   * @private
-   */
-  sortPendingTasks_() {
+  /** Sorts pending tasks by priorities. */
+  private sortPendingTasks_() {
     this.pendingTasks_.sort((a, b) => {
       return a.getPriority() - b.getPriority();
     });
@@ -127,32 +100,23 @@ export class Scheduler {
   /**
    * Processes pending tasks from the queue. There is no guarantee that
    * all of the tasks will be processed at once.
-   *
-   * @private
    */
-  continue_() {
+  private continue_() {
     // Run only up to MAXIMUM_IN_PARALLEL in the same time.
-    while (this.pendingTasks_.length &&
+    while (this.pendingTasks_.length > 0 &&
            this.activeTasks_.length < MAXIMUM_IN_PARALLEL) {
-      const task = this.pendingTasks_.shift();
+      const task = this.pendingTasks_.shift()!;
       this.activeTasks_.push(task);
 
       // Try to load from cache. If doesn't exist, then download.
       task.loadFromCacheAndProcess(
-          this.finish_.bind(this, task), function(currentTask) {
-            currentTask.downloadAndProcess(
-                this.finish_.bind(this, currentTask));
-          }.bind(this, task));
+          () => this.finish_(task),
+          () => task.downloadAndProcess(() => this.finish_(task)));
     }
   }
 
-  /**
-   * Handles finished tasks.
-   *
-   * @param {ImageRequestTask} task Finished task.
-   * @private
-   */
-  finish_(task) {
+  /** Handles a finished task. */
+  private finish_(task: ImageRequestTask) {
     const index = this.activeTasks_.indexOf(task);
     if (index < 0) {
       console.warn('ImageRequestTask not found.');
@@ -166,10 +130,3 @@ export class Scheduler {
     }
   }
 }
-
-/**
- * Maximum download tasks to be run in parallel.
- * @type {number}
- * @const
- */
-export const MAXIMUM_IN_PARALLEL = 5;

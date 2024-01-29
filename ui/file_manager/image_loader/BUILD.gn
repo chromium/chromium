@@ -46,7 +46,7 @@ copy("copy_src") {
     "image_request_task.js",
     "load_image_request.js",
     "piex_loader.js",
-    "scheduler.js",
+    "scheduler.ts",
   ]
   outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
 }
@@ -62,10 +62,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
-  deps = [
-    "//ash/webui/common/resources:build_ts",
-    "//ui/webui/resources/js:build_ts",
-  ]
+  deps = [ "//ash/webui/common/resources:build_ts" ]
 
   extra_deps = [
     ":copy_src",

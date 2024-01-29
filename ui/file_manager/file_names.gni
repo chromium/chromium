@@ -6,10 +6,10 @@ image_loader_static_js_files = [
   "image_loader/image_request_task.js",
   "image_loader/load_image_request.js",
   "image_loader/piex_loader.js",
-  "image_loader/scheduler.js",
 ]
 
 image_loader_ts = [
+  "image_loader/scheduler.ts",
   "image_loader/image_orientation.ts",
   "image_loader/background.ts",
   "image_loader/cache.ts",
@@ -555,6 +555,7 @@ ts_test_files = [
 
   # Image Loader:
   "image_loader/image_orientation_unittest.ts",
+  "image_loader/scheduler_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -611,10 +612,9 @@ unittest_files = [
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 
   # Image Loader:
-  "image_loader/scheduler_unittest.js",
-  "image_loader/image_loader_unittest.js",
   "image_loader/cache_unittest.js",
   "image_loader/image_loader_client_unittest.js",
+  "image_loader/image_loader_unittest.js",
 ]
 
 # Files that don't have the generated HTML, but are used for tests.

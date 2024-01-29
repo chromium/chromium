@@ -1,7 +1,6 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -18,20 +17,18 @@ export function setUp() {
   globalTime = 0;
 }
 
-/**
- * @typedef{{
- *   cancelCallCount: number,
- *   runTime: number,
- * }}
- */
-let FakeImageRequestTask;
+interface FakeImageRequestTask {
+  cancelCallCount: number;
+  runTime: number;
+  getId(): string;
+  getPriority(): number;
+  cancel(): void;
+  loadFromCacheAndProcess(onSuccess: VoidCallback, onFailure: VoidCallback):
+      void;
+}
 
-/**
- * @param {string} taskId
- * @return {!FakeImageRequestTask}
- */
-function newTask(taskId, priority) {
-  return /** @type !FakeImageRequestTask */ ({
+function newTask(taskId: string, priority: number): FakeImageRequestTask {
+  return {
     // Counts how many times cancel method was called.
     // Used to test multiple cancellation of the same task.
     cancelCallCount: 0,
@@ -41,20 +38,23 @@ function newTask(taskId, priority) {
     // executed and in what orders tasks were executed.
     runTime: 0,
 
-    getId() {
+    getId(): string {
       return taskId;
     },
-    getPriority() {
+
+    getPriority(): number {
       return priority;
     },
+
     cancel() {
       ++this.cancelCallCount;
     },
-    loadFromCacheAndProcess(resolve, reject) {
+
+    loadFromCacheAndProcess(resolve: VoidCallback, _reject: VoidCallback) {
       this.runTime = ++globalTime;
       setTimeout(resolve);
     },
-  });
+  };
 }
 
 /**
@@ -63,7 +63,7 @@ function newTask(taskId, priority) {
 export function testIdleSchedulerAddRemove() {
   const scheduler = new Scheduler();
   const fakeTask = newTask('task-1', 0);
-  scheduler.add(/** @type {!ImageRequestTask} */ (fakeTask));
+  scheduler.add(fakeTask as unknown as ImageRequestTask);
   assertEquals(0, fakeTask.cancelCallCount);
   scheduler.remove('task-1');
   assertEquals(1, fakeTask.cancelCallCount);
@@ -81,8 +81,8 @@ export function testNewTasksMovedAndRunInPriorityOrder() {
   const fakeTask2 = newTask('task-2', 0);
 
   const scheduler = new Scheduler();
-  scheduler.add(/** @type {!ImageRequestTask} */ (fakeTask1));
-  scheduler.add(/** @type {!ImageRequestTask} */ (fakeTask2));
+  scheduler.add(fakeTask1 as unknown as ImageRequestTask);
+  scheduler.add(fakeTask2 as unknown as ImageRequestTask);
 
   scheduler.start();
   assertEquals(2, fakeTask1.runTime);
@@ -97,11 +97,11 @@ export function testParallelTasks() {
   const taskList = [];
   for (let i = 0; i <= MAXIMUM_IN_PARALLEL; ++i) {
     taskList.push(newTask(`task-${i}`, 0));
-    scheduler.add(/** @type {!ImageRequestTask} */ (taskList[i]));
+    scheduler.add(taskList[i] as unknown as ImageRequestTask);
   }
   scheduler.start();
   for (let i = 0; i < MAXIMUM_IN_PARALLEL; ++i) {
-    assertEquals(i + 1, taskList[i].runTime, `task ${i} did not run`);
+    assertEquals(i + 1, taskList[i]!.runTime, `task ${i} did not run`);
   }
-  assertEquals(0, taskList[MAXIMUM_IN_PARALLEL].runTime);
+  assertEquals(0, taskList[MAXIMUM_IN_PARALLEL]!.runTime);
 }
