@@ -161,10 +161,10 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 
 // Tests the language specific feature check.
 TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
-  const char* enabled[]{"en-US", "en-UK", "en",    "pt",    "pt-BR",
-                        "pt-PT", "fr",    "fr-CA", "it",    "nl",
-                        "de",    "de-DE", "es",    "es-419"};
-  const char* disabled[]{"da", "id", "zh-TW", "ja"};
+  const char* enabled[]{"en-US", "en-UK",  "en", "pt", "pt-BR", "pt-PT",
+                        "fr",    "fr-CA",  "it", "nl", "de",    "de-DE",
+                        "es",    "es-419", "da", "id", "zh-TW", "ja"};
+  const char* disabled[]{"gl", "si"};
 
   for (const char* lang : enabled) {
     EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
