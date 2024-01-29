@@ -402,8 +402,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * Finishes the sign-in flow. If the user is managed, the policy should be fetched and enforced
      * before calling this method.
      */
-    @VisibleForTesting
-    void finishSignInAfterPolicyEnforced() {
+    private void finishSignInAfterPolicyEnforced() {
         assert mSignInState != null : "SigninState shouldn't be null!";
         assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)
                 : "The user should not be already signed in";

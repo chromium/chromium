@@ -236,17 +236,23 @@ public class SigninManagerImplTest {
         // Sign out is not allowed.
         assertFalse(mSigninManager.isSignOutAllowed());
 
+        doAnswer(
+                        (args) -> {
+                            // A sign in operation is in progress, so we do not allow a new sign
+                            // in/out operation.
+                            assertFalse(mSigninManager.isSigninAllowed());
+                            assertFalse(mSigninManager.isSyncOptInAllowed());
+                            assertFalse(mSigninManager.isSignOutAllowed());
+
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(ACCOUNT_INFO), any());
+
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
 
-        verify(mNativeMock)
-                .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(ACCOUNT_INFO), any());
-        // A sign in operation is in progress, so we do not allow a new sign in/out operation.
-        assertFalse(mSigninManager.isSigninAllowed());
-        assertFalse(mSigninManager.isSyncOptInAllowed());
-        assertFalse(mSigninManager.isSignOutAllowed());
-
-        mSigninManager.finishSignInAfterPolicyEnforced();
         verify(mIdentityMutator)
                 .setPrimaryAccount(
                         eq(ACCOUNT_INFO.getId()),
@@ -283,21 +289,28 @@ public class SigninManagerImplTest {
         // Sign out is not allowed.
         assertFalse(mSigninManager.isSignOutAllowed());
 
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
-
         List<CoreAccountInfo> coreAccountInfos =
                 mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
         CoreAccountInfo primaryAccountInfo =
                 AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, ACCOUNT_INFO.getEmail());
-        verify(mNativeMock)
-                .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(primaryAccountInfo), any());
-        // A sign in operation is in progress, so we do not allow a new sign in/out operation.
-        assertFalse(mSigninManager.isSigninAllowed());
-        assertFalse(mSigninManager.isSyncOptInAllowed());
-        assertFalse(mSigninManager.isSignOutAllowed());
 
-        mSigninManager.finishSignInAfterPolicyEnforced();
+        doAnswer(
+                        (args) -> {
+                            // A sign in operation is in progress, so we do not allow a new sign
+                            // in/out operation.
+                            assertFalse(mSigninManager.isSigninAllowed());
+                            assertFalse(mSigninManager.isSyncOptInAllowed());
+                            assertFalse(mSigninManager.isSignOutAllowed());
+
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(primaryAccountInfo), any());
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
+
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                         coreAccountInfos, primaryAccountInfo.getId());
@@ -890,13 +903,19 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.UNKNOWN),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
-
         AtomicInteger callCount = new AtomicInteger(0);
-        mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
-        assertEquals(0, callCount.get());
+        doAnswer(
+                        (args) -> {
+                            mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
+                            assertEquals(0, callCount.get());
 
-        mSigninManager.finishSignInAfterPolicyEnforced();
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
         assertEquals(1, callCount.get());
     }
 
@@ -920,13 +939,19 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.UNKNOWN),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
-
         AtomicInteger callCount = new AtomicInteger(0);
-        mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
-        assertEquals(0, callCount.get());
+        doAnswer(
+                        (args) -> {
+                            mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
+                            assertEquals(0, callCount.get());
 
-        mSigninManager.finishSignInAfterPolicyEnforced();
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
         assertEquals(1, callCount.get());
     }
 
@@ -967,11 +992,19 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mSignInStateObserver).onSignInAllowedChanged();
+        doAnswer(
+                        (args) -> {
+                            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+                            verify(mSignInStateObserver).onSignInAllowedChanged();
 
-        mSigninManager.finishSignInAfterPolicyEnforced();
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
+
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignOutAllowedChanged();
         assertFalse(mSigninManager.isSigninAllowed());
@@ -1002,11 +1035,19 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
-        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mSignInStateObserver).onSignInAllowedChanged();
+        doAnswer(
+                        (args) -> {
+                            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+                            verify(mSignInStateObserver).onSignInAllowedChanged();
 
-        mSigninManager.finishSignInAfterPolicyEnforced();
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, null);
+
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignOutAllowedChanged();
         assertFalse(mSigninManager.isSigninAllowed());
