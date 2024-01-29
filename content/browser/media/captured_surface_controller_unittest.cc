@@ -4,6 +4,7 @@
 
 #include "content/browser/media/captured_surface_controller.h"
 
+#include <limits>
 #include <list>
 #include <memory>
 
@@ -26,6 +27,11 @@ using CapturedWheelActionPtr = ::blink::mojom::CapturedWheelActionPtr;
 using CSCResult = ::blink::mojom::CapturedSurfaceControlResult;
 using CSCPermissionResult =
     ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
+
+enum class Boundary {
+  kMin,
+  kMax,
+};
 
 // Make an arbitrary valid CapturedWheelAction.
 CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
@@ -870,6 +876,119 @@ TEST_P(CapturedSurfaceControllerFocusRequirementTest,
   // Note absence of call to `capturer_->Focus()`.
   // TODO(crbug.com/1466247): Use a dedicated error.
   RunTestedActionAndExpect(&run_loop, CSCResult::kUnknownError);
+  run_loop.Run();
+}
+
+// This test suite checks correct clamping of x/y wheel-deltas to min/max.
+//
+// The suite is parameterized on the *zoom* level because that affects
+// the values that will ultimately be fed into the UI system, and checking
+// at both the min/max zoom levels increases coverage somewhat.
+//
+// The suite is *not* parameterized on the wheel deltas themselves, as that
+// would increase test complexity and reduce confidence in test correctness.
+class CapturedSurfaceControllerSendWheelClampTest
+    : public CapturedSurfaceControllerSendWheelTest,
+      public ::testing::WithParamInterface<Boundary> {
+ public:
+  CapturedSurfaceControllerSendWheelClampTest()
+      : zoom_level_boundary_(GetParam()) {}
+  ~CapturedSurfaceControllerSendWheelClampTest() override = default;
+
+ protected:
+  int zoom_level() const {
+    static const double kMin = 100 * blink::kMaximumPageZoomFactor;
+    static const double kMax = 100 * blink::kMinimumPageZoomFactor;
+    switch (zoom_level_boundary_) {
+      case Boundary::kMin:
+        return static_cast<int>(std::ceil(kMin));
+      case Boundary::kMax:
+        return static_cast<int>(std::floor(kMax));
+    }
+    NOTREACHED_NORETURN();
+  }
+
+ private:
+  const Boundary zoom_level_boundary_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CapturedSurfaceControllerSendWheelClampTest,
+                         ::testing::Values(Boundary::kMin, Boundary::kMax));
+
+TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMinWheelDeltaX) {
+  using WheelDeltaType = decltype(CapturedWheelAction::wheel_delta_x);
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 0,
+      .y = 0,
+      .delta_x = -CapturedSurfaceController::kMaxWheelDeltaMagnitude,
+      .delta_y = 0});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0,
+          /*y=*/0,
+          /*wheel_delta_x=*/std::numeric_limits<WheelDeltaType>::min(),
+          /*wheel_delta_y=*/0),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMaxWheelDeltaX) {
+  using WheelDeltaType = decltype(CapturedWheelAction::wheel_delta_x);
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 0,
+      .y = 0,
+      .delta_x = CapturedSurfaceController::kMaxWheelDeltaMagnitude,
+      .delta_y = 0});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0,
+          /*y=*/0,
+          /*wheel_delta_x=*/std::numeric_limits<WheelDeltaType>::max(),
+          /*wheel_delta_y=*/0),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMinWheelDeltaY) {
+  using WheelDeltaType = decltype(CapturedWheelAction::wheel_delta_y);
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 0,
+      .y = 0,
+      .delta_x = 0,
+      .delta_y = -CapturedSurfaceController::kMaxWheelDeltaMagnitude});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0,
+          /*y=*/0,
+          /*wheel_delta_x=*/0,
+          /*wheel_delta_y=*/std::numeric_limits<WheelDeltaType>::min()),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMaxWheelDeltaY) {
+  using WheelDeltaType = decltype(CapturedWheelAction::wheel_delta_y);
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 0,
+      .y = 0,
+      .delta_x = 0,
+      .delta_y = CapturedSurfaceController::kMaxWheelDeltaMagnitude});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0,
+          /*y=*/0,
+          /*wheel_delta_x=*/0,
+          /*wheel_delta_y=*/std::numeric_limits<WheelDeltaType>::max()),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
   run_loop.Run();
 }
 

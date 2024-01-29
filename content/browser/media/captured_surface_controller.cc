@@ -112,11 +112,24 @@ CapturedSurfaceControlResult DoSendWheel(
   const double y =
       std::floor(action->relative_y * captured_viewport_size.height());
 
+  // Clamp deltas.
+  // Note that `action->wheel_delta_x` and `action->wheel_delta_y` are
+  // `int32_t`s, but `blink::SyntheticWebMouseWheelEventBuilder::Build()`
+  // receives `float`s.
+  const float wheel_delta_x =
+      std::min(CapturedSurfaceController::kMaxWheelDeltaMagnitude,
+               std::max(action->wheel_delta_x,
+                        -CapturedSurfaceController::kMaxWheelDeltaMagnitude));
+  const float wheel_delta_y =
+      std::min(CapturedSurfaceController::kMaxWheelDeltaMagnitude,
+               std::max(action->wheel_delta_y,
+                        -CapturedSurfaceController::kMaxWheelDeltaMagnitude));
+
   // Produce the wheel event on the captured surface.
   {
     blink::WebMouseWheelEvent event =
         blink::SyntheticWebMouseWheelEventBuilder::Build(
-            x, y, action->wheel_delta_x, action->wheel_delta_y,
+            x, y, wheel_delta_x, wheel_delta_y,
             blink::WebInputEvent::kNoModifiers,
             ui::ScrollGranularity::kScrollByPixel);
     event.phase = blink::WebMouseWheelEvent::Phase::kPhaseBegan;
