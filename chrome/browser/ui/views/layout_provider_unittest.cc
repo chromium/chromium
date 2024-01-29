@@ -345,7 +345,7 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
                             {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
                             {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
                             {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
-                            {views::style::CONTEXT_BUTTON_MD, 0, 1}};
+                            {views::style::CONTEXT_BUTTON_MD, -2, 1}};
 
   const auto& typography_provider = views::TypographyProvider::Get();
   for (size_t i = 0; i < std::size(kExpectedIncreases); ++i) {

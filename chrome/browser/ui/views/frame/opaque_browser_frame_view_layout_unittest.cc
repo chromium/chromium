@@ -381,7 +381,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {
   // Tests the layout of a default chrome window with a tabstrip and no window
   // title.
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(false);
   ExpectWindowIcon(false);
 }
@@ -396,7 +396,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowButtonsOnLeft) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(true, 0);
+  ExpectCaptionButtons(true, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(true);
   ExpectWindowIcon(true);
 }
@@ -418,7 +418,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   AddWindowTitleIcons();
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectWindowIcon(false);
   ExpectWindowTitle();
 }

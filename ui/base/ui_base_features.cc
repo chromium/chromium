@@ -481,15 +481,15 @@ bool CustomizeChromeSupportsChromeRefresh2023() {
 
 BASE_FEATURE(kChromeRefresh2023,
              "ChromeRefresh2023",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeRefreshSecondary2023,
              "ChromeRefreshSecondary2023",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeRefresh2023NTB,
              "ChromeRefresh2023NTB",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kChromeRefresh2023NTBVariationKey[] = "Variation";
 
@@ -541,7 +541,7 @@ bool IsChromeRefresh2023() {
 
 BASE_FEATURE(kChromeWebuiRefresh2023,
              "ChromeWebuiRefresh2023",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsChromeWebuiRefresh2023() {
   if (!CustomizeChromeSupportsChromeRefresh2023()) {

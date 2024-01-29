@@ -487,7 +487,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "app_list_view_assistant_zero_state", 7,
+      "app_list_view_assistant_zero_state", 8,
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
