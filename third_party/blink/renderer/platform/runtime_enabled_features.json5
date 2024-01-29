@@ -2641,7 +2641,7 @@
     },
     {
       name: "OnePassRasterInvalidation",
-      status: "experimental",
+      status: "stable",
     },
     // This flag is a killswitch. It was only exists as a way for us to turn
     // the feature off in the emergency that it breaks websites.
