@@ -484,8 +484,14 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Media notification seek backward button."/>
   <int value="24" label="Price drop notification visit site button."/>
   <int value="25" label="Price drop notification turn off alert button."/>
+  <int value="26" label="Confirm button on sharing notification."/>
+  <int value="27" label="Cancel button on sharing notification."/>
   <int value="28" label="WebApk install notification 'Back to site' button."/>
   <int value="29" label="WebApk install notification retry button."/>
+  <int value="30" label="Provisional unsubscribe button."/>
+  <int value="31" label="Undo provisional unsubscribe button."/>
+  <int value="32" label="Commit provisional unsubscribe explicitly."/>
+  <int value="33" label="Commit provisional unsubscribe implicitly."/>
 </enum>
 
 <enum name="SystemNotificationType">
