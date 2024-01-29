@@ -685,16 +685,8 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
         break;
       }
     }
-    if (fail) {
-      LOG(ERROR) << "Failed to set dirty bits on some objects in the ancestor"
-                    "chain. Bits set: ";
-      for (auto* obj = this; obj; obj = obj->CachedParentObject()) {
-        LOG(ERROR) << "* has_dirty_descendants_: "
-                   << obj->has_dirty_descendants_
-                   << " object: " << obj->ToString(true, true);
-      }
-      DCHECK(false);
-    }
+    DCHECK(!fail) << "Failed to set dirty bits on some ancestors:\n"
+                  << ParentChainToStringHelper(this);
   }
 #endif
 }
