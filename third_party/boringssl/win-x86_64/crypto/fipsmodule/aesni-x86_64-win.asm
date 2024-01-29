@@ -1024,10 +1024,7 @@ DB	102,15,58,34,232,3
 	lea	r9,[7+r8]
 	mov	DWORD[((96+12))+rsp],r10d
 	bswap	r9d
-	lea	r10,[OPENSSL_ia32cap_P]
-	mov	r10d,DWORD[4+r10]
 	xor	r9d,ebp
-	and	r10d,71303168
 	mov	DWORD[((112+12))+rsp],r9d
 
 	movups	xmm1,XMMWORD[16+rcx]
@@ -1038,103 +1035,9 @@ DB	102,15,58,34,232,3
 	cmp	rdx,8
 	jb	NEAR $L$ctr32_tail
 
-	sub	rdx,6
-	cmp	r10d,4194304
-	je	NEAR $L$ctr32_6x
-
 	lea	rcx,[128+rcx]
-	sub	rdx,2
+	sub	rdx,8
 	jmp	NEAR $L$ctr32_loop8
-
-ALIGN	16
-$L$ctr32_6x:
-	shl	eax,4
-	mov	r10d,48
-	bswap	ebp
-	lea	rcx,[32+rax*1+rcx]
-	sub	r10,rax
-	jmp	NEAR $L$ctr32_loop6
-
-ALIGN	16
-$L$ctr32_loop6:
-	add	r8d,6
-	movups	xmm0,XMMWORD[((-48))+r10*1+rcx]
-	DB	102,15,56,220,209
-	mov	eax,r8d
-	xor	eax,ebp
-	DB	102,15,56,220,217
-	DB	0x0f,0x38,0xf1,0x44,0x24,12
-	lea	eax,[1+r8]
-	DB	102,15,56,220,225
-	xor	eax,ebp
-	DB	0x0f,0x38,0xf1,0x44,0x24,28
-	DB	102,15,56,220,233
-	lea	eax,[2+r8]
-	xor	eax,ebp
-	DB	102,15,56,220,241
-	DB	0x0f,0x38,0xf1,0x44,0x24,44
-	lea	eax,[3+r8]
-	DB	102,15,56,220,249
-	movups	xmm1,XMMWORD[((-32))+r10*1+rcx]
-	xor	eax,ebp
-
-	DB	102,15,56,220,208
-	DB	0x0f,0x38,0xf1,0x44,0x24,60
-	lea	eax,[4+r8]
-	DB	102,15,56,220,216
-	xor	eax,ebp
-	DB	0x0f,0x38,0xf1,0x44,0x24,76
-	DB	102,15,56,220,224
-	lea	eax,[5+r8]
-	xor	eax,ebp
-	DB	102,15,56,220,232
-	DB	0x0f,0x38,0xf1,0x44,0x24,92
-	mov	rax,r10
-	DB	102,15,56,220,240
-	DB	102,15,56,220,248
-	movups	xmm0,XMMWORD[((-16))+r10*1+rcx]
-
-	call	$L$enc_loop6
-
-	movdqu	xmm8,XMMWORD[rdi]
-	movdqu	xmm9,XMMWORD[16+rdi]
-	movdqu	xmm10,XMMWORD[32+rdi]
-	movdqu	xmm11,XMMWORD[48+rdi]
-	movdqu	xmm12,XMMWORD[64+rdi]
-	movdqu	xmm13,XMMWORD[80+rdi]
-	lea	rdi,[96+rdi]
-	movups	xmm1,XMMWORD[((-64))+r10*1+rcx]
-	pxor	xmm8,xmm2
-	movaps	xmm2,XMMWORD[rsp]
-	pxor	xmm9,xmm3
-	movaps	xmm3,XMMWORD[16+rsp]
-	pxor	xmm10,xmm4
-	movaps	xmm4,XMMWORD[32+rsp]
-	pxor	xmm11,xmm5
-	movaps	xmm5,XMMWORD[48+rsp]
-	pxor	xmm12,xmm6
-	movaps	xmm6,XMMWORD[64+rsp]
-	pxor	xmm13,xmm7
-	movaps	xmm7,XMMWORD[80+rsp]
-	movdqu	XMMWORD[rsi],xmm8
-	movdqu	XMMWORD[16+rsi],xmm9
-	movdqu	XMMWORD[32+rsi],xmm10
-	movdqu	XMMWORD[48+rsi],xmm11
-	movdqu	XMMWORD[64+rsi],xmm12
-	movdqu	XMMWORD[80+rsi],xmm13
-	lea	rsi,[96+rsi]
-
-	sub	rdx,6
-	jnc	NEAR $L$ctr32_loop6
-
-	add	rdx,6
-	jz	NEAR $L$ctr32_done
-
-	lea	eax,[((-48))+r10]
-	lea	rcx,[((-80))+r10*1+rcx]
-	neg	eax
-	shr	eax,4
-	jmp	NEAR $L$ctr32_tail
 
 ALIGN	32
 $L$ctr32_loop8:
@@ -1671,16 +1574,10 @@ $L$cbc_decrypt_body:
 	movdqa	xmm14,xmm5
 	movdqu	xmm7,XMMWORD[80+rdi]
 	movdqa	xmm15,xmm6
-	lea	r9,[OPENSSL_ia32cap_P]
-	mov	r9d,DWORD[4+r9]
 	cmp	rdx,0x70
 	jbe	NEAR $L$cbc_dec_six_or_seven
 
-	and	r9d,71303168
-	sub	rdx,0x50
-	cmp	r9d,4194304
-	je	NEAR $L$cbc_dec_loop6_enter
-	sub	rdx,0x20
+	sub	rdx,0x70
 	lea	rcx,[112+rcx]
 	jmp	NEAR $L$cbc_dec_loop8_enter
 ALIGN	16
@@ -1950,51 +1847,6 @@ $L$cbc_dec_seven:
 	pxor	xmm8,xmm8
 	pxor	xmm9,xmm9
 	jmp	NEAR $L$cbc_dec_tail_collected
-
-ALIGN	16
-$L$cbc_dec_loop6:
-	movups	XMMWORD[rsi],xmm7
-	lea	rsi,[16+rsi]
-	movdqu	xmm2,XMMWORD[rdi]
-	movdqu	xmm3,XMMWORD[16+rdi]
-	movdqa	xmm11,xmm2
-	movdqu	xmm4,XMMWORD[32+rdi]
-	movdqa	xmm12,xmm3
-	movdqu	xmm5,XMMWORD[48+rdi]
-	movdqa	xmm13,xmm4
-	movdqu	xmm6,XMMWORD[64+rdi]
-	movdqa	xmm14,xmm5
-	movdqu	xmm7,XMMWORD[80+rdi]
-	movdqa	xmm15,xmm6
-$L$cbc_dec_loop6_enter:
-	lea	rdi,[96+rdi]
-	movdqa	xmm8,xmm7
-
-	call	_aesni_decrypt6
-
-	pxor	xmm2,xmm10
-	movdqa	xmm10,xmm8
-	pxor	xmm3,xmm11
-	movdqu	XMMWORD[rsi],xmm2
-	pxor	xmm4,xmm12
-	movdqu	XMMWORD[16+rsi],xmm3
-	pxor	xmm5,xmm13
-	movdqu	XMMWORD[32+rsi],xmm4
-	pxor	xmm6,xmm14
-	mov	rcx,rbp
-	movdqu	XMMWORD[48+rsi],xmm5
-	pxor	xmm7,xmm15
-	mov	eax,r10d
-	movdqu	XMMWORD[64+rsi],xmm6
-	lea	rsi,[80+rsi]
-	sub	rdx,0x60
-	ja	NEAR $L$cbc_dec_loop6
-
-	movdqa	xmm2,xmm7
-	add	rdx,0x50
-	jle	NEAR $L$cbc_dec_clear_tail_collected
-	movups	XMMWORD[rsi],xmm7
-	lea	rsi,[16+rsi]
 
 $L$cbc_dec_tail:
 	movups	xmm2,XMMWORD[rdi]

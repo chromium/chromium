@@ -5,7 +5,6 @@
 
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
-
 .globl	_gcm_init_clmul
 .private_extern _gcm_init_clmul
 
@@ -243,14 +242,8 @@ L$_ghash_clmul:
 	jz	L$odd_tail
 
 	movdqu	16(%rsi),%xmm6
-	leaq	_OPENSSL_ia32cap_P(%rip),%rax
-	movl	4(%rax),%eax
 	cmpq	$0x30,%rcx
 	jb	L$skip4x
-
-	andl	$71303168,%eax
-	cmpl	$4194304,%eax
-	je	L$skip4x
 
 	subq	$0x30,%rcx
 	movq	$0xA040608020C0E000,%rax

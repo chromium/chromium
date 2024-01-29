@@ -90,35 +90,16 @@ K256:
 .word	0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 .size	K256,.-K256
 .word	0				@ terminator
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-.LOPENSSL_armcap:
-.word	OPENSSL_armcap_P-.Lsha256_block_data_order
-#endif
 .align	5
 
-.globl	sha256_block_data_order
-.hidden	sha256_block_data_order
-.type	sha256_block_data_order,%function
-sha256_block_data_order:
-.Lsha256_block_data_order:
-	adr	r3,.Lsha256_block_data_order
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-	ldr	r12,.LOPENSSL_armcap
-	ldr	r12,[r3,r12]		@ OPENSSL_armcap_P
-#ifdef	__APPLE__
-	ldr	r12,[r12]
-#endif
-	tst	r12,#ARMV8_SHA256
-	bne	.LARMv8
-	tst	r12,#ARMV7_NEON
-	bne	.LNEON
-#endif
+.globl	sha256_block_data_order_nohw
+.hidden	sha256_block_data_order_nohw
+.type	sha256_block_data_order_nohw,%function
+sha256_block_data_order_nohw:
 	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
 	stmdb	sp!,{r0,r1,r2,r4-r11,lr}
 	ldmia	r0,{r4,r5,r6,r7,r8,r9,r10,r11}
-	@ TODO(davidben): When the OPENSSL_armcap logic above is removed,
-	@ replace this with a simple ADR.
-	sub	r14,r3,#256+32	@ K256
+	adr	r14,K256
 	sub	sp,sp,#16*4		@ alloca(X[16])
 .Loop:
 # if __ARM_ARCH>=7
@@ -1880,10 +1861,18 @@ sha256_block_data_order:
 	moveq	pc,lr			@ be binary compatible with V4, yet
 .word	0xe12fff1e			@ interoperable with Thumb ISA:-)
 #endif
-.size	sha256_block_data_order,.-sha256_block_data_order
+.size	sha256_block_data_order_nohw,.-sha256_block_data_order_nohw
 #if __ARM_MAX_ARCH__>=7
 .arch	armv7-a
 .fpu	neon
+
+.LK256_shortcut_neon:
+@ PC is 8 bytes ahead in Arm mode and 4 bytes ahead in Thumb mode.
+#if defined(__thumb2__)
+.word	K256-(.LK256_add_neon+4)
+#else
+.word	K256-(.LK256_add_neon+8)
+#endif
 
 .globl	sha256_block_data_order_neon
 .hidden	sha256_block_data_order_neon
@@ -1891,11 +1880,24 @@ sha256_block_data_order:
 .align	5
 .skip	16
 sha256_block_data_order_neon:
-.LNEON:
 	stmdb	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 
 	sub	r11,sp,#16*4+16
-	adr	r14,K256
+
+	@ K256 is just at the boundary of being easily referenced by an ADR from
+	@ this function. In Arm mode, when building with __ARM_ARCH=6, it does
+	@ not fit. By moving code around, we could make it fit, but this is too
+	@ fragile. For simplicity, just load the offset from
+	@ .LK256_shortcut_neon.
+	@
+	@ TODO(davidben): adrl would avoid a load, but clang-assembler does not
+	@ support it. We might be able to emulate it with a macro, but Android's
+	@ did not work when I tried it.
+	@ https://android.googlesource.com/platform/ndk/+/refs/heads/master/docs/ClangMigration.md#arm
+	ldr	r14,.LK256_shortcut_neon
+.LK256_add_neon:
+	add	r14,pc,r14
+
 	bic	r11,r11,#15		@ align for 128-bit stores
 	mov	r12,sp
 	mov	sp,r11			@ alloca
@@ -2677,12 +2679,27 @@ sha256_block_data_order_neon:
 #  define INST(a,b,c,d)	.byte	a,b,c,d
 # endif
 
-.type	sha256_block_data_order_armv8,%function
+.LK256_shortcut_hw:
+@ PC is 8 bytes ahead in Arm mode and 4 bytes ahead in Thumb mode.
+#if defined(__thumb2__)
+.word	K256-(.LK256_add_hw+4)
+#else
+.word	K256-(.LK256_add_hw+8)
+#endif
+
+.globl	sha256_block_data_order_hw
+.hidden	sha256_block_data_order_hw
+.type	sha256_block_data_order_hw,%function
 .align	5
-sha256_block_data_order_armv8:
-.LARMv8:
+sha256_block_data_order_hw:
+	@ K256 is too far to reference from one ADR command in Thumb mode. In
+	@ Arm mode, we could make it fit by aligning the ADR offset to a 64-byte
+	@ boundary. For simplicity, just load the offset from .LK256_shortcut_hw.
+	ldr	r3,.LK256_shortcut_hw
+.LK256_add_hw:
+	add	r3,pc,r3
+
 	vld1.32	{q0,q1},[r0]
-	sub	r3,r3,#256+32
 	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
 	b	.Loop_v8
 
@@ -2814,13 +2831,9 @@ sha256_block_data_order_armv8:
 	vst1.32	{q0,q1},[r0]
 
 	bx	lr		@ bx lr
-.size	sha256_block_data_order_armv8,.-sha256_block_data_order_armv8
+.size	sha256_block_data_order_hw,.-sha256_block_data_order_hw
 #endif
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,52,47,78,69,79,78,47,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-.comm	OPENSSL_armcap_P,4,4
-.hidden	OPENSSL_armcap_P
-#endif
 #endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__ELF__)
