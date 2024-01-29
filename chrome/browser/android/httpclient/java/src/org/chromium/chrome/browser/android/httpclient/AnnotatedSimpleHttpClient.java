@@ -44,6 +44,10 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
+                    if (mProfile == null || !mProfile.isNativeInitialized()) {
+                        return;
+                    }
+
                     SimpleHttpClient.getForProfile(mProfile)
                             .send(
                                     gurl,
