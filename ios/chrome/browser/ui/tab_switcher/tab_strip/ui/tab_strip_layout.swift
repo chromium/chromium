@@ -174,6 +174,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       // If intersects with the left bounds.
       if frame.minX < leftBounds {
+        cell.leadingSeparatorHidden = false
 
         // Update the frame origin and width.
         frame.origin.x = max(leftBounds, frame.origin.x)
@@ -210,6 +211,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
       // If intersects with the right bounds.
       else if frame.maxX > rightBounds {
+        cell.trailingSeparatorHidden = false
 
         // Update the frame origin and width.
         frame.origin.x = min(rightBounds, frame.origin.x)
@@ -309,16 +311,23 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let horizontalOffset = collectionView.contentOffset.x
     let frame = layoutAttributes.frame
     var origin = layoutAttributes.frame.origin
+    var horizontalInset: CGFloat = 0
+
+    // If the collection view is scrollable, add an horizontal inset to its origin.
+    if collectionView.contentSize.width > collectionView.frame.width {
+      horizontalInset = TabStripConstants.TabItem.horizontalSelectedInset
+    }
 
     // Update the cell's origin horizontally to prevent it from being
     // partially hidden off-screen.
 
     // Check the left side.
-    let minOringin = horizontalOffset + sectionInset.left
+    let minOringin = horizontalOffset + sectionInset.left + horizontalInset
     origin.x = max(origin.x, minOringin)
     // Check the right side.
     let maxOrigin =
       horizontalOffset + collectionViewWidth - frame.size.width - sectionInset.right
+      - horizontalInset
     origin.x = min(origin.x, maxOrigin)
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
