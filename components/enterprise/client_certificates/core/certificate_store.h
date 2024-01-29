@@ -64,10 +64,12 @@ class CertificateStore : public KeyedService {
       base::OnceCallback<void(scoped_refptr<PrivateKey>)> callback) = 0;
 
   // Will store the given `certificate` in the database under `identity_name`.
+  // Will call `callback` with a boolean to indicate whether the operation
+  // succeeded or not.
   virtual void CommitCertificate(
       const std::string& identity_name,
       scoped_refptr<net::X509Certificate> certificate,
-      base::OnceClosure done_callback) = 0;
+      base::OnceCallback<void(bool)> callback) = 0;
 
   virtual void GetIdentity(
       const std::string& identity_name,

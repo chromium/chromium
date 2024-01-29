@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//components/enterprise/client_certificates/proto:db_client_certs",
     "//components/leveldb_proto:test_support",
     "//net",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
