@@ -8,10 +8,6 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-config("use_chromium_base_define") {
-  defines = [ "USE_CHROMIUM_BASE" ]
-}
-
 config("toolchain_define") {
   if (is_robolectric) {
     defines = [ "JNI_ZERO_IS_ROBOLECTRIC" ]
@@ -22,9 +18,6 @@ source_set("jni_export") {
   sources = [ "jni_export.h" ]
 }
 
-# Base depends on this transitively, so we have to avoid deps onto base.
-# Eventually, it will make sense to merge this with :jni_zero once it also no
-# longer depends on //base.
 component("jni_zero") {
   sources = [
     "core.cc",
@@ -40,9 +33,8 @@ component("jni_zero") {
   if (is_android) {
     libs = [ "log" ]
   }
-  public_configs = [ ":use_chromium_base_define" ]
   if (is_robolectric) {
-    public_configs += [ "//third_party/jdk:jdk" ]
+    public_configs = [ "//third_party/jdk:jdk" ]
   }
   configs += [ ":toolchain_define" ]
 }

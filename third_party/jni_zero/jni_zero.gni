@@ -91,10 +91,10 @@ template("_invoke_jni_zero") {
 #     splits which provide their own native library. (optional)
 #   namespace: Registration functions will be wrapped into this. (optional)
 #   require_native_mocks: Enforce that any native calls using
-#     org.chromium.base.annotations.NativeMethods must have a mock set
+#     org.jni_zero.NativeMethods must have a mock set
 #     (optional).
 #   enable_native_mocks: Allow native calls using
-#     org.chromium.base.annotations.NativeMethods to be mocked in tests
+#     org.jni_zero.NativeMethods to be mocked in tests
 #     (optional).
 #
 # Example
@@ -208,11 +208,6 @@ template("generate_jni_registration") {
       public_configs = [
         # This gives targets depending on this registration access to our generated header.
         "//third_party/jni_zero:jni_include_dir",
-
-        # For now, we unconditionally use chromium's base. We could move this
-        # to depend on an invoker variable like we do with generate_jni_impl
-        # if we want this to be configurable.
-        "//third_party/jni_zero:use_chromium_base_define",
       ]
     }
 
@@ -229,9 +224,6 @@ template("generate_jni_registration") {
 # JNI target implementation. See generate_jni or generate_jar_jni for usage.
 template("generate_jni_impl") {
   public_configs = []
-  if (!defined(invoker.use_chromium_base) || invoker.use_chromium_base) {
-    public_configs += [ "//third_party/jni_zero:use_chromium_base_define" ]
-  }
   _jni_zero_action_target_name = target_name + "__action"
   if (current_toolchain != default_toolchain && target_os == "android") {
     # Rather than regenerating .h files in secondary toolchains, re-use the
@@ -258,19 +250,8 @@ template("generate_jni_impl") {
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
       if (defined(invoker.jni_generator_include)) {
         _jni_generator_include = invoker.jni_generator_include
-        _jni_generator_include_deps = []
       } else {
         _jni_generator_include = "//third_party/jni_zero/jni_zero_helper.h"
-        _jni_generator_include_deps = [
-          # Using //base/android/jni_generator/jni_generator_helper.h introduces
-          # a dependency on buildflags targets indirectly through
-          # base/android/jni_android.h, which is part of the //base target.
-          # This can't depend directly on //base without causing a dependency
-          # cycle, though.
-          "//base:debugging_buildflags",
-          "//base:logging_buildflags",
-          "//build:chromeos_buildflags",
-        ]
       }
 
       # The sources aren't compiled so don't check their dependencies.
@@ -284,8 +265,6 @@ template("generate_jni_impl") {
       if (!defined(public_deps)) {
         public_deps = []
       }
-      public_deps += _jni_generator_include_deps
-
       public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
 
       inputs = []

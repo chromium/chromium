@@ -7,11 +7,6 @@
 
 #include <jni.h>
 
-#if defined(USE_CHROMIUM_BASE)
-// Used for ARCH_CPU_X86 - embedder must define this correctly if they want
-// 16-byte stack alignment on x86.
-#include "build/build_config.h"
-#endif                     // defined(USE_CHROMIUM_BASE)
 #include "third_party/jni_zero/core.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_int_wrapper.h"
