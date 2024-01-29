@@ -782,7 +782,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/1521921): Test is flaky on Mac asan.
-#if BUILDFLAG(IS_MAC) && defined(LEAK_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor2_ScrollChild \
   DISABLED_DeviceScaleFactor2_ScrollChild
 #else
