@@ -95,8 +95,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({AutofillProfile::Source::kLocalOrSyncable,
                        AutofillProfile::Source::kAccount}));
 
-// Tests reading/writing name, email, company, address, phone number and
-// birthdate information.
+// Tests reading/writing name, email, company, address and phone number
+// information.
 TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   AutofillProfile home_profile = CreateAutofillProfile();
 
@@ -176,9 +176,6 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
       ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca", VerificationStatus::kObserved);
 
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
-  home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
-  home_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
-  home_profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
   home_profile.set_language_code("en");
 
   // Add the profile to the table.
@@ -301,9 +298,6 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
-  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
-  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
-  profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
   profile.set_language_code("en");
   profile.FinalizeAfterImport();
   table_->AddAutofillProfile(profile);

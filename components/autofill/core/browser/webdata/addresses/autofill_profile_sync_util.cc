@@ -317,11 +317,6 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_FLOOR)));
 
-  // Set birthdate-related values.
-  specifics->set_birthdate_day(entry.GetRawInfoAsInt(BIRTHDATE_DAY));
-  specifics->set_birthdate_month(entry.GetRawInfoAsInt(BIRTHDATE_MONTH));
-  specifics->set_birthdate_year(entry.GetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR));
-
   return entity_data;
 }
 
@@ -594,11 +589,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ADDRESS_HOME_FLOOR, UTF8ToUTF16(specifics.address_home_floor()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_floor_status()));
-
-  // Set birthdate-related fields.
-  profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
-  profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
-  profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, specifics.birthdate_year());
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.

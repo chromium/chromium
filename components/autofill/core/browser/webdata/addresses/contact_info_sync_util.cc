@@ -291,11 +291,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_company_name(), COMPANY_NAME);
   s.Set(specifics.mutable_phone_home_whole_number(), PHONE_HOME_WHOLE_NUMBER);
 
-  // Set birthdate-related values and statuses.
-  s.Set(specifics.mutable_birthdate_day(), BIRTHDATE_DAY);
-  s.Set(specifics.mutable_birthdate_month(), BIRTHDATE_MONTH);
-  s.Set(specifics.mutable_birthdate_year(), BIRTHDATE_4_DIGIT_YEAR);
-
   return specifics;
 }
 
@@ -424,11 +419,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.company_name(), COMPANY_NAME);
   s.Set(specifics.phone_home_whole_number(), PHONE_HOME_WHOLE_NUMBER);
 
-  // Set birthdate-related values and statuses.
-  s.Set(specifics.birthdate_day(), BIRTHDATE_DAY);
-  s.Set(specifics.birthdate_month(), BIRTHDATE_MONTH);
-  s.Set(specifics.birthdate_year(), BIRTHDATE_4_DIGIT_YEAR);
-
   profile->FinalizeAfterImport();
   return profile;
 }
@@ -555,16 +545,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_phone_home_whole_number())) {
     trimmed_specifics.clear_phone_home_whole_number();
-  }
-  // Delete birthdate-related values and statuses.
-  if (d.Delete(trimmed_specifics.mutable_birthdate_day())) {
-    trimmed_specifics.clear_birthdate_day();
-  }
-  if (d.Delete(trimmed_specifics.mutable_birthdate_month())) {
-    trimmed_specifics.clear_birthdate_month();
-  }
-  if (d.Delete(trimmed_specifics.mutable_birthdate_year())) {
-    trimmed_specifics.clear_birthdate_year();
   }
 
   return trimmed_specifics;
