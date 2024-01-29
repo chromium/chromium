@@ -238,6 +238,7 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->quick_start_setup_ongoing = true;
+    controller_state_ = ControllerState::WAITING_TO_RESUME_AFTER_UPDATE;
   }
 
   StartObservingScreenTransitions();
@@ -469,6 +470,17 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->quick_start_setup_ongoing = true;
+
+    if (IsBluetoothDisabled()) {
+      controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
+      UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
+      return;
+    }
+
+    StartAdvertising();
+  } else if (controller_state_ ==
+             ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
+    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
 
     if (IsBluetoothDisabled()) {
       controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;

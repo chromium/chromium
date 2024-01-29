@@ -157,6 +157,12 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
   authenticated_connection_ = authenticated_connection;
+
+  if (session_context_.is_resume_after_update()) {
+    UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
+    return;
+  }
+
   WaitForUserVerification();
 }
 
