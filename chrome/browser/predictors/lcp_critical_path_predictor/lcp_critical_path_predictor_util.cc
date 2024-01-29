@@ -395,6 +395,27 @@ bool RecordLcpInfluencerScriptUrlsHistogram(
   return updater->has_updated();
 }
 
+bool RecordPreconnectOriginsHistogram(const LoadingPredictorConfig& config,
+                                      const std::vector<GURL>& origins,
+                                      LcppData& data) {
+  // There could be multiple preconnect origins. Record each in a separate
+  // histogram.
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
+          config, data.mutable_lcpp_stat()->preconnect_origin_stat());
+  CHECK(updater);
+  for (auto& origin : origins) {
+    const auto& origin_spec = origin.spec();
+    if (!IsValidUrlInLcppStringFrequencyStatData(origin_spec)) {
+      continue;
+    }
+    updater->Update(origin_spec);
+  }
+  *data.mutable_lcpp_stat()->mutable_preconnect_origin_stat() =
+      updater->ToLcppStringFrequencyStatData();
+  return updater->has_updated();
+}
+
 bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
                                     const std::vector<GURL>& fetched_font_urls,
                                     LcppData& data) {
@@ -512,12 +533,14 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_data);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_data);
+  std::vector<GURL> preconnect_origins =
+      PredictPreconnectableOrigins(lcpp_data);
 
   if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty() ||
-      !fetched_fonts.empty()) {
+      !fetched_fonts.empty() || !preconnect_origins.empty()) {
     return blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
         std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
-        std::move(fetched_fonts));
+        std::move(fetched_fonts), std::move(preconnect_origins));
   }
   return std::nullopt;
 }
@@ -616,6 +639,8 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
       RecordFetchedFontUrlsHistogram(config, inputs.font_urls, data);
   data_updated |= RecordFetchedSubresourceUrlsHistogram(
       config, inputs.subresource_urls, data);
+  data_updated |=
+      RecordPreconnectOriginsHistogram(config, inputs.preconnect_origins, data);
   base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
                                 base::checked_cast<int>(inputs.font_url_count));
   return data_updated;

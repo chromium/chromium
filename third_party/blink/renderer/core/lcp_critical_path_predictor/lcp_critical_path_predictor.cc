@@ -165,6 +165,22 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kLCPPAutoPreconnectLcpOrigin)) {
+    auto root_origin =
+        url::Origin::Create((GURL)lcp_element.GetDocument().Url());
+    if (const HTMLImageElement* image_element =
+            DynamicTo<HTMLImageElement>(lcp_element)) {
+      const KURL& lcp_image_url = image_element->SourceURL();
+      if (!lcp_image_url.IsEmpty() && lcp_image_url.IsValid() &&
+          lcp_image_url.ProtocolIsInHTTPFamily()) {
+        auto lcp_origin = url::Origin::Create((GURL)lcp_image_url);
+        if (!lcp_origin.IsSameOriginWith(root_origin)) {
+          GetHost().SetPreconnectOrigins({(KURL)lcp_origin.GetURL()});
+        }
+      }
+    }
+  }
+
   if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
     if (const HTMLImageElement* image_element =
             DynamicTo<HTMLImageElement>(lcp_element)) {

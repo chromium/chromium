@@ -10,6 +10,7 @@ export async function setupLCPTest(lcp_locator_protos) {
     hint.lcpElementLocators = [];
     hint.lcpInfluencerScripts = [];
     hint.fetchedFonts = [];
+    hint.preconnectOrigins = [];
 
     let getLCPBytes = async function(proto_file) {
       const resp = await fetch(

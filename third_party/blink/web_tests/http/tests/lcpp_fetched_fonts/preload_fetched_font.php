@@ -23,6 +23,7 @@ if (window.location.search != "?start") {
   // All fields are non-nullable.
   hint.lcpElementLocators = [];
   hint.lcpInfluencerScripts = [];
+  hint.preconnectOrigins = [];
 
   const web_test_control_host_remote = new NonAssociatedWebTestControlHostRemote();
   web_test_control_host_remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
