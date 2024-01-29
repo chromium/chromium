@@ -1374,7 +1374,6 @@ component("base") {
       "files/dir_reader_posix.h",
       "files/file_path_watcher_stub.cc",  # See crbug.com/851641.
       "files/file_posix.cc",
-      "files/file_util_fuchsia.cc",
       "files/memory_mapped_file_posix.cc",
       "fuchsia/default_job.cc",
       "fuchsia/default_job.h",
