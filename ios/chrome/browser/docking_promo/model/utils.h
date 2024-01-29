@@ -7,6 +7,11 @@
 
 #import "base/time/time.h"
 
+// For testing only.
+// Returns YES if the Docking Promo is forced for display via Chrome
+// Experimental Settings.
+BOOL IsDockingPromoForcedForDisplay();
+
 // Returns whether the user eligibility criteria to show the Docking Promo have
 // been met, namely:
 //

@@ -71,6 +71,11 @@
 
 // Register the promo with the PromosManager, if the conditions are met.
 - (void)maybeRegisterPromo {
+  if (IsDockingPromoForcedForDisplay()) {
+    [self registerPromo];
+    return;
+  }
+
   // If the app was never foregrounded, do not register the Docking Promo.
   if (_appState.lastTimeInForeground.is_null()) {
     return;

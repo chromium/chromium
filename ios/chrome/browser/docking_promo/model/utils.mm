@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
+BOOL IsDockingPromoForcedForDisplay() {
   NSString* forced_promo_name = experimental_flags::GetForcedPromoToDisplay();
 
   if ([forced_promo_name length] > 0) {
@@ -25,6 +25,14 @@ BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
     }
 
     return forced_promo.value() == promos_manager::Promo::DockingPromo;
+  }
+
+  return NO;
+}
+
+BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
+  if (IsDockingPromoForcedForDisplay()) {
+    return YES;
   }
 
   if (IsChromeLikelyDefaultBrowser()) {
