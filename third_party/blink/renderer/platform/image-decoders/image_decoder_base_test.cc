@@ -109,14 +109,6 @@ void ImageDecoderBaseTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
   data_dir_ = data_dir.AppendASCII("webkit").AppendASCII("data").AppendASCII(
       format_.Utf8() + "_decoder");
-  if (!base::PathExists(data_dir_)) {
-    const testing::TestInfo* const test_info =
-        testing::UnitTest::GetInstance()->current_test_info();
-    VLOG(0) << test_info->name()
-            << " not running because test data wasn't found.";
-    data_dir_.clear();
-    return;
-  }
 }
 
 base::FilePath ImageDecoderBaseTest::GetMD5SumPath(const base::FilePath& path) {
@@ -126,10 +118,13 @@ base::FilePath ImageDecoderBaseTest::GetMD5SumPath(const base::FilePath& path) {
 }
 
 Vector<base::FilePath> ImageDecoderBaseTest::GetImageFiles() const {
+  Vector<base::FilePath> image_files;
+  if (!base::PathExists(data_dir_)) {
+    return image_files;
+  }
   std::string pattern = "*." + format_.Utf8();
   base::FileEnumerator enumerator(data_dir_, false,
                                   base::FileEnumerator::FILES);
-  Vector<base::FilePath> image_files;
   for (base::FilePath next_file_name = enumerator.Next();
        !next_file_name.empty(); next_file_name = enumerator.Next()) {
     base::FilePath base_name = next_file_name.BaseName();
@@ -153,14 +148,18 @@ bool ImageDecoderBaseTest::ShouldImageFail(const base::FilePath& path) const {
 void ImageDecoderBaseTest::TestDecoding(
     blink::ImageDecoderBaseTest::FileSelection file_selection,
     const int64_t threshold) {
-  if (data_dir_.empty()) {
+  const Vector<base::FilePath> image_files = GetImageFiles();
+  if (image_files.empty()) {
+    const testing::TestInfo* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    VLOG(0) << "TestDecoding() in " << test_info->test_suite_name() << "."
+            << test_info->name()
+            << " not running because test data wasn't found.";
     return;
   }
-  const Vector<base::FilePath> image_files(GetImageFiles());
-  for (Vector<base::FilePath>::const_iterator i = image_files.begin();
-       i != image_files.end(); ++i) {
-    if (!ShouldSkipFile(*i, file_selection, threshold)) {
-      TestImageDecoder(*i, GetMD5SumPath(*i), kFirstFrameIndex);
+  for (const base::FilePath& file : image_files) {
+    if (!ShouldSkipFile(file, file_selection, threshold)) {
+      TestImageDecoder(file, GetMD5SumPath(file), kFirstFrameIndex);
     }
   }
 }
@@ -175,6 +174,8 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   }
 #endif
 
+  CHECK(base::PathExists(image_path));
+  CHECK(base::PathExists(md5_sum_path));
   Vector<char> image_contents;
   ReadFileToVector(image_path, &image_contents);
   EXPECT_TRUE(image_contents.size());

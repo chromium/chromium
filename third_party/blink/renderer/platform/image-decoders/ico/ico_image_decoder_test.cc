@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <memory>
+#include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -125,12 +126,14 @@ TEST_F(ICOImageDecoderCorpusTest, Decoding) {
 }
 
 TEST_F(ICOImageDecoderCorpusTest, ImageNonZeroFrameIndex) {
-  if (data_dir().empty()) {
-    return;
-  }
   // Test that the decoder decodes multiple sizes of icons which have them.
   // Load an icon that has both favicon-size and larger entries.
   base::FilePath multisize_icon_path(data_dir().AppendASCII("yahoo.ico"));
+
+  // data_dir may not exist without src_internal checkouts.
+  if (!base::PathExists(multisize_icon_path)) {
+    return;
+  }
   const base::FilePath md5_sum_path(GetMD5SumPath(multisize_icon_path).value() +
                                     FILE_PATH_LITERAL("2"));
   static const int kDesiredFrameIndex = 3;
