@@ -7830,7 +7830,7 @@
   {
     "name": "third-party-storage-partitioning",
     "owners": [ "miketaylr@chromium.org", "//third_party/blink/public/common/storage_key/OWNERS" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 124
   },
   {
     "name": "throttle-ambient-animations",
