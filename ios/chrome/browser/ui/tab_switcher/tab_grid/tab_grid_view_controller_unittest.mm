@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
@@ -68,6 +69,8 @@ class TabGridViewControllerTest : public PlatformTest {
     view_controller_.incognitoGridContainerViewController = incognito_grids_;
     view_controller_.regularGridContainerViewController = regular_grids_;
     view_controller_.remoteGridContainerViewController = remote_grids_;
+    view_controller_.pinnedTabsViewController =
+        [[PinnedTabsViewController alloc] init];
   }
 
   // Checks that `view_controller_` can perform the `action`. The sender is set

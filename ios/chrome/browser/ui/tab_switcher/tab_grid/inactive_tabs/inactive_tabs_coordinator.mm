@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
@@ -143,7 +144,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   __weak id<InactiveTabsCoordinatorDelegate> _delegate;
 
   // Provides the context menu for the tabs on the grid.
-  __weak id<TabContextMenuProvider> _menuProvider;
+  TabContextMenuHelper* _contextMenuProvider;
 
   // The navigation controller for inactive tabs settings.
   SettingsNavigationController* _settingsController;
@@ -153,18 +154,15 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 #pragma mark - Public
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                      delegate:(id<InactiveTabsCoordinatorDelegate>)delegate
-                  menuProvider:(id<TabContextMenuProvider>)menuProvider {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                  delegate:(id<InactiveTabsCoordinatorDelegate>)
+                                               delegate {
   CHECK(IsInactiveTabsAvailable());
-  CHECK(menuProvider);
   CHECK(delegate);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _delegate = delegate;
-    _menuProvider = menuProvider;
   }
   return self;
 }
@@ -181,6 +179,10 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)start {
   [super start];
+
+  _contextMenuProvider = [[TabContextMenuHelper alloc]
+        initWithBrowserState:self.browser->GetActiveBrowser()->GetBrowserState()
+      tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   Browser* browser = self.browser;
   SnapshotStorage* snapshotStorage =
@@ -214,7 +216,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   self.mediator.consumer = self.viewController.gridViewController;
 
-  self.viewController.gridViewController.menuProvider = _menuProvider;
+  self.viewController.gridViewController.menuProvider = _contextMenuProvider;
 
   // Add the Inactive Tabs view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;

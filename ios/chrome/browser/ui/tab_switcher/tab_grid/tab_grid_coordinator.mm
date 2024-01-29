@@ -214,8 +214,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
-// Mediator for pinned Tabs.
-@property(nonatomic, strong) PinnedTabsMediator* pinnedTabsMediator;
 // Mediator for the inactive tabs button.
 @property(nonatomic, strong)
     InactiveTabsButtonMediator* inactiveTabsButtonMediator;
@@ -239,10 +237,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
-
-// Helper objects to be provided to the TabGridViewController to create
-// the context menu configuration.
-@property(nonatomic, strong) TabContextMenuHelper* regularTabContextMenuHelper;
 
 @property(weak, nonatomic, readonly) UIWindow* window;
 
@@ -730,6 +724,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
             gridMediatorDelegate:self];
   _regularGridCoordinator.disabledTabViewControllerDelegate =
       self.baseViewController;
+  _regularGridCoordinator.tabContextMenuDelegate = self;
   // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
   // it should be a RegularViewController instead of a TabGridViewController.
   _regularGridCoordinator.tabGridViewController = self.baseViewController;
@@ -740,11 +735,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _regularGridCoordinator.disabledViewController;
   self.baseViewController.regularGridContainerViewController =
       _regularGridCoordinator.gridContainerViewController;
+  self.baseViewController.pinnedTabsViewController =
+      _regularGridCoordinator.pinnedTabsViewController;
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
-  if (IsPinnedTabsEnabled()) {
-    // TODO(crbug.com/1457146): To remove when pinned tabs is fully moved.
-    self.pinnedTabsMediator = _regularGridCoordinator.pinnedTabsMediator;
-  }
 
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
@@ -799,18 +792,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.remoteTabsViewController.menuProvider =
       self.recentTabsContextMenuHelper;
 
-  self.regularTabContextMenuHelper = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.regularBrowser->GetBrowserState()
-      tabContextMenuDelegate:self];
-  self.baseViewController.regularTabsContextMenuProvider =
-      self.regularTabContextMenuHelper;
-
   if (IsInactiveTabsAvailable()) {
     self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:_inactiveBrowser
-                          delegate:self
-                      menuProvider:self.regularTabContextMenuHelper];
+                          delegate:self];
+    self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
+
     [self.inactiveTabsCoordinator start];
 
     baseViewController.inactiveTabsDelegate =
@@ -931,7 +919,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // setting the handler to nil.
   self.baseViewController.handler = nil;
   self.recentTabsContextMenuHelper = nil;
-  self.regularTabContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];

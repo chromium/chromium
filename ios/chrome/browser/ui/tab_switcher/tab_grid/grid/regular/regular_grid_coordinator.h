@@ -8,24 +8,28 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator+subclassing.h"
 
 @class PinnedTabsMediator;
+@class PinnedTabsViewController;
 @class RegularGridMediator;
 @class RegularGridViewController;
+@protocol TabContextMenuDelegate;
 
 // Coordinator to manage regular grid.
 @interface RegularGridCoordinator : BaseGridCoordinator
 
+// Delegate for the context menu.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
+
 // Grid view controller.
-// TODO(crbug.com/1457146): Replace with RegularGridViewController when
-// possible.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong)
     RegularGridViewController* gridViewController;
+// Pinned tabs view controller.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
 // Regular grid mediator.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong) RegularGridMediator* regularGridMediator;
-// Pinned tabs mediator.
-// TODO(crbug.com/1457146): Remove when it is fully moved.
-@property(nonatomic, readonly, weak) PinnedTabsMediator* pinnedTabsMediator;
 
 // Stops all child coordinators.
 - (void)stopChildCoordinators;

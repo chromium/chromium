@@ -112,8 +112,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // `-contentWillDisappearAnimated methods. Note that the `Did` methods are not
 // reliably called (e.g., edge case in multitasking).
 @property(nonatomic, assign) BOOL viewVisible;
-// Child view controllers.
-@property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
 
 // The view controller to display when the recent tabs are disabled.
 @property(nonatomic, strong)
@@ -191,10 +189,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     } else {
       _remoteTabsViewController = [[RecentTabsTableViewController alloc] init];
     }
-
-    if (IsPinnedTabsEnabled()) {
-      _pinnedTabsViewController = [[PinnedTabsViewController alloc] init];
-    }
   }
   return self;
 }
@@ -217,6 +211,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupBottomToolbar];
 
   if (IsPinnedTabsEnabled()) {
+    CHECK(self.pinnedTabsViewController);
     [self setupPinnedTabsViewController];
   }
 
@@ -491,7 +486,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)dismissModals {
-  [self.pinnedTabsConsumer dismissModals];
   [self.remoteTabsViewController dismissModals];
 }
 
@@ -581,23 +575,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _priceCardDataSource = priceCardDataSource;
 }
 
-- (id<TabCollectionConsumer>)pinnedTabsConsumer {
-  return self.pinnedTabsViewController;
-}
-
 - (id<RecentTabsConsumer>)remoteTabsConsumer {
   return self.remoteTabsViewController;
-}
-
-- (void)setRegularTabsContextMenuProvider:(id<TabContextMenuProvider>)provider {
-  if (_regularTabsContextMenuProvider == provider)
-    return;
-  _regularTabsContextMenuProvider = provider;
-
-  self.regularTabsViewController.menuProvider = provider;
-  if (IsPinnedTabsEnabled()) {
-    self.pinnedTabsViewController.menuProvider = provider;
-  }
 }
 
 #pragma mark - TabGridPaging
@@ -1142,7 +1121,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   PinnedTabsViewController* pinnedTabsViewController =
       self.pinnedTabsViewController;
   pinnedTabsViewController.delegate = self;
-  pinnedTabsViewController.dragDropHandler = self.pinnedTabsDragDropHandler;
 
   [self addChildViewController:pinnedTabsViewController];
   [self.view addSubview:pinnedTabsViewController.view];

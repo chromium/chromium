@@ -10,7 +10,7 @@
 @class InactiveTabsCoordinator;
 @protocol GridCommands;
 @protocol GridToolbarsConfigurationProvider;
-@protocol TabContextMenuProvider;
+@protocol TabContextMenuDelegate;
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -46,13 +46,13 @@ class WebStateID;
 // The mutator receiver handling regular grid calls.
 @property(nonatomic, weak, readonly) id<GridToolbarsConfigurationProvider>
     toolbarsConfigurationProvider;
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // Init the inactive tabs coordinator, all parameters should *not* be nil.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                       delegate:(id<InactiveTabsCoordinatorDelegate>)delegate
-                  menuProvider:(id<TabContextMenuProvider>)menuProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
