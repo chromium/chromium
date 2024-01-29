@@ -38,10 +38,11 @@ constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
 // NOTE: The factory verifies that the usage for SIs created from empty GMBs
 // includes GLES2 usage (either read or write) as the factory's entire purpose
 // is GL-Vulkan interop, so it's necessary to specify *some* GLES2 usage here
-// even though the tests don't actually use the GLES2 interface.
-constexpr uint32_t kUsage =
-    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
-    SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_GLES2_READ;
+// even though the tests don't actually use the GLES2 interface. The tests do
+// exercise Skia read and write accesses, so include RASTER_{READ, WRITE} usage.
+constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_RASTER_READ |
+                            SHARED_IMAGE_USAGE_RASTER_WRITE |
+                            SHARED_IMAGE_USAGE_GLES2_READ;
 
 base::NoDestructor<base::test::ScopedFeatureList> g_scoped_feature_list;
 
