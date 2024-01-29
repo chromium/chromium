@@ -1108,6 +1108,12 @@ constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 // will be replaced by DanglingUntriaged where necessary.
 constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
 
+// Temporary alias introduced in the context of rewriting std::set<T*> into
+// std::set<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
+// checks on the CQ. This alias will be removed gradually after the rewrite cl
+// lands and will be replaced by DanglingUntriaged where necessary.
+constexpr inline auto SetExperimental = base::RawPtrTraits::kMayDangle;
+
 // Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
 // in Mocked method signatures as the macros don't allow commas within.
 template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
