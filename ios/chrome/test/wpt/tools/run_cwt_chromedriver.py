@@ -6,7 +6,6 @@
 import argparse
 import os
 import sys
-import subprocess
 import time
 
 def GetChromiumSrcDir():
@@ -70,9 +69,13 @@ egtests_app = test_apps.EgtestsApp(
     egtests_app=test_app, test_args=['--port %s' % args.port],
     host_app_path=host_app, inserted_libs=inserted_libs)
 
+if iossim_util.is_device_with_udid_simulator(destination):
+    xcodebuild_runner.shutdown_all_simulators()
+    xcodebuild_runner.erase_all_simulators()
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
     clones=1, retries=1, readline_timeout=constants.READLINE_TIMEOUT,
     out_dir=output_directory,
-    cert_path='../../wpt_tools/wpt/tools/certs/cacert.pem')
+    cert_path='../../wpt_tools/wpt/tools/certs/cacert.pem',
+    erase_simulators=False)
 
 launch_command.launch()
