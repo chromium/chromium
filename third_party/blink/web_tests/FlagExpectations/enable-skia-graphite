@@ -31,6 +31,3 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 # WPT failures
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
-# ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
-crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]

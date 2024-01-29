@@ -2005,7 +2005,6 @@ crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-0
 crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-085.html [ Failure ]
 crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-086.html [ Failure ]
 crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-087.html [ Failure ]
-crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-087.html [ Failure ]
 crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-088.html [ Failure ]
 crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-089.html [ Failure ]
 crbug.com/893490 [ Linux ] external/wpt/css/css-text/white-space/control-chars-08A.html [ Failure ]
@@ -2779,7 +2778,6 @@ crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-f
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
-crbug.com/626703 [ Debug Mac13-arm64 ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/workers/modules/shared-worker-import-failure.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
@@ -3461,7 +3459,7 @@ crbug.com/722212 fast/events/pointerevents/mouse-pointer-event-properties.html [
 
 # Sheriff failures 2018-08-15
 crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
-crbug.com/874837 [ Linux ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
+crbug.com/874837 [ Debug Linux ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
 
 # Sheiff failures 2021-04-09
 
@@ -3691,7 +3689,7 @@ crbug.com/825733 [ Win ] media/color-profile-video-seek-filter.html [ Failure Pa
 crbug.com/754986 media/video-transformed.html [ Failure Pass ]
 
 # Sheriff 2018-03-29
-crbug.com/827209 [ Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
+crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 
 # Sheriff 2018-04-11
@@ -6662,7 +6660,6 @@ crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.serve
 crbug.com/1518938 [ Linux ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
 crbug.com/1519124 [ Mac13 Release ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/1519124 [ Mac13-arm64 Release ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
-crbug.com/1519124 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1519124 [ Mac11 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1519124 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1519124 [ Mac12 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
