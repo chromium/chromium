@@ -15,7 +15,6 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,9 +35,6 @@ constexpr int kCameraRollItemVerticalSpacing = 8;
 constexpr int kCameraRollItemHorizontalPadding = 4;
 constexpr int kCameraRollItemVerticalPadding = 4;
 constexpr int kHeaderLabelLineHeight = 48;
-
-// Typography.
-constexpr int kHeaderTextFontSizeDip = 15;
 
 gfx::Size GetCameraRollItemSize() {
   int dimension =
@@ -62,15 +58,8 @@ class HeaderView : public views::Label {
     SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
 
-    if (chromeos::features::IsJellyrollEnabled()) {
-      TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
-                                            *this);
-    } else {
-      SetFontList(font_list()
-                      .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
-                                           font_list().GetFontSize())
-                      .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-    }
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                          *this);
 
     // Overriding because the typography line height set does not match Phone
     // Hub specs.

@@ -47,7 +47,6 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -140,13 +139,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   icon->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   icon_ = tray_container()->AddChildView(std::move(icon));
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active());
-  } else {
-    icon_->SetImageModel(views::ImageButton::STATE_NORMAL,
-                         ui::ImageModel::FromVectorIcon(
-                             kPhoneHubPhoneIcon, kColorAshIconColorPrimary));
-  }
+
+  UpdateTrayItemColor(is_active());
 
   onboarding_nudge_controller_ =
       features::IsPhoneHubOnboardingNotifierRevampEnabled()
@@ -200,7 +194,6 @@ void PhoneHubTray::ClickedOutsideBubble() {
 }
 
 void PhoneHubTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   icon_->SetImageModel(
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(

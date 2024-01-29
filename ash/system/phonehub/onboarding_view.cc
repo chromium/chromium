@@ -28,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -83,9 +82,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON),
-        chromeos::features::IsJellyrollEnabled()
-            ? PillButton::Type::kPrimaryWithoutIcon
-            : PillButton::Type::kDefaultWithoutIcon,
+        PillButton::Type::kPrimaryWithoutIcon,
         /*icon=*/nullptr);
     get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
     AddButton(std::move(get_started));

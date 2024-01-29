@@ -10,7 +10,6 @@
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -28,16 +27,6 @@ void ConfigureLabelProperties(views::Label* label) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetCanProcessEventsWithinSubtree(false);
-}
-
-void ConfigureLabelFonts(views::Label* label, int line_height, int font_size) {
-  gfx::Font default_font;
-  gfx::Font label_font =
-      default_font.Derive(font_size - default_font.GetFontSize(),
-                          gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
-  gfx::FontList font_list(label_font);
-  label->SetFontList(font_list);
-  label->SetLineHeight(line_height);
 }
 
 }  // namespace
@@ -74,24 +63,15 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   ConfigureLabelProperties(label_);
   ConfigureLabelProperties(sub_label_);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // StyleLabel() will configure the height, weight, font, etc.
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
-                                          *label_);
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
-                                          *sub_label_);
-    sub_label_color_ = GetColorProvider()
-                           ? GetColorProvider()->GetColor(
-                                 cros_tokens::kCrosSysOnSurfaceVariant)
-                           : gfx::kPlaceholderColor;
-  } else {
-    ConfigureLabelFonts(label_, kUnifiedFeaturePodLabelLineHeight,
-                        kUnifiedFeaturePodLabelFontSize);
-    ConfigureLabelFonts(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
-                        kUnifiedFeaturePodSubLabelFontSize);
-    sub_label_color_ = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
-  }
+  // StyleLabel() will configure the height, weight, font, etc.
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *label_);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                        *sub_label_);
+  sub_label_color_ =
+      GetColorProvider()
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)
+          : gfx::kPlaceholderColor;
 
   SetEnabled(true /* enabled */);
 }
@@ -128,29 +108,22 @@ const std::u16string& QuickActionItem::GetItemLabel() const {
 void QuickActionItem::SetEnabled(bool enabled) {
   View::SetEnabled(enabled);
   icon_button_->SetEnabled(enabled);
-  if (chromeos::features::IsJellyrollEnabled() && !GetColorProvider()) {
+  if (!GetColorProvider()) {
     return;
   }
 
   // When creating QuickActionItem |sub_label_color_| may have been set to
-  // gfx::kPlaceholderColor, if color provider was null and Jellyroll enabled,
-  // update color here.
+  // gfx::kPlaceholderColor if color provider was null, update color here.
+  // TODO(b/322067753): Convert all usage of |AshColorProvider| to use
+  // |cros_tokens| instead.
   sub_label_color_ =
-      chromeos::features::IsJellyrollEnabled()
-          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)
-          : AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorSecondary);
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   if (!enabled) {
     label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary));
-    if (chromeos::features::IsJellyrollEnabled()) {
-      sub_label_->SetEnabledColor(
-          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
-    } else {
-      sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary));
-    }
+    sub_label_->SetEnabledColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
 
     sub_label_->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE));

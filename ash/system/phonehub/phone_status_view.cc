@@ -24,7 +24,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -55,9 +54,6 @@ constexpr int kSeparatorHeight = 18;
 constexpr int kPhoneNameLabelWidthMax = 160;
 constexpr auto kBorderInsets = gfx::Insets::VH(0, 16);
 constexpr auto kBatteryLabelBorderInsets = gfx::Insets::TLBR(0, 0, 0, 4);
-
-// Typograph in dip.
-constexpr int kBatteryLabelFontSize = 11;
 
 // Multiplied by the int returned by GetSignalStrengthAsInt() to obtain a
 // percentage for the signal strength displayed by the tooltip when hovering
@@ -109,6 +105,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   phone_model_->AddObserver(this);
 
   phone_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
   phone_name_label_->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -128,17 +125,13 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
 
   battery_label_->SetAutoColorReadabilityEnabled(false);
   battery_label_->SetSubpixelRenderingEnabled(false);
+
+  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
   battery_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
-                                          *battery_label_);
-  } else {
-    auto default_font = battery_label_->font_list();
-    battery_label_->SetFontList(default_font.DeriveWithSizeDelta(
-        kBatteryLabelFontSize - default_font.GetFontSize()));
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *battery_label_);
 
   battery_label_->SetBorder(
       views::CreateEmptyBorder(kBatteryLabelBorderInsets));

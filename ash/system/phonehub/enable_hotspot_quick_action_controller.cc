@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
@@ -60,7 +59,7 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
 
   // Ensure that GetColorProvider() is not null as it will be used
   // to set |sub_label_color|.
-  if (chromeos::features::IsJellyrollEnabled() && !item_->GetColorProvider()) {
+  if (!item_->GetColorProvider()) {
     return;
   }
 
@@ -75,24 +74,16 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
       button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
-      sub_label_color =
-          chromeos::features::IsJellyrollEnabled()
-              ? item_->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysOnSurfaceVariant)
-              : AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      sub_label_color = item_->GetColorProvider()->GetColor(
+          cros_tokens::kCrosSysOnSurfaceVariant);
       break;
     case ActionState::kConnecting:
       icon_enabled = true;
       button_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE;
-      sub_label_color =
-          chromeos::features::IsJellyrollEnabled()
-              ? item_->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysOnSurfaceVariant)
-              : AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      sub_label_color = item_->GetColorProvider()->GetColor(
+          cros_tokens::kCrosSysOnSurfaceVariant);
       break;
     case ActionState::kConnected:
       icon_enabled = true;
@@ -100,11 +91,7 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE;
       sub_label_color =
-          chromeos::features::IsJellyrollEnabled()
-              ? item_->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysPositive)
-              : AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorPositive);
+          item_->GetColorProvider()->GetColor(cros_tokens::kCrosSysPositive);
       break;
     case ActionState::kNoReception:
       icon_enabled = false;
@@ -112,12 +99,8 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
       state_text_id =
           IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_NO_RECEPTION_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
-      sub_label_color =
-          chromeos::features::IsJellyrollEnabled()
-              ? item_->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysOnSurfaceVariant)
-              : AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      sub_label_color = item_->GetColorProvider()->GetColor(
+          cros_tokens::kCrosSysOnSurfaceVariant);
       break;
   }
 
