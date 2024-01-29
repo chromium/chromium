@@ -2214,7 +2214,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // * Send the focus event for the initially focused element.
   for (const FormFieldData::FillData& field : fields) {
     WebFormControlElement element =
-        FindFormControlByRendererId(field.unique_renderer_id);
+        GetFormControlByRendererId(field.unique_renderer_id);
     if (element.IsNull()) {
       continue;
     }
@@ -2268,7 +2268,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // Autofill the non-initiating elements.
   for (const FormFieldData::FillData* field_data : autofillable_fields) {
     WebFormControlElement element =
-        FindFormControlByRendererId(field_data->unique_renderer_id);
+        GetFormControlByRendererId(field_data->unique_renderer_id);
     if (!element.IsNull()) {
       filled_fields.emplace_back(element, element.GetAutofillState());
       fill_or_preview(*field_data, false, element, field_data_manager);
@@ -2471,7 +2471,7 @@ std::u16string InferLabelForElement(const WebFormControlElement& element,
   return u"";
 }
 
-WebFormElement FindFormByRendererId(FormRendererId form_renderer_id) {
+WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
   if (!form_renderer_id) {
     return WebFormElement();
   }
@@ -2482,7 +2482,7 @@ WebFormElement FindFormByRendererId(FormRendererId form_renderer_id) {
              : WebFormElement();
 }
 
-WebFormControlElement FindFormControlByRendererId(
+WebFormControlElement GetFormControlByRendererId(
     FieldRendererId queried_form_control) {
   if (!queried_form_control) {
     return WebFormControlElement();
@@ -2495,18 +2495,7 @@ WebFormControlElement FindFormControlByRendererId(
              : WebFormControlElement();
 }
 
-std::vector<WebFormControlElement> FindFormControlsByRendererId(
-    base::span<const FieldRendererId> queried_form_controls) {
-  std::vector<WebFormControlElement> control_elements;
-  control_elements.reserve(queried_form_controls.size());
-  for (FieldRendererId queried_form_control : queried_form_controls) {
-    control_elements.push_back(
-        FindFormControlByRendererId(queried_form_control));
-  }
-  return control_elements;
-}
-
-WebElement FindContentEditableByRendererId(FieldRendererId field_renderer_id) {
+WebElement GetContentEditableByRendererId(FieldRendererId field_renderer_id) {
   WebElement field =
       WebNode::FromDomNodeId(*field_renderer_id).DynamicTo<WebElement>();
   return !field.IsNull() && field.IsContentEditable() ? field : WebElement();

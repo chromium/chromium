@@ -626,27 +626,27 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   WebVector<WebFormElement> forms = doc.Forms();
 
   for (const auto& form : forms)
-    EXPECT_EQ(form, FindFormByRendererId(GetFormRendererId(form)));
+    EXPECT_EQ(form, GetFormByRendererId(GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
                                       1000);
-  EXPECT_TRUE(FindFormByRendererId(non_existing_form_id).IsNull());
+  EXPECT_TRUE(GetFormByRendererId(non_existing_form_id).IsNull());
 }
 
-// Used in ParameterizedFindFormControlByRendererIdTest.
+// Used in ParameterizedGetFormControlByRendererIdTest.
 struct FindFormControlTestParam {
   std::string queried_field;
   bool expectation;
 };
 
-// Tests FindFormControlByRendererId().
-class ParameterizedFindFormControlByRendererIdTest
+// Tests GetFormControlByRendererId().
+class ParameterizedGetFormControlByRendererIdTest
     : public FormAutofillUtilsTest,
       public testing::WithParamInterface<FindFormControlTestParam> {};
 
-TEST_P(ParameterizedFindFormControlByRendererIdTest,
-       FindFormControlByRendererId) {
+TEST_P(ParameterizedGetFormControlByRendererIdTest,
+       GetFormControlByRendererId) {
   LoadHTML(R"(
     <body>
       <input id="nonexistentField">
@@ -666,36 +666,16 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(GetParam().expectation,
-            queried_field == FindFormControlByRendererId(queried_field_id));
+            queried_field == GetFormControlByRendererId(queried_field_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ParameterizedFindFormControlByRendererIdTest,
+    ParameterizedGetFormControlByRendererIdTest,
     Values(FindFormControlTestParam{"nonexistentField", false},
            FindFormControlTestParam{"ownedField1", true},
            FindFormControlTestParam{"ownedField2", true},
            FindFormControlTestParam{"unownedField", true}));
-
-TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
-  LoadHTML("<body><input id='i1'><input id='i2'><input id='i3'></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto input1 = GetFormControlElementById(doc, "i1");
-  auto input3 = GetFormControlElementById(doc, "i3");
-  FieldRendererId non_existing_field_id(GetFieldRendererId(input3).value() +
-                                        1000);
-
-  std::vector<FieldRendererId> renderer_ids = {GetFieldRendererId(input3),
-                                               non_existing_field_id,
-                                               GetFieldRendererId(input1)};
-
-  auto elements = FindFormControlsByRendererId(renderer_ids);
-
-  ASSERT_EQ(3u, elements.size());
-  EXPECT_EQ(input3, elements[0]);
-  EXPECT_TRUE(elements[1].IsNull());
-  EXPECT_EQ(input1, elements[2]);
-}
 
 // Tests the extraction of the aria-label attribute.
 TEST_F(FormAutofillUtilsTest, GetAriaLabel) {

@@ -326,7 +326,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
   WebDocument document = frame_->GetDocument();
   WebFormElement form_element =
-      form_util::FindFormByRendererId(form.data.unique_renderer_id);
+      form_util::GetFormByRendererId(form.data.unique_renderer_id);
   std::vector<WebFormControlElement> control_elements =
       form_util::GetAutofillableFormControlElements(document, form_element);
   if (control_elements.size() != form.fields.size()) {

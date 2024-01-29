@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -88,10 +89,9 @@ using password_manager::util::IsRendererRecognizedCredentialForm;
 namespace autofill {
 
 using form_util::ExtractOption;
-using form_util::FindFormByRendererId;
-using form_util::FindFormControlByRendererId;
-using form_util::FindFormControlsByRendererId;
 using form_util::GetFieldRendererId;
+using form_util::GetFormByRendererId;
+using form_util::GetFormControlByRendererId;
 using form_util::GetFormRendererId;
 using form_util::IsElementEditable;
 using form_util::IsWebElementFocusableForAutofill;
@@ -408,7 +408,7 @@ void AnnotateFieldWithParsingResult(
     const std::string& password_managers_annotation) {
   if (renderer_id.is_null())
     return;
-  auto element = FindFormControlByRendererId(renderer_id);
+  auto element = GetFormControlByRendererId(renderer_id);
   if (element.IsNull())
     return;
   // Calling SetAttribute synchronously here is safe because
@@ -1497,9 +1497,12 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   autofilled_elements_cache_.clear();
 
   // Clear the actual field values.
-  std::vector<WebFormControlElement> elements =
-      FindFormControlsByRendererId(base::make_span(
-          all_autofilled_elements_.begin(), all_autofilled_elements_.end()));
+  std::vector<WebFormControlElement> elements;
+  elements.reserve(all_autofilled_elements_.size());
+  for (FieldRendererId id : all_autofilled_elements_) {
+    elements.push_back(form_util::GetFormControlByRendererId(id));
+  }
+
   for (WebFormControlElement& element : elements) {
     if (element.IsNull())
       continue;
@@ -1540,7 +1543,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
 void PasswordAutofillAgent::TriggerFormSubmission() {
   // Find the last interacted element to simulate an enter keystroke at.
   WebFormControlElement form_control =
-      FindFormControlByRendererId(field_renderer_id_to_submit_);
+      GetFormControlByRendererId(field_renderer_id_to_submit_);
   if (form_control.IsNull()) {
     // The target field doesn't exist anymore. Don't try to submit it.
     return;
@@ -1975,8 +1978,11 @@ PasswordAutofillAgent::FindUsernamePasswordElements(
   if (is_username_present)
     element_ids.push_back(username_renderer_id);
 
-  std::vector<WebFormControlElement> elements =
-      FindFormControlsByRendererId(element_ids);
+  std::vector<WebFormControlElement> elements;
+  elements.reserve(element_ids.size());
+  for (FieldRendererId id : element_ids) {
+    elements.push_back(form_util::GetFormControlByRendererId(id));
+  }
 
   // Set password element.
   WebInputElement password_field;

@@ -419,7 +419,7 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
   // Mark the input element as |has_been_password_for_autofill_|.
   if (mark_generation_element_) {
     WebFormControlElement new_password_input =
-        form_util::FindFormControlByRendererId(form.new_password_renderer_id);
+        form_util::GetFormControlByRendererId(form.new_password_renderer_id);
     if (!new_password_input.IsNull()) {
       // Mark the input element with renderer id
       // |form.new_password_renderer_id|.
@@ -751,7 +751,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
   std::vector<blink::WebInputElement> passwords = {generation_element};
 
   WebFormControlElement confirmation_password =
-      form_util::FindFormControlByRendererId(confirmation_password_renderer_id);
+      form_util::GetFormControlByRendererId(confirmation_password_renderer_id);
 
   if (!confirmation_password.IsNull()) {
     WebInputElement input = confirmation_password.DynamicTo<WebInputElement>();

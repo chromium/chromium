@@ -47,7 +47,7 @@ FormRef::FormRef(blink::WebFormElement form)
 
 blink::WebFormElement FormRef::GetForm() const {
   return ShouldReplaceElementsByRendererIds()
-             ? form_util::FindFormByRendererId(form_renderer_id_)
+             ? form_util::GetFormByRendererId(form_renderer_id_)
              : form_;
 }
 
@@ -76,14 +76,14 @@ FieldRef::FieldRef(blink::WebElement content_editable)
 
 blink::WebFormControlElement FieldRef::GetField() const {
   return ShouldReplaceElementsByRendererIds()
-             ? form_util::FindFormControlByRendererId(field_renderer_id_)
+             ? form_util::GetFormControlByRendererId(field_renderer_id_)
              : field_.DynamicTo<WebFormControlElement>();
 }
 
 blink::WebElement FieldRef::GetContentEditable() const {
   blink::WebElement content_editable =
       ShouldReplaceElementsByRendererIds()
-          ? form_util::FindContentEditableByRendererId(field_renderer_id_)
+          ? form_util::GetContentEditableByRendererId(field_renderer_id_)
           : field_;
   return content_editable.IsContentEditable() ? content_editable
                                               : blink::WebElement();

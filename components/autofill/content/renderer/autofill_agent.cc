@@ -50,6 +50,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
@@ -99,9 +100,7 @@ using blink::WebVector;
 namespace autofill {
 
 using form_util::ExtractOption;
-using form_util::FindContentEditableByRendererId;
 using form_util::FindFormAndFieldForFormControlElement;
-using form_util::FindFormByRendererId;
 using form_util::FindFormForContentEditable;
 using form_util::IsElementEditable;
 using form_util::MaybeWasOwnedByFrame;
@@ -658,7 +657,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
            last_queried_element)) != form.unique_renderer_id)) {
     for (const FormFieldData::FillData& field : form.fields) {
       last_queried_element =
-          form_util::FindFormControlByRendererId(field.unique_renderer_id);
+          form_util::GetFormControlByRendererId(field.unique_renderer_id);
       if (!last_queried_element.IsNull()) {
         last_queried_element_ = FieldRef(last_queried_element);
         break;
@@ -703,7 +702,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
 
     if (auto* render_frame = unsafe_render_frame()) {
       WebFormElement updated_form_element =
-          form_util::FindFormByRendererId(form.unique_renderer_id);
+          form_util::GetFormByRendererId(form.unique_renderer_id);
       std::optional<FormData> updated_form_data = form_util::ExtractFormData(
           render_frame->GetWebFrame()->GetDocument(), updated_form_element,
           field_data_manager());
@@ -777,7 +776,7 @@ void AutofillAgent::TriggerSuggestions(
     FieldRendererId field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   if (WebFormControlElement control_element =
-          form_util::FindFormControlByRendererId(field_id);
+          form_util::GetFormControlByRendererId(field_id);
       !control_element.IsNull()) {
     last_queried_element_ = FieldRef(control_element);
     ShowSuggestions(control_element, trigger_source);
@@ -793,7 +792,7 @@ void AutofillAgent::ApplyFieldAction(
     return;
   }
   WebFormControlElement form_control =
-      form_util::FindFormControlByRendererId(field_id);
+      form_util::GetFormControlByRendererId(field_id);
   if (!form_control.IsNull() &&
       form_util::IsTextAreaElementOrTextInput(form_control)) {
     DCHECK(MaybeWasOwnedByFrame(form_control, unsafe_render_frame()));
@@ -834,7 +833,7 @@ void AutofillAgent::ApplyFieldAction(
   }
 
   if (WebElement content_editable =
-          form_util::FindContentEditableByRendererId(field_id);
+          form_util::GetContentEditableByRendererId(field_id);
       !content_editable.IsNull()) {
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
@@ -1130,7 +1129,7 @@ void AutofillAgent::ExtractForm(
       return;
     }
   }
-  if (WebFormElement form_element = FindFormByRendererId(form_id);
+  if (WebFormElement form_element = form_util::GetFormByRendererId(form_id);
       !form_element.IsNull()) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_element, field_data_manager(), extract_options)) {
@@ -1139,7 +1138,7 @@ void AutofillAgent::ExtractForm(
     }
   }
   if (WebElement ce =
-          FindContentEditableByRendererId(FieldRendererId(*form_id));
+          form_util::GetContentEditableByRendererId(FieldRendererId(*form_id));
       !ce.IsNull()) {
     std::move(callback).Run(FindFormForContentEditable(ce));
     return;
@@ -1489,7 +1488,7 @@ void AutofillAgent::OnProvisionallySaveForm(
     std::erase_if(formless_elements_user_edited_,
                   [](const FieldRendererId field_id) {
                     WebFormControlElement field =
-                        form_util::FindFormControlByRendererId(field_id);
+                        form_util::GetFormControlByRendererId(field_id);
                     return !field.IsNull() &&
                            form_util::IsWebElementFocusableForAutofill(field);
                   });
@@ -1636,11 +1635,13 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // disappeared (removed/hidden).
   auto all_control_elements_disappeared =
       [](const std::set<FieldRendererId>& element_ids) {
-        std::vector<FieldRendererId> elements(element_ids.begin(),
-                                              element_ids.end());
+        std::vector<WebFormControlElement> elements;
+        elements.reserve(element_ids.size());
+        for (FieldRendererId id : element_ids) {
+          elements.push_back(form_util::GetFormControlByRendererId(id));
+        };
         return base::ranges::none_of(
-            form_util::FindFormControlsByRendererId(elements),
-            form_util::IsWebElementFocusableForAutofill);
+            elements, form_util::IsWebElementFocusableForAutofill);
       };
 
   // We check if we have a cached `last_interacted_.form_id`. In that case we

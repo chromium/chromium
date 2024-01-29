@@ -388,29 +388,17 @@ std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
-blink::WebFormElement FindFormByRendererId(FormRendererId form_renderer_id);
+blink::WebFormElement GetFormByRendererId(FormRendererId form_renderer_id);
 
 // Returns the form control element by unique renderer id.
 // |form_to_be_searched| could be used as an optimization to only search for
 // elements in it, but doesn't guarantee that the returned element will belong
 // to it. Returns the null element if there is no element with the
 // |queried_form_control| renderer id.
-blink::WebFormControlElement FindFormControlByRendererId(
+blink::WebFormControlElement GetFormControlByRendererId(
     FieldRendererId queried_form_control);
 
-// Note: The vector-based API of the following two functions is a tax for
-// limiting the frequency and duration of retrieving a lot of DOM elements.
-// Alternative solutions have been discussed on https://crrev.com/c/1108201.
-
-// Returns form control elements identified by the given unique renderer IDs.
-// The result has the same number of elements as |queried_form_controls| and
-// the i-th element of the result corresponds to the i-th element of
-// |queried_form_controls|. The call of this function might be time
-// expensive, because it retrieves all DOM elements.
-std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
-    base::span<const FieldRendererId> queried_form_controls);
-
-blink::WebElement FindContentEditableByRendererId(
+blink::WebElement GetContentEditableByRendererId(
     FieldRendererId field_renderer_id);
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
