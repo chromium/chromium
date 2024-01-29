@@ -14,6 +14,7 @@ found in the LICENSE file.
     <dimen name="readaloud_mini_player_play_button_margin_vertical">12dp</dimen>
     <dimen name="readaloud_mini_player_play_button_margin_end">12dp</dimen>
     <dimen name="readaloud_mini_player_text_padding_end">25dp</dimen>
+    <dimen name="readaloud_mini_player_tablet_padding">80dp</dimen>
 
     <!-- Expanded player -->
     <!-- Overall margins -->
