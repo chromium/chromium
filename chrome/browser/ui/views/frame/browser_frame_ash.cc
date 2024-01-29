@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_info.h"
@@ -220,11 +219,6 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
     params.bounds = browser->create_params().initial_bounds;
   }
   params.display_id = browser->create_params().display_id;
-
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    // Corner radius specifies the radius of the frame shadow.
-    params.corner_radius = chromeos::features::RoundedWindowsRadius();
-  }
 
   return params;
 }

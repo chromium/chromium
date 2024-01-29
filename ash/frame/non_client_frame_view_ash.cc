@@ -23,6 +23,7 @@
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/non_client_frame_view_base.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -310,8 +311,11 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
-  const int corner_radius =
-      chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+  aura::Window* frame_window = GetWidget()->GetNativeWindow();
+
+  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                            corner_radius);
 
   if (frame_enabled_) {
     header_view_->SetHeaderCornerRadius(corner_radius);

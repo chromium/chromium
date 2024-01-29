@@ -1035,8 +1035,13 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
-  const int corner_radius =
-      chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
+  DCHECK(GetWidget());
+
+  aura::Window* frame_window = GetWidget()->GetNativeWindow();
+
+  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                            corner_radius);
 
   if (frame_header_) {
     frame_header_->SetHeaderCornerRadius(corner_radius);

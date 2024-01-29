@@ -230,10 +230,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
 
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    init_params->corner_radius = chromeos::features::RoundedWindowsRadius();
-  }
-
   app_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
