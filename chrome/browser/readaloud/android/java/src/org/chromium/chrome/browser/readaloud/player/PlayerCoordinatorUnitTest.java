@@ -178,6 +178,7 @@ public class PlayerCoordinatorUnitTest {
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
         mPlayerCoordinator.expand();
         verify(mExpandedPlayer).show();
+        verify(mMiniPlayer).dismiss(/* animate= */ eq(false));
     }
 
     @Test
