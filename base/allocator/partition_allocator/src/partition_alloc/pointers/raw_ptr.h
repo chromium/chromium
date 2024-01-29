@@ -1106,8 +1106,6 @@ constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 // std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
 // checks on the CQ. This alias will be removed gradually after the cl lands and
 // will be replaced by DanglingUntriaged where necessary.
-// Update: The alias now temporarily disables BRP. This is due to performance
-// issues. BRP will be re-enabled once the issues are identified and handled.
 constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
 
 // Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
