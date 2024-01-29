@@ -401,6 +401,7 @@ TEST_F(SharedPasswordControllerTest,
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
   AddWebFrame(std::move(web_frame));
 
   id mock_completion_handler =
@@ -412,6 +413,7 @@ TEST_F(SharedPasswordControllerTest,
   [[suggestion_helper_ expect]
       checkIfSuggestionsAvailableForForm:form_query
                        completionHandler:mock_completion_handler];
+  [[suggestion_helper_ expect] isPasswordFieldOnForm:form_query webFrame:frame];
 
   __block BOOL completion_was_called = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query
@@ -1317,6 +1319,7 @@ TEST_F(SharedPasswordControllerTest,
   [[suggestion_helper_ expect]
       checkIfSuggestionsAvailableForForm:form_query
                        completionHandler:mock_completion_handler];
+  [[suggestion_helper_ expect] isPasswordFieldOnForm:form_query webFrame:frame];
 
   [controller_ checkIfSuggestionsAvailableForForm:form_query
                                    hasUserGesture:NO

@@ -436,12 +436,15 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     completion(NO);
     return;
   }
+
+  BOOL isPasswordField = [self.suggestionHelper isPasswordFieldOnForm:formQuery
+                                                             webFrame:frame];
+
   [self.suggestionHelper
       checkIfSuggestionsAvailableForForm:formQuery
                        completionHandler:^(BOOL suggestionsAvailable) {
                          // Always display "Show All..." for password fields.
-                         completion([formQuery isOnPasswordField] ||
-                                    suggestionsAvailable);
+                         completion(isPasswordField || suggestionsAvailable);
                        }];
 
   if (self.isPasswordGenerated &&
