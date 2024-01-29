@@ -22,11 +22,12 @@ found in the LICENSE file.
   <div slot="bottom-buttons">
     <oobe-text-button id="doneButton" inverse on-click="onProceed"
         class="focus-on-show" text-key="factorSuccessDoneButton"
+        disabled="[[!buttonsEnabled]]"
         hidden="[[hasNextStep]]">
     </oobe-text-button>
     <oobe-next-button id="nextButton" inverse on-click="onProceed"
-        class="focus-on-show"
-     hidden="[[!hasNextStep]]" >
+        class="focus-on-show" disabled="[[!buttonsEnabled]]"
+        hidden="[[!hasNextStep]]" >
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
