@@ -375,7 +375,7 @@ export namespace Browser {
 export namespace Browser {
   export const GetUserContextsResultSchema = z.lazy(() =>
     z.object({
-      userContexts: z.array(Browser.UserContextInfoSchema),
+      userContexts: z.array(Browser.UserContextInfoSchema).min(1),
     })
   );
 }
@@ -674,7 +674,7 @@ export namespace BrowsingContext {
       ownership: Script.ResultOwnershipSchema.optional(),
       sandbox: z.string().optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
-      startNodes: z.array(Script.SharedReferenceSchema).optional(),
+      startNodes: z.array(Script.SharedReferenceSchema).min(1).optional(),
     })
   );
 }
@@ -985,7 +985,7 @@ export namespace Network {
       redirectCount: JsUintSchema,
       request: Network.RequestDataSchema,
       timestamp: JsUintSchema,
-      intercepts: z.array(Network.InterceptSchema).optional(),
+      intercepts: z.array(Network.InterceptSchema).min(1).optional(),
     })
   );
 }
@@ -1164,7 +1164,7 @@ export namespace Network {
 export namespace Network {
   export const AddInterceptParametersSchema = z.lazy(() =>
     z.object({
-      phases: z.array(Network.InterceptPhaseSchema),
+      phases: z.array(Network.InterceptPhaseSchema).min(1),
       urlPatterns: z.array(Network.UrlPatternSchema).optional(),
     })
   );
@@ -1691,7 +1691,7 @@ export namespace Script {
     Script.BaseRealmInfoSchema.and(
       z.object({
         type: z.literal('shared-worker'),
-        owners: z.array(Script.RealmSchema),
+        owners: z.array(Script.RealmSchema).min(1),
       })
     )
   );
@@ -2125,7 +2125,10 @@ export namespace Script {
     z.object({
       functionDeclaration: z.string(),
       arguments: z.array(Script.ChannelValueSchema).optional(),
-      contexts: z.array(BrowsingContext.BrowsingContextSchema).optional(),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
       sandbox: z.string().optional(),
     })
   );

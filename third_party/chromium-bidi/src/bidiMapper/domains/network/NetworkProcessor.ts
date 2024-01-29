@@ -48,12 +48,6 @@ export class NetworkProcessor {
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
-    if (params.phases.length === 0) {
-      throw new InvalidArgumentException(
-        'At least one phase must be specified.'
-      );
-    }
-
     // If AuthRequired is specified, BeforeRequestSent must also be specified.
     // This is a CDP quirk.
     if (

@@ -12,6 +12,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import re
+
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
@@ -20,11 +22,13 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
 
 @pytest.mark.asyncio
 async def test_add_intercept_invalid_empty_phases(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": "At least one phase must be specified."
-                       })):
+    with pytest.raises(
+            Exception,
+            match=re.escape(
+                str({
+                    "error": "invalid argument",
+                    "message": "Array must contain at least 1 element(s) in \"phases\"."
+                }))):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
