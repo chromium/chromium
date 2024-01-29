@@ -827,6 +827,8 @@ static_library("test_support") {
     "mock_autocomplete_history_manager.h",
     "mock_autofill_compose_delegate.cc",
     "mock_autofill_compose_delegate.h",
+    "mock_autofill_manager.cc",
+    "mock_autofill_manager.h",
     "mock_autofill_manager_observer.cc",
     "mock_autofill_manager_observer.h",
     "mock_autofill_optimization_guide.cc",
