@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
-#include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -751,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -795,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -813,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   event_navigation_observer.Wait();
   // Check that a new regular browser is opened
   // and the url is opened in the regular browser.
-  Browser* new_browser = chrome::GetLastActiveBrowser();
+  Browser* new_browser = chrome::FindLastActive();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());
@@ -835,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
   EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
   guest_browser->window()->Show();
-  EXPECT_EQ(guest_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(guest_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -881,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   event_navigation_observer.Wait();
   // Check that a new incognito browser is opened
   // and the url is opened in the incognito browser.
-  Browser* new_browser = chrome::GetLastActiveBrowser();
+  Browser* new_browser = chrome::FindLastActive();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_TRUE(new_browser->profile()->IsIncognitoProfile());
   EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
@@ -911,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.

@@ -21,9 +21,9 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,7 +57,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override {}
   void OnBrowserRemoved(Browser* browser) override {
-    [controller_ activeBrowserChangedTo:chrome::GetLastActiveBrowser()];
+    [controller_ activeBrowserChangedTo:chrome::FindLastActive()];
   }
   void OnBrowserSetLastActive(Browser* browser) override {
     [controller_ activeBrowserChangedTo:browser];

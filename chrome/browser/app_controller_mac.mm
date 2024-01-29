@@ -77,7 +77,6 @@
 #import "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
 #include "chrome/browser/ui/cocoa/handoff_observer.h"
 #import "chrome/browser/ui/cocoa/history_menu_bridge.h"
-#include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
 #import "chrome/browser/ui/cocoa/tab_menu_bridge.h"
@@ -219,7 +218,7 @@ Browser* CreateBrowser(Profile* profile) {
     chrome::NewEmptyWindow(profile);
   }
 
-  Browser* browser = chrome::GetLastActiveBrowser();
+  Browser* browser = chrome::FindLastActive();
   CHECK(browser);
   return browser;
 }
@@ -1277,7 +1276,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if ([NSApp modalWindow])
     return YES;
 
-  Browser* browser = chrome::GetLastActiveBrowser();
+  Browser* browser = chrome::FindLastActive();
   return browser && [[browser->window()->GetNativeWindow().GetNativeNSWindow()
                             attachedSheet] isKindOfClass:[NSWindow class]];
 }

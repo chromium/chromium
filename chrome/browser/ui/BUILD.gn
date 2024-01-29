@@ -4420,8 +4420,6 @@ static_library("ui") {
       "cocoa/javascript_app_modal_dialog_cocoa.mm",
       "cocoa/l10n_util.h",
       "cocoa/l10n_util.mm",
-      "cocoa/last_active_browser_cocoa.cc",
-      "cocoa/last_active_browser_cocoa.h",
       "cocoa/main_menu_builder.h",
       "cocoa/main_menu_builder.mm",
       "cocoa/main_menu_item.h",
