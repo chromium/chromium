@@ -173,6 +173,7 @@ non_web_component_files_ts = [
   "quick_unlock/lock_screen_constants.ts",
   "quick_unlock/utils.ts",
   "sea_pen/constants.ts",
+  "sea_pen/constants_generated.ts",
   "sea_pen/load_time_booleans.ts",
   "sea_pen/sea_pen_actions.ts",
   "sea_pen/sea_pen_controller.ts",
