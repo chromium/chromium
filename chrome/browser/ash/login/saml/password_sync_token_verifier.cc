@@ -166,7 +166,7 @@ void PasswordSyncTokenVerifier::OnTokenVerified(bool is_valid) {
       InSessionPasswordSyncManagerFactory::GetForProfile(primary_profile_);
   if (password_sync_manager) {
     password_sync_manager->MaybeForceReauthOnLockScreen(
-        InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
+        InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
   }
 }
 
