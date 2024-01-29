@@ -16,6 +16,17 @@ namespace blink {
 namespace {
 
 class AbsoluteUtilsTest : public RenderingTest {
+ public:
+  AbsoluteUtilsTest()
+      : ltr_space_(CreateConstraintSpace(
+            {WritingMode::kHorizontalTb, TextDirection::kLtr})),
+        rtl_space_(CreateConstraintSpace(
+            {WritingMode::kHorizontalTb, TextDirection::kRtl})),
+        vlr_space_(CreateConstraintSpace(
+            {WritingMode::kVerticalLr, TextDirection::kLtr})),
+        vrl_space_(CreateConstraintSpace(
+            {WritingMode::kVerticalRl, TextDirection::kLtr})) {}
+
  protected:
   ConstraintSpace CreateConstraintSpace(
       WritingDirectionMode writing_direction) {
@@ -47,14 +58,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     RunDocumentLifecycle();
 
     element_ = GetDocument().getElementById(AtomicString("target"));
-    ltr_space_ = CreateConstraintSpace(
-        {WritingMode::kHorizontalTb, TextDirection::kLtr});
-    rtl_space_ = CreateConstraintSpace(
-        {WritingMode::kHorizontalTb, TextDirection::kRtl});
-    vlr_space_ =
-        CreateConstraintSpace({WritingMode::kVerticalLr, TextDirection::kLtr});
-    vrl_space_ =
-        CreateConstraintSpace({WritingMode::kVerticalRl, TextDirection::kLtr});
   }
 
   void SetHorizontalStyle(const String& left,

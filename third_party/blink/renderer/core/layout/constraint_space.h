@@ -102,9 +102,6 @@ class CORE_EXPORT ConstraintSpace final {
     kRareDataPercentage
   };
 
-  ConstraintSpace()
-      : ConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
-
   ConstraintSpace(const ConstraintSpace& other)
       : available_size_(other.available_size_),
         exclusion_space_(other.exclusion_space_),
