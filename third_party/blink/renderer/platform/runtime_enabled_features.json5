@@ -777,7 +777,6 @@
       name: "CSSAnchorPositioning",
       implied_by: ["HTMLSelectListElement"],
       status: "experimental",
-      base_feature: "none",
     },
     {
       // Use full cascading for applying @try fallback for anchor positioning
