@@ -2477,15 +2477,6 @@
       status: "test",
       base_feature: "none",
     },
-    {
-      // When a Web application calls getDisplayMedia() and asks for video,
-      // allow a hint to be provided as to whether it prefers that the user
-      // has the option to choose display surfaces whose type is monitor.
-      //
-      // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-monitortypesurfaces
-      name: "MonitorTypeSurfaces",
-      status: "stable",
-    },
     // crbug.com/269917: Make mouse event targets agnostic to mousedown event
     // cancellation when the pointer is dragged out of an iframe.
     {
