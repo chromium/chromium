@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -39,6 +40,34 @@ class AddressDataCleanerTest : public testing::Test {
   TestPersonalDataManager test_pdm_;
   AddressDataCleaner data_cleaner_;
 };
+
+// Tests that for non-syncing users `MaybeCleanupAddressData()` immediately
+// performs clean-ups.
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncing) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetHasSyncConsent(false);
+  ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
+}
+
+// Tests that for syncing users `MaybeCleanupAddressData()` doesn't perform
+// clean-ups, since it's expecting another call once sync is ready.
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_Syncing) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetDownloadStatusFor(
+      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
+      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+  ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  EXPECT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
+
+  sync_service.SetDownloadStatusFor(
+      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  data_cleaner_.MaybeCleanupAddressData(&sync_service);
+  EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
+}
 
 // Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
 // i.e. never lose information and keep the syntax of the profile with the

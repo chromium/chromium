@@ -21,6 +21,10 @@ class AddressDataCleanerTestApi {
 
   void DeleteDisusedAddresses() { data_cleaner_->DeleteDisusedAddresses(); }
 
+  bool AreCleanupsPending() const {
+    return data_cleaner_->is_profile_cleanup_pending_;
+  }
+
  private:
   const raw_ref<AddressDataCleaner> data_cleaner_;
 };

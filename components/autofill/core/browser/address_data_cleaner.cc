@@ -4,20 +4,49 @@
 
 #include "components/autofill/core/browser/address_data_cleaner.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
+
+namespace {
+
+// Determines whether cleanups should be deferred because the latest data wasn't
+// synced down yet.
+bool ShouldWaitForSync(syncer::SyncService* sync_service) {
+  // No need to wait if the user is not syncing addresses.
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kAutofill)) {
+    return false;
+  }
+
+  auto should_wait = [&sync_service](syncer::ModelType model_type) {
+    switch (sync_service->GetDownloadStatusFor(model_type)) {
+      case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
+        return true;
+      case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
+      // If the download status is kError, it will likely not become available
+      // anytime soon. In this case, don't defer the cleanups.
+      case syncer::SyncService::ModelTypeDownloadStatus::kError:
+        return false;
+    }
+    NOTREACHED_NORETURN();
+  };
+  return should_wait(syncer::ModelType::AUTOFILL_PROFILE) ||
+         should_wait(syncer::ModelType::CONTACT_INFO);
+}
+
+}  // namespace
 
 AddressDataCleaner::AddressDataCleaner(
     PersonalDataManager* personal_data_manager,
@@ -34,71 +63,28 @@ AddressDataCleaner::AddressDataCleaner(
 
 AddressDataCleaner::~AddressDataCleaner() = default;
 
-void AddressDataCleaner::MaybeCleanupAddressData() {
-  // The profile de-duplication is run once every major chrome version. If the
-  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
-  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
-  // defer the insertion to when the observers are notified.
-  if (!alternative_state_name_map_updater_
-           ->is_alternative_state_name_map_populated() &&
-      is_autofill_profile_dedupe_pending_) {
-    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
-                       weak_ptr_factory_.GetWeakPtr()));
+void AddressDataCleaner::MaybeCleanupAddressData(
+    syncer::SyncService* sync_service) {
+  if (!is_profile_cleanup_pending_ || ShouldWaitForSync(sync_service)) {
     return;
   }
 
-  // If the user has chosen to sync addresses, wait for sync to start before
-  // performing cleanups. Otherwise do them now.
-  if (!personal_data_manager_->IsUserSelectableTypeEnabled(
-          syncer::UserSelectableType::kAutofill)) {
-    ApplyAddressFixesAndCleanups();
-  }
-}
-
-void AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange(
-    syncer::ModelType model_type) {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
   // |AlternativeStateNameMap| needs to be populated first. Otherwise,
   // defer the insertion to when the observers are notified.
-  // TODO(crbug.com/1111960): If sync is disabled and re-enabled, the
-  // alternative state name map should be re-populated. This is currently not
-  // the case due to the `is_alternative_state_name_map_populated()` check. This
-  // state should be reset when sync is disabled, together with
-  // `autofill_profile_sync_started_` and `contact_info_sync_started_`.
-  autofill_profile_sync_started_ |= model_type == syncer::AUTOFILL_PROFILE;
-  contact_info_sync_started_ |= model_type == syncer::CONTACT_INFO;
-  if (autofill_profile_sync_started_ && contact_info_sync_started_ &&
+  if (alternative_state_name_map_updater_ &&
       !alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(
-            &AddressDataCleaner::MaybeCleanupAddressDataAfterSyncChange,
-            weak_ptr_factory_.GetWeakPtr(), model_type));
+        base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
+                       weak_ptr_factory_.GetWeakPtr(), sync_service));
     return;
   }
 
-  // Run deferred autofill address profile startup code.
-  if (autofill_profile_sync_started_ && contact_info_sync_started_ &&
-      (model_type == syncer::AUTOFILL_PROFILE ||
-       model_type == syncer::CONTACT_INFO)) {
-    ApplyAddressFixesAndCleanups();
-  }
-}
-
-void AddressDataCleaner::ApplyAddressFixesAndCleanups() {
-  if (!is_profile_cleanup_pending_) {
-    return;
-  }
-
-  // Once per major version, otherwise NOP.
   ApplyAddressDedupingRoutine();
-
-  // Ran once on browser startup.
   DeleteDisusedAddresses();
-
   is_profile_cleanup_pending_ = false;
 }
 

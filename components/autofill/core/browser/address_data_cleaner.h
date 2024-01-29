@@ -13,13 +13,16 @@
 #include "components/sync/base/model_type.h"
 
 class PrefService;
+namespace syncer {
+class SyncService;
+}
 
 namespace autofill {
 
 class PersonalDataManager;
 
-// AddressDataCleaner is responsible for applying address cleanups once
-// on browser startup provided that the sync is enabled or when the sync starts.
+// AddressDataCleaner is responsible for applying address cleanups on browser
+// startup, after sync is ready (if applicable).
 class AddressDataCleaner {
  public:
   AddressDataCleaner(
@@ -31,18 +34,13 @@ class AddressDataCleaner {
   AddressDataCleaner& operator=(const AddressDataCleaner&) =
       delete;
 
-  // Applies address cleanups if sync is disabled.
-  void MaybeCleanupAddressData();
-
-  // Applies address cleanups if all address Autofill `model_type`s are enabled.
-  void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
+  // Determines whether the cleanups should run depending on the sync state and
+  // runs them if applicable. Ensures that the cleanups are run at most once
+  // over multiple invocations of the functions.
+  void MaybeCleanupAddressData(syncer::SyncService* sync_service);
 
  private:
   friend class AddressDataCleanerTestApi;
-
-  // Shared implementation of `MaybeCleanupAddressData()` and
-  // `MaybeCleanupAddressDataAfterSyncChange()`
-  void ApplyAddressFixesAndCleanups();
 
   // Applies the deduping routine once per major version. Calls DedupeProfiles()
   // with the content of `PersonalDataManager::GetProfiles()` as a parameter.
@@ -81,17 +79,6 @@ class AddressDataCleaner {
   // AlternativeStateNameMap with the geographical state data.
   const raw_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_ = nullptr;
-
-  // Profiles are loaded through two sync bridges, the AUTOFILL_PROFILE and the
-  // CONTACT_INFO sync bridge. Both of them are behind the same settings toggle,
-  // so it is guaranteed that either both of them or none of them are activated
-  // together. In order to initialize the alternative state map only after
-  // profiles from both sources were loaded, we track whether each model type's
-  // `SyncStarted()` event has triggered yet.
-  // TODO(crbug.com/1348294): Remove once the AUTOFILL_PROFILE sync bridge is
-  // deprecated.
-  bool autofill_profile_sync_started_ = false;
-  bool contact_info_sync_started_ = false;
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.

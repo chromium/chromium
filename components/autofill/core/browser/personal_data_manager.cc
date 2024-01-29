@@ -637,7 +637,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   if (!is_data_loaded_) {
     is_data_loaded_ = true;
     LogStoredDataMetrics();
-    address_data_cleaner_->MaybeCleanupAddressData();
+    address_data_cleaner_->MaybeCleanupAddressData(sync_service_);
     payments_data_cleaner_->CleanupPaymentsData();
   }
   NotifyPersonalDataObserver();
@@ -646,11 +646,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
 void PersonalDataManager::OnAutofillChangedBySync(
     syncer::ModelType model_type) {
   Refresh();
-
-  // Note, it's possible that the cleanups are run on the stale data since
-  // `Refresh` is an async operation. But, since the cleanups happen over the
-  // local data, it should be fine.
-  address_data_cleaner_->MaybeCleanupAddressDataAfterSyncChange(model_type);
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
@@ -658,6 +653,11 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
 
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataSyncStateChanged();
+  }
+
+  // TODO(b/321929498): During initialization, `address_data_cleaner_` is null.
+  if (address_data_cleaner_) {
+    address_data_cleaner_->MaybeCleanupAddressData(sync_service);
   }
 
   // Use the ephemeral account storage when the user didn't enable the sync
