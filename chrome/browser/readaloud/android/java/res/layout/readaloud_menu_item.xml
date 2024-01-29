@@ -40,8 +40,7 @@ found in the LICENSE file.
         android:src="@drawable/mini_play_button"
         android:background="@drawable/rounded_ripple"
         android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/readaloud_play"/>
+        android:focusable="true"/>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
