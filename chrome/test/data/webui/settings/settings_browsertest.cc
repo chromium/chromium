@@ -1060,6 +1060,12 @@ IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest, ManageTopics) {
           "runMochaSuite('ManageTopics')");
 }
 
+IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
+                       FledgeSubpageWithProactiveTopicsBlockingEnabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpageWithProactiveTopicsBlockingEnabled')");
+}
+
 class SettingsReviewNotificationPermissionsTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

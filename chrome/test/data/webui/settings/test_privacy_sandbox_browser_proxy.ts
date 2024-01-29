@@ -45,6 +45,7 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     };
   }
 
+  // Setters for test
   setChildTopics(childTopics: CanonicalTopic[]) {
     this.childTopicsCurrentlyAssigned_ = childTopics;
   }
@@ -53,10 +54,15 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     this.firstLevelTopicsState_ = firstLevelTopicsState;
   }
 
+  setTestTopicState(topicsState: TopicsState) {
+    this.topicsState_ = topicsState;
+  }
+
   setFledgeState(fledgeState: FledgeState) {
     this.fledgeState_ = fledgeState;
   }
 
+  // Test Proxy Functions
   getFledgeState() {
     this.methodCalled('getFledgeState');
     return Promise.resolve(this.fledgeState_);

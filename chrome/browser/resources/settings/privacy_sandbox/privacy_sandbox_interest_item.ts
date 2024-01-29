@@ -14,6 +14,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import type {PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_interest_item.html.js';
 
@@ -51,8 +53,11 @@ export class PrivacySandboxInterestItemElement extends
     if (this.interest.topic !== undefined) {
       assert(!this.interest.site);
       return this.i18n(
-          this.interest.removed ? 'topicsPageAllowTopic' :
-                                  'topicsPageBlockTopic');
+          this.interest.removed ?
+              ((loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) ?
+                   'unblockTopicButtonTextV2' :
+                   'topicsPageAllowTopic') :
+              'topicsPageBlockTopic');
     } else {
       assert(!this.interest.topic);
       return this.i18n(
@@ -82,6 +87,12 @@ export class PrivacySandboxInterestItemElement extends
     this.dispatchEvent(new CustomEvent(
         'interest-changed',
         {bubbles: true, composed: true, detail: this.interest}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-sandbox-interest-item': PrivacySandboxInterestItemElement;
   }
 }
 

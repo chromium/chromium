@@ -21,6 +21,7 @@ import './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 import './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
 import './privacy_sandbox/privacy_sandbox_interest_item.js';
 import './privacy_sandbox/privacy_sandbox_page.js';
+import './privacy_sandbox/privacy_sandbox_manage_topics_subpage.js';
 import './privacy_sandbox/privacy_sandbox_topics_subpage.js';
 import './privacy_page/security_keys_subpage.js';
 import './privacy_page/security_keys_phones_subpage.js';
@@ -87,6 +88,7 @@ export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList}
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
