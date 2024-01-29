@@ -365,7 +365,7 @@
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListContentNotification:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self.contentSuggestionsMediator disableSetUpList];
       break;
@@ -587,7 +587,9 @@
       case SetUpListItemType::kAutofill:
         [weakSelf showCredentialProviderPromo];
         break;
-      case SetUpListItemType::kContentNotification:
+      case SetUpListItemType::kNotifications:
+        // TODO(crbug.com/1519599): start the NotificationsOptInCoordinator to
+        // display the view.
         [weakSelf showContentNotificationBottomSheet];
         break;
       case SetUpListItemType::kFollow:

@@ -28,7 +28,7 @@ enum class ContentSuggestionsModuleType {
   kTabResumption = 10,
   kParcelTracking = 11,
   kParcelTrackingSeeMore = 12,
-  kSetUpListContentNotification = 13,
+  kSetUpListNotifications = 13,
   kPlaceholder = 14,
   kMaxValue = kPlaceholder,
 };

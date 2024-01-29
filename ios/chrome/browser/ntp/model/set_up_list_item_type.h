@@ -15,8 +15,8 @@ enum class SetUpListItemType {
   kAutofill = 3,
   kFollow = 4,
   kAllSet = 5,
-  kContentNotification = 6,
-  kMaxValue = kContentNotification
+  kNotifications = 6,
+  kMaxValue = kNotifications
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

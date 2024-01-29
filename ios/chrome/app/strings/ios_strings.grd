@@ -4458,6 +4458,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
         Options
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome notifications.">
+        Keep up with the latest news, price tracking updates and more.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
+        Get Notifications
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL" desc="Title for the item to cancel opening the Set Up List Settings action sheet.">
         Cancel
       </message>

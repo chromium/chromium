@@ -74,7 +74,7 @@
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
-    case ContentSuggestionsModuleType::kSetUpListContentNotification: {
+    case ContentSuggestionsModuleType::kSetUpListNotifications: {
       SetUpListConfig* setUpListConfig = static_cast<SetUpListConfig*>(config);
       return [self setUpListViewForConfig:setUpListConfig];
     }

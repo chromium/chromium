@@ -175,11 +175,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListSyncItemView;
   SetUpListItemView* _setUpListDefaultBrowserItemView;
   SetUpListItemView* _setUpListAutofillItemView;
-  SetUpListItemView* _setUpListContentNotificationItemView;
+  SetUpListItemView* _setUpListNotificationsItemView;
   MagicStackModuleContainer* _setUpListSyncModule;
   MagicStackModuleContainer* _setUpListDefaultBrowserModule;
   MagicStackModuleContainer* _setUpListAutofillModule;
-  MagicStackModuleContainer* _setUpListContentNotificationModule;
+  MagicStackModuleContainer* _setUpListNotificationsModule;
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
@@ -630,8 +630,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         case ContentSuggestionsModuleType::kSetUpListAutofill:
           _setUpListAutofillModule = setUpListModule;
           break;
-        case ContentSuggestionsModuleType::kSetUpListContentNotification:
-          _setUpListContentNotificationModule = setUpListModule;
+        case ContentSuggestionsModuleType::kSetUpListNotifications:
+          _setUpListNotificationsModule = setUpListModule;
           break;
         case ContentSuggestionsModuleType::kSetUpListAllSet:
           _setUpListAllSetModule = setUpListModule;
@@ -695,9 +695,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case SetUpListItemType::kAutofill:
         [_setUpListAutofillItemView markCompleteWithCompletion:completion];
         break;
-      case SetUpListItemType::kContentNotification:
-        [_setUpListContentNotificationItemView
-            markCompleteWithCompletion:completion];
+      case SetUpListItemType::kNotifications:
+        [_setUpListNotificationsItemView markCompleteWithCompletion:completion];
         break;
       default:
         break;
@@ -1235,8 +1234,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         moduleContainer = _setUpListAutofillModule;
         break;
       }
-      case ContentSuggestionsModuleType::kSetUpListContentNotification: {
-        moduleContainer = _setUpListContentNotificationModule;
+      case ContentSuggestionsModuleType::kSetUpListNotifications: {
+        moduleContainer = _setUpListNotificationsModule;
         break;
       }
       case ContentSuggestionsModuleType::kCompactedSetUpList: {
@@ -1419,7 +1418,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case ContentSuggestionsModuleType::kSetUpListSync:
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
       case ContentSuggestionsModuleType::kSetUpListAutofill:
-      case ContentSuggestionsModuleType::kSetUpListContentNotification:
+      case ContentSuggestionsModuleType::kSetUpListNotifications:
       case ContentSuggestionsModuleType::kCompactedSetUpList:
         [viewIndicesToRemove addObject:@(index)];
         break;
