@@ -306,8 +306,6 @@ class ReadAnythingAppModel {
   // node isn't in the current segment.
   int GetNextTextEndIndex(ui::AXNodeID node_id);
 
-  void ClearReadAloudState();
-
  private:
   void EraseTree(ui::AXTreeID tree_id);
 
@@ -344,6 +342,8 @@ class ReadAnythingAppModel {
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition();
+
+  void ResetReadAloudState();
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.

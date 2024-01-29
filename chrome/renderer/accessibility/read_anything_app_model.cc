@@ -94,6 +94,7 @@ void ReadAnythingAppModel::Reset(
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
   selection_from_action_ = false;
+  ResetReadAloudState();
   ResetSelection();
 }
 
@@ -1448,7 +1449,7 @@ bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
   return false;
 }
 
-void ReadAnythingAppModel::ClearReadAloudState() {
+void ReadAnythingAppModel::ResetReadAloudState() {
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   current_text_index_ = 0;
   processed_granularity_index_ = -1;

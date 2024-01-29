@@ -524,11 +524,9 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // Update Read Aloud state.
-  model_.ClearReadAloudState();
-
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
+  // This also includes Read Aloud state.
   model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
