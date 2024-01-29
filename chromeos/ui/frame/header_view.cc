@@ -118,7 +118,7 @@ int HeaderView::GetPreferredOnScreenHeight() {
 }
 
 int HeaderView::GetPreferredHeight() {
-  // Calculating the preferred height requires at least one Layout().
+  // Calculating the preferred height requires at least one layout.
   if (!did_layout_)
     Layout();
   return frame_header_->GetHeaderHeightForPainting();
