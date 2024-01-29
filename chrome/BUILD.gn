@@ -33,8 +33,6 @@ import("//v8/gni/v8.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-# TODO(jam): remove is_fuchsia below
-
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_linux || is_chromeos) {
@@ -105,7 +103,7 @@ group("assert_no_deps") {
 
   if (is_android) {
     deps += [ "//chrome/android:chrome_public_apk" ]
-  } else if (!is_fuchsia) {
+  } else {
     deps += [ ":chrome" ]
   }
 
@@ -117,18 +115,9 @@ group("assert_no_deps") {
   # for no reason and is easy to mess up. See the comment at the top of
   # //chrome/installer/util/BUILD.gn.
   assert_no_deps = [ "//chrome/installer/util:strings" ]
-
-  if (is_fuchsia) {
-    assert_no_deps += [
-      # Chrome should use Perfetto instead of libtrace. Vulkan depends on
-      # trace-engine, but there should be no dependencies on trace-provider.
-      "//third_party/fuchsia-sdk/sdk/pkg/trace",
-      "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
-    ]
-  }
 }
 
-if (!is_android && !is_mac && !is_fuchsia) {
+if (!is_android && !is_mac) {
   group("chrome") {
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
@@ -278,7 +267,7 @@ if (!is_android && !is_mac && !is_fuchsia) {
         sources += [ "app/chrome_exe_main_aura.cc" ]
       }
 
-      if (is_linux || is_chromeos || is_fuchsia) {
+      if (is_linux || is_chromeos) {
         sources += [
           "app/chrome_dll_resource.h",
           "app/chrome_main.cc",
@@ -303,15 +292,12 @@ if (!is_android && !is_mac && !is_fuchsia) {
           "//headless:headless_shell_lib",
         ]
 
-        public_deps = [ "//chrome/common:buildflags" ]
+        public_deps = [
+          ":xdg_mime",  # Needs to be public for installer to consume files.
+          "//chrome/common:buildflags",
+        ]
 
-        if (!is_fuchsia) {
-          public_deps += [
-            ":xdg_mime",  # Needs to be public for installer to consume files.
-          ]
-
-          data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
-        }
+        data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
 
         ldflags = []
 
@@ -1435,6 +1421,7 @@ group("dependencies") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
+    "//components/crash/core/app",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils",
@@ -1481,10 +1468,6 @@ group("dependencies") {
       "//chromeos",
       "//chromeos/ash/components/memory",
     ]
-  }
-
-  if (!is_fuchsia) {
-    public_deps += [ "//components/crash/core/app" ]
   }
 }
 

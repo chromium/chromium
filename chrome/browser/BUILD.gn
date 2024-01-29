@@ -58,8 +58,6 @@ if (is_win) {
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-# TODO(jam): remove is_fuchsia below
-
 declare_args() {
   # You can set the variable 'use_official_enterprise_connectors_api_keys' to
   # true to use the Google-internal file containing official API keys
@@ -309,6 +307,8 @@ static_library("browser") {
     "component_updater/crowd_deny_component_installer.h",
     "component_updater/desktop_sharing_hub_component_remover.cc",
     "component_updater/desktop_sharing_hub_component_remover.h",
+    "component_updater/file_type_policies_component_installer.cc",
+    "component_updater/file_type_policies_component_installer.h",
     "component_updater/first_party_sets_component_installer.cc",
     "component_updater/first_party_sets_component_installer.h",
     "component_updater/masked_domain_list_component_installer.cc",
@@ -2671,7 +2671,7 @@ static_library("browser") {
     deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
   }
 
-  if (is_posix || is_fuchsia) {
+  if (is_posix) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.cc",
@@ -4638,6 +4638,7 @@ static_library("browser") {
       "//courgette:courgette_lib",
       "//services/device/public/cpp/bluetooth",
       "//services/device/public/cpp/hid",
+      "//third_party/crashpad/crashpad/client:common",
       "//third_party/sqlite",
       "//third_party/zxcvbn-cpp",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
@@ -4766,10 +4767,6 @@ static_library("browser") {
       ]
     }
 
-    if (!is_fuchsia) {
-      deps += [ "//third_party/crashpad/crashpad/client:common" ]
-    }
-
     # On Windows, the hashes are embedded in //chrome:chrome_initial rather
     # than here in :chrome_dll.
     if (!is_win) {
@@ -4792,7 +4789,7 @@ static_library("browser") {
       }
     }
 
-    if (is_posix || is_fuchsia) {
+    if (is_posix) {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
     }
 
@@ -6550,49 +6547,6 @@ static_library("browser") {
     }
   }
 
-  if (is_fuchsia) {
-    sources += [
-      "download/download_status_updater_fuchsia.cc",
-      "first_run/first_run_internal_fuchsia.cc",
-      "first_run/upgrade_util_fuchsia.cc",
-      "fuchsia/chrome_browser_main_parts_fuchsia.cc",
-      "fuchsia/chrome_browser_main_parts_fuchsia.h",
-      "fuchsia/element_manager_impl.cc",
-      "fuchsia/element_manager_impl.h",
-      "fullscreen_fuchsia.cc",
-      "icon_loader_fuchsia.cc",
-      "importer/firefox_profile_lock_fuchsia.cc",
-      "media/webrtc/window_icon_util_fuchsia.cc",
-      "memory_details_fuchsia.cc",
-      "obsolete_system/obsolete_system_stub.cc",
-      "platform_util_fuchsia.cc",
-      "policy/browser_dm_token_storage_fuchsia.cc",
-      "policy/browser_dm_token_storage_fuchsia.h",
-      "process_singleton_fuchsia.cc",
-      "shell_integration_fuchsia.cc",
-      "upgrade_detector/get_installed_version_fuchsia.cc",
-      "upgrade_detector/installed_version_monitor_fuchsia.cc",
-    ]
-
-    deps += [
-      "//components/fuchsia_component_support",
-      "//components/fuchsia_component_support:annotations_manager",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app:fuchsia.ui.app_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition:fuchsia.ui.composition_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-      "//ui/platform_window",
-    ]
-
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp" ]
-  } else {
-    #!is_fuchsia
-    sources += [
-      "component_updater/file_type_policies_component_installer.cc",
-      "component_updater/file_type_policies_component_installer.h",
-    ]
-  }
-
   if (is_posix) {
     sources += [
       "shutdown_signal_handlers_posix.cc",
@@ -6619,7 +6573,7 @@ static_library("browser") {
     sources += [ "hang_monitor/hang_crash_dump.cc" ]
   }
 
-  if (is_win || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_linux || is_chromeos) {
     sources += [
       "renderer_context_menu/spelling_options_submenu_observer.cc",
       "renderer_context_menu/spelling_options_submenu_observer.h",
@@ -6717,7 +6671,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
@@ -6945,9 +6899,6 @@ static_library("browser") {
     }
     if (is_linux) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
-    }
-    if (is_fuchsia) {
-      sources += [ "printing/printer_manager_dialog_fuchsia.cc" ]
     }
     if (enable_oop_printing) {
       sources += [
@@ -8177,7 +8128,7 @@ grit("resources") {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [ "//services/resource_coordinator/public/mojom:mojom_js" ]
   }
 

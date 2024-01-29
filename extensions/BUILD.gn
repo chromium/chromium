@@ -10,9 +10,6 @@ import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(enable_extensions)
-assert(!is_fuchsia, "Fuchsia shouldn't use anything in //extensions")
-
-# TODO(jam): remove is_fuchsia below
 
 if (is_component_build) {
   component("extensions") {
@@ -280,16 +277,6 @@ test("extensions_unittests") {
     "//testing/buildbot/filters:extensions_unittests_filters",
     "//third_party/mesa_headers",
   ]
-
-  if (is_fuchsia) {
-    additional_manifest_fragments = [
-      # TODO(https://crbug.com/1185811): Investigate removing the requirement
-      # for VmexResource.
-      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
-      "//build/config/fuchsia/test/network.shard.test-cml",
-      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
-    ]
-  }
 
   if (is_chromeos) {
     deps += [
