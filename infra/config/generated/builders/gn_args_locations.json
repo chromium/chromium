@@ -213,10 +213,8 @@
   "chromium.fuchsia": {
     "Deterministic Fuchsia (dbg)": "ci/Deterministic Fuchsia (dbg)/gn-args.json",
     "fuchsia-arm64-cast-receiver-rel": "ci/fuchsia-arm64-cast-receiver-rel/gn-args.json",
-    "fuchsia-arm64-rel": "ci/fuchsia-arm64-rel/gn-args.json",
     "fuchsia-x64-cast-receiver-rel": "ci/fuchsia-x64-cast-receiver-rel/gn-args.json",
-    "fuchsia-x64-dbg": "ci/fuchsia-x64-dbg/gn-args.json",
-    "fuchsia-x64-rel": "ci/fuchsia-x64-rel/gn-args.json"
+    "fuchsia-x64-dbg": "ci/fuchsia-x64-dbg/gn-args.json"
   },
   "chromium.fuchsia.fyi": {
     "fuchsia-fyi-arm64-dbg": "ci/fuchsia-fyi-arm64-dbg/gn-args.json",
@@ -719,7 +717,6 @@
   },
   "tryserver.chromium.fuchsia": {
     "fuchsia-arm64-cast-receiver-rel": "try/fuchsia-arm64-cast-receiver-rel/gn-args.json",
-    "fuchsia-arm64-rel": "try/fuchsia-arm64-rel/gn-args.json",
     "fuchsia-binary-size": "try/fuchsia-binary-size/gn-args.json",
     "fuchsia-binary-size-siso": "try/fuchsia-binary-size-siso/gn-args.json",
     "fuchsia-code-coverage": "try/fuchsia-code-coverage/gn-args.json",
@@ -729,8 +726,7 @@
     "fuchsia-fyi-x64-asan": "try/fuchsia-fyi-x64-asan/gn-args.json",
     "fuchsia-fyi-x64-dbg": "try/fuchsia-fyi-x64-dbg/gn-args.json",
     "fuchsia-fyi-x64-dbg-persistent-emulator": "try/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
-    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json",
-    "fuchsia-x64-rel": "try/fuchsia-x64-rel/gn-args.json"
+    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",
