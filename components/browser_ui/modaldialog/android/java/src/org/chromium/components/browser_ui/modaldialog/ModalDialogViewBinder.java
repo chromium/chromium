@@ -104,7 +104,8 @@ public class ModalDialogViewBinder
             boolean ignoreHeightConstraint =
                     dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG
                             || dialogStyle
-                                    == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG;
+                                    == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG
+                            || dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE;
             view.setIgnoreConstraints(ignoreWidthConstraints, ignoreHeightConstraint);
         } else if (ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS == propertyKey) {
             view.setButtonTapProtectionDurationMs(
