@@ -687,9 +687,6 @@ id<GREYMatcher> ManualFallbackOtherPasswordsDismissMatcher();
 // Returns a matcher for the a password in the manual fallback list.
 id<GREYMatcher> ManualFallbackPasswordButtonMatcher();
 
-// Returns a matcher for the PasswordTableView window.
-id<GREYMatcher> ManualFallbackPasswordTableViewWindowMatcher();
-
 // Returns a matcher for the profiles icon in the keyboard accessory bar.
 id<GREYMatcher> ManualFallbackProfilesIconMatcher();
 

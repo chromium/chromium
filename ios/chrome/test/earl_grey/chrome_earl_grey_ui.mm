@@ -4,6 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -455,6 +457,33 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tapAtPoint(CGPointMake(0, 0))
               error:&err];
   return err == nil;
+}
+
+- (void)cleanupAfterShowingAlert {
+  // Workaround for an Earl Grey crash in iOS 15.5 on iPad when traversing the
+  // view hierarchy with accessibility. Likely due to the system alert view, the
+  // traversal will crash because some system view cannot provide the correct
+  // accessibility result. Background and Foreground the app removes the system
+  // alert view's residues from the view hierarchy.
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  }
+}
+
+- (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher {
+  id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
+  id<GREYMatcher> parentMatcher = grey_descendant(matcher);
+  id<GREYMatcher> windowMatcher = grey_allOf(classMatcher, parentMatcher, nil);
+
+  // Tap on a point outside of the popover.
+  // The way EarlGrey taps doesn't go through the window hierarchy. Because of
+  // this, the tap needs to be done in the same window as the popover.
+  [[EarlGrey selectElementWithMatcher:windowMatcher]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
+  // Verify the window is not visible.
+  [[EarlGrey selectElementWithMatcher:windowMatcher]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Private

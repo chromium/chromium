@@ -42,7 +42,6 @@ using chrome_test_util::ManualFallbackPasswordButtonMatcher;
 using chrome_test_util::ManualFallbackPasswordIconMatcher;
 using chrome_test_util::ManualFallbackPasswordSearchBarMatcher;
 using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
-using chrome_test_util::ManualFallbackPasswordTableViewWindowMatcher;
 using chrome_test_util::ManualFallbackSuggestPasswordMatcher;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
@@ -625,12 +624,9 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap on a point outside of the popover.
-  // The way EarlGrey taps doesn't go through the window hierarchy. Because of
-  // this, the tap needs to be done in the same window as the popover.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackPasswordTableViewWindowMatcher()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  [ChromeEarlGreyUI
+      dismissByTappingOnTheWindowOfPopover:
+          chrome_test_util::ManualFallbackPasswordTableViewMatcher()];
 
   // Verify the password controller table view is not visible and the password
   // icon is visible.
@@ -772,6 +768,8 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
   // Dismiss the alert.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
       performAction:grey_tap()];
+
+  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests that the password icon is not present when no passwords are available.
