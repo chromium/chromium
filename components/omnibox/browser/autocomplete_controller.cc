@@ -16,6 +16,7 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 
@@ -1781,10 +1782,14 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   }
 
   // The goal is to redistribute the existing relevance scores among the
-  // eligible matches according to the model prediction scores. Construct two
-  // max heaps for the (legacy) relevance score and the model prediction scores.
+  // eligible matches according to the model prediction scores.
+  // `relevance_heap` is a max heap containing the (legacy) relevance scores,
+  // while `prediction_and_match_itr_heap` is a max heap containing tuples of
+  // the form (ml_score, legacy_score, match_itr). If two matches have the same
+  // ML score (e.g. two remote document suggestions w/o local scoring signals),
+  // then the legacy score will be used to break ties.
   std::priority_queue<int> relevance_heap;
-  std::priority_queue<std::pair<float, AutocompleteResult::iterator>>
+  std::priority_queue<std::tuple<float, int, AutocompleteResult::iterator>>
       prediction_and_match_itr_heap;
   // Likewise, keep the same number of shortcut boosted suggestions but reassign
   // them to the highest scoring suggestions.
@@ -1797,7 +1802,8 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
 
     auto match_itr = eligible_match_itrs[index];
     relevance_heap.emplace(match_itr->relevance);
-    prediction_and_match_itr_heap.emplace(prediction.value(), match_itr);
+    prediction_and_match_itr_heap.emplace(prediction.value(),
+                                          match_itr->relevance, match_itr);
     if (match_itr->shortcut_boosted)
       boosted_shortcut_count++;
   }
@@ -1820,11 +1826,11 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     // If not in the counterfactual treatment, assign the highest relevance
     // score to the match with the highest respective model prediction score.
     if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
-      auto match_itr = prediction_and_match_itr_heap.top().second;
+      auto match_itr = std::get<2>(prediction_and_match_itr_heap.top());
       match_itr->RecordAdditionalInfo("ml legacy relevance",
                                       match_itr->relevance);
       match_itr->RecordAdditionalInfo(
-          "ml model output", prediction_and_match_itr_heap.top().first);
+          "ml model output", std::get<0>(prediction_and_match_itr_heap.top()));
       match_itr->relevance = relevance_heap.top();
       if (boosted_shortcut_count) {
         match_itr->RecordAdditionalInfo("ML shortcut boosted", "true");

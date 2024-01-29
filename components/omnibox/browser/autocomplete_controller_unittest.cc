@@ -651,6 +651,27 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
           "history 1100 .1",
       }));
 
+  // When multiple URL suggestions have been assigned the same score by the ML
+  // model, those suggestions which were top-ranked according to legacy scoring
+  // should continue to be top-ranked once ML scoring has run.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history A 1350 .2", true, 1350, .2),
+          CreateHistoryUrlMlScoredMatch("history B 1200 .2", true, 1200, .2),
+          CreateHistoryUrlMlScoredMatch("history C 1100 .2", false, 1100, .2),
+          CreateHistoryUrlMlScoredMatch("history D 300 .2", true, 300, .2),
+          CreateHistoryUrlMlScoredMatch("history E 200 .2", true, 200, .2),
+          CreateHistoryUrlMlScoredMatch("history F 100 .2", true, 100, .2),
+      }),
+      testing::ElementsAreArray({
+          "history A 1350 .2",
+          "history B 1200 .2",
+          "history C 1100 .2",
+          "history D 300 .2",
+          "history E 200 .2",
+          "history F 100 .2",
+      }));
+
   // Can change the default suggestion from 1 history to another.
   EXPECT_THAT(
       controller_.SimulateCleanAutocompletePass({
