@@ -485,7 +485,7 @@ fuzzer_test("libyuv_scale_fuzzer") {
 # In time, we may choose a different option here.
 test("libyuv_scale_fuzztest") {
   sources = [ "libyuv_scale_fuzztest.cc" ]
-  enable_fuzztest = true
+  fuzztests = [ "ScaleFuzz.ScaleDoesNotCrash" ]
 
   deps = [
     ":libyuv_scale_fuzzer_common",

@@ -180,10 +180,12 @@ template("mixed_test") {
 #      for build targets.
 #   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
 #      network requests during the test.
-#   enable_fuzztest: whether to allow the use of the FUZZ_TEST macro to
+#   fuzztests: a list of instances of the FUZZ_TEST macro to
 #      include fuzzing tests alongside unit tests. This introduces an
 #      extra dependency and also creates additional metadata so that our
 #      fuzzing infrastructure can find and run such tests.
+#      This should be a list of the test names, for example
+#      fuzztests = [ "MyTestClass.MyTestName" ]
 template("test") {
   testonly = true
   if (!is_ios) {
@@ -196,7 +198,7 @@ template("test") {
   }
 
   _fuzztest_deps = []
-  if (defined(invoker.enable_fuzztest) && invoker.enable_fuzztest) {
+  if (defined(invoker.fuzztests) && invoker.fuzztests != []) {
     _output_name = invoker.target_name
     _fuzzer_options_target = "${_output_name}__fuzzer_options"
     _fuzztest_deps = [
