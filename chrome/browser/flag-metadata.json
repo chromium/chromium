@@ -7061,7 +7061,7 @@
   {
     "name": "restore-synced-placeholder-tabs",
     "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "restrict-gamepad-access",
