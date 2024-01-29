@@ -3867,28 +3867,43 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @Override
-    public boolean handleMismatchedIndices(Activity preLaunchedActivity) {
-        if (!ChromeFeatureList.sTabWindowManagerIndexReassignmentOnMismatch.isEnabled()
-                || !(preLaunchedActivity instanceof ChromeTabbedActivity preLaunchedTabbedActivity)
-                || !preLaunchedActivity.isFinishing()) {
+    public boolean handleMismatchedIndices(
+            Activity activityAtRequestedIndex,
+            boolean isActivityInAppTasks,
+            boolean isActivityInSameTask) {
+        boolean shouldHandleMismatch =
+                (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityFinishing.isEnabled()
+                                && activityAtRequestedIndex.isFinishing())
+                        || (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityInSameTask
+                                        .isEnabled()
+                                && isActivityInSameTask)
+                        || (ChromeFeatureList
+                                        .sTabWindowManagerIndexReassignmentActivityNotInAppTasks
+                                        .isEnabled()
+                                && !isActivityInAppTasks);
+
+        if (!shouldHandleMismatch
+                || !(activityAtRequestedIndex
+                        instanceof ChromeTabbedActivity tabbedActivityAtRequestedIndex)) {
             return false;
         }
 
-        // Destroy the TabPersistentStore instance maintained by the finishing activity. Save the
-        // tab state first to align with the current flow of execution when the store is destroyed.
+        // Destroy the TabPersistentStore instance maintained by the activity at the requested
+        // index. Save the tab state first to align with the current flow of execution when the
+        // store is destroyed.
         var tabModelOrchestrator =
-                preLaunchedTabbedActivity.getTabModelOrchestratorSupplier().get();
+                tabbedActivityAtRequestedIndex.getTabModelOrchestratorSupplier().get();
         // If the two activities launched within a short span, simply destroy the persistent store
-        // instance of the finishing activity, assuming no changes have been made to the tab state
-        // during this time.
+        // instance of the activity at the requested index, assuming no changes have been made to
+        // the tab state during this time.
         // TODO (crbug.com/1520923): Add a histogram to track the time difference to possibly refine
         // the threshold value, and also make this Finch configurable.
         long onCreateTimeDelta =
                 Math.abs(
-                        preLaunchedTabbedActivity.getOnCreateTimestampMs()
+                        tabbedActivityAtRequestedIndex.getOnCreateTimestampMs()
                                 - this.getOnCreateTimestampMs());
         boolean shouldSaveState =
-                preLaunchedTabbedActivity.getLifecycleDispatcher().getCurrentActivityState()
+                tabbedActivityAtRequestedIndex.getLifecycleDispatcher().getCurrentActivityState()
                         < ActivityState.STOPPED_WITH_NATIVE;
         if (shouldSaveState
                 && onCreateTimeDelta > BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS) {
@@ -3896,6 +3911,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             tabModelOrchestrator.getTabPersistentStore().saveState();
         }
         tabModelOrchestrator.destroyTabPersistentStore();
+
+        // If the activity at the requested index is not finishing already, explicitly finish it.
+        if (!activityAtRequestedIndex.isFinishing()) {
+            activityAtRequestedIndex.finish();
+        }
         return true;
     }
 

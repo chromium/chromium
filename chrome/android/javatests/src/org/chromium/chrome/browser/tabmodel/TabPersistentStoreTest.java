@@ -1073,7 +1073,9 @@ public class TabPersistentStoreTest {
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,
-                                                    preLaunchedActivity -> false,
+                                                    (activityAtRequestedIndex,
+                                                            isActivityInAppTasks,
+                                                            isActivityInSameTask) -> false,
                                                     0)
                                             .second;
                         });

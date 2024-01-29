@@ -186,7 +186,8 @@ public class MultiInstanceManagerApi31UnitTest {
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
 
-    private final MismatchedIndicesHandler mMismatchedIndicesHandler = preLaunchedActivity -> false;
+    private final MismatchedIndicesHandler mMismatchedIndicesHandler =
+            (activityAtRequestedIndex, isActivityInAppTasks, isActivityInSameTask) -> false;
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()

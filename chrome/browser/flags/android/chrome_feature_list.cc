@@ -264,7 +264,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStateFlatBuffer,
     &kTabStripStartupRefactoring,
     &kTabToGTSAnimation,
-    &kTabWindowManagerIndexReassignmentOnMismatch,
+    &kTabWindowManagerIndexReassignmentActivityFinishing,
+    &kTabWindowManagerIndexReassignmentActivityInSameTask,
+    &kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -800,8 +802,16 @@ BASE_FEATURE(kTabToGTSAnimation,
              "TabToGTSAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabWindowManagerIndexReassignmentOnMismatch,
-             "TabWindowManagerIndexReassignmentOnMismatch",
+BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing,
+             "TabWindowManagerIndexReassignmentActivityFinishing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityInSameTask,
+             "TabWindowManagerIndexReassignmentActivityInSameTask",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
+             "TabWindowManagerIndexReassignmentActivityNotInAppTasks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabWindowManagerReportIndicesMismatch,

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 
 /**
  * Contains methods for activities to handle scenarios where a new activity attempts to use a
@@ -17,8 +18,16 @@ public interface MismatchedIndicesHandler {
      * Allows a new activity to perform explicit operations on a previously launched activity in a
      * scenario where both activities are attempting to use the same index.
      *
-     * @param preLaunchedActivity The activity that launched first.
+     * @param activityAtRequestedIndex The activity that launched first and is using the requested
+     *     index.
+     * @param isActivityInAppTasks Whether the activity that launched first is present in {@link
+     *     ActivityManager#getAppTasks()}.
+     * @param isActivityInSameTask Whether the activity that launched first is in the same task as
+     *     the new activity.
      * @return Whether the operations were successfully performed.
      */
-    boolean handleMismatchedIndices(Activity preLaunchedActivity);
+    boolean handleMismatchedIndices(
+            Activity activityAtRequestedIndex,
+            boolean isActivityInAppTasks,
+            boolean isActivityInSameTask);
 }
