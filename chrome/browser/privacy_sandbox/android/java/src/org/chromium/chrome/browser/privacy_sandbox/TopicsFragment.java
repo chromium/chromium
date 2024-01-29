@@ -103,11 +103,24 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                     "</link>",
                                     new NoUnderlineClickableSpan(
                                             getContext(), this::onLearnMoreClicked))));
+            mTopicsPageFooterPreference.setSummary(
+                    SpanApplier.applySpans(
+                            getResources().getString(R.string.settings_topics_page_footer),
+                            new SpanApplier.SpanInfo(
+                                    "<link1>",
+                                    "</link1>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onFledgeSettingsLinkClicked)),
+                            new SpanApplier.SpanInfo(
+                                    "<link2>",
+                                    "</link2>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onCookieSettingsLink))));
+            return;
         }
-
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
-                        getResources().getString(R.string.settings_topics_page_footer),
+                        getResources().getString(R.string.settings_topics_page_footer_new),
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
@@ -117,12 +130,21 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 "<link2>",
                                 "</link2>",
                                 new NoUnderlineClickableSpan(
-                                        getContext(), this::onCookieSettingsLink))));
+                                        getContext(), this::onCookieSettingsLink)),
+                        new SpanApplier.SpanInfo(
+                                "<link3>",
+                                "</link3>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onManagingAdPrivacyClicked))));
     }
 
     private void onLearnMoreClicked(View view) {
         RecordUserAction.record("Settings.PrivacySandbox.Topics.LearnMoreClicked");
         launchSettingsActivity(TopicsLearnMoreFragment.class);
+    }
+
+    private void onManagingAdPrivacyClicked(View view) {
+        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
     private void onFledgeSettingsLinkClicked(View view) {
