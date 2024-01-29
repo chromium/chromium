@@ -94,6 +94,9 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
             mBlockedTopicsCategory.setSummary(null);
+            if (mBlockedTopicsCategory.getPreferenceCount() == 0)
+                mBlockedTopicsCategory.setSummary(
+                        R.string.settings_topics_page_blocked_topics_description_empty_ptb);
             return;
         }
         mBlockedTopicsCategory.setSummary(

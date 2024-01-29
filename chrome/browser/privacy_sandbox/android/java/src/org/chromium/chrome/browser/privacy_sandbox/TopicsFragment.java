@@ -38,6 +38,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
     private static final String DISABLED_TOPICS_PREFERENCE = "topics_disabled";
     private static final String TOPICS_PAGE_FOOTER_PREFERENCE = "topics_page_footer";
+    private static final String ACTIVE_TOPICS_PREFERENCE = "active_topics";
+    private static final String BLOCKED_TOPICS_PREFERENCE = "blocked_topics";
+    private static final String MANAGE_TOPICS_PREFERENCE = "manage_topics";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
     private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
@@ -45,6 +48,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private TextMessagePreference mEmptyTopicsPreference;
     private TextMessagePreference mDisabledTopicsPreference;
     private ClickableSpansTextMessagePreference mTopicsPageFooterPreference;
+    private Preference mActiveTopicsPreference;
+    private Preference mBlockedTopicsPreference;
+    private Preference mManageTopicsPreference;
 
     static boolean isTopicsPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -79,6 +85,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
         mTopicsPageFooterPreference =
                 (ClickableSpansTextMessagePreference) findPreference(TOPICS_PAGE_FOOTER_PREFERENCE);
+        mActiveTopicsPreference = findPreference(ACTIVE_TOPICS_PREFERENCE);
+        mBlockedTopicsPreference = findPreference(BLOCKED_TOPICS_PREFERENCE);
+        mManageTopicsPreference = findPreference(MANAGE_TOPICS_PREFERENCE);
 
         mTopicsTogglePreference.setChecked(isTopicsPrefEnabled(getProfile()));
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
@@ -197,13 +206,24 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
         // Visible when Topics are disabled.
-        mDisabledTopicsPreference.setVisible(!topicsEnabled);
+        mDisabledTopicsPreference.setVisible(
+                !topicsEnabled
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING));
 
         // Visible when Topics are enabled, but the current Topics list is empty.
         mEmptyTopicsPreference.setVisible(topicsEnabled && topicsEmpty);
 
         // Visible when Topics are enabled and the current Topics list is not empty.
         mCurrentTopicsCategory.setVisible(topicsEnabled && !topicsEmpty);
+
+        // The new UI hides all the sections when the Topics are disabled.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            mActiveTopicsPreference.setVisible(topicsEnabled);
+            mBlockedTopicsPreference.setVisible(topicsEnabled);
+            mManageTopicsPreference.setVisible(topicsEnabled);
+        }
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
