@@ -16,5 +16,5 @@ extern __typeof (FcPatternAddFTFace) FcPatternAddFTFace __attribute((alias("IA__
 #ifdef __fcfreetype__
 # undef FcFreeTypeQueryFace
 extern __typeof (FcFreeTypeQueryFace) FcFreeTypeQueryFace __attribute((alias("IA__FcFreeTypeQueryFace"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-#endif /*  */
+#endif /* __fcfreetype__ */
 #endif /* HAVE_GNUC_ATTRIBUTE */

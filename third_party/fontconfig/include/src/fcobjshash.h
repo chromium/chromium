@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: gperf --pic -m 100 fcobjshash.gperf  */
+/* Command-line: /usr/bin/gperf --pic -m 100 --output-file src/fcobjshash.h src/fcobjshash.gperf  */
 /* Computed positions: -k'3,5' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -29,9 +29,9 @@
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gperf@gnu.org>."
 #endif
 
-#line 1 "fcobjshash.gperf"
+#line 1 "src/fcobjshash.gperf"
 
-#line 13 "fcobjshash.gperf"
+#line 13 "src/fcobjshash.gperf"
 struct FcObjectTypeInfo {
 int name;
 int id;
@@ -223,114 +223,114 @@ FcObjectTypeLookup (register const char *str, register size_t len)
   static const struct FcObjectTypeInfo wordlist[] =
     {
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-#line 62 "fcobjshash.gperf"
+#line 62 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str6,FC_HASH_OBJECT},
-#line 27 "fcobjshash.gperf"
+#line 27 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str7,FC_SIZE_OBJECT},
       {-1}, {-1},
-#line 43 "fcobjshash.gperf"
+#line 43 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str10,FC_DPI_OBJECT},
-#line 50 "fcobjshash.gperf"
+#line 50 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str11,FC_CHARSET_OBJECT},
-#line 42 "fcobjshash.gperf"
+#line 42 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str12,FC_SCALABLE_OBJECT},
-#line 24 "fcobjshash.gperf"
+#line 24 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str13,FC_SLANT_OBJECT},
-#line 51 "fcobjshash.gperf"
+#line 51 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str14,FC_LANG_OBJECT},
-#line 70 "fcobjshash.gperf"
+#line 70 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str15,FC_DESKTOP_NAME_OBJECT},
-#line 30 "fcobjshash.gperf"
+#line 30 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str16,FC_SPACING_OBJECT},
-#line 32 "fcobjshash.gperf"
+#line 32 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str17,FC_ANTIALIAS_OBJECT},
-#line 63 "fcobjshash.gperf"
+#line 63 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str18,FC_POSTSCRIPT_NAME_OBJECT},
-#line 49 "fcobjshash.gperf"
+#line 49 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str19,FC_MATRIX_OBJECT},
-#line 41 "fcobjshash.gperf"
+#line 41 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str20,FC_OUTLINE_OBJECT},
-#line 33 "fcobjshash.gperf"
+#line 33 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str21,FC_HINT_STYLE_OBJECT},
-#line 38 "fcobjshash.gperf"
+#line 38 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str22,FC_FILE_OBJECT},
-#line 44 "fcobjshash.gperf"
+#line 44 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str23,FC_RGBA_OBJECT},
-#line 34 "fcobjshash.gperf"
+#line 34 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str24,FC_HINTING_OBJECT},
-#line 48 "fcobjshash.gperf"
+#line 48 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str25,FC_CHAR_HEIGHT_OBJECT},
-#line 25 "fcobjshash.gperf"
+#line 25 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str26,FC_WEIGHT_OBJECT},
-#line 36 "fcobjshash.gperf"
+#line 36 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str27,FC_AUTOHINT_OBJECT},
-#line 18 "fcobjshash.gperf"
+#line 18 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str28,FC_FAMILY_OBJECT},
-#line 47 "fcobjshash.gperf"
+#line 47 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str29,FC_CHARWIDTH_OBJECT},
-#line 59 "fcobjshash.gperf"
+#line 59 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str30,FC_NAMELANG_OBJECT},
-#line 67 "fcobjshash.gperf"
+#line 67 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str31,FC_VARIABLE_OBJECT},
-#line 19 "fcobjshash.gperf"
+#line 19 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str32,FC_FAMILYLANG_OBJECT},
-#line 28 "fcobjshash.gperf"
+#line 28 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str33,FC_ASPECT_OBJECT},
-#line 68 "fcobjshash.gperf"
+#line 68 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str34,FC_FONT_HAS_HINT_OBJECT},
-#line 46 "fcobjshash.gperf"
+#line 46 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str35,FC_MINSPACE_OBJECT},
-#line 22 "fcobjshash.gperf"
+#line 22 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str36,FC_FULLNAME_OBJECT},
-#line 58 "fcobjshash.gperf"
+#line 58 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str37,FC_LCD_FILTER_OBJECT},
-#line 71 "fcobjshash.gperf"
+#line 71 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str38,FC_NAMED_INSTANCE_OBJECT},
-#line 26 "fcobjshash.gperf"
+#line 26 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str39,FC_WIDTH_OBJECT},
-#line 23 "fcobjshash.gperf"
+#line 23 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str40,FC_FULLNAMELANG_OBJECT},
-#line 57 "fcobjshash.gperf"
+#line 57 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str41,FC_DECORATIVE_OBJECT},
-#line 35 "fcobjshash.gperf"
+#line 35 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str42,FC_VERTICAL_LAYOUT_OBJECT},
-#line 45 "fcobjshash.gperf"
+#line 45 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str43,FC_SCALE_OBJECT},
-#line 64 "fcobjshash.gperf"
+#line 64 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str44,FC_COLOR_OBJECT},
-#line 55 "fcobjshash.gperf"
+#line 55 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str45,FC_EMBOLDEN_OBJECT},
-#line 53 "fcobjshash.gperf"
+#line 53 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str46,FC_CAPABILITY_OBJECT},
-#line 69 "fcobjshash.gperf"
+#line 69 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str47,FC_ORDER_OBJECT},
-#line 40 "fcobjshash.gperf"
+#line 40 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str48,FC_RASTERIZER_OBJECT},
-#line 20 "fcobjshash.gperf"
+#line 20 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str49,FC_STYLE_OBJECT},
-#line 39 "fcobjshash.gperf"
+#line 39 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str50,FC_INDEX_OBJECT},
-#line 29 "fcobjshash.gperf"
+#line 29 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str51,FC_PIXEL_SIZE_OBJECT},
-#line 52 "fcobjshash.gperf"
+#line 52 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str52,FC_FONTVERSION_OBJECT},
-#line 21 "fcobjshash.gperf"
+#line 21 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str53,FC_STYLELANG_OBJECT},
-#line 56 "fcobjshash.gperf"
+#line 56 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str54,FC_EMBEDDED_BITMAP_OBJECT},
-#line 66 "fcobjshash.gperf"
+#line 66 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str55,FC_FONT_VARIATIONS_OBJECT},
-#line 65 "fcobjshash.gperf"
+#line 65 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str56,FC_SYMBOL_OBJECT},
-#line 54 "fcobjshash.gperf"
+#line 54 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str57,FC_FONTFORMAT_OBJECT},
-#line 31 "fcobjshash.gperf"
+#line 31 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str58,FC_FOUNDRY_OBJECT},
-#line 60 "fcobjshash.gperf"
+#line 60 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str59,FC_FONT_FEATURES_OBJECT},
-#line 61 "fcobjshash.gperf"
+#line 61 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str60,FC_PRGNAME_OBJECT},
-#line 37 "fcobjshash.gperf"
+#line 37 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str61,FC_GLOBAL_ADVANCE_OBJECT}
     };
 

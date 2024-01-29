@@ -19,6 +19,14 @@ To import a new snapshot of fontconfig:
     git checkout origin/main
 - Change the DEPS entry to the newly checked out commit.
 - Update generated files:
-    ./autogen.sh --enable-libxml2 --disable-docs && make
-    rsync -R $(git ls-files --others '*.h' '*/*.h') ../include
+    meson build -Ddoc=disabled --prefix=/usr
+    ninja -C build
+    find build -name '*.h' -printf '%P\n' | \
+        rsync -R --files-from=- build/ ../include/
+    # config.h has "#define _GNU_SOURCE" which would conflict with
+    # our "#define _GNU_SOURCE 1".
+    sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/config.h
+    # Use libxml2 instead of libexpat.  Currently, there's no way
+    # to configure this with meson options.
+    echo '#define ENABLE_LIBXML2 1' >> ../include/config.h
 - Update this README to reflect the new version number and CPEPrefix.

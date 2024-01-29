@@ -506,5 +506,5 @@ extern __typeof (FcConfigParseAndLoadFromMemory) FcConfigParseAndLoadFromMemory 
 extern __typeof (FcConfigGetRescanInverval) FcConfigGetRescanInverval __attribute((alias("IA__FcConfigGetRescanInverval"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigSetRescanInverval
 extern __typeof (FcConfigSetRescanInverval) FcConfigSetRescanInverval __attribute((alias("IA__FcConfigSetRescanInverval"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-#endif /*  */
+#endif /* __fccfg__ */
 #endif /* HAVE_GNUC_ATTRIBUTE */
