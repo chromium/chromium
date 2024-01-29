@@ -471,7 +471,7 @@ GURL WebAppBrowserController::GetAppNewTabUrl() const {
 
 bool WebAppBrowserController::ShouldHideNewTabButton() const {
   if (!registrar().IsTabbedWindowModeEnabled(app_id())) {
-    return false;
+    return true;
   }
 
   // If the app added a pinned home tab without changing their new tab URL, we

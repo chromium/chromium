@@ -324,6 +324,19 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
       embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NonTabbedWebApp) {
+  Profile* profile = browser()->profile();
+
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->title = u"Test app";
+  web_app_info->start_url = embedded_test_server()->GetURL(kAppPath);
+  webapps::AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
+
+  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+
+  EXPECT_TRUE(app_browser->app_controller()->ShouldHideNewTabButton());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/tab_strip_customizations.html?some_query#blah");
