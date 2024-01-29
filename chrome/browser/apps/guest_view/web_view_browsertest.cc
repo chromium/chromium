@@ -5023,14 +5023,18 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   // Make sure wheel events don't get filtered.
   float scroll_magnitude = 15.f;
 
+  display::ScreenInfo screen_info =
+      GetGuestWebContents()->GetRenderWidgetHostView()->GetScreenInfo();
   {
     // Scroll the embedder from a position in the embedder that is not over
     // the guest.
-    gfx::Point embedder_scroll_location(
-        embedder_rect.x() + embedder_rect.width() / 2,
-        (embedder_rect.y() + guest_rect.y()) / 2);
+    gfx::Point embedder_scroll_location = gfx::ScaleToRoundedPoint(
+        gfx::Point(embedder_rect.x() + embedder_rect.width() / 2,
+                   (embedder_rect.y() + guest_rect.y()) / 2),
+        1 / screen_info.device_scale_factor);
 
-    gfx::PointF expected_offset(0.f, scroll_magnitude);
+    gfx::PointF expected_offset(
+        0.f, scroll_magnitude * screen_info.device_scale_factor);
 
     content::SimulateMouseEvent(embedder_contents,
                                 blink::WebInputEvent::Type::kMouseMove,
@@ -5053,8 +5057,9 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   guest_rect.set_x(guest_rect.x() - embedder_rect.x());
   guest_rect.set_y(guest_rect.y() - embedder_rect.y());
   {
-    gfx::Point guest_scroll_location(guest_rect.x() + guest_rect.width() / 2,
-                                     guest_rect.y());
+    gfx::Point guest_scroll_location = gfx::ScaleToRoundedPoint(
+        gfx::Point(guest_rect.x() + guest_rect.width() / 2, guest_rect.y()),
+        1 / screen_info.device_scale_factor);
 
     content::SimulateMouseEvent(embedder_contents,
                                 blink::WebInputEvent::Type::kMouseMove,

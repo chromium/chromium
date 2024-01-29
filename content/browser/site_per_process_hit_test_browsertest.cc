@@ -5936,9 +5936,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   gfx::Rect popup_rect = popup_waiter->last_initial_rect();
   popup_rect =
       gfx::ScaleToRoundedRect(popup_rect, 1 / screen_info.device_scale_factor);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
   // On Mac and Android we receive the coordinates before they are transformed,
   // so they are still relative to the out-of-process iframe origin.
+  int expected_x = base::ClampRound(9 / screen_info.device_scale_factor);
+  int expected_y = base::ClampRound(9 / screen_info.device_scale_factor);
+  EXPECT_EQ(popup_rect.x(), expected_x);
+  EXPECT_EQ(popup_rect.y(), expected_y);
+#elif BUILDFLAG(IS_ANDROID)
+  // Android doesn't seem to care about the device_scale_factor.
   EXPECT_EQ(popup_rect.x(), 9);
   EXPECT_EQ(popup_rect.y(), 9);
 #else
