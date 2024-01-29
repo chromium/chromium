@@ -1109,11 +1109,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="5" label="HeavyAd Element opened"/>
   <int value="6" label="ContentSecurityPolicy Directive opened"/>
   <int value="7" label="ContentSecurityPolicy Element opened"/>
-  <int value="8" label="CrossOriginEmbedderPolicy LearnMore opened"/>
-  <int value="9" label="MixedContent LearnMore opened"/>
-  <int value="10" label="SameSiteCookie LearnMore opened"/>
-  <int value="11" label="HeavyAd LearnMore opened"/>
-  <int value="12" label="ContentSecurityPolicy LearnMore opened"/>
 </enum>
 
 <enum name="DevToolsKeybindSets">
