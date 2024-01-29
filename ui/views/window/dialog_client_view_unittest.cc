@@ -64,7 +64,8 @@ class DialogClientViewTest : public test::WidgetTest {
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    delegate_ = nullptr;
+    widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
   }
 
@@ -181,8 +182,8 @@ class DialogClientViewTest : public test::WidgetTest {
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<DialogDelegateView, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<DialogDelegateView> delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;
