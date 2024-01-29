@@ -39,9 +39,7 @@ std::string ConvertToUTF16Base64(const std::string& text) {
     utf16_bytes.push_back(static_cast<char>(c >> 8));
     utf16_bytes.push_back(static_cast<char>(c & 0xff));
   }
-  std::string encoded;
-  base::Base64Encode(utf16_bytes, &encoded);
-  return encoded;
+  return base::Base64Encode(utf16_bytes);
 }
 
 base::Value::Dict AvailableContentToValue(

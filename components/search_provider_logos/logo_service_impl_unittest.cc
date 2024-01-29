@@ -84,9 +84,7 @@ scoped_refptr<base::RefCountedString> EncodeBitmapAsPNG(
 
 std::string EncodeBitmapAsPNGBase64(const SkBitmap& bitmap) {
   scoped_refptr<base::RefCountedString> png_bytes = EncodeBitmapAsPNG(bitmap);
-  std::string encoded_image_base64;
-  base::Base64Encode(png_bytes->data(), &encoded_image_base64);
-  return encoded_image_base64;
+  return base::Base64Encode(png_bytes->data());
 }
 
 SkBitmap MakeBitmap(int width, int height) {

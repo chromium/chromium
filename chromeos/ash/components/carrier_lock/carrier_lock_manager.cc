@@ -715,8 +715,7 @@ void CarrierLockManager::ConfigCallback(Result result) {
     RetryStep();
     return;
   }
-  std::string signed_config;
-  base::Base64Encode(config_->GetSignedConfig(), &signed_config);
+  std::string signed_config = base::Base64Encode(config_->GetSignedConfig());
   local_state_->SetString(kSignedConfigPref, signed_config);
   local_state_->SetString(kFcmTopicPref, config_->GetFcmTopic());
 

@@ -28,10 +28,7 @@ std::string MakeBase64EncodedMetadata(
       MakeMetadataProtoFromVectorOfPair(metadata_pairs).SerializeAsString(),
       &compressed);
 
-  std::string encoded;
-  base::Base64Encode(compressed, &encoded);
-
-  return encoded;
+  return base::Base64Encode(compressed);
 }
 
 }  // namespace tpcd::metadata

@@ -91,8 +91,7 @@ void StorePrefOnUiThread(PrefService* local_state,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (encrypted_data.empty())
     return;
-  std::string base64_data;
-  base::Base64Encode(encrypted_data, &base64_data);
+  std::string base64_data = base::Base64Encode(encrypted_data);
 
   local_state->SetString(prefs::kOsCryptAppBoundFixedDataPrefName, base64_data);
 }

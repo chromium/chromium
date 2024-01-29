@@ -28,8 +28,7 @@ void ClientResultPrefs::SaveClientResultToPrefs(
       cached_results_.mutable_client_result_map()->erase(client_key);
     }
   }
-  std::string output;
-  base::Base64Encode(cached_results_.SerializeAsString(), &output);
+  std::string output = base::Base64Encode(cached_results_.SerializeAsString());
   prefs_->SetString(kSegmentationClientResultPrefs, output);
 }
 

@@ -152,9 +152,7 @@ std::string SerializeAndEncodeEntityInfo(
     const omnibox::EntityInfo& entity_info) {
   std::string serialized_entity_info;
   entity_info.SerializeToString(&serialized_entity_info);
-  std::string encoded_entity_info;
-  base::Base64Encode(serialized_entity_info, &encoded_entity_info);
-  return encoded_entity_info;
+  return base::Base64Encode(serialized_entity_info);
 }
 
 }  // namespace

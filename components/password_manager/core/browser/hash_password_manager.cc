@@ -53,9 +53,7 @@ std::string EncryptString(const std::string& plain_text) {
   if (!OSCrypt::EncryptString(plain_text, &encrypted_text)) {
     return std::string();
   }
-  std::string encrypted_base64_text;
-  base::Base64Encode(encrypted_text, &encrypted_base64_text);
-  return encrypted_base64_text;
+  return base::Base64Encode(encrypted_text);
 }
 
 std::string GetAndDecryptField(const base::Value& dict,

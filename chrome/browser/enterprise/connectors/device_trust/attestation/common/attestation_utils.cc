@@ -20,8 +20,7 @@ std::string ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response) {
   base::Value::Dict signed_data;
 
-  std::string encoded;
-  base::Base64Encode(challenge_response, &encoded);
+  std::string encoded = base::Base64Encode(challenge_response);
 
   base::Value::Dict dict;
   dict.Set("challengeResponse", base::Value(encoded));

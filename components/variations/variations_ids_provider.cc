@@ -442,10 +442,7 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
 
   std::string serialized;
   proto.SerializeToString(&serialized);
-
-  std::string hashed;
-  base::Base64Encode(serialized, &hashed);
-  return hashed;
+  return base::Base64Encode(serialized);
 }
 
 bool VariationsIdsProvider::AddVariationIdsToSet(

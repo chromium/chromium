@@ -250,8 +250,7 @@ void QueryTraceEvents(trace_analyzer::TraceAnalyzer* analyzer,
 std::string MakeBase64EncodedGZippedString(const std::string& input) {
   std::string gzipped_input;
   compression::GzipCompress(input, &gzipped_input);
-  std::string result;
-  base::Base64Encode(gzipped_input, &result);
+  std::string result = base::Base64Encode(gzipped_input);
 
   // Break up the string with newlines to make it easier to handle in the
   // console logs.

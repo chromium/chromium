@@ -552,8 +552,7 @@ TEST(SetupUtilTest, DecodeDMTokenSwitchValue) {
   EXPECT_FALSE(installer::DecodeDMTokenSwitchValue(L"not-base64-string"));
 
   std::string token("this is a token");
-  std::string encoded;
-  base::Base64Encode(token, &encoded);
+  std::string encoded = base::Base64Encode(token);
   EXPECT_EQ(token,
             *installer::DecodeDMTokenSwitchValue(base::UTF8ToWide(encoded)));
 }

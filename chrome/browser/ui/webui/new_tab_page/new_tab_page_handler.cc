@@ -324,8 +324,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     GURL log_url,
     GURL cta_log_url) {
   auto doodle = new_tab_page::mojom::ImageDoodle::New();
-  std::string base64;
-  base::Base64Encode(data, &base64);
+  std::string base64 = base::Base64Encode(data);
   doodle->image_url = GURL(base::StringPrintf(
       "data:%s;base64,%s", mime_type.c_str(), base64.c_str()));
   if (type == search_provider_logos::LogoType::ANIMATED) {

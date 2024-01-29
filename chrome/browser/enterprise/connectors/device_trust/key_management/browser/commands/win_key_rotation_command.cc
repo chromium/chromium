@@ -224,10 +224,8 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
               return KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION;
             }
 
-            std::string token_base64;
-            base::Base64Encode(params.dm_token, &token_base64);
-            std::string nonce_base64;
-            base::Base64Encode(params.nonce, &nonce_base64);
+            std::string token_base64 = base::Base64Encode(params.dm_token);
+            std::string nonce_base64 = base::Base64Encode(params.nonce);
 
             std::optional<DWORD> return_code;
 

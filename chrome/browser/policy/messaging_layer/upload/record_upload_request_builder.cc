@@ -187,8 +187,8 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
 
   // Gap records won't fill in this field, so it can be missing.
   if (record.has_encrypted_wrapped_record()) {
-    std::string base64_encode;
-    base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
+    std::string base64_encode =
+        base::Base64Encode(record.encrypted_wrapped_record());
     ScopedReservation base64_encode_reservation(base64_encode.size(),
                                                 scoped_reservation);
     if (!base64_encode_reservation.reserved()) {
@@ -315,8 +315,7 @@ EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
     return;
   }
 
-  std::string base64_key;
-  base::Base64Encode(encryption_info.encryption_key(), &base64_key);
+  std::string base64_key = base::Base64Encode(encryption_info.encryption_key());
   encryption_info_dictionary.Set(GetEncryptionKeyPath(), base64_key);
   encryption_info_dictionary.Set(
       GetPublicKeyIdPath(),

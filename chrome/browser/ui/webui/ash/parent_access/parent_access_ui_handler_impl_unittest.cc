@@ -616,8 +616,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, ParsingErrorMetricRecorded) {
 
   // Receive non-parseable callback.
   base::RunLoop run_loop;
-  std::string encoded_not_a_callback;
-  base::Base64Encode("not_a_callback", &encoded_not_a_callback);
+  std::string encoded_not_a_callback = base::Base64Encode("not_a_callback");
   parent_access_ui_handler_->OnParentAccessCallbackReceived(
       encoded_not_a_callback,
       base::BindLambdaForTesting(

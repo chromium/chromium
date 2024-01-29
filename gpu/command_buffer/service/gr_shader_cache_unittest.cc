@@ -69,8 +69,7 @@ TEST_F(GrShaderCacheTest, LoadedFromDisk) {
   std::string key_str(static_cast<const char*>(key->data()), key->size());
   std::string shader_str(static_cast<const char*>(shader->data()),
                          shader->size());
-  std::string encoded_key;
-  base::Base64Encode(key_str, &encoded_key);
+  std::string encoded_key = base::Base64Encode(key_str);
   cache_.PopulateCache(encoded_key, shader_str);
   {
     GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);

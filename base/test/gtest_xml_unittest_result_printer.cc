@@ -222,10 +222,8 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
       type = "skip";
       break;
   }
-  std::string summary_encoded;
-  Base64Encode(summary, &summary_encoded);
-  std::string message_encoded;
-  Base64Encode(message, &message_encoded);
+  std::string summary_encoded = base::Base64Encode(summary);
+  std::string message_encoded = base::Base64Encode(message);
   fprintf(output_file_.get(),
           "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
           "        <summary>%s</summary>\n"

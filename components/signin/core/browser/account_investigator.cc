@@ -173,9 +173,7 @@ std::string AccountInvestigator::HashAccounts(
 
   // PrefService will slightly mangle some undisplayable characters, by encoding
   // in Base64 we are sure to have all safe characters that PrefService likes.
-  std::string encoded;
-  base::Base64Encode(base::SHA1HashString(stream.str()), &encoded);
-  return encoded;
+  return base::Base64Encode(base::SHA1HashString(stream.str()));
 }
 
 // static

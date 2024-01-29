@@ -70,8 +70,7 @@ constexpr char kAccountKeyFullName[] = "fullName";
 constexpr char kAccountKeyImage[] = "image";
 
 std::string AnonymizeAccountEmail(const std::string& email) {
-  std::string result;
-  base::Base64Encode(crypto::SHA256HashString(email), &result);
+  std::string result = base::Base64Encode(crypto::SHA256HashString(email));
   return result + "@example.com";
 }
 

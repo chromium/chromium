@@ -34,11 +34,8 @@ const char kFakeDmServerUrl[] =
     "7C1.2.3&request=browser_public_key_upload";
 
 void CheckCommandArgs(const std::vector<std::string>& args) {
-  std::string token_base64;
-  base::Base64Encode(kFakeDMToken, &token_base64);
-  std::string nonce_base64;
-  base::Base64Encode(kFakeDMToken, &token_base64);
-  base::Base64Encode(kNonce, &nonce_base64);
+  std::string token_base64 = base::Base64Encode(kFakeDMToken);
+  std::string nonce_base64 = base::Base64Encode(kNonce);
   EXPECT_EQ(token_base64, args[0]);
   EXPECT_EQ(kFakeDmServerUrl, args[1]);
   EXPECT_EQ(nonce_base64, args[2]);

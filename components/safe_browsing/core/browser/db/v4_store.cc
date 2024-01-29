@@ -390,8 +390,7 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
 V4Store::~V4Store() = default;
 
 std::string V4Store::DebugString() const {
-  std::string state_base64;
-  base::Base64Encode(state_, &state_base64);
+  std::string state_base64 = base::Base64Encode(state_);
 
   return base::StringPrintf("path: %" PRFilePath "; state: %s",
                             store_path_.value().c_str(), state_base64.c_str());

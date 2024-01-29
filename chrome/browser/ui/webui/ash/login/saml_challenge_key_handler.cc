@@ -175,8 +175,8 @@ void SamlChallengeKeyHandler::ReturnResult(
     LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
   }
 
-  std::string encoded_result_data;
-  base::Base64Encode(result.challenge_response, &encoded_result_data);
+  std::string encoded_result_data =
+      base::Base64Encode(result.challenge_response);
 
   js_result.Set(kSuccessField, result.IsSuccess());
   js_result.Set(kResponseField, encoded_result_data);

@@ -108,8 +108,7 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
   if (attach_encryption_settings.has_value() &&
       attach_encryption_settings.value()) {
     base::Value::Dict encryption_settings;
-    std::string encoded;
-    base::Base64Encode("PUBLIC KEY", &encoded);
+    std::string encoded = base::Base64Encode("PUBLIC KEY");
     encryption_settings.Set(json_keys::kPublicKey, std::move(encoded));
     encryption_settings.Set(json_keys::kPublicKeyId, 12345);
     base::Base64Encode("PUBLIC KEY SIG", &encoded);
@@ -136,8 +135,7 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
     base::Value::Dict lock;
     lock.Set(json_keys::kConfigurationFileDestination, "LOCK_UNLOCK_EVENTS");
     event_configs.Append(std::move(lock));
-    std::string encoded;
-    base::Base64Encode("Fake signature", &encoded);
+    std::string encoded = base::Base64Encode("Fake signature");
     configuration_file.Set(json_keys::kConfigurationFileSignature,
                            std::move(encoded));
     configuration_file.Set(json_keys::kBlockedEventConfigs,

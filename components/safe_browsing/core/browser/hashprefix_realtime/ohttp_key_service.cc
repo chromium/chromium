@@ -380,8 +380,7 @@ void OhttpKeyService::PopulateKeyFromPref() {
 
 void OhttpKeyService::StoreKeyToPref() {
   if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
-    std::string base64_encoded_key;
-    base::Base64Encode(ohttp_key_->key, &base64_encoded_key);
+    std::string base64_encoded_key = base::Base64Encode(ohttp_key_->key);
     pref_service_->SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
                              base64_encoded_key);
     pref_service_->SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,

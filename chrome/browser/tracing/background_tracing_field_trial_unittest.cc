@@ -118,8 +118,7 @@ TEST_F(BackgroundTracingTest, MaybeSetupBackgroundTracingFromFieldTrial) {
 TEST_F(BackgroundTracingTest, MaybeSetupFieldTracingFromFieldTrial) {
   std::string serialized_config =
       GetFieldTracingConfigFromText(kValidProtoTracingConfig);
-  std::string encoded_config;
-  base::Base64Encode(serialized_config, &encoded_config);
+  std::string encoded_config = base::Base64Encode(serialized_config);
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
                                                  {{"config", encoded_config}});

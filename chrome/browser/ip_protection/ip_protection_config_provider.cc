@@ -384,8 +384,7 @@ IpProtectionConfigProvider::CreateBlindSignedAuthToken(
                         privacy_pass_token_data.encoded_extensions(), "\""});
     }
   } else {
-    std::string encoded_token;
-    base::Base64Encode(bsa_token.token, &encoded_token);
+    std::string encoded_token = base::Base64Encode(bsa_token.token);
 
     token_header_value = base::StrCat({"Bearer ", encoded_token});
   }

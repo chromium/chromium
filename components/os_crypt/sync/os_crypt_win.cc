@@ -112,8 +112,7 @@ bool EncryptAndStoreKey(const std::string& key, PrefService* local_state) {
 
   // Add header indicating this key is encrypted with DPAPI.
   encrypted_key.insert(0, kDPAPIKeyPrefix);
-  std::string base64_key;
-  base::Base64Encode(encrypted_key, &base64_key);
+  std::string base64_key = base::Base64Encode(encrypted_key);
   local_state->SetString(kOsCryptEncryptedKeyPrefName, base64_key);
   return true;
 }
