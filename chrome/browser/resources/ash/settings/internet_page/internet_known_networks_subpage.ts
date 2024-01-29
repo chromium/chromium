@@ -411,13 +411,13 @@ export class SettingsInternetKnownNetworksPageElement extends
 
   private async onSubscriptionForgetClick_(): Promise<void> {
     this.$.subscriptionDotsMenu.close();
-    this.selectedSubscriptionId_ = '';
     const response = await this.passpointService_.deletePasspointSubscription(
         this.selectedSubscriptionId_);
     if (!response.success) {
       console.warn(
           'Forget subscription failed for: ' + this.selectedSubscriptionId_);
     }
+    this.selectedSubscriptionId_ = '';
   }
 
   override async onPasspointSubscriptionAdded(

@@ -329,6 +329,15 @@ suite('<settings-internet-known-networks-subpage>', () => {
               .querySelector<CrActionMenuElement>('#subscriptionDotsMenu');
       assertTrue(!!menu);
       assertTrue(menu.open);
+
+      const forgetButton =
+          menu.querySelector<HTMLButtonElement>('.dropdown-item');
+      assertTrue(!!forgetButton);
+      forgetButton.click();
+      await waitAfterNextRender(forgetButton);
+
+      const resp = await passpointServiceApi.listPasspointSubscriptions();
+      assertTrue(resp.result.length === 0);
     });
   });
 });
