@@ -10787,6 +10787,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/reading_list/features:flags",
       "//components/resources",
       "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/saved_tab_groups:core",
       "//components/search",
       "//components/security_interstitials/content:security_interstitial_page",

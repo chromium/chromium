@@ -23,6 +23,12 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -109,6 +115,15 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
     BrowserView* const browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->toolbar()->download_button();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    DownloadTestBase::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
   }
 
   void SetUpOnMainThread() override {
@@ -281,6 +296,9 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
 
  private:
   feature_engagement::test::ScopedIphFeatureList test_features_;
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
@@ -368,6 +386,32 @@ IN_PROC_BROWSER_TEST_F(
     DangerousDownloadDoesNotShowEsbIphPromo_WhenEnhancedSafeBrowsingEnabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
+  RunTestSequence(
+      Do(DownloadDangerousTestFile()),
+      WaitForShow(kToolbarDownloadButtonElementId),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Hide the partial view, if enabled. The IPH should not be shown.
+      Do(ChangeBubbleVisibility(false)),
+      Check(DownloadBubbleIsShowingDetails(false)),
+      Check(DownloadBubblePromoIsActive(
+          false, feature_engagement::kIPHDownloadEsbPromoFeature)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DownloadBubbleInteractiveUiTest,
+    DangerousDownloadDoesNotShowEsbIphPromo_WhenSafeBrowsingSetByPolicy) {
+  policy::PolicyMap policy;
+  policy.Set(
+      policy::key::kSafeBrowsingProtectionLevel, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(safe_browsing::SafeBrowsingPolicyHandler::
+                                       ProtectionLevel::kStandardProtection)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policy);
+
+  EXPECT_TRUE(safe_browsing::SafeBrowsingPolicyHandler::
+                  IsSafeBrowsingProtectionLevelSetByPolicy(
+                      browser()->profile()->GetPrefs()));
   RunTestSequence(
       Do(DownloadDangerousTestFile()),
       WaitForShow(kToolbarDownloadButtonElementId),
