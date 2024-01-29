@@ -252,6 +252,12 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
   histogram_tester_.ExpectBucketCount(
       DisplaySettingsProvider::kNewDisplayConnectedHistogram,
       DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+
+  // Entering unified desk mode should not count new display connected.
+  provider_->OnDisplayAdded(display::Display(display::kUnifiedDisplayId));
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::kNewDisplayConnectedHistogram,
+      DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
 }
 
 // Test histogram is recorded when user overrides system default display

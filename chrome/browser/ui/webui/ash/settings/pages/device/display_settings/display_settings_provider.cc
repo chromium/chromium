@@ -109,6 +109,11 @@ void DisplaySettingsProvider::OnDidProcessDisplayChanges(
 
 void DisplaySettingsProvider::OnDisplayAdded(
     const display::Display& new_display) {
+  // Do not count new display connected when turning on unified desk mode.
+  if (new_display.id() == display::kUnifiedDisplayId) {
+    return;
+  }
+
   // Check with prefs service to see if this display is firstly seen or was
   // saved to prefs before.
   if (Shell::HasInstance() && Shell::Get()->display_prefs() &&
