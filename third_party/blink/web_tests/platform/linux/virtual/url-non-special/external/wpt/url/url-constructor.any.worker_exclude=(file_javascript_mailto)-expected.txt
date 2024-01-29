@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> without base
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> without base
@@ -36,22 +36,12 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <notspecial://host/?'> without base
   assert_equals: href expected "notspecial://host/?'" but got "notspecial://host/?%27"
-[FAIL] Parsing: <../i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: </i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: <x> against <sc://ñ>
-  Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <http://a b/> without base
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://ho%20st/> without base
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> without base
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
-[FAIL] Parsing: <#x> against <sc://ñ>
-  Failed to construct 'URL': Invalid URL
-[FAIL] Parsing: <?x> against <sc://ñ>
-  Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <///> against <sc://x/>
   Failed to construct 'URL': Invalid URL
 [FAIL] Parsing: <////> against <sc://x/>
@@ -79,15 +69,9 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <a/..//path> against <non-spec:/p>
   assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
 [FAIL] Parsing: <> against <non-spec:/..//p>
-  Failed to construct 'URL': Invalid URL
+  assert_equals: href expected "non-spec:/.//p" but got "non-spec://p"
 [FAIL] Parsing: <path> against <non-spec:/..//p>
-  Failed to construct 'URL': Invalid URL
-[FAIL] Parsing: <../path> against <non-spec:/.//p>
-  Failed to construct 'URL': Invalid URL
-[FAIL] Parsing: <test-a-colon-slash-slash.html> against <a://>
-  Failed to construct 'URL': Invalid URL
-[FAIL] Parsing: <test-a-colon-slash-slash-b.html> against <a://b>
-  Failed to construct 'URL': Invalid URL
+  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
 [FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> without base
   assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> without base
