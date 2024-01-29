@@ -271,6 +271,9 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
       action_metric = autofill_metrics::UploadIbanActionMetric::kDeclined;
       GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
           base::UTF16ToUTF8(import_candidate.value())));
+      if (observer_for_testing_) {
+        observer_for_testing_->OnDeclineSaveIbanComplete();
+      }
       break;
   }
   autofill_metrics::LogUploadIbanMetric(
@@ -286,6 +289,9 @@ void IbanSaveManager::OnDidGetUploadDetails(
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message) {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnReceivedGetUploadDetailsResponse();
+  }
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Upload should only be offered when legal messages are parsed
     // successfully.
@@ -293,14 +299,17 @@ void IbanSaveManager::OnDidGetUploadDetails(
     if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
       context_token_ = context_token;
-      // If `show_save_prompt`'s value is false, desktop builds will still offer
-      // save in the omnibox without popping-up the bubble.
       client_->ConfirmUploadIbanToCloud(
           import_candidate, std::move(parsed_legal_message_lines),
           show_save_prompt,
           base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,
                          weak_ptr_factory_.GetWeakPtr(), import_candidate,
                          show_save_prompt));
+      // If `show_save_prompt`'s value is false, desktop builds will still offer
+      // save in the omnibox without popping-up the bubble.
+      if (observer_for_testing_) {
+        observer_for_testing_->OnOfferUploadSave();
+      }
       return;
     }
   }
@@ -313,6 +322,9 @@ void IbanSaveManager::OnDidGetUploadDetails(
 
 void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
                                         bool show_save_prompt) {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnSentUploadRequest();
+  }
   payments::PaymentsNetworkInterface::UploadIbanRequestDetails details;
   details.app_locale = personal_data_manager_->app_locale();
   details.billable_service_number =
@@ -345,6 +357,13 @@ void IbanSaveManager::OnDidUploadIban(
     // If the upload failed and the bubble was actually shown (NOT just the
     // icon), count that as a strike against offering upload in the future.
     GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
+  }
+  if (observer_for_testing_) {
+    if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+      observer_for_testing_->OnAcceptUploadSaveIbanComplete();
+    } else {
+      observer_for_testing_->OnAcceptUploadSaveIbanFailed();
+    }
   }
 }
 
