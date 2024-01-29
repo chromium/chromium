@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
+#include "third_party/blink/renderer/core/paint/text_shadow_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
@@ -209,9 +208,19 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     return;
 
   GraphicsContextStateSaver state_saver(graphics_context_);
+  // Updating Graphics Context for text only (kTextProperOnly),
+  // instead of the default text and shadows (kBothShadowsAndTextProper),
+  // because shadows will be painted by ScopedTextShadowPainter.
   UpdateGraphicsContext(graphics_context_, text_style, state_saver,
-                        ShadowMode::kBothShadowsAndTextProper);
+                        ShadowMode::kTextProperOnly);
 
+  ScopedTextShadowPainter text_shadow_scope(graphics_context_, text_style);
+  PaintDecorationsOnlyLineThrough(decoration_info, flags);
+}
+
+void TextPainterBase::PaintDecorationsOnlyLineThrough(
+    TextDecorationInfo& decoration_info,
+    const cc::PaintFlags* flags) {
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decoration_info.AppliedDecorationCount();
        ++applied_decoration_index) {
@@ -257,54 +266,13 @@ void TextPainterBase::PaintUnderOrOverLineDecorations(
 
   // Updating Graphics Context for text only (kTextProperOnly),
   // instead of the default text and shadows (kBothShadowsAndTextProper),
-  // because shadows will be painted by
-  // TextPainterBase::PaintUnderOrOverLineDecorationShadows.
+  // because shadows will be painted by ScopedTextShadowPainter.
   UpdateGraphicsContext(graphics_context_, text_style, state_saver,
                         ShadowMode::kTextProperOnly);
 
-  PaintUnderOrOverLineDecorationShadows(fragment_paint_info, decoration_offset,
-                                        decoration_info, lines_to_paint, flags,
-                                        text_style);
-
+  ScopedTextShadowPainter text_shadow_scope(graphics_context_, text_style);
   PaintUnderOrOverLineDecorations(fragment_paint_info, decoration_offset,
                                   decoration_info, lines_to_paint, flags);
-}
-
-void TextPainterBase::PaintUnderOrOverLineDecorationShadows(
-    const TextFragmentPaintInfo& fragment_paint_info,
-    const TextDecorationOffset& decoration_offset,
-    TextDecorationInfo& decoration_info,
-    TextDecorationLine lines_to_paint,
-    const cc::PaintFlags* flags,
-    const TextPaintStyle& text_style) {
-  const ShadowList* shadow_list = text_style.shadow.get();
-  if (!shadow_list) {
-    return;
-  }
-
-  for (const auto& shadow : base::Reversed(shadow_list->Shadows())) {
-    const Color& color = shadow.GetColor().Resolve(text_style.current_color,
-                                                   text_style.color_scheme);
-    // Detect when there's no effective shadow.
-    if (color.IsFullyTransparent()) {
-      continue;
-    }
-
-    const gfx::Vector2dF& offset = shadow.Offset();
-
-    float blur = shadow.Blur();
-    DCHECK_GE(blur, 0);
-    const auto sigma = BlurRadiusToStdDev(blur);
-
-    graphics_context_.BeginLayer(sk_make_sp<DropShadowPaintFilter>(
-        offset.x(), offset.y(), sigma, sigma, color.toSkColor4f(),
-        DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr));
-
-    PaintUnderOrOverLineDecorations(fragment_paint_info, decoration_offset,
-                                    decoration_info, lines_to_paint, flags);
-
-    graphics_context_.EndLayer();
-  }
 }
 
 void TextPainterBase::PaintUnderOrOverLineDecorations(
