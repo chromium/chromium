@@ -142,6 +142,11 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
 
+  // The encryption bootstrap token represents a user-entered passphrase per
+  // account.
+  registry->RegisterDictionaryPref(
+      prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+
   registry->RegisterBooleanPref(prefs::internal::kSyncManaged, false);
   registry->RegisterIntegerPref(
       prefs::internal::kSyncPassphrasePromptMutedProductVersion, 0);
@@ -550,6 +555,29 @@ void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
 void SyncPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);
+}
+
+std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) const {
+  CHECK(gaia_id_hash.IsValid());
+  const std::string* account_passphrase =
+      pref_service_
+          ->GetDict(prefs::internal::kSyncEncryptionBootstrapTokenPerAccount)
+          .FindString(gaia_id_hash.ToBase64());
+  return account_passphrase ? *account_passphrase : std::string();
+}
+
+void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
+    const std::string& token,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  CHECK(gaia_id_hash.IsValid());
+  {
+    ScopedDictPrefUpdate update_account_passphrase_dict(
+        pref_service_,
+        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
+    all_accounts.Set(gaia_id_hash.ToBase64(), token);
+  }
 }
 
 // static

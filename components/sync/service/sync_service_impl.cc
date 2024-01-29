@@ -1301,7 +1301,7 @@ std::optional<PassphraseType> SyncServiceImpl::GetPassphraseType() const {
 void SyncServiceImpl::SetEncryptionBootstrapToken(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);
+  user_settings_->SetEncryptionBootstrapToken(bootstrap_token);
 #if BUILDFLAG(IS_ANDROID)
   SendExplicitPassphraseToJavaPlatformClient(this);
 #endif
@@ -1309,7 +1309,7 @@ void SyncServiceImpl::SetEncryptionBootstrapToken(
 
 std::string SyncServiceImpl::GetEncryptionBootstrapToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return sync_prefs_.GetEncryptionBootstrapToken();
+  return user_settings_->GetEncryptionBootstrapToken();
 }
 
 bool SyncServiceImpl::IsCustomPassphraseAllowed() const {

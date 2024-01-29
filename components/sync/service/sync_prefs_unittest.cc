@@ -51,12 +51,35 @@ class SyncPrefsTest : public testing::Test {
   signin::GaiaIdHash gaia_id_hash_;
 };
 
-TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
-  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenForSyncingUser) {
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
   sync_prefs_->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_prefs_->GetEncryptionBootstrapToken());
   sync_prefs_->ClearEncryptionBootstrapToken();
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
+}
+
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
+  auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
+  EXPECT_TRUE(
+      sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty)
+          .empty());
+}
+
+TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  auto gaia_id_hash_2 = signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token2", gaia_id_hash_2);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_EQ("token2",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2));
 }
 
 TEST_F(SyncPrefsTest, CachedPassphraseType) {

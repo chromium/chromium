@@ -109,6 +109,12 @@ inline constexpr char kSyncCachedPassphraseType[] =
 inline constexpr char kSyncEncryptionBootstrapToken[] =
     "sync.encryption_bootstrap_token";
 
+// A dict that can be used to restore per-account the sync encryption
+// infrastructure on startup so that the user doesn't need to provide
+// credentials on each start.
+inline constexpr char kSyncEncryptionBootstrapTokenPerAccount[] =
+    "sync.encryption_bootstrap_token_per_account";
+
 // Stores whether a platform specific passphrase error prompt has been muted by
 // the user (e.g. an Android system notification). Specifically, it stores which
 // major product version was used to mute this error.

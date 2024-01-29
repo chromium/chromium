@@ -44,6 +44,10 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;
+  // The encryption bootstrap token is used for explicit passphrase users
+  // (usually custom passphrase) and represents a user-entered passphrase.
+  std::string GetEncryptionBootstrapToken() const;
+  void SetEncryptionBootstrapToken(const std::string& token);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSyncFeatureDisabledViaDashboard();

@@ -409,4 +409,42 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   return !Intersection(preferred_types, encrypted_types).Empty();
 }
 
+std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
+  if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
+    switch (delegate_->GetSyncAccountStateForPrefs()) {
+      case SyncPrefs::SyncAccountState::kSyncing:
+        return prefs_->GetEncryptionBootstrapToken();
+      case SyncPrefs::SyncAccountState::kNotSignedIn:
+        return std::string();
+      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
+        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+            delegate_->GetSyncAccountInfoForPrefs().gaia);
+        return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
+    }
+  }
+  return prefs_->GetEncryptionBootstrapToken();
+}
+
+void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
+    const std::string& token) {
+  if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
+    switch (delegate_->GetSyncAccountStateForPrefs()) {
+      case SyncPrefs::SyncAccountState::kSyncing:
+        prefs_->SetEncryptionBootstrapToken(token);
+        return;
+      case SyncPrefs::SyncAccountState::kNotSignedIn:
+        // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+        DUMP_WILL_BE_NOTREACHED_NORETURN()
+            << "Must not set passphrase while signed out";
+        return;
+      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
+        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+            delegate_->GetSyncAccountInfoForPrefs().gaia);
+        prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
+        return;
+    }
+  }
+  prefs_->SetEncryptionBootstrapToken(token);
+}
+
 }  // namespace syncer

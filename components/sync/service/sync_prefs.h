@@ -207,9 +207,18 @@ class SyncPrefs {
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
+  // TODO(crbug.com/1471928): Rename to specify that *EncryptionBootstrapToken
+  // will be used for syncing users only when
+  // kSyncRememberCustomPassphraseAfterSignout is fully rolled-out.
   std::string GetEncryptionBootstrapToken() const;
   void SetEncryptionBootstrapToken(const std::string& token);
   void ClearEncryptionBootstrapToken();
+  // Used for signed-in non-syncing users, where the passphrase is gaia-keyed.
+  std::string GetEncryptionBootstrapTokenForAccount(
+      const signin::GaiaIdHash& gaia_id_hash) const;
+  void SetEncryptionBootstrapTokenForAccount(
+      const std::string& token,
+      const signin::GaiaIdHash& gaia_id_hash);
 
   // Muting mechanism for passphrase prompts, used on Android.
   int GetPassphrasePromptMutedProductVersion() const;
