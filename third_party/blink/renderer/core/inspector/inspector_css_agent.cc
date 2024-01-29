@@ -1074,7 +1074,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
 
   // Matched rules.
   *matched_css_rules =
-      BuildArrayForMatchedRuleList(resolver.MatchedRules(), element);
+      BuildArrayForMatchedRuleList(resolver.MatchedRules(), element,
+                                   element_pseudo_id, view_transition_name);
 
   // Inherited styles.
   *inherited_entries =
@@ -1082,21 +1083,26 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorCSSMatchedRules* match : resolver.ParentRules()) {
     std::unique_ptr<protocol::CSS::InheritedStyleEntry> entry =
         protocol::CSS::InheritedStyleEntry::create()
-            .setMatchedCSSRules(
-                BuildArrayForMatchedRuleList(match->matched_rules, element))
+            .setMatchedCSSRules(BuildArrayForMatchedRuleList(
+                match->matched_rules, element, element_pseudo_id,
+                view_transition_name))
             .build();
     if (match->element->style() && match->element->style()->length()) {
       InspectorStyleSheetForInlineStyle* style_sheet =
           AsInspectorStyleSheet(match->element);
       if (style_sheet) {
         entry->setInlineStyle(style_sheet->BuildObjectForStyle(
-            style_sheet->InlineStyle(), element));
+            style_sheet->InlineStyle(), element, element_pseudo_id,
+            view_transition_name));
       }
     }
     inherited_entries->value().emplace_back(std::move(entry));
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
+
+  std::tie(*css_property_rules, *css_property_registrations) =
+      CustomPropertiesForNode(element);
 
   // Pseudo elements.
   if (element_pseudo_id)
@@ -1159,8 +1165,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         std::move(inherited_pseudo_element_matches));
   }
 
-  std::tie(*css_property_rules, *css_property_registrations) =
-      CustomPropertiesForNode(element);
   *css_position_fallback_rules = PositionFallbackRulesForNode(element);
 
   if (auto rule = FontPalettesForNode(*element)) {

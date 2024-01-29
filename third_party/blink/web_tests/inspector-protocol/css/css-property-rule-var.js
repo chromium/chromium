@@ -49,17 +49,23 @@
   await dp.CSS.enable();
 
   const {result: {root}} = await dp.DOM.getDocument();
-  const {result: {nodeId}} =
-      await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'div'});
+
+  const nodes = new Map();
+  function collectNodes(node) {
+    nodes.set(node.localName, node.nodeId);
+    node.children?.forEach(collectNodes);
+    node.pseudoElements?.forEach(collectNodes);
+  }
+  collectNodes(root);
 
   const {result: {computedStyle}} =
-      await dp.CSS.getComputedStyleForNode({nodeId});
+      await dp.CSS.getComputedStyleForNode({nodeId: nodes.get('div')});
   testRunner.log('Computed value:');
   testRunner.log(computedStyle.find(style => style.name === '--len'));
   testRunner.log(computedStyle.find(style => style.name === '--color'));
 
   const {result: {matchedCSSRules, cssKeyframesRules, pseudoElements}} =
-      await dp.CSS.getMatchedStylesForNode({nodeId});
+      await dp.CSS.getMatchedStylesForNode({nodeId: nodes.get('div')});
 
   const rules =
       matchedCSSRules.filter(({rule}) => rule.selectorList.text === 'div');
@@ -84,7 +90,7 @@
   {
     const edits = [{styleSheetId, range, text: '--v: 5px; --len: var(--v);'}];
     const {result: {styles: [{cssProperties}]}} = await dp.CSS.setStyleTexts(
-        {edits, nodeForPropertySyntaxValidation: nodeId});
+        {edits, nodeForPropertySyntaxValidation: nodes.get('div')});
     testRunner.log(cssProperties);
   }
 
@@ -97,17 +103,15 @@
       styleSheetId,
       location,
       ruleText: 'div { --v: 5px; --len: var(--v); }',
-      nodeForPropertySyntaxValidation: nodeId,
+      nodeForPropertySyntaxValidation: nodes.get('div'),
     });
     testRunner.log(cssProperties);
   }
 
   testRunner.log('Pseudo Elements:');
   {
-    const {result: {nodeId}} =
-        await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'body'});
     const {result: {pseudoElements}} =
-        await dp.CSS.getMatchedStylesForNode({nodeId});
+        await dp.CSS.getMatchedStylesForNode({nodeId: nodes.get('body')});
     testRunner.log(
         pseudoElements
             .map(
@@ -115,8 +119,18 @@
                     matches.map(({rule}) => rule.style.cssProperties).flat())
             .flat()
             .filter(({name}) => name.startsWith('--')));
+    const {result: {matchedCSSRules, cssPropertyRules}} =
+        await dp.CSS.getMatchedStylesForNode({nodeId: nodes.get('::before')});
+    testRunner.log(
+        matchedCSSRules
+            .filter(({rule}) => rule.selectorList.text === 'body::before')
+            .map(({rule}) => rule.style.cssProperties)
+            .flat()
+            .filter(({name}) => name.startsWith('--'))
+            .flat());
+    testRunner.log('Pseudo element registered properties:');
+    testRunner.log(cssPropertyRules.map(({propertyName}) => propertyName));
   }
-
 
   testRunner.completeTest();
 });

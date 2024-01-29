@@ -1978,6 +1978,10 @@ Dumping styles for : ::view-transition with id undefined{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2087,6 +2091,10 @@ Dumping styles for : ::view-transition-group with id root{
                     }
                 ]
             }
+        ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
         ]
         inherited : [
         ]
@@ -2328,6 +2336,10 @@ Dumping styles for : ::view-transition-image-pair with id root{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2554,6 +2566,10 @@ Dumping styles for : ::view-transition-old with id root{
                     }
                 ]
             }
+        ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
         ]
         inherited : [
         ]
@@ -2927,6 +2943,10 @@ Dumping styles for : ::view-transition-new with id root{
                 ]
             }
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3126,6 +3146,10 @@ Dumping styles for : ::view-transition-group with id shared{
                     }
                 ]
             }
+        ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
         ]
         inherited : [
         ]
@@ -3367,6 +3391,10 @@ Dumping styles for : ::view-transition-image-pair with id shared{
     result : {
         cssKeyframesRules : [
         ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3593,6 +3621,10 @@ Dumping styles for : ::view-transition-old with id shared{
                     }
                 ]
             }
+        ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
         ]
         inherited : [
         ]
@@ -3965,6 +3997,10 @@ Dumping styles for : ::view-transition-new with id shared{
                     }
                 ]
             }
+        ]
+        cssPropertyRegistrations : [
+        ]
+        cssPropertyRules : [
         ]
         inherited : [
         ]
