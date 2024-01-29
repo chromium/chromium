@@ -5,9 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_UTILS_H_
 #define MEDIA_GPU_V4L2_STATELESS_UTILS_H_
 
-#include <poll.h>
-
-#include "base/functional/callback_helpers.h"
 #include "media/gpu/v4l2/stateless/device.h"
 #include "media/video/video_decode_accelerator.h"
 

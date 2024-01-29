@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include <poll.h>
-
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -186,9 +184,6 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
   // unmmap the |buffer| when read/write access is no longer needed.
   void MunmapBuffer(Buffer& buffer);
-
-  // Return the structure of events that should be waited on
-  struct pollfd GetPollEvent();
 
   // Capabilities are queried using VIDIOC_QUERYCAP. Stateless and
   // stateful drivers need different capabilities.

@@ -14,7 +14,6 @@
 
 #include <fcntl.h>
 #include <linux/videodev2.h>
-#include <sys/eventfd.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
@@ -656,13 +655,6 @@ void Device::MunmapBuffer(Buffer& buffer) {
       buffer.SetMappedAddress(plane, nullptr);
     }
   }
-}
-
-struct pollfd Device::GetPollEvent() {
-  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  // Poll events that are relevant are those around the CAPTURE queue. These
-  // events will occur when there is data to dequeue.
-  return {.fd = device_fd_.get(), .events = POLLIN | POLLRDNORM};
 }
 
 Device::~Device() {}
