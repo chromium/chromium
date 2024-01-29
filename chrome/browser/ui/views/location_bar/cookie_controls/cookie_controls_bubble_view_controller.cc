@@ -125,39 +125,25 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
   bool is_permanent_exception = expiration == base::Time();
   std::u16string label_title;
   int bubble_title, label_description;
+  if (is_permanent_exception ||
+      enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
+    label_title = l10n_util::GetStringUTF16(
+        IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE);
+    label_description =
+        IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
+  } else {
+    label_title = l10n_util::GetPluralStringFUTF16(
+        blocking_status_ == CookieBlocking3pcdStatus::kLimited
+            ? IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE
+            : IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
+        content_settings::CookieControlsUtil::GetDaysToExpiration(expiration));
+    label_description =
+        IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
+  }
   if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
     bubble_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE;
-    if (is_permanent_exception) {
-      label_title = l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE);
-      label_description =
-          IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
-    } else {
-      label_title = l10n_util::GetPluralStringFUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-          content_settings::CookieControlsUtil::GetDaysToExpiration(
-              expiration));
-      label_description =
-          IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY;
-    }
   } else {
     bubble_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
-    if (is_permanent_exception ||
-        enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
-      label_title = l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE);
-      label_description =
-          IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
-    } else {
-      label_title = l10n_util::GetPluralStringFUTF16(
-          blocking_status_ == CookieBlocking3pcdStatus::kAll
-              ? IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE
-              : IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE,
-          content_settings::CookieControlsUtil::GetDaysToExpiration(
-              expiration));
-      label_description =
-          IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
-    }
   }
 
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
@@ -168,26 +154,15 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
-  auto default_exception_expiration =
-      content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  int label_title, label_description;
-  if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
-    label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE;
-    label_description =
-        default_exception_expiration.is_zero()
-            ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
-            : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY;
-  } else {
-    label_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
-    label_description =
-        IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT;
-  }
-
+  int label_title = blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd
+                        ? IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE
+                        : IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(label_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
-      l10n_util::GetStringUTF16(label_description));
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
   bubble_view_->GetContentView()->SetToggleIsOn(false);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
 }

@@ -327,7 +327,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)));
+              IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)));
   blocking_status_ = GetParam();
   OnStatusChanged();
 }
@@ -448,16 +448,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool()));
 
 class CookieControlsBubbleViewControllerPre3pcdTest
-    : public CookieControlsBubbleViewControllerTest,
-      public testing::WithParamInterface<bool> {
+    : public CookieControlsBubbleViewControllerTest {
   std::vector<base::test::FeatureRefAndParams> EnabledFeatures() override {
-    std::string expiration = GetParam() ? "30d" : "0d";
-    return {{content_settings::features::kUserBypassUI,
-             {{"expiration", expiration}}}};
+    return {
+        {content_settings::features::kUserBypassUI, {{"expiration", "30d"}}}};
   }
 };
 
-TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
+TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
        ThirdPartyCookiesBlocked) {
   const int kAllowedSitesCount = 2;
   const int kBlockedSitesCount = 3;
@@ -470,9 +468,7 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
           l10n_util::GetStringUTF16(
-              GetParam()
-                  ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
-                  : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)));
+              IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(false));
   EXPECT_CALL(
@@ -489,7 +485,7 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
                                          kBlockedSitesCount);
 }
 
-TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
+TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
        ThirdPartyCookiesAllowedPermanent) {
   const int kAllowedSitesCount = 2;
   const int kBlockedSitesCount = 3;
@@ -500,9 +496,9 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
       *mock_content_view(),
       UpdateContentLabels(
           l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE),
+              IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
+              IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
   EXPECT_CALL(
@@ -520,7 +516,7 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
                                          kBlockedSitesCount);
 }
 
-TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
+TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
        ThirdPartyCookiesAllowedTemporary) {
   const int kAllowedSitesCount = 2;
   const int kBlockedSitesCount = 3;
@@ -531,10 +527,10 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
       *mock_content_view(),
       UpdateContentLabels(
           l10n_util::GetPluralStringFUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
+              IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
               kDaysToExpiration),
           l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY)));
+              IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
   EXPECT_CALL(
@@ -551,12 +547,6 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
   view_controller()->OnSitesCountChanged(kAllowedSitesCount,
                                          kBlockedSitesCount);
 }
-
-// Runs all tests with two versions of user bypass - one that creates
-// temporary exceptions and one that creates permanent exceptions.
-INSTANTIATE_TEST_SUITE_P(All,
-                         CookieControlsBubbleViewControllerPre3pcdTest,
-                         testing::Bool());
 
 class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
  public:

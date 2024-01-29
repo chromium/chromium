@@ -132,15 +132,15 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveBrowserTest {
 
   auto CheckStateForTemporaryException() {
     return Steps(
-        CheckViewProperty(CookieControlsContentView::kTitle,
-                          &views::Label::GetText,
-                          l10n_util::GetPluralStringFUTF16(
-                              IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                              ExceptionDurationInDays())),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
+                ExceptionDurationInDays())),
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY)),
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
@@ -158,9 +158,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveBrowserTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                ExceptionDurationInDays() == 0
-                    ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
-                    : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)),
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
                   views::kEyeCrossedRefreshIcon));
   }
@@ -200,7 +198,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveBrowserTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)),
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckViewProperty(
             CookieControlsContentView::kToggleLabel, &views::Label::GetText,
             l10n_util::GetStringUTF16(
