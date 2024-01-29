@@ -64,16 +64,6 @@ void BrowserStateInfoCache::AddBrowserState(
   }
 }
 
-void BrowserStateInfoCache::AddObserver(
-    BrowserStateInfoCacheObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void BrowserStateInfoCache::RemoveObserver(
-    BrowserStateInfoCacheObserver* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
 void BrowserStateInfoCache::RemoveBrowserState(
     const base::FilePath& browser_state_path) {
   size_t browser_state_index =
@@ -101,6 +91,16 @@ void BrowserStateInfoCache::RemoveBrowserState(
 
 size_t BrowserStateInfoCache::GetNumberOfBrowserStates() const {
   return sorted_keys_.size();
+}
+
+void BrowserStateInfoCache::AddObserver(
+    BrowserStateInfoCacheObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void BrowserStateInfoCache::RemoveObserver(
+    BrowserStateInfoCacheObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithPath(
