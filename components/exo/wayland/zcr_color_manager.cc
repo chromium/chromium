@@ -27,6 +27,7 @@
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/wayland/color_manager_util.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -225,11 +226,18 @@ class ColorManagerObserver : public WaylandDisplayObserver {
       LOG(WARNING) << "Wayland output was destroyed and not replaced.";
       return gfx::ColorSpace::CreateSRGB();
     }
-    // Snapshot ColorSpace is only valid for ScreenAsh.
-    return ash::Shell::Get()
-        ->display_manager()
-        ->GetDisplayInfo(wayland_display_handler_->id())
-        .GetSnapshotColorSpace();
+
+    // Lacros only checks if the colorspace is HDR or not. So send display
+    // colorspace if HDR is possible, otherwise just send SRGB.
+    if (base::FeatureList::IsEnabled(
+            display::features::kUseHDRTransferFunction)) {
+      // Snapshot ColorSpace is only valid for ScreenAsh.
+      return ash::Shell::Get()
+          ->display_manager()
+          ->GetDisplayInfo(wayland_display_handler_->id())
+          .GetSnapshotColorSpace();
+    }
+    return gfx::ColorSpace::CreateSRGB();
   }
 
   WaylandDisplayHandler* wayland_display_handler() {
