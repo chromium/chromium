@@ -2668,7 +2668,7 @@
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2685,7 +2685,7 @@
         "name": "chrome_private_code_test",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2704,7 +2704,7 @@
         },
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2731,7 +2731,7 @@
         },
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04|Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests.finch"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

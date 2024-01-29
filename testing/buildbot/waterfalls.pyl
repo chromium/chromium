@@ -231,7 +231,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_linux_isolated_script_tests',
@@ -6467,7 +6467,7 @@
       'android-emulator-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
           '11-x86-emulator',
           'skia_gold_test',
         ],
@@ -6500,7 +6500,7 @@
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-jammy-or-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',

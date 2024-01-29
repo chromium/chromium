@@ -767,15 +767,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "linux-jammy-or-bionic",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Ubuntu-22.04|Ubuntu-18.04",
-        },
-    ),
-)
-
-targets.mixin(
     name = "linux-jammy-or-focal",
     swarming = targets.swarming(
         dimensions = {

@@ -615,13 +615,6 @@
       },
     },
   },
-  'linux-jammy-or-bionic': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04|Ubuntu-18.04',
-      },
-    },
-  },
   'linux-jammy-or-focal': {
     'swarming': {
       'dimensions': {
