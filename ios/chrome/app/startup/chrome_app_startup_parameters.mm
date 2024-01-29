@@ -177,7 +177,10 @@ enum class IOSExternalAction {
   ACTION_OPEN_NTP = 1,
   // Logged when Chrome is passed a "DefaultBrowserSettings" action.
   ACTION_DEFAULT_BROWSER_SETTINGS = 2,
-  kMaxValue = ACTION_DEFAULT_BROWSER_SETTINGS,
+  // Logged when Chrome is passed a "DefaultBrowserSettings" action, but instead
+  // will show the NTP, since Chrome is already set as default browser.
+  ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP = 3,
+  kMaxValue = ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
@@ -510,11 +513,22 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
     base::RecordAction(base::UserMetricsAction(
         "MobileExternalActionURLOpenedWithDefaultBrowserSettings"));
-    action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
-    params = [self startupParametersForExternalActionWithAppID:appID
-                                                   completeURL:completeURL
-                                                   externalURL:GURL()];
-    params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
+
+    // If Chrome is already set as default browser, just open the NTP.
+    if (IsChromeLikelyDefaultBrowser()) {
+      action =
+          IOSExternalAction::ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP;
+      params = [self
+          startupParametersForExternalActionWithAppID:appID
+                                          completeURL:completeURL
+                                          externalURL:GURL(kChromeUINewTabURL)];
+    } else {
+      action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
+      params = [self startupParametersForExternalActionWithAppID:appID
+                                                     completeURL:completeURL
+                                                     externalURL:GURL()];
+      params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
+    }
   } else {
     action = IOSExternalAction::ACTION_INVALID;
     params = nil;

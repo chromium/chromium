@@ -104,6 +104,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//ios/chrome/app",
     "//ios/chrome/app/startup:startup_basic",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/app_group",

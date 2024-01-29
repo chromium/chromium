@@ -12,6 +12,8 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -584,6 +586,7 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeOpenNTP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+  ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL
@@ -605,6 +608,7 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+  ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL
@@ -622,12 +626,38 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
                                      /*ACTION_DEFAULT_BROWSER_SETTINGS*/ 2, 1);
 }
 
+// Tests that the external action scheme is handled correctly with the
+// "DefaultBrowserSettings" action, but Chrome is already default browser.
+TEST_F(AppStartupParametersTest,
+       ExternalActionSchemeDefaultBrowserSettingsChromeAlreadyDefaultBrowser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+  LogOpenHTTPURLFromExternalURL();
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:
+          @"googlechrome://ChromeExternalAction/DefaultBrowserSettings?test=3"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters startupParametersWithURL:url
+                                         sourceApplication:nil];
+
+  EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.ExternalAction",
+      /*ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP*/ 3, 1);
+}
+
 // Tests that the external action scheme is handled with a Chromium-flavored
 // URL.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeChromiumURLHandled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+  ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
   NSURL* url =
