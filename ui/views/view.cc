@@ -860,6 +860,10 @@ int View::GetMirroredXWithWidthInView(int x, int w) const {
 
 // Layout ----------------------------------------------------------------------
 
+void View::DeprecatedLayoutImmediately() {
+  LayoutImmediately();
+}
+
 void View::Layout() {
   needs_layout_ = false;
 

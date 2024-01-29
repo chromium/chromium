@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <concepts>
 #include <memory>
 #include <set>
 #include <string>
@@ -796,15 +797,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // To customize layout behavior, use LayoutManagers; see
   // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#Use-LayoutManagers.
   // For now, classes may override Layout() to customize this manually, but this
-  // will eventually be removed; see https://crbug.com/1005568.
+  // will eventually be removed; see https://crbug.com/1005568. Subclasses which
+  // need to invoke a superclass' Layout() method during their own
+  // implementation of Layout() can do so via LayoutSuperclass<SuperT>(this);
+  // calling this in any other way or context is forbidden (and will likely
+  // break at compile or run time).
   //
   // To cause a view to be laid out, use InvalidateLayout(), which will
   // perform layout asynchronously; see
   // https://chromium.googlesource.com/chromium/src/+/main/docs/ui/learn/bestpractices/layout.md?pli=1#don_t-invoke-layout_directly.
-  // For now, classes may also call Layout() to synchronously lay out a view,
-  // but this will eventually be removed; see https://crbug.com/1521108. Neither
-  // of these methods should be called from Layout(); see
-  // https://crbug.com/1121681.
+  // For now, classes may also call DeprecatedLayoutImmediately() to
+  // synchronously lay out a view, but this will eventually be removed; see
+  // https://crbug.com/1521108. Neither of these methods should be called from
+  // Layout(); see https://crbug.com/1121681.
+  void DeprecatedLayoutImmediately();
   virtual void Layout();
 
   bool needs_layout() const { return needs_layout_; }
@@ -1831,6 +1837,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the child by adding its own layer.
   virtual void OnChildLayerChanged(View* child);
 
+  // Layout --------------------------------------------------------------------
+
+  // Invokes Layout() on a superclass on behalf of the subclass. This is to be
+  // used only inside a Layout() override, where a subclass needs to do the
+  // superclass portion of layout. Invoke like `LayoutSuperclass<SuperT>(this)`,
+  // where SuperT is the relevant superclass type.
+  template <typename Super, typename This>
+    requires std::derived_from<Super, View> && std::derived_from<This, Super> &&
+             (!std::same_as<Super, This>)
+  void LayoutSuperclass(This* ptr) {
+    static_cast<Super*>(ptr)->Super::Layout();
+  }
+
   // Input ---------------------------------------------------------------------
 
   virtual DragInfo* GetDragInfo();
@@ -2146,7 +2165,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // default fill layout or the assigned layout manager.
   bool HasLayoutManager() const;
 
-  // Implementation of synchronous layout.
+  // Implementation of synchronous layout. DeprecatedLayoutImmediately() is a
+  // temporary public accessor to this; this is the access point for the few
+  // blessed uses.
   void LayoutImmediately();
 
   // Input ---------------------------------------------------------------------
