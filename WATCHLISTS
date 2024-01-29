@@ -2885,7 +2885,7 @@
     'fuchsia': ['fuchsia-reviews@chromium.org',
                 'zijiehe@google.com'],
     'full_restore': ['nancylingwang@chromium.org'],
-    'fuzzing': ['fuzzing@chromium.org'],
+    'fuzzing': ['fuzzing+watch@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org'],
     'generic_sensor': ['mattreynolds+watch@chromium.org',
