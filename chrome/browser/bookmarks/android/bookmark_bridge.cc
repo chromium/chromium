@@ -1115,10 +1115,9 @@ void BookmarkBridge::EndGroupingUndos(JNIEnv* env) {
 }
 
 bool BookmarkBridge::IsBookmarked(JNIEnv* env,
-                                  const JavaParamRef<jobject>& gurl) {
+                                  const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return bookmark_model_->IsBookmarked(
-      *url::GURLAndroid::ToNativeGURL(env, gurl));
+  return !GetMostRecentlyAddedUserBookmarkIdForUrl(env, j_url).is_null();
 }
 
 std::u16string BookmarkBridge::GetTitle(const BookmarkNode* node) const {

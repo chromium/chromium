@@ -879,6 +879,7 @@ class BookmarkBridge {
      * @return Whether the URL has been bookmarked.
      */
     public boolean isBookmarked(GURL url) {
+        ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().isBookmarked(mNativeBookmarkBridge, url);
     }

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
@@ -34,6 +35,7 @@
 #include "components/sync/test/test_sync_user_settings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
@@ -252,6 +254,26 @@ TEST_F(
   ASSERT_EQ(
       nullptr,
       bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+}
+
+TEST_F(BookmarkBridgeTest, TestIsBookmarked) {
+  JNIEnv* const env = AttachCurrentThread();
+  GURL url = GURL("http://foo.com");
+  auto java_url = url::GURLAndroid::FromNativeGURL(env, url);
+  ASSERT_FALSE(bookmark_bridge()->IsBookmarked(
+      env, JavaParamRef<jobject>(env, java_url.obj())));
+
+  AddURL(bookmark_model()->other_node(), 0, u"foo", url);
+  ASSERT_TRUE(bookmark_bridge()->IsBookmarked(
+      env, JavaParamRef<jobject>(env, java_url.obj())));
+
+  bookmark_model()->RemoveAllUserBookmarks();
+  ASSERT_FALSE(bookmark_bridge()->IsBookmarked(
+      env, JavaParamRef<jobject>(env, java_url.obj())));
+
+  local_or_syncable_reading_list_manager()->Add(url, "bar");
+  ASSERT_TRUE(bookmark_bridge()->IsBookmarked(
+      env, JavaParamRef<jobject>(env, java_url.obj())));
 }
 
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
