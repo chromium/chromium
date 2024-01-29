@@ -7,14 +7,24 @@
 #import "base/check.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
 
-@implementation CreateTabGroupMediator
+@implementation CreateTabGroupMediator {
+  __weak id<TabGroupCreationConsumer> _consumer;
+}
 
-- (instancetype)init {
+- (instancetype)initWithConsumer:(id<TabGroupCreationConsumer>)consumer {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
-  return [super init];
+  self = [super init];
+  if (self) {
+    CHECK(consumer);
+    _consumer = consumer;
+    // TODO(crbug.com/1501837): Get the default color from the component.
+    [_consumer setDefaultGroupColor:tab_groups::TabGroupColorId::kPink];
+  }
+  return self;
 }
 
 #pragma mark - TabGroupCreationMutator

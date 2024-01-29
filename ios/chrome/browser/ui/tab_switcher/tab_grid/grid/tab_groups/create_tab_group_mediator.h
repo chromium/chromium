@@ -9,8 +9,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 
+@protocol TabGroupCreationConsumer;
+
 // Mediator to manage the model layer of the tab group creation.
 @interface CreateTabGroupMediator : NSObject <TabGroupCreationMutator>
+
+- (instancetype)initWithConsumer:(id<TabGroupCreationConsumer>)consumer;
 
 @end
 

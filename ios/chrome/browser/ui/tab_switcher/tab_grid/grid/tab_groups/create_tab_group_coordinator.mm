@@ -29,13 +29,14 @@
 }
 
 - (void)start {
-  _mediator = [[CreateTabGroupMediator alloc] init];
-
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController =
-      [[CreateTabGroupViewController alloc] initWithHandler:handler
-                                                    mutator:_mediator];
+      [[CreateTabGroupViewController alloc] initWithHandler:handler];
+
+  _mediator = [[CreateTabGroupMediator alloc] initWithConsumer:_viewController];
+
+  _viewController.mutator = _mediator;
 
   // TODO(crbug.com/1501837): Add the create tab group animation.
   _viewController.modalPresentationStyle =

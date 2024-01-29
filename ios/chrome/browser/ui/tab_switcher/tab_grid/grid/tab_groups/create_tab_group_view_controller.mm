@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
@@ -28,28 +29,80 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 constexpr CGFloat kButtonsHeight = 50;
 constexpr CGFloat kButtonsMargin = 8;
 constexpr CGFloat kButtonBackgroundCornerRadius = 15;
-}
+constexpr CGFloat kColoredButtonSize = 24;
+constexpr CGFloat kColorSelectionImageSize = 13;
+constexpr CGFloat kColorListViewHeight = 44;
+constexpr CGFloat kColorListBottomMargin = 16;
+}  // namespace
 
 @implementation CreateTabGroupViewController {
   // Text input to name the group.
   UITextField* _tabGroupTextField;
   // Handler to handle user's actions.
   __weak id<TabGroupsCommands> _tabGroupsHandler;
-  // Mutator to handle model changes.
-  __weak id<TabGroupCreationMutator> _mutator;
+  // List of all colored buttons.
+  NSArray<UIButton*>* _colorSelectionButtons;
+  // Currently selected color view represented by the dot next to the title.
+  UIView* _dotView;
+  // Currently selected colored button.
+  UIButton* _selectedButton;
+  // Lists which contains all the available colors.
+  NSArray<UIColor*>* _UIColorList;
+  // Lists which contains all the available colors ID.
+  std::vector<tab_groups::TabGroupColorId> _colorIDList;
+  // Default color.
+  tab_groups::TabGroupColorId _defaultColor;
 }
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                        mutator:(id<TabGroupCreationMutator>)mutator {
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];
   if (self) {
     CHECK(handler);
-    CHECK(mutator);
     _tabGroupsHandler = handler;
-    _mutator = mutator;
+
+    // TODO(crbug.com/1501837): Get the color ID list from helper to ensure to
+    // always have the correct values.
+    _colorIDList = {
+        tab_groups::TabGroupColorId::kGrey,
+        tab_groups::TabGroupColorId::kBlue,
+        tab_groups::TabGroupColorId::kRed,
+        tab_groups::TabGroupColorId::kYellow,
+        tab_groups::TabGroupColorId::kGreen,
+        tab_groups::TabGroupColorId::kPink,
+        tab_groups::TabGroupColorId::kPurple,
+        tab_groups::TabGroupColorId::kCyan,
+        tab_groups::TabGroupColorId::kOrange,
+    };
+
+    // TODO(crbug.com/1501837): Get the color list from helper to ensure to
+    // always have the correct values.
+    _UIColorList = @[
+      // tab_groups::TabGroupColorId::kGrey
+      [UIColor colorNamed:kStaticGrey300Color],
+      // tab_groups::TabGroupColorId::kBlue
+      [UIColor colorNamed:kBlueColor],
+      // tab_groups::TabGroupColorId::kRed
+      [UIColor colorNamed:kRedColor],
+      // tab_groups::TabGroupColorId::kYellow
+      [UIColor colorNamed:kYellow500Color],
+      // tab_groups::TabGroupColorId::kGreen
+      [UIColor colorNamed:kGreenColor],
+      // tab_groups::TabGroupColorId::kPink
+      [UIColor colorNamed:kPink500Color],
+      // tab_groups::TabGroupColorId::kPurple
+      [UIColor colorNamed:kPurple500Color],
+      // tab_groups::TabGroupColorId::kCyan
+      [UIColor colorNamed:kBlueHaloColor],
+      // tab_groups::TabGroupColorId::kOrange
+      [UIColor colorNamed:kOrange500Color],
+    ];
+
+    [self createColorSelectionButtons];
+    CHECK_NE([_colorSelectionButtons count], 0u)
+        << "The available color list for tab group is empty.";
   }
   return self;
 }
@@ -59,6 +112,19 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kCreateTabGroupIdentifier;
+
+  __weak CreateTabGroupViewController* weakSelf = self;
+  auto selectedDefaultButtonTest =
+      ^BOOL(UIButton* button, NSUInteger index, BOOL* stop) {
+        return [weakSelf isDefaultButton:button];
+      };
+
+  NSInteger defaultButtonIndex = [_colorSelectionButtons
+      indexOfObjectPassingTest:selectedDefaultButtonTest];
+
+  _selectedButton = _colorSelectionButtons[defaultButtonIndex];
+  [_selectedButton setSelected:YES];
+
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
         colorWithAlphaComponent:kBackgroundAlpha];
@@ -74,9 +140,11 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
   }
 
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
+  UIView* colorsView = [self listOfColorView];
   UIButton* creationButton = [self configuredCreateGroupButton];
   UIButton* cancelButton = [self configuredCancelButton];
   [self.view addSubview:dotAndFieldContainer];
+  [self.view addSubview:colorsView];
   [self.view addSubview:creationButton];
   [self.view addSubview:cancelButton];
 
@@ -109,6 +177,15 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kHorizontalMargin],
     [creationButton.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kHorizontalMargin],
+    [colorsView.bottomAnchor constraintEqualToAnchor:creationButton.topAnchor
+                                            constant:-kColorListBottomMargin],
+    [colorsView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+    [colorsView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalMargin],
+    [colorsView.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
   ]];
@@ -167,22 +244,22 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
   titleBackground.layer.cornerRadius = kTitleBackgroundCornerRadius;
   titleBackground.opaque = NO;
 
-  // TODO(crbug.com/1501837): Save the view to be able to change the color of
-  // the dot.
-  UIView* coloredDotView =
-      [self groupDotViewWithColor:[UIColor colorNamed:kYellow500Color]];
+  UIColor* defaultColor =
+      [self tabGroupColorFromColorID:static_cast<tab_groups::TabGroupColorId>(
+                                         _selectedButton.tag)];
+  _dotView = [self groupDotViewWithColor:defaultColor];
   _tabGroupTextField = [self configuredTabGroupNameTextFieldInput];
 
-  [titleBackground addSubview:coloredDotView];
+  [titleBackground addSubview:_dotView];
   [titleBackground addSubview:_tabGroupTextField];
 
   [NSLayoutConstraint activateConstraints:@[
     [_tabGroupTextField.leadingAnchor
-        constraintEqualToAnchor:coloredDotView.trailingAnchor
+        constraintEqualToAnchor:_dotView.trailingAnchor
                        constant:kDotTitleSeparationMargin],
-    [coloredDotView.centerYAnchor
+    [_dotView.centerYAnchor
         constraintEqualToAnchor:_tabGroupTextField.centerYAnchor],
-    [coloredDotView.leadingAnchor
+    [_dotView.leadingAnchor
         constraintEqualToAnchor:titleBackground.leadingAnchor
                        constant:kTitleHorizontalMargin],
     [titleBackground.trailingAnchor
@@ -205,8 +282,6 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
 
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.titleAlignment =
-      UIButtonConfigurationTitleAlignmentCenter;
   NSDictionary* attributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
@@ -238,8 +313,6 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
 
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfiguration.titleAlignment =
-      UIButtonConfigurationTitleAlignmentCenter;
   buttonConfiguration.baseBackgroundColor = [UIColor colorNamed:kBlue600Color];
   buttonConfiguration.background.cornerRadius = kButtonBackgroundCornerRadius;
   NSDictionary* attributes = @{
@@ -274,18 +347,113 @@ constexpr CGFloat kButtonBackgroundCornerRadius = 15;
 
 // Creates the group and dismiss the view.
 - (void)creationButtonTapped {
-  // TODO(crbug.com/1501837): Get the color of the selected dot.
   __weak CreateTabGroupViewController* weakSelf = self;
-  [_mutator createNewGroupWithTitle:_tabGroupTextField.text
-                              color:tab_groups::TabGroupColorId::kYellow
-                         completion:^{
-                           [weakSelf dismissViewController];
-                         }];
+  [self.mutator
+      createNewGroupWithTitle:_tabGroupTextField.text
+                        color:static_cast<tab_groups::TabGroupColorId>(
+                                  _selectedButton.tag)
+                   completion:^{
+                     [weakSelf dismissViewController];
+                   }];
 }
 
 // Dismisses the current view.
 - (void)dismissViewController {
   [_tabGroupsHandler hideTabGroupCreation];
+}
+
+// Changes the selected color.
+- (void)coloredButtonTapped:(UIButton*)sender {
+  if (sender.isSelected) {
+    return;
+  }
+  [_selectedButton setSelected:NO];
+  _selectedButton = sender;
+  [_selectedButton setSelected:YES];
+  [_dotView
+      setBackgroundColor:[self tabGroupColorFromColorID:
+                                   static_cast<tab_groups::TabGroupColorId>(
+                                       _selectedButton.tag)]];
+}
+
+// Creates all the available color buttons.
+- (void)createColorSelectionButtons {
+  NSMutableArray* buttons = [[NSMutableArray alloc] init];
+  for (tab_groups::TabGroupColorId colorID : _colorIDList) {
+    UIButton* colorButton = [[UIButton alloc] init];
+    colorButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [colorButton setTag:static_cast<NSInteger>(colorID)];
+
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration filledButtonConfiguration];
+    buttonConfiguration.baseBackgroundColor =
+        [self tabGroupColorFromColorID:colorID];
+    buttonConfiguration.background.cornerRadius = kColoredButtonSize / 2;
+    colorButton.configuration = buttonConfiguration;
+
+    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithPointSize:kColorSelectionImageSize
+                            weight:UIImageSymbolWeightBold
+                             scale:UIImageSymbolScaleLarge];
+    UIImage* image =
+        DefaultSymbolWithConfiguration(kCircleSymbol, configuration);
+    image = [image imageWithTintColor:[UIColor colorNamed:kGrey900Color]
+                        renderingMode:UIImageRenderingModeAlwaysOriginal];
+    UIImage* emptyImage = [[UIImage alloc] init];
+
+    [colorButton setImage:emptyImage forState:UIControlStateNormal];
+    [colorButton setImage:image forState:UIControlStateSelected];
+
+    [colorButton addTarget:self
+                    action:@selector(coloredButtonTapped:)
+          forControlEvents:UIControlEventTouchUpInside];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [colorButton.heightAnchor constraintEqualToConstant:kColoredButtonSize],
+      [colorButton.widthAnchor constraintEqualToConstant:kColoredButtonSize],
+    ]];
+
+    [buttons addObject:colorButton];
+  }
+
+  _colorSelectionButtons = buttons;
+}
+
+// Returns the configured view, which contains all the available colors.
+- (UIView*)listOfColorView {
+  UIStackView* colorsView = [[UIStackView alloc] init];
+  colorsView.distribution = UIStackViewDistributionEqualSpacing;
+  colorsView.alignment = UIStackViewAlignmentCenter;
+  colorsView.translatesAutoresizingMaskIntoConstraints = NO;
+  // Add empty view before and after so the equal spacing distribution do not
+  // put dots at view's boundary and dots stay completely inside the view.
+  [colorsView addArrangedSubview:[[UIView alloc] init]];
+  for (UIButton* button in _colorSelectionButtons) {
+    [colorsView addArrangedSubview:button];
+  }
+  [colorsView addArrangedSubview:[[UIView alloc] init]];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [colorsView.heightAnchor constraintEqualToConstant:kColorListViewHeight],
+  ]];
+
+  return colorsView;
+}
+
+// Color and color ID mapping.
+// TODO(crbug.com/1501837): Remove once the color helper exist.
+- (UIColor*)tabGroupColorFromColorID:(tab_groups::TabGroupColorId)colorID {
+  return _UIColorList[static_cast<NSUInteger>(colorID)];
+}
+
+- (BOOL)isDefaultButton:(UIButton*)button {
+  return static_cast<tab_groups::TabGroupColorId>(button.tag) == _defaultColor;
+}
+
+#pragma mark - TabGroupCreationConsumer
+
+- (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color {
+  _defaultColor = color;
 }
 
 @end

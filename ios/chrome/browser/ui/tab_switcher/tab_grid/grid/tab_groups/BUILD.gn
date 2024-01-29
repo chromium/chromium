@@ -62,7 +62,12 @@ source_set("tab_groups_ui") {
 }
 
 source_set("tab_group_consumer") {
-  sources = [ "tab_group_consumer.h" ]
+  sources = [
+    "tab_group_consumer.h",
+    "tab_group_creation_consumer.h",
+  ]
+
+  deps = [ "//components/tab_groups" ]
 }
 
 source_set("tab_groups_constant") {
