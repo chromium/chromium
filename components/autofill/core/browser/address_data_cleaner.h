@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
 
-#include <unordered_set>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -32,9 +30,9 @@ class AddressDataCleaner : public PersonalDataManagerObserver,
  public:
   AddressDataCleaner(
       PersonalDataManager& personal_data_manager,
-      AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
-      PrefService* pref_service,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      PrefService& pref_service,
+      AlternativeStateNameMapUpdater* alternative_state_name_map_updater);
   ~AddressDataCleaner() override;
   AddressDataCleaner(const AddressDataCleaner&) = delete;
   AddressDataCleaner& operator=(const AddressDataCleaner&) =
@@ -43,29 +41,18 @@ class AddressDataCleaner : public PersonalDataManagerObserver,
   // Determines whether the cleanups should run depending on the sync state and
   // runs them if applicable. Ensures that the cleanups are run at most once
   // over multiple invocations of the functions.
+  // Deduplication is particularly expensive, since it runs in O(#profiles^2).
+  // For this reason, it is only run once per milestone.
   void MaybeCleanupAddressData();
 
  private:
   friend class AddressDataCleanerTestApi;
 
-  // Applies the deduping routine once per major version. Calls DedupeProfiles()
-  // with the content of `PersonalDataManager::GetProfiles()` as a parameter.
-  // Removes the profiles to delete from the database and updates the others.
-  // Returns true if the routine was run.
-  void ApplyAddressDedupingRoutine();
+  // Deduplicates the PDMs profiles, by merging profile pairs where one is a
+  // subset of the other. Account profiles are never deduplication.
+  void ApplyDeduplicationRoutine();
 
-  // Goes through all the `existing_profiles` and merges all similar profiles
-  // together. All the profiles except the results of the merges will be
-  // added to `profile_guids_to_delete`. This routine should be run once per
-  // major version.
-  //
-  // This method should only be called by ApplyDedupingRoutine(). It is split
-  // for testing purposes.
-  void DedupeProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
-      std::unordered_set<std::string>& profile_guids_to_delete) const;
-
-  // Tries to delete disused addresses on startup.
+  // Delete profiles unused for at least `kDisusedDataModelDeletionTimeDelta`.
   void DeleteDisusedAddresses();
 
   // PersonalDataManagerObserver
@@ -74,26 +61,18 @@ class AddressDataCleaner : public PersonalDataManagerObserver,
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
-  // True if autofill profile dedupe needs to be performed.
-  bool is_autofill_profile_dedupe_pending_ = true;
+  // Used to ensure that cleanups are only performed once per profile startup.
+  bool are_cleanups_pending_ = true;
 
-  // True if the profile cleanups need to be performed.
-  bool is_profile_cleanup_pending_ = true;
-
-  // The personal data manager, used to load and update the personal data
-  // from/to the web database.
   const raw_ref<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  // Used to check whether deduplication was already run this milestone.
+  const raw_ref<PrefService> pref_service_;
 
-  // The PrefService used to track that deduplication is only run once per
-  // milestone.
-  const raw_ptr<PrefService> pref_service_;
-
-  // The AlternativeStateNameMapUpdater, used to populate
-  // AlternativeStateNameMap with the geographical state data.
+  // Used to ensure that the alternative state name map gets populated before
+  // performing deduplication.
   const raw_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
-
-  const raw_ptr<syncer::SyncService> sync_service_;
 
   // Observe the PDM, so cleanups can run when the data was loaded from the DB.
   base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>

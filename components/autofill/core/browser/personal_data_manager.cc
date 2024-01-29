@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -450,8 +451,8 @@ void PersonalDataManager::Init(
   Refresh();
 
   address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
-      *this, alternative_state_name_map_updater_.get(), pref_service,
-      sync_service);
+      *this, sync_service, CHECK_DEREF(pref_service),
+      alternative_state_name_map_updater_.get());
   payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(this);
 
   // Potentially import profiles for testing. `Init()` is called whenever the
