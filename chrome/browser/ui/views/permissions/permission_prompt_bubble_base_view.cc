@@ -334,10 +334,6 @@ void PermissionPromptBubbleBaseView::RecordDecision(
     case PermissionPromptStyle::kBubbleOnly:
       time_to_decision_uma_name = "Permissions.Prompt.TimeToDecision";
       break;
-    case PermissionPromptStyle::kEmbeddedElementSecondaryUI:
-      time_to_decision_uma_name =
-          "Permissions.kEmbeddedElementSecondaryUI.TimeToDecision";
-      break;
     case PermissionPromptStyle::kChip:
       time_to_decision_uma_name = "Permissions.Chip.TimeToDecision";
       break;
