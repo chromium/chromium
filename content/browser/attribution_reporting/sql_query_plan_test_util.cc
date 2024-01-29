@@ -207,7 +207,7 @@ SqlQueryPlanExplainer::GetPlan(
   command_line.AppendArg(explain_query);
 
   std::string output;
-  if (!base::GetAppOutputAndError(command_line, &output)) {
+  if (!base::GetAppOutput(command_line, &output)) {
     LOG(ERROR) << "command failed output: " << output;
     return base::unexpected(Error::kCommandFailed);
   }
