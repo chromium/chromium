@@ -5430,20 +5430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSLVersionGoogle" enum="SSLOrQUICVersion"
-    expires_after="2024-02-04">
-  <owner>davidben@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    The SSL/TLS version that was negotiated to a Google host. Recorded for each
-    appplicable SSL/TLS connection in the socket pool where Connect() succeeds.
-    Google servers all support TLS 1.2, so any occurrences of TLS 1.0 or TLS 1.1
-    indicate an outdated insecure TLS MITM proxy, such as some antivirus
-    configurations. TLS 1.0 and 1.1 are deprecated, so record these to see how
-    prevalent they are. See https://crbug.com/896013.
-  </summary>
-</histogram>
-
 <histogram name="Net.TCP_Connection_Latency" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
