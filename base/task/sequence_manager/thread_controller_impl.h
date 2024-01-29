@@ -78,10 +78,8 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
                        scoped_refptr<SingleThreadTaskRunner> task_runner,
                        const TickClock* time_source);
 
-  // TODO(altimin): Make these const. Blocked on removing
-  // lazy initialisation support.
-  raw_ptr<SequenceManagerImpl> funneled_sequence_manager_;
-  scoped_refptr<SingleThreadTaskRunner> task_runner_;
+  const raw_ptr<SequenceManagerImpl> funneled_sequence_manager_;
+  const scoped_refptr<SingleThreadTaskRunner> task_runner_;
 
   raw_ptr<RunLoop::NestingObserver> nesting_observer_ = nullptr;
 
