@@ -7469,26 +7469,6 @@
             ]
         }
     ],
-    "FilteringScrollPrediction": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "one_euro_filter_4.7_cutoff_0.01_beta20230221",
-                    "params": {
-                        "beta": "0.01",
-                        "filter": "one_euro_filter",
-                        "mincutoff": "4.7"
-                    },
-                    "enable_features": [
-                        "FilteringScrollPrediction"
-                    ]
-                }
-            ]
-        }
-    ],
     "FindRegistrationImprovements": [
         {
             "platforms": [
