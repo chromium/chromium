@@ -143,6 +143,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unavailable: Low-end device"/>
   <int value="3" label="Unavailable: System doesn't have PiP feature"/>
   <int value="4" label="Unavailable: PiP permission isn't granted"/>
+  <int value="5" label="Unavailable: Device is on manufacturer exclude list"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">

@@ -49,6 +49,7 @@ BASE_DECLARE_FEATURE(kCCTFeatureUsage);
 BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);
 BASE_DECLARE_FEATURE(kCCTIntentFeatureOverrides);
 BASE_DECLARE_FEATURE(kCCTMinimized);
+BASE_DECLARE_FEATURE(kCCTMinimizedEnabledByDefault);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHub);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHubBetterScroll);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);

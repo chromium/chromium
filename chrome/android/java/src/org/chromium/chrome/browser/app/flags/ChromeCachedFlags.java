@@ -131,6 +131,7 @@ public class ChromeCachedFlags {
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                         MinimizedFeatureUtils.ICON_VARIANT,
+                        MinimizedFeatureUtils.MANUFACTURER_EXCLUDE_LIST,
                         BackPressManager.TAB_HISTORY_RECOVER);
 
         tryToCatchMissingParameters(fieldTrialsToCache);
