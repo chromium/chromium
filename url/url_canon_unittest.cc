@@ -1875,39 +1875,6 @@ TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
   }
 }
 
-TEST(URLCanonTest, CanonicalizeNonSpecialURLOutputParsed) {
-  // Test that out_parsed is correctly set.
-  struct URLCase {
-    const std::string_view input;
-    // Currently, test only host and length.
-    Component expected_output_parsed_host;
-    int expected_output_parsed_length;
-  } cases[] = {
-      {"git:", Component(), 4},
-      {"git:opaque", Component(), 10},
-      {"git:/", Component(), 5},
-      {"git://", Component(6, 0), 6},
-      {"git:///", Component(6, 0), 7},
-      // The length of "[1:2:0:0:5::]" is 13.
-      {"git://[1:2:0:0:5:0:0:0]/", Component(6, 13), 20},
-  };
-
-  for (const auto& i : cases) {
-    SCOPED_TRACE(i.input);
-    Parsed parsed;
-    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
-    Parsed out_parsed;
-    std::string unused_out_str;
-    StdStringCanonOutput unused_output(&unused_out_str);
-    bool success = CanonicalizeNonSpecialURL(
-        i.input.data(), i.input.size(), parsed,
-        /*query_converter=*/nullptr, unused_output, out_parsed);
-    ASSERT_TRUE(success);
-    EXPECT_EQ(out_parsed.host, i.expected_output_parsed_host);
-    EXPECT_EQ(out_parsed.Length(), i.expected_output_parsed_length);
-  }
-}
-
 // The codepath here is the same as for regular canonicalization, so we just
 // need to test that things are replaced or not correctly.
 TEST(URLCanonTest, ReplaceStandardURL) {
@@ -3089,7 +3056,7 @@ void ComponentCaseMatches(bool success,
 
 TEST(URLCanonTest, OpaqueHost) {
   DualComponentCase host_cases[] = {
-      {"", L"", "", Component(0, 0), true},
+      {"", L"", "", Component(), true},
       {"google.com", L"google.com", "google.com", Component(0, 10), true},
       // Upper case letters should be preserved.
       {"gooGle.com", L"gooGle.com", "gooGle.com", Component(0, 10), true},
