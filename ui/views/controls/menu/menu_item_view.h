@@ -584,7 +584,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  raw_ptr<MenuDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<MenuDelegate> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;

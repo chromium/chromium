@@ -379,9 +379,9 @@ void PineContentsView::OnSettingsButtonPressed() {
 }
 
 void PineContentsView::OnMenuClosed() {
-  context_menu_model_.reset();
-  menu_model_adapter_.reset();
   menu_runner_.reset();
+  menu_model_adapter_.reset();
+  context_menu_model_.reset();
 }
 
 BEGIN_METADATA(PineContentsView, views::BoxLayoutView)

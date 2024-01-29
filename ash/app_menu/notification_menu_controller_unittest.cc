@@ -67,6 +67,7 @@ class NotificationMenuControllerTest : public AshTestBase {
 
   // Overridden from AshTestBase:
   void TearDown() override {
+    root_menu_item_view_.reset();
     // NotificationMenuController removes itself from MessageCenter's observer
     // list in the dtor, so force it to happen first to prevent a crash. This
     // crash does not repro in production.
@@ -82,26 +83,24 @@ class NotificationMenuControllerTest : public AshTestBase {
     test_app_menu_model_adapter_->model()->AddItem(0, u"item 0");
     test_app_menu_model_adapter_->model()->AddItem(1, u"item 1");
 
-    root_menu_item_view_ =
-        new views::MenuItemView(test_app_menu_model_adapter_.get());
-    host_view_ = std::make_unique<views::View>();
-    host_view_->AddChildView(root_menu_item_view_.get());
-    test_app_menu_model_adapter_->BuildMenu(root_menu_item_view_);
+    root_menu_item_view_ = std::make_unique<views::MenuItemView>(
+        test_app_menu_model_adapter_.get());
+    test_app_menu_model_adapter_->BuildMenu(root_menu_item_view());
 
     notification_menu_controller_ =
         std::make_unique<NotificationMenuController>(
-            kTestAppId, root_menu_item_view_,
+            kTestAppId, root_menu_item_view(),
             test_app_menu_model_adapter_.get());
   }
 
-  views::MenuItemView* root_menu_item_view() { return root_menu_item_view_; }
+  views::MenuItemView* root_menu_item_view() {
+    return root_menu_item_view_.get();
+  }
 
  private:
-  // The root MenuItemView. Owned by |host_view_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged> root_menu_item_view_ =
-      nullptr;
-  // Allows the dtor to access the restricted views::MenuItemView dtor.
-  std::unique_ptr<views::View> host_view_;
+  // The root `MenuItemView`. In production, it is created and owned by the
+  // `AppMenuModelAdapter`. In this test setup, the test fixture owns it.
+  std::unique_ptr<views::MenuItemView> root_menu_item_view_;
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;
   std::unique_ptr<TestAppMenuModelAdapter> test_app_menu_model_adapter_;
 };
