@@ -40,6 +40,17 @@ class PassKey {
   PassKey() = default;
 };
 
+// NonCopyablePassKey is a version of PassKey that also disallows copy/move
+// construction/assignment. This way functions called with a passkey cannot use
+// that key to invoke other passkey-protected functions.
+template <typename T>
+class NonCopyablePassKey {
+  friend T;
+  NonCopyablePassKey() = default;
+  NonCopyablePassKey(const NonCopyablePassKey&) = delete;
+  NonCopyablePassKey& operator=(const NonCopyablePassKey&) = delete;
+};
+
 }  // namespace base
 
 #endif  // BASE_TYPES_PASS_KEY_H_

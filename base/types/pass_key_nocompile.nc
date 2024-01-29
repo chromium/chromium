@@ -54,4 +54,12 @@ void CannotConstructNamedPassKey() {
   Secret(key);
 }
 
+void CannotCopyNonCopyablePassKey(NonCopyablePassKey<Manager> key) {
+  CannotCopyNonCopyablePassKey(key);  // expected-error {{call to deleted constructor of 'NonCopyablePassKey<Manager>'}}
+}
+
+void CannotMoveNonCopyablePassKey(NonCopyablePassKey<Manager> key) {
+  CannotMoveNonCopyablePassKey(std::move(key));  // expected-error {{call to deleted constructor of 'NonCopyablePassKey<Manager>'}}
+}
+
 }  // namespace base
