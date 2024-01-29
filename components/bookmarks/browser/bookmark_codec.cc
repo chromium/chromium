@@ -132,10 +132,16 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
   FinalizeChecksum();
   // If either the checksums differ or some IDs were missing/not unique,
   // reassign IDs.
-  if (!ids_valid_ || computed_checksum() != stored_checksum())
+  if (!ids_valid_ || computed_checksum_ != stored_checksum_) {
     ReassignIDs(bb_node, other_folder_node, mobile_folder_node);
+  }
   *max_id = maximum_id_ + 1;
   return success;
+}
+
+bool BookmarkCodec::required_recovery() const {
+  return ids_reassigned_ || uuids_reassigned_ ||
+         computed_checksum_ != stored_checksum_;
 }
 
 base::Value::Dict BookmarkCodec::EncodeNode(const BookmarkNode* node) {

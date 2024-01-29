@@ -1130,33 +1130,41 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(details);
   DCHECK(!loaded_);
+  DCHECK(details->required_recovery() || !details->ids_reassigned());
 
-  next_node_id_ = details->max_id();
-  if (details->computed_checksum() != details->stored_checksum() ||
-      details->ids_reassigned() || details->uuids_reassigned()) {
-    // If bookmarks file changed externally, the IDs may have changed
-    // externally. In that case, the decoder may have reassigned IDs to make
-    // them unique. So when the file has changed externally, we should save the
-    // bookmarks file to persist such changes. The same applies if new UUIDs
-    // have been assigned to bookmarks.
+  if (details->required_recovery()) {
+    // If the from-disk loading went through a recovery (e.g. IDs were
+    // reassigned due to collisions), it is best to save the result back to
+    // disk so it won't keep happening upon every restart.
     if (store_) {
       store_->ScheduleSave();
     }
   }
 
+  next_node_id_ = details->max_id();
   titled_url_index_ = details->owned_titled_url_index();
   uuid_index_[NodeTypeForUuidLookup::kLocalOrSyncableNodes] =
-      details->owned_uuid_index();
+      details->owned_local_or_syncable_uuid_index();
+  uuid_index_[NodeTypeForUuidLookup::kAccountNodes] =
+      details->owned_account_uuid_index();
   url_index_ = details->url_index();
-  root_ = details->root_node();
+  root_ = url_index_->root();
   // See declaration for details on why `owned_root_` is reset.
   owned_root_.reset();
   bookmark_bar_node_ = details->bb_node();
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
 
-  // TODO(crbug.com/1520418): Load nodes for account storage as well and load
-  // UUIDs onto `uuid_index_`.
+  account_bookmark_bar_node_ = details->account_bb_node();
+  account_other_node_ = details->account_other_folder_node();
+  account_mobile_node_ = details->account_mobile_folder_node();
+
+  if (!AreFoldersForAccountStorageAllowed()) {
+    CHECK(!account_bookmark_bar_node_);
+    CHECK(!account_other_node_);
+    CHECK(!account_mobile_node_);
+    CHECK(uuid_index_[NodeTypeForUuidLookup::kAccountNodes].empty());
+  }
 
   titled_url_index_->SetNodeSorter(
       std::make_unique<TypedCountSorter>(client_.get()));
@@ -1166,7 +1174,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
 
   loaded_ = true;
   client_->DecodeBookmarkSyncMetadata(
-      details->sync_metadata_str(),
+      details->local_or_syncable_sync_metadata_str(),
       store_ ? base::BindRepeating(&BookmarkStorage::ScheduleSave,
                                    base::Unretained(store_.get()))
              : base::DoNothing());

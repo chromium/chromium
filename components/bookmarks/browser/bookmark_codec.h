@@ -60,23 +60,20 @@ class BookmarkCodec {
               int64_t* max_node_id,
               std::string* sync_metadata_str);
 
-  // Returns the checksum computed during last encoding/decoding call.
-  const std::string& computed_checksum() const { return computed_checksum_; }
-
-  // Returns the checksum that's stored in the file. After a call to Encode,
-  // the computed and stored checksums are the same since the computed checksum
-  // is stored to the file. After a call to decode, the computed checksum can
-  // differ from the stored checksum if the file contents were changed by the
-  // user.
-  const std::string& stored_checksum() const { return stored_checksum_; }
+  // The required-recovery bit represents whether the on-disk state was corrupt
+  // and had to be recovered. Scenarios include ID or UUID collisions and
+  // checksum mismatches.
+  bool required_recovery() const;
 
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
 
-  // Returns whether the UUIDs were reassigned during decoding. Always returns
-  // false after encoding.
-  bool uuids_reassigned() const { return uuids_reassigned_; }
+  // Test-only APIs.
+  const std::string& ComputedChecksumForTest() const {
+    return computed_checksum_;
+  }
+  const std::string& StoredChecksumForTest() const { return stored_checksum_; }
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
@@ -192,8 +189,14 @@ class BookmarkCodec {
   // MD5 context used to compute MD5 hash of all bookmark data.
   base::MD5Context md5_context_;
 
-  // Checksums.
+  // Checksum computed during last encoding/decoding call.
   std::string computed_checksum_;
+
+  // The checksum that's stored in the file. After a call to Encode, the
+  // computed and stored checksums are the same since the computed checksum is
+  // stored to the file. After a call to decode, the computed checksum can
+  // differ from the stored checksum if the file contents were changed by the
+  // user.
   std::string stored_checksum_;
 
   // Maximum ID assigned when decoding data.

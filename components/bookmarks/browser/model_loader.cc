@@ -4,6 +4,8 @@
 
 #include "components/bookmarks/browser/model_loader.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -25,38 +27,46 @@ namespace bookmarks {
 
 namespace {
 
-// Loads the bookmarks from a file determined by `path`. This is intended to be
-// called on the background thread. Returns the loaded BookmarkLoadDetails.
+// Loads and deserializes a JSON file determined by `file_path` and returns it
+// in the form of a dictionary, or nullopt if something fails.
+std::optional<base::Value::Dict> LoadFileToDict(
+    const base::FilePath& file_path) {
+  // Titles may end up containing invalid utf and we shouldn't throw away
+  // all bookmarks if some titles have invalid utf.
+  JSONFileValueDeserializer deserializer(file_path,
+                                         base::JSON_REPLACE_INVALID_CHARACTERS);
+  std::unique_ptr<base::Value> root = deserializer.Deserialize(
+      /*error_code=*/nullptr, /*error_message=*/nullptr);
+  if (!root || !root->is_dict()) {
+    // The bookmark file exists but was not deserialized properly.
+    return std::nullopt;
+  }
+
+  return std::make_optional(std::move(*root).TakeDict());
+}
+
+// Loads the bookmarks from a file determined by `file_path`. This is intended
+// to be called on the background thread. Returns the loaded
+// BookmarkLoadDetails.
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarksFromFile(
-    const base::FilePath& path) {
+    const base::FilePath& file_path) {
   auto details = std::make_unique<BookmarkLoadDetails>();
 
-  bool bookmark_file_exists = base::PathExists(path);
-  if (bookmark_file_exists) {
-    // Titles may end up containing invalid utf and we shouldn't throw away
-    // all bookmarks if some titles have invalid utf.
-    JSONFileValueDeserializer deserializer(
-        path, base::JSON_REPLACE_INVALID_CHARACTERS);
-    std::unique_ptr<base::Value> root_value =
-        deserializer.Deserialize(nullptr, nullptr);
-
-    if (!root_value) {
-      // The bookmark file exists but was not deserialized.
-    } else if (const auto* root_dict = root_value->GetIfDict()) {
-      int64_t max_node_id = 0;
-      std::string sync_metadata_str;
-      BookmarkCodec codec;
-      codec.Decode(*root_dict, details->bb_node(), details->other_folder_node(),
-                   details->mobile_folder_node(), &max_node_id,
-                   &sync_metadata_str);
-      details->set_sync_metadata_str(std::move(sync_metadata_str));
-      details->set_max_id(std::max(max_node_id, details->max_id()));
-      details->set_computed_checksum(codec.computed_checksum());
-      details->set_stored_checksum(codec.stored_checksum());
-      details->set_ids_reassigned(codec.ids_reassigned());
-      details->set_uuids_reassigned(codec.uuids_reassigned());
-    }
+  std::optional<base::Value::Dict> root_dict = LoadFileToDict(file_path);
+  if (!root_dict.has_value()) {
+    return details;
   }
+
+  int64_t max_node_id = 0;
+  std::string sync_metadata_str;
+  BookmarkCodec codec;
+  codec.Decode(*root_dict, details->bb_node(), details->other_folder_node(),
+               details->mobile_folder_node(), &max_node_id, &sync_metadata_str);
+  details->set_local_or_syncable_sync_metadata_str(
+      std::move(sync_metadata_str));
+  details->set_max_id(std::max(max_node_id, details->max_id()));
+  details->set_ids_reassigned(codec.ids_reassigned());
+  details->set_required_recovery(codec.required_recovery());
 
   return details;
 }
@@ -71,7 +81,7 @@ void LoadManagedNode(LoadManagedNodeCallback load_managed_node_callback,
   std::unique_ptr<BookmarkPermanentNode> managed_node =
       std::move(load_managed_node_callback).Run(&max_node_id);
   if (managed_node) {
-    details.root_node()->Add(std::move(managed_node));
+    details.AddManagedNode(std::move(managed_node));
     details.set_max_id(std::max(max_node_id, details.max_id()));
   }
 }

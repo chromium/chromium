@@ -2195,6 +2195,40 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   EXPECT_EQ(node_url, matches[0].node->GetTitledUrlNodeUrl());
 }
 
+// Verifies the UUID index is probably loaded.
+TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
+  // Create a model with a single url.
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  test::WaitForBookmarkModelToLoad(model.get());
+  const base::Uuid node_uuid = model
+                                   ->AddURL(model->bookmark_bar_node(), 0,
+                                            u"User", GURL("http://google.com"))
+                                   ->uuid();
+
+  // This is necessary to ensure the save completes.
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Recreate the model and ensure GetBookmarksMatching() returns the url that
+  // was added.
+  model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  EXPECT_NE(nullptr,
+            model->GetNodeByUuid(node_uuid,
+                                 NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+
+  // TODO(crbug.com/1520418): Add analogous tests for account bookmarks once
+  // enough functionality is implemented.
+}
+
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   GURL url;
   BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);

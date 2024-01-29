@@ -143,12 +143,12 @@ class BookmarkCodecTest : public testing::Test {
                                  std::string* checksum) {
     BookmarkCodec encoder;
     // Computed and stored checksums should be empty.
-    EXPECT_EQ("", encoder.computed_checksum());
-    EXPECT_EQ("", encoder.stored_checksum());
+    EXPECT_EQ("", encoder.ComputedChecksumForTest());
+    EXPECT_EQ("", encoder.StoredChecksumForTest());
 
     base::Value::Dict value(encoder.Encode(model, sync_metadata_str));
-    const std::string& computed_checksum = encoder.computed_checksum();
-    const std::string& stored_checksum = encoder.stored_checksum();
+    const std::string& computed_checksum = encoder.ComputedChecksumForTest();
+    const std::string& stored_checksum = encoder.StoredChecksumForTest();
 
     // Computed and stored checksums should not be empty and should be equal.
     EXPECT_FALSE(computed_checksum.empty());
@@ -181,15 +181,15 @@ class BookmarkCodecTest : public testing::Test {
       std::string* sync_metadata_str) {
     BookmarkCodec decoder;
     // Computed and stored checksums should be empty.
-    EXPECT_EQ("", decoder.computed_checksum());
-    EXPECT_EQ("", decoder.stored_checksum());
+    EXPECT_EQ("", decoder.ComputedChecksumForTest());
+    EXPECT_EQ("", decoder.StoredChecksumForTest());
 
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
     EXPECT_TRUE(Decode(&decoder, value, model.get(),
                        /*sync_metadata_str=*/sync_metadata_str));
 
-    *computed_checksum = decoder.computed_checksum();
-    const std::string& stored_checksum = decoder.stored_checksum();
+    *computed_checksum = decoder.ComputedChecksumForTest();
+    const std::string& stored_checksum = decoder.StoredChecksumForTest();
 
     // Computed and stored checksums should not be empty.
     EXPECT_FALSE(computed_checksum->empty());
@@ -378,8 +378,8 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
 }
 
 TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
-  base::FilePath test_file =
-      GetTestDataDir().AppendASCII("bookmarks/model_without_sync.json");
+  base::FilePath test_file = GetTestDataDir().AppendASCII(
+      "bookmarks/model_without_mobile_bookmarks.json");
   ASSERT_TRUE(base::PathExists(test_file));
 
   JSONFileValueDeserializer deserializer(test_file);
@@ -496,7 +496,7 @@ TEST_F(BookmarkCodecTest, ReassignEmptyUuid) {
   ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_FALSE(decoder1.uuids_reassigned());
+  EXPECT_FALSE(decoder1.required_recovery());
 
   // Change UUID of child to be empty.
   base::Value* child_value = nullptr;
@@ -518,7 +518,7 @@ TEST_F(BookmarkCodecTest, ReassignEmptyUuid) {
   EXPECT_NE(uuid, decoded_model2->bookmark_bar_node()->children()[0]->uuid());
   EXPECT_TRUE(
       decoded_model2->bookmark_bar_node()->children()[0]->uuid().is_valid());
-  EXPECT_TRUE(decoder2.uuids_reassigned());
+  EXPECT_TRUE(decoder2.required_recovery());
 }
 
 TEST_F(BookmarkCodecTest, ReassignMissingUuid) {
@@ -533,7 +533,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingUuid) {
   ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_FALSE(decoder1.uuids_reassigned());
+  EXPECT_FALSE(decoder1.required_recovery());
 
   // Change UUID of child to be missing.
   base::Value* child_value = nullptr;
@@ -555,7 +555,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingUuid) {
   EXPECT_NE(uuid, decoded_model2->bookmark_bar_node()->children()[0]->uuid());
   EXPECT_TRUE(
       decoded_model2->bookmark_bar_node()->children()[0]->uuid().is_valid());
-  EXPECT_TRUE(decoder2.uuids_reassigned());
+  EXPECT_TRUE(decoder2.required_recovery());
 }
 
 TEST_F(BookmarkCodecTest, ReassignInvalidUuid) {
@@ -583,7 +583,7 @@ TEST_F(BookmarkCodecTest, ReassignInvalidUuid) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_TRUE(decoder.uuids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
   EXPECT_TRUE(
       decoded_model->bookmark_bar_node()->children()[0]->uuid().is_valid());
 }
@@ -618,7 +618,7 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateUuid) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_TRUE(decoder.uuids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
   EXPECT_NE(decoded_model->bookmark_bar_node()->children()[0]->uuid(),
             decoded_model->bookmark_bar_node()->children()[1]->uuid());
 }
@@ -645,7 +645,7 @@ TEST_F(BookmarkCodecTest, ReassignBannedUuid) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_TRUE(decoder.uuids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
   EXPECT_TRUE(
       decoded_model->bookmark_bar_node()->children()[0]->uuid().is_valid());
   EXPECT_NE(decoded_model->bookmark_bar_node()->children()[0]->uuid(),
@@ -675,7 +675,7 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateUuid) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  EXPECT_TRUE(decoder.uuids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
   EXPECT_NE(base::Uuid::ParseLowercase(kRootNodeUuid),
             decoded_model->bookmark_bar_node()->children()[0]->uuid());
 }
