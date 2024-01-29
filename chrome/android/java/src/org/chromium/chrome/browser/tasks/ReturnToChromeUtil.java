@@ -778,26 +778,28 @@ public final class ReturnToChromeUtil {
     /**
      * Shows a NTP on warm startup on tablets if return time arrives. Only create a new NTP if there
      * isn't any existing NTP to reuse.
+     *
      * @param isIncognito Whether the incognito mode is selected.
      * @param shouldShowNtpHomeSurfaceOnStartup Whether to show a NTP as home surface on startup.
-     * @param currentTabModel The object of the current {@link  TabModel}.
+     * @param currentTabModel The object of the current {@link TabModel}.
      * @param tabCreator The {@link TabCreator} object.
      * @param homeSurfaceTracker The {@link HomeSurfaceTracker} object.
+     * @return whether an NTP was shown.
      */
-    public static void setInitialOverviewStateOnResumeWithNtp(
+    public static boolean setInitialOverviewStateOnResumeWithNtp(
             boolean isIncognito,
             boolean shouldShowNtpHomeSurfaceOnStartup,
             TabModel currentTabModel,
             TabCreator tabCreator,
             HomeSurfaceTracker homeSurfaceTracker) {
         if (isIncognito || !shouldShowNtpHomeSurfaceOnStartup) {
-            return;
+            return false;
         }
 
         int index = currentTabModel.index();
         Tab lastActiveTab = TabModelUtils.getCurrentTab(currentTabModel);
         // Early exits if there isn't any Tab, i.e., don't create a home surface.
-        if (lastActiveTab == null) return;
+        if (lastActiveTab == null) return false;
 
         // If the last active Tab is a NTP, we continue to show this NTP as it is now.
         if (UrlUtilities.isNtpUrl(lastActiveTab.getUrl())) {
@@ -816,7 +818,7 @@ public final class ReturnToChromeUtil {
                 if (!isNtpUrl) {
                     recordFailToShowHomeSurfaceReasonUma(
                             FailToShowHomeSurfaceReason.FAIL_TO_FIND_NTP_TAB);
-                    return;
+                    return false;
                 }
 
                 // Sets the found NTP as home surface.
@@ -831,6 +833,7 @@ public final class ReturnToChromeUtil {
 
         recordHomeSurfaceShownAtStartup();
         recordHomeSurfaceShown();
+        return true;
     }
 
     /*

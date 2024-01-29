@@ -1497,12 +1497,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * has left Chrome for a while.
      */
     private void setInitialOverviewStateWithNtp() {
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
-                mTabModelSelector.isIncognitoSelected(),
-                shouldShowNtpHomeSurfaceOnStartup(),
-                getCurrentTabModel(),
-                getTabCreator(false),
-                mHomeSurfaceTracker);
+        boolean showedNtp =
+                ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
+                        mTabModelSelector.isIncognitoSelected(),
+                        shouldShowNtpHomeSurfaceOnStartup(),
+                        getCurrentTabModel(),
+                        getTabCreator(false),
+                        mHomeSurfaceTracker);
+        if (showedNtp
+                && HubFieldTrial.isHubEnabled()
+                && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+            mLayoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
+        }
     }
 
     private void logMainIntentBehavior(Intent intent) {
