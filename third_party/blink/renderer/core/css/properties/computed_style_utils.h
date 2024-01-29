@@ -205,14 +205,6 @@ class CORE_EXPORT ComputedStyleUtils {
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
                                               const ComputedStyle&);
-  // TODO(fs): For some properties ('transform') we use the pixel snapped
-  // border-box as the reference box. In other cases ('transform-origin') we use
-  // the "unsnapped" border-box. Maybe use the same (the "unsnapped") in both
-  // cases?
-  enum UsePixelSnappedBox {
-    kDontUsePixelSnappedBox,
-    kUsePixelSnappedBox,
-  };
 
   // Serializes a gfx::Transform into a matrix() or matrix3d() transform
   // function value. If force_matrix3d is true, it will always give a matrix3d
@@ -235,9 +227,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          gfx::SizeF box_size = gfx::SizeF(0,
                                                                           0));
   static CSSValue* ValueForTransformFunction(const TransformOperations&);
-  static gfx::RectF ReferenceBoxForTransform(
-      const LayoutObject&,
-      UsePixelSnappedBox = kUsePixelSnappedBox);
+  static gfx::RectF ReferenceBoxForTransform(const LayoutObject&);
   // The LayoutObject parameter is only used for converting unreperesentable
   // relative transforms into matrix() values, with a default box size of 0x0.
   static CSSValue* ComputedTransformList(const ComputedStyle&,

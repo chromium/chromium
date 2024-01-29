@@ -1796,18 +1796,10 @@ gfx::RectF PaintLayer::FilterReferenceBox() const {
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
   if (const auto* layout_inline = DynamicTo<LayoutInline>(GetLayoutObject())) {
-    return RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
-               ? gfx::RectF(
-                     gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size))
-               : gfx::RectF(
-                     ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
-                         .size());
+    return gfx::RectF(
+        gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size));
   }
-
-  const auto* layout_box = GetLayoutBox();
-  return RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
-             ? gfx::RectF(layout_box->PhysicalBorderBoxRect())
-             : gfx::RectF(layout_box->DeprecatedPixelSnappedBorderBoxRect());
+  return gfx::RectF(GetLayoutBox()->PhysicalBorderBoxRect());
 }
 
 gfx::RRectF PaintLayer::BackdropFilterBounds() const {

@@ -1261,11 +1261,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
                            LayoutUnit(entry_size->inlineSize()));
   } else if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     border_box_size_in_css_space =
-        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
-            ? layout_inline->PhysicalLinesBoundingBox().size
-            : PhysicalSize(
-                  ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
-                      .size());
+        layout_inline->PhysicalLinesBoundingBox().size;
     // Convert to CSS pixels instead of layout pixels.
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }

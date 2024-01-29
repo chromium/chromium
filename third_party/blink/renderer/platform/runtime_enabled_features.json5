@@ -3144,10 +3144,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "ReferenceBoxNoPixelSnapping",
-      status: "stable",
-    },
-    {
       name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
