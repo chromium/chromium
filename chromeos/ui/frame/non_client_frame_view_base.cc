@@ -32,7 +32,7 @@ NonClientFrameViewBase::OverlayView::~OverlayView() = default;
 void NonClientFrameViewBase::OverlayView::Layout() {
   // Layout |header_view_| because layout affects the result of
   // GetPreferredOnScreenHeight().
-  header_view_->Layout();
+  header_view_->DeprecatedLayoutImmediately();
 
   int onscreen_height = header_view_->GetPreferredOnScreenHeight();
   int height = header_view_->GetPreferredHeight();
@@ -217,7 +217,7 @@ bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
 
 void NonClientFrameViewBase::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
-  frame_->non_client_view()->Layout();
+  frame_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 }  // namespace chromeos
