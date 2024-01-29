@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_mac.h"
 
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 
@@ -49,8 +50,8 @@ AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
                                   base::DoNothing(),
                                   std::nullopt),
       touch_bar_controller_(nil),
-      is_credit_card_popup_(delegate->GetPopupType() ==
-                            PopupType::kCreditCards) {}
+      is_credit_card_popup_(delegate->GetMainFillingProduct() ==
+                            FillingProduct::kCreditCard) {}
 
 AutofillPopupControllerImplMac::~AutofillPopupControllerImplMac() = default;
 

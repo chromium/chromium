@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -66,7 +67,7 @@
 @synthesize formInputPreviousButtonEnabled = _formInputPreviousButtonEnabled;
 @synthesize navigationDelegate = _navigationDelegate;
 @synthesize passwordButtonHidden = _passwordButtonHidden;
-@synthesize suggestionType = _suggestionType;
+@synthesize mainFillingProduct = _mainFillingProduct;
 @synthesize currentFieldId = _currentFieldId;
 
 #pragma mark - Life Cycle
@@ -187,17 +188,20 @@
 - (void)manualFillButtonPressed:(UIButton*)button {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  switch (_suggestionType) {
-    case autofill::PopupType::kAddresses:
+  switch (_mainFillingProduct) {
+    case autofill::FillingProduct::kAddress:
+    case autofill::FillingProduct::kPlusAddresses:
       [self.manualFillAccessoryViewController accountButtonPressed:button];
       break;
-    case autofill::PopupType::kCreditCards:
-    case autofill::PopupType::kIbans:
+    case autofill::FillingProduct::kCreditCard:
+    case autofill::FillingProduct::kIban:
       [self.manualFillAccessoryViewController cardButtonPressed:button];
       break;
-    case autofill::PopupType::kPasswords:
-    case autofill::PopupType::kAutocomplete:
-    case autofill::PopupType::kUnspecified:
+    case autofill::FillingProduct::kCompose:
+    case autofill::FillingProduct::kMerchantPromoCode:
+    case autofill::FillingProduct::kPassword:
+    case autofill::FillingProduct::kAutocomplete:
+    case autofill::FillingProduct::kNone:
       [self.manualFillAccessoryViewController passwordButtonPressed:button];
       break;
   }
@@ -286,30 +290,33 @@
 - (void)announceVoiceOverMessageIfNeeded:(int)suggestionCount {
   if (UIAccessibilityIsVoiceOverRunning() && suggestionCount > 0 &&
       self.lastAnnouncedFieldId != _currentFieldId) {
-    std::u16string suggestionTypeString;
-    switch (_suggestionType) {
-      case autofill::PopupType::kAddresses:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+    std::u16string mainFillingProductString;
+    switch (_mainFillingProduct) {
+      case autofill::FillingProduct::kAddress:
+      case autofill::FillingProduct::kPlusAddresses:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kPasswords:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kPassword:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kCreditCards:
-      case autofill::PopupType::kIbans:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kCreditCard:
+      case autofill::FillingProduct::kIban:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kAutocomplete:
-        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+      case autofill::FillingProduct::kAutocomplete:
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::PopupType::kUnspecified:
+      case autofill::FillingProduct::kMerchantPromoCode:
+      case autofill::FillingProduct::kCompose:
+      case autofill::FillingProduct::kNone:
         return;
     }
 
@@ -321,7 +328,7 @@
                    forKey:UIAccessibilitySpeechAttributeQueueAnnouncement];
     NSMutableAttributedString* suggestionsVoiceOverMessage =
         [[NSMutableAttributedString alloc]
-            initWithString:base::SysUTF16ToNSString(suggestionTypeString)
+            initWithString:base::SysUTF16ToNSString(mainFillingProductString)
                 attributes:attributes];
 
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,

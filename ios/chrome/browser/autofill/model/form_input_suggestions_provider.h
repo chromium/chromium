@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #include "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 
@@ -38,8 +38,8 @@ typedef void (^FormSuggestionsReadyCompletion)(
 // The type of the current suggestion provider.
 @property(nonatomic, readonly) SuggestionProviderType type;
 
-// The type of the current suggestions.
-@property(nonatomic, readonly) autofill::PopupType suggestionType;
+// The main type of the current suggestions.
+@property(nonatomic, readonly) autofill::FillingProduct mainFillingProduct;
 
 // Asynchronously retrieves form suggestions from this provider for the
 // specified form/field and returns it via `accessoryViewUpdateBlock`. View

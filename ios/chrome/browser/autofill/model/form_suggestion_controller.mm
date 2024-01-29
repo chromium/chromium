@@ -12,13 +12,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -343,9 +343,9 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   return _provider ? _provider.type : SuggestionProviderTypeUnknown;
 }
 
-- (autofill::PopupType)suggestionType {
-  return _provider ? _provider.suggestionType
-                   : autofill::PopupType::kUnspecified;
+- (autofill::FillingProduct)mainFillingProduct {
+  return _provider ? _provider.mainFillingProduct
+                   : autofill::FillingProduct::kNone;
 }
 
 #pragma mark - Private

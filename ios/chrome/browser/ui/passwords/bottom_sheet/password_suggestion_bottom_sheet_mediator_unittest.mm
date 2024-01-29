@@ -84,7 +84,7 @@ NSString* PrimaryActionLabelForUsernameFill() {
 @property(nonatomic, assign) BOOL askedIfSuggestionsAvailable;
 @property(nonatomic, assign) BOOL askedForSuggestions;
 @property(nonatomic, assign) SuggestionProviderType type;
-@property(nonatomic, readonly) autofill::PopupType suggestionType;
+@property(nonatomic, readonly) autofill::FillingProduct mainFillingProduct;
 
 // Creates a test provider with default suggesstions.
 + (instancetype)providerWithSuggestions;

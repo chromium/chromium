@@ -29,9 +29,9 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
-#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -530,9 +530,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   return SuggestionProviderTypeAutofill;
 }
 
-- (autofill::PopupType)suggestionType {
-  return _popupDelegate ? _popupDelegate->GetPopupType()
-                        : autofill::PopupType::kUnspecified;
+- (autofill::FillingProduct)mainFillingProduct {
+  return _popupDelegate ? _popupDelegate->GetMainFillingProduct()
+                        : autofill::FillingProduct::kNone;
 }
 
 #pragma mark - AutofillDriverIOSBridge
@@ -716,8 +716,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       }
 
       // Only show icon for credit card suggestions.
-      if (delegate &&
-          delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
+      if (delegate && delegate->GetMainFillingProduct() ==
+                          autofill::FillingProduct::kCreditCard) {
         icon = [self createIcon:popup_suggestion];
       }
     } else if (popup_suggestion.popup_item_id ==

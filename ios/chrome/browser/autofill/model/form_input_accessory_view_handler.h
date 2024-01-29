@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORM_INPUT_ACCESSORY_VIEW_HANDLER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORM_INPUT_ACCESSORY_VIEW_HANDLER_H_
 
-#import "components/autofill/core/browser/ui/popup_types.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 
 namespace web {
