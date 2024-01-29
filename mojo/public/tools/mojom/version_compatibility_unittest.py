@@ -28,7 +28,7 @@ class VersionCompatibilityTest(MojomParserTestCase):
       try:
         compatibility_map[name] = checker.IsBackwardCompatible(
             new[name], old[name])
-      except Exception:
+      except compatibility_checker.CompatibilityError:
         compatibility_map[name] = False
     return compatibility_map
 
