@@ -34,9 +34,6 @@ using autofill::ADDRESS_HOME_SORTING_CODE;
 using autofill::ADDRESS_HOME_STATE;
 using autofill::ADDRESS_HOME_STREET_ADDRESS;
 using autofill::ADDRESS_HOME_ZIP;
-using autofill::BIRTHDATE_4_DIGIT_YEAR;
-using autofill::BIRTHDATE_DAY;
-using autofill::BIRTHDATE_MONTH;
 using autofill::COMPANY_NAME;
 using autofill::EMAIL_ADDRESS;
 using autofill::NAME_FIRST;
@@ -54,7 +51,6 @@ using autofill::Address;
 using autofill::AutofillClock;
 using autofill::AutofillProfile;
 using autofill::AutofillType;
-using autofill::Birthdate;
 using autofill::CompanyInfo;
 using autofill::EmailInfo;
 using autofill::FieldType;
@@ -77,7 +73,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::CompareTokens;
     using Super::GetNamePartVariants;
     using Super::HaveMergeableAddresses;
-    using Super::HaveMergeableBirthdates;
     using Super::HaveMergeableCompanyNames;
     using Super::HaveMergeableEmailAddresses;
     using Super::HaveMergeableNames;
@@ -183,16 +178,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", line1, line2,
                                    city, state, zip, country, "");
-    return profile;
-  }
-
-  AutofillProfile CreateProfileWithBirthdate(const char* day,
-                                             const char* month,
-                                             const char* year) {
-    AutofillProfile profile(kLegacyHierarchyCountryCode);
-    profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
-    profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
-    profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));
     return profile;
   }
 
@@ -689,26 +674,6 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentSortingCode));
 }
 
-TEST_F(AutofillProfileComparatorTest, HaveMergeableBirthdates) {
-  // Birthdates are mergeable if the components are either equal or one of them
-  // is empty.
-  AutofillProfile p1 = CreateProfileWithBirthdate("14", "", "1997");
-  AutofillProfile p2 = CreateProfileWithBirthdate("", "3", "1997");
-  AutofillProfile p3 = CreateProfileWithBirthdate("15", "4", "1997");
-
-  EXPECT_TRUE(comparator_.HaveMergeableBirthdates(p1, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableBirthdates(p1, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableBirthdates(p1, p3));
-
-  EXPECT_TRUE(comparator_.HaveMergeableBirthdates(p2, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableBirthdates(p2, p2));
-  EXPECT_FALSE(comparator_.HaveMergeableBirthdates(p2, p3));
-
-  EXPECT_FALSE(comparator_.HaveMergeableBirthdates(p3, p1));
-  EXPECT_FALSE(comparator_.HaveMergeableBirthdates(p3, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableBirthdates(p3, p3));
-}
-
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
   AutofillProfile p(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(&p, "Marion", "Mitchell", "Morrison",
@@ -1190,22 +1155,6 @@ TEST_F(AutofillProfileComparatorTest,
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
-}
-
-TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
-  AutofillProfile profile1 = CreateProfileWithBirthdate("14", "", "1997");
-  AutofillProfile profile2 = CreateProfileWithBirthdate("", "3", "1997");
-
-  Birthdate expected;
-  expected.SetRawInfo(BIRTHDATE_DAY, u"14");
-  expected.SetRawInfo(BIRTHDATE_MONTH, u"3");
-  expected.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, u"1997");
-
-  Birthdate actual;
-  EXPECT_TRUE(comparator_.MergeBirthdates(profile1, profile2, actual));
-  for (FieldType component : Birthdate::GetRawComponents()) {
-    EXPECT_EQ(expected.GetRawInfo(component), actual.GetRawInfo(component));
-  }
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreetsAndAdmin2) {

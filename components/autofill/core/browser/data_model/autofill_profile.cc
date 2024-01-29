@@ -379,7 +379,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   company_ = profile.company_;
   phone_number_ = profile.phone_number_;
   phone_number_.set_profile(this);
-  birthdate_ = profile.birthdate_;
 
   address_ = profile.address_;
   set_language_code(profile.language_code());
@@ -815,7 +814,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   CompanyInfo company;
   PhoneNumber phone_number(this);
   Address address(profile.GetAddressCountryCode());
-  Birthdate birthdate;
 
   DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;
 
@@ -829,8 +827,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
       !comparator.MergeEmailAddresses(profile, *this, email) ||
       !comparator.MergeCompanyNames(profile, *this, company) ||
       !comparator.MergePhoneNumbers(profile, *this, phone_number) ||
-      !comparator.MergeAddresses(profile, *this, address) ||
-      !comparator.MergeBirthdates(profile, *this, birthdate)) {
+      !comparator.MergeAddresses(profile, *this, address)) {
     NOTREACHED();
     return false;
   }
@@ -880,12 +877,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   if (address_ != address) {
     MergeFormGroupTokenQuality(address, profile);
     address_ = address;
-    modified = true;
-  }
-
-  if (birthdate_ != birthdate) {
-    MergeFormGroupTokenQuality(birthdate, profile);
-    birthdate_ = birthdate;
     modified = true;
   }
 
@@ -1244,10 +1235,8 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
     case FieldTypeGroup::kAddress:
       return &address_;
 
-    case FieldTypeGroup::kBirthdateField:
-      return &birthdate_;
-
     case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kBirthdateField:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kPasswordField:
