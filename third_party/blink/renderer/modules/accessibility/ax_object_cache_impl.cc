@@ -2150,11 +2150,22 @@ bool AXObjectCacheImpl::CanDeferTreeUpdate(Document* tree_update_document) {
   }
 
   if (tree_update_document != document_) {
+    // If the popup_document_ is null, throw this tree update away, because:
+    // - Updates that occur BEFORE the popup is tracked in a11y don't matter,
+    // as we will build the entire popup's AXObject subtree once we are
+    // notified about the popup.
+    // - Updates that occur AFTER the popup is no longer tracked could occur
+    // while the popup is currently closing, in which case the updates are no
+    // longer useful.
+    if (!popup_document_) {
+      return false;
+    }
     // If we are queuing an update to a document other than the main document,
     // then it must be in an active popup document. The cache would never
     // receive notifications from other documents.
-    DCHECK(popup_document_);
-    DCHECK_EQ(tree_update_document, popup_document_);
+    DUMP_WILL_BE_CHECK_EQ(tree_update_document, popup_document_)
+        << "Update in non-main, non-popup document: "
+        << tree_update_document->Url().GetString();
   }
 
   return true;
