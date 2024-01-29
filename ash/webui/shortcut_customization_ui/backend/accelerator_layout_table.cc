@@ -136,14 +136,6 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                 TextAcceleratorPart(ui::EF_SHIFT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_L),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_ESCAPE)})},
-          {NonConfigurableActions::kAmbientSwitchFocus,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_SWITCH_FOCUS,
-               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_BACK),
-                TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_BACK)})},
           {NonConfigurableActions::kAmbientMoveAppsInGrid,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_GRID,
@@ -416,6 +408,13 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_BROWSER_REFRESH, ui::EF_NONE),
                 ui::Accelerator(ui::VKEY_R, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientSwitchFocusForwards,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientSwitchFocusBackwards,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BROWSER_BACK,
+                                ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }
@@ -1723,13 +1722,21 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kVisibility,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
-       {NonConfigurableActions::kAmbientSwitchFocus,
+       {NonConfigurableActions::kAmbientSwitchFocusForwards,
         AcceleratorLayoutDetails(
-            NonConfigurableActions::kAmbientSwitchFocus,
-            IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS,
+            NonConfigurableActions::kAmbientSwitchFocusForwards,
+            IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_FORWARDS,
             mojom::AcceleratorCategory::kAccessibility,
             mojom::AcceleratorSubcategory::kAccessibilityNavigation,
-            /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
+            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAmbient)},
+       {NonConfigurableActions::kAmbientSwitchFocusBackwards,
+        AcceleratorLayoutDetails(
+            NonConfigurableActions::kAmbientSwitchFocusBackwards,
+            IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_BACKWARDS,
+            mojom::AcceleratorCategory::kAccessibility,
+            mojom::AcceleratorSubcategory::kAccessibilityNavigation,
+            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAmbient)},
        {NonConfigurableActions::kAmbientCaretBrowsing,
         AcceleratorLayoutDetails(

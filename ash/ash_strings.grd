@@ -4480,6 +4480,12 @@ Some features are limited to increase battery life.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
         Move between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
       </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_FORWARDS" desc="Label for accelerator description - Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move forwards between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS_BACKWARDS" desc="Label for accelerator description - Move backwards between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move backwards between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
+      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" desc="Label for accelerator description - Copy selected content to clipboard.">
         Copy selected content to clipboard
       </message>

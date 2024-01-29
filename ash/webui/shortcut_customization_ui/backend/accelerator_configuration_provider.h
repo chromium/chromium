@@ -194,6 +194,8 @@ class AcceleratorConfigurationProvider
                            SetLayoutDetailsMapForTesting);
   friend class AcceleratorConfigurationProviderTest;
   using NonConfigAcceleratorActionMap = ui::AcceleratorMap<AcceleratorActionId>;
+  using AccessibilityAcceleratorActionMap =
+      ui::AcceleratorMap<AcceleratorActionId>;
 
   // Represents the different states the current pending accelerator can be
   // in.
@@ -263,6 +265,9 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorSource source,
       AcceleratorActionId action_id);
 
+  std::vector<uint32_t> FindNonConfigurableIdFromAccelerator(
+      const ui::Accelerator& accelerator);
+
   void SetLayoutDetailsMapForTesting(
       const std::vector<AcceleratorLayoutDetails>& layouts);
 
@@ -306,6 +311,11 @@ class AcceleratorConfigurationProvider
   // A map from accelerators to AcceleratorActions, used as a reverse lookup for
   // standard non-configurable accelerators.
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
+
+  // A map from accelerators to accessibility actions, used as a reverse lookup.
+  // This is separate from `non_configurable_accelerator_to_id_` since shortcuts
+  // between browser and accessibility are allowed to overlap.
+  AccessibilityAcceleratorActionMap accessibility_accelerator_to_id_;
 
   std::unique_ptr<PendingAccelerator> pending_accelerator_;
 

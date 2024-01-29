@@ -554,7 +554,6 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
           weak_ptr_factory_.GetWeakPtr()));
 
   UpdateKeyboards();
-  InitializeNonConfigurableAccelerators(GetNonConfigurableActionsMap());
 
   // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
@@ -573,6 +572,10 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;
   }
+
+  // Must initialize the non-configurable accelerators after the layout
+  // has been set.
+  InitializeNonConfigurableAccelerators(GetNonConfigurableActionsMap());
 }
 
 AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
@@ -668,15 +671,16 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
 
   // Check if `accelerator` conflicts with non-configurable accelerators.
   // This includes: browser, accessbility, and ambient accelerators.
-  const uint32_t* non_configurable_conflict_id =
-      non_configurable_accelerator_to_id_.Find(accelerator);
+  const std::vector<uint32_t> non_configurable_conflict_ids =
+      FindNonConfigurableIdFromAccelerator(accelerator);
   // If there was a conflict with a non-configurable accelerator
-  if (non_configurable_conflict_id) {
+  if (!non_configurable_conflict_ids.empty()) {
     result_data->result = AcceleratorConfigResult::kConflict;
     // Get the shortcut name and add it to the return struct.
     result_data->shortcut_name = l10n_util::GetStringUTF16(
-        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
-                                           *non_configurable_conflict_id)]
+        accelerator_layout_lookup_[GetUuid(
+                                       mojom::AcceleratorSource::kAmbient,
+                                       non_configurable_conflict_ids.front())]
             .description_string_id);
     std::move(callback).Run(std::move(result_data));
     VLOG(1) << "Attempted to add accelerator: " << accelerator.GetShortcutText()
@@ -1145,11 +1149,20 @@ void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
     if (accelerators_details.IsStandardAccelerator()) {
       DCHECK(!accelerators_details.replacements.has_value());
       DCHECK(!accelerators_details.message_id.has_value());
+      const AcceleratorLayoutDetails& layout =
+          accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
+                                             ambient_action_id)];
       for (const auto& accelerator :
            accelerators_details.accelerators.value()) {
         const uint32_t action_id = static_cast<uint32_t>(ambient_action_id);
-        non_configurable_accelerator_to_id_.InsertNew(
-            std::make_pair(accelerator, action_id));
+        // Store accessibility lookups separately.
+        if (layout.category == mojom::AcceleratorCategory::kAccessibility) {
+          accessibility_accelerator_to_id_.InsertNew(
+              std::make_pair(accelerator, action_id));
+        } else {
+          non_configurable_accelerator_to_id_.InsertNew(
+              std::make_pair(accelerator, action_id));
+        }
         id_to_non_configurable_accelerators_[action_id].push_back(accelerator);
       }
     }
@@ -1247,16 +1260,18 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
 
   // Check if `accelerator` conflicts with non-configurable accelerators.
   // This includes: browser, accessbility, and ambient accelerators.
-  const uint32_t* non_configurable_conflict_id =
-      non_configurable_accelerator_to_id_.Find(accelerator);
-  // If there was a conflict with a non-configurable accelerator
-  if (non_configurable_conflict_id) {
+  const std::vector<uint32_t> non_configurable_conflict_ids =
+      FindNonConfigurableIdFromAccelerator(accelerator);
+  // If there was a conflict with a non-configurable accelerator, return
+  // just one of the conflict id's.
+  if (!non_configurable_conflict_ids.empty()) {
     pending_accelerator_.reset();
     result_data->result = AcceleratorConfigResult::kConflict;
     // Get the shortcut name and add it to the return struct.
     result_data->shortcut_name = l10n_util::GetStringUTF16(
-        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
-                                           *non_configurable_conflict_id)]
+        accelerator_layout_lookup_[GetUuid(
+                                       mojom::AcceleratorSource::kAmbient,
+                                       non_configurable_conflict_ids.front())]
             .description_string_id);
     return result_data;
   }
@@ -1362,6 +1377,29 @@ AcceleratorConfigurationProvider::MaybeHandleNonSearchAccelerator(
     }
   }
   return AcceleratorConflictErrorState::kStandby;
+}
+
+std::vector<uint32_t>
+AcceleratorConfigurationProvider::FindNonConfigurableIdFromAccelerator(
+    const ui::Accelerator& accelerator) {
+  std::vector<uint32_t> ids;
+  // Check browser/text non-configurable accelerators first.
+  uint32_t* non_configurable_conflict_id =
+      non_configurable_accelerator_to_id_.Find(accelerator);
+
+  if (non_configurable_conflict_id) {
+    ids.push_back(*non_configurable_conflict_id);
+  }
+
+  // Then check accessibility accelerators.
+  non_configurable_conflict_id =
+      accessibility_accelerator_to_id_.Find(accelerator);
+
+  if (non_configurable_conflict_id) {
+    ids.push_back(*non_configurable_conflict_id);
+  }
+
+  return ids;
 }
 
 void AcceleratorConfigurationProvider::SetLayoutDetailsMapForTesting(
