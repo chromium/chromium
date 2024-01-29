@@ -243,7 +243,7 @@ public class QuickDeleteControllerTest {
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
-
+        onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
         histogramWatcher.assertExpected();
     }
 
@@ -257,6 +257,7 @@ public class QuickDeleteControllerTest {
                         "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.QUICK_DELETE);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
     }

@@ -346,14 +346,14 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Show the Quick Delete animation on the tab list . */
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) {
             onAnimationEnd.run();
             return;
         }
-        coordinator.showQuickDeleteAnimation(onAnimationEnd);
+        coordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 
     /**

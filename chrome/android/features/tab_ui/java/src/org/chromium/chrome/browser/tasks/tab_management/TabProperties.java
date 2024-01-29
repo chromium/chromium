@@ -129,6 +129,9 @@ public class TabProperties {
     public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
             new WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableIntPropertyKey QUICK_DELETE_ANIMATION_STATUS =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
                 TAB_ID,
@@ -158,7 +161,8 @@ public class TabProperties {
                 CONTENT_DESCRIPTION_STRING,
                 CLOSE_BUTTON_DESCRIPTION_STRING,
                 SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                SHOULD_SHOW_PRICE_DROP_TOOLTIP
+                SHOULD_SHOW_PRICE_DROP_TOOLTIP,
+                QUICK_DELETE_ANIMATION_STATUS
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =

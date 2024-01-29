@@ -8,8 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
+
+import java.util.List;
 
 /**
  * Implementation of {@link TabSwitcher} for adapting the tab switcher pane. {@link
@@ -72,7 +75,7 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     }
 
     @Override
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
-        mTabSwitcherPane.showQuickDeleteAnimation(onAnimationEnd);
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+        mTabSwitcherPane.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 }

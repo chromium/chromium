@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -51,6 +52,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
@@ -455,7 +458,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mDialogControllerSupplier.get();
     }
 
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
-        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd);
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+        mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 }

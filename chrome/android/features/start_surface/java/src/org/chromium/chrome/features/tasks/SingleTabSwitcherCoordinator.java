@@ -40,6 +40,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.List;
+
 /** Coordinator of the single tab tab switcher. */
 public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider {
 
@@ -264,7 +266,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
     @Override
-    public void showQuickDeleteAnimation(Runnable onAnimationEnd) {
+    public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         assert false : "should not reach here";
     }
 

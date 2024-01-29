@@ -12,8 +12,11 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+
+import java.util.List;
 
 /**
  * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations
@@ -55,12 +58,12 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     }
 
     @Override
-    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd) {
+    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {
         @Nullable TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
         if (tabSwitcher == null) {
             onAnimationEnd.run();
             return;
         }
-        tabSwitcher.showQuickDeleteAnimation(onAnimationEnd);
+        tabSwitcher.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 }
