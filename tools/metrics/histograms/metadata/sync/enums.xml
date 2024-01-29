@@ -716,11 +716,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SyncInitialState">
-  <int value="0" label="Can attempt to start"/>
+  <int value="0" label="Sync-the-feature can start"/>
   <int value="1" label="No signed in user"/>
-  <int value="2" label="Turned off by user"/>
-  <int value="3" label="Turned off and setup not completed"/>
-  <int value="4" label="Must confirm sync settings"/>
+  <int value="2"
+      label="Sync-the-transport can start (Sync-the-feature turned off but
+             initial setup complete)"/>
+  <int value="3"
+      label="Sync-the-transport can start (Sync-the-feature turned off with
+             initial setup incomplete"/>
+  <int value="4"
+      label="Sync-the-transport can start (Sync-the-feature turned on but
+             initial setup incomplete"/>
   <int value="5" label="Disallowed by enterprise policy"/>
   <int value="6"
       label="Disallowed by the platform (obsolete, was never recorded)"/>

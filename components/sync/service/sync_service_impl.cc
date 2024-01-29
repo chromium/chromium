@@ -75,20 +75,31 @@ constexpr char kModelTypeReachedUpToDateHistogramPrefix[] =
     "Sync.ModelTypeUpToDateTime";
 
 // The initial state of sync, for the Sync.InitialState2 histogram. Even if
-// this value is CAN_START, sync startup might fail for reasons that we may
-// want to consider logging in the future, such as a passphrase needed for
-// decryption, or the version of Chrome being too old. This enum is used to
-// back a UMA histogram, and should therefore be treated as append-only.
+// this value indicates that sync (the feature or the transport) can start, the
+// startup might fail for reasons such as network issues, or the version of
+// Chrome being too old.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum SyncInitialState {
-  CAN_START = 0,                // Sync can attempt to start up.
-  NOT_SIGNED_IN = 1,            // There is no signed in user.
-  NOT_REQUESTED = 2,            // The user turned off sync.
-  NOT_REQUESTED_NOT_SETUP = 3,  // The user turned off sync and setup completed
-                                // is false. Might indicate a stop-and-clear.
-  NEEDS_CONFIRMATION = 4,       // The user must confirm sync settings.
-  NOT_ALLOWED_BY_POLICY = 5,    // Sync is disallowed by enterprise policy.
-  OBSOLETE_NOT_ALLOWED_BY_PLATFORM = 6,
-  kMaxValue = OBSOLETE_NOT_ALLOWED_BY_PLATFORM
+  // Sync-the-feature can attempt to start up.
+  kFeatureCanStart = 0,
+  // There is no signed in user, so neither feature nor transport can start.
+  kNotSignedIn = 1,
+  // The user has disabled Sync-the-feature, but the initial setup has been
+  // completed. This should be very rare; it can happen after a
+  // reset-via-dashboard on ChromeOS.
+  kFeatureNotRequested = 2,
+  // The user has not enabled Sync-the-feature. This is the expected state for
+  // a Sync-the-transport (signed-in non-syncing) user.
+  kFeatureNotRequestedNotSetup = 3,
+  // The user has enabled Sync-the-feature, but has not completed the initial
+  // setup. This should be rare; it can happen if the initial setup got
+  // interrupted e.g. by a crash.
+  kFeatureNotSetup = 4,
+  // Sync (both feature and transport) is disallowed by enterprise policy.
+  kNotAllowedByPolicy = 5,
+  kObsoleteNotAllowedByPlatform = 6,
+  kMaxValue = kObsoleteNotAllowedByPlatform
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -107,20 +118,20 @@ enum class DownloadStatusWaitingForUpdatesReason {
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                             bool is_sync_feature_requested,
                             bool initial_sync_feature_setup_complete) {
-  SyncInitialState sync_state = CAN_START;
+  SyncInitialState sync_state = kFeatureCanStart;
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
-    sync_state = NOT_SIGNED_IN;
+    sync_state = kNotSignedIn;
   } else if (disable_reasons.Has(
                  SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    sync_state = NOT_ALLOWED_BY_POLICY;
+    sync_state = kNotAllowedByPolicy;
   } else if (!is_sync_feature_requested) {
     if (initial_sync_feature_setup_complete) {
-      sync_state = NOT_REQUESTED;
+      sync_state = kFeatureNotRequested;
     } else {
-      sync_state = NOT_REQUESTED_NOT_SETUP;
+      sync_state = kFeatureNotRequestedNotSetup;
     }
   } else if (!initial_sync_feature_setup_complete) {
-    sync_state = NEEDS_CONFIRMATION;
+    sync_state = kFeatureNotSetup;
   }
   base::UmaHistogramEnumeration("Sync.InitialState2", sync_state);
 }
