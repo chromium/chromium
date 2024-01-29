@@ -16,7 +16,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -39,7 +39,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -62,7 +62,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -845,7 +845,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -868,7 +868,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -891,7 +891,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -922,7 +922,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -954,7 +954,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -986,7 +986,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -1018,7 +1018,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
@@ -1138,7 +1138,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,

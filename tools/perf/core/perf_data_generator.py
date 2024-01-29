@@ -387,7 +387,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -396,7 +396,7 @@ BUILDERS = {
     'android-builder-perf-pgo': {
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger': False,
@@ -430,7 +430,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -439,7 +439,7 @@ BUILDERS = {
     'android_arm64-builder-perf-pgo': {
         'dimension': {
             'cpu': 'x86',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger': False,
@@ -456,7 +456,7 @@ BUILDERS = {
         }],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -465,7 +465,7 @@ BUILDERS = {
     'linux-builder-perf-pgo': {
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger': False,
@@ -1233,7 +1233,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -1256,7 +1256,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -1279,7 +1279,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -1302,7 +1302,7 @@ BUILDERS = {
         ],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Ubuntu-18.04',
+            'os': 'Ubuntu-22.04',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
