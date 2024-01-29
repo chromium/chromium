@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -232,7 +233,11 @@ void EditContext::updateCharacterBounds(
 
   character_bounds_.clear();
   base::ranges::for_each(character_bounds, [this](const auto& bounds) {
-    auto result_bounds = bounds->ToEnclosingRect();
+    auto result_bounds = gfx::ToEnclosingRect(
+        gfx::RectF(ClampToWithNaNTo0<float>(bounds->x()),
+                   ClampToWithNaNTo0<float>(bounds->y()),
+                   ClampToWithNaNTo0<float>(bounds->width()),
+                   ClampToWithNaNTo0<float>(bounds->height())));
     TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "charBounds",
                  result_bounds.ToString());
     character_bounds_.push_back(result_bounds);
@@ -240,15 +245,23 @@ void EditContext::updateCharacterBounds(
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
+  control_bounds_ = gfx::ToEnclosingRect(
+      gfx::RectF(ClampToWithNaNTo0<float>(control_bounds->x()),
+                 ClampToWithNaNTo0<float>(control_bounds->y()),
+                 ClampToWithNaNTo0<float>(control_bounds->width()),
+                 ClampToWithNaNTo0<float>(control_bounds->height())));
   TRACE_EVENT1("ime", "EditContext::updateControlBounds", "control_bounds",
-               control_bounds->ToEnclosingRect().ToString());
-  control_bounds_ = control_bounds->ToEnclosingRect();
+               control_bounds_.ToString());
 }
 
 void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
+  selection_bounds_ = gfx::ToEnclosingRect(
+      gfx::RectF(ClampToWithNaNTo0<float>(selection_bounds->x()),
+                 ClampToWithNaNTo0<float>(selection_bounds->y()),
+                 ClampToWithNaNTo0<float>(selection_bounds->width()),
+                 ClampToWithNaNTo0<float>(selection_bounds->height())));
   TRACE_EVENT1("ime", "EditContext::updateSelectionBounds", "selection_bounds",
-               selection_bounds->ToEnclosingRect().ToString());
-  selection_bounds_ = selection_bounds->ToEnclosingRect();
+               selection_bounds_.ToString());
 }
 
 void EditContext::updateText(uint32_t start,
