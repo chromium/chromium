@@ -50,6 +50,25 @@ struct DriveFileUploadResult {
 using DriveFileUploadCompletionCallback =
     base::OnceCallback<void(DriveFileUploadResult)>;
 
+// Result reported by the completion block of a query to fetch the user's Drive
+// storage quota.
+struct DriveStorageQuotaResult {
+  // The usage limit, if applicable. Set to -1 if the user has unlimited
+  // storage.
+  int64_t limit;
+  // The usage by all files in Drive.
+  int64_t usage_in_drive;
+  // The usage by trashed files in Drive.
+  int64_t usage_in_drive_trash;
+  // The total usage across all services.
+  int64_t usage;
+  // Error object, if fetching storage quota failed.
+  NSError* error = nil;
+};
+
+using DriveStorageQuotaCompletionCallback =
+    base::OnceCallback<void(DriveStorageQuotaResult)>;
+
 // This interface is used to perform queries in a user's Drive account.
 class DriveFileUploader {
  public:
@@ -97,6 +116,13 @@ class DriveFileUploader {
       NSString* folder_identifier,
       DriveFileUploadProgressCallback progress_callback,
       DriveFileUploadCompletionCallback completion_callback) = 0;
+
+  // Fetches the Drive storage quota, to check if there is enough storage for
+  // uploads.
+  // TODO(crbug.com/1495354): Remove this implementation once all subclasses
+  // provide their own.
+  virtual void FetchStorageQuota(
+      DriveStorageQuotaCompletionCallback completion_callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_FILE_UPLOADER_H_
