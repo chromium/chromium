@@ -590,6 +590,9 @@ crbug.com/1267498 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-trans
 crbug.com/1267498 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] transforms/transformed-caret.html [ Failure ]
 
+# Temporarily disabled to unblock https://crrev.com/c/4728041
+crbug.com/1468393 http/tests/devtools/emulate-focus.js [ Failure Pass ]
+
 # Fail due to lack of fuzzy matching on Linux, Win and Mac platforms for WPT. The pixels in the pre-rotated reference
 # images do not exactly match the exif rotated images, probably due to jpeg decoding/encoding issues. Maybe
 # adjusting the image size to a multiple of 8 would fix this (so all jpeg blocks are solid color).
