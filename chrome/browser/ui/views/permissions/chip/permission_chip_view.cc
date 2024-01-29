@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 
-#include <memory>
-
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
-#include "chrome/browser/ui/views/permissions/chip/multi_image_container.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -47,9 +44,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView, kChipElementId);
 PermissionChipView::PermissionChipView(PressedCallback callback)
     : MdTextButton(std::move(callback),
                    std::u16string(),
-                   views::style::CONTEXT_BUTTON_MD,
-                   /*use_text_color_for_icon=*/true,
-                   std::make_unique<MultiImageContainer>()) {
+                   views::style::CONTEXT_BUTTON_MD) {
   SetProperty(views::kElementIdentifierKey, kChipElementId);
   views::InstallPillHighlightPathGenerator(this);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -196,10 +191,6 @@ void PermissionChipView::SetPermissionPromptStyle(
 void PermissionChipView::SetMessage(std::u16string message) {
   SetText(message);
   UpdateIconAndColors();
-}
-
-MultiImageContainer* PermissionChipView::multi_image_container() {
-  return static_cast<MultiImageContainer*>(image_container());
 }
 
 ui::ImageModel PermissionChipView::GetIconImageModel() const {

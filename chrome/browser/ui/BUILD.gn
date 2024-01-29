@@ -5688,8 +5688,6 @@ static_library("ui") {
       "views/performance_controls/memory_saver_chip_view.h",
       "views/performance_controls/memory_saver_resource_view.cc",
       "views/performance_controls/memory_saver_resource_view.h",
-      "views/permissions/chip/multi_image_container.cc",
-      "views/permissions/chip/multi_image_container.h",
       "views/permissions/chip/permission_chip_theme.h",
       "views/permissions/chip/permission_chip_view.cc",
       "views/permissions/chip/permission_chip_view.h",
