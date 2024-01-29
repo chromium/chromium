@@ -53,7 +53,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
       if (col.compare) {
         th.setAttribute('role', 'button');
-        setSortAttrs(th, /*sortDesc=*/ null);
+        setSortAttrs(th, idx === model.sortIdx ? this.sortDesc_ : null);
         th.addEventListener('click', () => this.changeSortHeader_(idx));
       }
 
