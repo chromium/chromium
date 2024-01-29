@@ -334,6 +334,7 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
 
   switch (style) {
     case mojom::ToolbarVisibilityStyle::kAlways:
+      SetIgnoreRevealLocks(false);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 
@@ -360,11 +361,13 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
+      SetIgnoreRevealLocks(false);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
       browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
+      SetIgnoreRevealLocks(true);
       [immersive_mode_titlebar_view_controller_
           setVisibility:mojom::ToolbarVisibilityStyle::kNone];
       UpdateThinControllerVisibility();
@@ -440,24 +443,52 @@ void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {
 
 void ImmersiveModeControllerCocoa::RevealLock() {
   reveal_lock_count_++;
+  if (ignore_reveal_locks_) {
+    return;
+  }
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::RevealUnlock() {
+  reveal_lock_count_--;
+  CHECK(reveal_lock_count_ >= 0);
+  if (ignore_reveal_locks_) {
+    return;
+  }
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::ApplyRevealLockState() {
+  if (reveal_lock_count_) {
+    RevealLocked();
+  } else {
+    RevealUnlocked();
+  }
+}
+
+void ImmersiveModeControllerCocoa::SetIgnoreRevealLocks(bool ignore) {
+  // Set the new ignore value. If the value is same, return. If ignore is true
+  // all we needed to do is update the ignore_reveal_locks_, which we just did
+  // so also return.
+  bool was_ignore = std::exchange(ignore_reveal_locks_, ignore);
+  if (was_ignore == ignore_reveal_locks_ || ignore_reveal_locks_) {
+    return;
+  }
+
+  // If we make it here, we are disabling ignore reveal locks. In other words we
+  // are going to stop ignoring the reveal locks. We need to visually apply the
+  // correct reveal state to make up for any missed calls to RevealLocked() /
+  // RevealUnlocked() while the ignore was in place.
+  ApplyRevealLockState();
+}
+
+void ImmersiveModeControllerCocoa::RevealLocked() {
   [immersive_mode_titlebar_view_controller_
       setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 }
 
-void ImmersiveModeControllerCocoa::RevealUnlock() {
-  // Re-hide the toolbar if appropriate.
-  if (--reveal_lock_count_ < 1 &&
-      immersive_mode_titlebar_view_controller_.fullScreenMinHeight > 0 &&
-      last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide) {
-    [immersive_mode_titlebar_view_controller_
-        setVisibility:mojom::ToolbarVisibilityStyle::kAutohide];
-  }
-
-  // Account for last_used_style_ changing while a reveal lock was active.
-  if (reveal_lock_count_ < 1) {
-    UpdateToolbarVisibility(last_used_style_);
-  }
-  DCHECK(reveal_lock_count_ >= 0);
+void ImmersiveModeControllerCocoa::RevealUnlocked() {
+  UpdateToolbarVisibility(last_used_style_);
 }
 
 bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {

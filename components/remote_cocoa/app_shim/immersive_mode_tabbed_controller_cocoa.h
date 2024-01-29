@@ -34,8 +34,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
   void Init() override;
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
-  void RevealLock() override;
-  void RevealUnlock() override;
+  void RevealLocked() override;
+  void RevealUnlocked() override;
   void Reanchor() override;
   void OnChildWindowAdded(NSWindow* child) override;
   void OnChildWindowRemoved(NSWindow* child) override;

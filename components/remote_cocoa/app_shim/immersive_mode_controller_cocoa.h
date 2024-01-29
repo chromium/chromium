@@ -63,9 +63,18 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // If ToolbarVisibilityStyle is then changed to kAutohide, top
   // chrome will stay on screen until RevealUnlock() is called. At that point
   // top chrome will autohide.
-  virtual void RevealLock();
-  virtual void RevealUnlock();
+  void RevealLock();
+  void RevealUnlock();
   int reveal_lock_count() { return reveal_lock_count_; }
+
+  // When set to true, calls to RevealLock() and RevealUnlock() will have no
+  // visual effect. The lock/unlock calls are still counted and will go into
+  // effect when this function is called with false.
+  void SetIgnoreRevealLocks(bool ignore);
+
+  // Called when a reveal lock/unlock is ready to take effect.
+  virtual void RevealLocked();
+  virtual void RevealUnlocked();
 
   // Returns true if the toolbar is visible, either because there are
   // outstanding reveal locks, or the user hovers over the upper border of the
@@ -145,9 +154,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
   void UpdateThinControllerVisibility();
 
+  // Calls either RevealLocked() or RevealUnlocked() based on the current
+  // reveal_lock_count_.
+  void ApplyRevealLockState();
+
   bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
+  bool ignore_reveal_locks_ = false;
 
   bool is_toolbar_revealed_ = false;
 

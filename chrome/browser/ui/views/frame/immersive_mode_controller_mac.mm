@@ -272,7 +272,8 @@ void ImmersiveModeControllerMac::OnWidgetActivationChanged(
 
 int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
   if (find_bar_visible_ &&
-      !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser())) {
+      !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser()) &&
+      !fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
     return overlay_height_;
   }
   return 0;

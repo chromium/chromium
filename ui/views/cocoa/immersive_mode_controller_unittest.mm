@@ -344,11 +344,12 @@ class MockImmersiveModeTabbedControllerCocoa
       : ImmersiveModeTabbedControllerCocoa(browser_window,
                                            overlay_window,
                                            tab_window) {}
-  MOCK_METHOD(void, RevealLock, (), (override));
-  MOCK_METHOD(void, RevealUnlock, (), (override));
+  MOCK_METHOD(void, RevealLocked, (), (override));
+  MOCK_METHOD(void, RevealUnlocked, (), (override));
 };
 
-TEST_F(CocoaImmersiveModeControllerTest, NoRevealUnlockDuringChildReordering) {
+TEST_F(CocoaImmersiveModeControllerTest,
+       NoRevealUnlockedDuringChildReordering) {
   // Controller under test.
   testing::StrictMock<MockImmersiveModeTabbedControllerCocoa>
       immersive_mode_controller(browser(), overlay(), tab_overlay());
@@ -360,15 +361,43 @@ TEST_F(CocoaImmersiveModeControllerTest, NoRevealUnlockDuringChildReordering) {
 
   // Add the popup as a child of overlay.
   // Reveal lock once on child add.
-  EXPECT_CALL(immersive_mode_controller, RevealLock()).Times(1);
+  EXPECT_CALL(immersive_mode_controller, RevealLocked()).Times(1);
   [overlay() addChildWindow:popup ordered:NSWindowAbove];
 
   // During re-ordering, no reveal lock or unlock should happen.
   [overlay() orderWindowByShuffling:NSWindowAbove relativeTo:0];
 
   // Reveal unlock once on child removal.
-  EXPECT_CALL(immersive_mode_controller, RevealUnlock()).Times(1);
+  EXPECT_CALL(immersive_mode_controller, RevealUnlocked()).Times(1);
   [popup close];
+}
+
+TEST_F(CocoaImmersiveModeControllerTest, IgnoreRevealLocks) {
+  // Controller under test.
+  testing::StrictMock<MockImmersiveModeTabbedControllerCocoa>
+      immersive_mode_controller(browser(), overlay(), tab_overlay());
+  immersive_mode_controller.Init();
+  immersive_mode_controller.FullscreenTransitionCompleted();
+
+  // Grab a reveal lock while ignore reveal locks is enabled. RevealLocked()
+  // should not be called.
+  EXPECT_CALL(immersive_mode_controller, RevealLocked()).Times(0);
+  immersive_mode_controller.SetIgnoreRevealLocks(true);
+  immersive_mode_controller.RevealLock();
+
+  // Upon disabling ignore reveal locks, RevealLocked() should fire.
+  EXPECT_CALL(immersive_mode_controller, RevealLocked()).Times(1);
+  immersive_mode_controller.SetIgnoreRevealLocks(false);
+
+  // Enable ignore reveal locks while there is an active reveal lock then call
+  // RevealUnlock(). We expect RevealUnlocked() not to be called.
+  EXPECT_CALL(immersive_mode_controller, RevealUnlocked()).Times(0);
+  immersive_mode_controller.SetIgnoreRevealLocks(true);
+  immersive_mode_controller.RevealUnlock();
+
+  // Upon disabling ignore reveal locks, RevealUnlocked() should fire.
+  EXPECT_CALL(immersive_mode_controller, RevealUnlocked()).Times(1);
+  immersive_mode_controller.SetIgnoreRevealLocks(false);
 }
 
 }  // namespace remote_cocoa
