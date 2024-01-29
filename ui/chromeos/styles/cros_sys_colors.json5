@@ -515,6 +515,37 @@
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
 
+    /* Sparkle tokens */
+    'analog': {
+      light: '$cros.ref.sparkle-analog70',
+      dark: '$cros.ref.sparkle-analog30',
+    },
+
+    'analog-variant': {
+      light: '$cros.ref.sparkle-analog80',
+      dark: '$cros.ref.sparkle-analog40',
+    },
+
+    'muted': {
+      light: '$cros.ref.sparkle-muted80',
+      dark: '$cros.ref.sparkle-muted30',
+    },
+
+    'muted-variant': {
+      light: '$cros.ref.sparkle-muted90',
+      dark: '$cros.ref.sparkle-muted40',
+    },
+
+    'complement': {
+      light: '$cros.ref.sparkle-complement90',
+      dark: '$cros.ref.sparkle-complement20',
+    },
+
+    'complement-variant': {
+      light: '$cros.ref.sparkle-complement95',
+      dark: '$cros.ref.sparkle-complement30',
+    },
+
     /* Illustration colors. */
     'illo.color1': {
       light: '$cros.ref.primary30',
@@ -616,6 +647,10 @@
       dark: '#d7aefb',
       generate_per_mode: true,
     },
+    'illo.analog': '$cros.ref.sparkle-analog70',
+    'illo.muted': '$cros.ref.sparkle-muted80',
+    'illo.complement': '$cros.ref.sparkle-complement90',
+    'illo.on-gradient': '$cros.ref.neutral10',
 
     /*
      * Some GM2 assets are "elevated" meaning they have slightly different
