@@ -1168,13 +1168,16 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   logging.basicConfig(level=logging.INFO)
   devil_chromium.Initialize(adb_path=options.adb_path)
 
-  # Since we generate a ".arm" orderfile irrespective of the architecture (see
-  # comment in _GetPathToOrderfile()), make sure that we don't commit it.
-  if options.arch != 'arm':
-    assert not options.buildbot, (
-        'ARM is the only supported architecture on bots')
-    assert not options.upload_ready_orderfiles, (
-        'ARM is the only supported architecture on bots')
+  # TODO(https://crbug.com/1517659): We are testing if arm64 can improve perf
+  #     while not regressing arm32 memory or perf by too much. Keeping the file
+  #     extension as is temporarily to make the change as small as possible.
+  ## Since we generate a ".arm" orderfile irrespective of the architecture (see
+  ## comment in _GetPathToOrderfile()), make sure that we don't commit it.
+  #if options.arch != 'arm':
+  #  assert not options.buildbot, (
+  #      'ARM is the only supported architecture on bots')
+  #  assert not options.upload_ready_orderfiles, (
+  #      'ARM is the only supported architecture on bots')
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
   try:
