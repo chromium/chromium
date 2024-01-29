@@ -89,6 +89,11 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
+    public @NonNull ObservableSupplier<Boolean> getHubVisibilitySupplier() {
+        return mHubVisibilitySupplier;
+    }
+
+    @Override
     public void setHubLayoutController(@NonNull HubLayoutController hubLayoutController) {
         assert mHubLayoutController == null : "setHubLayoutController should only be called once.";
         mHubLayoutController = hubLayoutController;

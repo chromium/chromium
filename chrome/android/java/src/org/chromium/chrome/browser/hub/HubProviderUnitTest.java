@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -53,7 +54,10 @@ public class HubProviderUnitTest {
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Tab> mTabSupplierMock = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
+            new ObservableSupplierImpl<>();
 
+    @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Pane mMockTabSwitcherPane;
     @Mock private Pane mMockIncognitoTabSwitcherPane;
@@ -68,6 +72,11 @@ public class HubProviderUnitTest {
 
     @Before
     public void setUp() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
+        mTabModelSupplier.set(mTabModel);
+
         when(mMockTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mMockIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mMockBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);

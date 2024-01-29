@@ -704,6 +704,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/homepage/settings/RadioButtonGroupHomepagePreference.java",
   "java/src/org/chromium/chrome/browser/hub/HubLayout.java",
   "java/src/org/chromium/chrome/browser/hub/HubProvider.java",
+  "java/src/org/chromium/chrome/browser/hub/HubTabSwitcherMetricsRecorder.java",
   "java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java",
   "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationManager.java",
   "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationPresenceController.java",
