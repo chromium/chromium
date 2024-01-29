@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
@@ -96,7 +98,7 @@ class AdminTemplateTest : public OverviewTestBase,
 
  protected:
   // Creates a template from a JSON string.
-  std::unique_ptr<DeskTemplate> CreateTemplateFromJson(base::StringPiece json) {
+  std::unique_ptr<DeskTemplate> CreateTemplateFromJson(std::string_view json) {
     base::JSONReader::Result json_read_result =
         base::JSONReader::ReadAndReturnValueWithError(json);
     if (!json_read_result.has_value()) {
