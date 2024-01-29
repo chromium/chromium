@@ -5991,6 +5991,28 @@ domain Network
       # RFC6265bis.
       NameValuePairExceedsMaxSize
 
+  # Types of reasons why a cookie should have been blocked by 3PCD but is exempted for the request.
+  experimental type CookieExemptionReason extends string
+    enum
+      # The default value. Cookie with this reason could either be blocked or included.
+      None
+      # The cookie should have been blocked by 3PCD but is exempted by explicit user setting.
+      UserSetting
+      # The cookie should have been blocked by 3PCD but is exempted by metadata mitigation.
+      TPCDMetadata
+      # The cookie should have been blocked by 3PCD but is exempted by Deprecation Trial mitigation.
+      TPCDDeprecationTrial
+      # The cookie should have been blocked by 3PCD but is exempted by heuristics mitigation.
+      TPCDHeuristics
+      # The cookie should have been blocked by 3PCD but is exempted by Enterprise Policy.
+      EnterprisePolicy
+      # The cookie should have been blocked by 3PCD but is exempted by Storage Access API.
+      StorageAccess
+      # The cookie should have been blocked by 3PCD but is exempted by Top-level Storage Access API.
+      TopLevelStorageAccess
+      # The cookie should have been blocked by 3PCD but is exempted by browser heuristics.
+      BrowserHeuristics
+
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
     properties
@@ -6004,13 +6026,26 @@ domain Network
       # errors.
       optional Cookie cookie
 
-  # A cookie with was not sent with a request with the corresponding reason.
-  experimental type BlockedCookieWithReason extends object
+  # A cookie should have been blocked by 3PCD but is exempted and stored from a response with the
+  # corresponding reason. A cookie could only have at most one exemption reason.
+  experimental type ExemptedSetCookieWithReason extends object
     properties
-      # The reason(s) the cookie was blocked.
-      array of CookieBlockedReason blockedReasons
+      # The reason the cookie was exempted.
+      CookieExemptionReason exemptionReason
+      # The cookie object representing the cookie.
+      Cookie cookie
+
+  # A cookie associated with the request which may or may not be sent with it.
+  # Includes the cookies itself and reasons for blocking or exemption.
+  experimental type AssociatedCookie extends object
+    properties
       # The cookie object representing the cookie which was not sent.
       Cookie cookie
+      # The reason(s) the cookie was blocked. If empty means the cookie is included.
+      array of CookieBlockedReason blockedReasons
+      # The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
+      # only have at most one exemption reason.
+      optional CookieExemptionReason exemptionReason
 
   # Cookie parameter object
   type CookieParam extends object
@@ -6779,8 +6814,8 @@ domain Network
       # Request identifier. Used to match this information to an existing requestWillBeSent event.
       RequestId requestId
       # A list of cookies potentially associated to the requested URL. This includes both cookies sent with
-      # the request and the ones not sent; the latter are distinguished by having blockedReason field set.
-      array of BlockedCookieWithReason associatedCookies
+      # the request and the ones not sent; the latter are distinguished by having blockedReasons field set.
+      array of AssociatedCookie associatedCookies
       # Raw request headers as they will be sent over the wire.
       Headers headers
       # Connection timing information for the request.
@@ -6818,6 +6853,9 @@ domain Network
       optional string cookiePartitionKey
       # True if partitioned cookies are enabled, but the partition key is not serializeable to string.
       optional boolean cookiePartitionKeyOpaque
+      # A list of cookies which should have been blocked by 3PCD but are exempted and stored from
+      # the response with the corresponding reason.
+      optional array of ExemptedSetCookieWithReason exemptedCookies
 
   # Fired exactly once for each Trust Token operation. Depending on
   # the type of the operation and whether the operation succeeded or

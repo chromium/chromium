@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -951,21 +953,83 @@ BuildProtocolBlockedSetCookies(
   return protocol_list;
 }
 
-std::unique_ptr<Array<Network::BlockedCookieWithReason>>
+Network::CookieExemptionReason GetProtocolCookieExemptionReason(
+    net::CookieInclusionStatus status) {
+  switch (status.exemption_reason()) {
+    case net::CookieInclusionStatus::ExemptionReason::kNone:
+      return Network::CookieExemptionReasonEnum::None;
+    case net::CookieInclusionStatus::ExemptionReason::kUserSetting:
+      return Network::CookieExemptionReasonEnum::UserSetting;
+    case net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata:
+      return Network::CookieExemptionReasonEnum::TPCDMetadata;
+    case net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial:
+      return Network::CookieExemptionReasonEnum::TPCDDeprecationTrial;
+    case net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics:
+      return Network::CookieExemptionReasonEnum::TPCDHeuristics;
+    case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
+      return Network::CookieExemptionReasonEnum::EnterprisePolicy;
+    case net::CookieInclusionStatus::ExemptionReason::kStorageAccess:
+      return Network::CookieExemptionReasonEnum::StorageAccess;
+    case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
+      return Network::CookieExemptionReasonEnum::TopLevelStorageAccess;
+    case net::CookieInclusionStatus::ExemptionReason::kBrowserHeuristics:
+      return Network::CookieExemptionReasonEnum::BrowserHeuristics;
+  }
+}
+
+std::unique_ptr<Array<Network::ExemptedSetCookieWithReason>>
+BuildProtocolExemptedSetCookies(
+    const net::CookieAndLineAccessResultList& net_list) {
+  std::unique_ptr<Array<Network::ExemptedSetCookieWithReason>> protocol_list =
+      std::make_unique<Array<Network::ExemptedSetCookieWithReason>>();
+
+  for (const auto& cookie : net_list) {
+    Network::CookieExemptionReason exemption_reason =
+        GetProtocolCookieExemptionReason(cookie.access_result.status);
+    if (exemption_reason != Network::CookieExemptionReasonEnum::None) {
+      // The exempted cookies are guaranteed to be valid.
+      protocol_list->push_back(
+          Network::ExemptedSetCookieWithReason::Create()
+              .SetExemptionReason(std::move(exemption_reason))
+              .SetCookie(BuildCookie(cookie.cookie.value()))
+              .Build());
+    }
+  }
+  return protocol_list;
+}
+
+std::pair<std::unique_ptr<Array<Network::CookieBlockedReason>>,
+          Network::CookieExemptionReason>
+GetProtocolAssociatedCookie(net::CookieInclusionStatus status) {
+  std::unique_ptr<Array<Network::CookieBlockedReason>> blocked_reasons =
+      std::make_unique<Array<Network::CookieBlockedReason>>();
+  blocked_reasons = GetProtocolBlockedCookieReason(status);
+
+  Network::CookieExemptionReason exemption_reason =
+      GetProtocolCookieExemptionReason(status);
+
+  return std::make_pair(std::move(blocked_reasons),
+                        std::move(exemption_reason));
+}
+
+std::unique_ptr<Array<Network::AssociatedCookie>>
 BuildProtocolAssociatedCookies(const net::CookieAccessResultList& net_list) {
-  auto protocol_list =
-      std::make_unique<Array<Network::BlockedCookieWithReason>>();
+  auto protocol_list = std::make_unique<Array<Network::AssociatedCookie>>();
 
   for (const net::CookieWithAccessResult& cookie : net_list) {
-    std::unique_ptr<Array<Network::CookieBlockedReason>> blocked_reasons =
-        GetProtocolBlockedCookieReason(cookie.access_result.status);
-    // Note that the condition below is not always true,
-    // as there might be blocked reasons that we do not report.
-    if (blocked_reasons->size() || cookie.access_result.status.IsInclude()) {
+    std::pair<std::unique_ptr<Array<Network::CookieBlockedReason>>,
+              Network::CookieExemptionReason>
+        cookie_with_reasons =
+            GetProtocolAssociatedCookie(cookie.access_result.status);
+    // Note that the condition below is not always true, as there might be
+    // blocked reasons that we do not report.
+    if (cookie_with_reasons.first->size() ||
+        cookie.access_result.status.IsInclude()) {
       protocol_list->push_back(
-          Network::BlockedCookieWithReason::Create()
-              .SetBlockedReasons(std::move(blocked_reasons))
+          Network::AssociatedCookie::Create()
               .SetCookie(BuildCookie(cookie.cookie))
+              .SetBlockedReasons(std::move(cookie_with_reasons.first))
+              .SetExemptionReason(std::move(cookie_with_reasons.second))
               .Build());
     }
   }
@@ -3114,7 +3178,8 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
       std::move(frontend_partition_key),
       cookie_partition_key
           ? Maybe<bool>(!cookie_partition_key->IsSerializeable())
-          : Maybe<bool>());
+          : Maybe<bool>(),
+      BuildProtocolExemptedSetCookies(response_cookie_list));
 }
 
 void NetworkHandler::OnLoadNetworkResourceFinished(

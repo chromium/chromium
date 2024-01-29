@@ -96,6 +96,8 @@ Network.responseReceivedExtraInfo{
     ]
     cookiePartitionKey : https://127.0.0.1
     cookiePartitionKeyOpaque : false
+    exemptedCookies : [
+    ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
@@ -231,6 +233,8 @@ Network.responseReceivedExtraInfo{
     ]
     cookiePartitionKey : https://127.0.0.1
     cookiePartitionKeyOpaque : false
+    exemptedCookies : [
+    ]
     headers : {
         Connection : Keep-Alive
         Content-Length : 0
@@ -312,6 +316,8 @@ Network.responseReceivedExtraInfo{
     ]
     cookiePartitionKey : https://localhost
     cookiePartitionKeyOpaque : false
+    exemptedCookies : {
+    }
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive

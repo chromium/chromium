@@ -56,6 +56,36 @@ bool IsValidType(ContentSettingsType type) {
   return CookieSettings::GetContentSettingsTypes().contains(type);
 }
 
+net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
+    CookieSettings::ThirdPartyCookieAllowMechanism allow_mechanism) {
+  switch (allow_mechanism) {
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByExplicitSetting:
+      return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
+      return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+      return net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByTopLevelStorageAccess:
+      return net::CookieInclusionStatus::ExemptionReason::
+          kTopLevelStorageAccess;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+      return net::CookieInclusionStatus::ExemptionReason::kBrowserHeuristics;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kNone:
+      return net::CookieInclusionStatus::ExemptionReason::kNone;
+  }
+}
+
 }  // namespace
 
 // static
@@ -167,6 +197,8 @@ bool CookieSettings::IsCookieAccessible(
         cookie_inclusion_status->AddWarningReason(
             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
       }
+      cookie_inclusion_status->MaybeSetExemptionReason(GetExemptionReason(
+          setting_with_metadata.third_party_cookie_allow_mechanism()));
     } else {
       if (IsThirdPartyPhaseoutEnabled() &&
           AffectedByThirdPartyCookiePhaseout(
@@ -260,6 +292,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
         cookie.access_result.status.AddWarningReason(
             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
       }
+      cookie.access_result.status.MaybeSetExemptionReason(GetExemptionReason(
+          setting_with_metadata.third_party_cookie_allow_mechanism()));
     } else {
       // Use a different exclusion reason when the 3pc is blocked by browser.
       if (IsThirdPartyPhaseoutEnabled() &&
