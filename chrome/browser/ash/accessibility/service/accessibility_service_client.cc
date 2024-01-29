@@ -185,7 +185,6 @@ void AccessibilityServiceClient::EnableAssistiveTechnology(
     return;
   } else if (enabled && iter == enabled_features_.end()) {
     enabled_features_.push_back(type);
-    AccessibilityManager::Get()->InitializeFocusRings(type);
   } else if (!enabled && iter != enabled_features_.end()) {
     enabled_features_.erase(iter);
     AccessibilityManager::Get()->RemoveFocusRings(type);

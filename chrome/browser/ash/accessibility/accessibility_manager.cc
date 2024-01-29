@@ -937,13 +937,7 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if (enabled) {
     accessibility_common_enabled_features_.insert(pref_name);
     if (!accessibility_common_extension_loader_->loaded()) {
-      accessibility_common_extension_loader_->Load(
-          profile_, base::BindRepeating(
-                        &AccessibilityManager::PostLoadAccessibilityCommon,
-                        weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      // It's already loaded. Just run the callback.
-      PostLoadAccessibilityCommon();
+      accessibility_common_extension_loader_->Load(profile_, base::DoNothing());
     }
   } else {
     accessibility_common_enabled_features_.erase(pref_name);
@@ -1422,10 +1416,7 @@ void AccessibilityManager::OnSwitchAccessChanged() {
   NotifyAccessibilityStatusChanged(details);
 
   if (enabled) {
-    switch_access_loader_->Load(
-        profile_,
-        base::BindRepeating(&AccessibilityManager::PostLoadSwitchAccess,
-                            weak_ptr_factory_.GetWeakPtr()));
+    switch_access_loader_->Load(profile_, base::DoNothing());
   }
 }
 
@@ -1944,8 +1935,6 @@ void AccessibilityManager::PostLoadChromeVox() {
   audio_focus_manager_->SetEnforcementMode(
       media_session::mojom::EnforcementMode::kNone);
 
-  InitializeFocusRings(ax::mojom::AssistiveTechnologyType::kChromeVox);
-
   // Force volume slide gesture to be on for Chromebox for Meetings provisioned
   // devices.
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition())
@@ -2005,8 +1994,6 @@ void AccessibilityManager::OnChromeVoxPanelDestroying() {
 }
 
 void AccessibilityManager::PostLoadSelectToSpeak() {
-  InitializeFocusRings(ax::mojom::AssistiveTechnologyType::kSelectToSpeak);
-
   UpdateEnhancedNetworkTts();
 }
 
@@ -2098,10 +2085,6 @@ void AccessibilityManager::PostLoadEnhancedNetworkTts() {
     std::move(enhanced_network_tts_waiter_for_test_).Run();
 }
 
-void AccessibilityManager::PostLoadSwitchAccess() {
-  InitializeFocusRings(ax::mojom::AssistiveTechnologyType::kSwitchAccess);
-}
-
 void AccessibilityManager::PostUnloadSwitchAccess() {
   // Do any teardown work needed immediately after Switch Access actually
   // unloads.
@@ -2115,16 +2098,6 @@ void AccessibilityManager::PostUnloadSwitchAccess() {
   } else {
     was_vk_enabled_before_switch_access_ = false;
   }
-}
-
-void AccessibilityManager::PostLoadAccessibilityCommon() {
-  // Do any setup work needed immediately after the Accessibility Common
-  // extension actually loads. This may be used by all features which make
-  // use of the Accessibility Common extension.
-  // Autoclick uses a focus ring to highlight the scrollable area.
-  InitializeFocusRings(ax::mojom::AssistiveTechnologyType::kAutoClick);
-  // Magnifier may use a focus ring to draw the user debug rect.
-  InitializeFocusRings(ax::mojom::AssistiveTechnologyType::kMagnifier);
 }
 
 void AccessibilityManager::PostUnloadAccessibilityCommon() {
@@ -2195,17 +2168,18 @@ const std::string AccessibilityManager::GetFocusRingId(
     ax::mojom::AssistiveTechnologyType at_type,
     const std::string& focus_ring_name) {
   // Add the focus ring name to the list of focus rings for the extension.
-  focus_ring_names_for_at_type_.find(at_type)->second.insert(focus_ring_name);
+  GetFocusRingsForATType(at_type).insert(focus_ring_name);
   std::ostringstream typeStringStream;
   typeStringStream << at_type;
   return typeStringStream.str() + '-' + focus_ring_name;
 }
 
-void AccessibilityManager::InitializeFocusRings(
+std::set<std::string>& AccessibilityManager::GetFocusRingsForATType(
     ax::mojom::AssistiveTechnologyType at_type) {
   if (focus_ring_names_for_at_type_.count(at_type) == 0) {
     focus_ring_names_for_at_type_.emplace(at_type, std::set<std::string>());
   }
+  return focus_ring_names_for_at_type_.find(at_type)->second;
 }
 
 void AccessibilityManager::RemoveFocusRings(

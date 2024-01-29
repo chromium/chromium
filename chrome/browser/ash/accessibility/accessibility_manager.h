@@ -355,7 +355,8 @@ class AccessibilityManager
   void HideFocusRing(std::string focus_ring_id);
 
   // Initializes the focus rings when a feature loads.
-  void InitializeFocusRings(ax::mojom::AssistiveTechnologyType at_type);
+  std::set<std::string>& GetFocusRingsForATType(
+      ax::mojom::AssistiveTechnologyType at_type);
 
   // Hides all focus rings for the `at_type`, and removes that `at_type` from
   // |focus_ring_names_for_at_type_|.
@@ -477,10 +478,8 @@ class AccessibilityManager
   void PostLoadSelectToSpeak();
   void PostUnloadSelectToSpeak();
 
-  void PostLoadSwitchAccess();
   void PostUnloadSwitchAccess();
 
-  void PostLoadAccessibilityCommon();
   void PostUnloadAccessibilityCommon();
 
   void UpdateEnhancedNetworkTts();
