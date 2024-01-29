@@ -29,6 +29,9 @@ using sync_pb::CommitResponse;
 using sync_pb::EntitySpecifics;
 using sync_pb::SharingMessageCommitError;
 using sync_pb::SyncEntity;
+using testing::IsEmpty;
+using testing::Not;
+using testing::SizeIs;
 
 const ClientTagHash kTag = ClientTagHash::FromHashed("tag");
 const char kValue[] = "value";
@@ -307,6 +310,29 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
+}
+
+TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
+  // Create non-empty commit-only entity.
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = ClientTagHash::FromHashed("hash");
+  data->specifics.mutable_sharing_message()->set_message_id("message_id");
+  auto request_data = std::make_unique<CommitRequestData>();
+  request_data->entity = std::move(data);
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  CommitContributionImpl contribution(
+      SHARING_MESSAGE, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      PassphraseType::kKeystorePassphrase,
+      /*only_commit_specifics=*/true);
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_THAT(msg.commit().entries(), SizeIs(1));
+  EXPECT_THAT(msg.commit().entries(0).id_string(), Not(IsEmpty()));
 }
 
 }  // namespace

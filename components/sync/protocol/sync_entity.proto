@@ -22,6 +22,7 @@ message SyncEntity {
   // |id_string| is always the server generated ID.  The original
   // client-generated ID is preserved in the |originator_client_id| field.
   // Present in both GetUpdatesResponse and CommitMessage.
+  // Prior to M123, this field was empty for commit-only types.
   optional string id_string = 1;
 
   // An id referencing this item's parent in the hierarchy.  In a

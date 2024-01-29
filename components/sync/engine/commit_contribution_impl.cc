@@ -93,6 +93,13 @@ void CommitContributionImpl::AddToCommitMessage(
       // Only send specifics to server for commit-only types.
       sync_entity->mutable_specifics()->CopyFrom(
           commit_request->entity->specifics);
+
+      // Populate randomly-generated ID string similar to an uncommitted version
+      // of normal data types.
+      // TODO(crbug.com/1521827): consider using PopulateCommitProto() and
+      // AdjustCommitProto() for commit-only types.
+      sync_entity->set_id_string(
+          base::Uuid::GenerateRandomV4().AsLowercaseString());
     } else {
       PopulateCommitProto(type_, *commit_request, sync_entity);
       AdjustCommitProto(sync_entity);
