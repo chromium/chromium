@@ -2565,6 +2565,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-display-performance-mode",
+    "owners": [
+      "markyacoub@chromium.org",
+      "chromeos-gfx-display@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-download-service-foreground-session",
     "owners": [ "rajendrant@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 116

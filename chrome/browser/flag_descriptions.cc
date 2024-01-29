@@ -6117,6 +6117,12 @@ const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
 
+const char kEnableDisplayPerformanceModeName[] =
+    "Enable Display Performance Mode";
+const char kEnableDisplayPerformanceModeDescription[] =
+    "This option enables toggling different display features based on user "
+    "setting and power state";
+
 const char kDisableDnsProxyName[] = "Disable DNS proxy service for ChromeOS";
 const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "

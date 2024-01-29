@@ -11099,6 +11099,13 @@ const FeatureEntry kFeatureEntries[] = {
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
     // AboutFlagsHistogramTest unit test to verify this process).
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-display-performance-mode",
+     flag_descriptions::kEnableDisplayPerformanceModeName,
+     flag_descriptions::kEnableDisplayPerformanceModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDisplayPerformanceMode)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

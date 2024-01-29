@@ -17132,6 +17132,7 @@ from previous Chrome versions.
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1588221814" label="NtpReducedLogoSpace:disabled"/>
   <int value="-1588015999" label="ParcelTrackingTestData:disabled"/>
+  <int value="-1587492826" label="DisplayPerformanceMode:disabled"/>
   <int value="-1587103154"
       label="AutofillEnableVcnEnrollLoadingAndConfirmation:enabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
@@ -19328,6 +19329,7 @@ from previous Chrome versions.
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
+  <int value="-573375274" label="DisplayPerformanceMode:enabled"/>
   <int value="-572592521"
       label="FencedFramesReportingAttestationsChanges:enabled"/>
   <int value="-572285609" label="PretokenizeCss:enabled"/>

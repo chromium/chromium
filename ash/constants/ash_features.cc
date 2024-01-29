@@ -588,6 +588,11 @@ BASE_FEATURE(kCryptohomeRecoveryBeforeFlowSplit,
              "CryptohomeRecoveryBeforeFlowSplit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Toggle different display features based on user setting and power state
+BASE_FEATURE(kDisplayPerformanceMode,
+             "DisplayPerformanceMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
 // a notification if that shortcut is pressed, and replaces that shortcut with
 // Ctrl+Search+S to open the app.
