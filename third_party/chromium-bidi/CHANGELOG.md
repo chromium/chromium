@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.5...chromium-bidi-v0.5.6) (2024-01-29)
+
+
+### Features
+
+* add CPD specific field in cookies ([#1759](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1759)) ([d24584a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d24584ac0d30f58306700d29d22db284a4f47f7a))
+
+
+### Bug Fixes
+
+* handle headless errors when creating a target ([#1757](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1757)) ([cd7e772](https://github.com/GoogleChromeLabs/chromium-bidi/commit/cd7e772b39eb774c8f65e59b7047eafb419bea09))
+
 ## [0.5.5](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.4...chromium-bidi-v0.5.5) (2024-01-25)
 
 
