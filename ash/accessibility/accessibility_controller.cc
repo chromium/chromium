@@ -1241,13 +1241,39 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kAccessibilitySelectToSpeakVoiceName,
       kDefaultAccessibilitySelectToSpeakVoiceName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityColorVisionCorrectionAmount, 100,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityColorVisionCorrectionType,
+      ColorVisionCorrectionType::kDeuteranomaly,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  if (::features::IsAccessibilityFaceGazeEnabled()) {
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityColorVisionCorrectionAmount, 100,
+        prefs::kAccessibilityFaceGazeCursorSpeedUp, kDefaultFaceGazeCursorSpeed,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityColorVisionCorrectionType,
-        ColorVisionCorrectionType::kDeuteranomaly,
+        prefs::kAccessibilityFaceGazeCursorSpeedDown,
+        kDefaultFaceGazeCursorSpeed,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSpeedLeft,
+        kDefaultFaceGazeCursorSpeed,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSpeedRight,
+        kDefaultFaceGazeCursorSpeed,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeCursorSmoothing,
+        kDefaultFaceGazeCursorSmoothing,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+        kDefaultFaceGazeCursorUseAcceleration,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  }
 }
 
 void AccessibilityController::Shutdown() {

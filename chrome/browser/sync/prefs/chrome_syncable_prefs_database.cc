@@ -46,9 +46,9 @@ namespace syncable_prefs_ids {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding a new entry, append the
 // enumerator to the end and add it to the `SyncablePref` enum in
-// tools/metrics/histograms/enums.xml. When removing an unused enumerator,
-// comment it out here, making it clear the value was previously used, and
-// add "(obsolete)" to the corresponding entry in enums.xml.
+// tools/metrics/histograms/metadata/sync/enums.xml. When removing an unused
+// enumerator, comment it out here, making it clear the value was previously
+// used, and add "(obsolete)" to the corresponding entry in enums.xml.
 enum {
   // Starts with 100000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and
@@ -319,6 +319,12 @@ enum {
   kProfileContentSettingsPartitionedExceptionsWindowPlacement = 100260,
   kStandaloneWindowMigrationNudgeShown = 100261,
   kTabDiscardingExceptionsWithTime = 100262,
+  kAccessibilityFaceGazeCursorSpeedUp = 100263,
+  kAccessibilityFaceGazeCursorSpeedDown = 100264,
+  kAccessibilityFaceGazeCursorSpeedLeft = 100265,
+  kAccessibilityFaceGazeCursorSpeedRight = 100266,
+  kAccessibilityFaceGazeCursorSmoothing = 100267,
+  kAccessibilityFaceGazeCursorUseAcceleration = 100268,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1065,6 +1071,30 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kStandaloneWindowMigrationNudgeShown,
      {syncable_prefs_ids::kStandaloneWindowMigrationNudgeShown,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedUp,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorSpeedDown,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedDown,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorSpeedLeft,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedLeft,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorSpeedRight,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedRight,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorSmoothing,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorSmoothing,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorUseAcceleration,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

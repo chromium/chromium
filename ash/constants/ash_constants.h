@@ -186,6 +186,15 @@ constexpr bool kDefaultAccessibilitySelectToSpeakVoiceSwitching = false;
 // Whether Select-to-speak highlights each word as it is read by default.
 constexpr bool kDefaultAccessibilitySelectToSpeakWordHighlight = true;
 
+// How much to scale cursor speed in various directions.
+constexpr int kDefaultFaceGazeCursorSpeed = 20;
+
+// How much FaceGaze should smooth recent cursor movements.
+constexpr int kDefaultFaceGazeCursorSmoothing = 6;
+
+// Whether to use cursor acceleration.
+constexpr bool kDefaultFaceGazeCursorUseAcceleration = true;
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_

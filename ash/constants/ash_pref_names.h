@@ -632,8 +632,30 @@ inline constexpr char kAccessibilitySelectToSpeakVoiceSwitching[] =
 inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
     "settings.a11y.select_to_speak_word_highlight";
 
+// A boolean pref which determines whether FaceGaze is enabled.
 inline constexpr char kAccessibilityFaceGazeEnabled[] =
     "settings.a11y.face_gaze.enabled";
+// An integer pref which scales the cursor speed when moving up.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedUp[] =
+    "settings.a11y.face_gaze.cursor_speed_up";
+// An integer pref which scales the cursor speed when moving down.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedDown[] =
+    "settings.a11y.face_gaze.cursor_speed_down";
+// An integer pref which scales the cursor speed when moving left.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedLeft[] =
+    "settings.a11y.face_gaze.cursor_speed_left";
+// An integer pref which scales the cursor speed when moving right.
+inline constexpr char kAccessibilityFaceGazeCursorSpeedRight[] =
+    "settings.a11y.face_gaze.cursor_speed_right";
+// An integer pref which determines how much FaceGaze should smooth cursor
+// movements.
+inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
+    "settings.a11y.face_gaze.cursor_smoothing";
+// A boolean pref which determines whether FaceGaze should use cursor
+// acceleration, which makes the cursor move faster when the tracked point moves
+// quickly.
+inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
+    "settings.a11y.face_gaze.cursor_use_acceleration";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
