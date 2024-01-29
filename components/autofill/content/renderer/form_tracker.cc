@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -30,10 +31,15 @@ using blink::WebFormElement;
 namespace autofill {
 
 namespace {
+
+constexpr char kSubmissionSourceHistogram[] =
+    "Autofill.SubmissionDetectionSource.FormTracker";
+
 bool ShouldReplaceElementsByRendererIds() {
   return base::FeatureList::IsEnabled(
       features::kAutofillReplaceCachedWebElementsByRendererIds);
 }
+
 }  // namespace
 
 using mojom::SubmissionSource;
@@ -315,12 +321,16 @@ void FormTracker::OnFrameDetached() {
 }
 
 void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
+  base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
+                                SubmissionSource::FORM_SUBMISSION);
   for (auto& observer : observers_)
     observer.OnFormSubmitted(form);
   ResetLastInteractedElements();
 }
 
 void FormTracker::FireProbablyFormSubmitted() {
+  base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
+                                SubmissionSource::PROBABLY_FORM_SUBMITTED);
   for (auto& observer : observers_)
     observer.OnProbablyFormSubmitted();
   ResetLastInteractedElements();
@@ -328,6 +338,7 @@ void FormTracker::FireProbablyFormSubmitted() {
 
 void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
   for (auto& observer : observers_)
     observer.OnInferredFormSubmission(source);
   ResetLastInteractedElements();

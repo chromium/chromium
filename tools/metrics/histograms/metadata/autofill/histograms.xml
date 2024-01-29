@@ -4819,6 +4819,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.SubmissionDetectionSource.{SubmissionComponent}"
+    enum="AutofillSubmissionSource2" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Metric to measure the source of each submission. Emitted once per inferred
+    submission by {SubmissionComponent}.
+  </summary>
+  <token key="SubmissionComponent">
+    <variant name="AutofillAgent"/>
+    <variant name="FormTracker"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SubmittedCardState" enum="AutofillSubmittedCardState"
     expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>

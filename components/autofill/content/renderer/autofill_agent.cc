@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -110,6 +111,9 @@ using ShowAll = PasswordAutofillAgent::ShowAll;
 using mojom::FocusedFieldType;
 
 namespace {
+
+constexpr char kSubmissionSourceHistogram[] =
+    "Autofill.SubmissionDetectionSource.AutofillAgent";
 
 // Time to wait in ms to ensure that only a single select or datalist change
 // will be acted upon, instead of multiple in close succession (debounce time).
@@ -487,6 +491,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
   if (!submitted_forms_.insert(form_data.unique_renderer_id).second) {
     return;
   }
+  base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->FormSubmitted(form_data, known_success, source);
   }

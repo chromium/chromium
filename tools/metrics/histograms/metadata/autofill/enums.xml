@@ -3276,6 +3276,16 @@ Called by update_autofill_enums.py.-->
              confirmed"/>
 </enum>
 
+<enum name="AutofillSubmissionSource2">
+  <int value="0" label="No source"/>
+  <int value="1" label="Same document navigation"/>
+  <int value="2" label="XHR succeeded"/>
+  <int value="3" label="Frame detached"/>
+  <int value="4" label="Probable form submission"/>
+  <int value="5" label="Regular form submission"/>
+  <int value="6" label="DOM mutation after autofill"/>
+</enum>
+
 <enum name="AutofillSubmittedCardState">
   <int value="0" label="Has valid card number and expiration date"/>
   <int value="1" label="Has valid card number, but invalid expiration date"/>

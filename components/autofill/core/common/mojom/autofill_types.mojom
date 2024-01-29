@@ -146,26 +146,29 @@ enum SubmissionIndicatorEvent {
   DOM_MUTATION_AFTER_AUTOFILL = 12,
 };
 
+// These values are persisted to UMA logs. Entries should not be renumbered
+// and numeric values should never be reused. This indicates the source of
+// a submission firing event.
 enum SubmissionSource {
   // No submission signal was detected.
-  NONE,
+  NONE = 0,
   // After a same document navigation finished, the last interacted form became
   // inaccessible or was removed.
-  SAME_DOCUMENT_NAVIGATION,
+  SAME_DOCUMENT_NAVIGATION = 1,
   // Immediately after a successful XHR, the last interacted form became
   // inaccessible or was removed.
-  XHR_SUCCEEDED,
+  XHR_SUCCEEDED = 2,
   // The subframe or non-primary main frame containing the form was detached.
-  FRAME_DETACHED,
+  FRAME_DETACHED = 3,
   // A mainframe navigation was started which was initiated in the content area
   // (i.e. not clicking on a bookmark or typing a URL in the omnibar), not by
   // a link click. Only observed after the user interacted with a form.
-  PROBABLY_FORM_SUBMITTED,
+  PROBABLY_FORM_SUBMITTED = 4,
   // Normal form submission (i.e. user presses the submit button and no
   // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
-  FORM_SUBMISSION,
+  FORM_SUBMISSION = 5,
   // The form or field was hidden or removed after autofilling it.
-  DOM_MUTATION_AFTER_AUTOFILL,
+  DOM_MUTATION_AFTER_AUTOFILL = 6,
 };
 
 enum FocusedFieldType {
