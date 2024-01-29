@@ -174,6 +174,9 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
               mojom::DisplaySettingsOrientationOption::k90Degree;
         } else if (type == mojom::DisplaySettingsType::kNightLight) {
           value->night_light_status = true;
+        } else if (type == mojom::DisplaySettingsType::kNightLightSchedule) {
+          value->night_light_schedule =
+              mojom::DisplaySettingsNightLightScheduleOption::kSunsetToSunrise;
         }
         provider_->RecordChangingDisplaySettings(type, std::move(value));
 
@@ -188,13 +191,13 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
 
 // Test histogram is recorded when users change display orientation.
 TEST_F(DisplaySettingsProviderTest, ChangeDisplayOrientationHistogram) {
-  for (int orientationInt =
+  for (int orientation_int =
            static_cast<int>(mojom::DisplaySettingsOrientationOption::kMinValue);
-       orientationInt <=
+       orientation_int <=
        static_cast<int>(mojom::DisplaySettingsOrientationOption::kMaxValue);
-       orientationInt++) {
+       orientation_int++) {
     mojom::DisplaySettingsOrientationOption orientation =
-        static_cast<mojom::DisplaySettingsOrientationOption>(orientationInt);
+        static_cast<mojom::DisplaySettingsOrientationOption>(orientation_int);
     // Settings applied to either internal or external displays.
     for (bool internal : {true, false}) {
       auto value = mojom::DisplaySettingsValue::New();
@@ -228,6 +231,35 @@ TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightStatusHistogram) {
       histogram_name.append(internal ? ".Internal" : ".External");
       histogram_name.append(".NightLightStatus");
       histogram_tester_.ExpectBucketCount(histogram_name, night_light_status,
+                                          1);
+    }
+  }
+}
+
+// Test histogram is recorded when users change display night light schedule.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightScheduleHistogram) {
+  for (int night_light_schedule_int = static_cast<int>(
+           mojom::DisplaySettingsNightLightScheduleOption::kMinValue);
+       night_light_schedule_int <=
+       static_cast<int>(
+           mojom::DisplaySettingsNightLightScheduleOption::kMaxValue);
+       night_light_schedule_int++) {
+    mojom::DisplaySettingsNightLightScheduleOption night_light_schedule =
+        static_cast<mojom::DisplaySettingsNightLightScheduleOption>(
+            night_light_schedule_int);
+    // Settings applied to either internal or external displays.
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      value->night_light_schedule = night_light_schedule;
+      provider_->RecordChangingDisplaySettings(
+          mojom::DisplaySettingsType::kNightLightSchedule, std::move(value));
+
+      std::string histogram_name(
+          DisplaySettingsProvider::kDisplaySettingsHistogramName);
+      histogram_name.append(internal ? ".Internal" : ".External");
+      histogram_name.append(".NightLightSchedule");
+      histogram_tester_.ExpectBucketCount(histogram_name, night_light_schedule,
                                           1);
     }
   }

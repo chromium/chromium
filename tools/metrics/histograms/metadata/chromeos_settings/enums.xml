@@ -31,6 +31,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="On"/>
 </enum>
 
+<enum name="DisplaySettingsNightLightScheduleOption">
+  <int value="0" label="Never"/>
+  <int value="1" label="Sunset to sunrise"/>
+  <int value="2" label="Custom"/>
+</enum>
+
 <enum name="DisplaySettingsOrientationOption">
   <int value="0" label="Auto"/>
   <int value="1" label="0 degree"/>

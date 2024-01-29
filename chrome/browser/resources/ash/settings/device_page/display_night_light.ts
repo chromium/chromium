@@ -24,7 +24,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
@@ -172,7 +172,8 @@ export class SettingsDisplayNightLightElement extends
     // undefined.
     if (this.currentScheduleType !== scheduleType &&
         this.currentScheduleType !== undefined) {
-      this.recordChangingNightLightSchedule(this.isInternalDisplay);
+      this.recordChangingNightLightSchedule(
+          this.isInternalDisplay, scheduleType);
     }
     if (this.currentNightLightStatus !== nightLightStatus &&
         this.currentNightLightStatus !== undefined) {
@@ -186,9 +187,12 @@ export class SettingsDisplayNightLightElement extends
   }
 
   // Records metrics when users change the night light schedule.
-  private recordChangingNightLightSchedule(isInternalDisplay: boolean): void {
+  private recordChangingNightLightSchedule(
+      isInternalDisplay: boolean,
+      nightLightSchedule: DisplaySettingsNightLightScheduleOption): void {
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kNightLightSchedule, {isInternalDisplay});
+        DisplaySettingsType.kNightLightSchedule,
+        {isInternalDisplay, nightLightSchedule});
   }
 
   // Records metrics when users toggle the night light status.

@@ -152,6 +152,11 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
     histogram_name.append(".NightLightStatus");
     base::UmaHistogramBoolean(histogram_name,
                               value->night_light_status.value());
+  } else if (type == mojom::DisplaySettingsType::kNightLightSchedule) {
+    CHECK(value->night_light_schedule.has_value());
+    histogram_name.append(".NightLightSchedule");
+    base::UmaHistogramEnumeration(histogram_name,
+                                  value->night_light_schedule.value());
   }
 
   // Record default display settings performance metrics.

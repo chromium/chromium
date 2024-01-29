@@ -405,6 +405,15 @@ suite('<settings-display>', () => {
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType
                   .kNightLightSchedule));
+
+      const externalDisplayNightLightScheduleHistogram =
+          displaySettingsProvider.getDisplayNightLightScheduleHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayNightLightScheduleHistogram.get(
+              displaySettingsProviderMojom
+                  .DisplaySettingsNightLightScheduleOption.kSunsetToSunrise));
     });
 
     test('mirror mode', () => {

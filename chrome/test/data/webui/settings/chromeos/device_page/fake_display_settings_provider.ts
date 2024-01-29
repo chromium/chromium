@@ -20,6 +20,8 @@ type DisplaySettingsType = displaySettingsProviderMojom.DisplaySettingsType;
 type DisplaySettingsValue = displaySettingsProviderMojom.DisplaySettingsValue;
 type DisplaySettingsOrientationOption =
     displaySettingsProviderMojom.DisplaySettingsOrientationOption;
+type DisplaySettingsNightLightScheduleOption =
+    displaySettingsProviderMojom.DisplaySettingsNightLightScheduleOption;
 
 export class FakeDisplaySettingsProvider implements
     DisplaySettingsProviderInterface {
@@ -38,6 +40,10 @@ export class FakeDisplaySettingsProvider implements
   // night light status. The value indicates the histogram count.
   private displayNightLightStatusHistogram =
       new Map<boolean, Map<boolean, number>>();
+  // First key indicates internal or external display. Second key indicates the
+  // night light schedule. The value indicates the histogram count.
+  private displayNightLightScheduleHistogram =
+      new Map<boolean, Map<DisplaySettingsNightLightScheduleOption, number>>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -106,6 +112,19 @@ export class FakeDisplaySettingsProvider implements
           (nightLightStatusHistogram.get(value.nightLightStatus) || 0) + 1);
       this.displayNightLightStatusHistogram.set(
           value.isInternalDisplay, nightLightStatusHistogram);
+    } else if (
+        type ===
+            displaySettingsProviderMojom.DisplaySettingsType
+                .kNightLightSchedule &&
+        value.isInternalDisplay !== undefined &&
+        value.nightLightSchedule !== undefined) {
+      const nightLightScheduleHistogram =
+          this.getDisplayNightLightScheduleHistogram(value.isInternalDisplay);
+      nightLightScheduleHistogram.set(
+          value.nightLightSchedule,
+          (nightLightScheduleHistogram.get(value.nightLightSchedule) || 0) + 1);
+      this.displayNightLightScheduleHistogram.set(
+          value.isInternalDisplay, nightLightScheduleHistogram);
     }
   }
 
@@ -131,5 +150,11 @@ export class FakeDisplaySettingsProvider implements
       Map<boolean, number> {
     return this.displayNightLightStatusHistogram.get(isInternalDisplay) ||
         new Map<boolean, number>();
+  }
+
+  getDisplayNightLightScheduleHistogram(isInternalDisplay: boolean):
+      Map<DisplaySettingsNightLightScheduleOption, number> {
+    return this.displayNightLightScheduleHistogram.get(isInternalDisplay) ||
+        new Map<DisplaySettingsNightLightScheduleOption, number>();
   }
 }
