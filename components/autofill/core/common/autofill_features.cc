@@ -222,13 +222,6 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              "AutofillEnableSupportForApartmentNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables parsing for birthdate fields. Filling is not supported and parsing
-// is meant to prevent false positive credit card expiration dates.
-// TODO(crbug.com/1306654): Remove once launched.
-BASE_FEATURE(kAutofillEnableBirthdateParsing,
-             "AutofillEnableBirthdateParsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
 // TODO(crbug.com/1157405): Remove once launched.
 BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
