@@ -246,8 +246,14 @@ void LayoutText::StyleDidChange(StyleDifference diff,
   ETextSecurity old_security =
       old_style ? old_style->TextSecurity() : ETextSecurity::kNone;
   if (old_transform != new_style.TextTransform() ||
-      old_security != new_style.TextSecurity())
+      old_security != new_style.TextSecurity()) {
     TransformAndSecureOriginalText();
+  } else if (RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() &&
+             old_transform == new_style.TextTransform() &&
+             new_style.TextTransform() != ETextTransform::kNone &&
+             old_style->Locale() != new_style.Locale()) {
+    TransformAndSecureOriginalText();
+  }
 
   // This is an optimization that kicks off font load before layout.
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
