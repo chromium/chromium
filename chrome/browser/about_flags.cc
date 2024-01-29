@@ -7262,11 +7262,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
 #endif
 
-    {"enable-css-selector-fragment-anchor",
-     flag_descriptions::kEnableCssSelectorFragmentAnchorName,
-     flag_descriptions::kEnableCssSelectorFragmentAnchorDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCssSelectorFragmentAnchor)},
-
     {"drop-input-events-before-first-paint",
      flag_descriptions::kDropInputEventsBeforeFirstPaintName,
      flag_descriptions::kDropInputEventsBeforeFirstPaintDescription, kOsAll,

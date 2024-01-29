@@ -2468,11 +2468,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-css-selector-fragment-anchor",
-    "owners": [ "mehdika@chromium.org", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
     "expiry_milestone": 124
