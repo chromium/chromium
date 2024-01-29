@@ -990,40 +990,6 @@ void FilterOptionElementsAndGetOptionStrings(
   }
 }
 
-// Use insertion sort to sort the almost sorted |elements|.
-void SortByFieldRendererIds(std::vector<WebFormControlElement>& elements) {
-  for (auto it = elements.begin(); it != elements.end(); it++) {
-    // insertion_point will point to the first element that is greater than
-    // to_be_inserted.
-    const auto& to_be_inserted = *it;
-    const auto insertion_point = base::ranges::upper_bound(
-        elements.begin(), it, GetFieldRendererId(to_be_inserted),
-        base::ranges::less{}, &GetFieldRendererId);
-
-    // Shift all elements from [insertion_point, it) right and move |it| to the
-    // front.
-    std::rotate(insertion_point, it, it + 1);
-  }
-}
-
-std::vector<WebFormControlElement>::iterator SearchInSortedVector(
-    const FormFieldData::FillData& field,
-    std::vector<WebFormControlElement>& sorted_elements) {
-  auto get_field_renderer_id = [](const WebFormControlElement& e) {
-    return GetFieldRendererId(e);
-  };
-  // Find the first element whose unique renderer ID is greater or equal to
-  // |fields|.
-  auto it = base::ranges::lower_bound(
-      sorted_elements.begin(), sorted_elements.end(), field.unique_renderer_id,
-      base::ranges::less{}, get_field_renderer_id);
-  if (it == sorted_elements.end() ||
-      GetFieldRendererId(*it) != field.unique_renderer_id) {
-    return sorted_elements.end();
-  }
-  return it;
-}
-
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element,
                          const WebFormControlElement& trigger_element) {
@@ -1864,7 +1830,7 @@ FormRendererId GetFormRendererId(const blink::WebElement& e) {
   if (e.IsNull()) {
     return FormRendererId();
   }
-    return FormRendererId(e.GetDomNodeId());
+  return FormRendererId(e.GetDomNodeId());
 }
 
 FieldRendererId GetFieldRendererId(const blink::WebElement& e) {
@@ -2185,9 +2151,9 @@ std::optional<FormData> FindFormForContentEditable(
   // If this is not sufficient in the future, consider calling
   // HTMLElement::innerText(), which returns the text "as rendered" (i.e., it
   // inserts whitespace at the right places and it ignores "display:none"
-  // subtrees), but is significantly more expensive because it triggers a layout.
-  field.value =
-      content_editable.TextContentAbridged(kMaxStringLength).Utf16();
+  // subtrees), but is significantly more expensive because it triggers a
+  // layout.
+  field.value = content_editable.TextContentAbridged(kMaxStringLength).Utf16();
   DCHECK_LE(field.value.length(), kMaxStringLength);
   field.selected_text =
       content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
@@ -2217,19 +2183,13 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // This is the focused element that led to the filling. It might not exist in
   // scenarios like refills where no element is focused, but if it is then it
   // needs special treatment. See intended behavior comment below.
-  WebFormControlElement* initially_focused_element = nullptr;
+  WebFormControlElement initially_focused_element;
 
-  // This container stores the pairs of autofillable WebFormControlElement* and
-  // the corresponding FormFieldData* of `form.fields` that are used to fill
-  // this element.
-  std::vector<std::pair<WebFormControlElement*, const FormFieldData::FillData*>>
-      autofillable_elements_index_pairs;
-
+  // This container stores the FormFieldData::FillData* of `form.fields` that
+  // will be filled into their corresponding blink elements.
+  std::vector<const FormFieldData::FillData*> autofillable_fields;
   std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields;
-  filled_fields.reserve(control_elements.size());
-
-  // Prepare for binary search.
-  SortByFieldRendererIds(control_elements);
+  filled_fields.reserve(fields.size());
 
   // If this is a preview, prevent already autofilled fields from being
   // highlighted.
@@ -2253,11 +2213,11 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // * For each other element, focus -> autofill -> blur.
   // * Send the focus event for the initially focused element.
   for (const FormFieldData::FillData& field : fields) {
-    auto it = SearchInSortedVector(field, control_elements);
-    if (it == control_elements.end()) {
+    WebFormControlElement element =
+        FindFormControlByRendererId(field.unique_renderer_id);
+    if (element.IsNull()) {
       continue;
     }
-    WebFormControlElement& element = *it;
     element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
 
     if ((action_type == mojom::ActionType::kFill &&
@@ -2271,7 +2231,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     if (is_initiating_element) {
       if (action_persistence == mojom::ActionPersistence::kFill &&
           element.Focused()) {
-        initially_focused_element = &element;
+        initially_focused_element = element;
       }
 
       filled_fields.emplace_back(element, element.GetAutofillState());
@@ -2290,34 +2250,35 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     CHECK(element != initiating_element);
     // Storing the indexes of non-initiating elements to be autofilled after
     // triggering the blur event for the initiating element.
-    autofillable_elements_index_pairs.emplace_back(&element, &field);
+    autofillable_fields.emplace_back(&field);
   }
 
   // If there is no other field to be autofilled, sending the blur event and
   // then the focus event for the initiating element does not make sense.
-  if (autofillable_elements_index_pairs.empty()) {
+  if (autofillable_fields.empty()) {
     return filled_fields;
   }
 
   // A blur event is emitted for the focused element if it is the initiating
   // element before all other elements are autofilled.
-  if (initially_focused_element) {
-    initially_focused_element->DispatchBlurEvent();
+  if (!initially_focused_element.IsNull()) {
+    initially_focused_element.DispatchBlurEvent();
   }
 
   // Autofill the non-initiating elements.
-  for (const auto& [filled_element, field_data] :
-       autofillable_elements_index_pairs) {
-    filled_fields.emplace_back(*filled_element,
-                               filled_element->GetAutofillState());
-    fill_or_preview(*field_data, false, CHECK_DEREF(filled_element),
-                    field_data_manager);
+  for (const FormFieldData::FillData* field_data : autofillable_fields) {
+    WebFormControlElement element =
+        FindFormControlByRendererId(field_data->unique_renderer_id);
+    if (!element.IsNull()) {
+      filled_fields.emplace_back(element, element.GetAutofillState());
+      fill_or_preview(*field_data, false, element, field_data_manager);
+    }
   }
 
   // A focus event is emitted for the initiating element after autofilling is
   // completed. It is not intended to work for the preview filling.
-  if (initially_focused_element) {
-    initially_focused_element->DispatchFocusEvent();
+  if (!initially_focused_element.IsNull()) {
+    initially_focused_element.DispatchFocusEvent();
   }
 
   return filled_fields;
