@@ -571,9 +571,9 @@ void BubbleFrameView::Layout() {
   }
 
   // TODO(tapted): Layout() should skip more surrounding code when !HasTitle().
-  // Currently DCHECKs fail since title_insets is 0 when there is no title.
-  // Skip checking if bounds is empty, as async bounds setting during bubble
-  // creation may cause unreliable layout results.
+  // Currently DCHECKs fail since title_insets is 0 when there is no title. Skip
+  // checking if bounds is empty, as async bounds setting during bubble creation
+  // may cause unreliable layout results.
   if (DCHECK_IS_ON() && HasTitle() && !bounds.IsEmpty()) {
     const gfx::Insets title_insets =
         GetTitleLabelInsetsFromFrame() + GetInsets();
