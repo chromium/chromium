@@ -126,7 +126,7 @@ Status Ed25519Implementation::GenerateKey(
   // multiplication, but there aren't EVP APIs to avoid it without a lot of
   // boilerplate.
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoEd25519PrivateKey(base::make_span(privkey).first(32),
+  status = CreateWebCryptoEd25519PrivateKey(base::make_span(privkey).first(32u),
                                             key_algorithm, extractable,
                                             private_usages, &private_key);
   if (status.IsError())

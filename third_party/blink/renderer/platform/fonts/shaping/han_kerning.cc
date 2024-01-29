@@ -378,9 +378,9 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   glyph_data_span = glyph_data_span.subspan(kQuoteStartIndex);
   bounds_span = bounds_span.subspan(kQuoteStartIndex);
   DCHECK_EQ(bounds_span.size(), 4u);
-  if (CharTypeFromBounds(glyph_data_span.first(2), bounds_span.first(2),
+  if (CharTypeFromBounds(glyph_data_span.first(2u), bounds_span.first(2u),
                          is_horizontal) != CharType::kOpen ||
-      CharTypeFromBounds(glyph_data_span.subspan(2), bounds_span.subspan(2),
+      CharTypeFromBounds(glyph_data_span.subspan(2u), bounds_span.subspan(2u),
                          is_horizontal) != CharType::kClose) {
     is_quote_fullwidth = false;
   }

@@ -2338,7 +2338,7 @@ TEST(V8ScriptValueSerializerTest, SSVTrailerWriteNewVersionDisabled) {
   // Should actually be the old version (decimal 20).
   V8ScriptValueSerializer serializer(scope.GetScriptState());
   auto value = serializer.Serialize(v8::True(isolate), ASSERT_NO_EXCEPTION);
-  EXPECT_THAT(value->GetWireData().first(2), ::testing::ElementsAre(0xff, 20));
+  EXPECT_THAT(value->GetWireData().first(2u), ::testing::ElementsAre(0xff, 20));
 }
 
 // TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for

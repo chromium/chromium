@@ -987,20 +987,20 @@ TEST(SpanTest, First) {
   span<int> span(array);
 
   {
-    auto subspan = span.first(0);
+    auto subspan = span.first(0u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(0u, subspan.size());
   }
 
   {
-    auto subspan = span.first(1);
+    auto subspan = span.first(1u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(1u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
   }
 
   {
-    auto subspan = span.first(2);
+    auto subspan = span.first(2u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(2u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1008,7 +1008,7 @@ TEST(SpanTest, First) {
   }
 
   {
-    auto subspan = span.first(3);
+    auto subspan = span.first(3u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1022,20 +1022,20 @@ TEST(SpanTest, Last) {
   span<int> span(array);
 
   {
-    auto subspan = span.last(0);
+    auto subspan = span.last(0u);
     EXPECT_EQ(span.data() + 3, subspan.data());
     EXPECT_EQ(0u, subspan.size());
   }
 
   {
-    auto subspan = span.last(1);
+    auto subspan = span.last(1u);
     EXPECT_EQ(span.data() + 2, subspan.data());
     EXPECT_EQ(1u, subspan.size());
     EXPECT_EQ(3, subspan[0]);
   }
 
   {
-    auto subspan = span.last(2);
+    auto subspan = span.last(2u);
     EXPECT_EQ(span.data() + 1, subspan.data());
     EXPECT_EQ(2u, subspan.size());
     EXPECT_EQ(2, subspan[0]);
@@ -1043,7 +1043,7 @@ TEST(SpanTest, Last) {
   }
 
   {
-    auto subspan = span.last(3);
+    auto subspan = span.last(3u);
     EXPECT_EQ(span.data(), subspan.data());
     EXPECT_EQ(3u, subspan.size());
     EXPECT_EQ(1, subspan[0]);
@@ -1564,15 +1564,15 @@ TEST(SpanTest, EnsureConstexprGoodness) {
 TEST(SpanTest, OutOfBoundsDeath) {
   constexpr span<int, 0> kEmptySpan;
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan[0], "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1u), "");
 
   constexpr span<int> kEmptyDynamicSpan;
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan[0], "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.front(), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.first(1), "");
-  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.last(1), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.first(1u), "");
+  ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.last(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.back(), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptyDynamicSpan.subspan(1), "");
 
@@ -1594,8 +1594,8 @@ TEST(SpanTest, OutOfBoundsDeath) {
   // backed by larger arrays.
   int array1[] = {1, 2, 3, 4};
   int array2[] = {1, 2, 3, 4};
-  span<int> span_len2 = span(array1).first(2);
-  span<int> span_len3 = span(array2).first(3);
+  span<int> span_len2 = span(array1).first(2u);
+  span<int> span_len3 = span(array2).first(3u);
   ASSERT_DEATH_IF_SUPPORTED(*span_len2.end(), "");
   ASSERT_DEATH_IF_SUPPORTED(span_len2.begin()[2], "");
   ASSERT_DEATH_IF_SUPPORTED(span_len2.begin() + 3, "");
@@ -1749,19 +1749,19 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(static_span.first(2).copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2).copy_from(static_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(static_span.first(2u).copy_from(dynamic_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2u).copy_from(static_span), "");
 
-  static_span.first(2).copy_from(static_span.last(2));
+  static_span.first(2u).copy_from(static_span.last(2u));
   EXPECT_THAT(arr, ElementsAre(2, 3, 3));
 
-  dynamic_span.first(2).copy_from(dynamic_span.last(2));
+  dynamic_span.first(2u).copy_from(dynamic_span.last(2u));
   EXPECT_THAT(vec, ElementsAre(5, 6, 6));
 
-  static_span.last(1).copy_from(dynamic_span.last(1));
+  static_span.last(1u).copy_from(dynamic_span.last(1u));
   EXPECT_THAT(arr, ElementsAre(2, 3, 6));
 
-  dynamic_span.first(1).copy_from(static_span.first(1));
+  dynamic_span.first(1u).copy_from(static_span.first(1u));
   EXPECT_THAT(vec, ElementsAre(2, 6, 6));
 }
 

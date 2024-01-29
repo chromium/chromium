@@ -5117,7 +5117,7 @@ TEST_P(SpdyNetworkTransactionTest, VerifyRetryOnConnectionReset) {
   MockWrite writes2[] = {CreateMockWrite(req, 0)};
 
   // This test has a couple of variants.
-  enum {
+  enum : size_t {
     // Induce the RST while waiting for our transaction to send.
     VARIANT_RST_DURING_SEND_COMPLETION = 0,
     // Induce the RST while waiting for our transaction to read.
@@ -5125,10 +5125,10 @@ TEST_P(SpdyNetworkTransactionTest, VerifyRetryOnConnectionReset) {
     VARIANT_RST_DURING_READ_COMPLETION = 1
   };
 
-  for (int variant = VARIANT_RST_DURING_SEND_COMPLETION;
+  for (size_t variant = VARIANT_RST_DURING_SEND_COMPLETION;
        variant <= VARIANT_RST_DURING_READ_COMPLETION; ++variant) {
     SequencedSocketData data1(reads,
-                              base::make_span(writes1).first(1 + variant));
+                              base::make_span(writes1).first(1u + variant));
 
     SequencedSocketData data2(reads2, writes2);
 

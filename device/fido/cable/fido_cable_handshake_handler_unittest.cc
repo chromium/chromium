@@ -149,7 +149,7 @@ std::vector<uint8_t> ConstructAuthenticatorHelloReply(
   }
 
   fido_parsing_utils::Append(
-      &reply, base::make_span(authenticator_hello_mac).first(16));
+      &reply, base::make_span(authenticator_hello_mac).first(16u));
   return reply;
 }
 
@@ -200,7 +200,7 @@ class FakeCableAuthenticator {
     if (handshake_message.size() != 58)
       return false;
 
-    const auto client_hello = handshake_message.first(42);
+    const auto client_hello = handshake_message.first(42u);
     if (!hmac.VerifyTruncated(
             fido_parsing_utils::ConvertToStringView(client_hello),
             fido_parsing_utils::ConvertToStringView(
