@@ -1307,7 +1307,7 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
 
   absl::optional<Vector<gfx::Rect>> line_bounds;
   FrameWidget* frame_widget = client_->FrameWidget();
-  if (base::FeatureList::IsEnabled(features::kReportVisibleLineBounds) &&
+  if (RuntimeEnabledFeatures::ReportVisibleLineBoundsEnabled() &&
       frame_widget) {
     line_bounds = frame_widget->GetVisibleLineBoundsOnScreen();
   }

@@ -869,8 +869,8 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -911,8 +911,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1090,8 +1090,8 @@ TEST_F(WebFrameWidgetSimTest, ResizableMatchesCanResize) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1150,8 +1150,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1219,8 +1219,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1291,8 +1291,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1356,8 +1356,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1440,8 +1440,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -1507,8 +1507,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -1581,8 +1581,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
-  base::test::ScopedFeatureList feature_list(
-      features::kReportVisibleLineBounds);
+  std::unique_ptr<ScopedReportVisibleLineBoundsForTest> enabled =
+      std::make_unique<ScopedReportVisibleLineBoundsForTest>(true);
   WebView().ResizeVisualViewport(gfx::Size(200, 200));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest main_resource("https://example.com/test.html", "text/html");

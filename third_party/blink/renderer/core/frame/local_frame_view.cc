@@ -2179,7 +2179,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
         observer->DidFinishLifecycleUpdate(frame_view);
     });
     if (frame_->GetWidgetForLocalRoot() &&
-        base::FeatureList::IsEnabled(features::kReportVisibleLineBounds)) {
+        RuntimeEnabledFeatures::ReportVisibleLineBoundsEnabled()) {
       frame_->GetWidgetForLocalRoot()->UpdateLineBounds();
     }
   }

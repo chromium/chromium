@@ -3185,6 +3185,15 @@
       base_feature: "none",
     },
     {
+      // TODO(crbug.com/1500633): Remove this flag when the new CursorAnchorInfo
+      // mojo pipe is launched.
+      name: "ReportVisibleLineBounds",
+      status: {
+        "Android": "stable",
+        "default": "",
+      }
+    },
+    {
       name: "ResourceTimingContentType",
       status: "experimental",
       base_feature: "none",
