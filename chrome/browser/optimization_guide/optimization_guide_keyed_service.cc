@@ -605,7 +605,7 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
   }
 
   // Don't trigger upload for an empty log entry.
-  if (!log_entry && log_entry->log_ai_data_request()) {
+  if (!log_entry || !log_entry->log_ai_data_request()) {
     return;
   }
 
