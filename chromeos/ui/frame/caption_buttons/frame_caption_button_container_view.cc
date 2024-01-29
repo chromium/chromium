@@ -514,7 +514,7 @@ void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
 }
 
 void FrameCaptionButtonContainerView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // This ensures that the first frame of the animation to show the size button
   // pushes the buttons to the left of the size button into the center.

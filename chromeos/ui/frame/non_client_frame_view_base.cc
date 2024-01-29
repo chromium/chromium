@@ -149,7 +149,7 @@ gfx::Size NonClientFrameViewBase::CalculatePreferredSize() const {
 }
 
 void NonClientFrameViewBase::Layout() {
-  views::NonClientFrameView::Layout();
+  LayoutSuperclass<views::NonClientFrameView>(this);
   if (!GetFrameEnabled())
     return;
   aura::Window* frame_window = frame_->GetNativeWindow();

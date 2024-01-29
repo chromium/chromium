@@ -417,7 +417,7 @@ void FrameSizeButton::Layout() {
   bounds.Inset(GetInkdropInsets(bounds.size()));
   pie_animation_view_->SetBoundsRect(bounds);
 
-  views::FrameCaptionButton::Layout();
+  LayoutSuperclass<views::FrameCaptionButton>(this);
 }
 
 void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
