@@ -16,14 +16,14 @@ namespace android {
 std::unique_ptr<JavaHandlerThread> JavaHandlerThreadHelpers::CreateJavaFirst() {
   return std::make_unique<JavaHandlerThread>(
       nullptr, Java_JavaHandlerThreadHelpers_testAndGetJavaHandlerThread(
-                   base::android::AttachCurrentThread()));
+                   jni_zero::AttachCurrentThread()));
 }
 
 // static
 void JavaHandlerThreadHelpers::ThrowExceptionAndAbort(WaitableEvent* event) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_JavaHandlerThreadHelpers_throwException(env);
-  DCHECK(HasException(env));
+  DCHECK(jni_zero::HasException(env));
   base::CurrentUIThread::Get()->Abort();
   event->Signal();
 }
@@ -31,7 +31,7 @@ void JavaHandlerThreadHelpers::ThrowExceptionAndAbort(WaitableEvent* event) {
 // static
 bool JavaHandlerThreadHelpers::IsExceptionTestException(
     ScopedJavaLocalRef<jthrowable> exception) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_JavaHandlerThreadHelpers_isExceptionTestException(env, exception);
 }
 
