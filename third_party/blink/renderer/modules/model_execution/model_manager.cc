@@ -38,15 +38,24 @@ String AvailabilityToString(ModelManager::Availability availability) {
 }
 
 ModelManager::ModelManager(LocalDOMWindow* window)
-    : task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)) {
-  CHECK(window && window->GetFrame());
-  window->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
-      model_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
-}
+    : ExecutionContextClient(window),
+      task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)) {}
 
 void ModelManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   visitor->Trace(model_manager_remote_);
+}
+
+HeapMojoRemote<mojom::blink::ModelManager>&
+ModelManager::GetModelManagerRemote() {
+  if (!model_manager_remote_.is_bound()) {
+    if (DomWindow() && DomWindow()->GetFrame()) {
+      DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+          model_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
+    }
+  }
+  return model_manager_remote_;
 }
 
 ScriptPromise ModelManager::canCreateGenericSession(
@@ -63,10 +72,10 @@ ScriptPromise ModelManager::canCreateGenericSession(
   ScriptPromise promise = resolver->Promise();
   // TODO(leimy): in the future, we may need to check if the model has been
   // downloaded etc.
-  if (!model_manager_remote_.is_connected()) {
+  if (!GetModelManagerRemote().is_connected()) {
     resolver->Resolve(AvailabilityToString(kNo));
   } else {
-    model_manager_remote_->CanCreateGenericSession(WTF::BindOnce(
+    GetModelManagerRemote()->CanCreateGenericSession(WTF::BindOnce(
         [](ScriptPromiseResolver* resolver, bool can_create) {
           Availability availability = kNo;
           if (can_create) {
@@ -83,7 +92,8 @@ ScriptPromise ModelManager::canCreateGenericSession(
 ScriptPromise ModelManager::createGenericSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
+  if (!script_state->ContextIsValid() ||
+      !GetModelManagerRemote().is_connected()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
     return ScriptPromise();
@@ -95,7 +105,7 @@ ScriptPromise ModelManager::createGenericSession(
 
   ModelGenericSession* generic_session =
       MakeGarbageCollected<ModelGenericSession>(task_runner_);
-  model_manager_remote_->CreateGenericSession(
+  GetModelManagerRemote()->CreateGenericSession(
       generic_session->GetModelSessionReceiver(),
       WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
