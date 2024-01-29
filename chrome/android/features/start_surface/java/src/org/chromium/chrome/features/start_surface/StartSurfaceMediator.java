@@ -772,8 +772,6 @@ class StartSurfaceMediator
         // Only pad single pane home page since tabs grid has already been padding for the
         // bottom bar.
         setBottomMargin(mBrowserControlsStateProvider.getBottomControlsHeight());
-        setIncognitoModeDescriptionVisibility(
-                mIsIncognito && (mTabModelSelector.getModel(true).getCount() <= 0));
 
         // Make sure ExploreSurfaceCoordinator is built before the explore surface is showing
         // by default.
