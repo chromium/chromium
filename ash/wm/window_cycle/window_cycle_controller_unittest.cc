@@ -1816,7 +1816,7 @@ TEST_F(WindowCycleControllerTest, RasterScaleNotSetForVisibleWindows) {
 }
 
 // Tests the UAF issue reported in https://crbug.com/1350558. `OnFlingStep()`
-// triggers a `Layout()` which may trigger an `OnFlingEnd()` where the
+// triggers layout, which may trigger an `OnFlingEnd()` where the
 // `WmFlingHandler` is destroyed while still in the middle of its
 // `WmFlingHandler::OnAnimationStep()`. This test simulates the use case when we
 // initiate an alt + tab session, start a fling, trigger another alt + tab and

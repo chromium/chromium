@@ -813,7 +813,7 @@ void AppsGridView::EndDrag(bool cancel) {
 
           // If item drag created a folder, layout the grid to ensure the
           // created folder's bounds are correct. Note that `open_folder_info_`
-          // affects ideal item bounds, so `Layout()` needs to be callsed after
+          // affects ideal item bounds, so `Layout()` needs to be called after
           // `SetOpenFolderInfo()`.
           Layout();
         }
@@ -843,10 +843,10 @@ void AppsGridView::EndDrag(bool cancel) {
   UpdatePaging();
 
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout, force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     DCHECK(!ignore_layout_);
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
@@ -2180,7 +2180,7 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
 
     // Layout the grid to ensure the created folder's bounds are correct.
     // Note that `open_folder_info_` affects ideal item bounds, so `Layout()`
-    // needs to be callsed after `SetOpenFolderInfo()`.
+    // needs to be called after `SetOpenFolderInfo()`.
     Layout();
   }
 }
@@ -2368,10 +2368,10 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   ClearDragState();
   UpdatePaging();
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout, force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     DCHECK(!ignore_layout_);
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();

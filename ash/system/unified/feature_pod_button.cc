@@ -112,7 +112,7 @@ void FeaturePodLabelButton::Layout() {
   if (!detailed_view_arrow_->GetVisible())
     return;
 
-  // We need custom Layout() because |label_| is first laid out in the center
+  // We need custom layout because |label_| is first laid out in the center
   // without considering |detailed_view_arrow_|, then |detailed_view_arrow_| is
   // placed on the right side of |label_|.
   gfx::Size arrow_size = detailed_view_arrow_->GetPreferredSize();

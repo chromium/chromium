@@ -885,9 +885,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
       pin_bounds.set_y(previous_state_->pin_start_in_screen.y() -
                        pin_end_in_screen.y());
 
-      // Since PIN is disabled, the previous Layout() hid the PIN keyboard.
-      // We need to redisplay it where it used to be.
-      // pin_view_->SetVisible(true);
+      // Since PIN is disabled, the previous layout hid the PIN keyboard. We
+      // need to redisplay it where it used to be.
       pin_view_->SetBoundsRect(pin_bounds);
     }
 

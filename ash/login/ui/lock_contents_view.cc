@@ -1671,7 +1671,7 @@ void LockContentsView::DoLayout() {
     action.Run(landscape);
   }
 
-  // SizeToPreferredSize will call Layout().
+  // SizeToPreferredSize will trigger layout.
   SizeToPreferredSize();
 }
 

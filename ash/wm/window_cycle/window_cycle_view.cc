@@ -327,7 +327,7 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
 gfx::Rect WindowCycleView::GetTargetBounds() const {
   // The widget is sized clamped to the screen bounds. Its child, the mirror
   // container which is parent to all the previews may be larger than the
-  // widget as some previews will be offscreen. In `Layout()` of `cycle_view_`
+  // widget as some previews will be offscreen. When `cycle_view_` does layout
   // the mirror container will be slid back and forth depending on the target
   // window.
   gfx::Rect widget_rect = root_window_->GetBoundsInScreen();
@@ -659,10 +659,9 @@ void WindowCycleView::Layout() {
     no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
   }
 
-  // Enable animations only after the first `Layout()` pass. If `this` is
-  // animating or `defer_widget_bounds_update_`, don't animate as well since
-  // the cycle view is already being animated or just finished animating for
-  // mode switch.
+  // Enable animations only after the first layout pass. If `this` is animating
+  // or `defer_widget_bounds_update_`, don't animate as well since the cycle
+  // view is already being animated or just finished animating for mode switch.
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
   std::optional<ui::AnimationThroughputReporter> reporter;
   if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
@@ -704,7 +703,7 @@ void WindowCycleView::Layout() {
 void WindowCycleView::OnImplicitAnimationsCompleted() {
   layer()->SetClipRect(gfx::Rect());
   if (defer_widget_bounds_update_) {
-    // This triggers a `Layout()` so reset `defer_widget_bounds_update_` after
+    // This triggers layout, so reset `defer_widget_bounds_update_` after
     // calling `SetBounds()` to prevent the mirror container from animating.
     GetWidget()->SetBounds(GetTargetBounds());
     defer_widget_bounds_update_ = false;

@@ -82,7 +82,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Lays out the view without animation transform.
   void LayoutWithoutTransform();
 
-  // Helper methods for Layout().
+  // Helper methods for performing layout.
   void LayoutMenuView();
   void LayoutMenuCurtainView();
 

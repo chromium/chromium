@@ -780,7 +780,7 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
   }
 
   // Continue section is being shown. Transform the apps grid view up to its
-  // original pre-Layout() position.
+  // original pre-layout position.
   gfx::Transform transform;
   transform.Translate(0, vertical_offset);
   apps_grid_view_->SetTransform(transform);

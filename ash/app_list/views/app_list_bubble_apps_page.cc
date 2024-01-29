@@ -950,13 +950,13 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
   view_delegate_->SetHideContinueSection(should_hide);
   // AppListControllerImpl will trigger UpdateContinueSectionVisibility().
 
-  // Layout() will change the position of the separator and apps grid based on
-  // the visibility of the continue section view and recent apps.
+  // Layout will change the position of the separator and apps grid based on the
+  // visibility of the continue section view and recent apps.
   if (needs_layout())
     Layout();
 
   // The vertical offset for slide animations is the difference in separator
-  // position from before the Layout() versus its position now.
+  // position from before layout versus its position now.
   const int vertical_offset = separator_initial_y - separator_->y();
   const base::TimeDelta duration = base::Milliseconds(300);
   const gfx::Tween::Type tween_type = gfx::Tween::ACCEL_LIN_DECEL_100_3;

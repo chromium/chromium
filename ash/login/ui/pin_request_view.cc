@@ -447,8 +447,8 @@ void PinRequestView::OnDisplayTabletStateChanged(display::TabletState state) {
     VLOG(1) << base::StrCat({show_pin_keyboard ? "Showing" : "Hiding",
                              " PIN keyboard in PinRequestView"});
     pin_keyboard_view_->SetVisible(show_pin_keyboard);
-    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
-    // in view. As the result whole hierarchy will go through re-layout.
+    // This will trigger ChildPreferredSizeChanged() in the parent view, which
+    // in turn triggers layout for the whole hierarchy.
     UpdatePreferredSize();
   }
 }

@@ -803,10 +803,10 @@ void PagedAppsGridView::EndAppsGridCardifiedView() {
 
 void PagedAppsGridView::AnimateCardifiedState() {
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout; force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     DCHECK(!ignore_layout_);
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
@@ -1208,10 +1208,10 @@ void PagedAppsGridView::AnimateOnNudgeRemoved() {
   UpdateTilePadding();
 
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout; force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
   }
