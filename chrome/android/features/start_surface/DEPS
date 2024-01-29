@@ -8,4 +8,5 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+components/browser_ui/settings/android",
 ]
