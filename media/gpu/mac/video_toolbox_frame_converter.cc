@@ -30,11 +30,13 @@ namespace media {
 
 namespace {
 
+// The SharedImages created by this class to back VideoFrames can be read by the
+// raster interface for canvas and by the GLES2 interface for WebGL in addition
+// to being sent to the display compositor and/or used as overlays.
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
     gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-    gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
