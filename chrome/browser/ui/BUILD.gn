@@ -5619,6 +5619,8 @@ static_library("ui") {
       "views/passwords/password_auto_sign_in_view.h",
       "views/passwords/password_bubble_view_base.cc",
       "views/passwords/password_bubble_view_base.h",
+      "views/passwords/password_default_store_changed_view.cc",
+      "views/passwords/password_default_store_changed_view.h",
       "views/passwords/password_generation_confirmation_view.cc",
       "views/passwords/password_generation_confirmation_view.h",
       "views/passwords/password_generation_popup_view_views.cc",
