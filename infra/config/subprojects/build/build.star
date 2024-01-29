@@ -6,7 +6,7 @@
 # Note that CI builders can't use `mirrors`.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "reclient", "siso")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -590,4 +590,5 @@ This builder measures build performance for iOS developer builds, by simulating 
         short_name = "dev",
     ),
     reclient_jobs = 800,
+    xcode = xcode.xcode_default,
 )
