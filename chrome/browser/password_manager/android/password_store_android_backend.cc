@@ -363,52 +363,6 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
 
 }  // namespace
 
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    LoginsOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder,
-    base::TimeDelta delay,
-    PasswordStoreOperation operation)
-    : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)),
-      delay_(delay),
-      operation_(operation) {}
-
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    PasswordChangesOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder,
-    base::TimeDelta delay,
-    PasswordStoreOperation operation)
-    : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)),
-      delay_(delay),
-      operation_(operation) {}
-
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    JobReturnHandler&&) = default;
-
-PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
-
-void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
-    std::optional<AndroidBackendError> error) const {
-  SuccessStatus sucess_status = GetSuccessStatusFromError(error);
-  metrics_recorder_.RecordMetrics(sucess_status, std::move(error));
-}
-
-base::TimeDelta
-PasswordStoreAndroidBackend::JobReturnHandler::GetElapsedTimeSinceStart()
-    const {
-  // The recorder is always created right before the task starts.
-  return metrics_recorder_.GetElapsedTimeSinceCreation();
-}
-
-base::TimeDelta PasswordStoreAndroidBackend::JobReturnHandler::GetDelay() {
-  return delay_;
-}
-
-PasswordStoreOperation
-PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
-  return operation_;
-}
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
@@ -671,6 +625,53 @@ void PasswordStoreAndroidBackend::ClearAllTasksAndReplyWithReason(
     }
   }
   request_for_job_.clear();
+}
+
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    LoginsOrErrorReply callback,
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    base::TimeDelta delay,
+    PasswordStoreOperation operation)
+    : success_callback_(std::move(callback)),
+      metrics_recorder_(std::move(metrics_recorder)),
+      delay_(delay),
+      operation_(operation) {}
+
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    PasswordChangesOrErrorReply callback,
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    base::TimeDelta delay,
+    PasswordStoreOperation operation)
+    : success_callback_(std::move(callback)),
+      metrics_recorder_(std::move(metrics_recorder)),
+      delay_(delay),
+      operation_(operation) {}
+
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    JobReturnHandler&&) = default;
+
+PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
+
+void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
+    std::optional<AndroidBackendError> error) const {
+  SuccessStatus sucess_status = GetSuccessStatusFromError(error);
+  metrics_recorder_.RecordMetrics(sucess_status, std::move(error));
+}
+
+base::TimeDelta
+PasswordStoreAndroidBackend::JobReturnHandler::GetElapsedTimeSinceStart()
+    const {
+  // The recorder is always created right before the task starts.
+  return metrics_recorder_.GetElapsedTimeSinceCreation();
+}
+
+base::TimeDelta PasswordStoreAndroidBackend::JobReturnHandler::GetDelay() {
+  return delay_;
+}
+
+PasswordStoreOperation
+PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
+  return operation_;
 }
 
 void PasswordStoreAndroidBackend::RetryOperation(

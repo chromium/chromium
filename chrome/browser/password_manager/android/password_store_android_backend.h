@@ -105,66 +105,6 @@ class PasswordStoreAndroidBackend
       PrefService* prefs);
   ~PasswordStoreAndroidBackend() override;
 
- private:
-  SEQUENCE_CHECKER(main_sequence_checker_);
-
-  // Wraps the handler for an asynchronous job (if successful or scheduled to be
-  // retried) and invokes the supplied metrics recorded upon completion. An
-  // object of this type shall be created and stored in |request_for_job_| once
-  // an asynchronous task begins, and destroyed once the job is finished.
-  // The handler stores an |operation| which determines whether the method
-  // matching the |operation| can be retried due to an error. The operations are
-  // retried with exponential backoff. The |delay| with which the job was
-  // started is stored in the handler so that the next retry of the job can
-  // increase the |delay|. NOTE: Currently only retries for operations which
-  // match 1-to-1 to methods are supported.
-  class JobReturnHandler {
-   public:
-    using ErrorReply = base::OnceClosure;
-
-    JobReturnHandler(LoginsOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     base::TimeDelta delay,
-                     PasswordStoreOperation operation);
-    JobReturnHandler(PasswordChangesOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder,
-                     base::TimeDelta delay,
-                     PasswordStoreOperation operation);
-    JobReturnHandler(JobReturnHandler&&);
-    JobReturnHandler& operator=(JobReturnHandler&&) = delete;
-    ~JobReturnHandler();
-
-    template <typename T>
-    bool Holds() const {
-      return absl::holds_alternative<T>(success_callback_);
-    }
-
-    template <typename T>
-    T&& Get() && {
-      return std::move(absl::get<T>(success_callback_));
-    }
-
-    void RecordMetrics(std::optional<AndroidBackendError> error) const;
-    base::TimeDelta GetElapsedTimeSinceStart() const;
-
-    base::TimeDelta GetDelay();
-    PasswordStoreOperation GetOperation();
-
-   private:
-    absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
-        success_callback_;
-    PasswordStoreBackendMetricsRecorder metrics_recorder_;
-    base::TimeDelta delay_;
-    PasswordStoreOperation operation_;
-  };
-
-  using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
-  // Using a small_map should ensure that we handle rare cases with many jobs
-  // like a bulk deletion just as well as the normal, rather small job load.
-  using JobMap = base::small_map<
-      std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
-
- protected:
   // Internal methods corresponding to PasswordStoreBackendInterface that take
   // the account corresponding to the GMS Core storage as a param.
   void Init(
@@ -241,6 +181,64 @@ class PasswordStoreAndroidBackend
       AndroidBackendAPIErrorCode error) = 0;
 
  private:
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  // Wraps the handler for an asynchronous job (if successful or scheduled to be
+  // retried) and invokes the supplied metrics recorded upon completion. An
+  // object of this type shall be created and stored in |request_for_job_| once
+  // an asynchronous task begins, and destroyed once the job is finished.
+  // The handler stores an |operation| which determines whether the method
+  // matching the |operation| can be retried due to an error. The operations are
+  // retried with exponential backoff. The |delay| with which the job was
+  // started is stored in the handler so that the next retry of the job can
+  // increase the |delay|. NOTE: Currently only retries for operations which
+  // match 1-to-1 to methods are supported.
+  class JobReturnHandler {
+   public:
+    using ErrorReply = base::OnceClosure;
+
+    JobReturnHandler(LoginsOrErrorReply callback,
+                     PasswordStoreBackendMetricsRecorder metrics_recorder,
+                     base::TimeDelta delay,
+                     PasswordStoreOperation operation);
+    JobReturnHandler(PasswordChangesOrErrorReply callback,
+                     PasswordStoreBackendMetricsRecorder metrics_recorder,
+                     base::TimeDelta delay,
+                     PasswordStoreOperation operation);
+    JobReturnHandler(JobReturnHandler&&);
+    JobReturnHandler& operator=(JobReturnHandler&&) = delete;
+    ~JobReturnHandler();
+
+    template <typename T>
+    bool Holds() const {
+      return absl::holds_alternative<T>(success_callback_);
+    }
+
+    template <typename T>
+    T&& Get() && {
+      return std::move(absl::get<T>(success_callback_));
+    }
+
+    void RecordMetrics(std::optional<AndroidBackendError> error) const;
+    base::TimeDelta GetElapsedTimeSinceStart() const;
+
+    base::TimeDelta GetDelay();
+    PasswordStoreOperation GetOperation();
+
+   private:
+    absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
+        success_callback_;
+    PasswordStoreBackendMetricsRecorder metrics_recorder_;
+    base::TimeDelta delay_;
+    PasswordStoreOperation operation_;
+  };
+
+  using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
+  // Using a small_map should ensure that we handle rare cases with many jobs
+  // like a bulk deletion just as well as the normal, rather small job load.
+  using JobMap = base::small_map<
+      std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
+
   // Implements the retry mechanism for the operations that are safe to retry.
   // The given |delay| comes from the previous attempt to run the operation.
   // The delay before the next retry will be double the value of |delay|,
@@ -335,7 +333,6 @@ class PasswordStoreAndroidBackend
   // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
 
- private:
   raw_ptr<PrefService> prefs_ = nullptr;
 
   base::Time initialized_at_ = base::Time::Now();
