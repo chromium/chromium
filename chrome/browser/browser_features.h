@@ -37,8 +37,6 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
-BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
 #endif  // BUILDFLAG(IS_CHROMEOS)

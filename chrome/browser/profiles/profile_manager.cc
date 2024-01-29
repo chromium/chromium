@@ -969,13 +969,6 @@ void ProfileManager::CreateMultiProfileAsync(
   init_params.is_omitted = is_hidden;
   storage.AddProfile(std::move(init_params));
 
-  if (!base::FeatureList::IsEnabled(
-          features::kNukeProfileBeforeCreateMultiAsync)) {
-    profile_manager->CreateProfileAsync(
-        new_path, std::move(initialized_callback), std::move(created_callback));
-    return;
-  }
-
   // As another check, make sure the generated path is not present in the file
   // system (there could be orphan profile dirs).
   // TODO(crbug.com/1277948): There can be a theoretical race condition with a
