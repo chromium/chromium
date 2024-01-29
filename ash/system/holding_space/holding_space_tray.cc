@@ -460,7 +460,7 @@ void HoldingSpaceTray::PerformDrop(
 }
 
 void HoldingSpaceTray::Layout() {
-  TrayBackgroundView::Layout();
+  LayoutSuperclass<TrayBackgroundView>(this);
 
   // The `drop_target_overlay_` should always fill this view's bounds as they
   // are perceived by the user. Note that the user perceives the bounds of this

@@ -178,7 +178,7 @@ Legend::Legend(const std::vector<Legend::Entry>& contents) {
 Legend::~Legend() = default;
 
 void Legend::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   gfx::Size max_size;
   bool updated = false;
@@ -201,7 +201,7 @@ void Legend::Layout() {
 
       static_cast<LegendEntry*>(view)->value()->SetPreferredSize(max_size);
     }
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
   }
 }
 

@@ -287,7 +287,7 @@ gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize()
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
   if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
     return;
   }
   LayoutAppButtonsView(this);
@@ -335,7 +335,7 @@ gfx::Size PhoneHubRecentAppsView::LoadingView::CalculatePreferredSize() const {
 
 void PhoneHubRecentAppsView::LoadingView::Layout() {
   if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
     return;
   }
   LayoutAppButtonsView(this);

@@ -52,7 +52,7 @@ void UnifiedMediaControlsContainer::Layout() {
   for (views::View* child : children()) {
     child->SetBoundsRect(GetContentsBounds());
   }
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 gfx::Size UnifiedMediaControlsContainer::CalculatePreferredSize() const {

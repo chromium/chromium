@@ -296,7 +296,7 @@ void GlanceablesClassroomItemView::GetAccessibleNodeData(
 }
 
 void GlanceablesClassroomItemView::Layout() {
-  views::Button::Layout();
+  LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->Layout();
 }
 

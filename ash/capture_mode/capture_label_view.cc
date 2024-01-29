@@ -335,7 +335,7 @@ void CaptureLabelView::Layout() {
 
   // This is necessary to update the focus ring, which is a child view of
   // `this`.
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 gfx::Size CaptureLabelView::CalculatePreferredSize() const {

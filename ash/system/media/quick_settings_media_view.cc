@@ -66,7 +66,7 @@ class MediaScrollView : public views::ScrollView,
 
   void Layout() override {
     contents()->SizeToPreferredSize();
-    views::ScrollView::Layout();
+    LayoutSuperclass<views::ScrollView>(this);
   }
 
   void ScrollRectToVisible(const gfx::Rect& rect) override {

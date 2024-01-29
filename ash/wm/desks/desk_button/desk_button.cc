@@ -85,7 +85,7 @@ void DeskButton::Layout() {
     return;
   }
 
-  views::Button::Layout();
+  LayoutSuperclass<views::Button>(this);
 
   gfx::Rect available_bounds = gfx::Rect(size());
 

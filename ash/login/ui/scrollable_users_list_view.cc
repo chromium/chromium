@@ -81,7 +81,7 @@ class EnsureMinHeightView : public NonAccessibleView {
       new_size.set_height(min_height);
       SetSize(new_size);
     }
-    NonAccessibleView::Layout();
+    LayoutSuperclass<NonAccessibleView>(this);
   }
 };
 
@@ -268,7 +268,7 @@ void ScrollableUsersListView::Layout() {
   UpdateUserViewHostLayoutInsets();
 
   // Layout everything.
-  ScrollView::Layout();
+  LayoutSuperclass<ScrollView>(this);
 }
 
 void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {

@@ -544,7 +544,7 @@ void DeskPreviewView::Layout() {
   DCHECK(desk_mirrored_contents_layer);
   desk_mirrored_contents_layer->SetTransform(transform);
 
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {

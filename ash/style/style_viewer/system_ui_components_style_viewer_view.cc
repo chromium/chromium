@@ -270,7 +270,7 @@ void SystemUIComponentsStyleViewerView::Layout() {
   menu_contents_view_->SetSize(
       gfx::Size(kMenuWidth, menu_contents_view_->GetPreferredSize().height()));
   components_grid_view_->SizeToPreferredSize();
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 std::u16string SystemUIComponentsStyleViewerView::GetWindowTitle() const {

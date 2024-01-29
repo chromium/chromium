@@ -150,7 +150,7 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
 }
 
 void TabSlider::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // Synchronize the selector bounds with selected button's bounds.
   auto it =

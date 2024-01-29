@@ -137,7 +137,7 @@ gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize() const {
 }
 
 void CameraRollView::CameraRollItemsView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   CalculateIdealBounds();
   for (size_t i = 0; i < camera_roll_items_.view_size(); ++i) {
     auto* thumbnail = camera_roll_items_.view_at(i);

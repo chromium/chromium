@@ -594,7 +594,7 @@ gfx::Size LoginUserView::CalculatePreferredSize() const {
 }
 
 void LoginUserView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   tap_button_->SetBoundsRect(GetLocalBounds());
 }
 

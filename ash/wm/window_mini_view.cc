@@ -272,7 +272,7 @@ void WindowMiniView::Layout() {
   }
 
   header_view_->SetBoundsRect(GetHeaderBounds());
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

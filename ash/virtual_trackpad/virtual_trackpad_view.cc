@@ -313,7 +313,7 @@ void VirtualTrackpadView::Toggle() {
 }
 
 void VirtualTrackpadView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // The height of the finger buttons container stays the same while the width
   // matches the parent width.

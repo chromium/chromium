@@ -414,7 +414,7 @@ void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SavedDeskItemView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   if (delete_button_) {
     const gfx::Size delete_button_size = delete_button_->GetPreferredSize();

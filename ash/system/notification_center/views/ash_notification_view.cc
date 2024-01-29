@@ -313,7 +313,7 @@ void AshNotificationView::Layout() {
     return;
   }
 
-  message_center::NotificationViewBase::Layout();
+  LayoutSuperclass<message_center::NotificationViewBase>(this);
 }
 
 void AshNotificationView::GroupedNotificationsContainer::

@@ -314,7 +314,7 @@ void TrayDetailedView::CloseBubble() {
 }
 
 void TrayDetailedView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   if (scroller_ && !scroller_->is_bounded()) {
     scroller_->ClipHeightTo(0, scroller_->height());
   }

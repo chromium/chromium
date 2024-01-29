@@ -493,7 +493,7 @@ void Combobox::RemovedFromWidget() {
 }
 
 void Combobox::Layout() {
-  views::Button::Layout();
+  LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->Layout();
 }
 

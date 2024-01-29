@@ -416,7 +416,7 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void LoginShelfView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   UpdateButtonUnionBounds();
 }
 

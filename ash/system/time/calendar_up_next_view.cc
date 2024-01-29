@@ -282,7 +282,7 @@ void CalendarUpNextView::Layout() {
 
   // `content_view_` is a child of this class so we need to Layout after
   // changing its width.
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // After laying out the `content_view_`, we need to set the initial scroll
   // button state.

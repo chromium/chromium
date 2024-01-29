@@ -368,7 +368,7 @@ void AppListToastView::Layout() {
         label_width, subtitle_label_->GetHeightForWidth(label_width)));
   }
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void AppListToastView::UpdateInteriorMargins(const gfx::Insets& margin) {

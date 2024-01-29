@@ -367,7 +367,7 @@ class ImeMenuListView : public ImeListView {
   void Layout() override {
     gfx::Range height_range = GetImeListViewRange();
     scroller()->ClipHeightTo(height_range.start(), height_range.end());
-    ImeListView::Layout();
+    LayoutSuperclass<ImeListView>(this);
   }
 
   std::unique_ptr<Delegate> delegate_;

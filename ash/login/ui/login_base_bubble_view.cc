@@ -302,7 +302,7 @@ gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
 }
 
 void LoginBaseBubbleView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // If layout occurs while the bubble is visible (i.e. due to Show()), its
   // bounds may change because of the parent's LayoutManager. This allows the

@@ -435,7 +435,7 @@ class DragImageView : public views::View {
   }
 
   void Layout() override {
-    views::View::Layout();
+    LayoutSuperclass<views::View>(this);
 
     if (!drag_image_overflow_badge_)
       return;

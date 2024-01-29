@@ -666,7 +666,7 @@ void ArcNotificationContentView::Layout() {
     // window is opaque, because that method calls
     // views::NativeViewHostAura::ShowWidget() and aura::Window::Show() which
     // DCHECKs the opacity of the window.
-    views::NativeViewHost::Layout();
+    LayoutSuperclass<views::NativeViewHost>(this);
     // Reinstall mask to update rounded mask insets. Set null mask unless radius
     // is set.
     UpdateMask(false /* force_update */);

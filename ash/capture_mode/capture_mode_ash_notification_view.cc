@@ -53,7 +53,7 @@ void CaptureModeAshNotificationView::UpdateWithNotification(
 }
 
 void CaptureModeAshNotificationView::Layout() {
-  AshNotificationView::Layout();
+  LayoutSuperclass<AshNotificationView>(this);
   if (!extra_view_)
     return;
 

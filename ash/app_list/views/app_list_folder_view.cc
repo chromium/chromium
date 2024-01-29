@@ -877,7 +877,7 @@ void AppListFolderView::AddedToWidget() {
 }
 
 void AppListFolderView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();

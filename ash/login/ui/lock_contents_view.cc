@@ -551,7 +551,7 @@ void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
 }
 
 void LockContentsView::Layout() {
-  View::Layout();
+  LayoutSuperclass<View>(this);
   LayoutTopHeader();
   LayoutBottomStatusIndicator();
   LayoutUserAddingScreenIndicator();

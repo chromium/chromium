@@ -125,7 +125,7 @@ class PaginationTestScrollView : public views::ScrollView,
 
   void Layout() override {
     page_container_->SizeToPreferredSize();
-    views::ScrollView::Layout();
+    LayoutSuperclass<views::ScrollView>(this);
   }
 
   // PaginationModelObserver:

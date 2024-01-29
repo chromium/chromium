@@ -340,7 +340,7 @@ void FocusModeTray::OnActiveSessionDurationChanged(
 }
 
 void FocusModeTray::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // Position the progress indicator based on the position of the image view.
   // The centered position inside of the tray container changes based on shelf

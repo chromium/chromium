@@ -169,7 +169,7 @@ void DictationButtonTray::OnThemeChanged() {
 }
 
 void DictationButtonTray::Layout() {
-  TrayBackgroundView::Layout();
+  LayoutSuperclass<TrayBackgroundView>(this);
   UpdateProgressIndicatorBounds();
 }
 

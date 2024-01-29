@@ -123,7 +123,7 @@ gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
 }
 
 void TaskContinuationView::TaskChipsView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   CalculateIdealBounds();
   for (size_t i = 0; i < task_chips_.view_size(); ++i) {
     auto* button = task_chips_.view_at(i);

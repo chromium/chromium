@@ -360,7 +360,7 @@ gfx::Size HomeButton::CalculatePreferredSize() const {
 }
 
 void HomeButton::Layout() {
-  ShelfControlButton::Layout();
+  LayoutSuperclass<ShelfControlButton>(this);
 
   button_image_view_->SetBoundsRect(
       gfx::Rect(ShelfControlButton::CalculatePreferredSize()));

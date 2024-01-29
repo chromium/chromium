@@ -127,7 +127,7 @@ void ReferenceLines::Layout() {
                          left_bottom_label_->GetPreferredSize().height() -
                          label_border});
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 void ReferenceLines::OnPaint(gfx::Canvas* canvas) {

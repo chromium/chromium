@@ -52,7 +52,7 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
 }
 
 void GlanceableTrayChildBubble::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   if (error_message_) {
     error_message_->UpdateBoundsToContainer(GetLocalBounds());
   }

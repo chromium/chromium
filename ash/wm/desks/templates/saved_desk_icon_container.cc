@@ -156,7 +156,7 @@ SavedDeskIconContainer::SavedDeskIconContainer() {
 SavedDeskIconContainer::~SavedDeskIconContainer() = default;
 
 void SavedDeskIconContainer::Layout() {
-  views::BoxLayoutView::Layout();
+  LayoutSuperclass<views::BoxLayoutView>(this);
 
   // At this point we can not guarantee whether the child icon view has done
   // its icon loading yet, but `SortIconsAndUpdateOverflowIcon()` will be

@@ -966,7 +966,7 @@ void LockDebugView::Layout() {
   global_action_view_container_->SizeToPreferredSize();
   per_user_action_view_container_->SizeToPreferredSize();
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   lock_->SetBoundsRect(GetLocalBounds());
   container_->SetPosition(gfx::Point());

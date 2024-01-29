@@ -101,7 +101,7 @@ void OptionButtonBase::Layout() {
   image()->SetBoundsRect(
       gfx::Rect(image_origin, gfx::Size(kIconSize, kIconSize)));
   label->SetBoundsRect(gfx::Rect(label_origin, label_size));
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 void OptionButtonBase::OnThemeChanged() {

@@ -677,7 +677,7 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 void AppListBubbleView::Layout() {
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   // The folder view has custom layout code that centers the folder over the
   // associated root apps grid folder item.

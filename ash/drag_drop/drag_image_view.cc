@@ -182,7 +182,7 @@ gfx::Size DragImageView::GetMinimumSize() const {
 }
 
 void DragImageView::Layout() {
-  View::Layout();
+  LayoutSuperclass<View>(this);
 
   // Only consider resizing the widget for the drag hint image if we are in a
   // touch initiated drag.

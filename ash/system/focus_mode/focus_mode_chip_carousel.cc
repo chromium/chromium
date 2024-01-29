@@ -131,7 +131,7 @@ void FocusModeChipCarousel::Layout() {
     return;
   }
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
   scroll_contents_->SizeToPreferredSize();
 
   const gfx::Rect contents_bounds = GetContentsBounds();

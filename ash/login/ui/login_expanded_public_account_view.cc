@@ -933,7 +933,7 @@ int LoginExpandedPublicAccountView::GetHeightForWidth(int width) const {
 }
 
 void LoginExpandedPublicAccountView::Layout() {
-  View::Layout();
+  LayoutSuperclass<View>(this);
 
   submit_button_->SizeToPreferredSize();
   const int submit_button_x =

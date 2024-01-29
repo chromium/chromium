@@ -356,7 +356,7 @@ void AnimationSpeedControl::Layout() {
   slider_->SetPreferredSize(slider_size);
   slider_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, max_size.width() / 2)));
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 class HUDActionButton : public views::LabelButton {

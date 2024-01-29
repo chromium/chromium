@@ -838,7 +838,7 @@ void AppsContainerView::Layout() {
   if (rect.IsEmpty())
     return;
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 
   const int app_list_y =
       GetAppListY(contents_view_->app_list_view()->app_list_state());
