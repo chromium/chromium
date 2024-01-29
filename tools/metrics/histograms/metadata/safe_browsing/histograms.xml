@@ -2579,7 +2579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.UpdateLatency" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-03-04">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
