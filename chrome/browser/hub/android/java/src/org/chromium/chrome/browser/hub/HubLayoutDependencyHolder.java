@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
@@ -40,7 +41,7 @@ public class HubLayoutDependencyHolder {
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull Supplier<View> scrimAnchorViewSupplier,
-            @NonNull Supplier<Boolean> isIncognitoSupplier) {
+            @NonNull ObservableSupplier<Boolean> isIncognitoSupplier) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
@@ -50,10 +51,10 @@ public class HubLayoutDependencyHolder {
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
-     * @param hubRootViewGroup The root view to attach the {@link Hub} to.
+     * @param hubRootViewGroupSupplier Supplier for the root view to attach the hub to.
      * @param scrimController The {@link HubLayoutScrimController} for managing scrims.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     HubLayoutDependencyHolder(
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,

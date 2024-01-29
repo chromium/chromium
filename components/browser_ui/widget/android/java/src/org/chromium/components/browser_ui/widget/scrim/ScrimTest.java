@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -64,10 +65,17 @@ public class ScrimTest {
     private ScrimCoordinator mScrimCoordinator;
     private View mAnchorView;
 
+    private final PayloadCallbackHelper<Integer> mScrimColorCallbackHelper =
+            new PayloadCallbackHelper<>();
     private final CallbackHelper mStatusBarCallbackHelper = new CallbackHelper();
     private final CallbackHelper mNavigationBarCallbackHelper = new CallbackHelper();
     private final ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate =
             new ScrimCoordinator.SystemUiScrimDelegate() {
+                @Override
+                public void setScrimColor(int scrimColor) {
+                    mScrimColorCallbackHelper.notifyCalled(scrimColor);
+                }
+
                 @Override
                 public void setStatusBarScrimFraction(float scrimFraction) {
                     mStatusBarCallbackHelper.notifyCalled();
@@ -206,6 +214,22 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
+    public void testColor_mutated() throws TimeoutException {
+        PropertyModel model = buildModel(false, false, true, Color.GREEN);
+
+        showScrim(model, false);
+        assertScrimColor(Color.GREEN);
+        assertEquals(Color.GREEN, mScrimColorCallbackHelper.getOnlyPayloadBlocking().intValue());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ScrimProperties.BACKGROUND_COLOR, Color.RED));
+        assertScrimColor(Color.RED);
+        assertEquals(Color.RED, mScrimColorCallbackHelper.getPayloadByIndexBlocking(1).intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
     public void testHierarchy_behindAnchor() throws TimeoutException {
         showScrim(buildModel(true, false, false, Color.RED), false);
 
@@ -266,7 +290,6 @@ public class ScrimTest {
         showScrim(model, false);
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
-        int callCount = mScrimClickCallbackHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->

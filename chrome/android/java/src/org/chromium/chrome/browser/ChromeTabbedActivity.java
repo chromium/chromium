@@ -53,12 +53,14 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.UnwrapObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
@@ -753,12 +755,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             return (ViewGroup) stub.inflate();
                         });
 
+        ObservableSupplier<Boolean> incognitoSupplier =
+                new UnwrapObservableSupplier<>(
+                        mTabModelSelector.getCurrentTabModelSupplier(),
+                        (tabModel) -> tabModel == null ? false : tabModel.isIncognito());
         return new HubLayoutDependencyHolder(
                 mHubProvider.getHubManagerSupplier(),
                 rootViewSupplier,
                 mRootUiCoordinator.getScrimCoordinator(),
                 rootViewSupplier::get,
-                mTabModelSelector::isIncognitoSelected);
+                incognitoSupplier);
     }
 
     private void setupCompositorContentPreNativeForPhone() {
