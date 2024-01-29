@@ -379,7 +379,6 @@ public class HubLayout extends Layout implements HubLayoutController {
     @Override
     public void doneHiding() {
         try (TraceEvent e = TraceEvent.scoped("HubLayout.doneHiding")) {
-            super.doneHiding();
             HubContainerView containerView = mHubController.getContainerView();
             containerView.setVisibility(View.INVISIBLE);
             mRootView.removeView(containerView);
@@ -394,6 +393,9 @@ public class HubLayout extends Layout implements HubLayoutController {
             // This is a legacy value from the stack tab switcher, we are using at a proxy for Hub
             // hidden.
             RecordUserAction.record("MobileExitStackView");
+
+            // Do this last so the Hub is ready to show again.
+            super.doneHiding();
         }
     }
 
