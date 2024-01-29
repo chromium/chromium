@@ -150,7 +150,7 @@ void NotificationInputContainer::OnThemeChanged() {
 }
 
 void NotificationInputContainer::Layout() {
-  View::Layout();
+  LayoutSuperclass<View>(this);
 
   if (!ink_drop_container_)
     return;

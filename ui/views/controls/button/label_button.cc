@@ -437,7 +437,7 @@ void LabelButton::Layout() {
   }
 
   label_->SetBoundsRect(label_bounds);
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

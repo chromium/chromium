@@ -236,7 +236,7 @@ NotificationViewBase::~NotificationViewBase() {
 }
 
 void NotificationViewBase::Layout() {
-  MessageView::Layout();
+  LayoutSuperclass<MessageView>(this);
 
   // We need to call IsExpandable() after doing superclass layout, since whether
   // we should show expand button or not depends on the current view layout.

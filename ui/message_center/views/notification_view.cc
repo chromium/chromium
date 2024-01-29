@@ -628,7 +628,7 @@ void NotificationView::RemoveLayerFromRegions(ui::Layer* layer) {
 }
 
 void NotificationView::Layout() {
-  NotificationViewBase::Layout();
+  LayoutSuperclass<NotificationViewBase>(this);
 
   // The animation is needed to run inside of the border.
   ink_drop_container_->SetBoundsRect(GetLocalBounds());

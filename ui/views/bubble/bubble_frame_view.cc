@@ -609,7 +609,7 @@ void BubbleFrameView::Layout() {
   }
 
   // Lay out the client view.
-  NonClientFrameView::Layout();
+  LayoutSuperclass<NonClientFrameView>(this);
 }
 
 void BubbleFrameView::OnThemeChanged() {

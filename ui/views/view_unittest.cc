@@ -254,7 +254,7 @@ class TestView : public View {
 
   void Layout() override {
     did_layout_ = true;
-    View::Layout();
+    LayoutSuperclass<View>(this);
   }
 
   void SetDestructionCallback(base::OnceClosure destruction_callback) {

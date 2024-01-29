@@ -272,7 +272,7 @@ class VIEWS_EXPORT ManualLayoutUtil {
   //    layout_util.SetViewHidden(foo_button_, !foo_enabled);
   //
   //    // Do the standard Views layout, which invokes the layout manager.
-  //    View::Layout();
+  //    LayoutSuperclass<View>(this);
   //  }
   // ```
   //

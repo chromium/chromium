@@ -151,7 +151,7 @@ class CheckboxControl : public Checkbox {
 
   void Layout() override {
     // Skip LabelButton to use LayoutManager.
-    View::Layout();
+    LayoutSuperclass<View>(this);
   }
 
   gfx::Size CalculatePreferredSize() const override {
