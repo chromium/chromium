@@ -2695,7 +2695,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   auto rule_types_list =
       std::make_unique<protocol::Array<protocol::CSS::CSSRuleType>>();
 
-  CSSRule* parent_rule = rule->parentRule();
+  CSSRule* parent_rule = rule;
   auto nesting_selectors = std::make_unique<protocol::Array<String>>();
   while (parent_rule) {
     CollectLayersFromRule(parent_rule, layers_list.get(),
@@ -2708,9 +2708,12 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
                             rule_types_list.get());
     CollectScopesFromRule(parent_rule, scopes_list.get(),
                           rule_types_list.get());
-    if (auto* style_rule = DynamicTo<CSSStyleRule>(parent_rule)) {
-      nesting_selectors->emplace_back(style_rule->selectorText());
-      rule_types_list->emplace_back(protocol::CSS::CSSRuleTypeEnum::StyleRule);
+    if (parent_rule != rule) {
+      if (auto* style_rule = DynamicTo<CSSStyleRule>(parent_rule)) {
+        nesting_selectors->emplace_back(style_rule->selectorText());
+        rule_types_list->emplace_back(
+            protocol::CSS::CSSRuleTypeEnum::StyleRule);
+      }
     }
 
     if (parent_rule->parentRule()) {
