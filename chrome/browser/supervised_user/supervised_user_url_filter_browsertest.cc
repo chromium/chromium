@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -37,10 +39,10 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -55,6 +57,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+constexpr char kBlockedContentUkmName[] = "FamilyLinkUser.BlockedContent";
+constexpr char kBlockedContentUkmMainFrameMetricName[] = "MainFrameBlocked";
+constexpr char kBlockedContentUkmIFrameMetricName[] = "NumBlockedIframes";
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -205,6 +211,7 @@ using SupervisedUserURLFilterTest = SupervisedUserURLFilterTestBase;
 IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   WebContents* prev_tab = tab_strip->GetActiveWebContents();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Open URL in a new tab.
   GURL test_url("http://www.example.com/simple.html");
@@ -216,6 +223,13 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
   // Check that there is no interstitial.
   WebContents* tab = tab_strip->GetActiveWebContents();
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Check that no UKM is recorded.
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntries(kBlockedContentUkmName,
+                              {kBlockedContentUkmMainFrameMetricName,
+                               kBlockedContentUkmIFrameMetricName})
+                  .empty());
 
   {
     // Block the current URL.
@@ -238,6 +252,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
 
     // Check that we got the interstitial.
     ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+    // Check that no UKM is recorded (because the mainframe was blocked due to
+    // a manual block rather than due to safesites).
+    EXPECT_TRUE(ukm_recorder
+                    .GetEntries(kBlockedContentUkmName,
+                                {kBlockedContentUkmMainFrameMetricName,
+                                 kBlockedContentUkmIFrameMetricName})
+                    .empty());
   }
 
   {
@@ -432,6 +454,29 @@ class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTestBase {
             static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
   }
 };
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, RecordBlockedContentUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Open URL in a new tab, which is blocked by ClassifyUrl async checks.
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Check that the interstitial is displayed.
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  // Check that a UKM is recorded for the main frame only.
+  const auto ukm_entries =
+      ukm_recorder.GetEntriesByName(kBlockedContentUkmName);
+  CHECK_EQ(ukm_entries.size(), 1u);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], kBlockedContentUkmMainFrameMetricName, true);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], kBlockedContentUkmIFrameMetricName, 0);
+}
 
 // Tests that it's possible to navigate from a blocked page to another blocked
 // page.

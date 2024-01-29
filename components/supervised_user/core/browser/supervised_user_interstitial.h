@@ -92,13 +92,17 @@ class SupervisedUserInterstitial {
   WebContentHandler* web_content_handler() {
     return web_content_handler_.get();
   }
+  FilteringBehaviorReason filtering_behavior_reason() const {
+    return filtering_behavior_reason_;
+  }
 
  private:
   SupervisedUserInterstitial(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
       const GURL& url,
-      const std::u16string& supervised_user_name);
+      const std::u16string& supervised_user_name,
+      FilteringBehaviorReason reason);
 
   void OutputRequestPermissionSourceMetric();
 
@@ -109,6 +113,8 @@ class SupervisedUserInterstitial {
   // The last committed url for this frame.
   GURL url_;
   std::u16string supervised_user_name_;
+
+  const FilteringBehaviorReason filtering_behavior_reason_;
 };
 }  // namespace supervised_user
 
