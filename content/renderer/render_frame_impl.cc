@@ -2841,18 +2841,14 @@ void RenderFrameImpl::CommitNavigationWithParams(
     CHECK(!commit_params->not_restored_reasons);
   }
 
-  // Skip LCPP hints if the document isn't being loaded in the main frame,
-  // if the LCPP performance experiment is enabled.
-  if (!blink::features::
-           kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
-               .Get() ||
-      frame_->IsOutermostMainFrame()) {
-    frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
-  } else {
-    // When there's a pre-existing LCPP hint on frame, we want to remove the
-    // existing hint. Hence calling SetLCPPHint(nullptr) is required.
-    frame_->SetLCPPHint(nullptr);
-  }
+  // |lcpp_hint| is set only when the frame is eligible (e.g. it's an outer
+  // most main frame), which is checked in the browser process. Otherwise
+  // nullptr.
+  //
+  // When there's a pre-existing LCPP hint on frame, we want to remove the
+  // existing hint. Hence calling SetLCPPHint() is always required.
+  CHECK(!commit_params->lcpp_hint || frame_->IsOutermostMainFrame());
+  frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If
   // there is an active |MHTMLBodyLoaderClient|, the browser-side navigation
