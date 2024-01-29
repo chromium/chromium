@@ -61,6 +61,96 @@ std::string_view EvalLocationString(EvalLocation location) {
   }
 }
 
+// Emit an enum for for each event present in `session_events`.
+// Split the event counts histogram on `eval_location` if provided.
+void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
+                                  const ComposeSessionEvents& session_events) {
+  std::string histogram;
+  if (!eval_location) {
+    histogram = kComposeSessionEventCounts;
+  } else {
+    histogram = base::StrCat({"Compose.", EvalLocationString(*eval_location),
+                              ".Session.EventCounts"});
+  }
+  if (session_events.dialog_shown_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kDialogShown);
+  }
+  if (session_events.fre_dialog_shown_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kFREShown);
+  }
+  if (session_events.fre_completed_in_session) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kFREAccepted);
+  }
+  if (session_events.msbb_dialog_shown_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kMSBBShown);
+  }
+  if (session_events.msbb_settings_opened) {
+    base::UmaHistogramEnumeration(
+        histogram, ComposeSessionEventTypes::kMSBBSettingsOpened);
+  }
+  if (session_events.msbb_enabled_in_session) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kMSBBEnabled);
+  }
+  if (session_events.has_initial_text) {
+    base::UmaHistogramEnumeration(
+        histogram, ComposeSessionEventTypes::kStartedWithSelection);
+  }
+  if (session_events.compose_count > 0) {
+    // The first Compose event has to be "Create".
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kCreateClicked);
+  }
+  if (session_events.update_input_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kUpdateClicked);
+  }
+  if (session_events.regenerate_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kRetryClicked);
+  }
+  if (session_events.undo_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kUndoClicked);
+  }
+  if (session_events.shorten_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kShortenClicked);
+  }
+  if (session_events.lengthen_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kElaborateClicked);
+  }
+  if (session_events.casual_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kCasualClicked);
+  }
+  if (session_events.formal_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kFormalClicked);
+  }
+  if (session_events.has_thumbs_down) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kThumbsDown);
+  }
+  if (session_events.has_thumbs_up) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kThumbsUp);
+  }
+  if (session_events.inserted_results) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kInsertClicked);
+  }
+  if (session_events.close_clicked) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kCloseClicked);
+  }
+}
+
 }  // namespace
 
 PageUkmTracker::PageUkmTracker(ukm::SourceId source_id)
@@ -251,87 +341,11 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
   base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
                                session_events.update_input_count);
 
-  // Log all events that occurred during the session. Each event type can be
-  // logged at most once per session.
-  if (session_events.dialog_shown_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kDialogShown);
+  LogComposeSessionEventCounts(std::nullopt, session_events);
+  if (eval_location) {
+    LogComposeSessionEventCounts(eval_location, session_events);
   }
-  if (session_events.fre_dialog_shown_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kFREShown);
-  }
-  if (session_events.fre_completed_in_session) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kFREAccepted);
-  }
-  if (session_events.msbb_dialog_shown_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kMSBBShown);
-  }
-  if (session_events.msbb_settings_opened) {
-    base::UmaHistogramEnumeration(
-        kComposeSessionEventCounts,
-        ComposeSessionEventTypes::kMSBBSettingsOpened);
-  }
-  if (session_events.msbb_enabled_in_session) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kMSBBEnabled);
-  }
-  if (session_events.has_initial_text) {
-    base::UmaHistogramEnumeration(
-        kComposeSessionEventCounts,
-        ComposeSessionEventTypes::kStartedWithSelection);
-  }
-  if (session_events.compose_count > 0) {
-    // The first Compose event has to be "Create".
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kCreateClicked);
-  }
-  if (session_events.update_input_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kUpdateClicked);
-  }
-  if (session_events.regenerate_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kRetryClicked);
-  }
-  if (session_events.undo_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kUndoClicked);
-  }
-  if (session_events.shorten_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kShortenClicked);
-  }
-  if (session_events.lengthen_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kElaborateClicked);
-  }
-  if (session_events.casual_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kCasualClicked);
-  }
-  if (session_events.formal_count > 0) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kFormalClicked);
-  }
-  if (session_events.has_thumbs_down) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kThumbsDown);
-  }
-  if (session_events.has_thumbs_up) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kThumbsUp);
-  }
-  if (session_events.inserted_results) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kInsertClicked);
-  }
-  if (session_events.close_clicked) {
-    base::UmaHistogramEnumeration(kComposeSessionEventCounts,
-                                  ComposeSessionEventTypes::kCloseClicked);
-  }
+
   if (eval_location) {
     base::UmaHistogramCounts1000(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),

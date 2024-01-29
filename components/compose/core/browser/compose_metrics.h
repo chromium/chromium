@@ -144,6 +144,13 @@ enum class ComposeShowStatus {
   kMaxValue = kFeatureFlagDisabled,
 };
 
+enum class EvalLocation : int {
+  // Response was evaluated on the server.
+  kServer,
+  // Response was evaluated on the device.
+  kOnDevice,
+};
+
 // Struct containing event and logging information for an individual
 // |ComposeSession|.
 struct ComposeSessionEvents {
@@ -199,13 +206,6 @@ struct ComposeSessionEvents {
   unsigned int on_device_responses = 0;
   // Number of server responses received.
   unsigned int server_responses = 0;
-};
-
-enum class EvalLocation {
-  // Response was evaluated on the server.
-  kServer,
-  // Response was evaluated on the device.
-  kOnDevice,
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose

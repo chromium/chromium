@@ -460,6 +460,9 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
   histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kCreateClicked, 1);
   histograms().ExpectBucketCount(
