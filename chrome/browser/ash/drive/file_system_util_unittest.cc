@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -141,6 +142,57 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
   }
+}
+
+TEST_F(ProfileRelatedFileSystemUtilTest,
+       CheckDriveEnabledAndDriveAvailabilityForProfile) {
+  TestingProfile profile;
+  PrefService* const prefs = profile.GetPrefs();
+  DCHECK(prefs);
+
+  // Set disable Drive preference to true.
+  prefs->SetBoolean(prefs::kDisableDrive, true);
+
+  // Check kNotAvailableWhenDisableDrivePreferenceSet.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+            DriveAvailability::kNotAvailableWhenDisableDrivePreferenceSet);
+
+  // Set disable Drive preference to false.
+  prefs->SetBoolean(prefs::kDisableDrive, false);
+
+  // Check kNotAvailableForUninitialisedLoginState.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+            DriveAvailability::kNotAvailableForUninitialisedLoginState);
+
+  // Initialise login state.
+  ash::LoginState::Initialize();
+
+  // Check kNotAvailableForAccountType.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+            DriveAvailability::kNotAvailableForAccountType);
+
+  // Login gaia user.
+  const user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager(std::make_unique<ash::FakeChromeUserManager>());
+  const AccountId account_id(AccountId::FromUserEmailGaiaId(
+      "foobar@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId));
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      user_manager->GetPrimaryUser(), &profile);
+
+  // Check kAvailable.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+            DriveAvailability::kAvailable);
+
+  // Get incognito profile.
+  Profile* incongnito_profile = profile.GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+
+  // Check kNotAvailableInIncognito.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(incongnito_profile),
+            DriveAvailability::kNotAvailableInIncognito);
 }
 
 }  // namespace drive::util
