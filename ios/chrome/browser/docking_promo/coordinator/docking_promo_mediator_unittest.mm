@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
 
+#import "base/files/file.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/threading/thread_restrictions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
+#import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_consumer.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
@@ -32,7 +36,18 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 // Test fixture for testing the DockingPromoMediator class.
 class DockingPromoMediatorTest : public PlatformTest {
  public:
-  void SetUp() override { ClearUsageData(); }
+  void SetUp() override {
+    ClearUsageData();
+    WriteFirstRunSentinel();
+  }
+
+  void TearDown() override {
+    ClearUsageData();
+    if (FirstRun::RemoveSentinel()) {
+      FirstRun::LoadSentinelInfo();
+      FirstRun::ClearStateForTesting();
+    }
+  }
 
  protected:
   DockingPromoMediatorTest() { EnableDockingPromoFlag(); }
@@ -82,6 +97,21 @@ class DockingPromoMediatorTest : public PlatformTest {
         removeObjectForKey:kFirstRunRecencyKey];
   }
 
+  void WriteFirstRunSentinel() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FirstRun::RemoveSentinel();
+    base::File::Error file_error = base::File::FILE_OK;
+    startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
+        FirstRun::CreateSentinel(&file_error);
+    ASSERT_EQ(sentinel_created,
+              startup_metric_utils::FirstRunSentinelCreationResult::kSuccess)
+        << "Error creating FirstRun sentinel: "
+        << base::File::ErrorToString(file_error);
+    FirstRun::LoadSentinelInfo();
+    FirstRun::ClearStateForTesting();
+    EXPECT_FALSE(FirstRun::IsChromeFirstRun());
+  }
+
   std::unique_ptr<MockPromosManager> promos_manager_;
   DockingPromoMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -93,11 +123,7 @@ class DockingPromoMediatorTest : public PlatformTest {
 // - The user's last activity happened 10 days ago.
 TEST_F(DockingPromoMediatorTest,
        ShouldShowDockingPromoForTwoWeekOldInactiveUsers) {
-  base::Time last_foreground = base::Time::Now() - base::Days(10);
-  base::TimeDelta time_since_last_foreground =
-      base::Time::Now() - last_foreground;
-
-  CreateDockingPromoMediator(time_since_last_foreground);
+  CreateDockingPromoMediator(base::Days(10));
   SetFirstRunRecency(14);
 
   EXPECT_TRUE([mediator_ canShowDockingPromo]);
@@ -105,14 +131,10 @@ TEST_F(DockingPromoMediatorTest,
 
 // Tests that promo is eligible for display if:
 // - The user is no more than 14 days old
-// - The user's last activity happened 3 days ago.
+// - The user's last activity happened more than 3 days ago.
 TEST_F(DockingPromoMediatorTest,
        ShouldShowDockingPromoForTwoWeekOldRecentlyInactiveUsers) {
-  base::Time last_foreground = base::Time::Now() - base::Days(3);
-  base::TimeDelta time_since_last_foreground =
-      base::Time::Now() - last_foreground;
-
-  CreateDockingPromoMediator(time_since_last_foreground);
+  CreateDockingPromoMediator(base::Days(3) + base::Seconds(1));
   SetFirstRunRecency(14);
 
   EXPECT_TRUE([mediator_ canShowDockingPromo]);
@@ -123,11 +145,7 @@ TEST_F(DockingPromoMediatorTest,
 // - The user's last activity happened more than 1 day ago.
 TEST_F(DockingPromoMediatorTest,
        ShouldShowDockingPromoForTwoDaysOldInactiveUsers) {
-  base::Time last_foreground = base::Time::Now() - base::Days(1);
-  base::TimeDelta time_since_last_foreground =
-      base::Time::Now() - last_foreground;
-
-  CreateDockingPromoMediator(time_since_last_foreground);
+  CreateDockingPromoMediator(base::Days(1) + base::Seconds(1));
   SetFirstRunRecency(2);
 
   EXPECT_TRUE([mediator_ canShowDockingPromo]);
@@ -135,25 +153,17 @@ TEST_F(DockingPromoMediatorTest,
 
 // Tests that promo is not eligible for display if:
 // - The user is more than 14 days old
-// TEST_F(DockingPromoMediatorTest,
-//       ShouldNotShowDockingPromoForUsersMoreThanTwoWeeksOld) {
-//  base::Time last_foreground = base::Time::Now() - base::Days(3);
-//  base::TimeDelta time_since_last_foreground =
-//      base::Time::Now() - last_foreground;
-//
-//  CreateDockingPromoMediator(time_since_last_foreground);
-//  SetFirstRunRecency(18);
-//
-//  EXPECT_FALSE([mediator_ canShowDockingPromo]);
-//}
+TEST_F(DockingPromoMediatorTest,
+       ShouldNotShowDockingPromoForUsersMoreThanTwoWeeksOld) {
+  CreateDockingPromoMediator(base::Days(3));
+  SetFirstRunRecency(18);
+
+  EXPECT_FALSE([mediator_ canShowDockingPromo]);
+}
 
 // Tests the Docking Promo consumer is correctly configured.
 TEST_F(DockingPromoMediatorTest, DockingPromoConsumerProperlyConfigured) {
-  base::Time last_foreground = base::Time::Now() - base::Days(3);
-  base::TimeDelta time_since_last_foreground =
-      base::Time::Now() - last_foreground;
-
-  CreateDockingPromoMediator(time_since_last_foreground);
+  CreateDockingPromoMediator(base::Days(3));
 
   ExpectConsumerSetFieldsForPromo();
 
