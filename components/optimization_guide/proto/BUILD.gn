@@ -27,6 +27,7 @@ proto_library("optimization_guide_proto") {
     "model_quality_metadata.proto",
     "model_quality_service.proto",
     "models.proto",
+    "on_device_base_model_metadata.proto",
     "on_device_tail_suggest_model_metadata.proto",
     "page_entities_metadata.proto",
     "page_entities_model_metadata.proto",
