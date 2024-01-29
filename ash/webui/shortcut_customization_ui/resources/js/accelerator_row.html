@@ -84,7 +84,7 @@
 </style>
 
 <tr id="container" tabindex$="[[getTabIndex()]]"
-    on-focus="onFocusOrMouseEnter"
+    on-focus="onFocusOrMouseEnter" on-blur="onBlur"
     on-mouseenter="onFocusOrMouseEnter"
     aria-label$="[[getAriaLabel(description, acceleratorInfos)]]">
   <th id="descriptionText" scope="row">[[description]]</th>

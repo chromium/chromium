@@ -14,6 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
@@ -85,6 +86,8 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   action: number;
   source: AcceleratorSource;
   protected isLocked: boolean;
+  private lookupManager: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
 
@@ -158,7 +161,14 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   }
 
   protected onFocusOrMouseEnter(): void {
+    if (this.lookupManager.getSearchResultRowFocused()) {
+      return;
+    }
     strictQuery('#container', this.shadowRoot, HTMLTableRowElement).focus();
+  }
+
+  protected onBlur(): void {
+    this.lookupManager.setSearchResultRowFocused(false);
   }
 
   private getAriaLabel(): string {
