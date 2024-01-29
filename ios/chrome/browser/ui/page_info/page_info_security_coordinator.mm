@@ -43,6 +43,9 @@
   _viewController = [[PageInfoSecurityViewController alloc]
       initWithSiteSecurityDescription:siteSecurityDescription];
 
+  _viewController.pageInfoCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
+
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

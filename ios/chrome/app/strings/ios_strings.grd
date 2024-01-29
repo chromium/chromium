@@ -2799,6 +2799,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OVERSCROLL_RELOAD_LABEL" desc="The text to use for the tooltip for the overscroll reload action. [Length: 20em] [iOS only]">
         Reload
       </message>
+      <message name="IDS_IOS_PAGE_INFO_CONNECTION" desc="Title of the button opening the connection information (in page info)">
+        Connection
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_CONNECTION_SECURITY" desc="Title of the navigation controller to display when the page's security is presented.">
+        Connection Security
+      </message>
       <message name="IDS_IOS_PAGE_INFO_COOKIES_BLOCKED_LABEL" desc="Title of the item that displays the number of blocked Cookies in the site information screen.">
         Blocked Cookies
       </message>
@@ -2841,10 +2847,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_SECURITY_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility text for the page security info button">
         Page Security Info
       </message>
-      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE" desc="The label informing that a website is not secure">
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_NOT_SECURE" desc="The label informing that a website's connection is not secure">
+        Connection is Not Secure
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_SECURE" desc="The label informing that a website's connection is secure">
+        Connection is Secure
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE" desc="The label informing that a website's connection is not secure">
         Not Secure
       </message>
-      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE" desc="The label informing that a website is secure">
+      <message name="IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE" desc="The label informing that a website's connection is secure">
         Secure
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_INFORMATION" desc="Title of the navigation controller to display when the page info is presented.">
@@ -2852,9 +2864,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_SECURITY" desc="Title of the button opening the site security information (in page info)">
         Site Security
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_CONNECTION" desc="Title of the button opening the connection information (in page info)">
-        Connection
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded

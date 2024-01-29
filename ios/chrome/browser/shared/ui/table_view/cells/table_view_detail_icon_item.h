@@ -49,6 +49,10 @@ enum class BadgeType {
 // Default in no badge (BadgeType::kNone).
 @property(nonatomic, assign) BadgeType badgeType;
 
+// YES if multiple lines are allowed in the detail text. Value is ignored if
+// the layout constraint axis is set to horizontal. NO by default.
+@property(nonatomic, assign) BOOL allowMultilineDetailText;
+
 @end
 
 // TableViewDetailIconCell implements an TableViewCell subclass containing an
@@ -69,6 +73,10 @@ enum class BadgeType {
 
 // Custom label defined via the setter, if any.
 @property(nonatomic, strong) NSString* customAccessibilityLabel;
+
+// YES if multiple lines are allowed in the detail text. Value is ignored if
+// the layout constraint axis is set to horizontal. NO by default.
+@property(nonatomic, assign) BOOL allowMultilineDetailText;
 
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text

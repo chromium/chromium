@@ -181,3 +181,61 @@ TEST_F(TableViewDetailIconItemTest, ItemUpdateUILayoutConstraintAxisVertical) {
   EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
             detail_cell.detailTextLabel.font);
 }
+
+// Tests that `allowMultilineDetailTex`t and the detail text UILabel
+// numberOfLines are set properly after a call to `configureCell`.
+TEST_F(TableViewDetailIconItemTest, ItemDefaultDetailTextMultiline) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Jane Doe";
+  item.detailText = @"janedoe@gmail.com";
+  item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+
+  id cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
+
+  TableViewDetailIconCell* detail_cell =
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
+
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
+  [item configureCell:cell withStyler:styler];
+
+  // Check that the default detail UILabel doesn't allow multiline of detail
+  // text.
+  EXPECT_FALSE(detail_cell.allowMultilineDetailText);
+  EXPECT_EQ(1, detail_cell.detailTextLabel.numberOfLines);
+}
+
+// Tests that the detail text UILabel is set to be multilined when
+// `allowMultilineDetailText` is set to YES. It also tests that
+// `allowMultilineDetailText` is ignored when the UI Layout is horizontal.
+TEST_F(TableViewDetailIconItemTest, ItemWithDetailTextMultiline) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Jane Doe";
+  item.detailText = @"janedoe@gmail.com";
+  item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  item.allowMultilineDetailText = YES;
+
+  id cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
+
+  TableViewDetailIconCell* detail_cell =
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
+
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
+  [item configureCell:cell withStyler:styler];
+
+  // Check that if the layout is set to the vertical axis, and if we set
+  // `allowMultilineDetailText` to YES, then the detail text UILabel is set to
+  // multiline.
+  EXPECT_TRUE(detail_cell.allowMultilineDetailText);
+  EXPECT_EQ(0, detail_cell.detailTextLabel.numberOfLines);
+
+  [detail_cell setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
+
+  // Check that the if layout is set to the horizontal axis, then we ignore the
+  // `allowMultilineDetailText` property.
+  EXPECT_TRUE(detail_cell.allowMultilineDetailText);
+  EXPECT_EQ(1, detail_cell.detailTextLabel.numberOfLines);
+}

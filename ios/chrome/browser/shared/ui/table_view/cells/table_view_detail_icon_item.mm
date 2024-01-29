@@ -101,6 +101,8 @@ NewFeatureBadgeView* NewIPHBadgeView() {
          cornerRadius:self.iconCornerRadius];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
   [cell setBadgeType:self.badgeType];
+
+  [cell setAllowMultilineDetailText:self.allowMultilineDetailText];
 }
 
 @end
@@ -137,6 +139,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
 
 @synthesize detailTextLabel = _detailTextLabel;
 @synthesize textLabel = _textLabel;
+@synthesize allowMultilineDetailText = _allowMultilineDetailText;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -253,6 +256,14 @@ NewFeatureBadgeView* NewIPHBadgeView() {
 }
 
 #pragma mark - Properties
+
+- (void)setAllowMultilineDetailText:(BOOL)allowMultilineDetailText {
+  _allowMultilineDetailText = allowMultilineDetailText;
+
+  [self updateCellForAccessibilityContentSizeCategory:
+            UIContentSizeCategoryIsAccessibilityCategory(
+                self.traitCollection.preferredContentSizeCategory)];
+}
 
 - (void)setTextLayoutConstraintAxis:
     (UILayoutConstraintAxis)textLayoutConstraintAxis {
@@ -454,10 +465,11 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                   UIUserInterfaceLayoutDirectionLeftToRight
               ? NSTextAlignmentRight
               : NSTextAlignmentLeft;
+      _detailTextLabel.numberOfLines = 1;
     } else {
       _detailTextLabel.textAlignment = NSTextAlignmentNatural;
+      _detailTextLabel.numberOfLines = _allowMultilineDetailText ? 0 : 1;
     }
-    _detailTextLabel.numberOfLines = 1;
     _textLabel.numberOfLines = 2;
   }
   UIFontTextStyle preferredFont =

@@ -102,6 +102,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   dataHolder.isEmpty = NO;
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE);
+  dataHolder.securityStatus = l10n_util::GetNSString(
+      IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_NOT_SECURE);
 
   // Summary and details.
   if (!status.certificate) {
@@ -112,11 +114,16 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
         DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
-    dataHolder.message =
-        [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                                   l10n_util::GetNSString(
-                                       IDS_PAGE_INFO_NOT_SECURE_DETAILS),
-                                   l10n_util::GetNSString(IDS_LEARN_MORE)];
+    if (IsRevampPageInfoIosEnabled()) {
+      dataHolder.message =
+          l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_DETAILS);
+    } else {
+      dataHolder.message =
+          [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
+                                     l10n_util::GetNSString(
+                                         IDS_PAGE_INFO_NOT_SECURE_DETAILS),
+                                     l10n_util::GetNSString(IDS_LEARN_MORE)];
+    }
 
     return dataHolder;
   }
@@ -135,13 +142,20 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
 
     NSString* certificateDetails = BuildCertificateDetailString(status, URL);
 
-    dataHolder.message = BuildMessage(@[
-      [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                                 l10n_util::GetNSString(
-                                     IDS_PAGE_INFO_NOT_SECURE_DETAILS),
-                                 l10n_util::GetNSString(IDS_LEARN_MORE)],
-      certificateDetails
-    ]);
+    if (IsRevampPageInfoIosEnabled()) {
+      dataHolder.message = dataHolder.message = BuildMessage(@[
+        l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_DETAILS),
+        certificateDetails
+      ]);
+    } else {
+      dataHolder.message = dataHolder.message = BuildMessage(@[
+        [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
+                                   l10n_util::GetNSString(
+                                       IDS_PAGE_INFO_NOT_SECURE_DETAILS),
+                                   l10n_util::GetNSString(IDS_LEARN_MORE)],
+        certificateDetails
+      ]);
+    }
 
     return dataHolder;
   }
@@ -168,13 +182,16 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
         DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
-    dataHolder.message = BuildMessage(@[
-      [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                                 l10n_util::GetNSString(
-                                     IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
-                                 l10n_util::GetNSString(IDS_LEARN_MORE)],
-      certificateDetails
-    ]);
+    if (IsRevampPageInfoIosEnabled()) {
+      dataHolder.message =
+          l10n_util::GetNSString(IDS_PAGE_INFO_MIXED_CONTENT_DETAILS);
+    } else {
+      dataHolder.message =
+          [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
+                                     l10n_util::GetNSString(
+                                         IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
+                                     l10n_util::GetNSString(IDS_LEARN_MORE)];
+    }
 
     return dataHolder;
   }
@@ -182,6 +199,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   // Valid HTTPS
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE);
+  dataHolder.securityStatus = l10n_util::GetNSString(
+      IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_SECURE);
   // TODO(crbug.com/1512580): When removing the lock icon from the Page Info
   // entry point in iOS, the green lock icon on the security section was also
   // removed. This is not consistent with either Clank or Desktop. The Page Info
@@ -193,13 +212,19 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
           : nil;
   dataHolder.iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
 
-  dataHolder.message = BuildMessage(@[
-    [NSString
-        stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                         l10n_util::GetNSString(IDS_PAGE_INFO_SECURE_DETAILS),
-                         l10n_util::GetNSString(IDS_LEARN_MORE)],
-    certificateDetails
-  ]);
+  if (IsRevampPageInfoIosEnabled()) {
+    dataHolder.message = BuildMessage(@[
+      l10n_util::GetNSString(IDS_PAGE_INFO_SECURE_DETAILS), certificateDetails
+    ]);
+  } else {
+    dataHolder.message = BuildMessage(@[
+      [NSString
+          stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
+                           l10n_util::GetNSString(IDS_PAGE_INFO_SECURE_DETAILS),
+                           l10n_util::GetNSString(IDS_LEARN_MORE)],
+      certificateDetails
+    ]);
+  }
 
   DCHECK(!(status.cert_status & net::CERT_STATUS_IS_EV))
       << "Extended Validation should be disabled";
