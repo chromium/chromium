@@ -280,13 +280,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                         ClientHeight());
   }
 
-  // TODO(crbug.com/962299): This method is only correct when |offset| is the
-  // correct paint offset.
-  gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
-    NOT_DESTROYED();
-    return ToPixelSnappedSize(Size().ToLayoutSize(), offset.ToLayoutPoint());
-  }
-
   // The content area of the box (excludes padding - and intrinsic padding for
   // table cells, etc... - and scrollbars and border).
   // TODO(crbug.com/877518): Some callers of this method may actually want

@@ -3044,8 +3044,10 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
   // This can be fixed only after we support subpixels in overflow control
   // geometry. For now we ensure correct pixel snapping of overflow controls by
   // calling PositionOverflowControls() again when paint offset is updated.
-  return GetLayoutBox()->PixelSnappedBorderBoxSize(
-      GetLayoutBox()->FirstFragment().PaintOffset());
+  // TODO(crbug.com/962299): Only correct if the paint offset is correct.
+  return ToPixelSnappedSize(
+      GetLayoutBox()->Size().ToLayoutSize(),
+      GetLayoutBox()->FirstFragment().PaintOffset().ToLayoutPoint());
 }
 
 gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(

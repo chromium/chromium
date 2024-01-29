@@ -18,9 +18,11 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
                                          const ComputedStyle& style) {
   const StyleReflection* reflect_style = style.BoxReflect();
 
-  LayoutBox* layout_box = layer.GetLayoutBox();
-  gfx::Size frame_size = layout_box->PixelSnappedBorderBoxSize(
-      layout_box->FirstFragment().PaintOffset());
+  const LayoutBox* layout_box = layer.GetLayoutBox();
+  // TODO(crbug.com/962299): Only correct if the paint offset is correct.
+  gfx::Size frame_size = ToPixelSnappedSize(
+      layout_box->Size().ToLayoutSize(),
+      layout_box->FirstFragment().PaintOffset().ToLayoutPoint());
   BoxReflection::ReflectionDirection direction =
       BoxReflection::kVerticalReflection;
   float offset = 0;
