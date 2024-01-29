@@ -9,7 +9,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/device/public/mojom/battery_monitor.mojom-forward.h"
-#include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom-forward.h"
 #include "url/origin.h"
 

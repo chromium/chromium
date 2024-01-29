@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/device_posture/device_posture_platform_provider_android.h"
+#include "content/browser/device_posture/device_posture_platform_provider_android.h"
 
-namespace device {
+namespace content {
 
 DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid() =
     default;
@@ -12,9 +12,9 @@ DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid() =
 DevicePosturePlatformProviderAndroid::~DevicePosturePlatformProviderAndroid() =
     default;
 
-device::mojom::DevicePostureType
+blink::mojom::DevicePostureType
 DevicePosturePlatformProviderAndroid::GetDevicePosture() {
-  return device::mojom::DevicePostureType::kContinuous;
+  return blink::mojom::DevicePostureType::kContinuous;
 }
 const std::vector<gfx::Rect>&
 DevicePosturePlatformProviderAndroid::GetViewportSegments() {
@@ -25,4 +25,4 @@ void DevicePosturePlatformProviderAndroid::StartListening() {}
 
 void DevicePosturePlatformProviderAndroid::StopListening() {}
 
-}  // namespace device
+}  // namespace content

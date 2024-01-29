@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
-#define SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
+#ifndef CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
+#define CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 
 #include <string_view>
 #include <vector>
@@ -11,10 +11,11 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "services/device/device_posture/device_posture_platform_provider.h"
+#include "content/browser/device_posture/device_posture_platform_provider.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace device {
+namespace content {
 
 class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
  public:
@@ -26,29 +27,30 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   DevicePosturePlatformProviderWin& operator=(
       const DevicePosturePlatformProviderWin&) = delete;
 
-  device::mojom::DevicePostureType GetDevicePosture() override;
+  blink::mojom::DevicePostureType GetDevicePosture() override;
   const std::vector<gfx::Rect>& GetViewportSegments() override;
-  void StartListening() override;
-  void StopListening() override;
 
  private:
   friend class DevicePosturePlatformProviderWinTest;
+
+  void StartListening() override;
+  void StopListening() override;
   void OnRegistryKeyChanged();
   void ComputeFoldableState(const base::win::RegKey& registry_key,
                             bool notify_changes);
-  static absl::optional<std::vector<gfx::Rect>> ParseViewportSegments(
-      const base::Value::List& viewport_segments);
-  static absl::optional<mojom::DevicePostureType> ParsePosture(
-      std::string_view posture_state);
+  CONTENT_EXPORT static absl::optional<std::vector<gfx::Rect>>
+  ParseViewportSegments(const base::Value::List& viewport_segments);
+  CONTENT_EXPORT static absl::optional<blink::mojom::DevicePostureType>
+  ParsePosture(std::string_view posture_state);
 
-  mojom::DevicePostureType current_posture_ =
-      mojom::DevicePostureType::kContinuous;
+  blink::mojom::DevicePostureType current_posture_ =
+      blink::mojom::DevicePostureType::kContinuous;
   std::vector<gfx::Rect> current_viewport_segments_;
   // This member is used to watch the registry after StartListening is called.
   // It will be destroyed when calling StopListening.
   absl::optional<base::win::RegKey> registry_key_;
 };
 
-}  // namespace device
+}  // namespace content
 
-#endif  // SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
+#endif  // CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_

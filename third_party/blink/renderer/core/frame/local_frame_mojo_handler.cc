@@ -424,7 +424,7 @@ mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
   return reporting_service_.get();
 }
 
-device::mojom::blink::DevicePostureProvider*
+mojom::blink::DevicePostureProvider*
 LocalFrameMojoHandler::DevicePostureProvider() {
   if (!frame_->IsLocalRoot()) {
     return frame_->LocalFrameRoot().GetDevicePostureProvider();
@@ -440,15 +440,15 @@ LocalFrameMojoHandler::DevicePostureProvider() {
   return device_posture_provider_service_.get();
 }
 
-device::mojom::blink::DevicePostureType
-LocalFrameMojoHandler::GetDevicePosture() {
+mojom::blink::DevicePostureType LocalFrameMojoHandler::GetDevicePosture() {
   if (!frame_->IsLocalRoot()) {
     return frame_->LocalFrameRoot().GetDevicePosture();
   }
 
   DCHECK(frame_->IsLocalRoot());
-  if (device_posture_provider_service_.is_bound())
+  if (device_posture_receiver_.is_bound()) {
     return current_device_posture_;
+  }
 
   auto task_runner = frame_->GetTaskRunner(TaskType::kInternalDefault);
   DevicePostureProvider()->AddListenerAndGetCurrentPosture(
@@ -459,7 +459,7 @@ LocalFrameMojoHandler::GetDevicePosture() {
 }
 
 void LocalFrameMojoHandler::OverrideDevicePostureForEmulation(
-    device::mojom::blink::DevicePostureType device_posture_param) {
+    mojom::blink::DevicePostureType device_posture_param) {
   DevicePostureProvider()->OverrideDevicePostureForEmulation(
       device_posture_param);
 }
@@ -797,7 +797,7 @@ void LocalFrameMojoHandler::DidUpdateFramePolicy(
 }
 
 void LocalFrameMojoHandler::OnPostureChanged(
-    device::mojom::blink::DevicePostureType posture) {
+    mojom::blink::DevicePostureType posture) {
   if (!RuntimeEnabledFeatures::DevicePostureEnabled())
     return;
   current_device_posture_ = posture;

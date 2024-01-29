@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module device.mojom;
-
-import "ui/gfx/geometry/mojom/geometry.mojom";
+module blink.mojom;
 
 // An enum representing the posture of device, or an no type fold state.
 // Defined https://w3c.github.io/device-posture/#posture-types
@@ -23,12 +21,6 @@ interface DevicePostureProvider {
     pending_remote<DevicePostureClient> client)
       => (DevicePostureType posture);
 
-  // Associates an interface to this provider to get updates to viewport
-  // segments. The current segments will also be returned.
-  AddListenerAndGetCurrentViewportSegments(
-    pending_remote<DeviceViewportSegmentsClient> client)
-      => (array<gfx.mojom.Rect> segments);
-
   // This is used by DevTools to emulate a device posture.
   OverrideDevicePostureForEmulation(DevicePostureType posture);
   // This is used by DevTools to disable emulation of a device posture.
@@ -40,11 +32,4 @@ interface DevicePostureProvider {
 interface DevicePostureClient {
   // Interface used to notify posture changes.
   OnPostureChanged(DevicePostureType posture);
-};
-
-// Interface that client of the DevicePostureProvider interface must implement
-// to observe viewport segments changes.
-interface DeviceViewportSegmentsClient {
-  // Interface used to notify of viewport segments changes.
-  OnViewportSegmentsChanged(array<gfx.mojom.Rect> segments);
 };

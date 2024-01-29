@@ -538,7 +538,7 @@ int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
   return static_cast<int>(unique_y.size());
 }
 
-device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
+mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
     LocalFrame* frame) {
   return frame->GetDevicePosture();
 }

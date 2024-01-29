@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
-#define SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
+#ifndef CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
+#define CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
 
-#include "services/device/device_posture/device_posture_platform_provider.h"
+#include "content/browser/device_posture/device_posture_platform_provider.h"
 
-namespace device {
+namespace content {
 
 class DevicePosturePlatformProviderAndroid
     : public DevicePosturePlatformProvider {
@@ -20,7 +20,7 @@ class DevicePosturePlatformProviderAndroid
   DevicePosturePlatformProviderAndroid& operator=(
       const DevicePosturePlatformProviderAndroid&) = delete;
 
-  device::mojom::DevicePostureType GetDevicePosture() override;
+  blink::mojom::DevicePostureType GetDevicePosture() override;
   const std::vector<gfx::Rect>& GetViewportSegments() override;
   void StartListening() override;
   void StopListening() override;
@@ -29,6 +29,6 @@ class DevicePosturePlatformProviderAndroid
   std::vector<gfx::Rect> current_viewport_segments_;
 };
 
-}  // namespace device
+}  // namespace content
 
-#endif  // SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
+#endif  // CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_

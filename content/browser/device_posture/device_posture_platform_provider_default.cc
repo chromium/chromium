@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/device_posture/device_posture_platform_provider_default.h"
+#include "content/browser/device_posture/device_posture_platform_provider_default.h"
 
-namespace device {
+namespace content {
 
 DevicePosturePlatformProviderDefault::DevicePosturePlatformProviderDefault() =
     default;
@@ -12,9 +12,9 @@ DevicePosturePlatformProviderDefault::DevicePosturePlatformProviderDefault() =
 DevicePosturePlatformProviderDefault::~DevicePosturePlatformProviderDefault() =
     default;
 
-device::mojom::DevicePostureType
+blink::mojom::DevicePostureType
 DevicePosturePlatformProviderDefault::GetDevicePosture() {
-  return device::mojom::DevicePostureType::kContinuous;
+  return blink::mojom::DevicePostureType::kContinuous;
 }
 
 const std::vector<gfx::Rect>&
@@ -26,4 +26,4 @@ void DevicePosturePlatformProviderDefault::StartListening() {}
 
 void DevicePosturePlatformProviderDefault::StopListening() {}
 
-}  // namespace device
+}  // namespace content

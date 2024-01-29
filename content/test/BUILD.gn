@@ -3196,6 +3196,7 @@ test("content_unittests") {
     sources += [
       "../browser/accessibility/browser_accessibility_manager_win_unittest.cc",
       "../browser/accessibility/browser_accessibility_win_unittest.cc",
+      "../browser/device_posture/device_posture_platform_provider_win_unittest.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",
       "../browser/renderer_host/direct_manipulation_win_unittest.cc",

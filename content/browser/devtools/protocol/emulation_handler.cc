@@ -30,6 +30,7 @@
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
@@ -67,12 +68,12 @@ DisplayFeatureOrientationTypeFromString(const std::string& type) {
   return std::nullopt;
 }
 
-base::expected<device::mojom::DevicePostureType, protocol::Response>
+base::expected<blink::mojom::DevicePostureType, protocol::Response>
 DevicePostureTypeFromString(const std::string& type) {
   if (type == Emulation::DevicePosture::TypeEnum::Continuous) {
-    return device::mojom::DevicePostureType::kContinuous;
+    return blink::mojom::DevicePostureType::kContinuous;
   } else if (type == Emulation::DevicePosture::TypeEnum::Folded) {
-    return device::mojom::DevicePostureType::kFolded;
+    return blink::mojom::DevicePostureType::kFolded;
   } else {
     return base::unexpected(
         protocol::Response::InvalidParams("Invalid posture type"));

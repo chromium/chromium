@@ -337,8 +337,7 @@ int MediaValuesCached::GetVerticalViewportSegments() const {
   return data_.vertical_viewport_segments;
 }
 
-device::mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture()
-    const {
+mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture() const {
   return data_.device_posture;
 }
 

@@ -38,7 +38,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -48,6 +47,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
@@ -442,9 +442,9 @@ class CORE_EXPORT LocalFrame final
       const WebVector<gfx::Rect>& window_segments);
 
   void OverrideDevicePostureForEmulation(
-      device::mojom::blink::DevicePostureType device_posture_param);
+      mojom::blink::DevicePostureType device_posture_param);
   void DisableDevicePostureOverrideForEmulation();
-  device::mojom::blink::DevicePostureType GetDevicePosture();
+  mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;
   String SelectedText(const TextIteratorBehavior& behavior) const;
@@ -658,7 +658,7 @@ class CORE_EXPORT LocalFrame final
   SmoothScrollSequencer* GetSmoothScrollSequencer() const;
 
   mojom::blink::ReportingServiceProxy* GetReportingService();
-  device::mojom::blink::DevicePostureProvider* GetDevicePostureProvider();
+  mojom::blink::DevicePostureProvider* GetDevicePostureProvider();
 
   // Returns the frame host ptr. The interface returned is backed by an
   // associated interface with the legacy Chrome IPC channel.

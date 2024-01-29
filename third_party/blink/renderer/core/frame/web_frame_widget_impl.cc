@@ -2735,7 +2735,7 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
 }
 
 void WebFrameWidgetImpl::OverrideDevicePostureForEmulation(
-    device::mojom::blink::DevicePostureType device_posture_param) {
+    mojom::blink::DevicePostureType device_posture_param) {
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->OverrideDevicePostureForEmulation(device_posture_param);
 }

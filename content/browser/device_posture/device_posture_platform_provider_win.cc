@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/device_posture/device_posture_platform_provider_win.h"
+#include "content/browser/device_posture/device_posture_platform_provider_win.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -10,6 +10,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using blink::mojom::DevicePostureType;
 
 namespace {
 // The full specification of the registry is located over here
@@ -23,7 +25,7 @@ namespace {
 constexpr wchar_t kFoledRegKeyPath[] = L"Software\\Intel\\Foled";
 }  // namespace
 
-namespace device {
+namespace content {
 
 DevicePosturePlatformProviderWin::DevicePosturePlatformProviderWin() {
   base::win::RegKey registry_key(HKEY_CURRENT_USER, kFoledRegKeyPath,
@@ -35,7 +37,8 @@ DevicePosturePlatformProviderWin::DevicePosturePlatformProviderWin() {
 
 DevicePosturePlatformProviderWin::~DevicePosturePlatformProviderWin() = default;
 
-mojom::DevicePostureType DevicePosturePlatformProviderWin::GetDevicePosture() {
+DevicePostureType
+DevicePosturePlatformProviderWin::GetDevicePosture() {
   return current_posture_;
 }
 
@@ -63,16 +66,18 @@ void DevicePosturePlatformProviderWin::StopListening() {
   registry_key_ = absl::nullopt;
 }
 
-absl::optional<mojom::DevicePostureType>
+absl::optional<DevicePostureType>
 DevicePosturePlatformProviderWin::ParsePosture(std::string_view posture_state) {
   static constexpr auto kPostureStateToPostureType =
-      base::MakeFixedFlatMap<std::string_view, mojom::DevicePostureType>(
-          {{"MODE_HANDHELD", mojom::DevicePostureType::kFolded},
-           {"MODE_DUAL_ANGLE", mojom::DevicePostureType::kFolded},
-           {"MODE_LAPTOP_KB", mojom::DevicePostureType::kContinuous},
-           {"MODE_LAYFLAT_LANDSCAPE", mojom::DevicePostureType::kContinuous},
-           {"MODE_LAYFLAT_PORTRAIT", mojom::DevicePostureType::kContinuous},
-           {"MODE_TABLETOP", mojom::DevicePostureType::kContinuous}});
+      base::MakeFixedFlatMap<std::string_view, DevicePostureType>(
+          {{"MODE_HANDHELD", DevicePostureType::kFolded},
+           {"MODE_DUAL_ANGLE", DevicePostureType::kFolded},
+           {"MODE_LAPTOP_KB", DevicePostureType::kContinuous},
+           {"MODE_LAYFLAT_LANDSCAPE",
+            DevicePostureType::kContinuous},
+           {"MODE_LAYFLAT_PORTRAIT",
+            DevicePostureType::kContinuous},
+           {"MODE_TABLETOP", DevicePostureType::kContinuous}});
   if (auto* iter = kPostureStateToPostureType.find(posture_state);
       iter != kPostureStateToPostureType.end()) {
     return iter->second;
@@ -102,8 +107,8 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
     return;
   }
 
-  const mojom::DevicePostureType old_posture = current_posture_;
-  absl::optional<mojom::DevicePostureType> posture =
+  const DevicePostureType old_posture = current_posture_;
+  absl::optional<DevicePostureType> posture =
       ParsePosture(*posture_state);
 
   if (posture) {
@@ -183,4 +188,4 @@ void DevicePosturePlatformProviderWin::OnRegistryKeyChanged() {
   ComputeFoldableState(registry_key_.value(), /*notify_changes=*/true);
 }
 
-}  // namespace device
+}  // namespace content

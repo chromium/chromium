@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "services/device/public/mojom/device_posture_provider.mojom";
+import "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/display/mojom/screen_orientation.mojom";
 
@@ -52,5 +52,5 @@ struct DeviceEmulationParams {
   array<gfx.mojom.Rect> window_segments;
 
   // Posture of the device.
-  device.mojom.DevicePostureType device_posture;
+  blink.mojom.DevicePostureType device_posture;
 };

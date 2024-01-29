@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/device_posture/device_posture_platform_provider_win.h"
+#include "content/browser/device_posture/device_posture_platform_provider_win.h"
 
 #include <string_view>
 
@@ -10,7 +10,7 @@
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace device {
+namespace content {
 
 class DevicePosturePlatformProviderWinTest : public testing::Test {
  protected:
@@ -24,7 +24,7 @@ class DevicePosturePlatformProviderWinTest : public testing::Test {
         viewport_segments);
   }
 
-  static absl::optional<mojom::DevicePostureType> ParsePosture(
+  static absl::optional<blink::mojom::DevicePostureType> ParsePosture(
       std::string_view posture_state) {
     return DevicePosturePlatformProviderWin::ParsePosture(posture_state);
   }
@@ -37,16 +37,18 @@ TEST_F(DevicePosturePlatformProviderWinTest, InvalidPostureData) {
 }
 
 TEST_F(DevicePosturePlatformProviderWinTest, ValidPostureData) {
-  EXPECT_EQ(ParsePosture("MODE_HANDHELD"), mojom::DevicePostureType::kFolded);
-  EXPECT_EQ(ParsePosture("MODE_DUAL_ANGLE"), mojom::DevicePostureType::kFolded);
+  EXPECT_EQ(ParsePosture("MODE_HANDHELD"),
+            blink::mojom::DevicePostureType::kFolded);
+  EXPECT_EQ(ParsePosture("MODE_DUAL_ANGLE"),
+            blink::mojom::DevicePostureType::kFolded);
   EXPECT_EQ(ParsePosture("MODE_LAYFLAT_LANDSCAPE"),
-            mojom::DevicePostureType::kContinuous);
+            blink::mojom::DevicePostureType::kContinuous);
   EXPECT_EQ(ParsePosture("MODE_LAYFLAT_PORTRAIT"),
-            mojom::DevicePostureType::kContinuous);
+            blink::mojom::DevicePostureType::kContinuous);
   EXPECT_EQ(ParsePosture("MODE_TABLETOP"),
-            mojom::DevicePostureType::kContinuous);
+            blink::mojom::DevicePostureType::kContinuous);
   EXPECT_EQ(ParsePosture("MODE_LAPTOP_KB"),
-            mojom::DevicePostureType::kContinuous);
+            blink::mojom::DevicePostureType::kContinuous);
 }
 
 TEST_F(DevicePosturePlatformProviderWinTest, InvalidViewportSegmentsData) {
@@ -186,4 +188,4 @@ TEST_F(DevicePosturePlatformProviderWinTest, ValidViewportSegmentsData) {
                   gfx::Rect(44, 44, 44, 44), gfx::Rect(55, 55, 55, 55)}));
 }
 
-}  // namespace device
+}  // namespace content

@@ -42,6 +42,7 @@ namespace content {
 class BrowserAccessibilityManager;
 class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
+class DevicePostureProviderImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
@@ -210,6 +211,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Returns the window show state.
   virtual ui::WindowShowState GetWindowShowState();
+
+  // Returns the device posture provider tracking the device posture.
+  virtual DevicePostureProviderImpl* GetDevicePostureProvider();
 
   // Returns whether the window can be resized or not. Defaults to true for
   // desktopOSs and false for mobileOSs.

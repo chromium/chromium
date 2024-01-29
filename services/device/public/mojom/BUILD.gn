@@ -11,7 +11,6 @@ mojom("mojom") {
   sources = [
     "battery_monitor.mojom",
     "battery_status.mojom",
-    "device_posture_provider.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
     "geolocation_config.mojom",

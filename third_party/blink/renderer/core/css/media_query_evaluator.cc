@@ -29,13 +29,13 @@
 
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
@@ -119,7 +119,7 @@ KleeneValue KleeneAnd(KleeneValue a, KleeneValue b) {
 
 }  // namespace
 
-using device::mojom::blink::DevicePostureType;
+using mojom::blink::DevicePostureType;
 using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 

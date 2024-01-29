@@ -62,6 +62,7 @@
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/closewatcher/close_listener_manager.h"
+#include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
@@ -4022,6 +4023,10 @@ void WebContentsImpl::Restore() {
 ui::WindowShowState WebContentsImpl::GetWindowShowState() {
   return GetDelegate() ? GetDelegate()->GetWindowShowState()
                        : ui::SHOW_STATE_DEFAULT;
+}
+
+DevicePostureProviderImpl* WebContentsImpl::GetDevicePostureProvider() {
+  return DevicePostureProviderImpl::GetOrCreate(this);
 }
 
 bool WebContentsImpl::GetResizable() {
