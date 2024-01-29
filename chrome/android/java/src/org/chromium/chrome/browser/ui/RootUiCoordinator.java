@@ -823,7 +823,8 @@ public class RootUiCoordinator
                                             tab,
                                             tab.isIncognito());
                         },
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        mReadAloudControllerSupplier);
 
         mCaptureController =
                 new MediaCaptureOverlayController(
