@@ -9,7 +9,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 const char DevToolsSettings::kSyncDevToolsPreferencesFrontendName[] =
-    "sync_preferences";
+    "sync-preferences";
 const bool DevToolsSettings::kSyncDevToolsPreferencesDefault = false;
 
 DevToolsSettings::DevToolsSettings(Profile* profile) : profile_(profile) {
