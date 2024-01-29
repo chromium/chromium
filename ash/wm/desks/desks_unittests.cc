@@ -168,11 +168,6 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::ValuesIn;
 
-void NewDesk() {
-  // Create a desk through keyboard. Do not use |kButton| to avoid empty name.
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
-}
-
 std::unique_ptr<aura::Window> CreateTransientWindow(
     aura::Window* transient_parent,
     const gfx::Rect& bounds) {
@@ -11732,19 +11727,60 @@ class DeskProfilesTest : public AshTestBase {
   void AddDummyProfiles(size_t count) {
     for (size_t i = 0; i != count; ++i) {
       LacrosProfileSummary summary;
-      summary.profile_id = kLacrosProfileIdBase + i * 2;
+      summary.profile_id = GetLacrosProfileId(i);
       summary.name = base::StringPrintf("Lacros user %lu", i + 1);
       summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
       summary.icon = gfx::test::CreateImageSkia(32, 32);
 
-      GetTestDelegate().AddProfile(std::move(summary));
+      GetTestDelegate().UpdateTestProfile(std::move(summary));
     }
+  }
+
+  uint64_t GetLacrosProfileId(size_t index) {
+    return kLacrosProfileIdBase + index * 2;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kDeskProfiles};
 };
+
+TEST_F(DeskProfilesTest, RemoveProfile) {
+  // This test creates three dummy lacros profiles and sets up three desks with
+  // each associated with a different user. The last user is then removed and we
+  // verify that the desk has reverted to the default lacros profile.
+  AddDummyProfiles(3);
+
+  const uint64_t lacros_profile_id1 = GetLacrosProfileId(0);
+  const uint64_t lacros_profile_id2 = GetLacrosProfileId(1);
+  const uint64_t lacros_profile_id3 = GetLacrosProfileId(2);
+
+  GetTestDelegate().SetPrimaryProfileByProfileId(lacros_profile_id1);
+
+  NewDesk();
+  NewDesk();
+
+  // Assign different lacros profiles to all three desks.
+  auto* controller = DesksController::Get();
+  auto* desk1 = controller->GetDeskAtIndex(0);
+  auto* desk2 = controller->GetDeskAtIndex(1);
+  auto* desk3 = controller->GetDeskAtIndex(2);
+  desk1->SetLacrosProfileId(lacros_profile_id1);
+  desk2->SetLacrosProfileId(lacros_profile_id2);
+  desk3->SetLacrosProfileId(lacros_profile_id3);
+
+  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
+  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
+  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id3);
+
+  // Remove the last profile. We now expect the desk to be updated to the
+  // default profile (lacros_profile_id1).
+  GetTestDelegate().RemoveTestProfile(lacros_profile_id3);
+
+  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
+  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
+  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id1);
+}
 
 TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
   // The desk profile button is visible when there are two or more profiles.

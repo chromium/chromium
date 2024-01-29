@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/desk_profiles_delegate.h"
+#include "base/observer_list.h"
 
 namespace ash {
 
@@ -19,10 +20,14 @@ class ASH_PUBLIC_EXPORT TestDeskProfilesDelegate : public DeskProfilesDelegate {
   TestDeskProfilesDelegate& operator=(TestDeskProfilesDelegate&) = delete;
   ~TestDeskProfilesDelegate() override;
 
-  // Function to add fake profile.
-  void AddProfile(LacrosProfileSummary profile);
-  // Removes profile by `profile_id`, if profile can't be found, return false.
-  bool RemoveProfilesByProfileId(uint64_t profile_id);
+  // Function to add fake profile. Note: This will invoke
+  // Observer::OnProfileUpsert.
+  void UpdateTestProfile(LacrosProfileSummary profile);
+
+  // Removes profile by `profile_id`, if profile can't be found, return
+  // false. Note: this will invoke Observer::OnProfileRemoved.
+  bool RemoveTestProfile(uint64_t profile_id);
+
   // Set `primary_user_profile_id_` by `profile_id`, if profile can't be found,
   // return false.
   bool SetPrimaryProfileByProfileId(uint64_t profile_id);
@@ -37,6 +42,9 @@ class ASH_PUBLIC_EXPORT TestDeskProfilesDelegate : public DeskProfilesDelegate {
 
  private:
   std::vector<LacrosProfileSummary> profiles_;
+
+  base::ObserverList<Observer> observers_;
+
   uint64_t primary_user_profile_id_ = 0;
 };
 
