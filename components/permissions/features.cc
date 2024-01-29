@@ -121,12 +121,7 @@ BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
 // omnibox integration.
 BASE_FEATURE(kPermissionStorageAccessAPI,
              "PermissionStorageAccessAPI",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled "window-placement" may be used as an alias for
 // "window-management". Additionally, reverse mappings (i.e. enum to string)

@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/permissions/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/viz/common/features.h"
@@ -169,5 +170,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // FedCM is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
+  // Storage Access permission prompts are not supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      permissions::features::kPermissionStorageAccessAPI);
+
+  // `RegisterOverrides` must be called *after* all of the overrides have been
+  // set in `aw_feature_overrides`.
   aw_feature_overrides.RegisterOverrides(feature_list);
 }
