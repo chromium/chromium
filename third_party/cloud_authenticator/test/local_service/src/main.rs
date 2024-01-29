@@ -31,6 +31,7 @@ use std::net::{TcpListener, TcpStream};
 // Frame types from https://datatracker.ietf.org/doc/html/rfc6455#section-5.2
 const BINARY: u8 = 2;
 const CONTINUATION: u8 = 2;
+const WEBSOCKET_PROTOCOL: &str = "cloudauthenticator";
 
 /// Completly fills `buf` with data from `conn` and returns true iff successful.
 fn read_all(mut conn: &TcpStream, buf: &mut [u8]) -> bool {
@@ -193,6 +194,7 @@ impl EnclaveServer {
 
         let mut seen_first_line = false;
         let mut websocket_key: Option<String> = None;
+        let mut websocket_protocol: Option<String> = None;
         loop {
             let Some(line) = next_line(&conn) else {
                 return;
@@ -210,8 +212,10 @@ impl EnclaveServer {
                 return;
             };
             let key = key.trim();
-            if key.to_lowercase() == "sec-websocket-key" {
-                websocket_key = Some(String::from(value.trim()))
+            match key.to_lowercase().as_str() {
+                "sec-websocket-key" => websocket_key = Some(String::from(value.trim())),
+                "sec-websocket-protocol" => websocket_protocol = Some(String::from(value.trim())),
+                _ => (),
             }
         }
 
@@ -220,12 +224,25 @@ impl EnclaveServer {
             return;
         };
 
+        match websocket_protocol {
+            Some(protocol) if protocol.as_str() == WEBSOCKET_PROTOCOL => (),
+            _ => {
+                eprintln!("missing expected WebSocket protocol");
+                return;
+            }
+        }
+
         const RESPONSE : &[u8] = b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ";
         let accept_value = calculate_websocket_accept(websocket_key.as_bytes());
-        const TERMINATOR: &[u8] = b"\r\n\r\n";
+        const PROTOCOL_HEADER: &[u8] = b"Sec-WebSocket-Protocol: ";
+        const NEWLINE: &[u8] = b"\r\n";
         if !write_all(&conn, RESPONSE)
             || !write_all(&conn, accept_value.as_bytes())
-            || !write_all(&conn, TERMINATOR)
+            || !write_all(&conn, NEWLINE)
+            || !write_all(&conn, PROTOCOL_HEADER)
+            || !write_all(&conn, WEBSOCKET_PROTOCOL.as_bytes())
+            || !write_all(&conn, NEWLINE)
+            || !write_all(&conn, NEWLINE)
         {
             return;
         }
