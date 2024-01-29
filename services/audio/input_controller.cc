@@ -231,7 +231,7 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
   }
 
-  absl::optional<media::AudioParameters> processing_input_params =
+  std::optional<media::AudioParameters> processing_input_params =
       media::AudioProcessor::ComputeInputFormat(device_params,
                                                 processing_config->settings);
   if (!processing_input_params) {
@@ -768,7 +768,7 @@ void InputController::OnData(const media::AudioBus* source,
 void InputController::DeliverProcessedAudio(
     const media::AudioBus& audio_bus,
     base::TimeTicks audio_capture_time,
-    absl::optional<double> new_volume,
+    std::optional<double> new_volume,
     const media::AudioGlitchInfo& glitch_info) {
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.

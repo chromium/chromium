@@ -160,7 +160,7 @@ bool IsRangeResponseWithMiddleOfResource(
   return first_byte_position > 0;
 }
 
-bool IsOpaqueResponse(const absl::optional<url::Origin>& request_initiator,
+bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
                       mojom::RequestMode request_mode,
                       const mojom::URLResponseHead& response) {
   // ORB only applies to "no-cors" requests.
@@ -212,7 +212,7 @@ OpaqueResponseBlockingAnalyzer::~OpaqueResponseBlockingAnalyzer() {
 
 Decision OpaqueResponseBlockingAnalyzer::Init(
     const GURL& request_url,
-    const absl::optional<url::Origin>& request_initiator,
+    const std::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
     mojom::RequestDestination request_destination_from_renderer,
     const network::mojom::URLResponseHead& response) {

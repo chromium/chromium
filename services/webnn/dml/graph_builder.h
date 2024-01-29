@@ -6,14 +6,15 @@
 #define SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
 
 #include <DirectML.h>
+
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "services/webnn/dml/tensor_desc.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 

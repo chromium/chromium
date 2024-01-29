@@ -4,6 +4,7 @@
 
 #include "services/network/host_resolver.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "services/network/public/mojom/host_resolver.mojom-shared.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/resolve_host_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -34,11 +34,11 @@ HostResolver::ResolveHostCallback& GetResolveHostCallback() {
   return *callback;
 }
 
-absl::optional<net::HostResolver::ResolveHostParameters>
+std::optional<net::HostResolver::ResolveHostParameters>
 ConvertOptionalParameters(
     const mojom::ResolveHostParametersPtr& mojo_parameters) {
   if (!mojo_parameters)
-    return absl::nullopt;
+    return std::nullopt;
 
   net::HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = mojo_parameters->dns_query_type;

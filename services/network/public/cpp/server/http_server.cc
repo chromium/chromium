@@ -190,7 +190,7 @@ void HttpServer::DoAcceptLoop() {
 
 void HttpServer::OnAcceptCompleted(
     int rv,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {

@@ -41,7 +41,7 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   void OnReceiveResponse(
       mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr response_head) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
@@ -61,12 +61,12 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   const mojom::URLResponseHeadPtr& response_head() const {
     return response_head_;
   }
-  const absl::optional<net::SSLInfo>& ssl_info() const {
+  const std::optional<net::SSLInfo>& ssl_info() const {
     DCHECK(response_head_);
     return response_head_->ssl_info;
   }
   const net::RedirectInfo& redirect_info() const { return redirect_info_; }
-  const absl::optional<std::string>& cached_metadata() const {
+  const std::optional<std::string>& cached_metadata() const {
     return cached_metadata_;
   }
   mojo::DataPipeConsumerHandle response_body() { return response_body_.get(); }
@@ -106,7 +106,7 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   mojo::Receiver<mojom::URLLoaderClient> receiver_{this};
   mojom::URLResponseHeadPtr response_head_;
   net::RedirectInfo redirect_info_;
-  absl::optional<std::string> cached_metadata_;
+  std::optional<std::string> cached_metadata_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   URLLoaderCompletionStatus completion_status_;
   bool has_received_early_hints_ = false;

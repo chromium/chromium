@@ -45,7 +45,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
   auto dvlog = [&](std::string message) {
-    absl::optional<net::SchemefulSite> top_frame_site =
+    std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
     DVLOG(3) << "NSPD::OnResolveProxy(" << url << ", "
              << (top_frame_site.has_value() ? top_frame_site.value()
@@ -161,7 +161,7 @@ void IpProtectionProxyDelegate::OnBeforeTunnelRequest(
       }
     }
     CHECK(ipp_config_cache_);
-    absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
+    std::optional<network::mojom::BlindSignedAuthTokenPtr> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
@@ -256,10 +256,10 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
                   network::mojom::IpProtectionProxyLayer::kProxyA));
 
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
-    std::move(callback).Run(std::move(result).value(), absl::nullopt);
+    std::move(callback).Run(std::move(result).value(), std::nullopt);
     return;
   }
   base::Time try_auth_tokens_after =

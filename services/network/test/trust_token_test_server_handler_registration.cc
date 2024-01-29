@@ -5,6 +5,7 @@
 #include "services/network/test/trust_token_test_server_handler_registration.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -17,7 +18,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/test/trust_token_request_handler.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network::test {
 
@@ -69,7 +69,7 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
           return MakeTrustTokenFailureResponse();
         }
 
-        absl::optional<std::string> operation_result =
+        std::optional<std::string> operation_result =
             handler->Issue(request.headers.at("Sec-Private-State-Token"));
 
         if (!operation_result)
@@ -90,7 +90,7 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
           return MakeTrustTokenFailureResponse();
         }
 
-        absl::optional<std::string> operation_result =
+        std::optional<std::string> operation_result =
             handler->Redeem(request.headers.at("Sec-Private-State-Token"));
 
         if (!operation_result)

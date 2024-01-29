@@ -109,7 +109,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void OpenSettingsSubpage(const std::string& subpage) override;
   void ShowConfirmationDialog(const std::string& title,
                               const std::string& description,
-                              const absl::optional<std::string>& cancel_name,
+                              const std::optional<std::string>& cancel_name,
                               ShowConfirmationDialogCallback callback) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
@@ -187,8 +187,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
   mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
   base::RepeatingCallback<void()> speech_recognition_start_callback_;
-  absl::optional<std::string> speech_recognition_start_error_;
-  absl::optional<std::string> speech_recognition_stop_error_;
+  std::optional<std::string> speech_recognition_start_error_;
+  std::optional<std::string> speech_recognition_stop_error_;
 
   base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
       tts_speak_callback_;

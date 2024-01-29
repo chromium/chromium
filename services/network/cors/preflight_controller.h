@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_CORS_PREFLIGHT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -23,7 +24,6 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // `has_authorization_covered_by_wildcard` once the investigation is done.
   using CompletionCallback =
       base::OnceCallback<void(int net_error,
-                              absl::optional<CorsErrorStatus> cors_error_status,
+                              std::optional<CorsErrorStatus> cors_error_status,
                               bool has_authorization_covered_by_wildcard)>;
 
   using WithTrustedHeaderClient =
@@ -103,14 +103,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& original_request,
       bool tainted,
       PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
-      absl::optional<CorsErrorStatus>* detected_error_status);
+      std::optional<CorsErrorStatus>* detected_error_status);
 
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
   static base::expected<void, CorsErrorStatus> CheckPreflightAccessForTesting(
       const GURL& response_url,
       const int response_status_code,
-      const absl::optional<std::string>& allow_origin_header,
-      const absl::optional<std::string>& allow_credentials_header,
+      const std::optional<std::string>& allow_origin_header,
+      const std::optional<std::string>& allow_credentials_header,
       mojom::CredentialsMode actual_credentials_mode,
       const url::Origin& origin);
 

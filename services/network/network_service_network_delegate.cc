@@ -126,7 +126,7 @@ int NetworkServiceNetworkDelegate::OnHeadersReceived(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     const net::IPEndPoint& endpoint,
-    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url) {
   auto chain = base::MakeRefCounted<PendingCallbackChain>(std::move(callback));
   URLLoader* url_loader = URLLoader::ForRequest(*request);
   if (url_loader) {

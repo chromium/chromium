@@ -4,11 +4,12 @@
 
 #include "services/accessibility/android/android_accessibility_util.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ax::android {
@@ -18,7 +19,7 @@ using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 
-absl::optional<ax::mojom::Event> ToAXEvent(
+std::optional<ax::mojom::Event> ToAXEvent(
     mojom::AccessibilityEventType android_event_type,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node) {
@@ -32,14 +33,14 @@ absl::optional<ax::mojom::Event> ToAXEvent(
     case mojom::AccessibilityEventType::VIEW_LONG_CLICKED:
       return ax::mojom::Event::kClicked;
     case mojom::AccessibilityEventType::VIEW_TEXT_CHANGED:
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED:
       return ax::mojom::Event::kTextSelectionChanged;
     case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED: {
       if (focused_node) {
         return ax::mojom::Event::kFocus;
       } else {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
     case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
@@ -65,7 +66,7 @@ absl::optional<ax::mojom::Event> ToAXEvent(
           return ax::mojom::Event::kLiveRegionChanged;
         }
       }
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::AccessibilityEventType::VIEW_HOVER_ENTER:
       return ax::mojom::Event::kHover;
     case mojom::AccessibilityEventType::ANNOUNCEMENT: {
@@ -81,7 +82,7 @@ absl::optional<ax::mojom::Event> ToAXEvent(
       // See the comment on AXTreeSourceAndroid::UpdateAndroidFocusedId.
       if (source_node && source_node->IsNode() &&
           source_node->GetNode()->range_info) {
-        return absl::nullopt;
+        return std::nullopt;
       } else {
         return ax::mojom::Event::kFocus;
       }
@@ -103,12 +104,12 @@ absl::optional<ax::mojom::Event> ToAXEvent(
     case mojom::AccessibilityEventType::WINDOWS_CHANGED:
     case mojom::AccessibilityEventType::VIEW_CONTEXT_CLICKED:
     case mojom::AccessibilityEventType::ASSIST_READING_CONTEXT:
-      return absl::nullopt;
+      return std::nullopt;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
+std::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action) {
   switch (action) {
     case ax::mojom::Action::kDoDefault:
@@ -153,7 +154,7 @@ absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     case ax::mojom::Action::kLongClick:
       return ax::android::mojom::AccessibilityActionType::LONG_CLICK;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

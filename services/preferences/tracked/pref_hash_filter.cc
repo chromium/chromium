@@ -76,9 +76,9 @@ PrefHashFilter::PrefHashFilter(
     : pref_hash_store_(std::move(pref_hash_store)),
       external_validation_hash_store_pair_(
           external_validation_hash_store_pair.first
-              ? absl::make_optional(
+              ? std::make_optional(
                     std::move(external_validation_hash_store_pair))
-              : absl::nullopt),
+              : std::nullopt),
       reset_on_load_observer_(std::move(reset_on_load_observer)),
       delegate_(std::move(delegate)) {
   DCHECK(pref_hash_store_);

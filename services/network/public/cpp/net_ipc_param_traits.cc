@@ -470,8 +470,8 @@ void ParamTraits<url::Origin>::Write(base::Pickle* m, const url::Origin& p) {
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().host());
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().port());
   // Note: this is somewhat asymmetric with Read() to avoid extra copies during
-  // serialization. The actual serialized wire format matches how absl::optional
-  // values are normally serialized: see `ParamTraits<absl::optional<P>>`.
+  // serialization. The actual serialized wire format matches how std::optional
+  // values are normally serialized: see `ParamTraits<std::optional<P>>`.
   const base::UnguessableToken* nonce = p.GetNonceForSerialization();
   WriteParam(m, nonce != nullptr);
   if (nonce) {
@@ -485,13 +485,13 @@ bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
   std::string scheme;
   std::string host;
   uint16_t port;
-  absl::optional<base::UnguessableToken> nonce_if_opaque;
+  std::optional<base::UnguessableToken> nonce_if_opaque;
   if (!ReadParam(m, iter, &scheme) || !ReadParam(m, iter, &host) ||
       !ReadParam(m, iter, &port) || !ReadParam(m, iter, &nonce_if_opaque)) {
     return false;
   }
 
-  absl::optional<url::Origin> creation_result =
+  std::optional<url::Origin> creation_result =
       nonce_if_opaque
           ? url::Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
                 scheme, host, port, url::Origin::Nonce(*nonce_if_opaque))

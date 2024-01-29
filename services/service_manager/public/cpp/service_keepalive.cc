@@ -59,7 +59,7 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
 };
 
 ServiceKeepalive::ServiceKeepalive(ServiceReceiver* receiver,
-                                   absl::optional<base::TimeDelta> idle_timeout)
+                                   std::optional<base::TimeDelta> idle_timeout)
     : receiver_(receiver), idle_timeout_(idle_timeout) {}
 
 ServiceKeepalive::~ServiceKeepalive() = default;

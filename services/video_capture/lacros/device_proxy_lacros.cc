@@ -13,7 +13,7 @@
 namespace video_capture {
 
 DeviceProxyLacros::DeviceProxyLacros(
-    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
+    std::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote,
     base::OnceClosure cleanup_callback)
     : device_(std::move(proxy_remote)) {
@@ -49,7 +49,7 @@ void DeviceProxyLacros::StartInProcess(
   mojo::PendingRemote<crosapi::mojom::VideoFrameHandler> proxy_handler_remote;
   handler_ = std::make_unique<VideoFrameHandlerProxyLacros>(
       proxy_handler_remote.InitWithNewPipeAndPassReceiver(),
-      /*handler_remote=*/absl::nullopt, frame_handler);
+      /*handler_remote=*/std::nullopt, frame_handler);
   device_->Start(std::move(requested_settings),
                  std::move(proxy_handler_remote));
 }

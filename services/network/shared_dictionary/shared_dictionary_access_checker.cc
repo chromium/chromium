@@ -33,7 +33,7 @@ bool SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport(
     const GURL& dictionary_url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info) {
-  absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+  std::optional<net::SharedDictionaryIsolationKey> isolation_key =
       net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info);
   CHECK(isolation_key);
 
@@ -54,7 +54,7 @@ bool SharedDictionaryAccessChecker::CheckAllowedToReadAndReport(
     const GURL& target_resource_url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info) {
-  absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+  std::optional<net::SharedDictionaryIsolationKey> isolation_key =
       net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info);
   CHECK(isolation_key);
 

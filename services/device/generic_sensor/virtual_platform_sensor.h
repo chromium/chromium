@@ -5,11 +5,12 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_VIRTUAL_PLATFORM_SENSOR_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_VIRTUAL_PLATFORM_SENSOR_H_
 
+#include <optional>
+
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -32,8 +33,8 @@ class VirtualPlatformSensor : public PlatformSensor {
   void SimulateSensorRemoval();
 
   // Returns the current PlatformSensorConfiguration being used by the sensor
-  // if it is currently active, or a null absl::optional otherwise.
-  const absl::optional<PlatformSensorConfiguration>& optimal_configuration()
+  // if it is currently active, or a null std::optional otherwise.
+  const std::optional<PlatformSensorConfiguration>& optimal_configuration()
       const {
     return optimal_configuration_;
   }
@@ -63,10 +64,10 @@ class VirtualPlatformSensor : public PlatformSensor {
   double GetMinimumSupportedFrequency() override;
   double GetMaximumSupportedFrequency() override;
 
-  absl::optional<double> minimum_supported_frequency_;
-  absl::optional<double> maximum_supported_frequency_;
-  absl::optional<PlatformSensorConfiguration> optimal_configuration_;
-  absl::optional<mojom::ReportingMode> reporting_mode_;
+  std::optional<double> minimum_supported_frequency_;
+  std::optional<double> maximum_supported_frequency_;
+  std::optional<PlatformSensorConfiguration> optimal_configuration_;
+  std::optional<mojom::ReportingMode> reporting_mode_;
 };
 
 }  // namespace device

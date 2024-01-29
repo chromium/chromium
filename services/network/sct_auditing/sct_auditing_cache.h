@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 #define SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/timer/timer.h"
@@ -15,7 +17,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -82,9 +83,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // cache. If the SCTs were not already in the cache, a random sample is drawn
   // to determine whether to send a report. This means we sample a subset of
   // *certificates* rather than a subset of *connections*.
-  // Returns the report entry if the report should be sent, and absl::nullopt
+  // Returns the report entry if the report should be sent, and std::nullopt
   // otherwise.
-  absl::optional<ReportEntry> MaybeGenerateReportEntry(
+  std::optional<ReportEntry> MaybeGenerateReportEntry(
       const net::HostPortPair& host_port_pair,
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&

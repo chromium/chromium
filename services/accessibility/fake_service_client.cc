@@ -208,7 +208,7 @@ void FakeServiceClient::OpenSettingsSubpage(const std::string& subpage) {
 void FakeServiceClient::ShowConfirmationDialog(
     const std::string& title,
     const std::string& description,
-    const absl::optional<std::string>& cancel_name,
+    const std::optional<std::string>& cancel_name,
     ShowConfirmationDialogCallback callback) {
   std::move(callback).Run(true);
 }

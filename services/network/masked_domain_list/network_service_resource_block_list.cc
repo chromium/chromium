@@ -58,7 +58,7 @@ bool NetworkServiceResourceBlockList::IsPopulated() {
 
 bool NetworkServiceResourceBlockList::Matches(
     const GURL& request_url,
-    const absl::optional<net::IsolationInfo>& isolation_info) {
+    const std::optional<net::IsolationInfo>& isolation_info) {
   // If there is no isolation_info or a non-opaque top_frame_origin has no URL,
   // it is not possible to determine if the request is in a 3rd party context
   // and it should not be blocked.

@@ -4,12 +4,13 @@
 
 #include "services/accessibility/android/android_accessibility_util.h"
 
+#include <optional>
+
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ax::android {
 
@@ -36,9 +37,9 @@ TEST(AndroidAccessibilityUtilTest, LiveRegionChangeEvent) {
 
   AccessibilityNodeInfoDataWrapper source_node_info_wrapper_none(
       nullptr, node_info_data.get());
-  EXPECT_EQ(absl::nullopt, ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED,
-                                     &source_node_info_wrapper,
-                                     &source_node_info_wrapper_none));
+  EXPECT_EQ(std::nullopt, ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED,
+                                    &source_node_info_wrapper,
+                                    &source_node_info_wrapper_none));
 }
 
 TEST(AndroidAccessibilityUtilTest, ViewSelectedEvent) {
@@ -55,7 +56,7 @@ TEST(AndroidAccessibilityUtilTest, ViewSelectedEvent) {
   // No events are needed for a node with range info.
   node_info_data->range_info = AXRangeInfoData::New();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             ToAXEvent(AXEventType::VIEW_SELECTED, &source_node_info_wrapper,
                       &source_node_info_wrapper));
 }
@@ -67,8 +68,8 @@ TEST(AndroidAccessibilityUtilTest, WindowStateChangedEvent) {
       nullptr, node_info_data.get());
 
   // No event type if there's no focused node.
-  EXPECT_EQ(absl::nullopt, ToAXEvent(AXEventType::WINDOW_STATE_CHANGED,
-                                     &source_node_info_wrapper, nullptr));
+  EXPECT_EQ(std::nullopt, ToAXEvent(AXEventType::WINDOW_STATE_CHANGED,
+                                    &source_node_info_wrapper, nullptr));
 
   // Focused event if there's a focused node.
   EXPECT_EQ(ax::mojom::Event::kFocus,

@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COMPOSITOR_RENDER_PASS_MOJOM_TRAITS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
@@ -55,7 +55,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->backdrop_filters;
   }
 
-  static const absl::optional<gfx::RRectF>& backdrop_filter_bounds(
+  static const std::optional<gfx::RRectF>& backdrop_filter_bounds(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->backdrop_filter_bounds;
   }

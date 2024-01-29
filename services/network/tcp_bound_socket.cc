@@ -4,6 +4,7 @@
 
 #include "services/network/tcp_bound_socket.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "net/socket/tcp_socket.h"
 #include "services/network/socket_factory.h"
 #include "services/network/tcp_connected_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -131,8 +131,8 @@ void TCPBoundSocket::Connect(
 
 void TCPBoundSocket::OnConnectComplete(
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(connecting_socket_);

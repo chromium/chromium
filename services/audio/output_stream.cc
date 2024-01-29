@@ -120,7 +120,7 @@ class AudibilityHelperImpl : public OutputStream::AudibilityHelper {
 
     // Always instantly report audible signals.
     if (currently_audible) {
-      first_time_silent_ = absl::nullopt;
+      first_time_silent_ = std::nullopt;
       return true;
     }
 
@@ -146,7 +146,7 @@ class AudibilityHelperImpl : public OutputStream::AudibilityHelper {
   base::RepeatingTimer poll_timer_;
 
   // The time at which the stream last transitioned to silence.
-  absl::optional<base::TimeTicks> first_time_silent_;
+  std::optional<base::TimeTicks> first_time_silent_;
 
   // Streams start as silent, without a grace period. This is because the
   // silent -> audible transition is instant (and we will be in the correct
@@ -310,7 +310,7 @@ void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
   }
 
   std::move(created_callback)
-      .Run({absl::in_place, std::move(shared_memory_region),
+      .Run({std::in_place, std::move(shared_memory_region),
             std::move(socket_handle)});
 }
 

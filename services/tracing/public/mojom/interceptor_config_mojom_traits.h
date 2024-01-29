@@ -27,12 +27,12 @@ class StructTraits<tracing::mojom::InterceptorConfigDataView,
     return src.name();
   }
 
-  static absl::optional<perfetto::protos::gen::ConsoleConfig> console_config(
+  static std::optional<perfetto::protos::gen::ConsoleConfig> console_config(
       const perfetto::protos::gen::InterceptorConfig& src) {
     if (src.has_console_config()) {
       src.console_config();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static bool Read(tracing::mojom::InterceptorConfigDataView data,

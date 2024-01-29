@@ -29,13 +29,13 @@ void FakeSystemInfo::ClearGlobalBinderForAudioService() {
 void FakeSystemInfo::GetInputStreamParameters(
     const std::string& device_id,
     GetInputStreamParametersCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeSystemInfo::GetOutputStreamParameters(
     const std::string& device_id,
     GetOutputStreamParametersCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeSystemInfo::HasInputDevices(HasInputDevicesCallback callback) {
@@ -59,12 +59,12 @@ void FakeSystemInfo::GetOutputDeviceDescriptions(
 void FakeSystemInfo::GetAssociatedOutputDeviceID(
     const std::string& input_device_id,
     GetAssociatedOutputDeviceIDCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeSystemInfo::GetInputDeviceInfo(const std::string& input_device_id,
                                         GetInputDeviceInfoCallback callback) {
-  std::move(callback).Run(absl::nullopt, absl::nullopt);
+  std::move(callback).Run(std::nullopt, std::nullopt);
 }
 
 void FakeSystemInfo::Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver) {

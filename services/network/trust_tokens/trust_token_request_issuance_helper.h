@@ -76,7 +76,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
     // many blinded, unsigned trust tokens; on error, returns nullopt. The
     // format of this string will eventually be specified, but it is currently
     // considered an implementation detail of the underlying cryptographic code.
-    virtual absl::optional<std::string> BeginIssuance(size_t num_tokens) = 0;
+    virtual std::optional<std::string> BeginIssuance(size_t num_tokens) = 0;
 
     struct UnblindedTokens {
       UnblindedTokens();
@@ -127,8 +127,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       SuitableTrustTokenOrigin top_level_origin,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-      absl::optional<std::string> custom_key_commitment,
-      absl::optional<url::Origin> custom_issuer,
+      std::optional<std::string> custom_key_commitment,
+      std::optional<url::Origin> custom_issuer,
       std::unique_ptr<Cryptographer> cryptographer,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestIssuanceHelper() override;
@@ -161,7 +161,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // constructor's comment.)
   void Begin(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done) override;
 
   // Performs the second half of Trust Token issuance's client side,
@@ -196,7 +196,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // fetch.
   void OnGotKeyCommitment(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done,
       mojom::TrustTokenKeyCommitmentResultPtr commitment_result);
 
@@ -207,7 +207,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // |Finalize|.
   void OnDelegateBeginIssuanceCallComplete(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done,
       CryptographerAndBlindedTokens cryptographer_and_blinded_tokens);
 
@@ -230,12 +230,12 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
   // operation's execution.
-  absl::optional<SuitableTrustTokenOrigin> issuer_;
+  std::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
   const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
-  const absl::optional<std::string> custom_key_commitment_;
-  const absl::optional<url::Origin> custom_issuer_;
+  const std::optional<std::string> custom_key_commitment_;
+  const std::optional<url::Origin> custom_issuer_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
@@ -246,7 +246,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   std::unique_ptr<Cryptographer> cryptographer_;
 
   net::NetLogWithSource net_log_;
-  absl::optional<size_t> num_obtained_tokens_;
+  std::optional<size_t> num_obtained_tokens_;
   base::WeakPtrFactory<TrustTokenRequestIssuanceHelper> weak_ptr_factory_{this};
 };
 

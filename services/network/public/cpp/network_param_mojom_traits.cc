@@ -107,11 +107,11 @@ bool EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::
   return false;
 }
 
-absl::optional<net::HostPortPair>
+std::optional<net::HostPortPair>
 StructTraits<network::mojom::ProxyServerDataView,
              net::ProxyServer>::host_and_port(const net::ProxyServer& s) {
   if (s.scheme() == net::ProxyServer::SCHEME_INVALID) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return s.host_port_pair();
 }
@@ -124,7 +124,7 @@ bool StructTraits<network::mojom::ProxyServerDataView, net::ProxyServer>::Read(
     return false;
   }
 
-  absl::optional<net::HostPortPair> host_and_port;
+  std::optional<net::HostPortPair> host_and_port;
   if (!data.ReadHostAndPort(&host_and_port)) {
     return false;
   }
@@ -147,7 +147,7 @@ bool StructTraits<network::mojom::ProxyServerDataView, net::ProxyServer>::Read(
 bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
     network::mojom::ProxyChainDataView data,
     net::ProxyChain* out) {
-  absl::optional<std::vector<net::ProxyServer>> proxy_servers;
+  std::optional<std::vector<net::ProxyServer>> proxy_servers;
   if (!data.ReadProxyServers(&proxy_servers)) {
     return false;
   }

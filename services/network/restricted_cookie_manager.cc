@@ -146,7 +146,7 @@ net::CookieOptions MakeOptionsForGet(
     options.set_exclude_httponly();  // Default, but make it explicit here.
     options.set_same_site_cookie_context(
         net::cookie_util::ComputeSameSiteContextForScriptGet(
-            url, site_for_cookies, absl::nullopt /*initiator*/,
+            url, site_for_cookies, std::nullopt /*initiator*/,
             force_ignore_site_for_cookies));
   } else {
     // mojom::RestrictedCookieManagerRole::NETWORK
@@ -196,8 +196,8 @@ void RestrictedCookieManager::ComputeFirstPartySetMetadata(
   std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
             base::OnceCallback<void(net::FirstPartySetMetadata)>>
       callbacks = base::SplitOnceCallback(std::move(callback));
-  absl::optional<std::pair<net::FirstPartySetMetadata,
-                           net::FirstPartySetsCacheFilter::MatchInfo>>
+  std::optional<std::pair<net::FirstPartySetMetadata,
+                          net::FirstPartySetsCacheFilter::MatchInfo>>
       metadata_and_match_info =
           net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
               /*request_site=*/net::SchemefulSite(origin), isolation_info,
@@ -340,7 +340,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const net::SiteForCookies& site_for_cookies,
            const url::Origin& top_frame_origin,
            bool has_storage_access,
-           const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+           const std::optional<net::CookiePartitionKey>& cookie_partition_key,
            net::CookieOptions options,
            mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
       : cookie_store_(cookie_store),
@@ -670,7 +670,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url,
           isolated_top_frame_origin, site_for_cookies,
-          std::move(on_cookies_accessed_result), absl::nullopt, /*count=*/1,
+          std::move(on_cookies_accessed_result), std::nullopt, /*count=*/1,
           is_ad_tagged, cookie_setting_overrides));
     }
   };
@@ -787,7 +787,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies,
-          std::move(result_with_access_result), absl::nullopt,
+          std::move(result_with_access_result), std::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
@@ -813,7 +813,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // If the renderer's cookie has a partition key that was not created using
   // CookiePartitionKey::FromScript, then the cookie's partition key should be
   // equal to RestrictedCookieManager's partition key.
-  absl::optional<net::CookiePartitionKey> cookie_partition_key =
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
       cookie.PartitionKey();
 
   // If the `cookie_partition_key_` has a nonce then force all cookie writes to
@@ -827,7 +827,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
     // feature is disabled. If that is the case, we treat the cookie as
     // unpartitioned.
     if (!cookie_partition_key_) {
-      cookie_partition_key = absl::nullopt;
+      cookie_partition_key = std::nullopt;
     } else {
       bool cookie_partition_key_ok =
           cookie_partition_key->from_script() ||
@@ -904,7 +904,7 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies, std::move(notify),
-          absl::nullopt, /*count=*/1,
+          std::nullopt, /*count=*/1,
           /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
   }
@@ -964,7 +964,7 @@ void RestrictedCookieManager::SetCookieFromString(
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
       net::CanonicalCookie::Create(
-          url, cookie, base::Time::Now(), /*server_time=*/absl::nullopt,
+          url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_,
           cookie_settings().are_truncated_cookies_blocked(), &status);
   if (!parsed_cookie) {
@@ -978,7 +978,7 @@ void RestrictedCookieManager::SetCookieFromString(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
-          site_for_cookies, std::move(result_with_access_result), absl::nullopt,
+          site_for_cookies, std::move(result_with_access_result), std::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false,
           GetCookieSettingOverrides(has_storage_access,

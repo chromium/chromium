@@ -6,13 +6,14 @@
 #define SERVICES_ACCESSIBILITY_ANDROID_ANDROID_ACCESSIBILITY_UTIL_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace ax::android {
@@ -21,12 +22,12 @@ class AccessibilityInfoDataWrapper;
 
 // Returns Chrome accessibility event type if we need to dispatch some event
 // explicitly. Otherwise returns nullopt.
-absl::optional<ax::mojom::Event> ToAXEvent(
+std::optional<ax::mojom::Event> ToAXEvent(
     mojom::AccessibilityEventType android_event_type,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node);
 
-absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
+std::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action);
 
 ax::mojom::Action ConvertToChromeAction(

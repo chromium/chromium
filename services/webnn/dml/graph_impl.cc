@@ -105,7 +105,7 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
 // Calculate the total byte length of buffers and the D3D12_RANGE for each
 // buffer, all with the required alignment.
 template <typename Map>
-absl::optional<AlignedByteLength<typename Map::key_type>>
+std::optional<AlignedByteLength<typename Map::key_type>>
 CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
   base::CheckedNumeric<size_t> total_byte_length(0);
   std::map<typename Map::key_type, D3D12_RANGE> key_to_d3d12_range_map;
@@ -121,7 +121,7 @@ CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
         byte_length, DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
       DLOG(ERROR) << "Failed to calculate the total byte length.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // The aligned byte length calculated with `End` sub `Begin` attribute is
@@ -137,7 +137,7 @@ CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
 // Upload constants buffers in one Direct3D 12 committed resource, the
 // DML_BUFFER_BINDING specifies a resource binding described by a range of bytes
 // in the single buffer.
-absl::optional<std::map<uint64_t, DML_BUFFER_BINDING>>
+std::optional<std::map<uint64_t, DML_BUFFER_BINDING>>
 UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
     const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
@@ -151,7 +151,7 @@ UploadAndCreateConstantBufferBinding(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to map upload buffer for inputs: "
                 << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
@@ -566,8 +566,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   std::array<const NodeOutput*, 5> inputs = {input, mean, variance, scale,
                                              bias};
 
-  absl::optional<ActivationOperatorDesc> activation_operator_desc;
-  absl::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  std::optional<ActivationOperatorDesc> activation_operator_desc;
+  std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (batch_normalization->activation) {
     auto create_activation_result =
         CreateActivationOperatorDesc(batch_normalization->activation);
@@ -715,7 +715,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   std::vector<const NodeOutput*> inputs = {input, filter};
-  absl::optional<TensorDesc> reshaped_bias_tensor_desc;
+  std::optional<TensorDesc> reshaped_bias_tensor_desc;
   auto& bias_operand_id = conv2d->bias_operand_id;
   if (bias_operand_id) {
     const auto bias_node_output_iterator =
@@ -777,8 +777,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
   std::array<uint32_t, 2> default_out_padding = {0, 0};
 
-  absl::optional<ActivationOperatorDesc> activation_operator_desc;
-  absl::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  std::optional<ActivationOperatorDesc> activation_operator_desc;
+  std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (conv2d->activation) {
     auto create_activation_result =
         CreateActivationOperatorDesc(conv2d->activation);
@@ -1832,7 +1832,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   // The input c tensor description may be broadcasted.
-  absl::optional<TensorDesc> input_c_tensor_desc;
+  std::optional<TensorDesc> input_c_tensor_desc;
   auto& c_operand_id = gemm->c_operand_id;
   if (c_operand_id) {
     uint64_t input_c_id = c_operand_id.value();
@@ -2010,8 +2010,8 @@ CreateOperatorNodeForMeanVarianceNormalization(
   }
 
   std::vector<const NodeOutput*> inputs = {input};
-  absl::optional<TensorDesc> scale_tensor_desc;
-  absl::optional<TensorDesc> bias_tensor_desc;
+  std::optional<TensorDesc> scale_tensor_desc;
+  std::optional<TensorDesc> bias_tensor_desc;
 
   if (scale) {
     inputs.push_back(scale);
@@ -2409,7 +2409,7 @@ GraphImpl::AllocateComputeResources(
   // Calculate the total byte length of input array buffers to create
   // GPU input buffer and upload buffer, also records the aligned D3D12_RANGE
   // for each input.
-  absl::optional<AlignedByteLength<std::string>> aligned_byte_length_of_inputs =
+  std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_inputs =
       CalculateAlignedByteLength(
           compute_resource_info.input_name_to_byte_length_map);
   if (!aligned_byte_length_of_inputs) {
@@ -2440,8 +2440,8 @@ GraphImpl::AllocateComputeResources(
   // Calculate the total byte length of outputs array buffer to create
   // an output buffer and readback buffer, also records the aligned D3D12_RANGE
   // for each output.
-  absl::optional<AlignedByteLength<std::string>>
-      aligned_byte_length_of_outputs = CalculateAlignedByteLength(
+  std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_outputs =
+      CalculateAlignedByteLength(
           compute_resource_info.output_name_to_byte_length_map);
   if (!aligned_byte_length_of_outputs) {
     DLOG(ERROR) << "Failed to calculate the aligned byte length of outputs.";
@@ -2553,7 +2553,7 @@ HRESULT GraphImpl::RecordGraphExecution(
         DML_BINDING_TYPE_BUFFER, &output_buffer_binding.back()};
   }
 
-  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+  std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
   if (persistent_resource) {
     persistent_buffer_binding_desc =
         persistent_resource->persistent_buffer_binding_desc;
@@ -2649,7 +2649,7 @@ void GraphImpl::OnCompilationComplete(
       constant_id_to_byte_length_map[key] = buffer.size();
     }
 
-    absl::optional<AlignedByteLength<uint64_t>>
+    std::optional<AlignedByteLength<uint64_t>>
         aligned_byte_length_of_constants =
             CalculateAlignedByteLength(constant_id_to_byte_length_map);
     if (!aligned_byte_length_of_constants) {
@@ -2723,7 +2723,7 @@ void GraphImpl::OnCompilationComplete(
   // Create the persistent resource which is bound as output of operator
   // initializer.
   std::unique_ptr<PersistentResource> persistent_resource;
-  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+  std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
   uint64_t persistent_buffer_size =

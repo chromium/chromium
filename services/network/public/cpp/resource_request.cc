@@ -99,21 +99,21 @@ mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> Clone(
 //  - neither is nullopt and they both contain equal values
 //
 bool OptionalTrustedParamsEqualsForTesting(
-    const absl::optional<ResourceRequest::TrustedParams>& lhs,
-    const absl::optional<ResourceRequest::TrustedParams>& rhs) {
+    const std::optional<ResourceRequest::TrustedParams>& lhs,
+    const std::optional<ResourceRequest::TrustedParams>& rhs) {
   return (!lhs && !rhs) || (lhs && rhs && lhs->EqualsForTesting(*rhs));
 }
 
 bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
-    const absl::optional<ResourceRequest::WebBundleTokenParams>& lhs,
-    const absl::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
+    const std::optional<ResourceRequest::WebBundleTokenParams>& lhs,
+    const std::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
   return (!lhs && !rhs) ||
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
 }
 
 bool OptionalNetLogInfoEqualsForTesting(
-    const absl::optional<net::NetLogSource>& lhs,
-    const absl::optional<net::NetLogSource>& rhs) {
+    const std::optional<net::NetLogSource>& lhs,
+    const std::optional<net::NetLogSource>& rhs) {
   bool equal_members = lhs && rhs && lhs.value() == rhs.value();
   return (!lhs && !rhs) || equal_members;
 }

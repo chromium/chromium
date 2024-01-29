@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,13 +19,12 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
 namespace {
 
-absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
+std::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
   switch (cbor_value.type()) {
     case cbor::Value::Type::UNSIGNED:
     case cbor::Value::Type::NEGATIVE:
@@ -35,9 +35,9 @@ absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
       base::Value::List output_array;
 
       for (const auto& el : input_array) {
-        absl::optional<base::Value> converted_el = ConvertToBaseValue(el);
+        std::optional<base::Value> converted_el = ConvertToBaseValue(el);
         if (!converted_el.has_value()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         output_array.Append(*std::move(converted_el));
       }
@@ -57,14 +57,14 @@ absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
         } else {
           // not supporting anything that is not a string or a bytestring at the
           // moment.
-          return absl::nullopt;
+          return std::nullopt;
         }
 
-        absl::optional<base::Value> converted_value =
+        std::optional<base::Value> converted_value =
             ConvertToBaseValue(el.second);
 
         if (!converted_value.has_value()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         output_map.Set(key, *std::move(converted_value));
       }
@@ -81,7 +81,7 @@ absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
 
         case cbor::Value::SimpleValue::UNDEFINED:
         case cbor::Value::SimpleValue::NULL_VALUE:
-          return absl::nullopt;
+          return std::nullopt;
       }
 
     case cbor::Value::Type::STRING:
@@ -94,7 +94,7 @@ absl::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
       return base::Value(cbor_value.GetDouble());
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -113,17 +113,17 @@ void CborParserImpl::Parse(mojo_base::BigBuffer cbor, ParseCallback callback) {
   auto ret = cbor::Reader::Read(cbor, config);
 
   if (!ret.has_value()) {
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             cbor::Reader::ErrorCodeToString(error));
     return;
   }
 
-  absl::optional<::base::Value> temp_value = ConvertToBaseValue(*ret);
+  std::optional<::base::Value> temp_value = ConvertToBaseValue(*ret);
 
   if (temp_value.has_value()) {
-    std::move(callback).Run(std::move(*temp_value), absl::nullopt);
+    std::move(callback).Run(std::move(*temp_value), std::nullopt);
   } else {
-    std::move(callback).Run(absl::nullopt, "Error unexpected CBOR value.");
+    std::move(callback).Run(std::nullopt, "Error unexpected CBOR value.");
   }
 }
 }  // namespace data_decoder

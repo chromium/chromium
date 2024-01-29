@@ -50,8 +50,8 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
     mojom::TrustTokenRefreshPolicy refresh_policy,
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-    absl::optional<std::string> custom_key_commitment,
-    absl::optional<url::Origin> custom_issuer,
+    std::optional<std::string> custom_key_commitment,
+    std::optional<url::Origin> custom_issuer,
     std::unique_ptr<Cryptographer> cryptographer,
     net::NetLogWithSource net_log)
     : top_level_origin_(top_level_origin),
@@ -72,7 +72,7 @@ TrustTokenRequestRedemptionHelper::~TrustTokenRequestRedemptionHelper() =
 
 void TrustTokenRequestRedemptionHelper::Begin(
     const GURL& url,
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+    base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                             mojom::TrustTokenOperationStatus)> done) {
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION);
@@ -85,7 +85,7 @@ void TrustTokenRequestRedemptionHelper::Begin(
 
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL (request destination)");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kInvalidArgument);
     return;
   }
@@ -95,7 +95,7 @@ void TrustTokenRequestRedemptionHelper::Begin(
         TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);
     if (!keys) {
       LogOutcome(net_log_, kBegin, "Failed to parse custom keys");
-      std::move(done).Run(absl::nullopt,
+      std::move(done).Run(std::nullopt,
                           mojom::TrustTokenOperationStatus::kInvalidArgument);
       return;
     }
@@ -105,7 +105,7 @@ void TrustTokenRequestRedemptionHelper::Begin(
 
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
@@ -114,14 +114,14 @@ void TrustTokenRequestRedemptionHelper::Begin(
       token_store_->RetrieveNonstaleRedemptionRecord(*issuer_,
                                                      top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Redemption record cache hit");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kAlreadyExists);
     return;
   }
 
   if (token_store_->IsRedemptionLimitHit(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Redemption limit hit.");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
@@ -133,12 +133,12 @@ void TrustTokenRequestRedemptionHelper::Begin(
 }
 
 void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+    base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                             mojom::TrustTokenOperationStatus)> done,
     mojom::TrustTokenKeyCommitmentResultPtr commitment_result) {
   if (!commitment_result) {
     LogOutcome(net_log_, kBegin, "No keys for issuer");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kMissingIssuerKeys);
     return;
   }
@@ -147,10 +147,10 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
   // recent commitments.
   token_store_->PruneStaleIssuerState(*issuer_, commitment_result->keys);
 
-  absl::optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
+  std::optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
   if (!maybe_token_to_redeem) {
     LogOutcome(net_log_, kBegin, "No tokens to redeem");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
@@ -161,18 +161,18 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     LogOutcome(net_log_, kBegin,
                "Internal error initializing BoringSSL redemption state "
                "(possibly due to bad batch size)");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
 
-  absl::optional<std::string> maybe_redemption_header =
+  std::optional<std::string> maybe_redemption_header =
       cryptographer_->BeginRedemption(*maybe_token_to_redeem,
                                       top_level_origin_);
 
   if (!maybe_redemption_header) {
     LogOutcome(net_log_, kBegin, "Internal error beginning redemption");
-    std::move(done).Run(absl::nullopt,
+    std::move(done).Run(std::nullopt,
                         mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
@@ -224,7 +224,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   // header to BoringSSL.
   response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  absl::optional<std::string> maybe_redemption_record =
+  std::optional<std::string> maybe_redemption_record =
       cryptographer_->ConfirmRedemption(header_value);
 
   // 3. If BoringSSL fails its structural validation / signature check, return
@@ -274,7 +274,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }
 
-absl::optional<TrustToken>
+std::optional<TrustToken>
 TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
   // As a postcondition of UpdateTokenStoreFromKeyCommitmentResult, all of the
   // store's tokens for |issuer_| match the key commitment result obtained at
@@ -287,7 +287,7 @@ TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
       token_store_->RetrieveMatchingTokens(*issuer_, key_matcher);
 
   if (matching_tokens.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return matching_tokens.front();
 }

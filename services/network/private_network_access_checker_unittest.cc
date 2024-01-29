@@ -599,7 +599,7 @@ TEST(PrivateNetworkAccessCheckerTest, ResponseAddressSpace) {
   PrivateNetworkAccessChecker checker(
       ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
-  EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
+  EXPECT_EQ(checker.ResponseAddressSpace(), std::nullopt);
 
   checker.Check(DirectTransport(PublicEndpoint()));
 
@@ -692,7 +692,7 @@ TEST(PrivateNetworkAccessCheckerTest, ResetResponseAddressSpace) {
 
   checker.ResetForRedirect(GURL("http://foo.com"));
 
-  EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
+  EXPECT_EQ(checker.ResponseAddressSpace(), std::nullopt);
 
   // This succeeds even though the IP address space does not match that of the
   // previous endpoint passed to `Check()`, thanks to `ResetForRedirect()`.

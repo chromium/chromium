@@ -85,7 +85,7 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
 }
 
 void MockMediaSessionMojoObserver::MediaSessionMetadataChanged(
-    const absl::optional<MediaMetadata>& metadata) {
+    const std::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -127,7 +127,7 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 }
 
 void MockMediaSessionMojoObserver::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (position.has_value() && expected_position_.has_value() &&
@@ -256,7 +256,7 @@ void MockMediaSessionMojoObserver::WaitForExpectedImagesOfType(
 }
 
 void MockMediaSessionMojoObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in absl::optional so we must check
+  // |session_position_| is doubly wrapped in std::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -503,14 +503,14 @@ void MockMediaSession::FlushForTesting() {
 }
 
 void MockMediaSession::SimulateMetadataChanged(
-    const absl::optional<MediaMetadata>& metadata) {
+    const std::optional<MediaMetadata>& metadata) {
   for (auto& observer : observers_) {
     observer->MediaSessionMetadataChanged(metadata);
   }
 }
 
 void MockMediaSession::SimulatePositionChanged(
-    const absl::optional<MediaPosition>& position) {
+    const std::optional<MediaPosition>& position) {
   for (auto& observer : observers_) {
     observer->MediaSessionPositionChanged(position);
   }

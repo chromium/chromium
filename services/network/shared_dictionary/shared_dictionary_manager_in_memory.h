@@ -60,7 +60,7 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   // Performs a cache eviction using the specified params. If `top_frame_site`
   // is nullopt, performs the cache eviction for the all storages. Otherwise,
   // performs the cache eviction for the specified `top_frame_site`'s storages.
-  void RunCacheEvictionImpl(absl::optional<net::SchemefulSite> top_frame_site,
+  void RunCacheEvictionImpl(std::optional<net::SchemefulSite> top_frame_site,
                             uint64_t max_size,
                             uint64_t size_low_watermark,
                             uint64_t max_count,

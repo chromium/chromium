@@ -46,10 +46,10 @@ void MockDevToolsObserver::OnRawResponse(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& cookies_with_access_result,
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-    const absl::optional<std::string>& raw_response_headers,
+    const std::optional<std::string>& raw_response_headers,
     network::mojom::IPAddressSpace resource_address_space,
     int32_t http_status_code,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
   raw_response_cookies_.insert(raw_response_cookies_.end(),
                                cookies_with_access_result.begin(),
                                cookies_with_access_result.end());
@@ -70,7 +70,7 @@ void MockDevToolsObserver::OnRawResponse(
 }
 
 void MockDevToolsObserver::OnPrivateNetworkRequest(
-    const absl::optional<std::string>& devtools_request_id,
+    const std::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
@@ -104,8 +104,8 @@ void MockDevToolsObserver::OnTrustTokenOperationDone(
     network::mojom::TrustTokenOperationResultPtr result) {}
 
 void MockDevToolsObserver::OnCorsError(
-    const absl::optional<std::string>& devtools_request_id,
-    const absl::optional<::url::Origin>& initiator_origin,
+    const std::optional<std::string>& devtools_request_id,
+    const std::optional<::url::Origin>& initiator_origin,
     mojom::ClientSecurityStatePtr client_security_state,
     const GURL& url,
     const network::CorsErrorStatus& status,
@@ -165,7 +165,7 @@ void MockDevToolsObserver::WaitUntilCorsError() {
 
 MockDevToolsObserver::OnPrivateNetworkRequestParams::
     OnPrivateNetworkRequestParams(
-        const absl::optional<std::string>& devtools_request_id,
+        const std::optional<std::string>& devtools_request_id,
         const GURL& url,
         bool is_warning,
         network::mojom::IPAddressSpace resource_address_space,

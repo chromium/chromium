@@ -135,8 +135,8 @@ class GraphImpl final : public WebNNGraphImpl {
     ComPtr<ID3D12Resource> readback_buffer;
 
     ComPtr<ID3D12Resource> temporary_buffer;
-    absl::optional<DML_BUFFER_BINDING> temporary_buffer_binding;
-    absl::optional<DML_BINDING_DESC> temporary_buffer_binding_desc;
+    std::optional<DML_BUFFER_BINDING> temporary_buffer_binding;
+    std::optional<DML_BINDING_DESC> temporary_buffer_binding_desc;
   };
 
   static std::unique_ptr<ComputeResources> AllocateComputeResources(

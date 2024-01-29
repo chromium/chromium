@@ -17,7 +17,7 @@ namespace network {
 namespace {
 using masked_domain_list::MaskedDomainList;
 
-absl::optional<net::IsolationInfo> CreateIsolationInfo(
+std::optional<net::IsolationInfo> CreateIsolationInfo(
     const std::string& top_frame_domain) {
   return net::IsolationInfo::CreateForInternalRequest(
       url::Origin::Create(GURL(top_frame_domain)));

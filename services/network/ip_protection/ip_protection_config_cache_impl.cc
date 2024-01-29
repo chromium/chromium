@@ -62,9 +62,9 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   return all_caches_have_tokens;
 }
 
-absl::optional<network::mojom::BlindSignedAuthTokenPtr>
+std::optional<network::mojom::BlindSignedAuthTokenPtr>
 IpProtectionConfigCacheImpl::GetAuthToken(size_t chain_index) {
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> result;
   auto proxy_layer = chain_index == 0
                          ? network::mojom::IpProtectionProxyLayer::kProxyA
                          : network::mojom::IpProtectionProxyLayer::kProxyB;

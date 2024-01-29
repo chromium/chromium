@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   ~TCPConnectedSocket() override;
 
   void Connect(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);

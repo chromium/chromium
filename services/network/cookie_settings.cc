@@ -7,6 +7,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -177,7 +177,7 @@ bool CookieSettings::IsCookieAccessible(
     const net::CanonicalCookie& cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus* cookie_inclusion_status) const {
@@ -243,7 +243,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
 net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return PrivacySetting(GetCookieSettingWithMetadata(
       url, site_for_cookies, base::OptionalToPtr(top_frame_origin), overrides));

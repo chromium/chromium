@@ -4,8 +4,9 @@
 
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace data_decoder {
@@ -15,7 +16,7 @@ constexpr char kConnectionError[] =
     "Cannot connect to the remote parser service";
 }  // namespace
 
-SafeWebBundleParser::SafeWebBundleParser(const absl::optional<GURL>& base_url)
+SafeWebBundleParser::SafeWebBundleParser(const std::optional<GURL>& base_url)
     : base_url_(base_url) {}
 
 SafeWebBundleParser::~SafeWebBundleParser() = default;
@@ -62,7 +63,7 @@ void SafeWebBundleParser::ParseIntegrityBlock(
 }
 
 void SafeWebBundleParser::ParseMetadata(
-    absl::optional<uint64_t> offset,
+    std::optional<uint64_t> offset,
     web_package::mojom::WebBundleParser::ParseMetadataCallback callback) {
   // This method is designed to be called once. So, allowing only once
   // simultaneous request is fine enough.

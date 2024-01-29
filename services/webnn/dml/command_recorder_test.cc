@@ -262,7 +262,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   // Relu operator initializer deson't need to bind any input and persistent
   // resources.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, absl::nullopt));
+      compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   EXPECT_HRESULT_SUCCEEDED(
       command_recorder->GetCommandQueue()->WaitSyncForTesting());
@@ -307,7 +307,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   // Execute the operator with input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, absl::nullopt, absl::nullopt));
+      output_bindings, std::nullopt, std::nullopt));
 
   // Download the result from output resource.
   std::vector<float> result(buffer_size / sizeof(float));
@@ -353,7 +353,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Relu operator initializer deson't need to bind any input and persistent
   // resources.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, absl::nullopt));
+      compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   EXPECT_HRESULT_SUCCEEDED(
       command_recorder->GetCommandQueue()->WaitSyncForTesting());
@@ -400,7 +400,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Record the operator execution with input and output bindings once.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, absl::nullopt, absl::nullopt));
+      output_bindings, std::nullopt, std::nullopt));
 
   ComPtr<ID3D12Resource> readback_buffer;
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CreateReadbackBuffer(
@@ -499,7 +499,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   // Relu operator initializer deson't need to bind any input and persistent
   // resources.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, absl::nullopt));
+      compiled_operator.Get(), std::nullopt, std::nullopt));
   EXPECT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   EXPECT_HRESULT_SUCCEEDED(
       command_recorder->GetCommandQueue()->WaitSyncForTesting());
@@ -563,7 +563,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
          input_buffers[0].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       compiled_operator, descriptor_heaps[0], input_bindings[0],
-      output_bindings[0], absl::nullopt, absl::nullopt));
+      output_bindings[0], std::nullopt, std::nullopt));
 
   // Upload second input data and execute the operator again.
   input_data = {2.0, 1.0, -1.0, -2.0};
@@ -571,7 +571,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
          input_buffers[1].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       compiled_operator, descriptor_heaps[1], input_bindings[1],
-      output_bindings[1], absl::nullopt, absl::nullopt));
+      output_bindings[1], std::nullopt, std::nullopt));
 
   // Download result from output resources.
   ComPtr<ID3D12Resource> readback_buffers[2];
@@ -793,7 +793,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   // Execute the operator with persistent, input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
       std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, persistent_buffer_binding_desc, absl::nullopt));
+      output_bindings, persistent_buffer_binding_desc, std::nullopt));
 
   // Download the result from output resource.
   std::vector<float> result(output_buffer_size / sizeof(float));

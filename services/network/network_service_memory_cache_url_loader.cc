@@ -24,7 +24,7 @@ NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     scoped_refptr<base::RefCountedBytes> content,
     int64_t encoded_body_length,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key)
+    const std::optional<net::CookiePartitionKey> cookie_partition_key)
     : memory_cache_(memory_cache),
       trace_id_(trace_id),
       net_log_(net_log),
@@ -88,7 +88,7 @@ void NetworkServiceMemoryCacheURLLoader::Start(
 
   // Start sending the response.
   client_->OnReceiveResponse(std::move(response_head),
-                             std::move(consumer_handle), absl::nullopt);
+                             std::move(consumer_handle), std::nullopt);
 
   // Set up data pipe producer.
   producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
@@ -148,7 +148,7 @@ void NetworkServiceMemoryCacheURLLoader::MaybeNotifyRawResponse(
 
   devtools_observer_->OnRawResponse(
       *devtools_request_id_, /*cookies_with_access_result=*/{},
-      std::move(header_array), /*raw_response_headers=*/absl::nullopt,
+      std::move(header_array), /*raw_response_headers=*/std::nullopt,
       mojom::IPAddressSpace::kUnknown, response_head.headers->response_code(),
       cookie_partition_key_);
 }
@@ -250,7 +250,7 @@ void NetworkServiceMemoryCacheURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   NOTREACHED();
 }
 

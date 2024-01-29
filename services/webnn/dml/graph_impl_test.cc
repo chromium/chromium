@@ -382,14 +382,14 @@ struct ClampAttributes {
 
 struct Activation {
   mojom::Activation::Tag kind;
-  absl::optional<ClampAttributes> clamp_attributes;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<ClampAttributes> clamp_attributes;
+  std::optional<float> elu_alpha;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
 };
 
 template <typename T>
@@ -397,14 +397,14 @@ struct BatchNormalizationTester {
   OperandInfo<T> input;
   OperandInfo<T> mean;
   OperandInfo<T> variance;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct BatchNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<Activation> activation;
+    std::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo<T> output;
@@ -780,8 +780,8 @@ struct Conv2dTester {
     uint32_t groups = 1;
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
-    absl::optional<OperandInfo<T>> bias;
-    absl::optional<Activation> activation;
+    std::optional<OperandInfo<T>> bias;
+    std::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo<float> output;
@@ -797,7 +797,7 @@ struct Conv2dTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
 
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
@@ -3200,15 +3200,15 @@ template <typename T>
 struct UnaryOperatorTester {
   mojom::Operation::Tag tag;
   OperandInfo<T> input;
-  absl::optional<float> clamp_min_value;
-  absl::optional<float> clamp_max_value;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<float> clamp_min_value;
+  std::optional<float> clamp_max_value;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> elu_alpha;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
   OperandInfo<T> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
@@ -4351,7 +4351,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
 }
 
 struct GemmAttributes {
-  absl::optional<uint64_t> c_operand_id;
+  std::optional<uint64_t> c_operand_id;
   // TODO(crbug.com/1273291): Add test cases for below attributes.
   float alpha = 1.0;
   float beta = 1.0;
@@ -4363,7 +4363,7 @@ template <typename T>
 struct GemmTester {
   OperandInfo<T> input_a;
   OperandInfo<T> input_b;
-  absl::optional<OperandInfo<T>> input_c;
+  std::optional<OperandInfo<T>> input_c;
   GemmAttributes attributes;
   OperandInfo<float> output;
 
@@ -4677,11 +4677,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
 template <typename T>
 struct InstanceNormalizationTester {
   OperandInfo<T> input;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct InstanceNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     mojom::InputOperandLayout layout =
         mojom::InputOperandLayout::kChannelsFirst;
     float epsilon = 1e-5;
@@ -4822,11 +4822,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
 template <typename T>
 struct LayerNormalizationTester {
   OperandInfo<T> input;
-  absl::optional<OperandInfo<T>> scale;
-  absl::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> scale;
+  std::optional<OperandInfo<T>> bias;
   struct LayerNormalizationAttributes {
-    absl::optional<uint64_t> scale_operand_id;
-    absl::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> scale_operand_id;
+    std::optional<uint64_t> bias_operand_id;
     std::vector<uint32_t> axes;
     float epsilon = 1e-5;
   };
@@ -5727,7 +5727,7 @@ struct Resample2dTester {
   struct Resample2dAttributes {
     mojom::Resample2d::InterpolationMode mode =
         mojom::Resample2d::InterpolationMode::kNearestNeighbor;
-    absl::optional<std::vector<float>> scales;
+    std::optional<std::vector<float>> scales;
     std::vector<uint32_t> axes = {2, 3};
   };
   Resample2dAttributes attributes;

@@ -170,8 +170,8 @@ void CommandRecorder::CopyBufferRegion(ComPtr<ID3D12Resource> dst_buffer,
 
 HRESULT CommandRecorder::InitializeOperator(
     IDMLCompiledOperator* compiled_operator,
-    const absl::optional<DML_BINDING_DESC>& input_array_binding,
-    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
+    const std::optional<DML_BINDING_DESC>& input_array_binding,
+    const std::optional<DML_BINDING_DESC>& persistent_resource_binding) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::InitializeOperator");
   CHECK(is_open_);
   CHECK(compiled_operator);
@@ -301,8 +301,8 @@ HRESULT CommandRecorder::ExecuteOperator(
     ComPtr<ID3D12DescriptorHeap> descriptor_heap,
     base::span<const DML_BINDING_DESC> input_bindings,
     base::span<const DML_BINDING_DESC> output_bindings,
-    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding,
-    const absl::optional<DML_BINDING_DESC>& temporary_resource_binding) {
+    const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
+    const std::optional<DML_BINDING_DESC>& temporary_resource_binding) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::ExecuteOperator");
   CHECK(is_open_);
   CHECK(compiled_operator);

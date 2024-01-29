@@ -5,6 +5,7 @@
 #include "services/network/socket_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "services/network/restricted_udp_socket.h"
 #include "services/network/tls_client_socket.h"
 #include "services/network/udp_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -121,7 +121,7 @@ void SocketFactory::DidCompleteCreate(
     network::TransferableSocket socket,
     int result) {
   if (result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt);
+    std::move(callback).Run(result, std::nullopt);
     return;
   }
   auto tcp_socket =
@@ -154,7 +154,7 @@ void SocketFactory::CreateTCPServerSocketHelper(
     socket->AttachConnectionTracker(std::move(options->connection_tracker));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  absl::optional<bool> ipv6_only;
+  std::optional<bool> ipv6_only;
   switch (options->ipv6_only) {
     case mojom::OptionalBool::kTrue:
       ipv6_only = true;
@@ -168,7 +168,7 @@ void SocketFactory::CreateTCPServerSocketHelper(
   base::expected<net::IPEndPoint, int32_t> result =
       socket->Listen(local_addr, options->backlog, ipv6_only);
   if (!result.has_value()) {
-    std::move(callback).Run(result.error(), absl::nullopt);
+    std::move(callback).Run(result.error(), std::nullopt);
     return;
   }
   tcp_server_socket_receivers_.Add(std::move(socket), std::move(receiver));
@@ -176,7 +176,7 @@ void SocketFactory::CreateTCPServerSocketHelper(
 }
 
 void SocketFactory::CreateTCPConnectedSocket(
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -203,7 +203,7 @@ void SocketFactory::CreateTCPBoundSocket(
   net::IPEndPoint local_addr_out;
   int result = socket->Bind(local_addr, &local_addr_out);
   if (result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt);
+    std::move(callback).Run(result, std::nullopt);
     return;
   }
   TCPBoundSocket* socket_ptr = socket.get();

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/clock_snapshot.pb.h"
@@ -901,7 +901,7 @@ void HasMetadataValue(const perfetto::protos::ChromeMetadata& entry,
                       const base::Value::Dict& value) {
   EXPECT_TRUE(entry.has_json_value());
 
-  absl::optional<base::Value::Dict> child_dict =
+  std::optional<base::Value::Dict> child_dict =
       base::JSONReader::ReadDict(entry.json_value());
   EXPECT_EQ(*child_dict, value);
 }
@@ -921,7 +921,7 @@ void MetadataHasNamedValue(const google::protobuf::RepeatedPtrField<
   NOTREACHED();
 }
 
-absl::optional<base::Value::Dict> AddJsonMetadataGenerator() {
+std::optional<base::Value::Dict> AddJsonMetadataGenerator() {
   base::Value::Dict metadata;
   metadata.Set("foo_int", 42);
   metadata.Set("foo_str", "bar");
@@ -974,7 +974,7 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
     base::Value::Dict metadata;
     metadata.Set("before_int", 42);
-    return absl::optional<base::Value::Dict>(std::move(metadata));
+    return std::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource();
@@ -2056,7 +2056,7 @@ TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
     base::Value::Dict child_dict;
     child_dict.Set("child_str", "child_val");
     metadata.Set("child_dict", std::move(child_dict));
-    return absl::optional<base::Value::Dict>(std::move(metadata));
+    return std::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource(/*privacy_filtering_enabled=*/true);

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_ACCESS_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
@@ -20,7 +21,6 @@
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom-forward.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class FirstPartySetMetadata;
@@ -60,7 +60,7 @@ class FirstPartySetsAccessDelegate
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] absl::optional<
+  [[nodiscard]] std::optional<
       std::pair<net::FirstPartySetMetadata,
                 net::FirstPartySetsCacheFilter::MatchInfo>>
   ComputeMetadata(
@@ -77,7 +77,7 @@ class FirstPartySetsAccessDelegate
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] absl::optional<EntriesResult> FindEntries(
+  [[nodiscard]] std::optional<EntriesResult> FindEntries(
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(EntriesResult)> callback);
 
@@ -86,7 +86,7 @@ class FirstPartySetsAccessDelegate
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite> top_frame_site,
+      const std::optional<net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata,
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback) const;
@@ -131,7 +131,7 @@ class FirstPartySetsAccessDelegate
 
   // The first ReadyEvent received. This is set at most once, and is immutable
   // thereafter.
-  absl::optional<mojom::FirstPartySetsReadyEventPtr> ready_event_
+  std::optional<mojom::FirstPartySetsReadyEventPtr> ready_event_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of queries that are waiting for the instance to be initialized.
@@ -144,7 +144,7 @@ class FirstPartySetsAccessDelegate
 
   // Timer starting when the first async query was enqueued, if any. Used for
   // metrics.
-  absl::optional<base::ElapsedTimer> first_async_query_timer_
+  std::optional<base::ElapsedTimer> first_async_query_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Timer starting when the instance is constructed. Used for metrics.

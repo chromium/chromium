@@ -96,7 +96,7 @@ TEST_P(TrustTokenRequestSigner, Roundtrip) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -111,7 +111,7 @@ TEST_P(TrustTokenRequestSigner, EmptyMessage) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -126,7 +126,7 @@ TEST_P(TrustTokenRequestSigner, ShortMessage) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -140,7 +140,7 @@ TEST_P(TrustTokenRequestSigner, LongerMessage) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -157,7 +157,7 @@ TEST_P(TrustTokenRequestSigner, VerificationFromDifferentSigner) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
 
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> verifier =
@@ -173,7 +173,7 @@ TEST_P(TrustTokenRequestSigner, SigningKeyTooShort) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(base::make_span(keys.signing).subspan(1), message);
   EXPECT_FALSE(signature);
 }
@@ -187,7 +187,7 @@ TEST_P(TrustTokenRequestSigner, SigningKeyTooLong) {
   Keys keys = GetTestKeys();
   std::vector<uint8_t> overlong_signing_key(keys.signing.size() + 1);
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(overlong_signing_key, message);
   EXPECT_FALSE(signature);
 }
@@ -200,7 +200,7 @@ TEST_P(TrustTokenRequestSigner, VerificationKeyTooShort) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
 
   EXPECT_FALSE(signer->Verify(message, *signature,
@@ -215,7 +215,7 @@ TEST_P(TrustTokenRequestSigner, VerificationKeyTooLong) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
 
   std::vector<uint8_t> overlong_verification_key(keys.verification.size() + 1);
@@ -231,7 +231,7 @@ TEST_P(TrustTokenRequestSigner, SignatureTooShort) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   signature->pop_back();
 
@@ -246,7 +246,7 @@ TEST_P(TrustTokenRequestSigner, SignatureTooLong) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
   signature->push_back(0);
 
@@ -262,7 +262,7 @@ TEST_P(TrustTokenRequestSigner, SignatureWrong) {
   std::unique_ptr<TrustTokenRequestSigningHelper::Signer> signer =
       CreateSigner();
 
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       signer->Sign(keys.signing, message);
 
   // Corrupt the signature.

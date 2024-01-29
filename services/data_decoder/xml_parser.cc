@@ -40,8 +40,8 @@ void ReportError(XmlParser::ParseCallback callback,
     error = generic_error;
   }
 
-  std::move(callback).Run(/*result=*/absl::nullopt,
-                          absl::make_optional(std::move(error)));
+  std::move(callback).Run(/*result=*/std::nullopt,
+                          std::make_optional(std::move(error)));
 }
 
 enum class TextNodeType { kText, kCData };
@@ -214,8 +214,8 @@ void XmlParser::Parse(const std::string& xml,
     ReportError(std::move(callback), "Invalid XML: bad content", errors);
     return;
   }
-  std::move(callback).Run(absl::make_optional(std::move(root_element)),
-                          absl::optional<std::string>());
+  std::move(callback).Run(std::make_optional(std::move(root_element)),
+                          std::optional<std::string>());
 }
 
 }  // namespace data_decoder

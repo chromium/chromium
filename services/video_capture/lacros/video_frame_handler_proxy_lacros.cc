@@ -91,8 +91,7 @@ class VideoFrameHandlerProxyLacros::VideoFrameAccessHandlerProxy
 
 VideoFrameHandlerProxyLacros::VideoFrameHandlerProxyLacros(
     mojo::PendingReceiver<crosapi::mojom::VideoFrameHandler> proxy_receiver,
-    absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
-        handler_remote,
+    std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>> handler_remote,
     base::WeakPtr<media::VideoFrameReceiver> handler_remote_in_process) {
   CHECK(handler_remote || handler_remote_in_process);
   receiver_.Bind(std::move(proxy_receiver));

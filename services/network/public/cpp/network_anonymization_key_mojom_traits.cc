@@ -4,9 +4,10 @@
 
 #include "services/network/public/cpp/network_anonymization_key_mojom_traits.h"
 
+#include <optional>
+
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -27,7 +28,7 @@ bool StructTraits<network::mojom::NonEmptyNetworkAnonymizationKeyDataView,
   net::SchemefulSite top_frame_site;
   // Read is_cross_site boolean flag value.
   bool is_cross_site = data.is_cross_site();
-  absl::optional<base::UnguessableToken> nonce;
+  std::optional<base::UnguessableToken> nonce;
 
   if (!data.ReadTopFrameSite(&top_frame_site) || !data.ReadNonce(&nonce)) {
     return false;

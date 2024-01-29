@@ -76,7 +76,7 @@ class DeviceMediaToMojoAdapter : public Device {
  private:
   void StartInternal(
       const media::VideoCaptureParams& requested_settings,
-      absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
+      std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
           handler_pending_remote,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
       bool start_in_process,

@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -68,7 +68,7 @@ MATCHER_P2(Header,
 }
 
 SuitableTrustTokenOrigin CreateSuitableOriginOrDie(std::string_view spec) {
-  absl::optional<SuitableTrustTokenOrigin> maybe_origin =
+  std::optional<SuitableTrustTokenOrigin> maybe_origin =
       SuitableTrustTokenOrigin::Create(GURL(spec));
   CHECK(maybe_origin) << "Failed to create a SuitableTrustTokenOrigin!";
   return *maybe_origin;
@@ -79,7 +79,7 @@ bool ExtractRedemptionRecordsFromHeader(
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {
-  absl::optional<net::structured_headers::List> maybe_list =
+  std::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(sec_redemption_record_header);
 
   std::string dummy;
@@ -122,7 +122,7 @@ bool ExtractRedemptionRecordsFromHeader(
       return false;
     }
 
-    absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
+    std::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
     if (!maybe_issuer) {
       *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";

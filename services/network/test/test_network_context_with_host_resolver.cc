@@ -40,12 +40,12 @@ void TestNetworkContextWithHostResolver::ResolveHostImpl(
                 host->get_host_port_pair(), network_anonymization_key,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
-                /*optional_parameters=*/absl::nullopt)
+                /*optional_parameters=*/std::nullopt)
           : host_resolver_->CreateRequest(
                 host->get_scheme_host_port(), network_anonymization_key,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
-                /*optional_parameters=*/absl::nullopt);
+                /*optional_parameters=*/std::nullopt);
 
   auto* ptr = internal_request.get();
   auto [async_callback, sync_callback] = base::SplitOnceCallback(
@@ -68,7 +68,7 @@ void TestNetworkContextWithHostResolver::OnResolveHostComplete(
   response_client->OnComplete(
       error, internal_request->GetResolveErrorInfo(),
       base::OptionalFromPtr(internal_request->GetAddressResults()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   response_client.reset();
 }
 

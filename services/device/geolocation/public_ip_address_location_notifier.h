@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_PUBLIC_IP_ADDRESS_LOCATION_NOTIFIER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
@@ -17,7 +18,6 @@
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

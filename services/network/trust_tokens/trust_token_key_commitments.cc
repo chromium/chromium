@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "services/network/trust_tokens/trust_token_key_commitment_parser.h"
 #include "services/network/trust_tokens/trust_token_key_filtering.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -109,7 +109,7 @@ void TrustTokenKeyCommitments::Get(
 
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitments::GetSync(
     const url::Origin& origin) const {
-  absl::optional<SuitableTrustTokenOrigin> suitable_origin =
+  std::optional<SuitableTrustTokenOrigin> suitable_origin =
       SuitableTrustTokenOrigin::Create(origin);
   if (!suitable_origin) {
     return nullptr;

@@ -4,14 +4,15 @@
 
 #include "services/accessibility/android/test/android_accessibility_test_util.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace {
 void AddAction(
     std::vector<ax::android::mojom::AccessibilityActionInAndroidPtr>* actions,
     int id,
-    absl::optional<std::string> label) {
+    std::optional<std::string> label) {
   actions->push_back(ax::android::mojom::AccessibilityActionInAndroid::New());
   ax::android::mojom::AccessibilityActionInAndroid* action =
       actions->back().get();
@@ -26,7 +27,7 @@ namespace ax::android {
 
 void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
                        mojom::AccessibilityActionType action_type,
-                       absl::optional<std::string> label) {
+                       std::optional<std::string> label) {
   if (!node->standard_actions) {
     node->standard_actions =
         std::vector<mojom::AccessibilityActionInAndroidPtr>();

@@ -5,12 +5,12 @@
 #ifndef SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 #define SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -53,9 +53,9 @@ class SharedStorageResponse : public net::test_server::BasicHttpResponse {
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override;
 
  private:
-  absl::optional<std::string> shared_storage_write_;
+  std::optional<std::string> shared_storage_write_;
   net::HttpStatusCode code_ = net::HTTP_OK;
-  absl::optional<std::string> new_location_;
+  std::optional<std::string> new_location_;
 };
 
 // Sends a response with the "Shared-Storage-Write" header, with value

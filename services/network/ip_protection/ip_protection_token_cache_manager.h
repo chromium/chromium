@@ -5,9 +5,10 @@
 #ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -29,7 +30,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr>
+  virtual std::optional<network::mojom::BlindSignedAuthTokenPtr>
   GetAuthToken() = 0;
 
   // Invalidate any previous instruction that token requests should not be

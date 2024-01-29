@@ -52,7 +52,7 @@ class BrokeredTcpClientSocketTest : public testing::Test,
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
     net::IPEndPoint local_address(net::IPAddress::IPv4Localhost(), 0);
     ASSERT_THAT(
-        listen_socket_->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
+        listen_socket_->Listen(local_address, 1, /*ipv6_only=*/std::nullopt),
         IsOk());
     // Get the server's address (including the actual port number).
     ASSERT_THAT(listen_socket_->GetLocalAddress(&local_address), IsOk());
@@ -151,7 +151,7 @@ TEST_F(BrokeredTcpClientSocketTest, MAYBE_FailedBind) {
   net::TCPServerSocket ipv6_server_socket(nullptr, net::NetLogSource());
   net::IPEndPoint local_address(net::IPAddress::IPv6Localhost(), 0);
   int listen_result =
-      ipv6_server_socket.Listen(local_address, 1, /*ipv6_only=*/absl::nullopt);
+      ipv6_server_socket.Listen(local_address, 1, /*ipv6_only=*/std::nullopt);
   if (listen_result != net::OK) {
     LOG(ERROR) << "Failed to listen on ::1 - probably because IPv6 is disabled."
                   " Skipping the test";

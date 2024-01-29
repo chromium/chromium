@@ -171,7 +171,7 @@ class ResourceSchedulerTest : public testing::Test {
     for (int i = 0; i != net::EFFECTIVE_CONNECTION_TYPE_LAST; ++i) {
       auto type = static_cast<net::EffectiveConnectionType>(i);
       c[type] = ResourceSchedulerParamsManager::ParamsForNetworkQuality(
-          max_delayable_requests, 0.0, false, absl::nullopt);
+          max_delayable_requests, 0.0, false, std::nullopt);
     }
     return ResourceSchedulerParamsManager(std::move(c));
   }
@@ -357,9 +357,9 @@ class ResourceSchedulerTest : public testing::Test {
              ResourceSchedulerParamsManager::ParamsForNetworkQuality>
         params_for_network_quality_container;
     ResourceSchedulerParamsManager::ParamsForNetworkQuality params_slow_2g(
-        8, 3.0, true, absl::nullopt);
+        8, 3.0, true, std::nullopt);
     ResourceSchedulerParamsManager::ParamsForNetworkQuality params_2g(
-        8, 3.0, true, absl::nullopt);
+        8, 3.0, true, std::nullopt);
 
     params_for_network_quality_container
         [net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G] = params_slow_2g;
@@ -376,9 +376,9 @@ class ResourceSchedulerTest : public testing::Test {
              ResourceSchedulerParamsManager::ParamsForNetworkQuality>
         params_for_network_quality_container;
     ResourceSchedulerParamsManager::ParamsForNetworkQuality params_slow_2g(
-        8, 3.0, false, absl::nullopt);
+        8, 3.0, false, std::nullopt);
     ResourceSchedulerParamsManager::ParamsForNetworkQuality params_3g(
-        10, 0.0, false, absl::nullopt);
+        10, 0.0, false, std::nullopt);
 
     if (lower_delayable_count_enabled) {
       params_slow_2g.max_delayable_requests = 2;
@@ -407,7 +407,7 @@ class ResourceSchedulerTest : public testing::Test {
         params_for_network_quality_container;
 
     ResourceSchedulerParamsManager::ParamsForNetworkQuality params_slow_2g(
-        8, 3.0, true, absl::nullopt);
+        8, 3.0, true, std::nullopt);
     params_slow_2g.max_queuing_time = max_queuing_time;
     params_for_network_quality_container
         [net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G] = params_slow_2g;

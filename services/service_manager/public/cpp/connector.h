@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -20,7 +21,6 @@
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom-forward.h"
 #include "services/service_manager/public/mojom/service_manager.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -98,7 +98,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Connector {
   // or was started as a result of this request.
   using WarmServiceCallback =
       base::OnceCallback<void(mojom::ConnectResult result,
-                              const absl::optional<Identity>& identity)>;
+                              const std::optional<Identity>& identity)>;
   void WarmService(const ServiceFilter& filter,
                    WarmServiceCallback callback = {});
 
@@ -157,7 +157,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Connector {
   // request.
   using BindInterfaceCallback =
       base::OnceCallback<void(mojom::ConnectResult result,
-                              const absl::optional<Identity>& identity)>;
+                              const std::optional<Identity>& identity)>;
   template <typename Interface>
   void Connect(const ServiceFilter& filter,
                mojo::PendingReceiver<Interface> receiver,

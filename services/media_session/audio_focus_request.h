@@ -104,7 +104,7 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
   mojo::Receiver<mojom::AudioFocusRequestClient> receiver_;
 
   // The action to apply when the transient hold is released.
-  absl::optional<mojom::MediaSessionAction> delayed_action_;
+  std::optional<mojom::MediaSessionAction> delayed_action_;
 
   // The ID of the audio focus request.
   base::UnguessableToken const id_;

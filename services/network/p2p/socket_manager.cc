@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "services/network/p2p/socket.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/media/base/turn_utils.h"
 
@@ -91,7 +91,7 @@ class P2PSocketManager::DnsRequest {
       : resolver_(host_resolver), enable_mdns_(enable_mdns) {}
 
   void Resolve(const std::string& host_name,
-               absl::optional<int> family,
+               std::optional<int> family,
                const net::NetworkAnonymizationKey& network_anonymization_key,
                DoneCallback done_callback) {
     DCHECK(!done_callback.is_null());
@@ -389,7 +389,7 @@ void P2PSocketManager::GetHostAddress(
     const std::string& host_name,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, /*address_family=*/absl::nullopt, enable_mdns,
+  DoGetHostAddress(host_name, /*address_family=*/std::nullopt, enable_mdns,
                    std::move(callback));
 }
 
@@ -398,13 +398,13 @@ void P2PSocketManager::GetHostAddressWithFamily(
     int address_family,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, absl::make_optional(address_family), enable_mdns,
+  DoGetHostAddress(host_name, std::make_optional(address_family), enable_mdns,
                    std::move(callback));
 }
 
 void P2PSocketManager::DoGetHostAddress(
     const std::string& host_name,
-    absl::optional<int> address_family,
+    std::optional<int> address_family,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
   auto request = std::make_unique<DnsRequest>(

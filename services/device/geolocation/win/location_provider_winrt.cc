@@ -8,6 +8,8 @@
 #include <windows.foundation.h>
 #include <wrl/event.h>
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +18,6 @@
 #include "base/win/core_winrt_util.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -50,20 +51,20 @@ using Microsoft::WRL::ComPtr;
 constexpr double kDefaultMovementThresholdMeters = 1.0;
 
 template <typename F>
-absl::optional<DOUBLE> GetOptionalDouble(F&& getter) {
+std::optional<DOUBLE> GetOptionalDouble(F&& getter) {
   DOUBLE value = 0;
   HRESULT hr = getter(&value);
   if (SUCCEEDED(hr))
     return value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 template <typename F>
-absl::optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
+std::optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
   IReference<DOUBLE>* reference_value;
   HRESULT hr = getter(&reference_value);
   if (!SUCCEEDED(hr) || !reference_value)
-    return absl::nullopt;
+    return std::nullopt;
   return GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
     return reference_value->get_Value(value);
   });
@@ -95,24 +96,24 @@ bool IsSystemLocationSettingEnabled() {
            status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
 }
 
-absl::optional<BasicGeoposition> GetPositionFromCoordinate(
+std::optional<BasicGeoposition> GetPositionFromCoordinate(
     const ComPtr<IGeocoordinate>& coordinate) {
   ComPtr<IGeocoordinateWithPoint> coordinate_with_point = nullptr;
   const HRESULT query_result = coordinate.As(&coordinate_with_point);
   if (FAILED(query_result) || !coordinate_with_point) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ComPtr<IGeopoint> point = nullptr;
   const HRESULT point_result = coordinate_with_point->get_Point(&point);
   if (FAILED(point_result) || !point) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BasicGeoposition position;
   const HRESULT position_result = point->get_Position(&position);
   if (FAILED(position_result)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return position;
@@ -408,7 +409,7 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
     return nullptr;
   }
 
-  const absl::optional<BasicGeoposition> position =
+  const std::optional<BasicGeoposition> position =
       GetPositionFromCoordinate(coordinate);
   if (!position) {
     return nullptr;

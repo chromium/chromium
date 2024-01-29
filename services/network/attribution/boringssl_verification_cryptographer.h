@@ -6,12 +6,12 @@
 #define SERVICES_NETWORK_ATTRIBUTION_BORINGSSL_VERIFICATION_CRYPTOGRAPHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "services/network/attribution/attribution_verification_mediator.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -26,8 +26,8 @@ class BoringsslVerificationCryptographer
   bool Initialize(
       mojom::TrustTokenProtocolVersion issuer_configured_version) override;
   bool AddKey(std::string_view key) override;
-  absl::optional<std::string> BeginIssuance(std::string_view message) override;
-  absl::optional<std::string> ConfirmIssuanceAndBeginRedemption(
+  std::optional<std::string> BeginIssuance(std::string_view message) override;
+  std::optional<std::string> ConfirmIssuanceAndBeginRedemption(
       std::string_view response_header) override;
 
  private:

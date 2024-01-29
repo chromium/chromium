@@ -77,7 +77,7 @@ bool StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig>::
     Read(tracing::mojom::TraceConfigDataView data, perfetto::TraceConfig* out) {
   std::vector<perfetto::TraceConfig::DataSource> data_sources;
   std::vector<perfetto::TraceConfig::BufferConfig> buffers;
-  absl::optional<base::Token> trace_uuid;
+  std::optional<base::Token> trace_uuid;
   if (!data.ReadDataSources(&data_sources) || !data.ReadBuffers(&buffers) ||
       !data.ReadPerfettoBuiltinDataSource(
           out->mutable_builtin_data_sources()) ||

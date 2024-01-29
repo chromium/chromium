@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int64_t ip_address_attributes(const net::NetworkInterface& network) {
     return network.ip_address_attributes;
   }
-  static const absl::optional<net::Eui48MacAddress>& mac_address(
+  static const std::optional<net::Eui48MacAddress>& mac_address(
       const net::NetworkInterface& network) {
     return network.mac_address;
   }

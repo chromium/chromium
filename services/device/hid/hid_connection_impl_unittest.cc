@@ -24,10 +24,10 @@ namespace {
 using ::testing::ElementsAre;
 
 using ReadFuture = base::test::
-    TestFuture<bool, uint8_t, const absl::optional<std::vector<uint8_t>>&>;
+    TestFuture<bool, uint8_t, const std::optional<std::vector<uint8_t>>&>;
 using WriteFuture = base::test::TestFuture<bool>;
 using GetFeatureFuture =
-    base::test::TestFuture<bool, const absl::optional<std::vector<uint8_t>>&>;
+    base::test::TestFuture<bool, const std::optional<std::vector<uint8_t>>&>;
 
 #if BUILDFLAG(IS_MAC)
 const uint64_t kTestDeviceId = 123;

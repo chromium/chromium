@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/network_context.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
@@ -17,14 +20,12 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
-#include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cert_verifier {
 namespace {
@@ -163,7 +164,7 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
 class NetworkContextChromeRootStoreFeatureFlagTest
     : public NetworkContextWithRealCertVerifierTest,
       public testing::WithParamInterface<
-          std::tuple<bool, absl::optional<bool>>> {
+          std::tuple<bool, std::optional<bool>>> {
  public:
   NetworkContextChromeRootStoreFeatureFlagTest() {
     scoped_feature_list_.InitWithFeatureState(
@@ -180,7 +181,7 @@ class NetworkContextChromeRootStoreFeatureFlagTest
 
   bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }
 
-  absl::optional<bool> param_use_chrome_root_store() const {
+  std::optional<bool> param_use_chrome_root_store() const {
     return std::get<1>(GetParam());
   }
 
@@ -225,7 +226,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     NetworkContextChromeRootStoreFeatureFlagTest,
     ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(absl::nullopt, false, true)),
+                       ::testing::Values(std::nullopt, false, true)),
     [](const testing::TestParamInfo<
         NetworkContextChromeRootStoreFeatureFlagTest::ParamType>& info) {
       return base::StrCat(

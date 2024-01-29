@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
       mojom::NetworkContext::CreateTCPServerSocketCallback callback);
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

@@ -308,7 +308,7 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
 
   for (auto& observer : observers_) {
     observer->OnAuthScanDone(
-        {absl::in_place, converted_msg},
+        {std::in_place, converted_msg},
         // TODO(patrykd): Construct the map at the beginning of this function.
         base::flat_map<std::string, std::vector<std::string>>(entries));
   }

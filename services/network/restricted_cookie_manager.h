@@ -326,7 +326,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   // Cookie partition key that the instance of RestrictedCookieManager will have
   // access to. Must be set only in the constructor or in *ForTesting methods.
-  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  std::optional<net::CookiePartitionKey> cookie_partition_key_;
   // CookiePartitionKeyCollection that is either empty if
   // `cookie_partition_key_` is nullopt. If `cookie_partition_key_` is not null,
   // the key collection contains its value. Must be kept in sync with

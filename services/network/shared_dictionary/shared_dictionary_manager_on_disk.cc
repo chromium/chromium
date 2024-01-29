@@ -20,11 +20,11 @@
 namespace network {
 namespace {
 
-absl::optional<base::UnguessableToken> DeserializeToUnguessableToken(
+std::optional<base::UnguessableToken> DeserializeToUnguessableToken(
     const std::string& token_string) {
-  absl::optional<base::Token> token = base::Token::FromString(token_string);
+  std::optional<base::Token> token = base::Token::FromString(token_string);
   if (!token) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::UnguessableToken::Deserialize(token->high(), token->low());
 }
@@ -244,7 +244,7 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
     }
     disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
     // 5) Get the disk cache key token of the entry.
-    absl::optional<base::UnguessableToken> token =
+    std::optional<base::UnguessableToken> token =
         DeserializeToUnguessableToken(entry->GetKey());
     if (!token) {
       // 6) If the disk cache entry key is not a valid token, deletes the entry.
@@ -604,7 +604,7 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
   net::SharedDictionaryInfo info(url, response_time, expiration, match,
                                  last_used_time, size, hash,
                                  disk_cache_key_token,
-                                 /*primary_key_in_database=*/absl::nullopt);
+                                 /*primary_key_in_database=*/std::nullopt);
   metadata_store_.RegisterDictionary(
       isolation_key, info,
       /*max_size_per_site*/ cache_max_size_ / 2,

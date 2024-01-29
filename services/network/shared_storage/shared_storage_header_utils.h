@@ -5,10 +5,10 @@
 #ifndef SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_HEADER_UTILS_H_
 #define SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_HEADER_UTILS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -28,10 +28,10 @@ enum class SharedStorageHeaderParamType {
   kIgnoreIfPresent,
 };
 
-absl::optional<network::mojom::SharedStorageOperationType>
+std::optional<network::mojom::SharedStorageOperationType>
 StringToSharedStorageOperationType(std::string_view operation_str);
 
-absl::optional<SharedStorageHeaderParamType>
+std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str);
 
 bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers);

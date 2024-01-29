@@ -5,6 +5,7 @@
 #include "services/service_manager/service_process_launcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace {
@@ -80,8 +80,8 @@ TEST(ServiceProcessLauncherTest, DISABLED_StartJoin) {
                           .AddExtension(kServiceExtension);
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  absl::optional<ServiceProcessLauncher> launcher(
-      absl::in_place, &service_process_launcher_delegate, test_service_path);
+  std::optional<ServiceProcessLauncher> launcher(
+      std::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
       Identity(), sandbox::mojom::Sandbox::kNoSandbox,
@@ -109,8 +109,8 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   base::FilePath test_service_path(FILE_PATH_LITERAL("rockot@_rules.service"));
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  absl::optional<ServiceProcessLauncher> launcher(
-      absl::in_place, &service_process_launcher_delegate, test_service_path);
+  std::optional<ServiceProcessLauncher> launcher(
+      std::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(Identity(), sandbox::mojom::Sandbox::kNoSandbox,
                   base::BindOnce(&ProcessReadyCallbackAdapter,

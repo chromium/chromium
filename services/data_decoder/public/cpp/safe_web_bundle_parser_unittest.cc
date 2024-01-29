@@ -5,6 +5,7 @@
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace data_decoder {
@@ -64,7 +64,7 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
     void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override {
       integrity_block_callback_ = std::move(callback);
     }
-    void ParseMetadata(absl::optional<uint64_t> offset,
+    void ParseMetadata(std::optional<uint64_t> offset,
                        ParseMetadataCallback callback) override {
       metadata_callback_ = std::move(callback);
     }
@@ -102,7 +102,7 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
   // web_package::mojom::WebBundleParserFactory implementation.
   void GetParserForDataSource(
       mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver,
-      const absl::optional<GURL>& base_url,
+      const std::optional<GURL>& base_url,
       mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source)
       override {
     parser_ = std::make_unique<MockParser>(std::move(receiver));
@@ -165,7 +165,7 @@ class SafeWebBundleParserTest : public testing::Test {
 };
 
 TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
-  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
+  SafeWebBundleParser parser(/*base_url=*/std::nullopt);
   base::File test_file =
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
@@ -173,7 +173,7 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser.ParseMetadata(/*offset=*/absl::nullopt, metadata_future.GetCallback());
+  parser.ParseMetadata(/*offset=*/std::nullopt, metadata_future.GetCallback());
   auto [metadata, metadata_error] = metadata_future.Take();
   ASSERT_TRUE(metadata);
   ASSERT_FALSE(metadata_error);
@@ -204,15 +204,15 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
 }
 
 TEST_F(SafeWebBundleParserTest, OpenInvalidFile) {
-  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
+  SafeWebBundleParser parser(/*base_url=*/std::nullopt);
   EXPECT_EQ(base::File::FILE_ERROR_FAILED, parser.OpenFile(base::File()));
 }
 
 TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
-  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
+  SafeWebBundleParser parser(/*base_url=*/std::nullopt);
   bool metadata_parsed = false;
   parser.ParseMetadata(
-      /*offset=*/absl::nullopt,
+      /*offset=*/std::nullopt,
       base::BindOnce(
           [](bool* metadata_parsed,
              web_package::mojom::BundleMetadataPtr metadata,
@@ -244,7 +244,7 @@ TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
 }
 
 TEST_F(SafeWebBundleParserTest, UseMockFactory) {
-  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
+  SafeWebBundleParser parser(/*base_url=*/std::nullopt);
   MockFactory* raw_factory = InitializeMockFactory();
 
   EXPECT_FALSE(raw_factory->GetCreatedParser());
@@ -262,7 +262,7 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 
-  parser.ParseMetadata(/*offset=*/absl::nullopt, base::DoNothing());
+  parser.ParseMetadata(/*offset=*/std::nullopt, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
@@ -277,7 +277,7 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
 
 TEST_F(SafeWebBundleParserTest, ConnectionError) {
   auto parser =
-      std::make_unique<SafeWebBundleParser>(/*base_url=*/absl::nullopt);
+      std::make_unique<SafeWebBundleParser>(/*base_url=*/std::nullopt);
   MockFactory* raw_factory = InitializeMockFactory();
 
   mojo::PendingRemote<web_package::mojom::BundleDataSource> remote_data_source;
@@ -309,8 +309,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser->ParseMetadata(/*offset=*/absl::nullopt,
-                        metadata_future.GetCallback());
+  parser->ParseMetadata(/*offset=*/std::nullopt, metadata_future.GetCallback());
   base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<web_package::mojom::BundleResponsePtr,
@@ -349,7 +348,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 }
 
 TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
-  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
+  SafeWebBundleParser parser(/*base_url=*/std::nullopt);
   base::File test_file =
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
@@ -404,7 +403,7 @@ TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser.ParseMetadata(/*offset=*/absl::nullopt, metadata_future.GetCallback());
+  parser.ParseMetadata(/*offset=*/std::nullopt, metadata_future.GetCallback());
   auto [metadata, metadata_error] = metadata_future.Take();
   ASSERT_TRUE(metadata);
   ASSERT_FALSE(metadata_error);
@@ -421,7 +420,7 @@ TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
 
 TEST_F(SafeWebBundleParserTest, Close) {
   auto parser =
-      std::make_unique<SafeWebBundleParser>(/*base_url=*/absl::nullopt);
+      std::make_unique<SafeWebBundleParser>(/*base_url=*/std::nullopt);
 
   mojo::PendingRemote<web_package::mojom::BundleDataSource> remote_data_source;
   auto data_source = std::make_unique<MockDataSource>(

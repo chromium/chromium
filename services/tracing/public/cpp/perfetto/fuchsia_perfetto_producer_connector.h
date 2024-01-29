@@ -9,6 +9,8 @@
 #include <perfetto/ext/ipc/client.h>
 #include <perfetto/ext/tracing/core/shared_memory.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/tracing/perfetto_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 
@@ -29,7 +30,7 @@ class COMPONENT_EXPORT(TRACING_CPP) FuchsiaPerfettoProducerConnector {
 
   // Returns a ConnArgs object with a socket connected to the system tracing
   // service if system tracing is provided by the platform.
-  absl::optional<perfetto::ipc::Client::ConnArgs> Connect();
+  std::optional<perfetto::ipc::Client::ConnArgs> Connect();
 
   // Injects a ProducerConnector handle.
   void SetProducerServiceForTest(

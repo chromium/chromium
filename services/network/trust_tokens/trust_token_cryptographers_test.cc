@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 #include "url/gurl.h"
@@ -63,7 +63,7 @@ void RequestManyTokensAndRetainOneArbitrarily(
         reinterpret_cast<const char*>(key.value.data()), key.value.size())));
   }
 
-  absl::optional<std::string> maybe_base64_encoded_issuance_request =
+  std::optional<std::string> maybe_base64_encoded_issuance_request =
       issuance_cryptographer.BeginIssuance(kNumTokensToRequest);
   ASSERT_TRUE(maybe_base64_encoded_issuance_request);
 
@@ -99,7 +99,7 @@ void RedeemSingleToken(const TestTrustTokenIssuer& issuer,
   ASSERT_TRUE(redemption_cryptographer.Initialize(kProtocolVersion,
                                                   kNumTokensToRequest));
 
-  absl::optional<std::string> maybe_base64_encoded_redemption_request =
+  std::optional<std::string> maybe_base64_encoded_redemption_request =
       redemption_cryptographer.BeginRedemption(token_to_redeem,
                                                kRedeemingOrigin);
 

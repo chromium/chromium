@@ -752,7 +752,7 @@ TEST_F(OutputStreamAudibilityHelperTest, Poll_SmallGlitches_StaysAudible) {
   const base::TimeDelta kPollingPeriod = base::Seconds(1) / 15;
 
   base::TimeDelta glitch_length;
-  absl::optional<base::TimeTicks> glitch_start;
+  std::optional<base::TimeTicks> glitch_start;
   const auto return_glitch_power_levels = [&glitch_length, &glitch_start]() {
     const base::TimeTicks now = base::TimeTicks::Now();
 
@@ -771,7 +771,7 @@ TEST_F(OutputStreamAudibilityHelperTest, Poll_SmallGlitches_StaysAudible) {
   constexpr int kIterations = 5;
   for (int i = 0; i < kIterations; ++i) {
     // Force `return_glitch_power_levels` to return silent audio power levels.
-    glitch_start = absl::nullopt;
+    glitch_start = std::nullopt;
     glitch_length = (i + 1) * kPollingPeriod;
 
     EXPECT_CALL(*this, GetPowerLevel())

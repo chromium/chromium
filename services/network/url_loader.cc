@@ -8,6 +8,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -103,7 +104,6 @@
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -300,7 +300,7 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
 std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
     const std::string& accept_ch_frame,
     const net::HttpRequestHeaders& headers) {
-  absl::optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
+  std::optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
       ParseClientHintsHeader(accept_ch_frame);
 
   if (!maybe_hints)
@@ -1041,7 +1041,7 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
 }
 
 void URLLoader::OnDoneBeginningTrustTokenOperation(
-    absl::optional<net::HttpRequestHeaders> headers,
+    std::optional<net::HttpRequestHeaders> headers,
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
 
@@ -1122,7 +1122,7 @@ void URLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   if (!deferred_redirect_url_) {
     NOTREACHED();
     return;
@@ -1264,7 +1264,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
   PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheck(info);
-  absl::optional<mojom::CorsError> cors_error =
+  std::optional<mojom::CorsError> cors_error =
       PrivateNetworkAccessCheckResultToCorsError(result);
   if (cors_error.has_value()) {
     if (result == PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock &&
@@ -1417,7 +1417,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
           ? factory_params_->client_security_state->cross_origin_embedder_policy
           : kEmpty;
 
-  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
+  if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
@@ -1520,7 +1520,7 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
 }
 
 // static
-absl::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
+std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
     const net::IsolationInfo& factory_isolation_info,
     bool automatically_assign_isolation_info,
     const ResourceRequest& request) {
@@ -1542,7 +1542,7 @@ absl::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
                                       origin, origin, net::SiteForCookies());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,
@@ -1553,12 +1553,12 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
     return;
   }
   if (!url_loader_network_observer_) {
-    OnAuthCredentials(absl::nullopt);
+    OnAuthCredentials(std::nullopt);
     return;
   }
 
   if (do_not_prompt_for_login_) {
-    OnAuthCredentials(absl::nullopt);
+    OnAuthCredentials(std::nullopt);
     return;
   }
 
@@ -1745,7 +1745,7 @@ void URLLoader::ContinueOnResponseStarted() {
       factory_params_->client_security_state
           ? factory_params_->client_security_state->cross_origin_embedder_policy
           : kEmpty;
-  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
+  if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
@@ -1839,7 +1839,7 @@ void URLLoader::ReadMore() {
             !slop_bucket_->IsComplete()) {
           // Read into the slop bucket while we're waiting for the mojo data
           // pipe to empty out.
-          absl::optional<int> bytes_read_maybe = slop_bucket_->AttemptRead();
+          std::optional<int> bytes_read_maybe = slop_bucket_->AttemptRead();
           if (bytes_read_maybe.has_value()) {
             int bytes_read = bytes_read_maybe.value();
             if (bytes_read != net::ERR_IO_PENDING) {
@@ -2096,7 +2096,7 @@ int URLLoader::OnHeadersReceived(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     const net::IPEndPoint& endpoint,
-    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url) {
   if (header_client_) {
     header_client_->OnHeadersReceived(
         original_response_headers->raw_headers(), endpoint,
@@ -2169,7 +2169,7 @@ URLLoader* URLLoader::ForRequest(const net::URLRequest& request) {
 }
 
 void URLLoader::OnAuthCredentials(
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   auth_challenge_responder_receiver_.reset();
 
   if (!credentials.has_value()) {
@@ -2304,7 +2304,7 @@ void URLLoader::SendResponseToClient() {
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 
   url_loader_client_.Get()->OnReceiveResponse(
-      response_->Clone(), std::move(consumer_handle_), absl::nullopt);
+      response_->Clone(), std::move(consumer_handle_), std::nullopt);
 }
 
 void URLLoader::CompletePendingWrite(bool success) {
@@ -2417,7 +2417,7 @@ void URLLoader::DispatchOnRawRequest(
 
   emitted_devtools_raw_request_ = true;
 
-  absl::optional<bool> site_has_cookie_in_other_partition =
+  std::optional<bool> site_has_cookie_in_other_partition =
       url_request_->context()->cookie_store()->SiteHasCookieInOtherPartition(
           net::SchemefulSite(url_request_->url()),
           net::CookiePartitionKey::FromNetworkIsolationKey(
@@ -2481,13 +2481,13 @@ bool URLLoader::DispatchOnRawResponse() {
 
   // Only send the "raw" header text when the headers were actually send in
   // text form (i.e. not QUIC or SPDY)
-  absl::optional<std::string> raw_response_headers;
+  std::optional<std::string> raw_response_headers;
 
   const net::HttpResponseInfo& response_info = url_request_->response_info();
 
   if (!response_info.DidUseQuic() && !response_info.was_fetched_via_spdy) {
     raw_response_headers =
-        absl::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
+        std::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
             response_headers->raw_headers()));
   }
 
@@ -2542,17 +2542,17 @@ void URLLoader::ResumeStart() {
 void URLLoader::OnBeforeSendHeadersComplete(
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
     int result,
-    const absl::optional<net::HttpRequestHeaders>& headers) {
+    const std::optional<net::HttpRequestHeaders>& headers) {
   std::move(callback).Run(result, headers);
 }
 
 void URLLoader::OnHeadersReceivedComplete(
     net::CompletionOnceCallback callback,
     scoped_refptr<net::HttpResponseHeaders>* out_headers,
-    absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
+    std::optional<GURL>* out_preserve_fragment_on_redirect_url,
     int result,
-    const absl::optional<std::string>& headers,
-    const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
+    const std::optional<std::string>& headers,
+    const std::optional<GURL>& preserve_fragment_on_redirect_url) {
   if (headers) {
     *out_headers =
         base::MakeRefCounted<net::HttpResponseHeaders>(headers.value());
@@ -2564,7 +2564,7 @@ void URLLoader::OnHeadersReceivedComplete(
 void URLLoader::CompleteBlockedResponse(
     int error_code,
     bool should_report_corb_blocking,
-    absl::optional<mojom::BlockedByResponseReason> reason) {
+    std::optional<mojom::BlockedByResponseReason> reason) {
   if (has_received_response_) {
     // The response headers and body shouldn't yet be sent to the
     // URLLoaderClient.
@@ -2649,7 +2649,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
 
     // Tell the real URLLoaderClient that the response has been completed.
     url_loader_client_.Get()->OnReceiveResponse(
-        response_->Clone(), std::move(consumer_handle), absl::nullopt);
+        response_->Clone(), std::move(consumer_handle), std::nullopt);
   }
 
   // At this point, corb_analyzer_ has done its duty. We'll reset it now

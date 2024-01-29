@@ -5,11 +5,11 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_TRIGGER_VERIFICATION_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_TRIGGER_VERIFICATION_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION) TriggerVerification {
  public:
   // Creates a TriggerVerification instance if the `aggregatable_report_id` is a
   // valid id and `token` is not empty.
-  static absl::optional<TriggerVerification> Create(
+  static std::optional<TriggerVerification> Create(
       std::string token,
       base::Uuid aggregatable_report_id);
 

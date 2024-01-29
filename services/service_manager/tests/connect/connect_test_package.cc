@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Tests that multiple services can be packaged in a single service by
 // implementing ServiceFactory; that these services can be specified by
@@ -36,9 +36,9 @@ namespace {
 
 void QuitLoop(base::RunLoop* loop,
               mojom::ConnectResult* out_result,
-              absl::optional<Identity>* out_resolved_identity,
+              std::optional<Identity>* out_resolved_identity,
               mojom::ConnectResult result,
-              const absl::optional<Identity>& resolved_identity) {
+              const std::optional<Identity>& resolved_identity) {
   loop->Quit();
   *out_result = result;
   *out_resolved_identity = resolved_identity;
@@ -160,7 +160,7 @@ class ProvidedService : public Service,
       const service_manager::ServiceFilter& filter,
       ConnectToClassAppWithFilterCallback callback) override {
     mojom::ConnectResult result;
-    absl::optional<Identity> resolved_identity;
+    std::optional<Identity> resolved_identity;
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     service_receiver_.GetConnector()->WarmService(
         filter, base::BindOnce(&QuitLoop, &loop, &result, &resolved_identity));

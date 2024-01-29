@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -91,7 +91,7 @@ bool IsAndroidSecurityKeyRequest(
 }
 
 // Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.
-absl::optional<uint32_t> TotalPacketLength(
+std::optional<uint32_t> TotalPacketLength(
     base::span<const uint32_t> packet_lengths) {
   uint32_t total_bytes = 0;
   for (const uint32_t packet_length : packet_lengths) {
@@ -412,7 +412,7 @@ void DeviceImpl::IsochronousTransferIn(
     return;
   }
 
-  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  std::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
   if (!total_bytes.has_value()) {
     mojo::ReportBadMessage("Invalid isochronous packet lengths.");
     std::move(callback).Run(
@@ -439,7 +439,7 @@ void DeviceImpl::IsochronousTransferOut(
     return;
   }
 
-  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  std::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
   if (!total_bytes.has_value() || total_bytes.value() != data.size()) {
     mojo::ReportBadMessage("Invalid isochronous packet lengths.");
     std::move(callback).Run(BuildIsochronousPacketArray(

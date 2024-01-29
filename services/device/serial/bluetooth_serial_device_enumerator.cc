@@ -221,15 +221,14 @@ void BluetoothSerialDeviceEnumerator::OpenPort(
                 std::move(client), std::move(watcher), std::move(callback));
 }
 
-absl::optional<std::string>
-BluetoothSerialDeviceEnumerator::GetAddressFromToken(
+std::optional<std::string> BluetoothSerialDeviceEnumerator::GetAddressFromToken(
     const base::UnguessableToken& token) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& entry : device_ports_) {
     if (entry.second == token)
       return entry.first.first;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 BluetoothUUID BluetoothSerialDeviceEnumerator::GetServiceClassIdFromToken(

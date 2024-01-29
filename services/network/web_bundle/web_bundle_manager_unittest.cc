@@ -51,7 +51,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
     web_bundle_handles_.Add(this, std::move(receiver));
   }
 
-  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const std::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return last_bundle_error_;
   }
@@ -79,7 +79,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
   void OnWebBundleLoadFinished(bool success) override {}
 
  private:
-  absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>
+  std::optional<std::pair<mojom::WebBundleErrorType, std::string>>
       last_bundle_error_;
   base::OnceClosure quit_closure_for_bundle_error_;
 
@@ -100,7 +100,7 @@ CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
       manager.CreateWebBundleURLLoaderFactory(
           GURL(kBundleUrl), create_params, process_id,
           /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
-          /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+          /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
           /*coep_reporter=*/nullptr);
 
   return std::forward_as_tuple(std::move(factory), std::move(handle));
@@ -175,7 +175,7 @@ TEST_F(WebBundleManagerTest, NoFactoryExistsForDifferentProcessId) {
   auto factory = manager.CreateWebBundleURLLoaderFactory(
       GURL(kBundleUrl), create_params, process_id1,
       /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
-      /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+      /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
       /*coep_reporter=*/nullptr);
   ASSERT_TRUE(factory);
 
@@ -197,7 +197,7 @@ TEST_F(WebBundleManagerTest, UseProcesIdInTokenParamsForRequestsFromBrowser) {
   auto factory = manager.CreateWebBundleURLLoaderFactory(
       GURL(kBundleUrl), create_params, process_id1,
       /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
-      /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+      /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
       /*coep_reporter=*/nullptr);
   ASSERT_TRUE(factory);
 
@@ -228,7 +228,7 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
     auto factory = manager.CreateWebBundleURLLoaderFactory(
         GURL(kBundleUrl), create_params, process_id1,
         /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
-        /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+        /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
         /*coep_reporter=*/nullptr);
     ASSERT_TRUE(factory);
     ASSERT_TRUE(
@@ -317,7 +317,7 @@ TEST_F(WebBundleManagerTest,
   auto factory = manager.CreateWebBundleURLLoaderFactory(
       GURL(kBundleUrl), token_params, process_id1,
       /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
-      /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+      /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
       /*coep_reporter=*/nullptr);
 
   // Then, simulate that the bundle is loaded from the network, calling
@@ -686,7 +686,7 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
       manager.CreateWebBundleURLLoaderFactory(
           redirected_bundle_url, create_params, process_id1,
           /*devtools_observer=*/{},
-          /*devtools_request_id=*/absl::nullopt, CrossOriginEmbedderPolicy(),
+          /*devtools_request_id=*/std::nullopt, CrossOriginEmbedderPolicy(),
           /*coep_reporter=*/nullptr);
 
   // TestWebBundleHandle must receive an error.

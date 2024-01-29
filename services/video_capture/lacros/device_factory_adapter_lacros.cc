@@ -73,7 +73,7 @@ void DeviceFactoryAdapterLacros::WrapNewDeviceInProxy(
   // is only called within the lifetime of |device_proxy|, it should be safe
   // to use base::Unretained(this) here.
   auto device_proxy = std::make_unique<DeviceProxyLacros>(
-      absl::nullopt, std::move(proxy_remote),
+      std::nullopt, std::move(proxy_remote),
       base::BindOnce(
           &DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose,
           base::Unretained(this), device_id));

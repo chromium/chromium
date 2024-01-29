@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_REDEMPTION_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -81,7 +81,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     // Some representation of  |top_level_origin| is embedded in the redemption
     // request so that a token redemption can be bound to a particular top-level
     // origin; see the design doc for more details.
-    virtual absl::optional<std::string> BeginRedemption(
+    virtual std::optional<std::string> BeginRedemption(
         TrustToken token,
         const url::Origin& top_level_origin) = 0;
 
@@ -91,7 +91,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     //
     // The Trust Tokens design doc is currently the normative source for the
     // RR's format.
-    virtual absl::optional<std::string> ConfirmRedemption(
+    virtual std::optional<std::string> ConfirmRedemption(
         std::string_view response_header) = 0;
   };
 
@@ -118,8 +118,8 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
       mojom::TrustTokenRefreshPolicy refresh_policy,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-      absl::optional<std::string> custom_key_commitment,
-      absl::optional<url::Origin> custom_issuer,
+      std::optional<std::string> custom_key_commitment,
+      std::optional<url::Origin> custom_issuer,
       std::unique_ptr<Cryptographer> cryptographer,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestRedemptionHelper() override;
@@ -151,7 +151,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // constructor's comment.)
   void Begin(
       const GURL& url,
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done) override;
 
   // Performs the second half of Trust Token redemption's client side:
@@ -173,7 +173,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // Continuation of |Begin| after asynchronous key commitment fetching
   // concludes.
   void OnGotKeyCommitment(
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
+      base::OnceCallback<void(std::optional<net::HttpRequestHeaders>,
                               mojom::TrustTokenOperationStatus)> done,
       mojom::TrustTokenKeyCommitmentResultPtr commitment_result);
 
@@ -181,7 +181,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // it, returning nullopt if the store contains no tokens for |issuer_|.
   //
   // Warning: This does NOT remove the token from the store.
-  absl::optional<TrustToken> RetrieveSingleToken();
+  std::optional<TrustToken> RetrieveSingleToken();
 
   // |issuer_|, |top_level_origin_|, and |refresh_policy_| are parameters
   // determining the scope and control flow of the redemption operation.
@@ -189,7 +189,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
   // operation's execution.
-  absl::optional<SuitableTrustTokenOrigin> issuer_;
+  std::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
   const mojom::TrustTokenRefreshPolicy refresh_policy_;
 
@@ -201,8 +201,8 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
 
   const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
-  const absl::optional<std::string> custom_key_commitment_;
-  const absl::optional<url::Origin> custom_issuer_;
+  const std::optional<std::string> custom_key_commitment_;
+  const std::optional<url::Origin> custom_issuer_;
   const std::unique_ptr<KeyPairGenerator> key_pair_generator_;
   const std::unique_ptr<Cryptographer> cryptographer_;
   net::NetLogWithSource net_log_;

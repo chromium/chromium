@@ -62,8 +62,8 @@ constexpr char kUnrelatedURL[] = "http://unrelated.com";
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     const std::string& name,
     const std::string& domain,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key =
-        absl::nullopt) {
+    std::optional<net::CookiePartitionKey> cookie_partition_key =
+        std::nullopt) {
   return net::CanonicalCookie::CreateUnsafeCookieForTesting(
       name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
@@ -75,8 +75,8 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalSameSiteNoneCookie(
     const std::string& name,
     const std::string& domain,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key =
-        absl::nullopt) {
+    std::optional<net::CookiePartitionKey> cookie_partition_key =
+        std::nullopt) {
   return net::CanonicalCookie::CreateUnsafeCookieForTesting(
       name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
@@ -1047,7 +1047,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_SitesInFirstPartySets) {
   net::SchemefulSite primary((GURL(kFPSOwnerURL)));
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
-                                          absl::nullopt);
+                                          std::nullopt);
 
   settings.set_block_third_party_cookies(true);
   if (IsTrackingProtectionEnabledFor3pcd()) {
@@ -1398,7 +1398,7 @@ TEST_P(CookieSettingsTest,
 
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
-                                          absl::nullopt);
+                                          std::nullopt);
 
   const bool expected_allowed = false;
 
@@ -1462,7 +1462,7 @@ TEST_P(
   net::SchemefulSite primary((GURL(kFPSOwnerURL)));
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
-                                          absl::nullopt);
+                                          std::nullopt);
   // Without third-party-cookie-blocking enabled, the cookie is accessible, even
   // though cookies are blocked for the top-level URL.
   ASSERT_TRUE(settings.IsCookieAccessible(

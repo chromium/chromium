@@ -5,6 +5,7 @@
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
 #include <deque>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -33,18 +33,18 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
 
   void InvalidateTryAgainAfterTime() override {}
 
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
       override {
     return std::move(auth_token_);
   }
 
   void SetAuthToken(
-      absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
+      std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
  private:
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
 };
 
 class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
@@ -72,7 +72,7 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
   }
 
  private:
-  absl::optional<std::vector<std::vector<std::string>>> proxy_list_;
+  std::optional<std::vector<std::vector<std::string>>> proxy_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
@@ -171,7 +171,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   std::string proxy = "a-proxy";
   auto ip_protection_proxy_chain =
       net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
-                          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt))
+                          net::ProxyServer::SCHEME_HTTPS, proxy, std::nullopt))
           .ForIpProtection();
   const std::vector<net::ProxyChain> proxy_chain_list = {
       std::move(ip_protection_proxy_chain)};
@@ -198,8 +198,8 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyChainList) {
       {net::ProxyServer::SCHEME_HTTPS, "b-proxy", 443, "b-proxy:443"},
 
       // No ports.
-      {net::ProxyServer::SCHEME_HTTPS, "a-proxy", absl::nullopt, "a-proxy"},
-      {net::ProxyServer::SCHEME_HTTPS, "b-proxy", absl::nullopt, "b-proxy"},
+      {net::ProxyServer::SCHEME_HTTPS, "a-proxy", std::nullopt, "a-proxy"},
+      {net::ProxyServer::SCHEME_HTTPS, "b-proxy", std::nullopt, "b-proxy"},
 
       // Non-standard port.
       {net::ProxyServer::SCHEME_HTTPS, "a-proxy", 10, "a-proxy:10"},

@@ -71,7 +71,7 @@ void TestMediaControllerObserver::MediaSessionInfoChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionMetadataChanged(
-    const absl::optional<MediaMetadata>& metadata) {
+    const std::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -96,7 +96,7 @@ void TestMediaControllerObserver::MediaSessionActionsChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   session_request_id_ = request_id;
 
   if (expected_request_id_.has_value() &&
@@ -107,7 +107,7 @@ void TestMediaControllerObserver::MediaSessionChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (waiting_for_empty_position_ && !position.has_value()) {
@@ -176,7 +176,7 @@ void TestMediaControllerObserver::WaitForExpectedActions(
 }
 
 void TestMediaControllerObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in absl::optional so we must check
+  // |session_position_| is doubly wrapped in std::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -194,7 +194,7 @@ void TestMediaControllerObserver::WaitForNonEmptyPosition() {
 }
 
 void TestMediaControllerObserver::WaitForSession(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   if (session_request_id_.has_value() && session_request_id_ == request_id)
     return;
 

@@ -6,13 +6,14 @@
 
 #include <dlfcn.h>
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/policy/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
@@ -61,7 +62,7 @@ std::vector<BrokerFilePermission> GetNetworkFilePermissions(
         system_config_file.value()));
     perms.push_back(BrokerFilePermission::ReadOnly(system_config_file.value()));
 
-    absl::optional<base::FilePath> target_path =
+    std::optional<base::FilePath> target_path =
         base::ReadSymbolicLinkAbsolute(system_config_file);
     if (!target_path.has_value()) {
       continue;

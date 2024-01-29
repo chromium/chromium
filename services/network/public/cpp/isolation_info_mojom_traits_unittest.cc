@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/unguessable_token.h"
@@ -12,7 +13,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/isolation_info.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

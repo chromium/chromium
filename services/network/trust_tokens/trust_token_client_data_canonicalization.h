@@ -5,10 +5,10 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_CLIENT_DATA_CANONICALIZATION_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_CLIENT_DATA_CANONICALIZATION_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -25,7 +25,7 @@ namespace network {
 // on serialization error.
 //
 // |top_frame_origin| must not be opaque.
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CanonicalizeTrustTokenClientDataForRedemption(
     base::Time redemption_timestamp,
     const url::Origin& top_frame_origin);

@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_QUADS_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_QUADS_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +31,6 @@
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
 #include "skia/public/mojom/skcolor4f_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
@@ -506,7 +507,7 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->overlay_priority_hint;
   }
 
-  static const absl::optional<gfx::Rect>& damage_rect(
+  static const std::optional<gfx::Rect>& damage_rect(
       const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
@@ -631,14 +632,14 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
     return quad->protected_video_type;
   }
 
-  static const absl::optional<gfx::HDRMetadata> hdr_metadata(
+  static const std::optional<gfx::HDRMetadata> hdr_metadata(
       const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->hdr_metadata;
   }
 
-  static const absl::optional<gfx::Rect>& damage_rect(
+  static const std::optional<gfx::Rect>& damage_rect(
       const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);

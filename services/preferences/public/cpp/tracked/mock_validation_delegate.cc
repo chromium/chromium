@@ -60,7 +60,7 @@ MockValidationDelegate::~MockValidationDelegate() = default;
 
 void MockValidationDelegate::OnAtomicPreferenceValidation(
     const std::string& pref_path,
-    absl::optional<base::Value> value,
+    std::optional<base::Value> value,
     prefs::mojom::TrackedPreferenceValidationDelegate::ValueState value_state,
     prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
         external_validation_value_state,

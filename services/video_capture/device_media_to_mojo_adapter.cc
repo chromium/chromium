@@ -108,14 +108,14 @@ void DeviceMediaToMojoAdapter::StartInProcess(
                "DeviceMediaToMojoAdapter::StartInProcess");
 
   StartInternal(std::move(requested_settings),
-                /*handler_pending_remote=*/absl::nullopt,
+                /*handler_pending_remote=*/std::nullopt,
                 std::move(frame_handler), /*start_in_process=*/true,
                 std::move(video_effects_manager));
 }
 
 void DeviceMediaToMojoAdapter::StartInternal(
     const media::VideoCaptureParams& requested_settings,
-    absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
+    std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
     bool start_in_process,

@@ -5,6 +5,8 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_EXECUTOR_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
@@ -17,7 +19,6 @@
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ml {
 

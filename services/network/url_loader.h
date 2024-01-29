@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,7 +63,6 @@
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/upload_progress_tracker.h"
 #include "services/network/url_loader_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -227,7 +227,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
       const net::IPEndPoint& endpoint,
-      absl::optional<GURL>* preserve_fragment_on_redirect_url);
+      std::optional<GURL>* preserve_fragment_on_redirect_url);
 
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const {
@@ -236,7 +236,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // mojom::AuthChallengeResponder:
   void OnAuthCredentials(
-      const absl::optional<net::AuthCredentials>& credentials) override;
+      const std::optional<net::AuthCredentials>& credentials) override;
 
   // mojom::ClientCertificateResponder:
   void ContinueWithCertificate(
@@ -267,11 +267,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return custom_proxy_post_cache_headers_;
   }
 
-  const absl::optional<GURL>& new_redirect_url() const {
+  const std::optional<GURL>& new_redirect_url() const {
     return new_redirect_url_;
   }
 
-  const absl::optional<std::string>& devtools_request_id() const {
+  const std::optional<std::string>& devtools_request_id() const {
     return devtools_request_id_;
   }
 
@@ -296,7 +296,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
 
-  static absl::optional<net::IsolationInfo> GetIsolationInfo(
+  static std::optional<net::IsolationInfo> GetIsolationInfo(
       const net::IsolationInfo& factory_isolation_info,
       bool automatically_assign_isolation_info,
       const ResourceRequest& request);
@@ -474,7 +474,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojom::TrustTokenOperationType type,
       TrustTokenStatusOrRequestHelper status_or_helper);
   void OnDoneBeginningTrustTokenOperation(
-      absl::optional<net::HttpRequestHeaders> headers,
+      std::optional<net::HttpRequestHeaders> headers,
       mojom::TrustTokenOperationStatus status);
   void OnDoneFinalizingTrustTokenOperation(
       mojom::TrustTokenOperationStatus status);
@@ -514,19 +514,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void OnBeforeSendHeadersComplete(
       net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
       int result,
-      const absl::optional<net::HttpRequestHeaders>& headers);
+      const std::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
       net::CompletionOnceCallback callback,
       scoped_refptr<net::HttpResponseHeaders>* out_headers,
-      absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
+      std::optional<GURL>* out_preserve_fragment_on_redirect_url,
       int result,
-      const absl::optional<std::string>& headers,
-      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
+      const std::optional<std::string>& headers,
+      const std::optional<GURL>& preserve_fragment_on_redirect_url);
 
   void CompleteBlockedResponse(
       int error_code,
       bool should_report_corb_blocking,
-      absl::optional<mojom::BlockedByResponseReason> reason = absl::nullopt);
+      std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
 
   enum BlockResponseForCorbResult {
     // Returned when caller of BlockResponseForCorb doesn't need to continue,
@@ -617,7 +617,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool read_in_progress_ = false;
 
   // Stores any CORS error encountered while processing |url_request_|.
-  absl::optional<CorsErrorStatus> cors_error_status_;
+  std::optional<CorsErrorStatus> cors_error_status_;
 
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
@@ -646,12 +646,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // If |new_url| is given to FollowRedirect() it's saved here, so that it can
   // be later referred to from NetworkContext::OnBeforeURLRequestInternal, which
   // is called from NetworkDelegate::NotifyBeforeURLRequest.
-  absl::optional<GURL> new_redirect_url_;
+  std::optional<GURL> new_redirect_url_;
 
   // The ID that DevTools uses to track network requests. It is generated in the
   // renderer process and is only present when DevTools is enabled in the
   // renderer.
-  const absl::optional<std::string> devtools_request_id_;
+  const std::optional<std::string> devtools_request_id_;
 
   bool should_pause_reading_body_ = false;
   // The response body stream is open, but transferring data is paused.
@@ -687,7 +687,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Indicates the originating frame of the request, see
   // network::ResourceRequest::fetch_window_id for details.
-  absl::optional<base::UnguessableToken> fetch_window_id_;
+  std::optional<base::UnguessableToken> fetch_window_id_;
 
   PrivateNetworkAccessChecker private_network_access_checker_;
 
@@ -712,7 +712,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // protocol step or an inbound (response header reading) step; some error
   // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
   // specific to one direction.
-  absl::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+  std::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
 
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.

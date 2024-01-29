@@ -4,6 +4,7 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -28,7 +29,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -45,7 +45,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       std::move(on_invalidate_try_again_after_time_).Run();
     }
   }
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
   }
@@ -53,7 +53,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   // Set the auth token that will be returned from the next call to
   // `GetAuthToken()`.
   void SetNextAuthToken(
-      absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
+      std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
@@ -106,8 +106,8 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
  private:
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
-  absl::optional<std::vector<std::vector<std::string>>> proxy_list_;
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
+  std::optional<std::vector<std::vector<std::string>>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
   base::OnceClosure on_invalidate_try_again_after_time_;
@@ -136,11 +136,11 @@ class TestCustomProxyConnectionObserver
   TestCustomProxyConnectionObserver() = default;
   ~TestCustomProxyConnectionObserver() override = default;
 
-  const absl::optional<std::pair<net::ProxyChain, int>>& FallbackArgs() const {
+  const std::optional<std::pair<net::ProxyChain, int>>& FallbackArgs() const {
     return fallback_;
   }
 
-  const absl::optional<HeadersReceived>& HeadersReceivedArgs() const {
+  const std::optional<HeadersReceived>& HeadersReceivedArgs() const {
     return headers_received_;
   }
 
@@ -157,8 +157,8 @@ class TestCustomProxyConnectionObserver
   }
 
  private:
-  absl::optional<std::pair<net::ProxyChain, int>> fallback_;
-  absl::optional<HeadersReceived> headers_received_;
+  std::optional<std::pair<net::ProxyChain, int>> fallback_;
+  std::optional<HeadersReceived> headers_received_;
 };
 
 class IpProtectionProxyDelegateTest : public testing::Test {
@@ -222,9 +222,9 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto ip_protection_proxy_chain =
       net::ProxyChain(
           {net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxya", absl::nullopt),
+               net::ProxyServer::SCHEME_HTTPS, "proxya", std::nullopt),
            net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxyb", absl::nullopt)})
+               net::ProxyServer::SCHEME_HTTPS, "proxyb", std::nullopt)})
           .ForIpProtection();
   delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
                                   &headers);
@@ -247,9 +247,9 @@ TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
   auto ip_protection_proxy_chain =
       net::ProxyChain(
           {net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxya", absl::nullopt),
+               net::ProxyServer::SCHEME_HTTPS, "proxya", std::nullopt),
            net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxyb", absl::nullopt)})
+               net::ProxyServer::SCHEME_HTTPS, "proxyb", std::nullopt)})
           .ForIpProtection();
   delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
                                   &headers);
@@ -666,7 +666,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionHttpsSuccess) {
 TEST_F(IpProtectionProxyDelegateTest, OnFallback_IpProtection) {
   auto ip_protection_proxy_chain =
       net::ProxyChain::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                             "proxy.com", absl::nullopt)
+                                             "proxy.com", std::nullopt)
           .ForIpProtection();
   bool force_refresh_called = false;
 

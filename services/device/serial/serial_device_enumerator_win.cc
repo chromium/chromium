@@ -41,9 +41,9 @@ namespace device {
 
 namespace {
 
-absl::optional<std::string> GetProperty(HDEVINFO dev_info,
-                                        SP_DEVINFO_DATA* dev_info_data,
-                                        const DEVPROPKEY& property) {
+std::optional<std::string> GetProperty(HDEVINFO dev_info,
+                                       SP_DEVINFO_DATA* dev_info_data,
+                                       const DEVPROPKEY& property) {
   // SetupDiGetDeviceProperty() makes an RPC which may block.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -56,7 +56,7 @@ absl::optional<std::string> GetProperty(HDEVINFO dev_info,
                                /*Flags=*/0) ||
       GetLastError() != ERROR_INSUFFICIENT_BUFFER ||
       property_type != DEVPROP_TYPE_STRING) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::wstring buffer;
@@ -64,20 +64,20 @@ absl::optional<std::string> GetProperty(HDEVINFO dev_info,
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, /*RequiredSize=*/nullptr, /*Flags=*/0)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::WideToUTF8(buffer);
 }
 
 // Get the port name from the registry.
-absl::optional<std::string> GetPortName(HDEVINFO dev_info,
-                                        SP_DEVINFO_DATA* dev_info_data) {
+std::optional<std::string> GetPortName(HDEVINFO dev_info,
+                                       SP_DEVINFO_DATA* dev_info_data) {
   HKEY key = SetupDiOpenDevRegKey(dev_info, dev_info_data, DICS_FLAG_GLOBAL, 0,
                                   DIREG_DEV, KEY_READ);
   if (key == INVALID_HANDLE_VALUE) {
     SERIAL_PLOG(ERROR) << "Could not open device registry key";
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::win::RegKey scoped_key(key);
 
@@ -86,7 +86,7 @@ absl::optional<std::string> GetPortName(HDEVINFO dev_info,
   if (result != ERROR_SUCCESS) {
     SERIAL_LOG(ERROR) << "Failed to read port name: "
                       << logging::SystemErrorCodeToString(result);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::SysWideToUTF8(port_name);
@@ -105,26 +105,26 @@ base::FilePath GetPath(std::string port_name) {
 
 // Searches for the display name in the device's friendly name. Returns nullopt
 // if the name does not match the expected pattern.
-absl::optional<std::string> GetDisplayName(const std::string& friendly_name) {
+std::optional<std::string> GetDisplayName(const std::string& friendly_name) {
   std::string display_name;
   if (!RE2::PartialMatch(friendly_name, R"((.*) \(COM[0-9]+\))",
                          &display_name)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return display_name;
 }
 
 // Searches for the vendor ID in the device's instance ID. Returns nullopt if
 // the instance ID does not match the expected pattern.
-absl::optional<uint32_t> GetVendorID(const std::string& instance_id) {
+std::optional<uint32_t> GetVendorID(const std::string& instance_id) {
   std::string vendor_id_str;
   if (!RE2::PartialMatch(instance_id, "VID_([0-9a-fA-F]+)", &vendor_id_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint32_t vendor_id;
   if (!base::HexStringToUInt(vendor_id_str, &vendor_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return vendor_id;
@@ -132,15 +132,15 @@ absl::optional<uint32_t> GetVendorID(const std::string& instance_id) {
 
 // Searches for the product ID in the device's instance ID. Returns nullopt if
 // the instance ID does not match the expected pattern.
-absl::optional<uint32_t> GetProductID(const std::string& instance_id) {
+std::optional<uint32_t> GetProductID(const std::string& instance_id) {
   std::string product_id_str;
   if (!RE2::PartialMatch(instance_id, "PID_([0-9a-fA-F]+)", &product_id_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint32_t product_id;
   if (!base::HexStringToUInt(product_id_str, &product_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return product_id;
@@ -245,7 +245,7 @@ void SerialDeviceEnumeratorWin::OnPathRemoved(const std::wstring& device_path) {
   if (!SetupDiEnumDeviceInfo(dev_info.get(), 0, &dev_info_data))
     return;
 
-  absl::optional<std::string> port_name =
+  std::optional<std::string> port_name =
       GetPortName(dev_info.get(), &dev_info_data);
   if (!port_name)
     return;
@@ -303,7 +303,7 @@ void SerialDeviceEnumeratorWin::DoInitialEnumeration() {
 void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
                                               SP_DEVINFO_DATA* dev_info_data,
                                               bool check_port_name) {
-  absl::optional<std::string> port_name = GetPortName(dev_info, dev_info_data);
+  std::optional<std::string> port_name = GetPortName(dev_info, dev_info_data);
   if (!port_name)
     return;
 
@@ -316,7 +316,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   if (base::Contains(paths_, path))
     return;
 
-  absl::optional<std::string> instance_id =
+  std::optional<std::string> instance_id =
       GetProperty(dev_info, dev_info_data, DEVPKEY_Device_InstanceId);
   if (!instance_id)
     return;
@@ -347,7 +347,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
     // Fall back to the "friendly name" if no "bus reported device description"
     // is available. This name will likely be the same for all devices using the
     // same driver.
-    absl::optional<std::string> friendly_name =
+    std::optional<std::string> friendly_name =
         GetProperty(dev_info, dev_info_data, DEVPKEY_Device_FriendlyName);
     if (!friendly_name)
       return;
@@ -356,9 +356,9 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   }
 
   // The instance ID looks like "FTDIBUS\VID_0403+PID_6001+A703X87GA\0000".
-  absl::optional<uint32_t> vendor_id = GetVendorID(*instance_id);
-  absl::optional<uint32_t> product_id = GetProductID(*instance_id);
-  absl::optional<std::string> vendor_id_str, product_id_str;
+  std::optional<uint32_t> vendor_id = GetVendorID(*instance_id);
+  std::optional<uint32_t> product_id = GetProductID(*instance_id);
+  std::optional<std::string> vendor_id_str, product_id_str;
   if (vendor_id) {
     info->has_vendor_id = true;
     info->vendor_id = *vendor_id;

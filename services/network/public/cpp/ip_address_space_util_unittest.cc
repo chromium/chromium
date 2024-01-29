@@ -480,7 +480,7 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceFileURL) {
   EXPECT_EQ(IPAddressSpace::kLocal,
-            CalculateClientAddressSpace(GURL("file:///foo"), absl::nullopt));
+            CalculateClientAddressSpace(GURL("file:///foo"), std::nullopt));
 }
 
 TEST(IPAddressSpaceUtilTest,
@@ -522,9 +522,8 @@ TEST(IPAddressSpaceUtilTest,
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceNullParams) {
-  EXPECT_EQ(
-      IPAddressSpace::kUnknown,
-      CalculateClientAddressSpace(GURL("http://foo.test"), absl::nullopt));
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("http://foo.test"), std::nullopt));
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceEmptyParams) {

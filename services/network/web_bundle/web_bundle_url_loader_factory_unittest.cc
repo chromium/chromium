@@ -86,7 +86,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
       mojo::PendingReceiver<mojom::WebBundleHandle> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const std::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return last_bundle_error_;
   }
@@ -115,7 +115,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
 
  private:
   mojo::Receiver<mojom::WebBundleHandle> receiver_;
-  absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>
+  std::optional<std::pair<mojom::WebBundleErrorType, std::string>>
       last_bundle_error_;
   base::OnceClosure quit_closure_for_bundle_error_;
 };
@@ -223,7 +223,7 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
   void RunUntilBundleError() { handle_->RunUntilBundleError(); }
 
-  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const std::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return handle_->last_bundle_error();
   }

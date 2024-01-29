@@ -7,6 +7,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -45,7 +46,6 @@
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory_arbiter.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
@@ -182,11 +182,11 @@ void TraceEventMetadataSource::WriteMetadataPacket(
   }
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
   AutoLockWithDeferredTaskPosting lock(lock_);
   if (chrome_config_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict metadata;
@@ -274,7 +274,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
   auto write_to_bundle = [&generator](ChromeEventBundle* bundle) {
-    absl::optional<base::Value::Dict> metadata_dict = generator.Run();
+    std::optional<base::Value::Dict> metadata_dict = generator.Run();
     if (!metadata_dict)
       return;
     for (auto it : *metadata_dict) {
@@ -1274,7 +1274,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // periodically to ensure it is present in the traces when the process
   // crashes. Metadata can go missing if process crashes. So, record this in
   // process descriptor.
-  static const absl::optional<uint64_t> crash_trace_id = GetTraceCrashId();
+  static const std::optional<uint64_t> crash_trace_id = GetTraceCrashId();
   if (crash_trace_id) {
     chrome_process->set_crash_trace_id(*crash_trace_id);
   }

@@ -54,7 +54,7 @@ class Embedder : public service_manager::Service {
       std::move(callback).Run(base::GetCurrentProcId());
     } else {
       LOG(ERROR) << "Failed to create unknown service " << service_name;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
     }
   }
 

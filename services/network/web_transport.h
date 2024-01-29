@@ -76,14 +76,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void OnConnectionFailed(const net::WebTransportError& error) override;
   void OnClosed(
-      const absl::optional<net::WebTransportCloseInfo>& close_info) override;
+      const std::optional<net::WebTransportCloseInfo>& close_info) override;
   void OnError(const net::WebTransportError& error) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
   void OnDatagramReceived(std::string_view datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
-  void OnDatagramProcessed(absl::optional<quic::MessageStatus> status) override;
+  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override;
 
   bool torn_down() const { return torn_down_; }
 

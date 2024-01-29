@@ -20,9 +20,9 @@ class FileEnumeratorImpl final
       : remote_(std::move(remote)) {}
   ~FileEnumeratorImpl() override = default;
 
-  absl::optional<FileEnumerationEntry> Next() override {
+  std::optional<FileEnumerationEntry> Next() override {
     if (has_seen_end_) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (index_ >= entries_.size()) {
       index_ = 0;
@@ -31,14 +31,14 @@ class FileEnumeratorImpl final
     }
     if (entries_.empty()) {
       if (has_seen_end_) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       has_error_ = true;
       has_seen_end_ = true;
-      return absl::nullopt;
+      return std::nullopt;
     }
     DCHECK_LT(index_, entries_.size());
-    return absl::make_optional<FileEnumerationEntry>(
+    return std::make_optional<FileEnumerationEntry>(
         std::move(entries_[index_++]));
   }
 
@@ -121,9 +121,9 @@ bool MojoBackendFileOperations::ReplaceFile(const base::FilePath& from_path,
   return error == base::File::FILE_OK;
 }
 
-absl::optional<base::File::Info> MojoBackendFileOperations::GetFileInfo(
+std::optional<base::File::Info> MojoBackendFileOperations::GetFileInfo(
     const base::FilePath& path) {
-  absl::optional<base::File::Info> info;
+  std::optional<base::File::Info> info;
   remote_->GetFileInfo(path, &info);
   return info;
 }

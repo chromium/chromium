@@ -114,8 +114,8 @@ class ProxyResolvingSocketTestBase {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(receiver), std::move(socket_observer),
         base::BindLambdaForTesting(
-            [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
-                const absl::optional<net::IPEndPoint>& peer_addr,
+            [&](int result, const std::optional<net::IPEndPoint>& local_addr,
+                const std::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -391,8 +391,8 @@ TEST_F(ProxyResolvingSocketMojoTest, SocketDestroyedBeforeConnectCompletes) {
       socket.InitWithNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,
       base::BindLambdaForTesting(
-          [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
-              const absl::optional<net::IPEndPoint>& peer_addr,
+          [&](int result, const std::optional<net::IPEndPoint>& local_addr,
+              const std::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;

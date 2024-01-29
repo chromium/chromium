@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_URL_REQUEST_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_URL_REQUEST_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -40,7 +41,6 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -189,7 +189,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.update_first_party_url_on_redirect;
   }
-  static const absl::optional<url::Origin>& request_initiator(
+  static const std::optional<url::Origin>& request_initiator(
       const network::ResourceRequest& request) {
     return request.request_initiator;
   }
@@ -197,7 +197,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.navigation_redirect_chain;
   }
-  static const absl::optional<url::Origin>& isolated_world_origin(
+  static const std::optional<url::Origin>& isolated_world_origin(
       const network::ResourceRequest& request) {
     return request.isolated_world_origin;
   }
@@ -307,7 +307,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_revalidating(const network::ResourceRequest& request) {
     return request.is_revalidating;
   }
-  static const absl::optional<base::UnguessableToken>& throttling_profile_id(
+  static const std::optional<base::UnguessableToken>& throttling_profile_id(
       const network::ResourceRequest& request) {
     return request.throttling_profile_id;
   }
@@ -319,15 +319,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.custom_proxy_post_cache_headers;
   }
-  static const absl::optional<base::UnguessableToken>& fetch_window_id(
+  static const std::optional<base::UnguessableToken>& fetch_window_id(
       const network::ResourceRequest& request) {
     return request.fetch_window_id;
   }
-  static const absl::optional<std::string>& devtools_request_id(
+  static const std::optional<std::string>& devtools_request_id(
       const network::ResourceRequest& request) {
     return request.devtools_request_id;
   }
-  static const absl::optional<std::string>& devtools_stack_id(
+  static const std::optional<std::string>& devtools_stack_id(
       const network::ResourceRequest& request) {
     return request.devtools_stack_id;
   }
@@ -344,15 +344,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.original_destination;
   }
-  static const absl::optional<std::vector<net::SourceStream::SourceType>>&
+  static const std::optional<std::vector<net::SourceStream::SourceType>>&
   devtools_accepted_stream_types(const network::ResourceRequest& request) {
     return request.devtools_accepted_stream_types;
   }
-  static const absl::optional<network::ResourceRequest::TrustedParams>&
+  static const std::optional<network::ResourceRequest::TrustedParams>&
   trusted_params(const network::ResourceRequest& request) {
     return request.trusted_params;
   }
-  static const absl::optional<base::UnguessableToken>& recursive_prefetch_token(
+  static const std::optional<base::UnguessableToken>& recursive_prefetch_token(
       const network::ResourceRequest& request) {
     return request.recursive_prefetch_token;
   }
@@ -360,15 +360,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.trust_token_params.as_ptr();
   }
-  static const absl::optional<network::ResourceRequest::WebBundleTokenParams>&
+  static const std::optional<network::ResourceRequest::WebBundleTokenParams>&
   web_bundle_token_params(const network::ResourceRequest& request) {
     return request.web_bundle_token_params;
   }
-  static const absl::optional<net::NetLogSource>& net_log_create_info(
+  static const std::optional<net::NetLogSource>& net_log_create_info(
       const network::ResourceRequest& request) {
     return request.net_log_create_info;
   }
-  static const absl::optional<net::NetLogSource>& net_log_reference_info(
+  static const std::optional<net::NetLogSource>& net_log_reference_info(
       const network::ResourceRequest& request) {
     return request.net_log_reference_info;
   }
@@ -392,7 +392,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.attribution_reporting_runtime_features;
   }
-  static const absl::optional<base::UnguessableToken>&
+  static const std::optional<base::UnguessableToken>&
   attribution_reporting_src_token(const network::ResourceRequest& request) {
     return request.attribution_reporting_src_token;
   }

@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -20,7 +21,6 @@
 #include "services/audio/public/mojom/testing_api.mojom.h"
 #include "services/audio/stream_factory.h"
 #include "services/audio/testing_api_binder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DeferredSequencedTaskRunner;
@@ -128,7 +128,7 @@ class Service final : public mojom::AudioService {
   std::unique_ptr<media::AecdumpRecordingManager> aecdump_recording_manager_;
 
   std::unique_ptr<DebugRecording> debug_recording_;
-  absl::optional<StreamFactory> stream_factory_;
+  std::optional<StreamFactory> stream_factory_;
   std::unique_ptr<DeviceNotifier> device_notifier_;
   std::unique_ptr<LogFactoryManager> log_factory_manager_;
 };

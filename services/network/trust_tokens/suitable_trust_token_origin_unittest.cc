@@ -15,13 +15,13 @@ TEST(SuitableTrustTokenOrigin, Suitable) {
   auto suitable_url = GURL("https://suitable-origin.example");
   auto suitable_origin = url::Origin::Create(suitable_url);
 
-  absl::optional<SuitableTrustTokenOrigin> created_from_url =
+  std::optional<SuitableTrustTokenOrigin> created_from_url =
       SuitableTrustTokenOrigin::Create(suitable_url);
 
   ASSERT_TRUE(created_from_url);
   EXPECT_EQ(created_from_url->origin(), suitable_origin);
 
-  absl::optional<SuitableTrustTokenOrigin> created_from_origin =
+  std::optional<SuitableTrustTokenOrigin> created_from_origin =
       SuitableTrustTokenOrigin::Create(suitable_origin);
   ASSERT_TRUE(created_from_origin);
   EXPECT_EQ(created_from_origin->origin(), suitable_origin);

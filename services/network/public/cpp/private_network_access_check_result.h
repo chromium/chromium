@@ -6,11 +6,11 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -85,7 +85,7 @@ std::ostream& operator<<(std::ostream& out,
 
 // If `result` indicates that the request should be blocked, returns the
 // corresponding `CorsError` enum value. Otherwise returns `nullopt`.
-absl::optional<mojom::CorsError> COMPONENT_EXPORT(NETWORK_CPP)
+std::optional<mojom::CorsError> COMPONENT_EXPORT(NETWORK_CPP)
     PrivateNetworkAccessCheckResultToCorsError(
         PrivateNetworkAccessCheckResult result);
 

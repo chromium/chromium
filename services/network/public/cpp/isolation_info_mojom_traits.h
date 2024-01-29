@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_ISOLATION_INFO_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_ISOLATION_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -13,7 +15,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/isolation_info.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 
@@ -37,17 +38,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.request_type();
   }
 
-  static const absl::optional<url::Origin>& top_frame_origin(
+  static const std::optional<url::Origin>& top_frame_origin(
       const net::IsolationInfo& input) {
     return input.top_frame_origin();
   }
 
-  static const absl::optional<url::Origin>& frame_origin(
+  static const std::optional<url::Origin>& frame_origin(
       const net::IsolationInfo& input) {
     return input.frame_origin();
   }
 
-  static const absl::optional<base::UnguessableToken>& nonce(
+  static const std::optional<base::UnguessableToken>& nonce(
       const net::IsolationInfo& input) {
     return input.nonce_;
   }

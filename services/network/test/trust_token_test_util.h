@@ -108,8 +108,8 @@ struct TrustTokenTestParameters final {
   TrustTokenTestParameters(
       int version,
       mojom::TrustTokenOperationType operation,
-      absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy,
-      absl::optional<std::vector<std::string>> issuer_specs);
+      std::optional<mojom::TrustTokenRefreshPolicy> refresh_policy,
+      std::optional<std::vector<std::string>> issuer_specs);
 
   ~TrustTokenTestParameters();
 
@@ -118,11 +118,11 @@ struct TrustTokenTestParameters final {
 
   int version;
   mojom::TrustTokenOperationType operation;
-  absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy;
+  std::optional<mojom::TrustTokenRefreshPolicy> refresh_policy;
   // Because static initialization of GURLs/Origins isn't allowed in tests, use
   // the string representation of the issuer origins and convert them to Origins
   // in the test.
-  absl::optional<std::vector<std::string>> issuer_specs;
+  std::optional<std::vector<std::string>> issuer_specs;
 };
 
 // Serializes the value of a Trust Tokens enum parameter to its JS string
@@ -167,8 +167,8 @@ const TrustTokenTestParameters kIssuanceTrustTokenTestParameters[]{
     // For issuance, there are no additional parameters to specify.
     TrustTokenTestParameters(1,
                              mojom::TrustTokenOperationType::kIssuance,
-                             absl::nullopt,
-                             absl::nullopt)};
+                             std::nullopt,
+                             std::nullopt)};
 
 const TrustTokenTestParameters kRedemptionTrustTokenTestParameters[]{
     // For redemption, there is one free parameter, refreshPolicy, with two
@@ -176,15 +176,15 @@ const TrustTokenTestParameters kRedemptionTrustTokenTestParameters[]{
     TrustTokenTestParameters(1,
                              mojom::TrustTokenOperationType::kRedemption,
                              mojom::TrustTokenRefreshPolicy::kRefresh,
-                             absl::nullopt),
+                             std::nullopt),
     TrustTokenTestParameters(1,
                              mojom::TrustTokenOperationType::kRedemption,
                              mojom::TrustTokenRefreshPolicy::kUseCached,
-                             absl::nullopt),
+                             std::nullopt),
     TrustTokenTestParameters(1,
                              mojom::TrustTokenOperationType::kRedemption,
-                             absl::nullopt,
-                             absl::nullopt)};
+                             std::nullopt,
+                             std::nullopt)};
 
 const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
     // Signing's inputs are issuers; "issuers" must be nonempty and must only
@@ -192,12 +192,12 @@ const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
     TrustTokenTestParameters(
         1,
         mojom::TrustTokenOperationType::kSigning,
-        absl::nullopt,
+        std::nullopt,
         std::vector<std::string>{"https://issuer.example"}),
     TrustTokenTestParameters(
         1,
         mojom::TrustTokenOperationType::kSigning,
-        absl::nullopt,
+        std::nullopt,
         std::vector<std::string>{"https://issuer.example",
                                  "https://another-issuer.example"}),
 };

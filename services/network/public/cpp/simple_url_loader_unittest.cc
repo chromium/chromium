@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <list>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -66,7 +67,6 @@
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2128,7 +2128,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived401Response: {
@@ -2141,7 +2141,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceived501Response: {
@@ -2154,7 +2154,7 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
                     MOJO_RESULT_OK);
           client_->OnReceiveResponse(std::move(response_info),
-                                     std::move(consumer_handle), absl::nullopt);
+                                     std::move(consumer_handle), std::nullopt);
           break;
         }
         case TestLoaderEvent::kReceivedResponseNoData: {
@@ -2165,7 +2165,7 @@ class MockURLLoader : public network::mojom::URLLoader {
                   net::HttpUtil::AssembleRawHeaders(headers));
           client_->OnReceiveResponse(std::move(response_info),
                                      mojo::ScopedDataPipeConsumerHandle(),
-                                     absl::nullopt);
+                                     std::nullopt);
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {
@@ -2247,7 +2247,7 @@ class MockURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
     NOTREACHED();

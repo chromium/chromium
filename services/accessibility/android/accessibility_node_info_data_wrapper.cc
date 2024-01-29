@@ -945,7 +945,7 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
 
 ax::mojom::Role AccessibilityNodeInfoDataWrapper::GetChromeRole() const {
   std::string chrome_role;
-  absl::optional<ax::mojom::Role> result;
+  std::optional<ax::mojom::Role> result;
   if (GetProperty(AXStringProperty::CHROME_ROLE, &chrome_role)) {
     result = ui::MaybeParseAXEnum<ax::mojom::Role>(chrome_role.c_str());
   }

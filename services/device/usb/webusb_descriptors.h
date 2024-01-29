@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -40,7 +41,7 @@ void ReadWebUsbLandingPage(
 void ReadWebUsbCapabilityDescriptor(
     scoped_refptr<UsbDeviceHandle> device_handle,
     base::OnceCallback<void(
-        const absl::optional<WebUsbPlatformCapabilityDescriptor>& descriptor)>
+        const std::optional<WebUsbPlatformCapabilityDescriptor>& descriptor)>
         callback);
 
 void ReadWebUsbDescriptors(

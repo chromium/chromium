@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 #include <iterator>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"

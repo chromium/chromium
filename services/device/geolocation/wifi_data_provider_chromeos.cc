@@ -41,11 +41,11 @@ constexpr size_t kApUseLimit = 20;
 
 // Returns the Wi-Fi access point data from ChromeOS, or `nullopt` if the
 // NetworkHandler is not started or failed to acquire fresh data.
-absl::optional<WifiData> GetWifiData() {
+std::optional<WifiData> GetWifiData() {
   DCHECK(NetworkHandler::Get()->task_runner()->BelongsToCurrentThread());
   // If in startup or shutdown, NetworkHandler is uninitialized.
   if (!NetworkHandler::IsInitialized()) {
-    return absl::nullopt;  // Data not ready.
+    return std::nullopt;  // Data not ready.
   }
   // If Wi-Fi isn't enabled, we've effectively completed the task.
   ash::GeolocationHandler* const geolocation_handler =
@@ -57,12 +57,12 @@ absl::optional<WifiData> GetWifiData() {
   ash::WifiAccessPointVector access_points;
   int64_t age_ms = 0;
   if (!geolocation_handler->GetWifiAccessPoints(&access_points, &age_ms)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // If the age is significantly longer than our long polling time, assume the
   // data is stale to trigger a faster update.
   if (age_ms > kTwoNoChangePollingIntervalMilliseconds * 2) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Sort AP sightings by age, most recent first.
@@ -166,7 +166,7 @@ void WifiDataProviderChromeOs::DoWifiScanTask() {
 }
 
 void WifiDataProviderChromeOs::OnWifiScanTaskComplete(
-    absl::optional<WifiData> wifi_data) {
+    std::optional<WifiData> wifi_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!wifi_data) {
     // Schedule next scan if started (StopDataProvider could have been called
@@ -210,7 +210,7 @@ void WifiDataProviderChromeOs::ScheduleStart() {
   first_scan_delayed_ = (delay_interval > 0);
 }
 
-absl::optional<WifiData> WifiDataProviderChromeOs::GetWifiDataForTesting() {
+std::optional<WifiData> WifiDataProviderChromeOs::GetWifiDataForTesting() {
   return GetWifiData();
 }
 

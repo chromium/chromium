@@ -4,6 +4,7 @@
 
 #include "services/device/compute_pressure/cpu_probe_win.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/cpu.h"
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_pdh_query.h"
 #include "services/device/compute_pressure/pressure_sample.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -46,7 +46,7 @@ class CpuProbeWin::BlockingTaskRunnerHelper final {
   void Update();
 
  private:
-  absl::optional<PressureSample> GetPdhData();
+  std::optional<PressureSample> GetPdhData();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -98,7 +98,7 @@ void CpuProbeWin::BlockingTaskRunnerHelper::Update() {
                                 last_sample_));
 }
 
-absl::optional<PressureSample>
+std::optional<PressureSample>
 CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -107,7 +107,7 @@ CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
   if (!cpu_query_.is_valid()) {
     cpu_query_ = base::win::ScopedPdhQuery::Create();
     if (!cpu_query_.is_valid())
-      return absl::nullopt;
+      return std::nullopt;
 
     // When running in a VM, to provide a useful compute pressure signal, we
     // must measure the usage of the physical CPU rather than the virtual CPU
@@ -136,7 +136,7 @@ CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
       cpu_query_.reset();
       LOG(ERROR) << "PdhAddEnglishCounter failed: "
                  << logging::SystemErrorCodeToString(pdh_status);
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -144,12 +144,12 @@ CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
   if (pdh_status != ERROR_SUCCESS) {
     LOG(ERROR) << "PdhCollectQueryData failed: "
                << logging::SystemErrorCodeToString(pdh_status);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!got_baseline_) {
     got_baseline_ = true;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PDH_FMT_COUNTERVALUE counter_value;
@@ -158,7 +158,7 @@ CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
   if (pdh_status != ERROR_SUCCESS) {
     LOG(ERROR) << "PdhGetFormattedCounterValue failed: "
                << logging::SystemErrorCodeToString(pdh_status);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return PressureSample{counter_value.doubleValue / 100.0};

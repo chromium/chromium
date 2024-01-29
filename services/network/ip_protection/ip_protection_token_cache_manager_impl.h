@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
 
 #include <deque>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
   // IpProtectionTokenCacheManager implementation.
   bool IsAuthTokenAvailable() override;
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
+  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
       override;
   void InvalidateTryAgainAfterTime() override;
 
@@ -71,9 +71,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
  private:
   void OnGotAuthTokens(
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           tokens,
-      absl::optional<base::Time> try_again_after);
+      std::optional<base::Time> try_again_after);
   void RemoveExpiredTokens();
   void MeasureTokenRates();
   void MaybeRefillCache();

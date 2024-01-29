@@ -194,7 +194,7 @@ void HidService::FirstEnumerationComplete() {
   }
 }
 
-absl::optional<std::string> HidService::FindDeviceGuidInDeviceMap(
+std::optional<std::string> HidService::FindDeviceGuidInDeviceMap(
     const HidPlatformDeviceId& platform_device_id) {
   for (const auto& device_entry : devices_) {
     const auto& platform_device_map =
@@ -204,7 +204,7 @@ absl::optional<std::string> HidService::FindDeviceGuidInDeviceMap(
         return device_entry.first;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 scoped_refptr<HidDeviceInfo> HidService::FindSiblingDevice(

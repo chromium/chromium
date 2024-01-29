@@ -5,6 +5,7 @@
 #include "services/network/cors/preflight_controller.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -39,7 +40,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network::cors {
@@ -53,12 +53,12 @@ int RetrieveCacheFlags(int load_flags) {
                        net::LOAD_DISABLE_CACHE);
 }
 
-absl::optional<std::string> GetHeaderString(
+std::optional<std::string> GetHeaderString(
     const scoped_refptr<net::HttpResponseHeaders>& headers,
     const std::string& header_name) {
   std::string header_value;
   if (!headers || !headers->GetNormalizedHeader(header_name, &header_value))
-    return absl::nullopt;
+    return std::nullopt;
   return header_value;
 }
 
@@ -103,7 +103,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     const ResourceRequest& request,
     bool tainted,
     const net::NetLogWithSource& net_log_for_actual_request,
-    const absl::optional<base::UnguessableToken>& devtools_request_id) {
+    const std::optional<base::UnguessableToken>& devtools_request_id) {
   DCHECK(!request.url.has_username());
   DCHECK(!request.url.has_password());
 
@@ -221,8 +221,8 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
 base::expected<void, CorsErrorStatus> CheckPreflightAccess(
     const GURL& response_url,
     const int response_status_code,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
+    const std::optional<std::string>& allow_origin_header,
+    const std::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin) {
   // Step 7 of https://fetch.spec.whatwg.org/#cors-preflight-fetch
@@ -268,16 +268,16 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
 // See the CORS-preflight fetch algorithm modifications laid out in the Private
 // Network Access spec, in step 4 of the CORS preflight section as of writing:
 // https://wicg.github.io/private-network-access/#cors-preflight
-absl::optional<CorsErrorStatus> CheckAllowPrivateNetworkHeader(
+std::optional<CorsErrorStatus> CheckAllowPrivateNetworkHeader(
     const mojom::URLResponseHead& head,
     const ResourceRequest& original_request) {
   if (original_request.target_ip_address_space ==
       mojom::IPAddressSpace::kUnknown) {
     // Not a Private Network Access preflight.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> header = GetHeaderString(
+  std::optional<std::string> header = GetHeaderString(
       head.headers, header_names::kAccessControlAllowPrivateNetwork);
   if (!header) {
     CorsErrorStatus status(
@@ -293,7 +293,7 @@ absl::optional<CorsErrorStatus> CheckAllowPrivateNetworkHeader(
     return status;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<PreflightResult> CreatePreflightResult(
@@ -304,7 +304,7 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
     const mojom::ClientSecurityStatePtr& client_security_state,
     base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
-    absl::optional<CorsErrorStatus>* detected_error_status) {
+    std::optional<CorsErrorStatus>* detected_error_status) {
   CHECK(detected_error_status);
 
   auto check_result = CheckPreflightAccess(
@@ -327,7 +327,7 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     return nullptr;
   }
 
-  absl::optional<mojom::CorsError> error;
+  std::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(
       original_request.credentials_mode,
       GetHeaderString(head.headers, header_names::kAccessControlAllowMethods),
@@ -341,14 +341,13 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
   return result;
 }
 
-absl::optional<CorsErrorStatus> CheckPreflightResult(
+std::optional<CorsErrorStatus> CheckPreflightResult(
     const PreflightResult& result,
     const ResourceRequest& original_request,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     bool acam_preflight_spec_conformant) {
-  absl::optional<CorsErrorStatus> status =
-      result.EnsureAllowedCrossOriginMethod(original_request.method,
-                                            acam_preflight_spec_conformant);
+  std::optional<CorsErrorStatus> status = result.EnsureAllowedCrossOriginMethod(
+      original_request.method, acam_preflight_spec_conformant);
   if (status)
     return status;
 
@@ -485,7 +484,7 @@ class PreflightController::PreflightLoader final {
               network::URLLoaderCompletionStatus(net::OK));
     }
 
-    absl::optional<CorsErrorStatus> detected_error_status;
+    std::optional<CorsErrorStatus> detected_error_status;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_,
         private_network_access_behavior_, client_security_state_,
@@ -506,7 +505,7 @@ class PreflightController::PreflightLoader final {
 
     // Preflight succeeded. Check `original_request_` with `result`.
     net::Error net_error = net::OK;
-    absl::optional<CorsErrorStatus> check_error_status = CheckPreflightResult(
+    std::optional<CorsErrorStatus> check_error_status = CheckPreflightResult(
         *result, original_request_, non_wildcard_request_headers_support_,
         acam_preflight_spec_conformant_);
 
@@ -541,9 +540,9 @@ class PreflightController::PreflightLoader final {
     // `Private-Network-Access-Name` headers to claim its identity.
     // * Able to access permission in the browser process from
     // URLLoaderNetworkService.
-    absl::optional<std::string> id =
+    std::optional<std::string> id =
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceId);
-    absl::optional<std::string> name =
+    std::optional<std::string> name =
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceName);
 
     // TODO(https://crbug.com/1455395): `target_ip_address_space` should be
@@ -579,7 +578,7 @@ class PreflightController::PreflightLoader final {
 
   void HandlePrivateNetworkAccessPermissionResult(
       net::Error net_error,
-      absl::optional<CorsErrorStatus> detected_error_status,
+      std::optional<CorsErrorStatus> detected_error_status,
       std::unique_ptr<PreflightResult> result,
       bool permission_granted) {
     if (!permission_granted) {
@@ -594,7 +593,7 @@ class PreflightController::PreflightLoader final {
 
   void FinishHandleResponseHeader(
       net::Error net_error,
-      absl::optional<CorsErrorStatus> detected_error_status,
+      std::optional<CorsErrorStatus> detected_error_status,
       std::unique_ptr<PreflightResult> result) {
     bool has_authorization_covered_by_wildcard =
         result->HasAuthorizationCoveredByWildcard(original_request_.headers);
@@ -620,7 +619,7 @@ class PreflightController::PreflightLoader final {
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {
     const int error = loader_->NetError();
-    const absl::optional<URLLoaderCompletionStatus>& status =
+    const std::optional<URLLoaderCompletionStatus>& status =
         loader_->CompletionStatus();
 
     if (permission_state_ == PermissionState::kRequested) {
@@ -642,7 +641,7 @@ class PreflightController::PreflightLoader final {
       }
       std::move(completion_callback_)
           .Run(error,
-               status.has_value() ? status->cors_error_status : absl::nullopt,
+               status.has_value() ? status->cors_error_status : std::nullopt,
                false);
     }
 
@@ -667,7 +666,7 @@ class PreflightController::PreflightLoader final {
   const NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
   const PrivateNetworkAccessPreflightBehavior private_network_access_behavior_;
   const bool tainted_;
-  absl::optional<base::UnguessableToken> devtools_request_id_;
+  std::optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
   const mojom::ClientSecurityStatePtr client_security_state_;
   base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer_;
@@ -700,7 +699,7 @@ PreflightController::CreatePreflightRequestForTesting(
       request, tainted,
       net::NetLogWithSource::Make(net::NetLog::Get(),
                                   net::NetLogSourceType::URL_REQUEST),
-      /*devtools_request_id=*/absl::nullopt);
+      /*devtools_request_id=*/std::nullopt);
 }
 
 // static
@@ -711,7 +710,7 @@ PreflightController::CreatePreflightResultForTesting(
     const ResourceRequest& original_request,
     bool tainted,
     PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
-    absl::optional<CorsErrorStatus>* detected_error_status) {
+    std::optional<CorsErrorStatus>* detected_error_status) {
   return CreatePreflightResult(
       final_url, head, original_request, tainted,
       private_network_access_behavior,
@@ -726,8 +725,8 @@ base::expected<void, CorsErrorStatus>
 PreflightController::CheckPreflightAccessForTesting(
     const GURL& response_url,
     const int response_status_code,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
+    const std::optional<std::string>& allow_origin_header,
+    const std::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin) {
   return CheckPreflightAccess(response_url, response_status_code,
@@ -770,7 +769,7 @@ void PreflightController::PerformPreflightCheck(
           request.target_ip_address_space, request.credentials_mode,
           request.method, request.headers, request.is_revalidating, net_log,
           acam_preflight_spec_conformant)) {
-    std::move(callback).Run(net::OK, absl::nullopt, false);
+    std::move(callback).Run(net::OK, std::nullopt, false);
     return;
   }
 

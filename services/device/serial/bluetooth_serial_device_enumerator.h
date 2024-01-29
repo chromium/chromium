@@ -50,7 +50,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
 
   // This method will search the map of Bluetooth ports and find the
   // address with the matching token.
-  absl::optional<std::string> GetAddressFromToken(
+  std::optional<std::string> GetAddressFromToken(
       const base::UnguessableToken& token) const;
 
   // Return the service class ID for the port's `token`. If `token` is not found

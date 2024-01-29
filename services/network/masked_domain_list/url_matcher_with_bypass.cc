@@ -162,7 +162,7 @@ bool UrlMatcherWithBypass::IsPopulated() {
 
 UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
     const GURL& request_url,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const std::optional<net::SchemefulSite>& top_frame_site,
     bool skip_bypass_check) {
   auto dvlog = [&](std::string_view message,
                    const UrlMatcherWithBypass::MatchResult& match_result) {

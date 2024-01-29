@@ -131,12 +131,12 @@ void SharedDictionaryManagerInMemory::MaybeRunCacheEvictionPerSite(
 }
 
 void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
-  RunCacheEvictionImpl(absl::nullopt, cache_max_size_, cache_max_size_ * 0.9,
+  RunCacheEvictionImpl(std::nullopt, cache_max_size_, cache_max_size_ * 0.9,
                        cache_max_count_, cache_max_count_ * 0.9);
 }
 
 void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
-    absl::optional<net::SchemefulSite> top_frame_site,
+    std::optional<net::SchemefulSite> top_frame_site,
     uint64_t max_size,
     uint64_t size_low_watermark,
     uint64_t max_count,

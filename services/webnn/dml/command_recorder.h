@@ -7,12 +7,13 @@
 
 #include <DirectML.h>
 #include <wrl.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 
@@ -96,8 +97,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // until the operator initialization has completed on the GPU.
   HRESULT InitializeOperator(
       IDMLCompiledOperator* compiled_operator,
-      const absl::optional<DML_BINDING_DESC>& input_array_binding,
-      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
+      const std::optional<DML_BINDING_DESC>& input_array_binding,
+      const std::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
   // Execute a compiled DirectML operator after it is initialized. The caller is
   // allowed to call this method multiple times to record operator executions
@@ -129,8 +130,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       ComPtr<ID3D12DescriptorHeap> descriptor_heap,
       base::span<const DML_BINDING_DESC> input_bindings,
       base::span<const DML_BINDING_DESC> output_bindings,
-      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding,
-      const absl::optional<DML_BINDING_DESC>& temporary_resource_binding);
+      const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
+      const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
   // Create a resource with `size` bytes in
   // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the

@@ -75,7 +75,7 @@ void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
     response->headers->SetHeader(header.first, header.second);
 
   client_remote_->OnReceiveResponse(std::move(response), std::move(body),
-                                    absl::nullopt);
+                                    std::nullopt);
 }
 
 void TestURLLoaderFactory::NotifyClientOnComplete(int error_code) {
@@ -269,7 +269,7 @@ void CorsURLLoaderTestBase::AddBlockListEntryForOrigin(
       mojom::CorsOriginAccessMatchPriority::kHighPriority);
 }
 
-void CorsURLLoaderTestBase::ResetFactory(absl::optional<url::Origin> initiator,
+void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
                                          uint32_t process_id,
                                          const ResetFactoryParams& params) {
   if (process_id != mojom::kBrowserProcessId)

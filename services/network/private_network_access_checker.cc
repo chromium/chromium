@@ -53,14 +53,14 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
   return request_client_security_state;
 }
 
-absl::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
+std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
   net::IPAddress address;
   if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return address;
@@ -154,7 +154,7 @@ void PrivateNetworkAccessChecker::ResetForRetry() {
   // See also: https://crbug.com/1293891
   target_address_space_ = mojom::IPAddressSpace::kUnknown;
 
-  response_address_space_ = absl::nullopt;
+  response_address_space_ = std::nullopt;
 }
 
 mojom::ClientSecurityStatePtr
@@ -224,7 +224,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   //
   // `response_address_space_` behaves similarly to `target_address_space_`,
   // except `kUnknown` is also subject to checks (instead
-  // `response_address_space_ == absl::nullopt` indicates that no check
+  // `response_address_space_ == std::nullopt` indicates that no check
   // should be performed).
   if (response_address_space_.has_value() &&
       resource_address_space != *response_address_space_) {

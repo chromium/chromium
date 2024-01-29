@@ -6,11 +6,11 @@
 #define SERVICES_ACCESSIBILITY_ANDROID_AUTO_COMPLETE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "services/accessibility/android/ax_tree_source_android.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXNodeData;
@@ -41,8 +41,8 @@ class AutoCompleteHandler : public AXTreeSourceAndroid::Hook {
 
  private:
   const int32_t anchored_node_id_;
-  absl::optional<int32_t> suggestion_window_id_;
-  absl::optional<int32_t> selected_node_id_;
+  std::optional<int32_t> suggestion_window_id_;
+  std::optional<int32_t> selected_node_id_;
 };
 
 }  // namespace ax::android

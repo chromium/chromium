@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "services/audio/loopback_group_member.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -341,7 +341,7 @@ class OutputControllerTest : public ::testing::Test {
     controller_->SetVolume(kTestVolume);
   }
 
-  void TearDown() override { controller_ = absl::nullopt; }
+  void TearDown() override { controller_ = std::nullopt; }
 
  protected:
   // Returns the last-created or last-closed AudioOuptutStream.
@@ -474,7 +474,7 @@ class OutputControllerTest : public ::testing::Test {
   AudioManagerForControllerTest audio_manager_;
   base::UnguessableToken group_id_;
   StrictMock<MockOutputControllerSyncReader> mock_sync_reader_;
-  absl::optional<OutputController> controller_;
+  std::optional<OutputController> controller_;
 };
 
 TEST_F(OutputControllerTest, CreateAndClose) {

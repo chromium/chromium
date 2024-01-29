@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -21,7 +22,6 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/registry.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory_instrumentation {
 
@@ -54,7 +54,7 @@ class CoordinatorImpl : public Registry,
       mojo::PendingRemote<mojom::ClientProcess> client_process,
       mojom::ProcessType process_type,
       base::ProcessId process_id,
-      const absl::optional<std::string>& service_name) override;
+      const std::optional<std::string>& service_name) override;
 
   // mojom::Coordinator implementation.
   void RequestGlobalMemoryDump(
@@ -96,12 +96,12 @@ class CoordinatorImpl : public Registry,
   struct ClientInfo {
     ClientInfo(mojo::Remote<mojom::ClientProcess> client,
                mojom::ProcessType,
-               absl::optional<std::string> service_name);
+               std::optional<std::string> service_name);
     ~ClientInfo();
 
     const mojo::Remote<mojom::ClientProcess> client;
     const mojom::ProcessType process_type;
-    const absl::optional<std::string> service_name;
+    const std::optional<std::string> service_name;
   };
 
   void UnregisterClientProcess(base::ProcessId);

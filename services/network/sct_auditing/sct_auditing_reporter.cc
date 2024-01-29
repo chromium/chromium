@@ -59,7 +59,7 @@ constexpr char kStatusOK[] = "OK";
 
 // Overrides the initial retry delay in SCTAuditingReporter::kBackoffPolicy if
 // not nullopt.
-absl::optional<base::TimeDelta> g_retry_delay_for_testing = absl::nullopt;
+std::optional<base::TimeDelta> g_retry_delay_for_testing = std::nullopt;
 
 void RecordLookupQueryResult(SCTAuditingReporter::LookupQueryResult result) {
   base::UmaHistogramEnumeration("Security.SCTAuditing.OptOut.LookupQueryResult",
@@ -144,33 +144,33 @@ const net::BackoffEntry::Policy SCTAuditingReporter::kDefaultBackoffPolicy = {
 constexpr int kMaxRetries = 15;
 
 // static
-absl::optional<SCTAuditingReporter::SCTHashdanceMetadata>
+std::optional<SCTAuditingReporter::SCTHashdanceMetadata>
 SCTAuditingReporter::SCTHashdanceMetadata::FromValue(const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* encoded_leaf_hash = dict->FindString(kLeafHashKey);
-  const absl::optional<base::Time> issued =
+  const std::optional<base::Time> issued =
       base::ValueToTime(dict->Find(kIssuedKey));
   const std::string* encoded_log_id = dict->FindString(kLogIdKey);
-  const absl::optional<base::TimeDelta> log_mmd =
+  const std::optional<base::TimeDelta> log_mmd =
       base::ValueToTimeDelta(dict->Find(kLogMMDKey));
-  const absl::optional<base::Time> certificate_expiry =
+  const std::optional<base::Time> certificate_expiry =
       base::ValueToTime(dict->Find(kCertificateExpiry));
   if (!encoded_leaf_hash || !encoded_log_id || !log_mmd || !issued ||
       !certificate_expiry) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SCTAuditingReporter::SCTHashdanceMetadata sct_hashdance_metadata;
   if (!base::Base64Decode(*encoded_leaf_hash,
                           &sct_hashdance_metadata.leaf_hash)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::Base64Decode(*encoded_log_id, &sct_hashdance_metadata.log_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   sct_hashdance_metadata.log_mmd = std::move(*log_mmd);
   sct_hashdance_metadata.issued = std::move(*issued);
@@ -201,7 +201,7 @@ base::Value SCTAuditingReporter::SCTHashdanceMetadata::ToValue() const {
 
 // static
 void SCTAuditingReporter::SetRetryDelayForTesting(
-    absl::optional<base::TimeDelta> delay) {
+    std::optional<base::TimeDelta> delay) {
   g_retry_delay_for_testing = delay;
 }
 
@@ -210,7 +210,7 @@ SCTAuditingReporter::SCTAuditingReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
     bool is_hashdance,
-    absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata,
+    std::optional<SCTHashdanceMetadata> sct_hashdance_metadata,
     mojom::SCTAuditingConfigurationPtr configuration,
     mojom::URLLoaderFactory* url_loader_factory,
     ReporterUpdatedCallback update_callback,
@@ -372,7 +372,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  absl::optional<base::Value> result = base::JSONReader::Read(*response_body);
+  std::optional<base::Value> result = base::JSONReader::Read(*response_body);
   if (!result || !result->is_dict()) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();

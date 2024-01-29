@@ -52,7 +52,7 @@ class MediaController::ImageObserverHolder {
   mojom::MediaSessionImageType type() const { return type_; }
 
   void ImagesChanged(const std::vector<MediaImage>& images) {
-    absl::optional<MediaImage> image = manager_.SelectImage(images);
+    std::optional<MediaImage> image = manager_.SelectImage(images);
 
     // If we could not find an image then we should call with an empty image to
     // flush the observer.
@@ -97,7 +97,7 @@ class MediaController::ImageObserverHolder {
 
   // Whether the last information sent to the observer was an image.
   // Empty if we have not yet sent anything.
-  absl::optional<bool> did_send_image_last_;
+  std::optional<bool> did_send_image_last_;
 
   base::WeakPtrFactory<ImageObserverHolder> weak_ptr_factory_{this};
 };
@@ -154,7 +154,7 @@ void MediaController::AddObserver(
   if (session_) {
     media_controller_observer->MediaSessionChanged(session_->id());
   } else {
-    media_controller_observer->MediaSessionChanged(absl::nullopt);
+    media_controller_observer->MediaSessionChanged(std::nullopt);
   }
 
   // Flush the new observer with the current state.
@@ -176,7 +176,7 @@ void MediaController::MediaSessionInfoChanged(mojom::MediaSessionInfoPtr info) {
 }
 
 void MediaController::MediaSessionMetadataChanged(
-    const absl::optional<MediaMetadata>& metadata) {
+    const std::optional<MediaMetadata>& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& observer : observers_)
@@ -196,7 +196,7 @@ void MediaController::MediaSessionActionsChanged(
 }
 
 void MediaController::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& observer : observers_)
@@ -306,7 +306,7 @@ void MediaController::ExitPictureInPicture() {
     session_->ipc()->ExitPictureInPicture();
 }
 
-void MediaController::SetAudioSinkId(const absl::optional<std::string>& id) {
+void MediaController::SetAudioSinkId(const std::optional<std::string>& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (session_)
@@ -394,12 +394,12 @@ void MediaController::ClearMediaSession() {
   // If we are no longer bound to a session we should flush the observers
   // with empty data.
   for (auto& observer : observers_) {
-    observer->MediaSessionChanged(absl::nullopt);
+    observer->MediaSessionChanged(std::nullopt);
     observer->MediaSessionInfoChanged(nullptr);
-    observer->MediaSessionMetadataChanged(absl::nullopt);
+    observer->MediaSessionMetadataChanged(std::nullopt);
     observer->MediaSessionActionsChanged(
         std::vector<mojom::MediaSessionAction>());
-    observer->MediaSessionPositionChanged(absl::nullopt);
+    observer->MediaSessionPositionChanged(std::nullopt);
   }
 
   for (auto& holder : image_observers_)

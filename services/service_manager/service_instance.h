@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -29,7 +30,6 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/public/mojom/service_control.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace mojom {
@@ -136,7 +136,7 @@ class ServiceInstance : public mojom::Connector,
   // service to have access to *any* arbitrary interface on the target service.
   bool CanConnectToOtherInstance(
       const ServiceFilter& target_filter,
-      const absl::optional<std::string>& target_interface_name);
+      const std::optional<std::string>& target_interface_name);
 
   // mojom::Connector:
   void BindInterface(const ServiceFilter& target_filter,

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
+
 #include <deque>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -10,10 +13,8 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -46,7 +47,7 @@ class MockIpProtectionConfigGetter
 
   // Register an expectation of a call to `GetProxyList()`, returning nullopt.
   void ExpectGetProxyListCallFailure() {
-    expected_get_proxy_list_calls_.push_back(absl::nullopt);
+    expected_get_proxy_list_calls_.push_back(std::nullopt);
   }
 
   // True if all expected `TryGetAuthTokens` calls have occurred.
@@ -72,7 +73,7 @@ class MockIpProtectionConfigGetter
   }
 
  protected:
-  std::deque<absl::optional<std::vector<std::vector<std::string>>>>
+  std::deque<std::optional<std::vector<std::vector<std::string>>>>
       expected_get_proxy_list_calls_;
 };
 

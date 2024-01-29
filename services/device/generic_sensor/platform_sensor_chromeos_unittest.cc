@@ -80,7 +80,7 @@ class PlatformSensorChromeOSTestBase {
   mojo::PendingReceiver<chromeos::sensors::mojom::SensorDevice>
       pending_receiver_;
 
-  absl::optional<uint32_t> custom_reason_code_;
+  std::optional<uint32_t> custom_reason_code_;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 };

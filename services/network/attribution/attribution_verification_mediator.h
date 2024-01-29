@@ -97,7 +97,7 @@ class AttributionVerificationMediator {
     // `message` is a string representing the data that we want
     // to attest to. We "blind" it as part of the blind signature protocol
     // before sending it to the issuer for signature.
-    [[nodiscard]] virtual absl::optional<std::string> BeginIssuance(
+    [[nodiscard]] virtual std::optional<std::string> BeginIssuance(
         std::string_view message) = 0;
 
     // Given a base64-encoded issuance `response header`, attempts to unblind a
@@ -105,7 +105,7 @@ class AttributionVerificationMediator {
     // AddKey. If successful, it returns a token suitable for attachment in the
     // Sec-Attribution-Reporting-Private-State-Token header. On error, it
     // returns nullopt.
-    [[nodiscard]] virtual absl::optional<std::string>
+    [[nodiscard]] virtual std::optional<std::string>
     ConfirmIssuanceAndBeginRedemption(std::string_view response_header) = 0;
   };
 

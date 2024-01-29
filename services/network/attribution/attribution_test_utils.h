@@ -35,9 +35,9 @@ class FakeCryptographer
 
   bool AddKey(std::string_view key) override;
 
-  absl::optional<std::string> BeginIssuance(std::string_view message) override;
+  std::optional<std::string> BeginIssuance(std::string_view message) override;
 
-  absl::optional<std::string> ConfirmIssuanceAndBeginRedemption(
+  std::optional<std::string> ConfirmIssuanceAndBeginRedemption(
       std::string_view response_header) override;
 
   //***********************

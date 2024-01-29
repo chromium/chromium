@@ -5,6 +5,8 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -12,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace data_decoder {
@@ -24,7 +25,7 @@ namespace data_decoder {
 // methods.
 class SafeWebBundleParser {
  public:
-  explicit SafeWebBundleParser(const absl::optional<GURL>& base_url);
+  explicit SafeWebBundleParser(const std::optional<GURL>& base_url);
 
   SafeWebBundleParser(const SafeWebBundleParser&) = delete;
   SafeWebBundleParser& operator=(const SafeWebBundleParser&) = delete;
@@ -56,7 +57,7 @@ class SafeWebBundleParser {
   // details. This method fails when it's called before the previous call
   // finishes.
   void ParseMetadata(
-      absl::optional<uint64_t> offset,
+      std::optional<uint64_t> offset,
       web_package::mojom::WebBundleParser::ParseMetadataCallback callback);
 
   // Parses a response from a (Signed) Web Bundle. See
@@ -90,7 +91,7 @@ class SafeWebBundleParser {
                         web_package::mojom::BundleResponseParseErrorPtr error);
   void OnParserClosed();
 
-  absl::optional<GURL> base_url_;
+  std::optional<GURL> base_url_;
   DataDecoder data_decoder_;
   mojo::Remote<web_package::mojom::WebBundleParserFactory> factory_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;

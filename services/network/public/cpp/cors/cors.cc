@@ -102,7 +102,7 @@ bool IsCorsSafelistedLowerCaseContentType(const std::string& value) {
   if (base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))
     return false;
 
-  absl::optional<std::string> mime_type =
+  std::optional<std::string> mime_type =
       net::ExtractMimeTypeFromMediaType(value,
                                         /*accept_comma_separated=*/false);
   if (!mime_type.has_value()) {
@@ -147,8 +147,8 @@ const char kPrivateNetworkDeviceName[] = "Private-Network-Access-Name";
 // See https://fetch.spec.whatwg.org/#cors-check.
 base::expected<void, CorsErrorStatus> CheckAccess(
     const GURL& response_url,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
+    const std::optional<std::string>& allow_origin_header,
+    const std::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin) {
   if (allow_origin_header == kAsterisk) {
@@ -226,8 +226,8 @@ base::expected<void, CorsErrorStatus> CheckAccess(
 
 base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
     const GURL& response_url,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
+    const std::optional<std::string>& allow_origin_header,
+    const std::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin) {
   auto check_result =
@@ -246,7 +246,7 @@ base::expected<void, CorsErrorStatus> CheckAccessAndReportMetrics(
 }
 
 bool ShouldCheckCors(const GURL& request_url,
-                     const absl::optional<url::Origin>& request_initiator,
+                     const std::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode) {
   if (request_mode == network::mojom::RequestMode::kNavigate ||
       request_mode == network::mojom::RequestMode::kNoCors) {

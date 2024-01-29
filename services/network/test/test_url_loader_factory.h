@@ -41,7 +41,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
       std::vector<std::string> removed_headers;
       net::HttpRequestHeaders modified_headers;
       net::HttpRequestHeaders modified_cors_exempt_headers;
-      absl::optional<GURL> new_url;
+      std::optional<GURL> new_url;
     };
 
     explicit TestURLLoader(
@@ -56,7 +56,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const absl::optional<GURL>& new_url) override;
+        const std::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
     void PauseReadingBodyFromNet() override {}
@@ -228,7 +228,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   bool CreateLoaderAndStartInternal(const GURL& url,
                                     mojom::URLLoaderClient* client);
 
-  absl::optional<network::TestURLLoaderFactory::PendingRequest>
+  std::optional<network::TestURLLoaderFactory::PendingRequest>
   FindPendingRequest(const GURL& url, ResponseMatchFlags flags);
 
   static void SimulateResponse(mojom::URLLoaderClient* client,

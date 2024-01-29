@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "services/preferences/tracked/interceptable_pref_filter.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 #include "services/preferences/tracked/tracked_preference.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -147,7 +147,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // A store and contents on which to perform extra validations without
   // triggering resets.
   // Will be null if the platform does not support external validation.
-  absl::optional<StoreContentsPair> external_validation_hash_store_pair_;
+  std::optional<StoreContentsPair> external_validation_hash_store_pair_;
 
   // Notified if a reset occurs in a call to FilterOnLoad.
   mojo::Remote<prefs::mojom::ResetOnLoadObserver> reset_on_load_observer_;

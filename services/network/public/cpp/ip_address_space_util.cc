@@ -28,13 +28,13 @@ using net::IPAddress;
 using net::IPEndPoint;
 
 // Parses a string of the form "<URL-safe IP address>:<port>".
-absl::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
+std::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
   // Find the last colon character in `str`. We do not use
   // `base::SplitStringPiece()` because IPv6 address literals may contain colon
   // characters too.
   const auto pos = str.rfind(':');
   if (pos == str.npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string_view address_str = str.substr(0, pos);
@@ -47,18 +47,18 @@ absl::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
 
   IPAddress address;
   if (!net::ParseURLHostnameToAddress(address_str, &address)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Parse to a `unsigned int`, which is guaranteed to be at least 16 bits wide.
   // See https://en.cppreference.com/w/cpp/language/types.
   unsigned port_unsigned = 0;
   if (!base::StringToUint(port_str, &port_unsigned)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::IsValueInRangeForNumericType<uint16_t>(port_unsigned)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Use `checked_cast()` for extra safety, though this should never `CHECK()`
@@ -67,7 +67,7 @@ absl::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
   return IPEndPoint(address, port);
 }
 
-absl::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
+std::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
   if (str == "public") {
     return IPAddressSpace::kPublic;
   }
@@ -80,7 +80,7 @@ absl::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
     return IPAddressSpace::kLocal;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Represents a single command-line-specified endpoint override.
@@ -93,27 +93,27 @@ struct EndpointOverride {
 };
 
 // Parses an override from `str`, of the form "<endpoint>=<space>".
-absl::optional<EndpointOverride> ParseEndpointOverride(std::string_view str) {
+std::optional<EndpointOverride> ParseEndpointOverride(std::string_view str) {
   std::vector<std::string_view> tokens = base::SplitStringPiece(
       str, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // There should be 2 parts: the endpoint and the address space.
   if (tokens.size() != 2) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string_view endpoint = tokens[0];
   std::string_view address_space = tokens[1];
 
-  absl::optional<IPEndPoint> parsed_endpoint = ParseEndpoint(endpoint);
+  std::optional<IPEndPoint> parsed_endpoint = ParseEndpoint(endpoint);
   if (!parsed_endpoint.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<IPAddressSpace> parsed_address_space =
+  std::optional<IPAddressSpace> parsed_address_space =
       ParseIPAddressSpace(address_space);
   if (!parsed_address_space.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   EndpointOverride result;
@@ -130,7 +130,7 @@ std::vector<EndpointOverride> ParseEndpointOverrideList(std::string_view list) {
 
   std::vector<EndpointOverride> endpoint_overrides;
   for (std::string_view token : tokens) {
-    absl::optional<EndpointOverride> parsed = ParseEndpointOverride(token);
+    std::optional<EndpointOverride> parsed = ParseEndpointOverride(token);
     if (parsed.has_value()) {
       endpoint_overrides.push_back(*std::move(parsed));
     }
@@ -141,12 +141,12 @@ std::vector<EndpointOverride> ParseEndpointOverrideList(std::string_view list) {
 
 // Applies overrides specified on the command-line to `endpoint`.
 // Returns nullopt if no override matches `endpoint`.
-absl::optional<IPAddressSpace> ApplyCommandLineOverrides(
+std::optional<IPAddressSpace> ApplyCommandLineOverrides(
     const IPEndPoint& endpoint) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (!command_line.HasSwitch(switches::kIpAddressSpaceOverrides)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string switch_str =
@@ -160,7 +160,7 @@ absl::optional<IPAddressSpace> ApplyCommandLineOverrides(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Represents a single entry of the form: subnet -> address space.
@@ -175,7 +175,7 @@ class AddressSpaceMapEntry {
 
   // Returns the assigned address space if `address` belongs to this instance's
   // subnet. Returns nullopt otherwise.
-  absl::optional<IPAddressSpace> Apply(const IPAddress& address) const;
+  std::optional<IPAddressSpace> Apply(const IPAddress& address) const;
 
  private:
   IPAddress prefix_;
@@ -183,13 +183,13 @@ class AddressSpaceMapEntry {
   IPAddressSpace space_ = IPAddressSpace::kUnknown;
 };
 
-absl::optional<IPAddressSpace> AddressSpaceMapEntry::Apply(
+std::optional<IPAddressSpace> AddressSpaceMapEntry::Apply(
     const IPAddress& address) const {
   if (net::IPAddressMatchesPrefix(address, prefix_, prefix_length_)) {
     return space_;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Maps IP addresses to IP address spaces.
@@ -201,15 +201,15 @@ class AddressSpaceMap {
   // Applies entries in this map to `address`, in sequential order.
   // Returns the address space of the first matching entry.
   // Returns nullopt if no match is found.
-  absl::optional<IPAddressSpace> Apply(const IPAddress& address) const;
+  std::optional<IPAddressSpace> Apply(const IPAddress& address) const;
 
  private:
   std::vector<AddressSpaceMapEntry> entries_;
 };
 
-absl::optional<IPAddressSpace> AddressSpaceMap::Apply(
+std::optional<IPAddressSpace> AddressSpaceMap::Apply(
     const IPAddress& address) const {
-  absl::optional<IPAddressSpace> space;
+  std::optional<IPAddressSpace> space;
 
   for (const AddressSpaceMapEntry& entry : entries_) {
     space = entry.Apply(address);
@@ -264,7 +264,7 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
     return IPAddressSpace::kUnknown;
   }
 
-  absl::optional<IPAddressSpace> space = ApplyCommandLineOverrides(endpoint);
+  std::optional<IPAddressSpace> space = ApplyCommandLineOverrides(endpoint);
   if (space.has_value()) {
     return *space;
   }
@@ -327,7 +327,7 @@ namespace {
 // See: https://fetch.spec.whatwg.org/#concept-response-url-list
 const GURL& ResponseUrl(
     const GURL& request_url,
-    absl::optional<CalculateClientAddressSpaceParams> params) {
+    std::optional<CalculateClientAddressSpaceParams> params) {
   if (params.has_value() && !params->url_list_via_service_worker->empty()) {
     return params.value().url_list_via_service_worker->back();
   }
@@ -349,7 +349,7 @@ CalculateClientAddressSpaceParams::~CalculateClientAddressSpaceParams() =
 
 mojom::IPAddressSpace CalculateClientAddressSpace(
     const GURL& url,
-    absl::optional<CalculateClientAddressSpaceParams> params) {
+    std::optional<CalculateClientAddressSpaceParams> params) {
   if (ResponseUrl(url, params).SchemeIsFile()) {
     // See: https://wicg.github.io/cors-rfc1918/#file-url.
     return mojom::IPAddressSpace::kLocal;

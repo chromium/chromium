@@ -71,7 +71,7 @@ TEST(PlatformSensorProviderTestWinrt, SensorCreationReturnCheck) {
       std::move(mock_sensor_reader_factory));
 
   // CreateSensor is async so use a RunLoop to wait for completion.
-  absl::optional<base::RunLoop> run_loop;
+  std::optional<base::RunLoop> run_loop;
   bool expect_sensor_valid = false;
 
   base::RepeatingCallback<void(scoped_refptr<PlatformSensor> sensor)>

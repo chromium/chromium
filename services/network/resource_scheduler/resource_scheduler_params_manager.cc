@@ -4,6 +4,8 @@
 
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -13,16 +15,15 @@
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
-absl::optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
+std::optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
   if (!base::FeatureList::IsEnabled(
           features::kPauseBrowserInitiatedHeavyTrafficForP2P)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int max_wait_time_p2p_connections_in_minutes =
@@ -110,17 +111,17 @@ GetParamsForNetworkQualityContainer() {
       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          absl::nullopt)));
+          std::nullopt)));
   result.emplace(std::make_pair(
       net::EFFECTIVE_CONNECTION_TYPE_2G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          absl::nullopt)));
+          std::nullopt)));
   result.emplace(std::make_pair(
       net::EFFECTIVE_CONNECTION_TYPE_3G,
       ResourceSchedulerParamsManager::ParamsForNetworkQuality(
           8, 3.0, false /* delay_requests_on_multiplexed_connections */,
-          absl::nullopt)));
+          std::nullopt)));
 
   for (int config_param_index = 1; config_param_index <= 20;
        ++config_param_index) {
@@ -134,7 +135,7 @@ GetParamsForNetworkQualityContainer() {
       break;
     }
 
-    absl::optional<net::EffectiveConnectionType> effective_connection_type =
+    std::optional<net::EffectiveConnectionType> effective_connection_type =
         net::GetEffectiveConnectionTypeForName(
             base::GetFieldTrialParamValueByFeature(
                 features::kThrottleDelayable,
@@ -159,7 +160,7 @@ GetParamsForNetworkQualityContainer() {
           effective_connection_type.value(),
           ResourceSchedulerParamsManager::ParamsForNetworkQuality(
               max_delayable_requests, non_delayable_weight, false,
-              absl::nullopt)));
+              std::nullopt)));
     }
   }
 
@@ -168,7 +169,7 @@ GetParamsForNetworkQualityContainer() {
   // based on the experiment params.
   if (base::FeatureList::IsEnabled(
           features::kDelayRequestsOnMultiplexedConnections)) {
-    absl::optional<net::EffectiveConnectionType> max_effective_connection_type =
+    std::optional<net::EffectiveConnectionType> max_effective_connection_type =
         net::GetEffectiveConnectionTypeForName(
             base::GetFieldTrialParamValueByFeature(
                 features::kDelayRequestsOnMultiplexedConnections,
@@ -192,7 +193,7 @@ GetParamsForNetworkQualityContainer() {
             effective_connection_type,
             ResourceSchedulerParamsManager::ParamsForNetworkQuality(
                 kDefaultMaxNumDelayableRequestsPerClient, 0.0, true,
-                absl::nullopt)));
+                std::nullopt)));
       }
     }
   }
@@ -276,13 +277,13 @@ ResourceSchedulerParamsManager::ParamsForNetworkQuality::
           kDefaultMaxNumDelayableRequestsPerClient,
           0.0,
           false,
-          absl::nullopt) {}
+          std::nullopt) {}
 
 ResourceSchedulerParamsManager::ParamsForNetworkQuality::
     ParamsForNetworkQuality(size_t max_delayable_requests,
                             double non_delayable_weight,
                             bool delay_requests_on_multiplexed_connections,
-                            absl::optional<base::TimeDelta> max_queuing_time)
+                            std::optional<base::TimeDelta> max_queuing_time)
     : max_delayable_requests(max_delayable_requests),
       non_delayable_weight(non_delayable_weight),
       delay_requests_on_multiplexed_connections(
@@ -330,7 +331,7 @@ ResourceSchedulerParamsManager::GetParamsForEffectiveConnectionType(
   if (iter != params_for_network_quality_container_.end())
     return iter->second;
   return ParamsForNetworkQuality(kDefaultMaxNumDelayableRequestsPerClient, 0.0,
-                                 false, absl::nullopt);
+                                 false, std::nullopt);
 }
 
 bool ResourceSchedulerParamsManager::CanThrottleNetworkTrafficAnnotationHash(

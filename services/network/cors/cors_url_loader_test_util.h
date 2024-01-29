@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -249,7 +249,7 @@ class CorsURLLoaderTestBase : public testing::Test {
     DCHECK(url_loader_);
     url_loader_->FollowRedirect(removed_headers, modified_headers,
                                 modified_cors_exempt_headers,
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   }
 
   void AddHostHeaderAndFollowRedirect() {
@@ -258,7 +258,7 @@ class CorsURLLoaderTestBase : public testing::Test {
     modified_headers.SetHeader(net::HttpRequestHeaders::kHost, "bar.test");
     url_loader_->FollowRedirect(/*removed_headers=*/{}, modified_headers,
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   }
 
   // Methods for interacting with `TestURLLoaderClient`.
@@ -285,7 +285,7 @@ class CorsURLLoaderTestBase : public testing::Test {
                                   const mojom::CorsDomainMatchMode mode);
 
   // Resets `cors_url_loader_factory_` with the given parameters.
-  void ResetFactory(absl::optional<url::Origin> initiator,
+  void ResetFactory(std::optional<url::Origin> initiator,
                     uint32_t process_id,
                     const ResetFactoryParams& params = ResetFactoryParams());
 

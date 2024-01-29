@@ -91,7 +91,7 @@ class CoordinatorImplTest : public testing::Test {
       base::ProcessId pid) {
     coordinator_->RegisterClientProcess(
         std::move(receiver), std::move(client_process), process_type, pid,
-        /*service_name=*/absl::nullopt);
+        /*service_name=*/std::nullopt);
   }
 
   void RequestGlobalMemoryDump(RequestGlobalMemoryDumpCallback callback) {

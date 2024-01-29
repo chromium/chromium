@@ -55,7 +55,7 @@ class ProxiedServiceConnector : public mojom::Connector {
     auto* proxy = GetServiceProxy(service_filter.service_name());
     if (!proxy && factory_->ignore_unknown_service_requests()) {
       std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -67,7 +67,7 @@ class ProxiedServiceConnector : public mojom::Connector {
                                 base::Token{}, fake_guid_),
                        CapabilitySet()),
         interface_name, std::move(interface_pipe), base::DoNothing());
-    std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, absl::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, std::nullopt);
   }
 
   void WarmService(const ServiceFilter& filter,

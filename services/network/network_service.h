@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -60,7 +61,6 @@
 #include "services/network/restricted_cookie_manager.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "services/network/public/mojom/ct_log_info.mojom.h"

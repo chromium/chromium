@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
  private:
   void RefreshProxyList();
   void OnGotProxyList(
-      const absl::optional<std::vector<std::vector<std::string>>>&);
+      const std::optional<std::vector<std::vector<std::string>>>&);
 
   // Latest fetched proxy list.
   std::vector<std::vector<std::string>> proxy_list_;
