@@ -45,7 +45,7 @@ class WebIdTestContentBrowserClient
   void SetIdentityRegistry(
       WebContents* web_contents,
       base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const url::Origin& url);
+      const GURL& config_url);
 
   IdentityRequestDialogController*
   GetIdentityRequestDialogControllerForTests() {

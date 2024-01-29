@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -22,8 +23,8 @@ class MockModalDialogViewDelegate
   MockModalDialogViewDelegate& operator=(const MockModalDialogViewDelegate&) =
       delete;
 
-  MOCK_METHOD0(NotifyClose, void());
-  MOCK_METHOD1(NotifyResolve, bool(const std::string&));
+  MOCK_METHOD0(OnClose, void());
+  MOCK_METHOD2(OnResolve, bool(GURL, const std::string&));
 };
 
 }  // namespace content

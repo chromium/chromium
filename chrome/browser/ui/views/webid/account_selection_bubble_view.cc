@@ -692,7 +692,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
-                          idp_metadata.idp_login_url),
+                          idp_metadata.config_url, idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
   row->AddChildView(std::move(button));
@@ -1135,7 +1135,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
 
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
-                          idp_metadata.idp_login_url),
+                          idp_metadata.config_url, idp_metadata.idp_login_url),
       std::move(image_view),
       l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT,
                                  idp_for_display));
@@ -1149,7 +1149,7 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
     const content::IdentityProviderMetadata& idp_metadata) {
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
-                          idp_metadata.idp_login_url),
+                          idp_metadata.config_url, idp_metadata.idp_login_url),
       ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
                                      kDesiredUseOtherAccountIconSize),
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));

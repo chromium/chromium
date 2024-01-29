@@ -729,7 +729,7 @@ public class AccountSelectionControllerTest {
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
                     .onResult(null);
-            verify(mMockDelegate, times(++count)).onLoginToIdP(TEST_LOGIN_URL);
+            verify(mMockDelegate, times(++count)).onLoginToIdP(TEST_CONFIG_URL, TEST_LOGIN_URL);
         }
     }
 

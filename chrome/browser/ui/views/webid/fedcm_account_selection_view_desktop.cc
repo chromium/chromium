@@ -473,13 +473,14 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_login_url,
+void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
+                                             const GURL& idp_login_url,
                                              const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
 
-  delegate_->OnLoginToIdP(idp_login_url);
+  delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
   is_mismatch_continue_clicked_ = true;
   popup_window_state_ =
       PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;

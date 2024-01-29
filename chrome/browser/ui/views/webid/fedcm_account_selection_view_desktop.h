@@ -206,7 +206,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void OnLoginToIdP(const GURL& idp_login_url, const ui::Event& event) override;
+  void OnLoginToIdP(const GURL& idp_config_url,
+                    const GURL& idp_login_url,
+                    const ui::Event& event) override;
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
 

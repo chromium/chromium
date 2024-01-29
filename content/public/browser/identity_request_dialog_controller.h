@@ -107,7 +107,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
-  using LoginToIdPCallback = base::OnceCallback<void(GURL /*idp_login_url*/)>;
+  using LoginToIdPCallback =
+      base::OnceCallback<void(const GURL& /*idp_config_url*/,
+                              GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;
