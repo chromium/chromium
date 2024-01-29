@@ -465,37 +465,43 @@ def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('--out-dir',
+                      '--out_dir',
                       '--output-directory',
+                      '--output_directory',
                       '-C',
                       metavar='OUT_DIR',
                       help='output directory of the build')
   parser.add_argument(
       '--run-all',
+      '--run_all',
       action='store_true',
       help='Run all tests for the file or directory, instead of just one')
   parser.add_argument('--line',
                       type=int,
                       help='run only the test on this line number. c++ only.')
-  parser.add_argument('--gtest_filter',
-                      '--gtest-filter',
+  parser.add_argument('--gtest-filter',
+                      '--gtest_filter',
                       '-f',
                       metavar='FILTER',
                       help='test filter')
   parser.add_argument(
       '--dry-run',
+      '--dry_run',
       '-n',
       action='store_true',
       help='Print ninja and test run commands without executing them.')
   parser.add_argument(
       '--no-try-android-wrappers',
+      '--no_try_android_wrappers',
       action='store_true',
       help='Do not try to use Android test wrappers to run tests.')
   parser.add_argument('--no-fast-local-dev',
+                      '--no_fast_local_dev',
                       action='store_true',
                       help='Do not add --fast-local-dev for Android tests.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
-                      nargs="+",
+                      nargs='+',
                       help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
