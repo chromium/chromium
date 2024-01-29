@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/projector/projector_metadata_model.h"
+
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -19,20 +20,20 @@ namespace {
 constexpr std::array<char, 3> kSentenceEndPunctuations = {'.', '?', '!'};
 constexpr std::array<char16_t, 6> kCJKSentenceEndPunctuations = {
     u'。', u'？', u'！', u'.', u'?', u'!'};
-constexpr base::StringPiece kStartOffsetKey = "startOffset";
-constexpr base::StringPiece kEndOffsetKey = "endOffset";
-constexpr base::StringPiece kTextKey = "text";
-constexpr base::StringPiece kHypothesisPartsKey = "hypothesisParts";
-constexpr base::StringPiece kCaptionLanguage = "captionLanguage";
-constexpr base::StringPiece kCaptionsKey = "captions";
-constexpr base::StringPiece kKeyIdeasKey = "tableOfContent";
-constexpr base::StringPiece kOffset = "offset";
-constexpr base::StringPiece kRecognitionStatus = "recognitionStatus";
-constexpr base::StringPiece kMetadataVersionNumber = "version";
-constexpr base::StringPiece kGroupIdKey = "groupId";
+constexpr std::string_view kStartOffsetKey = "startOffset";
+constexpr std::string_view kEndOffsetKey = "endOffset";
+constexpr std::string_view kTextKey = "text";
+constexpr std::string_view kHypothesisPartsKey = "hypothesisParts";
+constexpr std::string_view kCaptionLanguage = "captionLanguage";
+constexpr std::string_view kCaptionsKey = "captions";
+constexpr std::string_view kKeyIdeasKey = "tableOfContent";
+constexpr std::string_view kOffset = "offset";
+constexpr std::string_view kRecognitionStatus = "recognitionStatus";
+constexpr std::string_view kMetadataVersionNumber = "version";
+constexpr std::string_view kGroupIdKey = "groupId";
 
 constexpr auto kLanguagesWithoutWhiteSpaces =
-    base::MakeFixedFlatSet<base::StringPiece>({
+    base::MakeFixedFlatSet<std::string_view>({
         "ja",     // Japanese
         "ko_KR",  // Korean
         "th",     // Thai
@@ -83,7 +84,7 @@ base::Value::Dict HypothesisPartsToDict(
 
 std::string GetSentenceText(const std::vector<media::HypothesisParts>& sentence,
                             const std::string& caption_language) {
-  std::vector<base::StringPiece> sentence_text;
+  std::vector<std::string_view> sentence_text;
   for (const auto& hypothesisPart : sentence) {
     sentence_text.push_back(hypothesisPart.text[0]);
   }
