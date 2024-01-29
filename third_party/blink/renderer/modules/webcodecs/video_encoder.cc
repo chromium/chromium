@@ -350,9 +350,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 
   if (parse_result->subsampling.value_or(media::VideoChromaSampling::k420) !=
           media::VideoChromaSampling::k420 &&
+      parse_result->codec != media::VideoCodec::kAV1 &&
       parse_result->codec != media::VideoCodec::kVP9) {
     result->not_supported_error_message =
-        "4:4:4 subsampling is currently only supported with VP9";
+        "4:4:4 subsampling is currently only supported with AV1 and VP9.";
     return result;
   }
 
@@ -365,11 +366,28 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->level = parse_result->level;
   result->options.subsampling = parse_result->subsampling;
 
+  // Ideally which profile supports a given subsampling would be checked by
+  // ParseVideoCodecString() above. Unfortunately, ParseVideoCodecString() is
+  // shared by many paths and enforcing profile and subsampling broke several
+  // sites. The error messages below are more helpful anyways.
   switch (result->codec) {
+    case media::VideoCodec::kAV1:
+      if (parse_result->subsampling.value_or(
+              media::VideoChromaSampling::k420) ==
+          media::VideoChromaSampling::k420) {
+        break;
+      }
+      if (result->options.subsampling == media::VideoChromaSampling::k444 &&
+          result->profile == media::AV1PROFILE_PROFILE_HIGH) {
+        break;
+      }
+      result->not_supported_error_message =
+          "Unsupported AV1 subsampling; 4:2:0 subsampling is supported with "
+          "all profiles while 4:4:4 subsampling is only supported with high "
+          "profile. Professional profile is not supported.";
+      return result;
+
     case media::VideoCodec::kVP9:
-      // Ideally this would checked by the parser above, but unfortunately the
-      // parser is shared by many paths and enforcing profile and subsampling
-      // broke several sites. The error message below is more helpful anyways.
       if (parse_result->subsampling.value_or(
               media::VideoChromaSampling::k420) ==
           media::VideoChromaSampling::k420) {

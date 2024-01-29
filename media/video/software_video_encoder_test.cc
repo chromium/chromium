@@ -284,6 +284,7 @@ class SoftwareVideoEncoderTest
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
     switch (profile) {
       case VP9PROFILE_PROFILE1:
+      case AV1PROFILE_PROFILE_HIGH:
         return PIXEL_FORMAT_I444;
       case VP9PROFILE_PROFILE2:
         return PIXEL_FORMAT_YUV420P10;
@@ -306,7 +307,8 @@ class SoftwareVideoEncoderTest
 
   VideoEncoder::Options CreateDefaultOptions() {
     VideoEncoder::Options default_options;
-    if (profile_ == VP9PROFILE_PROFILE1 || profile_ == VP9PROFILE_PROFILE3) {
+    if (profile_ == VP9PROFILE_PROFILE1 || profile_ == VP9PROFILE_PROFILE3 ||
+        profile_ == AV1PROFILE_PROFILE_HIGH) {
       default_options.subsampling = VideoChromaSampling::k444;
     }
     return default_options;
@@ -1139,7 +1141,10 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
 SwVideoTestParams kAv1Params[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
-    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_I444},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_NV12},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_XRGB}};
 
 INSTANTIATE_TEST_SUITE_P(Av1Generic,
                          SoftwareVideoEncoderTest,
