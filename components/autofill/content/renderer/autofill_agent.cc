@@ -154,10 +154,6 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     }
   }
 
-  void SetFormToBeProbablySubmitted(
-      const std::optional<FormData>& form) override {
-    DeferMsg(&mojom::AutofillDriver::SetFormToBeProbablySubmitted, form);
-  }
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override {
     DeferMsg(&mojom::AutofillDriver::FormsSeen, updated_forms, removed_forms);
@@ -343,7 +339,6 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
           : nullptr;
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
@@ -490,9 +485,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          SubmissionSource source) {
   // We don't want to fire duplicate submission event.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAllowDuplicateFormSubmissions) &&
-      !submitted_forms_.insert(form_data.unique_renderer_id).second) {
+  if (!submitted_forms_.insert(form_data.unique_renderer_id).second) {
     return;
   }
   if (auto* autofill_driver = unsafe_autofill_driver()) {
@@ -516,8 +509,6 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   if (password_generation_agent_) {
     password_generation_agent_->DidEndTextFieldEditing(element);
   }
-
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::SetUserGestureRequired(bool required) {
@@ -725,7 +716,6 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
                                    /*removed_forms=*/{});
       }
     }
-    SendPotentiallySubmittedFormToBrowser();
   }
   last_action_type_ = action_type;
 }
@@ -1273,8 +1263,6 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
         last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);
   }
   last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
-
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
@@ -1380,8 +1368,6 @@ void AutofillAgent::FormControlElementClicked(
 
   ShowSuggestions(element,
                   AutofillSuggestionTriggerSource::kFormControlElementClicked);
-
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::HandleFocusChangeComplete(
@@ -1446,8 +1432,6 @@ void AutofillAgent::HandleFocusChangeComplete(
       }
     }
   }
-
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
@@ -1463,7 +1447,6 @@ void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
 
 void AutofillAgent::AjaxSucceeded() {
   form_tracker_->AjaxSucceeded();
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::JavaScriptChangedAutofilledValue(
@@ -1549,7 +1532,6 @@ void AutofillAgent::OnProvisionallySaveForm(
       }
       break;
   }
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::OnProbablyFormSubmitted() {
@@ -1559,7 +1541,6 @@ void AutofillAgent::OnProbablyFormSubmitted() {
   }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
@@ -1573,7 +1554,6 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
   }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
@@ -1616,7 +1596,6 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
   }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
-  SendPotentiallySubmittedFormToBrowser();
 }
 
 void AutofillAgent::AddFormObserver(Observer* observer) {
@@ -1701,12 +1680,6 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     return last_interacted_.saved_state;
   }
   return std::nullopt;
-}
-
-void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
-  if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->SetFormToBeProbablySubmitted(GetSubmittedForm());
-  }
 }
 
 void AutofillAgent::ResetLastInteractedElements() {

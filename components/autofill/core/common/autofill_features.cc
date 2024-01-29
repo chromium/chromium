@@ -44,15 +44,6 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
-// is enabled, also ContentAutofillDriver omit duplicate form submissions, even
-// though the form's data may have changed substantially. If enabled, the
-// below feature allows duplicate form submissions.
-// TODO(crbug/1117451): Remove once the form-submission experiment is over.
-BASE_FEATURE(kAutofillAllowDuplicateFormSubmissions,
-             "AutofillAllowDuplicateFormSubmissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the two most recent address forms and the most recent credit card
 // forms, which were submitted on the same origin, are associated with each
 // other. The association only happens if at most `kAutofillAssociateFormsTTL`
@@ -447,13 +438,6 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
 // should take into account latency information of the user event.
 BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
              "AutofillPopupUseLatencyInformationForAcceptThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If the feature is enabled, FormTracker's probable-form-submission detection
-// is disabled and replaced with browser-side detection.
-// TODO(crbug/1117451): Remove once it works.
-BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
-             "AutofillProbableFormSubmissionInBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls non-default Autofill API predictions. See crbug.com/1331322.

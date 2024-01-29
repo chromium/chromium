@@ -321,11 +321,6 @@ void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
 }
 
 void FormTracker::FireProbablyFormSubmitted() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillProbableFormSubmissionInBrowser)) {
-    return;
-  }
-
   for (auto& observer : observers_)
     observer.OnProbablyFormSubmitted();
   ResetLastInteractedElements();

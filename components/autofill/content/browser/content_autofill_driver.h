@@ -165,11 +165,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
 
-  // Indicates that the `potentially_submitted_form_` has probably been
-  // submitted if the feature AutofillProbableFormSubmissionInBrowser is
-  // enabled.
-  void ProbablyFormSubmitted(base::PassKey<ContentAutofillDriverFactory>);
-
   // Called on certain types of navigations by ContentAutofillDriverFactory.
   void Reset();
 
@@ -289,8 +284,6 @@ class ContentAutofillDriver : public AutofillDriver,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override;
   void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
-  void SetFormToBeProbablySubmitted(
-      const std::optional<FormData>& form) override;
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
@@ -332,15 +325,6 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // The factory that created this driver. Outlives `this`.
   const raw_ref<ContentAutofillDriverFactory> owner_;
-
-  // The form pushed from the AutofillAgent to the AutofillDriver. When the
-  // ProbablyFormSubmitted() event is fired, this form is considered the
-  // submitted one.
-  std::optional<FormData> potentially_submitted_form_;
-
-  // Keeps track of the forms for which FormSubmitted() event has been triggered
-  // to avoid duplicates fired by AutofillAgent.
-  std::set<FormGlobalId> submitted_forms_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

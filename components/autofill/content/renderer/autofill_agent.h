@@ -368,9 +368,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // std::nullopt otherwise.
   std::optional<FormData> GetSubmittedForm() const;
 
-  // Pushes the value of GetSubmittedForm() to the AutofillDriver.
-  void SendPotentiallySubmittedFormToBrowser();
-
   void ResetLastInteractedElements();
   void UpdateLastInteracted(const blink::WebFormElement& form);
 

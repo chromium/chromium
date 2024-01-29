@@ -14,12 +14,6 @@ import "url/mojom/url.mojom";
 // There is one instance of this interface per RenderFrameHost in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillDriver {
-  // Pushes a form the user interacted with from the AutofillAgent to the
-  // AutofillDriver, which may consider this form as a probably-submitted form
-  // once the page is navigated away from. If |form| is not set, it resets the
-  // last-interacted form.
-  SetFormToBeProbablySubmitted(FormData? form);
-
   // Notification that forms have been seen that are candidates for
   // filling/submitting by the AutofillManager.
   FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);

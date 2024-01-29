@@ -71,9 +71,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
  private:
   // mojom::AutofillDriver:
-  void SetFormToBeProbablySubmitted(
-      const std::optional<FormData>& form) override {}
-
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override {}
 
@@ -1157,10 +1154,6 @@ TEST_P(FormAutocompleteSubmissionTest, FormSubmittedBySameDocumentNavigation) {
 }
 
 TEST_P(FormAutocompleteSubmissionTest, FormSubmittedByProbablyFormSubmitted) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillProbableFormSubmissionInBrowser);
-
   LoadHTML(
       "<html>"
       "<input type='text' id='address_field' name='address' autocomplete='on'>"
