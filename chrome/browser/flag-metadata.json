@@ -5610,12 +5610,12 @@
   {
     "name": "ntp-journeys-module",
     "owners": [ "romanarora@chromium.org", "mfacey@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-journeys-module-model-ranking",
     "owners": [ "sophiechang@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-journeys-module-suggestion-chip-header",
