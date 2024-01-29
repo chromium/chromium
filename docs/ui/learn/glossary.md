@@ -111,13 +111,13 @@ order, and should be used sparingly.
 An operation where a `View` sets the bounds of all of its children. Generally,
 calling `InvalidateLayout()` on a `View` will recursively mark that `View` and
 all ancestors as dirty; then at some point,
-`Widget::LayoutRootViewIfNecessary()` will call `Layout()` on the `RootView`,
-which will call `Layout()` on its contents, and so forth down the tree. `View`s
-can implement custom layout by overriding the virtual `Layout()` method, but
-generally should use one of the available `LayoutManager`s to describe how
-children should be arranged; then the `LayoutManager` will be responsible for
-both computing the `View`'s preferred size and for updating child bounds as
-necessary.
+`Widget::LayoutRootViewIfNecessary()` will call `LayoutImmediately()` on the
+`RootView`, which will call `Layout()` on its contents, and so forth down the
+tree. `View`s can currently implement custom layout by overriding the virtual
+`Layout()` method, but should instead use one of the available `LayoutManager`s
+to describe how children should be arranged; then the `LayoutManager` will be
+responsible for both computing the `View`'s preferred size and for updating
+child bounds as necessary.
 
 ### NativeWidget
 

@@ -391,7 +391,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
       needs_layout_ = false;
       TRACE_EVENT1("views", "View::Layout(set_bounds)", "class",
                    GetClassName());
-      Layout();
+      LayoutImmediately();
     }
     return;
   }
@@ -440,7 +440,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
     needs_layout_ = false;
     TRACE_EVENT1("views", "View::Layout(bounds_changed)", "class",
                  GetClassName());
-    Layout();
+    LayoutImmediately();
   }
 
   if (GetNeedsNotificationWhenVisibleBoundsChange())
@@ -879,7 +879,7 @@ void View::Layout() {
       TRACE_EVENT1("views", "View::LayoutChildren", "class",
                    child->GetClassName());
       child->needs_layout_ = false;
-      child->Layout();
+      child->LayoutImmediately();
     }
   }
 }
@@ -3407,6 +3407,10 @@ void View::CreateMaskLayer() {
 bool View::HasLayoutManager() const {
   return ((default_fill_layout_.has_value() && !children_.empty()) ||
           layout_manager_);
+}
+
+void View::LayoutImmediately() {
+  Layout();
 }
 
 // Input -----------------------------------------------------------------------

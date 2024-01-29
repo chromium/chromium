@@ -2146,6 +2146,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // default fill layout or the assigned layout manager.
   bool HasLayoutManager() const;
 
+  // Implementation of synchronous layout.
+  void LayoutImmediately();
+
   // Input ---------------------------------------------------------------------
 
   bool ProcessMousePressed(const ui::MouseEvent& event);

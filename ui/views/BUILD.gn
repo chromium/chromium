@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build/nocompile.gni")
 import("//components/metrics/generate_histograms_variants_allowlist.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//skia/features.gni")
@@ -1558,6 +1559,15 @@ test("views_unittests") {
     sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
     deps += [ "//ui/views:view_pixel_diff_test_support" ]
   }
+
+  if (enable_nocompile_tests) {
+    deps += [ ":views_nocompile_tests" ]
+  }
+}
+
+nocompile_source_set("views_nocompile_tests") {
+  sources = [ "view_nocompile.nc" ]
+  deps = [ ":views" ]
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must
