@@ -8,17 +8,18 @@ import {PointScanManager} from './point_scan_manager.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType} from './switch_access_constants.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 
 export class Navigator {
-  /** @param {!AutomationNode} desktop */
-  static initializeSingletonInstances(desktop) {
+  private static itemManager_?: ItemScanManager;
+  private static pointManager_?: PointScanManager;
+
+  static initializeSingletonInstances(desktop: AutomationNode): void {
     Navigator.itemManager_ = new ItemScanManager(desktop);
     Navigator.pointManager_ = new PointScanManager();
   }
 
-  /** @return {!ItemNavigatorInterface} */
-  static get byItem() {
+  static get byItem(): ItemNavigatorInterface {
     if (!Navigator.itemManager_) {
       throw SwitchAccess.error(
           ErrorType.UNINITIALIZED,
@@ -27,8 +28,7 @@ export class Navigator {
     return Navigator.itemManager_;
   }
 
-  /** @return {!PointNavigatorInterface} */
-  static get byPoint() {
+  static get byPoint(): PointNavigatorInterface {
     if (!Navigator.pointManager_) {
       throw SwitchAccess.error(
           ErrorType.UNINITIALIZED,
@@ -37,9 +37,3 @@ export class Navigator {
     return Navigator.pointManager_;
   }
 }
-
-/** @private {ItemNavigatorInterface} */
-Navigator.itemManager_;
-
-/** @private {PointNavigatorInterface} */
-Navigator.pointManager_;
