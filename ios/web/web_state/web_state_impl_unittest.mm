@@ -492,7 +492,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/true,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   EXPECT_CALL(
       decider,
       ShouldAllowRequest(request, RequestInfoMatch(request_info_main_frame), _))
@@ -522,7 +522,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/false,
       /*target_frame_is_cross_origin=*/false,
-      /*has_user_gesture=*/false);
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   EXPECT_CALL(decider, ShouldAllowRequest(
                            request, RequestInfoMatch(request_info_iframe), _))
       .Times(1)

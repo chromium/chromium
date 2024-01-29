@@ -108,7 +108,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     const web::WebStatePolicyDecider::RequestInfo request_info(
         ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
         /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/false);
+        /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision request_policy =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
