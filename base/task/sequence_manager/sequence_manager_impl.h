@@ -156,11 +156,10 @@ class BASE_EXPORT SequenceManagerImpl
       CurrentThread::DestructionObserver* destruction_observer);
   [[nodiscard]] CallbackListSubscription RegisterOnNextIdleCallback(
       OnceClosure on_next_idle_callback);
-
-  // Sets / returns the default TaskRunner. Thread-safe.
+  // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
   void SetTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner);
+  // TODO(alexclarke): Remove this as part of https://crbug.com/825327.
   scoped_refptr<SingleThreadTaskRunner> GetTaskRunner();
-
   bool IsBoundToCurrentThread() const;
   MessagePump* GetMessagePump() const;
   bool IsType(MessagePumpType type) const;

@@ -347,7 +347,6 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     bool RunOrPostTask(subtle::RunOrPostTaskPassKey,
                        const Location& from_here,
                        OnceClosure task) final;
-    bool BelongsToCurrentThread() const final;
     bool RunsTasksInCurrentSequence() const final;
 
    private:

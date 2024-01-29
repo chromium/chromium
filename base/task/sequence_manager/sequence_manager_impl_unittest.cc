@@ -5417,11 +5417,11 @@ class SequenceManagerRunOrPostTaskTest : public testing::Test {
   SequenceManagerImpl* sequence_manager() { return sequence_manager_.get(); }
   TaskQueue* queue() { return queue_.get(); }
   TaskQueue* other_queue() { return other_queue_.get(); }
-  SingleThreadTaskRunner* task_runner() { return queue_->task_runner().get(); }
-  SingleThreadTaskRunner* other_task_runner() {
+  SequencedTaskRunner* task_runner() { return queue_->task_runner().get(); }
+  SequencedTaskRunner* other_task_runner() {
     return other_queue_->task_runner().get();
   }
-  SingleThreadTaskRunner* other_thread_task_runner() {
+  SequencedTaskRunner* other_thread_task_runner() {
     return thread_.task_runner().get();
   }
 
@@ -5861,62 +5861,6 @@ TEST_F(SequenceManagerRunOrPostTaskTest,
 
   EXPECT_TRUE(sequence_checker_bound_in_task->CalledOnValidSequence());
   EXPECT_FALSE(thread_checker_bound_in_task->CalledOnValidThread());
-}
-
-TEST_F(SequenceManagerRunOrPostTaskTest, CurrentDefaultTaskRunner) {
-  SimulateInsideRunLoop();
-
-  EXPECT_TRUE(task_runner()->RunsTasksInCurrentSequence());
-  EXPECT_TRUE(task_runner()->BelongsToCurrentThread());
-  EXPECT_TRUE(other_task_runner()->RunsTasksInCurrentSequence());
-  EXPECT_TRUE(other_task_runner()->BelongsToCurrentThread());
-
-  EXPECT_TRUE(other_thread_task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
-        EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
-        EXPECT_EQ(other_thread_task_runner(),
-                  SingleThreadTaskRunner::GetCurrentDefault());
-        EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
-        EXPECT_EQ(other_thread_task_runner(),
-                  SequencedTaskRunner::GetCurrentDefault());
-
-        EXPECT_FALSE(task_runner()->RunsTasksInCurrentSequence());
-        EXPECT_FALSE(task_runner()->BelongsToCurrentThread());
-        EXPECT_FALSE(other_task_runner()->RunsTasksInCurrentSequence());
-        EXPECT_FALSE(other_task_runner()->BelongsToCurrentThread());
-
-        for (auto* tested_task_runner : {task_runner(), other_task_runner()}) {
-          bool did_run = false;
-
-          // The "current default" `SequencedTaskRunner` is the
-          // `SequenceManager`'s default task runner, irrespective of the task
-          // runner on which `RunOrPostTask` is called.
-          tested_task_runner->RunOrPostTask(
-              subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
-              BindLambdaForTesting([&]() {
-                did_run = true;
-                EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
-                EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
-                EXPECT_EQ(task_runner(),
-                          SequencedTaskRunner::GetCurrentDefault());
-
-                EXPECT_TRUE(task_runner()->RunsTasksInCurrentSequence());
-                EXPECT_FALSE(task_runner()->BelongsToCurrentThread());
-                EXPECT_TRUE(other_task_runner()->RunsTasksInCurrentSequence());
-                EXPECT_FALSE(other_task_runner()->BelongsToCurrentThread());
-              }));
-          EXPECT_TRUE(did_run);
-        }
-
-        EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
-        EXPECT_EQ(other_thread_task_runner(),
-                  SingleThreadTaskRunner::GetCurrentDefault());
-        EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
-        EXPECT_EQ(other_thread_task_runner(),
-                  SequencedTaskRunner::GetCurrentDefault());
-      })));
-
-  FlushOtherThread();
 }
 
 TEST(

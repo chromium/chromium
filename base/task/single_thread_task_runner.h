@@ -17,10 +17,6 @@ namespace blink::scheduler {
 class MainThreadSchedulerImpl;
 }  // namespace blink::scheduler
 
-namespace base::sequence_manager::internal {
-class CurrentDefaultHandleOverrideForRunOrPostTask;
-}
-
 namespace base {
 
 class ScopedDisallowRunningRunLoop;
@@ -39,13 +35,8 @@ class ScopedDisallowRunningRunLoop;
 //     running other kinds of message loop, e.g. Jingle threads.
 class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
  public:
-  // Returns true if the `SingleThreadTaskRunner` runs tasks posted to it on the
-  // current thread.
-  //
-  // Identical to `RunsTaskInCurrentSequence()`, except from a `RunOrPostTask()`
-  // callback running synchronously (in that case, `BelongsToCurrentThread()`
-  // returns false and `RunsTaskInCurrentSequence()` returns true).
-  virtual bool BelongsToCurrentThread() const;
+  // A more explicit alias to RunsTasksInCurrentSequence().
+  bool BelongsToCurrentThread() const { return RunsTasksInCurrentSequence(); }
 
   // Returns the default SingleThreadTaskRunner for the current thread.
   // On threads that service multiple task queues, the default task queue is
@@ -95,8 +86,6 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     // avoid the friend requirement.
     friend class blink::scheduler::MainThreadSchedulerImpl;
     friend class CurrentHandleOverrideForTesting;
-    friend class sequence_manager::internal::
-        CurrentDefaultHandleOverrideForRunOrPostTask;
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
                              NestedRunLoopAllowedUnderHandleOverride);
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,

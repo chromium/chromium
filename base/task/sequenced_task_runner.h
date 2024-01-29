@@ -246,7 +246,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // appropriate to invoke this if `task` may take a long time to run.
   //
   // TODO(crbug.com/1503967): This API is still in development. It doesn't yet
-  // support SequenceLocalStorage.
+  // support SEQUENCE_CHECKER or SequenceLocalStorage.
   virtual bool RunOrPostTask(subtle::RunOrPostTaskPassKey,
                              const Location& from_here,
                              OnceClosure task);
