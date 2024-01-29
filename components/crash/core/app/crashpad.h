@@ -197,6 +197,21 @@ base::FilePath::StringType::const_pointer GetCrashpadDatabasePathImpl();
 // The implementation function for ClearReportsBetween.
 void ClearReportsBetweenImpl(time_t begin, time_t end);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Called late in shutdown to remove the file that tells ChromeOS's
+// crash_reporter "This browser process has crashpad initialized; you don't
+// need to handle the crash reports coming from the kernel".
+//
+// Since crash_reporter will do a lot of unnecessary work if there is a
+// crash after this file is removed, this function should be called as late
+// as possible in the shutdown process, ideally after any code that might crash
+// has executed.
+//
+// Only needed in the browser process; calls in other processes will be
+// ignored. Multiple calls will be ignored as well.
+void DeleteCrashpadIsReadyFile();
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Captures a minidump for the process named by its |task_port| and stores it
 // in the current crash report database.

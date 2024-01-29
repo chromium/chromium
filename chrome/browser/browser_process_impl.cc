@@ -233,6 +233,7 @@
 #include "chrome/browser/hid/hid_pinned_notification.h"
 #include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "chrome/browser/usb/usb_pinned_notification.h"
+#include "components/crash/core/app/crashpad.h"
 #elif !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_status_icon.h"
 #include "chrome/browser/screen_ai/screen_ai_downloader_non_chromeos.h"
@@ -696,6 +697,20 @@ void BrowserProcessImpl::EndSession() {
   // be terminated soon.
   // http://crbug.com/125207
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The browser is already shutting down, so the DeleteFile inside
+  // DeleteCrashpadIsReadyFile cannot causing UI jank. Also, this code
+  // cannot use other MayBlock threads, as the process will be disappearing
+  // momentarily.
+  {
+    base::ScopedAllowBlocking allow_delete;
+    // Crashes after this point will generate a bunch of unnecessary work
+    // in crash reporter, so call this function as late as possible, after
+    // approximately everything that can crash is complete.
+    crash_reporter::DeleteCrashpadIsReadyFile();
+  }
+#endif
 
   // We must write that the profile and metrics service shutdown cleanly,
   // otherwise on startup we'll think we crashed. So we block until done and

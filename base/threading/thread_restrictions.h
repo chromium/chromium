@@ -568,6 +568,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
   // in unit tests to avoid the friend requirement.
   // Sorted by class name (with namespace), #if blocks at the bottom.
+  friend class ::BrowserProcessImpl;
   friend class ::BrowserThemePack;  // http://crbug.com/80206
   friend class ::DesktopNotificationBalloon;
   friend class ::FirefoxProfileLock;
