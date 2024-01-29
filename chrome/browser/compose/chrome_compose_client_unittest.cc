@@ -1461,6 +1461,16 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       2,  // Expect that the dialog was shown twice.
       1);
 
+  // Check expected session duration metrics
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms().ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".Ignored"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
+
   // No FRE related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
 }
@@ -1483,6 +1493,16 @@ TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
 
   // No FRE related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+
+  // Check expected session duration metrics
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms().ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".MSBB"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".Inserted"), 0);
+  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -1553,6 +1573,16 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
       compose::kComposeFirstRunSessionDialogShownCount +
           std::string(".Ignored"),
       1, 1);
+
+  // Check expected session duration metrics
+  histograms().ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".FRE"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".Ignored"), 0);
+  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
 
   // Show the FRE dialog and end the session by re-opening with selection
   ShowDialogAndBindMojo();
@@ -1702,6 +1732,16 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
       compose::kComposeSessionDialogShownCount + std::string(".Accepted"),
       3,  // Expect that the dialog was shown twice.
       1);
+
+  // Check expected session duration metrics
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".FRE"), 0);
+  histograms().ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms().ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".Inserted"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
 }
 
 TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {

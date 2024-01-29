@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -195,6 +196,7 @@ ComposeSession::ComposeSession(
       model_quality_logs_uploader_(model_quality_logs_uploader),
       session_id_(session_id),
       weak_ptr_factory_(this) {
+  session_duration_ = std::make_unique<base::ElapsedTimer>();
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
   most_recent_ok_state_ = std::make_unique<ComposeState>();
@@ -212,6 +214,7 @@ ComposeSession::~ComposeSession() {
     compose::LogComposeFirstRunSessionDialogShownCount(
         fre_close_reason_, session_events_.fre_dialog_shown_count);
     if (!fre_complete_) {
+      compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".FRE");
       return;
     }
   }
@@ -221,6 +224,7 @@ ComposeSession::~ComposeSession() {
         msbb_close_reason_, session_events_.msbb_dialog_shown_count);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
+      compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".MSBB");
       return;
     }
   }
@@ -232,6 +236,13 @@ ComposeSession::~ComposeSession() {
     return;
   }
 
+  if (session_events_.inserted_results) {
+    compose::LogComposeSessionDuration(session_duration_->Elapsed(),
+                                       ".Inserted");
+  } else {
+    compose::LogComposeSessionDuration(session_duration_->Elapsed(),
+                                       ".Ignored");
+  }
   if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));

@@ -23,6 +23,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace base {
+class ElapsedTimer;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -259,6 +263,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   compose::ComposeSessionCloseReason close_reason_;
   // Reason that a compose session was exited, used for quality logging.
   optimization_guide::proto::FinalStatus final_status_;
+
+  // Tracks how long a session has been open.
+  std::unique_ptr<base::ElapsedTimer> session_duration_;
 
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.

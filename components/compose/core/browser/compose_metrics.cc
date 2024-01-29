@@ -28,6 +28,8 @@ const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
 const char kComposeSessionDialogShownCount[] =
     "Compose.Session.DialogShownCount";
 const char kComposeSessionEventCounts[] = "Compose.Session.EventCounts";
+const char kComposeSessionDuration[] = "Compose.Session.Duration";
+const char kComposeSessionOverOneDay[] = "Compose.Session.Duration.OverOneDay";
 const char kComposeSessionUndoCount[] = "Compose.Session.UndoCount";
 const char kComposeSessionUpdateInputCount[] =
     "Compose.Session.SubmitEditCount";
@@ -306,6 +308,18 @@ void LogComposeDialogSelectionLength(int length) {
   const int max_selection_size = 51200 / 2;
   base::UmaHistogramCustomCounts(kComposeDialogSelectionLength, length, 1,
                                  max_selection_size + 1, 100);
+}
+
+void LogComposeSessionDuration(base::TimeDelta session_duration,
+                               std::string session_suffix) {
+  base::UmaHistogramLongTimes100(kComposeSessionDuration + session_suffix,
+                                 session_duration);
+
+  if (session_duration.InDays() > 1) {
+    base::UmaHistogramBoolean(kComposeSessionOverOneDay, true);
+  } else {
+    base::UmaHistogramBoolean(kComposeSessionOverOneDay, false);
+  }
 }
 
 }  // namespace compose
