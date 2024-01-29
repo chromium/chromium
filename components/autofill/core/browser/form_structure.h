@@ -550,6 +550,9 @@ class FormStructure {
   // frame.
   FormRendererId unique_renderer_id_;
 
+  // A vector of all iframes in the form.
+  std::vector<FrameTokenWithPredecessor> child_frames_;
+
   // Single username details, if applicable.
   std::vector<AutofillUploadContents::SingleUsernameData> single_username_data_;
 

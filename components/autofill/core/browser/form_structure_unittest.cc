@@ -2288,6 +2288,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   form.name = u"the-name";
   form.url = GURL("http://cool.com");
   form.action = form.url.Resolve("/login");
+  form.child_frames = {FrameTokenWithPredecessor()};
 
   FormFieldData field;
   field.label = u"username";
@@ -2308,7 +2309,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  EXPECT_TRUE(form.SameFormAs(FormStructure(form).ToFormData()));
+  EXPECT_TRUE(FormData::DeepEqual(form, FormStructure(form).ToFormData()));
 }
 
 // Tests that an Autofill upload for password form with 1 field should not be

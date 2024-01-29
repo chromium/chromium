@@ -129,7 +129,8 @@ FormStructure::FormStructure(const FormData& form)
       form_parsed_timestamp_(base::TimeTicks::Now()),
       host_frame_(form.host_frame),
       version_(form.version),
-      unique_renderer_id_(form.unique_renderer_id) {
+      unique_renderer_id_(form.unique_renderer_id),
+      child_frames_(form.child_frames) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields) {
     if (!IsCheckable(field.check_status)) {
@@ -762,6 +763,7 @@ FormData FormStructure::ToFormData() const {
   data.unique_renderer_id = unique_renderer_id_;
   data.host_frame = host_frame_;
   data.version = version_;
+  data.child_frames = child_frames_;
 
   for (const auto& field : fields_) {
     data.fields.push_back(*field);
