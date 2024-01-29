@@ -93,6 +93,7 @@ public class PriceChangeModuleBuilderUnitTest {
     @SmallTest
     public void testBuildModule_NotEligible() {
         assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
+        assertFalse(mModuleBuilder.isEligible());
 
         assertFalse(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
@@ -104,6 +105,7 @@ public class PriceChangeModuleBuilderUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
+        assertTrue(mModuleBuilder.isEligible());
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, times(1)).onResult(any(ModuleProvider.class));
