@@ -234,7 +234,7 @@ void InstanceIDImpl::EnsureIDGenerated() {
   //    We don't want to be strictly cryptographically secure. The server might
   //    reject the ID if there is a conflict or problem.
   uint8_t bytes[kInstanceIDByteLength];
-  crypto::RandBytes(bytes, sizeof(bytes));
+  crypto::RandBytes(bytes);
 
   // 2) Transforms the first 4 bits to 0x7. Note that this is required by the
   //    server.

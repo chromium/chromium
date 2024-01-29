@@ -50,10 +50,9 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
   base::Time created_time = base::Time::Now();
   std::string client_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string shared_secret;
-  char buffer[kKeySize];
-  crypto::RandBytes(buffer, std::size(buffer));
-  shared_secret =
-      base::Base64Encode(std::string_view(buffer, std::size(buffer)));
+  uint8_t buffer[kKeySize];
+  crypto::RandBytes(buffer);
+  shared_secret = base::Base64Encode(buffer);
   return Pairing(created_time, client_name, client_id, shared_secret);
 }
 

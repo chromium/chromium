@@ -168,9 +168,7 @@ std::vector<uint8_t> GenerateRandomCredentialId() {
   // The length of CredentialMetadata::Version::kV3 credentials. Older
   // credentials use the sealed metadata as the ID, which varies in size.
   constexpr size_t kCredentialIdLength = 32;
-  std::vector<uint8_t> id(kCredentialIdLength);
-  crypto::RandBytes(id);
-  return id;
+  return crypto::RandBytesAsVector(kCredentialIdLength);
 }
 
 }  // namespace

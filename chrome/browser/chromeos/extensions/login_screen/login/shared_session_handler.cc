@@ -334,9 +334,7 @@ void SharedSessionHandler::OnCleanupDone(
 }
 
 std::string SharedSessionHandler::GenerateRandomString(size_t size) {
-  char random_bytes[size];
-  crypto::RandBytes(random_bytes, size);
-  return base::HexEncode(random_bytes, size);
+  return base::HexEncode(crypto::RandBytesAsVector(size));
 }
 
 }  // namespace chromeos
