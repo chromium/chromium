@@ -961,7 +961,7 @@ ci.builder(
     ),
     builderless = False,
     cores = 12,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_BETA,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "beta",

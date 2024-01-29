@@ -84,7 +84,7 @@ try_.builder(
     ],
     gn_args = "ci/mac-osxbeta-rel",
     builderless = False,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_BETA,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
