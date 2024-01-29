@@ -110,6 +110,14 @@ size_t OriginValueMap::size() const {
   return size;
 }
 
+std::vector<ContentSettingsType> OriginValueMap::types() const {
+  std::vector<ContentSettingsType> result(entries_.size());
+  for (auto& entry : entries_) {
+    result.push_back(entry.first);
+  }
+  return result;
+}
+
 OriginValueMap::OriginValueMap() = default;
 
 OriginValueMap::~OriginValueMap() = default;

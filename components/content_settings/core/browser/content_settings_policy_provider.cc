@@ -199,26 +199,23 @@ constexpr const char* kManagedDefaultPrefs[] = {
 
 void ReportCookiesAllowedForUrlsUsage(
     content_settings::OriginValueMap& value_map) {
-  base::AutoLock lock(value_map.GetLock());
-
   bool has_pattern_with_wildcard_primary = false;
   bool has_pattern_with_wildcard_secondary = false;
   bool has_pattern_with_no_wildcard = false;
 
-  auto it = value_map.find(ContentSettingsType::COOKIES);
-  if (it == value_map.end()) {
+  auto it = value_map.GetRuleIterator(ContentSettingsType::COOKIES);
+  if (!it) {
     return;
   }
-  for (const auto& jt : it->second) {
-    if (static_cast<ContentSetting>(jt.second.value.GetIfInt().value()) !=
+  while (it->HasNext()) {
+    auto rule = it->Next();
+    if (static_cast<ContentSetting>(rule->value.GetIfInt().value()) !=
         CONTENT_SETTING_ALLOW) {
       continue;
     }
-    const auto& pattern_pair = jt.first;
-    if (pattern_pair.primary_pattern == ContentSettingsPattern::Wildcard()) {
+    if (rule->primary_pattern == ContentSettingsPattern::Wildcard()) {
       has_pattern_with_wildcard_primary = true;
-    } else if (pattern_pair.secondary_pattern ==
-               ContentSettingsPattern::Wildcard()) {
+    } else if (rule->secondary_pattern == ContentSettingsPattern::Wildcard()) {
       has_pattern_with_wildcard_secondary = true;
     } else {
       has_pattern_with_no_wildcard = true;

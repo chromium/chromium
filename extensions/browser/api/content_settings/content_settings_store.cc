@@ -301,9 +301,6 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     DCHECK(map);
 
     base::AutoLock map_lock(map->GetLock());
-    if (map->find(content_type) == map->end())
-      return;
-
     map->DeleteValues(content_type);
   }
   NotifyOfContentSettingChanged(ext_id, scope != ChromeSettingScope::kRegular);
@@ -321,12 +318,7 @@ base::Value::List ContentSettingsStore::GetSettingsForExtension(
     // Grab the set of keys first as OriginValueMap::GetRuleIterator
     // requires that the lock isn't already held.
     base::AutoLock map_lock(map->GetLock());
-    // Range-based for loops break locking annotations.
-    // https://github.com/llvm/llvm-project/issues/62497
-    // NOLINTNEXTLINE(modernize-loop-convert)
-    for (auto it = map->begin(); it != map->end(); it++) {
-      keys.push_back(it->first);
-    }
+    keys = map->types();
   }
   base::Value::List settings;
   for (ContentSettingsType key : keys) {

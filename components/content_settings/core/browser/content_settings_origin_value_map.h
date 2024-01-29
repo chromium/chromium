@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 
 class GURL;
 
@@ -40,34 +41,14 @@ namespace content_settings {
 // Iterator itself will hold the lock until it's destroyed.
 class OriginValueMap {
  public:
-  typedef std::map<ContentSettingsType, Rules> EntryMap;
-
   base::Lock& GetLock() const LOCK_RETURNED(lock_) { return lock_; }
-
-  EntryMap::iterator begin() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return entries_.begin();
-  }
-
-  EntryMap::iterator end() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return entries_.end();
-  }
-
-  EntryMap::const_iterator begin() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return entries_.begin();
-  }
-
-  EntryMap::const_iterator end() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return entries_.end();
-  }
-
-  EntryMap::iterator find(ContentSettingsType content_type)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return entries_.find(content_type);
-  }
 
   bool empty() const EXCLUSIVE_LOCKS_REQUIRED(lock_) { return size() == 0u; }
 
   size_t size() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  std::vector<ContentSettingsType> types() const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns an iterator for reading the rules for |content_type|. It is not
   // allowed to call functions of |OriginValueMap| (also
@@ -128,6 +109,8 @@ class OriginValueMap {
   void clear() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
  private:
+  typedef std::map<ContentSettingsType, Rules> EntryMap;
+
   mutable bool iterating_ = false;
   mutable base::Lock lock_;
   EntryMap entries_ GUARDED_BY(lock_);
