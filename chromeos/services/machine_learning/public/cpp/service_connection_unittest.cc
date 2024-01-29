@@ -18,6 +18,7 @@
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/heatmap_palm_rejection.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
@@ -190,6 +191,39 @@ TEST_F(ServiceConnectionTest, LoadImageAnnotator) {
       .LoadImageAnnotator(std::move(config),
                           image_content_annotator.BindNewPipeAndPassReceiver(),
                           base::BindOnce([](mojom::LoadModelResult result) {}));
+}
+
+class TestHeatmapClient : public mojom::HeatmapPalmRejectionClient {
+  void OnHeatmapProcessedEvent(mojom::HeatmapProcessedEventPtr event) override {
+  }
+};
+
+// Tests that LoadHeatmapPalmRejection runs OK (no crash) in a basic Mojo
+// environment.
+TEST_F(ServiceConnectionTest, LoadHeatmapPalmRejection) {
+  TestHeatmapClient test_client;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  mojo::Receiver<mojom::HeatmapPalmRejectionClient> heatmap_client{
+      &test_client};
+  bool callback_done = false;
+  auto config = mojom::HeatmapPalmRejectionConfig::New();
+  base::RunLoop run_loop;
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadHeatmapPalmRejection(
+          std::move(config), heatmap_client.BindNewPipeAndPassRemote(),
+          base::BindLambdaForTesting(
+              [&](mojom::LoadHeatmapPalmRejectionResult result) {
+                callback_done = true;
+                EXPECT_EQ(result, mojom::LoadHeatmapPalmRejectionResult::OK);
+                run_loop.Quit();
+              }));
+  run_loop.Run();
+  ASSERT_TRUE(callback_done);
 }
 
 // Tests the fake ML service for binding ml_service receiver.
