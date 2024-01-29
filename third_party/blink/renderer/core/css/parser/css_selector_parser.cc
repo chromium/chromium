@@ -1901,10 +1901,6 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
 // Returns nullptr on failure.
 CSSSelectorList* CSSSelectorParser::ConsumeNthChildOfSelectors(
     CSSParserTokenRange& range) {
-  if (!RuntimeEnabledFeatures::CSSSelectorNthChildComplexSelectorEnabled()) {
-    return nullptr;
-  }
-
   if (range.Peek().GetType() != kIdentToken ||
       range.Consume().Value() != "of") {
     return nullptr;
