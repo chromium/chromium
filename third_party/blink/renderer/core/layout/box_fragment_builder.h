@@ -552,10 +552,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     break_token_data_ = break_token_data;
   }
 
-  // Returns offset for given child. DCHECK if child not found.
-  // Warning: Do not call unless necessary.
-  LogicalOffset GetChildOffset(const LayoutObject* child) const;
-
 #if DCHECK_IS_ON()
   // If we don't participate in a fragmentation context, this method can check
   // that all block fragmentation related fields have their initial value.

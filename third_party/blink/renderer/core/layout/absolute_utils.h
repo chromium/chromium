@@ -16,7 +16,6 @@
 namespace blink {
 
 class BlockNode;
-class BoxFragmentBuilder;
 class ConstraintSpace;
 class LayoutResult;
 struct LogicalStaticPosition;
@@ -190,11 +189,6 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
-
-CORE_EXPORT void AdjustOffsetForSplitInline(
-    const BlockNode& node,
-    const BoxFragmentBuilder* container_builder,
-    LogicalOffset& offset);
 
 }  // namespace blink
 

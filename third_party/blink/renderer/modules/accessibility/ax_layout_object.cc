@@ -293,15 +293,6 @@ Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
     return list_marker->ListItem(*layout_object_)->GetNode();
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
-      layout_object_->IsAnonymous()) {
-    if (LayoutBlock* layout_block =
-            LayoutObject::FindNonAnonymousContainingBlock(layout_object_)) {
-      return layout_block->GetNode();
-    }
-    return nullptr;
-  }
-
   return GetNode();
 }
 

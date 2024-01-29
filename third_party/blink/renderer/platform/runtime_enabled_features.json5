@@ -2206,10 +2206,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutNewContainingBlock",
-      status: "stable",
-    },
-    {
       name: "LayoutNewMeasureCache",
       depends_on: ["LayoutNewMinMaxCache"],
       status: "stable",

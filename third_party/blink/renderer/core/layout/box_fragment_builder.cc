@@ -577,42 +577,6 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
       LayoutResult::BoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
-LogicalOffset BoxFragmentBuilder::GetChildOffset(
-    const LayoutObject* object) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
-  DCHECK(object);
-
-  if (const FragmentItemsBuilder* items_builder = items_builder_) {
-    if (auto offset = items_builder->LogicalOffsetFor(*object))
-      return *offset;
-    // Out-of-flow objects may be in |FragmentItems| or in |children_|.
-  }
-
-  for (const auto& child : children_) {
-    if (child.fragment->GetLayoutObject() == object)
-      return child.offset;
-
-    // TODO(layout-dev): ikilpatrick thinks we may need to traverse
-    // further than the initial line-box children for a nested inline
-    // container. We could not come up with a testcase, it would be
-    // something with split inlines, and nested oof/fixed descendants maybe.
-    if (child.fragment->IsLineBox()) {
-      const auto& line_box_fragment =
-          To<PhysicalLineBoxFragment>(*child.fragment);
-      for (const auto& line_box_child : line_box_fragment.Children()) {
-        if (line_box_child->GetLayoutObject() == object) {
-          return child.offset + line_box_child.Offset().ConvertToLogical(
-                                    GetWritingDirection(),
-                                    line_box_fragment.Size(),
-                                    line_box_child->Size());
-        }
-      }
-    }
-  }
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
-  return LogicalOffset();
-}
-
 void BoxFragmentBuilder::AdjustFragmentainerDescendant(
     LogicalOofNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {

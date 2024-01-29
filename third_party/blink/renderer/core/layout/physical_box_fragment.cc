@@ -1113,17 +1113,6 @@ void PhysicalBoxFragment::AddOutlineRectsForInlineBox(
 
   if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
-    if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
-        container->IsAnonymousBlock()) {
-      const auto* container_box = DynamicTo<LayoutBox>(
-          container->GetLayoutObject()->NonAnonymousAncestor());
-      if (!container_box)
-        return;
-      // TODO(crbug.com/1380673): Just picking the first fragment isn't right.
-      container = container_box->GetPhysicalFragment(0);
-      DCHECK(container);
-    }
-
     for (const auto& child : container->PostLayoutChildren()) {
       if (!child->IsOutOfFlowPositioned() ||
           child->GetLayoutObject()->ContainerForAbsolutePosition() !=

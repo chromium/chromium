@@ -121,9 +121,6 @@ class CORE_EXPORT FragmentItemsBuilder {
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
   using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
-  // Find |LogicalOffset| of the first |FragmentItem| for |LayoutObject|.
-  absl::optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
-
   // Moves all the |FragmentItem|s by |offset| in the block-direction.
   void MoveChildrenInBlockDirection(LayoutUnit offset);
 

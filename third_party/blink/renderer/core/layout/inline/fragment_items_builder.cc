@@ -398,15 +398,6 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   is_converted_to_physical_ = true;
 }
 
-absl::optional<LogicalOffset> FragmentItemsBuilder::LogicalOffsetFor(
-    const LayoutObject& layout_object) const {
-  for (const ItemWithOffset& item : items_) {
-    if (item->GetLayoutObject() == &layout_object)
-      return item.offset;
-  }
-  return absl::nullopt;
-}
-
 void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(!is_converted_to_physical_);
   for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {

@@ -2252,18 +2252,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       insets_to_store.ConvertToPhysical(candidate_writing_direction)
           .ConvertToLogical(node_info.default_writing_direction);
 
-  if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
-      !container_builder_->IsBlockFragmentationContextRoot()) {
-    // OOFs contained by an inline that's been split into continuations are
-    // special, as their offset is relative to a fragment that's not the same as
-    // their containing NG fragment; take a look inside
-    // AdjustOffsetForSplitInline() for further details. This doesn't apply if
-    // block fragmentation is involved, though, since all OOFs are then child
-    // fragments of the nearest fragmentainer.
-    AdjustOffsetForSplitInline(node_info.node, container_builder_,
-                               offset_info.offset);
-  }
-
   if (try_fit_available_space) {
     out_non_overflowing_range->containing_block_range =
         LogicalScrollRange{inline_scroll_min, inline_scroll_max,
