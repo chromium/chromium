@@ -192,9 +192,6 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Release"],
         "steps": {
-            "chrome_wpt_tests (with patch)": {
-                "product": "chrome"
-            },
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {},
             "high_dpi_blink_web_tests (with patch)": {
