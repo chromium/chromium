@@ -21,8 +21,9 @@ import './sea_pen_feedback_element.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {Query} from './constants.js';
-import {MantaStatusCode, SeaPenTemplateId, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
+import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';

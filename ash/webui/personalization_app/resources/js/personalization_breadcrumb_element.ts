@@ -21,7 +21,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
-import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';

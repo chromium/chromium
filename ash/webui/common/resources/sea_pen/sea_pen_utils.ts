@@ -6,7 +6,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen.mojom-webui.js';
+import {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
 export function isImageDataUrl(maybeDataUrl: unknown): maybeDataUrl is Url {

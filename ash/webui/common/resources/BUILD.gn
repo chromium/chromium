@@ -194,6 +194,7 @@ mojo_files_ts = [
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
   "sea_pen/sea_pen.mojom-webui.ts",
+  "sea_pen/sea_pen_generated.mojom-webui.ts",
   "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
   "shortcut_input_ui/accelerator_keys.mojom-webui.ts",
   "shortcut_input_ui/input_device_settings.mojom-webui.ts",

@@ -16,8 +16,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {SeaPenTemplateId} from './sea_pen.mojom-webui.js';
 import {acceptSeaPenTermsOfService, getShouldShowSeaPenTermsOfServiceDialog} from './sea_pen_controller.js';
+import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';

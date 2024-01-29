@@ -9,6 +9,9 @@ assert(is_chromeos_ash, "SeaPen is for Chrome OS only.")
 # Stage sea_pen.mojom-webui.ts so that it can be hosted at chrome://resources/ash/.
 copy("copy_mojo_files") {
   deps = [ "//ash/webui/common/mojom:sea_pen_ts__generator" ]
-  sources = [ "$root_gen_dir/ash/webui/common/mojom/sea_pen.mojom-webui.ts" ]
+  sources = [
+    "$root_gen_dir/ash/webui/common/mojom/sea_pen.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/common/mojom/sea_pen_generated.mojom-webui.ts",
+  ]
   outputs = [ "$root_gen_dir/ash/webui/common/resources/preprocessed/sea_pen/{{source_file_part}}" ]
 }

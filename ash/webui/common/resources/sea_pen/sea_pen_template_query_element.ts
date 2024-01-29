@@ -17,8 +17,9 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
+import {SeaPenQuery, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';

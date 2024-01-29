@@ -37,7 +37,10 @@ mojom("shortcut_input_provider") {
 mojom("sea_pen") {
   disable_variants = true
   webui_module_path = "/"
-  sources = [ "sea_pen.mojom" ]
+  sources = [
+    "sea_pen.mojom",
+    "sea_pen_generated.mojom",
+  ]
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
