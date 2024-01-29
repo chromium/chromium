@@ -213,13 +213,6 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(
     PriceTrackingIconViewInteractiveTest,
     PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
-#if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble));
   bookmarks::BookmarkModel* bookmark_model =

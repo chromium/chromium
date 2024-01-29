@@ -888,9 +888,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
   auto pin_icon = gfx::Image(gfx::CreateVectorIcon(
       views::kPinIcon,
       color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
-  auto three_dot_icon = gfx::Image(
-      gfx::CreateVectorIcon(kBrowserToolsChromeRefreshIcon,
-                            color_provider->GetColor(kColorExtensionMenuIcon)));
+  auto three_dot_icon = gfx::Image(gfx::CreateVectorIcon(
+      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon)));
 
   // Verify context menu button has three dot icon for all button states.
   EXPECT_TRUE(gfx::test::AreImagesEqual(

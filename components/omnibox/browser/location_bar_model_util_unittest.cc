@@ -17,7 +17,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithNoneLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, omnibox::kHttpChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, omnibox::kHttpIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
@@ -26,7 +26,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, omnibox::kSecurePageInfoChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kHttpsValidIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
@@ -36,7 +36,7 @@ TEST(LocationBarModelUtilTest,
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, vector_icons::kBusinessChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kBusinessIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
@@ -48,7 +48,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
-  EXPECT_EQ(icon.name, vector_icons::kDangerousChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kDangerousIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
@@ -58,7 +58,7 @@ TEST(LocationBarModelUtilTest,
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_BILLING);
-  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
@@ -67,5 +67,5 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
-  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningIcon.name);
 }
