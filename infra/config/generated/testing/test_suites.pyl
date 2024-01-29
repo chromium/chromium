@@ -4751,25 +4751,11 @@
       },
     },
 
-    'optimization_guide_desktop_gtests': {
-      'chrome_ml_unittests': {},
-      'optimization_guide_browser_tests': {
-        'test': 'browser_tests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
-        ],
-      },
-      'optimization_guide_components_unittests': {
-        'test': 'components_unittests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-        ],
-      },
+    'optimization_guide_gpu_gtests': {
       'optimization_guide_gpu_unittests': {},
-      'optimization_guide_unittests': {},
     },
 
-    'optimization_guide_desktop_gtests_nogpu': {
+    'optimization_guide_nogpu_gtests': {
       'chrome_ml_unittests': {},
       'optimization_guide_browser_tests': {
         'test': 'browser_tests',
@@ -7893,6 +7879,29 @@
           'MODEL_VALIDATION_TRUNK',
         ],
       },
+    },
+
+    'optimization_guide_linux_gtests': {
+      'optimization_guide_gpu_gtests': {
+        'variants': [
+          'INTEL_UHD_630',
+        ],
+      },
+      'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_mac_gtests': {
+      'optimization_guide_gpu_gtests': {},
+      'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_win_gtests': {
+      'optimization_guide_gpu_gtests': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+        ],
+      },
+      'optimization_guide_nogpu_gtests': {},
     },
 
     'webview_trichrome_10_cts_tests_gtest': {

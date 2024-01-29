@@ -5,6 +5,12 @@
 # 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
+  'AMD_RADEON_RX_5500_XT': {
+    'identifier': 'AMD Radeon RX 5500 XT',
+    'mixins': [
+      'amd_radeon_rx_5500_xt',
+    ],
+  },
   'CROS_BRYA_RELEASE_ASH_LKGM': {
     'identifier': 'BRYA_RELEASE_LKGM',
     'skylab': {
@@ -274,6 +280,12 @@
     'args': [
       '--webview-command-line-arg=--disable-field-trial-config',
       '--webview-command-line-arg=--webview-verbose-logging',
+    ],
+  },
+  'INTEL_UHD_630': {
+    'identifier': 'Intel UHD 630',
+    'mixins': [
+      'intel_uhd_630',
     ],
   },
   'IPHONE_7_15_4_1': {

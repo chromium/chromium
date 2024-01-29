@@ -5,6 +5,14 @@
 load("//lib/targets.star", "targets")
 
 targets.variant(
+    name = "AMD_RADEON_RX_5500_XT",
+    identifier = "AMD Radeon RX 5500 XT",
+    mixins = [
+        "amd_radeon_rx_5500_xt",
+    ],
+)
+
+targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
     args = [
@@ -67,6 +75,14 @@ targets.variant(
         "--webview-command-line-arg=--webview-verbose-logging",
         "--webview-command-line-arg=--disable-field-trial-config",
         "--webview-command-line-arg=--fake-variations-channel=stable",
+    ],
+)
+
+targets.variant(
+    name = "INTEL_UHD_630",
+    identifier = "Intel UHD 630",
+    mixins = [
+        "intel_uhd_630",
     ],
 )
 

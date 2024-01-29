@@ -170,6 +170,13 @@
       ],
     },
   },
+  'amd_radeon_rx_5500_xt': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7340',
+      },
+    },
+  },
   'android': {
     'swarming': {
       'dimensions': {
@@ -513,6 +520,13 @@
     'swarming': {
       'dimensions': {
         'integrity': 'high',
+      },
+    },
+  },
+  'intel_uhd_630': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:9bc5',
       },
     },
   },

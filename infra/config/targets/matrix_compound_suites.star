@@ -1355,6 +1355,42 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_linux_gtests",
+    basic_suites = {
+        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
+            # TODO(b:322815244): Add AMD and NVIDIA variants once driver issues
+            # are resolved.
+            variants = [
+                "INTEL_UHD_630",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_mac_gtests",
+    basic_suites = {
+        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_gpu_gtests": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_win_gtests",
+    basic_suites = {
+        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
+            # TODO(b:321865883): Add Intel and NVIDIA variants once deployment
+            # is complete and stable.
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "webview_trichrome_10_cts_tests_gtest",
     basic_suites = {
         "webview_trichrome_cts_tests": targets.legacy_matrix_config(

@@ -4403,23 +4403,19 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "optimization_guide_desktop_gtests",
+    name = "optimization_guide_nogpu_gtests",
     tests = {
         "chrome_ml_unittests": targets.legacy_test_config(),
         "optimization_guide_browser_tests": targets.legacy_test_config(),
         "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
         "optimization_guide_unittests": targets.legacy_test_config(),
     },
 )
 
 targets.legacy_basic_suite(
-    name = "optimization_guide_desktop_gtests_nogpu",
+    name = "optimization_guide_gpu_gtests",
     tests = {
-        "chrome_ml_unittests": targets.legacy_test_config(),
-        "optimization_guide_browser_tests": targets.legacy_test_config(),
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_unittests": targets.legacy_test_config(),
+        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
     },
 )
 

@@ -6697,7 +6697,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_nogpu_gtests',
         },
         'os_type': 'cros',
       },
@@ -6711,8 +6711,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_linux_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'linux',
@@ -6727,7 +6726,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests',
+           'gtest_tests': 'optimization_guide_mac_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6742,7 +6741,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_desktop_gtests',
+           'gtest_tests': 'optimization_guide_mac_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6757,8 +6756,7 @@
           'win10',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_win_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'win',
@@ -6774,8 +6772,7 @@
           'win10',
         ],
         'test_suites': {
-           # TODO(b/317243012): Add GPU suite when machines become available.
-           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
+           'gtest_tests': 'optimization_guide_win_gtests',
            'isolated_scripts': 'model_validation_tests_full',
 
         },

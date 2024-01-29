@@ -197,6 +197,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "amd_radeon_rx_5500_xt",
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "1002:7340",
+        },
+    ),
+)
+
+targets.mixin(
     name = "android",
     swarming = targets.swarming(
         dimensions = {
@@ -632,6 +641,15 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "integrity": "high",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "intel_uhd_630",
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "8086:9bc5",
         },
     ),
 )
