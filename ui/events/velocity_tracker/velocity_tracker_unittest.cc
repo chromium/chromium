@@ -8,8 +8,10 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/events/velocity_tracker/velocity_tracker_state.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -258,6 +260,24 @@ TEST_F(VelocityTrackerTest, NoDirectionReversal) {
   // Y velocity is negative, despite the fact that the finger only moved in the
   // positive y direction.
   EXPECT_GT(0, state_unrestricted.GetYVelocity(0));
+}
+
+class MockEvent : public MockMotionEvent {
+ public:
+  MockEvent(Action action, base::TimeTicks time, float x, float y)
+      : MockMotionEvent(action, time, x, y) {}
+
+  MOCK_METHOD(base::TimeTicks, GetLatestEventTime, (), (const, override));
+};
+
+TEST_F(VelocityTrackerTest, UsesLatestEventTime) {
+  VelocityTrackerState state(VelocityTracker::LSQ2);
+
+  MockEvent m1(MotionEvent::Action::MOVE, base::TimeTicks::Now(),
+               /* x= */ 0, /* y= */ 0);
+  EXPECT_CALL(m1, GetLatestEventTime()).Times(1);
+
+  state.AddMovement(m1);
 }
 
 }  // namespace ui

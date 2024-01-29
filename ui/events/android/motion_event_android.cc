@@ -237,7 +237,8 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                                        jfloat ticks_x,
                                        jfloat ticks_y,
                                        jfloat tick_multiplier,
-                                       base::TimeTicks time,
+                                       base::TimeTicks oldest_event_time,
+                                       base::TimeTicks latest_event_time,
                                        jint android_action,
                                        jint pointer_count,
                                        jint history_size,
@@ -255,9 +256,11 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
       ticks_x_(ticks_x),
       ticks_y_(ticks_y),
       tick_multiplier_(tick_multiplier),
-      time_sec_(time.ToUptimeMillis() / base::Time::kMillisecondsPerSecond),
+      time_sec_(oldest_event_time.ToUptimeMillis() /
+                base::Time::kMillisecondsPerSecond),
       for_touch_handle_(for_touch_handle),
-      cached_time_(FromAndroidTime(time)),
+      cached_oldest_event_time_(FromAndroidTime(oldest_event_time)),
+      cached_latest_event_time_(FromAndroidTime(latest_event_time)),
       cached_action_(FromAndroidAction(android_action)),
       cached_pointer_count_(pointer_count),
       cached_history_size_(ToValidHistorySize(history_size, cached_action_)),
@@ -281,6 +284,50 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
     cached_pointers_[1] = FromAndroidPointer(*pointer1);
 }
 
+MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
+                                       jobject event,
+                                       jfloat pix_to_dip,
+                                       jfloat ticks_x,
+                                       jfloat ticks_y,
+                                       jfloat tick_multiplier,
+                                       base::TimeTicks oldest_event_time,
+                                       jint android_action,
+                                       jint pointer_count,
+                                       jint history_size,
+                                       jint action_index,
+                                       jint android_action_button,
+                                       jint android_gesture_classification,
+                                       jint android_button_state,
+                                       jint android_meta_state,
+                                       jfloat raw_offset_x_pixels,
+                                       jfloat raw_offset_y_pixels,
+                                       jboolean for_touch_handle,
+                                       const Pointer* const pointer0,
+                                       const Pointer* const pointer1)
+    : MotionEventAndroid(env,
+                         event,
+                         pix_to_dip,
+                         ticks_x,
+                         ticks_y,
+                         tick_multiplier,
+                         oldest_event_time,
+                         oldest_event_time,
+                         android_action,
+                         pointer_count,
+                         history_size,
+                         action_index,
+                         android_action_button,
+                         android_gesture_classification,
+                         android_button_state,
+                         android_meta_state,
+                         raw_offset_x_pixels,
+                         raw_offset_y_pixels,
+                         for_touch_handle,
+                         pointer0,
+                         pointer1) {
+  DCHECK_EQ(history_size, 0);
+}
+
 MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e)
     : event_(e.event_),
       pix_to_dip_(e.pix_to_dip_),
@@ -289,7 +336,8 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e)
       tick_multiplier_(e.tick_multiplier_),
       time_sec_(e.time_sec_),
       for_touch_handle_(e.for_touch_handle_),
-      cached_time_(e.cached_time_),
+      cached_oldest_event_time_(e.cached_oldest_event_time_),
+      cached_latest_event_time_(e.cached_latest_event_time_),
       cached_action_(e.cached_action_),
       cached_pointer_count_(e.cached_pointer_count_),
       cached_history_size_(e.cached_history_size_),
@@ -498,7 +546,11 @@ float MotionEventAndroid::GetTangentialPressure(size_t pointer_index) const {
 }
 
 base::TimeTicks MotionEventAndroid::GetEventTime() const {
-  return cached_time_;
+  return cached_oldest_event_time_;
+}
+
+base::TimeTicks MotionEventAndroid::GetLatestEventTime() const {
+  return cached_latest_event_time_;
 }
 
 size_t MotionEventAndroid::GetHistorySize() const {

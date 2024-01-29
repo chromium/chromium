@@ -92,13 +92,20 @@ public class EventForwarderTest {
     public void testMotionEventWithHistory() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false);
         final long eventTime = 200;
+        final long latestEventTime = 400;
         MotionEvent dragEvent =
-                MotionEvent.obtain(100, eventTime, MotionEvent.ACTION_MOVE, 14, 21, 0);
+                MotionEvent.obtain(
+                        /* downTime= */ 100,
+                        eventTime,
+                        MotionEvent.ACTION_MOVE,
+                        /* x= */ 14,
+                        /* y= */ 21,
+                        /* metaState= */ 0);
         var pointerCoords = new PointerCoords();
         pointerCoords.x = 16;
         pointerCoords.y = 23;
         PointerCoords[] newMovements = {pointerCoords};
-        dragEvent.addBatch(/* eventTime= */ 200, newMovements, /* metaState= */ 0);
+        dragEvent.addBatch(latestEventTime, newMovements, /* metaState= */ 0);
         eventForwarder.onTouchEvent(dragEvent);
 
         // Check that the timestamp is forwarded from the first event in the batch (dragEvent) while
@@ -109,6 +116,7 @@ public class EventForwarderTest {
                         eventForwarder,
                         dragEvent,
                         eventTime * 1000_000,
+                        latestEventTime * 1000_000,
                         dragEvent.getActionMasked(),
                         1,
                         /* historySize= */ 1,
@@ -147,6 +155,7 @@ public class EventForwarderTest {
                         anyLong(),
                         any(EventForwarder.class),
                         any(MotionEvent.class),
+                        anyLong(),
                         anyLong(),
                         anyInt(),
                         anyInt(),

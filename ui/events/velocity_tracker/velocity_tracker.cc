@@ -370,7 +370,7 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
     positions[index].x = event.GetX(i);
     positions[index].y = event.GetY(i);
   }
-  AddMovement(event.GetEventTime(), id_bits, positions);
+  AddMovement(event.GetLatestEventTime(), id_bits, positions);
 }
 
 bool VelocityTracker::GetVelocity(uint32_t id,
