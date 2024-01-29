@@ -974,9 +974,9 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
 void SVGElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == html_names::kClassAttr) {
-    ClassAttributeChanged(AtomicString(class_name_->CurrentValue()->Value()));
+    ClassAttributeChanged(AtomicString(class_name_->CurrentValue()->Value()),
+                          params.reason);
     InvalidateInstances();
-    return;
   }
 }
 

@@ -153,6 +153,10 @@ void SpaceSplitString::ReplaceAt(wtf_size_t index, const AtomicString& token) {
   (*data_)[index] = token;
 }
 
+bool SpaceSplitString::MatchesSingleString(const AtomicString& value) const {
+  return data_ && data_->key_string() == value;
+}
+
 AtomicString SpaceSplitString::SerializeToString() const {
   wtf_size_t size = this->size();
   if (size == 0)
@@ -173,12 +177,27 @@ SpaceSplitString::DataMap& SpaceSplitString::SharedDataMap() {
   return *map;
 }
 
+// static
+bool SpaceSplitString::IsCached(const AtomicString& string) {
+  return SharedDataMap().Contains(string.Impl());
+}
+
 void SpaceSplitString::Set(const AtomicString& input_string) {
   if (input_string.IsNull()) {
     Clear();
     return;
   }
   data_ = Data::Create(input_string);
+}
+
+bool SpaceSplitString::SetFromCachedString(const AtomicString& string) {
+  DCHECK(!string.empty());
+  auto iter = SharedDataMap().find(string.Impl());
+  if (iter == SharedDataMap().end()) {
+    return false;
+  }
+  data_ = iter->value;
+  return true;
 }
 
 SpaceSplitString::Data::~Data() {
@@ -210,7 +229,6 @@ SpaceSplitString::Data::Data(const AtomicString& string) : key_string_(string) {
 SpaceSplitString::Data::Data(const SpaceSplitString::Data& other)
     : RefCounted<Data>(), vector_(other.vector_) {
   // Note that we don't copy key_string_ to indicate to the destructor that
-  // there's nothing to be removed from the SharedDataMap().
 }
 
 std::ostream& operator<<(std::ostream& ostream, const SpaceSplitString& str) {
