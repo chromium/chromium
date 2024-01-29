@@ -337,6 +337,10 @@ impl core::str::FromStr for AuthLevel {
 enum Authentication {
     None,
     // Contains the device ID and authentication level.
+    //
+    // This `dead_code` annotation exists because `AuthLevel` is not currently
+    // used, but it will be.
+    #[allow(dead_code)]
     Device(Vec<u8>, AuthLevel),
     // Requests processed after a registration will observe this special
     // authentication level. Duplicate registrations are silently accepted so
