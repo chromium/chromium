@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -94,10 +95,9 @@ const RuleEntry* FindInHostToContentSettings(
         }
       }
     } else {
-      size_t cur_pos = 0;
-      while (cur_pos != std::string::npos) {
-        auto it = indexed_content_setting.get().find(
-            host.substr(cur_pos, std::string::npos));
+      std::string_view subdomain(host);
+      while (!subdomain.empty()) {
+        auto it = indexed_content_setting.get().find(subdomain);
         if (it != indexed_content_setting.get().end()) {
           auto* result =
               FindContentSetting(primary_url, secondary_url, it->second);
@@ -105,8 +105,9 @@ const RuleEntry* FindInHostToContentSettings(
             return result;
           }
         }
-        size_t found = host.find(".", cur_pos);
-        cur_pos = found != std::string::npos ? found + 1 : std::string::npos;
+        size_t found = subdomain.find(".");
+        subdomain = found != std::string::npos ? subdomain.substr(found + 1)
+                                               : std::string_view();
       }
     }
   }

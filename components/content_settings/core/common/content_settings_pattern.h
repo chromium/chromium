@@ -207,6 +207,7 @@ class ContentSettingsPattern {
   // Expose an comparator to sort domains by precedence. Highest precedence
   // first.
   struct CompareDomains {
+    using is_transparent = void;
     bool operator()(const std::string_view& domain_a,
                     const std::string_view& domain_b) const;
   };
