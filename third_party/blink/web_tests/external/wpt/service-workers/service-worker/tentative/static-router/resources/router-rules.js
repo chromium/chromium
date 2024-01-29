@@ -30,9 +30,18 @@ const routerRules = {
       [{condition: {requestMode: 'no-cors'}, source: 'network'}],
   'condition-request-navigate-source-cache':
       [{condition: {requestMode: 'navigate'}, source: 'cache'}],
-  'condition-invalid-request-method':
-      [{condition: {requestMethod: String.fromCodePoint(0x3042)},
-        source: 'network'}],
+  'condition-request-method-get-network':
+      [{condition: {requestMethod: 'GET'}, source: 'network'}],
+  'condition-request-method-post-network':
+      [{condition: {requestMethod: 'POST'}, source: 'network'}],
+  'condition-request-method-put-network':
+      [{condition: {requestMethod: 'PUT'}, source: 'network'}],
+  'condition-request-method-delete-network':
+      [{condition: {requestMethod: 'DELETE'}, source: 'network'}],
+  'condition-invalid-request-method': [{
+    condition: {requestMethod: String.fromCodePoint(0x3042)},
+    source: 'network'
+  }],
   'condition-or-source-network': [{
     condition: {
       or: [
