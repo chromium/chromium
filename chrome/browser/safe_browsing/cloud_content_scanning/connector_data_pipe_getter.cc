@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
 
 #include <algorithm>
 
@@ -31,7 +31,7 @@ constexpr int64_t kMaxSize = 32 * 1024;
 }  // namespace
 
 #if BUILDFLAG(IS_POSIX)
-bool MultipartDataPipeGetter::InternalMemoryMappedFile::Initialize(
+bool ConnectorDataPipeGetter::InternalMemoryMappedFile::Initialize(
     base::File file) {
   if (IsValid())
     return false;
@@ -46,7 +46,7 @@ bool MultipartDataPipeGetter::InternalMemoryMappedFile::Initialize(
   return true;
 }
 
-bool MultipartDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
+bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -80,7 +80,7 @@ bool MultipartDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
   return true;
 }
 
-void MultipartDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
+void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -95,7 +95,7 @@ void MultipartDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
 #endif  // BUILDFLAG(IS_POSIX)
 
 // static
-std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
+std::unique_ptr<ConnectorDataPipeGetter> ConnectorDataPipeGetter::Create(
     const std::string& boundary,
     const std::string& metadata,
     base::File file) {
@@ -106,12 +106,12 @@ std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
   if (!mm_file->Initialize(std::move(file)))
     return nullptr;
 
-  return std::make_unique<MultipartDataPipeGetter>(boundary, metadata,
+  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
                                                    std::move(mm_file));
 }
 
 // static
-std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
+std::unique_ptr<ConnectorDataPipeGetter> ConnectorDataPipeGetter::Create(
     const std::string& boundary,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page) {
@@ -122,15 +122,15 @@ std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
   if (!mapping.IsValid())
     return nullptr;
 
-  return std::make_unique<MultipartDataPipeGetter>(boundary, metadata,
+  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
                                                    std::move(mapping));
 }
 
-MultipartDataPipeGetter::MultipartDataPipeGetter(
+ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
     std::unique_ptr<InternalMemoryMappedFile> file)
-    : MultipartDataPipeGetter(boundary,
+    : ConnectorDataPipeGetter(boundary,
                               metadata,
                               std::move(file),
                               base::ReadOnlySharedMemoryMapping()) {
@@ -138,21 +138,23 @@ MultipartDataPipeGetter::MultipartDataPipeGetter(
   CHECK(file_->IsValid());
 }
 
-MultipartDataPipeGetter::MultipartDataPipeGetter(
+ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
     base::ReadOnlySharedMemoryMapping page)
-    : MultipartDataPipeGetter(boundary, metadata, nullptr, std::move(page)) {
+    : ConnectorDataPipeGetter(boundary, metadata, nullptr, std::move(page)) {
   file_data_pipe_ = false;
   CHECK(page_.IsValid());
 }
 
-MultipartDataPipeGetter::MultipartDataPipeGetter(
+ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
     std::unique_ptr<InternalMemoryMappedFile> file,
     base::ReadOnlySharedMemoryMapping page)
     : file_(std::move(file)), page_(std::move(page)) {
+  // TODO(b/321956932): Move the string concatenation of metadata_ and
+  // last_boundary_ into a helper function.
   metadata_ = base::StrCat({"--", boundary, "\r\n", kDataContentType,
                             "\r\n\r\n", metadata, "\r\n--", boundary, "\r\n",
                             kDataContentType, "\r\n\r\n"});
@@ -160,9 +162,9 @@ MultipartDataPipeGetter::MultipartDataPipeGetter(
   last_boundary_ = base::StrCat({"\r\n--", boundary, "--\r\n"});
 }
 
-MultipartDataPipeGetter::~MultipartDataPipeGetter() = default;
+ConnectorDataPipeGetter::~ConnectorDataPipeGetter() = default;
 
-void MultipartDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
+void ConnectorDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
                                    ReadCallback callback) {
   Reset();
 
@@ -173,35 +175,37 @@ void MultipartDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   watcher_->Watch(
       pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE, MOJO_WATCH_CONDITION_SATISFIED,
-      base::BindRepeating(&MultipartDataPipeGetter::MojoReadyCallback,
+      base::BindRepeating(&ConnectorDataPipeGetter::MojoReadyCallback,
                           base::Unretained(this)));
 
   Write();
 }
 
-void MultipartDataPipeGetter::Clone(
+void ConnectorDataPipeGetter::Clone(
     mojo::PendingReceiver<network::mojom::DataPipeGetter> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void MultipartDataPipeGetter::Reset() {
+void ConnectorDataPipeGetter::Reset() {
   watcher_.reset();
   pipe_.reset();
   write_position_ = 0;
 }
 
-std::unique_ptr<MultipartDataPipeGetter::InternalMemoryMappedFile>
-MultipartDataPipeGetter::ReleaseFile() {
+std::unique_ptr<ConnectorDataPipeGetter::InternalMemoryMappedFile>
+ConnectorDataPipeGetter::ReleaseFile() {
   return std::move(file_);
 }
 
-void MultipartDataPipeGetter::MojoReadyCallback(
+void ConnectorDataPipeGetter::MojoReadyCallback(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   Write();
 }
 
-void MultipartDataPipeGetter::Write() {
+void ConnectorDataPipeGetter::Write() {
+  // TODO(b/321956932): Extract metadata & last boundary writing logics into a
+  // separate method.
   int64_t metadata_end = metadata_.size();
   if (0 <= write_position_ && write_position_ < metadata_end) {
     if (!WriteString(metadata_, write_position_))
@@ -236,7 +240,7 @@ void MultipartDataPipeGetter::Write() {
   }
 }
 
-bool MultipartDataPipeGetter::WriteString(const std::string& str,
+bool ConnectorDataPipeGetter::WriteString(const std::string& str,
                                           int64_t offset) {
   CHECK_GE(offset, 0);
   CHECK_LT(offset, static_cast<int64_t>(str.size()));
@@ -244,7 +248,7 @@ bool MultipartDataPipeGetter::WriteString(const std::string& str,
   return Write(str.data(), str.size(), offset);
 }
 
-bool MultipartDataPipeGetter::WriteFileData() {
+bool ConnectorDataPipeGetter::WriteFileData() {
   int64_t file_offset = write_position_ - metadata_.size();
   CHECK_GE(file_offset, 0);
   CHECK_LT(file_offset, static_cast<int64_t>(file_->length()));
@@ -253,7 +257,7 @@ bool MultipartDataPipeGetter::WriteFileData() {
                file_offset);
 }
 
-bool MultipartDataPipeGetter::WritePageData() {
+bool ConnectorDataPipeGetter::WritePageData() {
   int64_t page_offset = write_position_ - metadata_.size();
   CHECK_GE(page_offset, 0);
   CHECK_LT(page_offset, static_cast<int64_t>(page_.size()));
@@ -261,7 +265,7 @@ bool MultipartDataPipeGetter::WritePageData() {
   return Write(page_.GetMemoryAs<char>(), page_.size(), page_offset);
 }
 
-bool MultipartDataPipeGetter::Write(const char* data,
+bool ConnectorDataPipeGetter::Write(const char* data,
                                     int64_t full_size,
                                     int64_t offset) {
   while (true) {
@@ -289,7 +293,7 @@ bool MultipartDataPipeGetter::Write(const char* data,
   }
 }
 
-int64_t MultipartDataPipeGetter::FullSize() {
+int64_t ConnectorDataPipeGetter::FullSize() {
   int64_t size = metadata_.size() + last_boundary_.size();
   if (is_file_data_pipe()) {
     return size + file_->length();
@@ -299,11 +303,11 @@ int64_t MultipartDataPipeGetter::FullSize() {
   }
 }
 
-bool MultipartDataPipeGetter::is_file_data_pipe() const {
+bool ConnectorDataPipeGetter::is_file_data_pipe() const {
   return file_data_pipe_;
 }
 
-bool MultipartDataPipeGetter::is_page_data_pipe() const {
+bool ConnectorDataPipeGetter::is_page_data_pipe() const {
   return !file_data_pipe_;
 }
 

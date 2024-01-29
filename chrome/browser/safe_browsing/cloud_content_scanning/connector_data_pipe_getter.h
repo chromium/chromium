@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_DATA_PIPE_GETTER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_DATA_PIPE_GETTER_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
 
 #include <stdint.h>
 #include <memory>
@@ -31,7 +31,7 @@ namespace safe_browsing {
 // <file data>
 // --BOUNDARY--
 //
-class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
+class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
  public:
 #if BUILDFLAG(IS_POSIX)
   // Mimics base::MemoryMappedFile for READ_ONLY access.
@@ -71,13 +71,16 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
   // Each constructor takes either a MemoryMappedFile representing an
   // uploaded/downloaded file, or a ReadOnlySharedMemoryMapping representing a
   // printed page. In both cases, the memory handle is assumed to be valid.
-  MultipartDataPipeGetter(const std::string& boundary,
+  //
+  // TODO(b/321956932): Make boundary and metadata optional to support
+  // resumable upload.
+  ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           std::unique_ptr<InternalMemoryMappedFile> file);
-  MultipartDataPipeGetter(const std::string& boundary,
+  ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           base::ReadOnlySharedMemoryMapping page);
-  ~MultipartDataPipeGetter() override;
+  ~ConnectorDataPipeGetter() override;
 
   // network::mojom::DataPipeGetter:
   void Read(mojo::ScopedDataPipeProducerHandle pipe,
@@ -87,14 +90,14 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
 
   // Returns nullptr if `file` is invalid or if a memory mapped file can't be
   // created from it.
-  static std::unique_ptr<MultipartDataPipeGetter> Create(
+  static std::unique_ptr<ConnectorDataPipeGetter> Create(
       const std::string& boundary,
       const std::string& metadata,
       base::File file);
 
   // Returns nullptr if `page` is invalid or if a memory region can't be created
   // from it.
-  static std::unique_ptr<MultipartDataPipeGetter> Create(
+  static std::unique_ptr<ConnectorDataPipeGetter> Create(
       const std::string& boundary,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page);
@@ -115,7 +118,7 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
  private:
   // Private constructor that shares initialization logics across file and page
   // data pipes.
-  MultipartDataPipeGetter(const std::string& boundary,
+  ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           std::unique_ptr<InternalMemoryMappedFile> file,
                           base::ReadOnlySharedMemoryMapping page);
@@ -161,4 +164,4 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_DATA_PIPE_GETTER_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_

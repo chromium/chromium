@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -51,7 +51,7 @@ const char kUploadContentType[] = "multipart/related; boundary=";
 // Content type of the metadata and file contents.
 const char kDataContentType[] = "Content-Type: application/octet-stream";
 
-std::unique_ptr<MultipartDataPipeGetter> CreateFileDataPipeGetterBlocking(
+std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
     const std::string& boundary,
     const std::string& metadata,
     const base::FilePath& path) {
@@ -60,7 +60,7 @@ std::unique_ptr<MultipartDataPipeGetter> CreateFileDataPipeGetterBlocking(
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
-  return MultipartDataPipeGetter::Create(boundary, metadata, std::move(file));
+  return ConnectorDataPipeGetter::Create(boundary, metadata, std::move(file));
 }
 
 }  // namespace
@@ -140,7 +140,7 @@ MultipartUploadRequest::~MultipartUploadRequest() {
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
             [](std::unique_ptr<
-                MultipartDataPipeGetter::InternalMemoryMappedFile> file) {},
+                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
             std::move(file)));
   }
 }
@@ -252,14 +252,14 @@ void MultipartUploadRequest::SendPageRequest(
     CompleteSendRequest(std::move(request));
   } else {
     DataPipeCreatedCallback(std::move(request),
-                            MultipartDataPipeGetter::Create(
+                            ConnectorDataPipeGetter::Create(
                                 boundary_, metadata_, std::move(page_region_)));
   }
 }
 
 void MultipartUploadRequest::DataPipeCreatedCallback(
     std::unique_ptr<network::ResourceRequest> request,
-    std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter) {
+    std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter) {
   scoped_file_access_.reset();
   if (!data_pipe_getter) {
     std::move(callback_).Run(/*success=*/false, 0, "");

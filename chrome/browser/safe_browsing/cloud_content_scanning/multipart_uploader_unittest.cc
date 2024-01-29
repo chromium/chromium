@@ -94,7 +94,7 @@ class MockMultipartUploadDataPipeRequest : public MultipartUploadRequest {
                                std::move(callback)) {}
 
   std::string GetBodyFromFileOrPageRequest() {
-    MultipartDataPipeGetter* data_pipe_getter =
+    ConnectorDataPipeGetter* data_pipe_getter =
         this->data_pipe_getter_for_testing();
     EXPECT_TRUE(data_pipe_getter);
 
