@@ -257,6 +257,7 @@
 <translation id="1442987760062738829">Нүх цоолбор</translation>
 <translation id="1446396933673057385">Нарийвчлалын шалгалт</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" түлхүүрийг "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" түлхүүртэй ижил толь бичигт тохируулах боломжгүй</translation>
 <translation id="1452803302401719440">Таны эцэг эхийн сонгосон тохиргоо таныг одоо онлайн орчинд илүү аюулгүй байлгаж байна</translation>
 <translation id="1455413310270022028">Баллуур</translation>
 <translation id="1458140305240870199">Дотуур хувцаснууд</translation>
@@ -768,6 +769,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Таныг нэвтэрсэн үед энэ төхөөрөмжид залгасан нэмэлт хэрэгслүүд</translation>
 <translation id="2450021089947420533">Аяллууд</translation>
+<translation id="2452837234288608067">Үүнд туслах боломжгүй. Дахин оролдоно уу.</translation>
 <translation id="2456755709261364512">Таны батарейг <ph name="REQUIRED_BATTERY_PRECENT" />%-иас дээш цэнэглэсэн байх ёстой</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" />-г хайх</translation>
 <translation id="2463739503403862330">Бөглөх</translation>
@@ -909,6 +911,7 @@
 <translation id="2725927759457695883">Бүтэн нэр бөглөх</translation>
 <translation id="2726001110728089263">Хажуугийн тавиур</translation>
 <translation id="2728127805433021124">Серверийн гэрчилгээнд сул гарын үсгийн алгоритмаар нэвтэрч байна.</translation>
+<translation id="272937284275742856">Таны төлбөрийн дэлгэрэнгүйг аюулгүйгээр баталгаажуулж байна...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Сонгодог хөгжим</translation>
 <translation id="2731382536835015353">44 x 68 инч</translation>
@@ -1008,6 +1011,7 @@
 <translation id="2958544468932521864">Крикет</translation>
 <translation id="2959113999220720579">Нүүр, биеийн арчилгаа</translation>
 <translation id="2962073860865348475">12 x 18 инч</translation>
+<translation id="2967098518029543669">үүнийг Google Бүртгэлдээ хадгалах</translation>
 <translation id="2968103128155246731">Бүхээгтэй тэрэг, гэр бүлийн бүхээгтэй тэрэг</translation>
 <translation id="2972581237482394796">&amp; Дахин хийх</translation>
 <translation id="2977665033722899841">Одоогоор <ph name="ROW_NAME" />-г сонгосон байна. <ph name="ROW_CONTENT" /></translation>
@@ -1383,6 +1387,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> оронтой баталгаажуулах код оруулна уу</translation>
 <translation id="3681007416295224113">Гэрчилгээний мэдээлэл</translation>
 <translation id="3681421644246505351">Chrome таны саяхны хөтчийн түүхэд тулгуурлан сонирхсон сэдвүүдийг тэмдэглэдэг.</translation>
+<translation id="3682094733650754138">Хаягийг бөглөх сонголтыг сонгосон</translation>
 <translation id="3689867156802445220">Барилгын дугаар</translation>
 <translation id="3693327506115126094">Та өөрийгөө мөн болохыг хэрхэн баталгаажуулахаа сонгоно уу</translation>
 <translation id="3698629142018988477">Сайт үүсгэх товчлуур, Google Sites-д шинэ сайт шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
@@ -2787,6 +2792,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> таны MIDI төхөөрөмжүүдийг ашиглахыг хүсэж байна</translation>
 <translation id="6493924760403974580">Энэ апп зөвхөн энэ хэмжээг дэмждэг.</translation>
 <translation id="6494750904506170417">попап болон дахин чиглүүлэлт</translation>
+<translation id="6495664197699704593">Энэ нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмждөө ашиглахын тулд <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Бизнесийн үйл ажиллагаа</translation>
 <translation id="6499038740797743453">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="6502510275417601303">Шинэ төлбөрийн тохиргооны талаарх сэрэмжлүүлгийг хаасан</translation>
@@ -2901,6 +2907,7 @@
 <translation id="6732087373923685049">камер</translation>
 <translation id="6737708609449480586">Жигнэсэн бүтээгдэхүүнүүд</translation>
 <translation id="6738516213925468394">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />синкийн нэвтрэх үгтэй<ph name="END_LINK" /> <ph name="TIME" />-д синк хийсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
+<translation id="6740851646645036700">Та одоогоор бичих тусламжийн хязгаартаа хүрлээ. Дараа дахин оролдоно уу.</translation>
 <translation id="674375294223700098">Серверийн гэрчилгээний алдаа танигдахгүй байна.</translation>
 <translation id="6744009308914054259">Холболтыг хүлээх явцад та офлайн нийтлэлүүдийг уншихын тулд татаж авсан хэсэгт зочлох боломжтой.</translation>
 <translation id="6745592621698551453">Одоо шинэчилнэ үү</translation>
@@ -2957,6 +2964,7 @@
 <translation id="6860888819347870819">Дэлгэц доторх дэлгэцэд орохыг хүсэх боломжтой</translation>
 <translation id="6864189428899665393">267 х 389 мм</translation>
 <translation id="686485648936420384">Хэрэглэгчийн нөөц</translation>
+<translation id="6865166112578825782">Хаягийг бөглөх</translation>
 <translation id="6865412394715372076">Энэ картыг одоогоор баталгаажуулах боломжгүй байна</translation>
 <translation id="6868573634057275953">Шинэчлэлтийг үргэлжлүүлэх</translation>
 <translation id="6869334554832814367">Хувийн зээл</translation>
@@ -3426,6 +3434,7 @@
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7701544340847569275">Шинэчлэлт алдаатайгаар дууссан</translation>
 <translation id="7704050614460855821"><ph name="SITE" /> (аюултай) <ph name="BEGIN_LINK" />руу үгрэлжлүүлэх<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Надад бичихэд тусал</translation>
 <translation id="7705992072972338699">Оптик диск (маш гялгар)</translation>
 <translation id="770607638235926858">Цана, сноуборд</translation>
 <translation id="7706689436519265630">Таны хуулсан эсвэл зөөсөн файлуудыг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч тал руу илгээдэг. Жишээ нь тэдгээрийг эмзэг өгөгдөл эсвэл хортой программтай эсэхийг скан хийж магадгүй бөгөөд компанийн бодлогод тулгуурлан хадгалж магадгүй.</translation>
@@ -3645,6 +3654,7 @@
 <translation id="8161095570253161196">Үргэлжлүүлж үзэх</translation>
 <translation id="8163866351304776260">Зүүн ирмэг дагуу дөрвөн нүх цоолох</translation>
 <translation id="8164078261547504572">Үнэ буурсан тохиолдолд имэйл авахыг хүсэж байна уу?</translation>
+<translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" түлхүүрийг ижил толь бичигт тохируулах боломжгүй</translation>
 <translation id="8175796834047840627">Та нэвтэрсэн тул Chrome таны картыг таны Google Бүртгэлд хадгалахыг санал болгож байна. Та энэ ажиллах төлөвийг тохиргоонд өөрчилж болно.</translation>
 <translation id="8176440868214972690">Энэ төхөөрөмжийн администратор дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
 <translation id="817820454357658398">Эмэгтэйчүүдийн эрүүл ахуйн бүтээгдэхүүнүүд</translation>
@@ -4040,6 +4050,7 @@
 <translation id="8949410982325929394">Өнгө аяс</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Хууль, засгийн газар</translation>
+<translation id="8952569554322479410">Вебсайт дөнгөж сая таны <ph name="REQUEST_TYPE" />-д хандахыг хүссэн. Энэ 1 минутын судалгааг бөглөснөөр бидэнд вебсайтууд хэрхэн хандах эрх хүсэхийг сайжруулахад тусална уу.</translation>
 <translation id="8954252855949068147">Хувцас</translation>
 <translation id="8956124158020778855">Та энэ тохиргоог асаасныхаа дараа бичиж эхлэхийн тулд энэ таб руу буцаж ирнэ үү.</translation>
 <translation id="8957210676456822347">Captive Portal Authorization</translation>

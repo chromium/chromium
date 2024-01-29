@@ -257,6 +257,7 @@
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1446396933673057385">准确度检查</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">如果字典中有键“<ph name="DATA_CONTROLS_SECOND_KEY_SET" />”，就无法设置键“<ph name="DATA_CONTROLS_FIRST_KEY_SET" />”</translation>
 <translation id="1452803302401719440">系统正在根据家长选择的设置保护你更安全地上网</translation>
 <translation id="1455413310270022028">橡皮擦</translation>
 <translation id="1458140305240870199">内衣</translation>
@@ -768,6 +769,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">登录时连接至该设备的外围设备</translation>
 <translation id="2450021089947420533">历程</translation>
+<translation id="2452837234288608067">无法提供这方面的帮助。请重试。</translation>
 <translation id="2456755709261364512">电池电量必须在 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
 <translation id="2462599289530201834">在<ph name="KEYWORD_SHORT_NAME" />中搜索</translation>
 <translation id="2463739503403862330">填充</translation>
@@ -909,6 +911,7 @@
 <translation id="2725927759457695883">填充全名</translation>
 <translation id="2726001110728089263">侧面纸匣</translation>
 <translation id="2728127805433021124">服务器的证书是使用弱签名算法进行签名的。</translation>
+<translation id="272937284275742856">正在安全地验证付款信息…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />运行网络连接诊断<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">古典音乐</translation>
 <translation id="2731382536835015353">44 x 68 英寸</translation>
@@ -1008,6 +1011,7 @@
 <translation id="2958544468932521864">板球</translation>
 <translation id="2959113999220720579">面部与身体护理</translation>
 <translation id="2962073860865348475">12 x 18 英寸</translation>
+<translation id="2967098518029543669">将密码保存在您的 Google 账号中</translation>
 <translation id="2968103128155246731">货车与小型货车</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
@@ -1378,6 +1382,7 @@
 <translation id="3678914302246317895">输入 <ph name="OTP_LENGTH" /> 位数的验证码</translation>
 <translation id="3681007416295224113">证书信息</translation>
 <translation id="3681421644246505351">Chrome 会根据您近期的浏览记录来推测您感兴趣的主题。</translation>
+<translation id="3682094733650754138">已选择“填充地址”选项</translation>
 <translation id="3689867156802445220">门牌号</translation>
 <translation id="3693327506115126094">选择您要使用的身份验证方式</translation>
 <translation id="3698629142018988477">“创建网站”按钮，激活它即可在 Google 协作平台中快速创建新网站</translation>
@@ -2782,6 +2787,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> 想使用您的 MIDI 设备</translation>
 <translation id="6493924760403974580">此应用仅支持该尺寸。</translation>
 <translation id="6494750904506170417">弹出式窗口和重定向</translation>
+<translation id="6495664197699704593">这个密码仅会保存到此设备上。若要在其他设备上使用它，请<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="6497295192259406877">经营活动</translation>
 <translation id="6499038740797743453">重置密码？</translation>
 <translation id="6502510275417601303">关于新付款设置的提醒已关闭</translation>
@@ -2896,6 +2902,7 @@
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6737708609449480586">烘烤类食品</translation>
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>
+<translation id="6740851646645036700">您目前已达到“帮我写”请求次数上限。请稍后再试。</translation>
 <translation id="674375294223700098">未知的服务器证书错误。</translation>
 <translation id="6744009308914054259">在等待连接时，您可以前往“下载内容”页面阅读离线文章。</translation>
 <translation id="6745592621698551453">立即更新</translation>
@@ -2952,6 +2959,7 @@
 <translation id="6860888819347870819">可以请求进入画中画模式</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">面向消费者的资源</translation>
+<translation id="6865166112578825782">填充地址</translation>
 <translation id="6865412394715372076">暂时无法验证此信用卡</translation>
 <translation id="6868573634057275953">继续更新</translation>
 <translation id="6869334554832814367">个人贷款</translation>
@@ -3421,6 +3429,7 @@
 <translation id="7701040980221191251">无</translation>
 <translation id="7701544340847569275">更新已完成，但存在错误</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />继续前往<ph name="SITE" />（不安全）<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">帮我写</translation>
 <translation id="7705992072972338699">光盘（高光）</translation>
 <translation id="770607638235926858">滑雪与单板滑雪</translation>
 <translation id="7706689436519265630">系统会将您复制或移动的文件发送给 Google Cloud 或第三方以供分析。例如，可能会通过扫描来确定文件是否包含敏感数据或恶意软件，并且可能会根据公司政策存储这些文件。</translation>
@@ -3640,6 +3649,7 @@
 <translation id="8161095570253161196">继续浏览</translation>
 <translation id="8163866351304776260">四孔（左侧）</translation>
 <translation id="8164078261547504572">想在商品降价时收到电子邮件通知？</translation>
+<translation id="8169175551046720804">不能在同一字典中设置键“<ph name="DATA_CONTROLS_KEYS" />”</translation>
 <translation id="8175796834047840627">Chrome 会主动询问是否要将您的卡保存到您的 Google 账号中，因为您已登录。您可在“设置”中更改此行为。</translation>
 <translation id="8176440868214972690">此设备的管理员已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="817820454357658398">女性卫生产品</translation>
@@ -4036,6 +4046,7 @@
 <translation id="8949410982325929394">语气</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律与政府</translation>
+<translation id="8952569554322479410">某个网站刚刚请求访问您的<ph name="REQUEST_TYPE" />。只需 1 分钟即可完成调查问卷，帮助我们改进网站请求访问权限的方式。</translation>
 <translation id="8954252855949068147">服饰</translation>
 <translation id="8956124158020778855">开启此设置后，请返回此标签页开始撰写。</translation>
 <translation id="8957210676456822347">强制门户授权</translation>

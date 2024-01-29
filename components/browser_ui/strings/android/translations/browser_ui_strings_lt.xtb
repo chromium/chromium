@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
-<translation id="1426410128494586442">Taip</translation>
 <translation id="1434873037477293673">sumažintos kainos kortelė</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>

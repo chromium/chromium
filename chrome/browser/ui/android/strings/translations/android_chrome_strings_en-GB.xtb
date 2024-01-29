@@ -91,6 +91,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1428770807407000502">Turn off sync?</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1435593198351412143">Automatically open PDFs</translation>
 <translation id="1436784010935106834">Removed</translation>
 <translation id="1437543266176261764">Running in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
@@ -341,6 +342,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2894821468041866720">Doesn't noticeably slow down your browser or device.</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2901411048554510387">Showing suggestions for <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Downloaded PDFs automatically open with one of the PDF viewers on your device</translation>
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
 <translation id="2908243544703713905">Unread stories ready</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -592,7 +594,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4257230861809842349">Delete passwords from Google Password Manager?</translation>
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4277529130885813215">Use another device</translation>
-<translation id="4283102315569707115">Request desktop sites by default?</translation>
 <translation id="4285846616383034558">Cookies, cache and other site data</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Turn on screen lock in Android settings<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">New Incognito tab</translation>
@@ -896,9 +897,11 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="5814749351757353073">Keep up with your favourite sites</translation>
 <translation id="5822875253699806474">To quickly get back to sites that you’ve visited, sync your tabs and history</translation>
+<translation id="5829586821381540080">Saved in <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
+<translation id="5848257610304005265">Open PDF with <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Something went wrong. Couldn’t update track price.</translation>
@@ -1381,6 +1384,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>
+<translation id="8135406045838672858">Downloaded PDFs automatically open with <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8190358571722158785">1 day left</translation>

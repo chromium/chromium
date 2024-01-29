@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">乘</translation>
 <translation id="1145018782460575098">“更新外部设备的固件”窗口已打开。有 <ph name="NUM_UPDATES" /> 项可用的更新。</translation>
 <translation id="1145516343487477149">查找帮助文章和常见 Chromebook 问题解答</translation>
 <translation id="1154390310959620237">您只能自定义 5 个快捷键。如要添加一个新的快捷键，请先删除一个现有快捷键。</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1367951781824006909">选择文件</translation>
+<translation id="1371650399987522809">针对 Google AI 赋能的壁纸的反馈</translation>
 <translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">触控板</translation>
 <translation id="1561927818299383735">背光颜色</translation>
 <translation id="1565038567006703504">无法更新<ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">除</translation>
 <translation id="1567064801249837505">影集</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="160633243685262989">预览图片</translation>
 <translation id="1611649489706141841">前进</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
+<translation id="1615576200479539465">正在生成图片…</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1626590945318984973">此快捷键不可用。请在不使用功能键和<ph name="META_KEY" />键的情况下按一个新快捷键。</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="2880569433548999039">“云朵的动态变化”屏保</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
+<translation id="2938573842839598578">用<ph name="CATEGORY_TEXT" />值<ph name="OPERATOR_TEXT" />以 <ph name="CONVERSION_RATE" /> 可求近似值</translation>
 <translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">刷新</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
+<translation id="3547264467365135390">公式</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
 <translation id="3569407787324516067">屏保</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7184043045742675738">点击任意键自定义您的按钮。使用鼠标或箭头键调整键的位置。</translation>
+<translation id="7206979415662233817">服务条款</translation>
 <translation id="7212547870105584639">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部设备的固件更新</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">键盘颜色</translation>
 <translation id="7317831949569936035">学校注册</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">您必须年满 18 周岁，并且同意在使用 AI 壁纸时遵守 <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 服务条款<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />和<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成式 AI 附加服务条款<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          您只能利用 AI 制作用于个人和非商业用途的壁纸。当您获取壁纸方面的帮助时，系统会将相关文字发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成壁纸建议。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7353413232959255829">共 <ph name="LIST_SIZE" /> 条搜索结果，所选结果是第 <ph name="LIST_POSITION" /> 条，内容为：<ph name="SEARCH_RESULT_TEXT" />。按 Enter 键即可进入快捷键。</translation>

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
-<translation id="1426410128494586442">Да</translation>
 <translation id="1434873037477293673">Оповещение о скидках</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
@@ -323,7 +322,7 @@
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6304434827459067558"><ph name="SITE" /> запрещено использовать ваши данные на перечисленных сайтах</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
-<translation id="6344622098450209924">Блокировка отслеживания</translation>
+<translation id="6344622098450209924">Защита от слежения</translation>
 <translation id="6367753977865761591">Блокировать вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>

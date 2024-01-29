@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ஆப்ஸின் பதிப்பு</translation>
 <translation id="1428770807407000502">ஒத்திசைவை முடக்கவா?</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
+<translation id="1435593198351412143">PDF ஃபைல்களைத் தானாகத் திறத்தல்</translation>
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ஆப்ஸில் இயங்குகிறது</translation>
 <translation id="1448440926884431741">நீங்கள் கண்காணிக்கும் தயாரிப்புகளை Bookmarksஸில் ஒழுங்கமைக்கலாம்</translation>
@@ -341,6 +342,7 @@
 <translation id="2894821468041866720">உங்கள் உலாவி அல்லது சாதனத்தின் செயல்திறனைப் பெருமளவில் குறைக்காது.</translation>
 <translation id="2900528713135656174">நிகழ்வை உருவாக்கவும்</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> என்பதற்கான பரிந்துரைகளைக் காட்டுகிறது</translation>
+<translation id="2904300462646366554">பதிவிறக்கிய PDF ஃபைல்கள் உங்கள் சாதனத்தில் உள்ள ஏதேனும் ஒரு PDF வியூவரில் தானாகத் திறக்கப்படும்</translation>
 <translation id="2904414404539560095">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் முழு அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="2908243544703713905">படிக்காத செய்திகள் உள்ளன</translation>
 <translation id="2909615210195135082">Google அறிவிப்புகள் பிளாட்ஃபார்ம்</translation>
@@ -592,7 +594,6 @@
 <translation id="4257230861809842349">Google Password Managerரில் இருந்து கடவுச்சொற்களை நீக்கவா?</translation>
 <translation id="4269820728363426813">இணைப்பு முகவரியை நகலெடு</translation>
 <translation id="4277529130885813215">வேறொரு சாதனத்தைப் பயன்படுத்து</translation>
-<translation id="4283102315569707115">இயல்பாக டெஸ்க்டாப் தளங்களுக்குக் கோரிக்கை விடுக்கவா?</translation>
 <translation id="4285846616383034558">குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பிற தளத் தரவு</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android அமைப்புகளில் திரைப் பூட்டு அம்சத்தை இயக்கவும்<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">புதிய மறைநிலைத் தாவல்</translation>
@@ -896,9 +897,11 @@
 <translation id="5810288467834065221">பதிப்புரிமை <ph name="YEAR" /> Google LLC. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.</translation>
 <translation id="5814749351757353073">உங்களுக்குப் பிடித்த தளங்களைத் தவறாமல் பார்க்கலாம்</translation>
 <translation id="5822875253699806474">நீங்கள் பார்த்த தளங்களுக்கு விரைவாகச் செல்ல பக்கங்களையும் பதிவையும் ஒத்திசையுங்கள்</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ஃபோல்டரில் சேமிக்கப்பட்டது</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5833984609253377421">இணைப்பைப் பகிர்</translation>
 <translation id="5839058148541733625">Chrome டைனோசர்</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> ஆப்ஸில் PDF ஃபைலைத் திறக்கவா?</translation>
 <translation id="5853623416121554550">இடைநிறுத்தப்பட்டது</translation>
 <translation id="5855546874025048181">துல்லியமாக: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">ஏதோ தவறாகிவிட்டது. 'விலையைக் கண்காணி' அம்சத்தைப் புதுப்பிக்க முடியவில்லை.</translation>
@@ -1381,6 +1384,7 @@
 <translation id="8127542551745560481">முகப்புப்பக்கத்தைத் திருத்து</translation>
 <translation id="8130309322784422030">சேமிக்கப்பட்ட உங்களின் உள்நுழைவுத் தகவல் பழையதாக இருக்கக்கூடும்</translation>
 <translation id="813082847718468539">தள விவரங்களைக் காண்க</translation>
+<translation id="8135406045838672858">பதிவிறக்கிய PDF ஃபைல்கள் <ph name="APP_NAME" /> ஆப்ஸில் தானாகத் திறக்கப்படும்</translation>
 <translation id="8137562778192957619">இந்தக் கடவுச்சொல்லை நீங்கள் நினைவில் வைத்திருக்க வேண்டியதில்லை. Google Password Managerரில் இது சேமிக்கப்படும்.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>
 <translation id="8190358571722158785">1 நாள் மீதமுள்ளது</translation>

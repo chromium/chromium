@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1128128132059598906">EAP – TTLS</translation>
+<translation id="1134416403025830762">помножити</translation>
 <translation id="1145018782460575098">Вікно "Оновіть мікропрограму для зовнішніх пристроїв" відкрито. Доступно оновлень: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Шукайте довідкові статті та відповіді на поширені запитання про Chromebook</translation>
 <translation id="1154390310959620237">Можна налаштувати лише 5 комбінацій клавіш. Щоб додати нову комбінацію, видаліть одну з наявних.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">За розміром області сканування</translation>
 <translation id="1367951781824006909">Вибрати файл</translation>
+<translation id="1371650399987522809">Відгук про шпалери, створені за допомогою ШІ від Google</translation>
 <translation id="1387854245479784695">Це зведені дані для всіх ядер</translation>
 <translation id="1394661041439318933">Рівень заряду акумулятора чохла – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюз можна перевірити</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1561927818299383735">колір підсвітки</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не вдалось оновити</translation>
+<translation id="1566493343215789965">поділити</translation>
 <translation id="1567064801249837505">Альбоми</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1578784163189013834">Вибрати фон для заставки</translation>
 <translation id="160633243685262989">Попередній перегляд зображення</translation>
 <translation id="1611649489706141841">уперед</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Генерування зображень…</translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
 <translation id="1626590945318984973">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Завантаження</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2880569433548999039">Заставка "Плин хмар"</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
+<translation id="2938573842839598578">Щоб отримати приблизний результат, потрібно <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Не вдалося перевірити клавіатуру. Відкрийте кришку й повторіть спробу.</translation>
 <translation id="2941112035454246133">Низький</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Оновлення ОС Chrome</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локальна ідентифікація (необов’язково)</translation>
 <translation id="3565064564551103223">Дозволені IP-адреси</translation>
 <translation id="3569407787324516067">Заставка</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7180865173735832675">Налаштувати</translation>
 <translation id="7184043045742675738">Щоб налаштувати кнопку, натисніть будь-яку клавішу. Змініть положення клавіші за допомогою миші або стрілок.</translation>
+<translation id="7206979415662233817">Умови використання</translation>
 <translation id="7212547870105584639">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею і Інтернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Оновлення мікропрограми для зовнішніх пристроїв</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">колір клавіатури</translation>
 <translation id="7317831949569936035">Реєстрація в закладі освіти</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Застосовувати цю функцію можуть лише особи, які досягли 18-річного віку й погодилися, що користування шпалерами від ШІ регулюється <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Загальними положеннями й умовами Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> і <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Додатковими умовами використання генеративного штучного інтелекту<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          За допомогою ШІ можна створювати шпалери лише для особистого некомерційного використання. Коли ви запитуєте генерування шпалер, текст надсилається на сервери ШІ від Google, як описано в <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Політиці конфіденційності Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7353413232959255829">Результат пошуку <ph name="LIST_POSITION" /> з <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Натисніть Enter, щоб перейти до комбінації клавіш.</translation>

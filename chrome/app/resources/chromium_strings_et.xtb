@@ -280,6 +280,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="6144416395842701622">Chromiumi parimal moel kasutamiseks logige sisse</translation>
 <translation id="6145820983052037069">Chromiumi profiili saate vahetada siin</translation>
 <translation id="615103374448673771">Kui lubate küpsised, võib Chromium neid eellaadimise ajal kasutada</translation>
+<translation id="6174920971222007286">See fail võib olla ohtlik<ph name="LINE_BREAK" />Chromium võib seda allalaadimist teie eest kontrollida, kui sisestate parooli. Failiga seotud teave saadetakse teenusesse Google'i ohutu sirvimine, aga faili sisu ja parool jäävad teie seadmesse.</translation>
 <translation id="6175304430031192654">Teie seadetest olenevalt võib Chromium saata ka küpsisefaile ja teie praeguse URL-i</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
 <translation id="6183079672144801177">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chromiumi sisse logitud, ja proovige siis uuesti saata.</translation>

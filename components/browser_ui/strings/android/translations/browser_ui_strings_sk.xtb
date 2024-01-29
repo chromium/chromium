@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1384959399684842514">Sťahovanie bolo pozastavené</translation>
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
-<translation id="1426410128494586442">Áno</translation>
 <translation id="1434873037477293673">karta poklesu ceny</translation>
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>

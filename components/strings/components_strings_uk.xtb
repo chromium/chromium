@@ -257,6 +257,7 @@
 <translation id="1442987760062738829">Пробити отвір</translation>
 <translation id="1446396933673057385">Перевірка достовірності</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">Ключі "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" не можна додати в той самий словник, що й ключі "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
 <translation id="1452803302401719440">Налаштування, які вибрали твої батьки, захищають тебе в Інтернеті</translation>
 <translation id="1455413310270022028">Гумка</translation>
 <translation id="1458140305240870199">Спідня білизна</translation>
@@ -768,6 +769,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферійні пристрої, які підключені до цього пристрою, коли ви ввійшли в обліковий запис</translation>
 <translation id="2450021089947420533">Сеанси</translation>
+<translation id="2452837234288608067">Не вдалося допомогти із цим запитом. Повторіть спробу.</translation>
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2462599289530201834">Шукати: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Заповнити</translation>
@@ -909,6 +911,7 @@
 <translation id="2725927759457695883">Указати повне ім’я</translation>
 <translation id="2726001110728089263">Боковий лоток</translation>
 <translation id="2728127805433021124">Сертифікат сервера підписано з використанням слабкого алгоритму підпису.</translation>
+<translation id="272937284275742856">Безпечне підтвердження відомостей про спосіб оплати…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />провести діагностику з’єднання<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Класична музика</translation>
 <translation id="2731382536835015353">44 x 68 дюйм.</translation>
@@ -1008,6 +1011,7 @@
 <translation id="2958544468932521864">Крикет</translation>
 <translation id="2959113999220720579">Догляд за обличчям і тілом</translation>
 <translation id="2962073860865348475">12 x 18 дюйм.</translation>
+<translation id="2967098518029543669">збережіть його у своєму обліковому записі Google.</translation>
 <translation id="2968103128155246731">Фургони й мінівени</translation>
 <translation id="2972581237482394796">&amp;Повторити</translation>
 <translation id="2977665033722899841">Зараз вибрано: <ph name="ROW_NAME" /> (<ph name="ROW_CONTENT" />)</translation>
@@ -1382,6 +1386,7 @@
 <translation id="3678914302246317895">Введіть <ph name="OTP_LENGTH" />-значний код підтвердження</translation>
 <translation id="3681007416295224113">Інформація про сертифікат</translation>
 <translation id="3681421644246505351">Chrome запам’ятовує цікаві вам теми на основі вашої нещодавньої історії веб-перегляду.</translation>
+<translation id="3682094733650754138">Вибрано опцію "Заповнити адресу"</translation>
 <translation id="3689867156802445220">Номер будинку</translation>
 <translation id="3693327506115126094">Виберіть спосіб підтвердження особи</translation>
 <translation id="3698629142018988477">Кнопка "Створити сайт"; активуйте, щоб швидко створити новий сайт у Google Сайтах</translation>
@@ -2787,6 +2792,7 @@
 <translation id="6491663123807473970">Сайт <ph name="URL" /> хоче використовувати ваші пристрої MIDI</translation>
 <translation id="6493924760403974580">У цьому додатку підтримується лише цей розмір.</translation>
 <translation id="6494750904506170417">спливаючі вікна й переспрямування</translation>
+<translation id="6495664197699704593">Цей пароль зберігається лише на поточному пристрої. Щоб використовувати пароль на інших пристроях, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Комерційна діяльність</translation>
 <translation id="6499038740797743453">Скинути пароль?</translation>
 <translation id="6502510275417601303">Сповіщення про нове налаштування платежів закрито</translation>
@@ -2901,6 +2907,7 @@
 <translation id="6732087373923685049">камера</translation>
 <translation id="6737708609449480586">Випічка</translation>
 <translation id="6738516213925468394">Ваші дані було зашифровано за допомогою <ph name="BEGIN_LINK" />парольної фрази для синхронізації<ph name="END_LINK" /> від <ph name="TIME" />. Введіть її, щоб почати синхронізацію.</translation>
+<translation id="6740851646645036700">Ви досягли ліміту для запитів на допомогу з текстом. Повторіть спробу пізніше.</translation>
 <translation id="674375294223700098">Помилка "Невідомий сертифікат сервера".</translation>
 <translation id="6744009308914054259">Очікуючи на з’єднання, можете перейти в папку "Завантаження" й переглянути статті, доступні в режимі офлайн.</translation>
 <translation id="6745592621698551453">Оновити зараз</translation>
@@ -2957,6 +2964,7 @@
 <translation id="6860888819347870819">Може просити дозвіл ввімкнути режим "Картинка в картинці"</translation>
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Ресурси для споживачів</translation>
+<translation id="6865166112578825782">Заповнити адресу</translation>
 <translation id="6865412394715372076">Зараз цю картку не можна підтвердити</translation>
 <translation id="6868573634057275953">Відновити оновлення</translation>
 <translation id="6869334554832814367">Кредити фізичним особам</translation>
@@ -3426,6 +3434,7 @@
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7701544340847569275">Оновлення завершено з помилками</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /> (небезпечно)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Допомога з текстом</translation>
 <translation id="7705992072972338699">Оптичний диск (високоглянцевий)</translation>
 <translation id="770607638235926858">Катання на лижах і сноубордах</translation>
 <translation id="7706689436519265630">Файли, які ви копіюєте або переносите, надсилаються на платформу Google Cloud чи стороннім сервісам на аналіз. Наприклад, їх можуть сканувати на наявність чутливих даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії.</translation>
@@ -3645,6 +3654,7 @@
 <translation id="8161095570253161196">Відновити перегляд</translation>
 <translation id="8163866351304776260">Пробити чотири отвори ліворуч</translation>
 <translation id="8164078261547504572">Хочете отримувати електронні листи про зниження цін?</translation>
+<translation id="8169175551046720804">Ключі "<ph name="DATA_CONTROLS_KEYS" />" не можна додати в той самий словник</translation>
 <translation id="8175796834047840627">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях.</translation>
 <translation id="8176440868214972690">Адміністратор пристрою надіслав указаним веб-сайтам деяку інформацію, таку як налаштування й правила.</translation>
 <translation id="817820454357658398">Товари для жіночої гігієни</translation>
@@ -4041,6 +4051,7 @@
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон і уряд</translation>
+<translation id="8952569554322479410">Веб-сайт щойно надіслав такий запит на доступ: <ph name="REQUEST_TYPE" />. Пройдіть опитування, щоб допомогти нам покращити процес запиту доступу веб-сайтами (це займе всього хвилину).</translation>
 <translation id="8954252855949068147">Одяг</translation>
 <translation id="8956124158020778855">Увімкнувши це налаштування, поверніться на поточну вкладку, щоб почати писати.</translation>
 <translation id="8957210676456822347">Авторизація приєднаного порталу</translation>

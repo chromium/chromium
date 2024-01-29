@@ -1500,6 +1500,7 @@ Naujas įdiegimas</translation>
 <translation id="6981291220124935078">Įjungti prieigą</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="698231206551913481">Visi failai ir su šiuo naudotoju susiję duomenys bus ištrinti visam laikui, kai šis naudotojas bus pašalintas.</translation>
+<translation id="6984028004251196682">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Skyra pakeista į <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Peržiūrėkite trumpą „Chromebook“ apžvalgą. Pradėkite dirbti atlikę šešis veiksmus.</translation>
 <translation id="7004910047186208204">Prisijungti prie mobiliojo ryšio duomenų tinklo</translation>
 <translation id="7005239792648594238">Atidarykite programą ir pradėkite</translation>

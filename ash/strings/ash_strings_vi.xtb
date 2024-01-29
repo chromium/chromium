@@ -1500,6 +1500,7 @@ Mới cài đặt</translation>
 <translation id="6981291220124935078">Bật quyền truy cập</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Độ phân giải đã được đổi thành <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Hãy nhấp vào nút xác nhận để lưu các thay đổi. Các chế độ cài đặt trước đó sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="6989752354829085073">Xem hướng dẫn nhanh để biết cách thao tác trên Chromebook. Thiết lập và sử dụng trong 6 bước.</translation>
 <translation id="7004910047186208204">Kết nối với dữ liệu di động</translation>
 <translation id="7005239792648594238">Mở một ứng dụng để bắt đầu</translation>

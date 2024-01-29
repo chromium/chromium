@@ -404,7 +404,7 @@
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4054683689023980771">Downloader billedet</translation>
-<translation id="4060260348856573701">Nyt adgangspunkt</translation>
+<translation id="4060260348856573701">Nyt APN</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="409469431304488632">Eksperiment</translation>
@@ -533,7 +533,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på venstre øretelefon.</translation>
 <translation id="4905998861748258752">Aktivér funktionen for at vælge en pauseskærm</translation>
-<translation id="4910858703033903787">Typer af adgangspunkt</translation>
+<translation id="4910858703033903787">APN-typer</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="491791267030419270">Tips til at skrive feedback</translation>
@@ -664,7 +664,7 @@
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheden er en kombination af et tastatur og en mus</translation>
-<translation id="5904994456462260490">Tilføj et nyt adgangspunkt</translation>
+<translation id="5904994456462260490">Tilføj et nyt APN</translation>
 <translation id="5907649332524363701">farve på taster</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
@@ -762,7 +762,7 @@
 <translation id="6526200165918397681">Match baggrund</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="6535178685492749208">Du er offline. Din feedback sendes senere.</translation>
-<translation id="6557784757915238407">Adgangspunktet er <ph name="ATTACH" />.</translation>
+<translation id="6557784757915238407">APN er <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Farverig</translation>
 <translation id="6564646048574748301">Handlingen mislykkedes – Ingen forbindelse til printer</translation>
@@ -939,7 +939,7 @@
 <translation id="7882358943899516840">Udbydertype</translation>
 <translation id="7882501334836096755">Offentlig nøgle</translation>
 <translation id="7903695460270716054">Vælg udvalgte illustrationer og billeder</translation>
-<translation id="7915220255123750251">Administrer indstillinger for netværksadgangspunkter. Adgangspunkter opretter forbindelse mellem et mobilnetværk og internettet.</translation>
+<translation id="7915220255123750251">Administrer netværksindstillinger for APN. APN opretter forbindelse mellem et mobilnetværk og internettet.</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Fast keepalive-interval</translation>
@@ -1021,7 +1021,7 @@
 <translation id="8498220429738806196">Trafiktællere</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
-<translation id="8508640263392900755">Oplysninger om adgangspunkt</translation>
+<translation id="8508640263392900755">Oplysninger om APN</translation>
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
@@ -1124,7 +1124,7 @@
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Dit tastatur kan automatisk tilpasses din baggrund</translation>
 <translation id="9189000703457422362">Der kan ikke oprettes forbindelse til dette netværk via automatisk registrerede APN'er. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
-<translation id="9193744392140377127">Adgangspunkt*</translation>
+<translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Gateway kan ikke kontaktes fra Android-apps</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>
 <translation id="932327136139879170">Start</translation>

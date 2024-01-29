@@ -1496,6 +1496,7 @@
 <translation id="6981291220124935078">開啟存取權</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
+<translation id="6984028004251196682">「<ph name="DISPLAY_NAME" />」不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解析度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)。如要保留變更，請按一下「確認」。系統會在 <ph name="TIMEOUT_SECONDS" />後還原到先前的設定。</translation>
 <translation id="6989752354829085073">請觀看快速導覽，瞭解如何操作 Chromebook。只要 6 個步驟就能開始運作。</translation>
 <translation id="7004910047186208204">連線至行動數據網路</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>

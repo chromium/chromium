@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Gwall mewnol</translation>
 <translation id="1124772482545689468">Defnyddiwr</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">lluosi</translation>
 <translation id="1145018782460575098">Mae ffenestr diweddaru cadarnwedd ar gyfer dyfeisiau allanol ar agor. Mae <ph name="NUM_UPDATES" /> o ddiweddariadau ar gael.</translation>
 <translation id="1145516343487477149">Dewch o hyd i erthyglau cymorth ac atebion i gwestiynau cyffredin Chromebook</translation>
 <translation id="1154390310959620237">Dim ond 5 llwybr byr y gallwch chi eu haddasu. Dileu llwybr byr i ychwanegu un newydd.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ffitio i'r ardal sganio</translation>
 <translation id="1367951781824006909">Dewis ffeil</translation>
+<translation id="1371650399987522809">Adborth ar gyfer papur wal wedi'i bweru gan AI Google</translation>
 <translation id="1387854245479784695">Cydgasgliad o bob craidd yw hwn</translation>
 <translation id="1394661041439318933">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri cas.</translation>
 <translation id="1397738625398125236">Gellir Pingio porth</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Pad cyffwrdd</translation>
 <translation id="1561927818299383735">lliw ôl-oleuedig</translation>
 <translation id="1565038567006703504">Methu â diweddaru <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">rhannu</translation>
 <translation id="1567064801249837505">Albymau</translation>
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
 <translation id="1578784163189013834">Dewis cefndir yr arbedydd sgrîn</translation>
 <translation id="160633243685262989">Rhagolwg o'r Llun</translation>
 <translation id="1611649489706141841">ymlaen</translation>
 <translation id="1615335640928990664">Defnydd data ers <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Wrthi'n cynhyrchu lluniau...</translation>
 <translation id="1621067168122174824">Rhedeg prawf Gwefru</translation>
 <translation id="1626590945318984973">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd heb ddefnyddio bysellau swyddogaeth a <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Wedi dadwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="2880569433548999039">Arbedwr sgrîn llif cwmwl</translation>
 <translation id="2926057806159140518">Rhowch eich enw defnyddiwr a'ch cyfrinair neu sganiwch eich Cod QR</translation>
+<translation id="2938573842839598578">Am ganlyniad bras, <ph name="OPERATOR_TEXT" /> y gwerth <ph name="CATEGORY_TEXT" /> gan <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Methu â phrofi'r ddyfais. Ailagorwch y caead i brofi.</translation>
 <translation id="2941112035454246133">Isel</translation>
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
 <translation id="3527036260304016759">Wedi methu - Gwall anhysbys</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
+<translation id="3547264467365135390">Fformiwla</translation>
 <translation id="3557205324756024651">Hunaniaeth leol (dewisol)</translation>
 <translation id="3565064564551103223">Cyfeiriadau IP a ganiateir</translation>
 <translation id="3569407787324516067">Arbedydd sgrîn</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7180865173735832675">Personoleiddio</translation>
 <translation id="7184043045742675738">Cliciwch unrhyw allwedd i addasu eich botwm. Ail-leoli allwedd gyda'r llygoden neu'r bysellau saeth.</translation>
+<translation id="7206979415662233817">Telerau gwasanaeth</translation>
 <translation id="7212547870105584639">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Diweddariadau cadarnwedd ar gyfer dyfeisiau allanol</translation>
 <translation id="7216409898977639127">Darparwr Rhwydwaith Symudol</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">lliw bysellfwrdd</translation>
 <translation id="7317831949569936035">Cofrestru ysgol</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Rhaid i chi fod yn 18 oed o leiaf a chytuno bod eich defnydd o bapurau wal AI yn amodol ar <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Delerau Gwasanaeth Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Thelerau Gwasanaeth Ychwanegol AI Cynhyrchiol<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Dim ond ar gyfer defnydd personol ac anfasnachol y gallwch chi greu papurau wal gydag AI. Pan gewch help papur wal, anfonir testun at weinyddion Google AI i gynhyrchu awgrymiadau papur wal, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Bolisi Preifatrwydd Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pwyswch Search a Space i weld y canlyniad yn Google Search.</translation>
 <translation id="7343649194310845056">Dyfeisiau Rhwydwaith</translation>
 <translation id="7353413232959255829">Canlyniad chwilio <ph name="LIST_POSITION" /> o <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pwyswch Enter i lywio i'r llwybr byr.</translation>
