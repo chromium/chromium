@@ -22,7 +22,7 @@ import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shor
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeyState, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData, EditDialogCompletedActions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, EditDialogCompletedActions, UserAction} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

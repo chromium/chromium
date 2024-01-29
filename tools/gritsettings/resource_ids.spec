@@ -1101,7 +1101,7 @@
     "META": {"sizes": {"includes": [200],}},
     "includes": [7460],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [7480],
   },

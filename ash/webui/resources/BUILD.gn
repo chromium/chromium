@@ -41,13 +41,6 @@ ash_generated_grit("camera_app_resources") {
   deps = [ "//ash/webui/camera_app_ui:build_grd" ]
 }
 
-ash_generated_grit("shortcut_customization_app_resources") {
-  shortcut_customization_app_gen_dir =
-      "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"
-  source = "$shortcut_customization_app_gen_dir/ash_shortcut_customization_app_resources.grd"
-  deps = [ "//ash/webui/shortcut_customization_ui/resources:build_grd" ]
-}
-
 ash_generated_grit("files_internals_resources") {
   source = "$root_gen_dir/ash/webui/files_internals/ash_files_internals_resources.grd"
   deps = [ "//ash/webui/files_internals:build_grd" ]

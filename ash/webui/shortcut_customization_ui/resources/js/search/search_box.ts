@@ -19,7 +19,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchResultsAvailabilityObserverInterface, SearchResultsAvailabilityObserverReceiver} from '../../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
+import {SearchResultsAvailabilityObserverInterface, SearchResultsAvailabilityObserverReceiver} from '../../mojom-webui/search.mojom-webui.js';
 import {AcceleratorState, MojoSearchResult, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
 import {isCustomizationAllowed} from '../shortcut_utils.js';
 

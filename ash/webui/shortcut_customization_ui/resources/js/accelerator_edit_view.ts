@@ -16,7 +16,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';

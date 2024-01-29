@@ -12,7 +12,7 @@ mojom("mojom") {
 
   sources = [ "shortcut_customization.mojom" ]
 
-  webui_module_path = "/ash/webui/shortcut_customization_ui/mojom"
+  webui_module_path = "/"
 
   public_deps = [
     "//ash/public/mojom:accelerator_configuration",

@@ -15,7 +15,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EditDialogCompletedActions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {EditDialogCompletedActions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
