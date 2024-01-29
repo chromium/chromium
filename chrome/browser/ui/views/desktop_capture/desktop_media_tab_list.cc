@@ -327,6 +327,7 @@ DesktopMediaTabList::~DesktopMediaTabList() {
       highlighted_tabs);
 
   table_->SetModel(nullptr);
+  table_->set_observer(nullptr);
 }
 
 gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
