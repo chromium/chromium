@@ -152,9 +152,14 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
                                 deletion_start));
 
     remover->AddObserver(state_clearer);
+    chrome_browsing_data_remover::DataType remove_mask =
+        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
+    if (base::FeatureList::IsEnabled(features::kDIPSPreservePSData)) {
+      remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    }
     remover->RemoveWithFilterAndReply(
         base::Time::Min(), base::Time::Max(),
-        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+        remove_mask |
             content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
             content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,

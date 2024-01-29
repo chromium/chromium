@@ -79,6 +79,7 @@ CONTENT_EXPORT extern const base::FeatureParam<content::DIPSTriggeringAction>
     kDIPSTriggeringAction;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDIPSClientBounceDetectionTimeout;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPSPreservePSData);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kDisconnectExtensionMessagePortWhenPageEntersBFCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDrawCutoutEdgeToEdge);
