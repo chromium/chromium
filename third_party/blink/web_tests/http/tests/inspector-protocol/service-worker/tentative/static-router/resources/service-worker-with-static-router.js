@@ -1,7 +1,7 @@
 'use strict';
 
 self.addEventListener('install', async e => {
-  await e.registerRouter([
+  await e.addRoutes([
     {condition: {requestMethod: 'POST'}, source: 'network'},
     {condition: {urlPattern: '/**/*.txt??*'}, source: 'fetch-event'}
   ]);

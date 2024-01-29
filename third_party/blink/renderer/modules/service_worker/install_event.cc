@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_routerrule_routerrulesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -91,6 +92,11 @@ ScriptPromise InstallEvent::registerRouter(
               "registerRouter() and addRoutes() can not be called at the same "
               "time."));
   }
+  global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "registerRouter() has been deprecated. "
+      "Please use addRoutes() instead."));
 
   blink::ServiceWorkerRouterRules rules;
   ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
