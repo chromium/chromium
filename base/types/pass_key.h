@@ -36,11 +36,8 @@ namespace base {
 // making the constructor unusable elsewhere.
 template <typename T>
 class PassKey {
- private:
-  // Avoid =default to disallow creation by uniform initialization.
-  PassKey() {}
-
   friend T;
+  PassKey() = default;
 };
 
 }  // namespace base

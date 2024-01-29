@@ -7,6 +7,8 @@
 
 #include "base/types/pass_key.h"
 
+#include <utility>
+
 namespace base {
 
 class Manager;
@@ -14,15 +16,15 @@ class Manager;
 // May not be created without a PassKey.
 class Restricted {
  public:
-  Restricted(base::PassKey<Manager>) {}
+  Restricted(PassKey<Manager>) {}
 };
 
-void Secret(base::PassKey<Manager>) {}
+void Secret(PassKey<Manager>) {}
 
 void CannotConstructFieldFromTemporaryPassKey() {
   class NotAManager {
    public:
-    NotAManager() : restricted_(base::PassKey<Manager>()) {}  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
+    NotAManager() : restricted_(PassKey<Manager>()) {}  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
 
    private:
     Restricted restricted_;
@@ -40,7 +42,7 @@ void CannotConstructFieldFromImplicitPassKey() {
 }
 
 void CannotConstructTemporaryPassKey() {
-  Secret(base::PassKey<Manager>());  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
+  Secret(PassKey<Manager>());  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
 }
 
 void CannotConstructPassKeyImplicitly() {
@@ -48,7 +50,7 @@ void CannotConstructPassKeyImplicitly() {
 }
 
 void CannotConstructNamedPassKey() {
-  base::PassKey<Manager> key {};  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
+  PassKey<Manager> key {};  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
   Secret(key);
 }
 
