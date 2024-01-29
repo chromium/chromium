@@ -4,7 +4,9 @@
 
 #include "media/midi/midi_manager_win.h"
 
-#include <windows.h>
+// clang-format off
+#include <windows.h> // Must be in front of other Windows header files.
+// clang-format on
 
 #include <ks.h>
 #include <ksmedia.h>
