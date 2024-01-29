@@ -287,6 +287,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_InitialDocumentPath) {
   request->initial_document_path = arc::mojom::DocumentPath::New();
   request->initial_document_path->authority = "testing.provider";
   request->initial_document_path->path = {"doc:root", "doc:file1"};
+  request->initial_document_path->root_id = "root";
 
   // "doc:file1" is expected to be ignored.
   base::FilePath expected_file_path = base::FilePath(
