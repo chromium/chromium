@@ -12,27 +12,20 @@
 #include "base/notreached.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/browser_context.h"
-#include "ui/accessibility/ax_action_data.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/transform.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-using screen_ai::ScreenAIInstallState;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
 
@@ -62,44 +55,22 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
     return;
   }
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    CHECK(ScreenAIInstallState::GetInstance())
-        << "`ScreenAIInstallState` should always be created on browser "
-           "startup.";
-    screen_ai_install_state_ = ScreenAIInstallState::GetInstance()->get_state();
-    screen_ai_component_state_observer_.Observe(
-        ScreenAIInstallState::GetInstance());
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+      std::to_address(browser_context_))
+      ->GetServiceStateAsync(
+          screen_ai::ScreenAIServiceRouter::Service::kOCR,
+          base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
+                         weak_ptr_factory_.GetWeakPtr()));
 
-    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (is_ocr_service_enabled_for_testing_) {
-    return true;
-  }
-  CHECK(ScreenAIInstallState::GetInstance())
-      << "`ScreenAIInstallState` should always be created on browser startup.";
-  switch (screen_ai_install_state_) {
-    case ScreenAIInstallState::State::kNotDownloaded:
-      ScreenAIInstallState::GetInstance()->DownloadComponent();
-      [[fallthrough]];
-    case ScreenAIInstallState::State::kFailed:
-    case ScreenAIInstallState::State::kDownloading:
-      return false;
-    case ScreenAIInstallState::State::kDownloaded:
-    case ScreenAIInstallState::State::kReady:
-      return true;
-  }
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  return screen_ai_annotator_.is_bound() || is_ocr_service_enabled_for_testing_;
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXMediaAppUntrustedHandler::SetScreenAIAnnotatorForTesting(
     mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
         screen_ai_annotator) {
@@ -111,26 +82,25 @@ void AXMediaAppUntrustedHandler::FlushForTesting() {
   screen_ai_annotator_.FlushForTesting();  // IN-TEST
 }
 
-void AXMediaAppUntrustedHandler::StateChanged(
-    ScreenAIInstallState::State state) {
-  if (screen_ai_install_state_ == state) {
+void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
+  if (!successful) {
     return;
   }
-  screen_ai_install_state_ = state;
-  bool is_ocr_service_enabled = IsOcrServiceEnabled();
-  if (is_ocr_service_enabled && !screen_ai_annotator_.is_bound()) {
-    screen_ai::ScreenAIServiceRouter* service_router =
-        screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-            std::to_address(browser_context_));
-    service_router->BindScreenAIAnnotator(
-        screen_ai_annotator_.BindNewPipeAndPassReceiver());
-    OcrNextDirtyPageIfAny();
-  }
+
+  // This is expected to be called only once.
+  CHECK(!screen_ai_annotator_.is_bound());
+
+  screen_ai::ScreenAIServiceRouter* service_router =
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+          std::to_address(browser_context_));
+  service_router->BindScreenAIAnnotator(
+      screen_ai_annotator_.BindNewPipeAndPassReceiver());
+  OcrNextDirtyPageIfAny();
+
   if (media_app_) {
-    media_app_->OcrServiceEnabledChanged(is_ocr_service_enabled);
+    media_app_->OcrServiceEnabledChanged(true);
   }
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
   return base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
@@ -262,7 +232,6 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
                                                  float scale_factor) {}
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
     const std::string& page_id,
     const gfx::RectF& page_location) {
@@ -341,6 +310,5 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   // TODO(nektar): Attach the page to the tree for the main PDF document.
   OcrNextDirtyPageIfAny();
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace ash

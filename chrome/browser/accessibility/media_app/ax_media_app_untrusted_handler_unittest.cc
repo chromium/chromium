@@ -112,23 +112,6 @@ class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-TEST_F(AXMediaAppUntrustedHandlerTest, IsOcrServiceEnabled) {
-  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
-  EXPECT_FALSE(fake_media_app_.IsOcrServiceEnabled());
-
-  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
-      screen_ai::ScreenAIInstallState::State::kReady);
-  EXPECT_TRUE(handler_->IsOcrServiceEnabled());
-  EXPECT_TRUE(fake_media_app_.IsOcrServiceEnabled());
-
-  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
-      screen_ai::ScreenAIInstallState::State::kNotDownloaded);
-  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
-  EXPECT_FALSE(fake_media_app_.IsOcrServiceEnabled());
-}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
   EXPECT_FALSE(handler_->IsAccessibilityEnabled());
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
