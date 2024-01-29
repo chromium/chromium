@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -189,6 +190,20 @@ class CORE_EXPORT CSSParserToken {
       default:
         NOTREACHED();
         return kEOFToken;
+    }
+  }
+
+  // For debugging/logging only.
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const CSSParserToken& token) {
+    if (token.GetType() == kEOFToken) {
+      return stream << "<EOF>";
+    } else if (token.GetType() == kCommentToken) {
+      return stream << "/* comment */";
+    } else {
+      StringBuilder sb;
+      token.Serialize(sb);
+      return stream << sb.ToString();
     }
   }
 
