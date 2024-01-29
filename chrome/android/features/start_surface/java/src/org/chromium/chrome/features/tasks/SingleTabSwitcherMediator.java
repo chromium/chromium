@@ -127,7 +127,17 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                         assert mPropertyModel.get(IS_VISIBLE) || mModuleDelegate != null;
 
                         mSelectedTabDidNotChangedAfterShown = false;
-                        updateSelectedTab(tab);
+                        if (mModuleDelegate != null
+                                && type == TabSelectionType.FROM_CLOSE
+                                && UrlUtilities.isNtpUrl(tab.getUrl())) {
+                            // When the single tab card is shown as a module, it needs to change its
+                            // visibility if the previously selected Tab is deleted and the newly
+                            // selected Tab is a NTP.
+                            moduleDelegate.removeModule(getModuleType());
+                        } else {
+                            updateSelectedTab(tab);
+                        }
+
                         if (type == TabSelectionType.FROM_CLOSE
                                 || type == TabSelectionType.FROM_UNDO
                                 || mShouldIgnoreNextSelect) {
