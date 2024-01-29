@@ -1,14 +1,14 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
-/**
- * rotate90: clockwise degrees / 90.
- *
- * @typedef {{scaleX: number, scaleY: number, rotate90: number}}
- */
-export let ImageTransformParam;
+export interface ImageTransformParam {
+  scaleX: number;
+  scaleY: number;
+
+  /** Clockwise degrees / 90. */
+  rotate90: number;
+}
 
 /**
  * Class representing image orientation.
@@ -19,30 +19,15 @@ export class ImageOrientation {
    * The constructor takes 2x2 matrix value that cancels the image orientation:
    * |a, c|
    * |b, d|
-   * @param {number} a
-   * @param {number} b
-   * @param {number} c
-   * @param {number} d
    */
-  constructor(a, b, c, d) {
-    /** @public @const {number} */
-    this.a = a;
-
-    /** @public @const {number} */
-    this.b = b;
-
-    /** @public @const {number} */
-    this.c = c;
-
-    /** @public @const {number} */
-    this.d = d;
-  }
+  constructor(
+      public readonly a: number, public readonly b: number,
+      public readonly c: number, public readonly d: number) {}
 
   /**
-   * @param {number} orientation 1-based orientation number defined by EXIF.
-   * @return {!ImageOrientation}
+   * @param orientation 1-based orientation number defined by EXIF.
    */
-  static fromExifOrientation(orientation) {
+  static fromExifOrientation(orientation: number): ImageOrientation {
     switch (~~orientation) {
       case 1:
         return new ImageOrientation(1, 0, 0, 1);
@@ -61,16 +46,15 @@ export class ImageOrientation {
       case 8:
         return new ImageOrientation(0, -1, 1, 0);
       default:
-        console.error('Invalid orientation number.');
+        console.error(`Invalid orientation number: ${orientation}`);
         return new ImageOrientation(1, 0, 0, 1);
     }
   }
 
   /**
-   * @param {number} rotation90 Clockwise degrees / 90.
-   * @return {!ImageOrientation}
+   * @param rotation90 Clockwise degrees / 90.
    */
-  static fromClockwiseRotation(rotation90) {
+  static fromClockwiseRotation(rotation90: number): ImageOrientation {
     switch (~~(rotation90 % 4)) {
       case 0:
         return new ImageOrientation(1, 0, 0, 1);
@@ -84,17 +68,14 @@ export class ImageOrientation {
       case -1:
         return new ImageOrientation(0, -1, 1, 0);
       default:
-        console.error('Invalid orientation number.');
+        console.error(`Invalid rotation number: ${rotation90}`);
         return new ImageOrientation(1, 0, 0, 1);
     }
   }
 
-  /**
-   * Builds a transformation matrix from the image transform parameters.
-   * @param {!ImageTransformParam} transform
-   * @return {!ImageOrientation}
-   */
-  static fromRotationAndScale(transform) {
+  /** Builds a transformation matrix from the image transform parameters. */
+  static fromRotationAndScale(transform: ImageTransformParam):
+      ImageOrientation {
     const scaleX = transform.scaleX;
     const scaleY = transform.scaleY;
     const rotate90 = transform.rotate90;
@@ -113,13 +94,9 @@ export class ImageOrientation {
         orientation.d * scaleY);
   }
 
-  /**
-   * Obtains the image size after cancelling its orientation.
-   * @param {number} imageWidth
-   * @param {number} imageHeight
-   * @return {{width:number, height:number}}
-   */
-  getSizeAfterCancelling(imageWidth, imageHeight) {
+  /** Obtains the image size after cancelling its orientation. */
+  getSizeAfterCancelling(imageWidth: number, imageHeight: number):
+      {width: number, height: number} {
     const projectedX = this.a * imageWidth + this.c * imageHeight;
     const projectedY = this.b * imageWidth + this.d * imageHeight;
     return {
@@ -131,11 +108,10 @@ export class ImageOrientation {
   /**
    * Applies the transformation that cancels the image orientation to the given
    * context.
-   * @param {!CanvasRenderingContext2D} context
-   * @param {number} imageWidth
-   * @param {number} imageHeight
    */
-  cancelImageOrientation(context, imageWidth, imageHeight) {
+  cancelImageOrientation(
+      context: CanvasRenderingContext2D, imageWidth: number,
+      imageHeight: number) {
     // Calculate where to project the point of (imageWidth, imageHeight).
     const projectedX = this.a * imageWidth + this.c * imageHeight;
     const projectedY = this.b * imageWidth + this.d * imageHeight;
@@ -150,9 +126,8 @@ export class ImageOrientation {
 
   /**
    * Checks if the orientation represents identity transformation or not.
-   * @return {boolean}
    */
-  isIdentity() {
+  isIdentity(): boolean {
     return this.a === 1 && this.b === 0 && this.c === 0 && this.d === 1;
   }
 }

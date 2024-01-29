@@ -3,7 +3,6 @@ image_loader_static_js_files = [
   "image_loader/image_loader.js",
   "image_loader/image_loader_client.js",
   "image_loader/image_loader_util.js",
-  "image_loader/image_orientation.js",
   "image_loader/image_request_task.js",
   "image_loader/load_image_request.js",
   "image_loader/piex_loader.js",
@@ -11,6 +10,7 @@ image_loader_static_js_files = [
 ]
 
 image_loader_ts = [
+  "image_loader/image_orientation.ts",
   "image_loader/background.ts",
   "image_loader/cache.ts",
 ]

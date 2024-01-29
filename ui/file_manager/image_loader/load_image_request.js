@@ -4,7 +4,6 @@
 // @ts-nocheck
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {ImageOrientation, ImageTransformParam} from './image_orientation.js';
 
 
 /**
@@ -109,7 +108,9 @@ export class LoadImageRequest {
      */
     this.url;
 
-    /** @type{ImageOrientation|ImageTransformParam|undefined} */
+    /**
+     * @type{import('./image_orientation.js').ImageOrientation|import('./image_orientation.js').ImageTransformParam|undefined}
+     */
     this.orientation;
     /** @type {number|undefined} */
     this.scale;
@@ -180,7 +181,7 @@ export class LoadImageRequest {
    *   cache: boolean,
    *   priority: number,
    *   timestamp: (number|undefined),
-   *   orientation: ?ImageTransformParam,
+   *   orientation: ?import('./image_orientation.js').ImageTransformParam,
    * }} params Request parameters.
    * @return {!LoadImageRequest}
    */
