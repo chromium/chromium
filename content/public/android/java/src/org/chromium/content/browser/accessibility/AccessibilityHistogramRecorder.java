@@ -367,6 +367,5 @@ public class AccessibilityHistogramRecorder {
 
         // Reset values.
         mTimeOfFirstShown = -1;
-        mTimeOfNativeInitialization = -1;
     }
 }
