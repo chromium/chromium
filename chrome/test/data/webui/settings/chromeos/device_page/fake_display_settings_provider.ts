@@ -34,6 +34,10 @@ export class FakeDisplaySettingsProvider implements
   // orientation. The value indicates the histogram count.
   private displayOrientationHistogram =
       new Map<boolean, Map<DisplaySettingsOrientationOption, number>>();
+  // First key indicates internal or external display. Second key indicates the
+  // night light status. The value indicates the histogram count.
+  private displayNightLightStatusHistogram =
+      new Map<boolean, Map<boolean, number>>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -91,6 +95,17 @@ export class FakeDisplaySettingsProvider implements
           (orientationHistogram.get(value.orientation) || 0) + 1);
       this.displayOrientationHistogram.set(
           value.isInternalDisplay, orientationHistogram);
+    } else if (
+        type === displaySettingsProviderMojom.DisplaySettingsType.kNightLight &&
+        value.isInternalDisplay !== undefined &&
+        value.nightLightStatus !== undefined) {
+      const nightLightStatusHistogram =
+          this.getDisplayNightLightStatusHistogram(value.isInternalDisplay);
+      nightLightStatusHistogram.set(
+          value.nightLightStatus,
+          (nightLightStatusHistogram.get(value.nightLightStatus) || 0) + 1);
+      this.displayNightLightStatusHistogram.set(
+          value.isInternalDisplay, nightLightStatusHistogram);
     }
   }
 
@@ -110,5 +125,11 @@ export class FakeDisplaySettingsProvider implements
       Map<DisplaySettingsOrientationOption, number> {
     return this.displayOrientationHistogram.get(isInternalDisplay) ||
         new Map<DisplaySettingsOrientationOption, number>();
+  }
+
+  getDisplayNightLightStatusHistogram(isInternalDisplay: boolean):
+      Map<boolean, number> {
+    return this.displayNightLightStatusHistogram.get(isInternalDisplay) ||
+        new Map<boolean, number>();
   }
 }

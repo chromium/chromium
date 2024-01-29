@@ -380,6 +380,14 @@ suite('<settings-display>', () => {
           externalDisplayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kNightLight));
 
+      const externalDisplayNightLightStatusHistogram =
+          displaySettingsProvider.getDisplayNightLightStatusHistogram(
+              /*is_internal=*/ false);
+      assertEquals(
+          1,
+          externalDisplayNightLightStatusHistogram.get(
+              /*night_light_status=*/ true));
+
       // Mock user updating night light schedule.
       const schedule = displayNightLight.shadowRoot!
                            .querySelector<SettingsDropdownMenuElement>(

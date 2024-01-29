@@ -50,6 +50,10 @@ struct DisplaySettingsValue {
   // The orientation of the display. This is available only when display
   // orientation is changed.
   DisplaySettingsOrientationOption? orientation;
+
+  // The night light status of the display. This is available only when
+  // display night light status is changed.
+  bool? night_light_status;
 };
 
 // Implemented by clients that wish to be notified when the tablet mode is

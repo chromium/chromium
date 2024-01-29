@@ -172,13 +172,12 @@ export class SettingsDisplayNightLightElement extends
     // undefined.
     if (this.currentScheduleType !== scheduleType &&
         this.currentScheduleType !== undefined) {
-      this.recordNightLightSettingsMetrics(
-          DisplaySettingsType.kNightLightSchedule, this.isInternalDisplay);
+      this.recordChangingNightLightSchedule(this.isInternalDisplay);
     }
     if (this.currentNightLightStatus !== nightLightStatus &&
         this.currentNightLightStatus !== undefined) {
-      this.recordNightLightSettingsMetrics(
-          DisplaySettingsType.kNightLight, this.isInternalDisplay);
+      this.recordTogglingNightLightStatus(
+          this.isInternalDisplay, nightLightStatus);
     }
 
     // Updates current schedule type and night light status.
@@ -186,12 +185,17 @@ export class SettingsDisplayNightLightElement extends
     this.currentNightLightStatus = nightLightStatus;
   }
 
-  // Records metrics when users change the night light settings.
-  private recordNightLightSettingsMetrics(
-      displaySettingsType: DisplaySettingsType,
-      isInternalDisplay: boolean): void {
+  // Records metrics when users change the night light schedule.
+  private recordChangingNightLightSchedule(isInternalDisplay: boolean): void {
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        displaySettingsType, {isInternalDisplay});
+        DisplaySettingsType.kNightLightSchedule, {isInternalDisplay});
+  }
+
+  // Records metrics when users toggle the night light status.
+  private recordTogglingNightLightStatus(
+      isInternalDisplay: boolean, nightLightStatus: boolean): void {
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kNightLight, {isInternalDisplay, nightLightStatus});
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

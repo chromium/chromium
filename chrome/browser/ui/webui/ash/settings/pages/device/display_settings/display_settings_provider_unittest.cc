@@ -172,6 +172,8 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         if (type == mojom::DisplaySettingsType::kOrientation) {
           value->orientation =
               mojom::DisplaySettingsOrientationOption::k90Degree;
+        } else if (type == mojom::DisplaySettingsType::kNightLight) {
+          value->night_light_status = true;
         }
         provider_->RecordChangingDisplaySettings(type, std::move(value));
 
@@ -206,6 +208,27 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplayOrientationHistogram) {
       histogram_name.append(internal ? ".Internal" : ".External");
       histogram_name.append(".Orientation");
       histogram_tester_.ExpectBucketCount(histogram_name, orientation, 1);
+    }
+  }
+}
+
+// Test histogram is recorded when users toggle display night light status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightStatusHistogram) {
+  for (bool night_light_status : {true, false}) {
+    // Settings applied to either internal or external displays.
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      value->night_light_status = night_light_status;
+      provider_->RecordChangingDisplaySettings(
+          mojom::DisplaySettingsType::kNightLight, std::move(value));
+
+      std::string histogram_name(
+          DisplaySettingsProvider::kDisplaySettingsHistogramName);
+      histogram_name.append(internal ? ".Internal" : ".External");
+      histogram_name.append(".NightLightStatus");
+      histogram_tester_.ExpectBucketCount(histogram_name, night_light_status,
+                                          1);
     }
   }
 }

@@ -137,11 +137,16 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
   }
   base::UmaHistogramEnumeration(histogram_name, type);
 
-  // Record detailed orientation settings change.
+  // Record settings change in details.
   if (type == mojom::DisplaySettingsType::kOrientation) {
     CHECK(value->orientation.has_value());
     histogram_name.append(".Orientation");
     base::UmaHistogramEnumeration(histogram_name, value->orientation.value());
+  } else if (type == mojom::DisplaySettingsType::kNightLight) {
+    CHECK(value->night_light_status.has_value());
+    histogram_name.append(".NightLightStatus");
+    base::UmaHistogramBoolean(histogram_name,
+                              value->night_light_status.value());
   }
 
   // Record default display settings performance metrics.

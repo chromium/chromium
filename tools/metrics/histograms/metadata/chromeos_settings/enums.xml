@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplaySettingsBoolean">
+  <int value="0" label="Off"/>
+  <int value="1" label="On"/>
+</enum>
+
 <enum name="DisplaySettingsOrientationOption">
   <int value="0" label="Auto"/>
   <int value="1" label="0 degree"/>
