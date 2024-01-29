@@ -5,9 +5,13 @@
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_restrictions.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
@@ -44,6 +48,16 @@ bool BoardSupportsVulkan() {
   return board[0] == "brya" || board[0] == "volteer" || board[0] == "dedede";
 }
 
+// Returns whether a USE flag is present in tast_use_flags.txt. USE flags are
+// often used to control which software features a board supports.
+bool BoardHasUseFlag(const char* flag) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string use_flags;
+  CHECK(base::ReadFileToString(
+      base::FilePath("/usr/local/etc/tast_use_flags.txt"), &use_flags));
+  return base::Contains(use_flags, flag);
+}
+
 }  // namespace
 
 bool ShouldRunInformationalTests() {
@@ -55,6 +69,8 @@ bool HasRequirement(Requirement r) {
   switch (r) {
     case Requirement::kBluetooth:
       return BoardSupportsBluetooth();
+    case Requirement::kOndeviceHandwriting:
+      return BoardHasUseFlag("ondevice_handwriting");
     case Requirement::kVulkan:
       return BoardSupportsVulkan();
   }

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -19,22 +17,13 @@
 
 namespace {
 
-// Returns whether the current device supports on-device handwriting, based on
-// the presence of a USE flag in tast_use_flags.txt.
-bool SupportsOndeviceHandwriting() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string use_flags;
-  CHECK(base::ReadFileToString(
-      base::FilePath("/usr/local/etc/tast_use_flags.txt"), &use_flags));
-  return base::Contains(use_flags, "ondevice_handwriting");
-}
-
 // TODO(jamescook): Support Lacros. This will require crosapi to be bootstrapped
 // for Lacros Crosier tests.
 class WebHandwritingIntegrationTest : public MixinBasedInProcessBrowserTest {
  public:
   WebHandwritingIntegrationTest()
-      : supports_ondevice_handwriting_(SupportsOndeviceHandwriting()) {}
+      : supports_ondevice_handwriting_(crosier::HasRequirement(
+            crosier::Requirement::kOndeviceHandwriting)) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
