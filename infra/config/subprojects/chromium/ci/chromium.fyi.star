@@ -1233,7 +1233,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
         "build2": gn_args.config(
@@ -1242,7 +1241,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
     },
@@ -1271,7 +1269,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
         "build2": gn_args.config(
@@ -1281,7 +1278,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
     },
@@ -1310,7 +1306,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
         "build2": gn_args.config(
@@ -1320,7 +1315,6 @@ fyi_mac_reclient_comparison_builder(
                 "release_builder",
                 "reclient",
                 "minimal_symbols",
-                "disable_nacl",
             ],
         ),
     },
@@ -2517,7 +2511,6 @@ fyi_mac_builder(
             "gpu_tests",
             "debug_static_builder",
             "reclient",
-            "disable_nacl",
             "dcheck_off",
             "shared",
         ],
@@ -2723,7 +2716,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "arm64",
-            "disable_nacl",
             "minimal_symbols",
             "release_builder",
             "reclient",

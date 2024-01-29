@@ -2,7 +2,6 @@
   "gn_args": {
     "dcheck_always_on": true,
     "enable_mojom_fuzzer": true,
-    "enable_nacl": false,
     "ffmpeg_branding": "ChromeOS",
     "generate_fuzzer_owners": false,
     "is_asan": true,

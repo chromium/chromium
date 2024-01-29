@@ -484,7 +484,6 @@ gn_args.config(
     configs = [
         "debug",
         "full_symbols",
-        "disable_nacl",
         "shared",
     ],
 )
@@ -493,13 +492,6 @@ gn_args.config(
     name = "devtools_do_typecheck",
     args = {
         "devtools_skip_typecheck": False,
-    },
-)
-
-gn_args.config(
-    name = "disable_nacl",
-    args = {
-        "enable_nacl": False,
     },
 )
 
@@ -1305,7 +1297,6 @@ gn_args.config(
     },
     configs = [
         "x86",
-        "disable_nacl",
     ],
 )
 

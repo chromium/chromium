@@ -431,7 +431,6 @@ coverage_builder(
             "mojo_fuzzer",
             "libfuzzer",
             "dcheck_off",
-            "disable_nacl",
             "reclient",
             "chromeos_codecs",
             "pdf_xfa",

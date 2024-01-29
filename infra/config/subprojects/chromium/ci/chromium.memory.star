@@ -138,7 +138,6 @@ linux_memory_builder(
     gn_args = gn_args.config(
         configs = [
             "tsan",
-            "disable_nacl",
             "release_builder",
             "reclient",
         ],
@@ -464,7 +463,6 @@ ci.builder(
         configs = [
             "asan",
             "minimal_symbols",
-            "disable_nacl",
             "release_builder",
             "reclient",
             "dcheck_always_on",

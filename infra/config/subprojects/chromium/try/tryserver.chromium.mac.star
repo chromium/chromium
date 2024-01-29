@@ -377,7 +377,6 @@ try_.builder(
         configs = [
             "release_try_builder",
             "reclient",
-            "disable_nacl",
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -438,7 +437,6 @@ try_.builder(
         configs = [
             "asan",
             "dcheck_always_on",
-            "disable_nacl",
             "release_builder",
             "reclient",
         ],
@@ -805,7 +803,6 @@ try_.gpu.optional_tests_builder(
             "minimal_symbols",
             "dcheck_always_on",
             "x64",
-            "disable_nacl",
         ],
     ),
     cpu = cpu.ARM64,

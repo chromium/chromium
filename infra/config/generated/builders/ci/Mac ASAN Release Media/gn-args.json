@@ -2,7 +2,6 @@
   "gn_args": {
     "dcheck_always_on": false,
     "enable_ipc_fuzzer": true,
-    "enable_nacl": false,
     "ffmpeg_branding": "Chrome",
     "is_asan": true,
     "is_component_build": false,

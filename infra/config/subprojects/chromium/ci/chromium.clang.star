@@ -821,7 +821,6 @@ clang_tot_linux_builder(
             "release",
             "chromeos_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "optimize_for_fuzzing",
             "mojo_fuzzer",
         ],
@@ -1176,7 +1175,6 @@ ci.builder(
             "release",
             "chrome_with_codecs",
             "pdf_xfa",
-            "disable_nacl",
             "minimal_symbols",
         ],
     ),
@@ -1477,7 +1475,6 @@ clang_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "asan",
-            "disable_nacl",
             "clang_tot",
             "minimal_symbols",
             "release_builder",

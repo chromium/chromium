@@ -215,7 +215,6 @@ blink_mac_builder(
             "reclient",
             "chrome_with_codecs",
             "minimal_symbols",
-            "disable_nacl",
         ],
     ),
 )
@@ -245,7 +244,6 @@ blink_mac_builder(
             "reclient",
             "chrome_with_codecs",
             "minimal_symbols",
-            "disable_nacl",
         ],
     ),
     builderless = False,
@@ -307,7 +305,6 @@ blink_mac_builder(
             "reclient",
             "chrome_with_codecs",
             "minimal_symbols",
-            "disable_nacl",
         ],
     ),
 )
@@ -367,7 +364,6 @@ blink_mac_builder(
             "reclient",
             "chrome_with_codecs",
             "minimal_symbols",
-            "disable_nacl",
         ],
     ),
 )
