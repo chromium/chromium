@@ -502,6 +502,9 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
   }
 
   switch (model_->step()) {
+    case IsolatedWebAppInstallerModel::Step::kNone:
+      NOTREACHED();
+      break;
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CLOSE,

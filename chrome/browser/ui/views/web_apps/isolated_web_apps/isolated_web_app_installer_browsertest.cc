@@ -12,6 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/fake_pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
@@ -99,33 +100,27 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   base::FilePath bundle_path = BuildBundleAndWrite(
       "test_bundle_good.swbn", "1.0.0", /*errors=*/std::nullopt);
 
-  std::unique_ptr<IsolatedWebAppInstallerModel> model =
-      std::make_unique<IsolatedWebAppInstallerModel>(bundle_path);
-
-  std::unique_ptr<FakeIsolatedWebAppsEnabledPrefObserver> pref_observer =
-      std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(
-          /*initial_value=*/true);
-
-  std::unique_ptr<IsolatedWebAppInstallerViewController> controller =
-      std::make_unique<IsolatedWebAppInstallerViewController>(
-          profile(), WebAppProvider::GetForWebApps(profile()), model.get(),
-          std::move(pref_observer));
-
-  TestIsolatedWebAppInstallerModelObserver model_observer(model.get());
-
-  base::test::TestFuture<void> on_ready_to_show_future;
   base::test::TestFuture<void> on_closed_future;
-  controller->Start(on_ready_to_show_future.GetCallback(),
-                    on_closed_future.GetCallback());
-  ASSERT_TRUE(on_ready_to_show_future.Wait());
 
-  controller->Show();
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), bundle_path, on_closed_future.GetCallback(),
+          std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true));
 
-  views::Widget* main_widget = controller->GetWidgetForTesting();
-  ASSERT_TRUE(main_widget);
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  IsolatedWebAppInstallerViewController* controller =
+      coordinator->GetControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  TestIsolatedWebAppInstallerModelObserver model_observer(model);
 
   model_observer.WaitForStepChange(
       IsolatedWebAppInstallerModel::Step::kShowMetadata);
+
+  views::Widget* main_widget = controller->GetWidgetForTesting();
+  ASSERT_TRUE(main_widget);
 
   AcceptDialogAndContinue(main_widget);
 

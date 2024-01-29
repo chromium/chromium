@@ -21,20 +21,34 @@ namespace web_app {
 
 class IsolatedWebAppInstallerModel;
 class IsolatedWebAppInstallerViewController;
+class IsolatedWebAppsEnabledPrefObserver;
 
 class IsolatedWebAppInstallerCoordinator {
  public:
-  IsolatedWebAppInstallerCoordinator(Profile* profile,
-                                     const base::FilePath& bundle_path,
-                                     base::OnceClosure on_closed_callback);
+  static IsolatedWebAppInstallerCoordinator* CreateAndStart(
+      Profile* profile,
+      const base::FilePath& bundle_path,
+      base::OnceClosure on_closed_callback,
+      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
 
   ~IsolatedWebAppInstallerCoordinator();
 
-  void Show(base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 
   void FocusWindow();
 
+  IsolatedWebAppInstallerModel* GetModelForTesting();
+
+  IsolatedWebAppInstallerViewController* GetControllerForTesting();
+
  private:
+  IsolatedWebAppInstallerCoordinator(
+      Profile* profile,
+      const base::FilePath& bundle_path,
+      base::OnceClosure on_closed_callback,
+      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
+
+  void Start(base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
+
   void OnDialogClosed(
       base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 

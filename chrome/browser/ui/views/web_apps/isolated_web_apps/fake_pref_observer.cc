@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
+namespace web_app {
+
 FakeIsolatedWebAppsEnabledPrefObserver::FakeIsolatedWebAppsEnabledPrefObserver(
     bool initial_value)
     : pref_value_(initial_value) {}
@@ -33,3 +35,5 @@ void FakeIsolatedWebAppsEnabledPrefObserver::UpdatePrefValue(
         FROM_HERE, base::BindOnce(callback_, new_pref_value));
   }
 }
+
+}  // namespace web_app

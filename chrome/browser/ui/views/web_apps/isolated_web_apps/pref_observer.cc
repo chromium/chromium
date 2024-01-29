@@ -9,6 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 
+namespace web_app {
+
 class IsolatedWebAppsEnabledPrefObserverDefault
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
@@ -35,3 +37,5 @@ std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
 IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
   return std::make_unique<IsolatedWebAppsEnabledPrefObserverDefault>();
 }
+
+}  // namespace web_app

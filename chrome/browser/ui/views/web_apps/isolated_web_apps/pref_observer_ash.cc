@@ -12,6 +12,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
+namespace web_app {
+
 class IsolatedWebAppsEnabledPrefObserverAsh
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
@@ -69,3 +71,5 @@ std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
 IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
   return std::make_unique<IsolatedWebAppsEnabledPrefObserverAsh>(profile);
 }
+
+}  // namespace web_app
