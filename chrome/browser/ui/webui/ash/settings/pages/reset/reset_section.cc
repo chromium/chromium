@@ -101,10 +101,20 @@ void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"powerwashDialogESimWarningCheckbox",
        IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING_CHECKBOX_LABEL},
       {"powerwashContinue", IDS_SETTINGS_FACTORY_CONTINUE_BUTTON_LABEL},
+      {"sanitizeTitle", IDS_OS_SETTINGS_SANITIZE},
+      {"sanitizeDialogTitle", IDS_OS_SETTINGS_SANITIZE_HEADING},
+      {"sanitizeFeedback", IDS_OS_SETTINGS_SANITIZE_FEEDBACK},
+      {"sanitizeDialogButton", IDS_OS_SETTINGS_SANITIZE},
+      {"sanitizeButton", IDS_OS_SETTINGS_SANITIZE},
+      {"sanitizeShortDescription", IDS_OS_SETTINGS_SANITIZE_SHORT_DESCRIPTION},
+      {"sanitizeDescription", IDS_OS_SETTINGS_SANITIZE_DESCRIPTION},
+      {"sanitizeDialogExplanation", IDS_OS_SETTINGS_SANITIZE_WARNING},
+      {"sanitizeLearnMoreUrl", IDS_SANITIZE_HELP_URL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("allowPowerwash", IsPowerwashAllowed());
+  html_source->AddBoolean("allowSanitize", IsSanitizeAllowed());
 
   html_source->AddBoolean(
       "showResetProfileBanner",
@@ -150,6 +160,7 @@ bool ResetSection::LogMetric(mojom::Setting setting, base::Value& value) const {
 
 void ResetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPowerwash);
+  generator->RegisterTopLevelSetting(mojom::Setting::kSanitizeCrosSettings);
 }
 
 const std::vector<SearchConcept>& ResetSection::GetPowerwashSearchConcept() {
