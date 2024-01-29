@@ -165,10 +165,6 @@ BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
     TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
                                     TRACE_ID_LOCAL(this));
   }
-  // TODO(crbug.com/1501194): If a warning page is opened in a new tab,
-  // `OnCompleteSyncCheck` may not be called, in which case this metric won't
-  // be logged. Once this is fixed, confirm that this metric logs correctly in
-  // this case.
   if (was_async_faster_than_sync_.has_value()) {
     base::UmaHistogramBoolean(
         "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
