@@ -204,10 +204,14 @@ message ContactInfoSpecifics {
   // Phone.
   optional StringToken phone_home_whole_number = 33;
 
-  // Birthdate fields.
-  optional IntegerToken birthdate_day = 34;
-  optional IntegerToken birthdate_month = 35;  // Between 1 and 12.
-  optional IntegerToken birthdate_year = 36;   // 4 digits.
+  // Removed in M123.
+  reserved 34;
+  reserved "birthdate_day";
+  reserved 35;
+  reserved "birthdate_month";
+  reserved 36;
+  reserved "birthdate_year";
+
   // Removed in M122.
   reserved 6;
   reserved "name_honorific";
