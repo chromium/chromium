@@ -4981,20 +4981,16 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
     // data type, given scale only.
     LayerNormalizationTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = Float16FromFloat32({-1, 0, 1, 2, 3, 4})},
+                  .dimensions = {1, 2, 1, 2},
+                  .values = Float16FromFloat32({-2, -2, 2, 2})},
         .scale =
-            OperandInfo<float16>{
-                .type = mojom::Operand::DataType::kFloat16,
-                .dimensions = {2, 1, 3},
-                .values = Float16FromFloat32({1, 1, 1, 1, 1, 1})},
-        .attributes = {.axes = {1, 2, 3}},
+            OperandInfo<float16>{.type = mojom::Operand::DataType::kFloat16,
+                                 .dimensions = {2, 1, 2},
+                                 .values = Float16FromFloat32({1, 1, 1, 1})},
+        .attributes = {.axes = {1, 2, 3}, .epsilon = 0},
         .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = Float16FromFloat32(
-                       {-1.4638475999719223, -0.8783085599831534,
-                        -0.29276951999438444, 0.29276951999438444,
-                        0.8783085599831534, 1.4638475999719223})}}
+                   .dimensions = {1, 2, 1, 2},
+                   .values = Float16FromFloat32({-1, -1, 1, 1})}}
         .Test();
   }
   {
