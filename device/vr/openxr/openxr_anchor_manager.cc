@@ -17,15 +17,6 @@
 
 namespace device {
 
-namespace {
-device::Pose XrPoseToDevicePose(const XrPosef& pose) {
-  gfx::Quaternion orientation{pose.orientation.x, pose.orientation.y,
-                              pose.orientation.z, pose.orientation.w};
-  gfx::Point3F position{pose.position.x, pose.position.y, pose.position.z};
-  return device::Pose{position, orientation};
-}
-}  // namespace
-
 OpenXrAnchorManager::~OpenXrAnchorManager() {
   DisposeActiveAnchorCallbacks();
   for (const auto& it : openxr_anchors_) {

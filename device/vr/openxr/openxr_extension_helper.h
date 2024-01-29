@@ -63,6 +63,12 @@ struct OpenXrExtensionMethods {
 #if BUILDFLAG(IS_ANDROID)
   PFN_xrGetReferenceSpaceBoundsPolygonANDROID
       xrGetReferenceSpaceBoundsPolygonANDROID{nullptr};
+
+  // Trackables and Raycasting.
+  PFN_xrCreateTrackableTrackerANDROID xrCreateTrackableTrackerANDROID{nullptr};
+  PFN_xrDestroyTrackableTrackerANDROID xrDestroyTrackableTrackerANDROID{
+      nullptr};
+  PFN_xrRaycastANDROID xrRaycastANDROID{nullptr};
 #endif
 };
 

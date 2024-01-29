@@ -48,7 +48,7 @@ OpenXRSceneUnderstandingManagerMSFT::OpenXRSceneUnderstandingManagerMSFT(
   scene_bounds_.sphere_bounds_.push_back({{}, kScanRadius});
 }
 
-void OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
+bool OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
   if (scene_compute_state_ == SceneComputeState::Off) {
     if (!scene_observer_) {
       scene_observer_ = std::make_unique<OpenXrSceneObserverMsft>(
@@ -56,6 +56,8 @@ void OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
       scene_compute_state_ = SceneComputeState::Idle;
     }
   }
+
+  return true;
 }
 
 void OpenXRSceneUnderstandingManagerMSFT::OnAllHitTestSubscriptionsRemoved() {

@@ -157,6 +157,21 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetReferenceSpaceBoundsPolygonANDROID*>(
               &extension_methods_.xrGetReferenceSpaceBoundsPolygonANDROID)));
+
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrCreateTrackableTrackerANDROID",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateTrackableTrackerANDROID*>(
+              &extension_methods_.xrCreateTrackableTrackerANDROID)));
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrDestroyTrackableTrackerANDROID",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrDestroyTrackableTrackerANDROID*>(
+              &extension_methods_.xrDestroyTrackableTrackerANDROID)));
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrRaycastANDROID",
+      reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_xrRaycastANDROID*>(
+          &extension_methods_.xrRaycastANDROID)));
 #endif
 }
 
