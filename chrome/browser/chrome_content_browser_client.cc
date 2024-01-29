@@ -778,19 +778,6 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 
 namespace {
 
-#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
-    !defined(ADDRESS_SANITIZER)
-// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
-// process, when running on Windows 10 1511 and above. This has no effect if
-// NetworkServiceSandbox feature is disabled. See
-// https://blogs.windows.com/blog/tag/code-integrity-guard/.
-BASE_FEATURE(kNetworkServiceCodeIntegrity,
-             "NetworkServiceCodeIntegrity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) &&
-        // !defined(ADDRESS_SANITIZER)
-
 #if BUILDFLAG(IS_ANDROID)
 // Kill switch that allows falling back to the legacy behavior on Android when
 // it comes to site isolation for Gaia's origin (|GaiaUrls::gaia_origin()|).
@@ -4687,8 +4674,8 @@ bool ChromeContentBrowserClient::PreSpawnChild(
           (flags & ChildSpawnFlags::kChildSpawnFlagRendererCodeIntegrity);
       break;
     case sandbox::mojom::Sandbox::kNetwork:
-      enforce_code_integrity =
-          base::FeatureList::IsEnabled(kNetworkServiceCodeIntegrity);
+      enforce_code_integrity = base::FeatureList::IsEnabled(
+          sandbox::policy::features::kNetworkServiceCodeIntegrity);
       break;
     case sandbox::mojom::Sandbox::kServiceWithJit:
       enforce_code_integrity = true;

@@ -103,6 +103,14 @@ BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
 BASE_FEATURE(kWinSboxZeroAppShim,
              "WinSboxZeroAppShim",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
+// process, when running on Windows 10 1511 and above. This has no effect if
+// NetworkServiceSandbox feature is disabled, or if using a component or ASAN
+// build. See https://blogs.windows.com/blog/tag/code-integrity-guard/.
+BASE_FEATURE(kNetworkServiceCodeIntegrity,
+             "NetworkServiceCodeIntegrity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
