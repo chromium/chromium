@@ -79,9 +79,8 @@ class ConfigBase final : public TargetConfig {
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override;
   scoped_refptr<AppContainer> GetAppContainer() override;
-  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
-                                    const wchar_t* handle_name) override;
-  ResultCode SetDisconnectCsrss() override;
+  void AddKernelObjectToClose(HandleToClose handle_info) override;
+  void SetDisconnectCsrss() override;
   void SetDesktop(Desktop desktop) override;
   void SetFilterEnvironment(bool filter) override;
   bool GetEnvironmentFiltered() override;

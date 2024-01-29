@@ -266,11 +266,8 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     target_process_id_ = 0;
   }
 
-  ResultCode result = SBOX_ALL_OK;
   if (disable_csrss_) {
-    result = policy_->GetConfig()->SetDisconnectCsrss();
-    if (result != SBOX_ALL_OK)
-      return SBOX_TEST_FAILED_SETUP;
+    policy_->GetConfig()->SetDisconnectCsrss();
   }
 
   // Get the path to the sandboxed process.
@@ -287,6 +284,7 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   arguments += no_sandbox_ ? L"-no-sandbox " : L" ";
   arguments += command;
 
+  ResultCode result = SBOX_ALL_OK;
   if (no_sandbox_) {
     STARTUPINFO startup_info = {sizeof(STARTUPINFO)};
     if (!::CreateProcessW(prog_name, &arguments[0], NULL, NULL, FALSE, 0,

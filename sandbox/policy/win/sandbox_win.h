@@ -79,7 +79,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
                                 TargetConfig* config);
 
   // Closes handles that are opened at process creation and initialization.
-  static ResultCode AddBaseHandleClosePolicy(TargetConfig* config);
+  static void AddBaseHandleClosePolicy(TargetConfig* config);
 
   // Add AppContainer policy for |sid| on supported OS.
   static ResultCode AddAppContainerPolicy(TargetConfig* config,

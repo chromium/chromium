@@ -94,11 +94,8 @@ class TestTargetConfig : public TargetConfig {
   }
   void AddRestrictingRandomSid() override {}
   void SetLockdownDefaultDacl() override {}
-  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
-                                    const wchar_t* handle_name) override {
-    return SBOX_ALL_OK;
-  }
-  ResultCode SetDisconnectCsrss() override { return SBOX_ALL_OK; }
+  void AddKernelObjectToClose(HandleToClose handle_info) override {}
+  void SetDisconnectCsrss() override {}
 
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override {
