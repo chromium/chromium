@@ -166,4 +166,12 @@ MLGraphBuilder* MLGraphTestBase::CreateGraphBuilder(V8TestingScope& scope,
   return MLGraphBuilder::Create(context);
 }
 
+void ExpectFloatArrayEqual(const Vector<float>& data,
+                           const Vector<float>& expected_data) {
+  EXPECT_EQ(data.size(), expected_data.size());
+  for (wtf_size_t i = 0; i < data.size(); ++i) {
+    EXPECT_FLOAT_EQ(data[i], expected_data[i]);
+  }
+}
+
 }  // namespace blink

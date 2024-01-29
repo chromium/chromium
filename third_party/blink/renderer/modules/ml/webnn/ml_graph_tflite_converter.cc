@@ -8,6 +8,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -493,24 +495,76 @@ base::expected<OperatorOffset, String> SerializePool2d(
       tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
 }
 
-OperatorOffset SerializeRelu(const OperandToIndexMap& operand_to_index_map,
-                             const MLOperator* relu,
-                             flatbuffers::FlatBufferBuilder& builder,
-                             Vector<OperatorCodeOffset>& operator_codes) {
-  const int32_t input_index = GetOperatorInputIndex(relu, operand_to_index_map);
+OperatorOffset SerializeUnaryOperator(
+    tflite::BuiltinOperator code,
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* unary,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t input_index =
+      GetOperatorInputIndex(unary, operand_to_index_map);
   const int32_t output_index =
-      GetOperatorOutputIndex(relu, operand_to_index_map);
+      GetOperatorOutputIndex(unary, operand_to_index_map);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(code, builder, operator_codes);
+  const std::array<int32_t, 1> op_inputs = {input_index};
+  const std::array<int32_t, 1> op_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(op_inputs),
+                                builder.CreateVector<int32_t>(op_outputs));
+}
+
+base::expected<OperatorOffset, String> SerializeElu(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* elu,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes) {
+  const MLEluOptions* options =
+      static_cast<const MLEluOptions*>(elu->Options());
+  CHECK(options);
+  const float alpha = options->alpha();
+  if (alpha != 1.0) {
+    return base::unexpected(
+        "Setting a custom alpha is not supported in tflite schema.");
+  }
+
+  return SerializeUnaryOperator(tflite::BuiltinOperator_ELU,
+                                operand_to_index_map, elu, builder,
+                                operator_codes);
+}
+
+OperatorOffset SerializeLeakyRelu(const OperandToIndexMap& operand_to_index_map,
+                                  const MLOperator* leaky_relu,
+                                  flatbuffers::FlatBufferBuilder& builder,
+                                  Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t input_index =
+      GetOperatorInputIndex(leaky_relu, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(leaky_relu, operand_to_index_map);
+
+  // Create `tflite::LeakyReluOptions` with negative slope.
+  const MLLeakyReluOptions* options =
+      static_cast<const MLLeakyReluOptions*>(leaky_relu->Options());
+  CHECK(options);
+  const auto leaky_relu_options =
+      tflite::CreateLeakyReluOptions(builder, options->alpha());
 
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
   const auto operator_code_index = GetOperatorCodeIndex(
-      tflite::BuiltinOperator_RELU, builder, operator_codes);
-  const std::vector<int32_t> op_inputs = {input_index};
-  const std::vector<int32_t> op_outputs = {output_index};
+      tflite::BuiltinOperator_LEAKY_RELU, builder, operator_codes);
+  const std::array<int32_t, 1> operator_inputs = {input_index};
+  const std::array<int32_t, 1> operator_outputs = {output_index};
   return tflite::CreateOperator(builder, operator_code_index,
-                                builder.CreateVector<int32_t>(op_inputs),
-                                builder.CreateVector<int32_t>(op_outputs));
+                                builder.CreateVector<int32_t>(operator_inputs),
+                                builder.CreateVector<int32_t>(operator_outputs),
+                                tflite::BuiltinOptions_LeakyReluOptions,
+                                leaky_relu_options.Union());
 }
 
 OperatorOffset SerializeReshape(const OperandToIndexMap& operand_to_index_map,
@@ -668,6 +722,75 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = SerializeElementWiseBinary(operand_to_index_map, op,
                                                    builder_, operator_codes_);
       break;
+    case MLOperator::OperatorKind::kAbs:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_ABS,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kCeil:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CEIL,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kFloor:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_FLOOR,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kNeg:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_NEG,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kCos:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_COS,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kExp:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_EXP,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kLog:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOG,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kSin:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SIN,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kSqrt:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SQRT,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kCast:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CAST,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kElu: {
+      const auto elu_result =
+          SerializeElu(operand_to_index_map, op, builder_, operator_codes_);
+      // The scalar multiplier is not supported in tflite schema.
+      if (!elu_result.has_value()) {
+        return base::unexpected(elu_result.error());
+      }
+      operator_offset = elu_result.value();
+      break;
+    }
+    case MLOperator::OperatorKind::kHardSwish:
+      operator_offset = SerializeUnaryOperator(
+          tflite::BuiltinOperator_HARD_SWISH, operand_to_index_map, op,
+          builder_, operator_codes_);
+      break;
+    case blink::MLOperator::OperatorKind::kLeakyRelu:
+      operator_offset = SerializeLeakyRelu(operand_to_index_map, op, builder_,
+                                           operator_codes_);
+      break;
     case MLOperator::OperatorKind::kAveragePool2d:
       [[fallthrough]];
     case MLOperator::OperatorKind::kMaxPool2d: {
@@ -681,12 +804,18 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       break;
     }
     case MLOperator::OperatorKind::kRelu:
-      operator_offset =
-          SerializeRelu(operand_to_index_map, op, builder_, operator_codes_);
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_RELU,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
       break;
     case MLOperator::OperatorKind::kReshape:
       operator_offset =
           SerializeReshape(operand_to_index_map, op, builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kSigmoid:
+      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOGISTIC,
+                                               operand_to_index_map, op,
+                                               builder_, operator_codes_);
       break;
     case MLOperator::OperatorKind::kSoftmax:
       operator_offset =
