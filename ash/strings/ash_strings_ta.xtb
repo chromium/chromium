@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">அணுகலை ஆன் செய்</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="698231206551913481">இந்தப் பயனர் அகற்றப்பட்டதும், பயனருடன் தொடர்புடைய எல்லா கோப்புகளும் அகத் தரவும் நிரந்தரமாக நீக்கப்படும்.</translation>
+<translation id="6984028004251196682"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்காது. எனவே, <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) தெளிவுத்திறனுக்கு மாற்றப்பட்டது. மாற்றங்களை உறுதிசெய்ய 'உறுதிசெய்' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> வினாடிகளில் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="6989752354829085073">Chromebookகை எப்படிப் பயன்படுத்துவது என்று அறிந்துகொள்ள முன்னோட்டத்தைப் பாருங்கள். 6 படிகளில் அமைத்து பயன்படுத்தத் தொடங்கலாம்.</translation>
 <translation id="7004910047186208204">மொபைல் டேட்டாவுடன் இணைக்கவும்</translation>
 <translation id="7005239792648594238">தொடங்க ஆப்ஸைத் திறக்கவும்</translation>

@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Eroare internă</translation>
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">înmulțește</translation>
 <translation id="1145018782460575098">Fereastra de actualizare a firmware-ului pentru dispozitivele externe este deschisă. <ph name="NUM_UPDATES" /> actualizări disponibile.</translation>
 <translation id="1145516343487477149">Găsește articole de ajutor și răspunsuri la întrebările frecvente despre Chromebookuri</translation>
 <translation id="1154390310959620237">Poți personaliza doar cinci comenzi rapide. Șterge o comandă rapidă ca să adaugi alta.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
 <translation id="1367951781824006909">Alege un fișier</translation>
+<translation id="1371650399987522809">Feedback pentru fundalul dezvoltat de Google AI</translation>
 <translation id="1387854245479784695">Aceasta este o valoare cumulată pentru toate nucleele</translation>
 <translation id="1394661041439318933">Nivelul bateriei carcasei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">culoarea iluminării din fundal</translation>
 <translation id="1565038567006703504">Nu se poate actualiza <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">împarte</translation>
 <translation id="1567064801249837505">Albume</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1578784163189013834">Alege fundalul screensaverului</translation>
 <translation id="160633243685262989">Previzualizează imaginea</translation>
 <translation id="1611649489706141841">înainte</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Se generează imagini...</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1626590945318984973">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă fără să folosești tastele de funcții și <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="2880569433548999039">Screensaver cu Cloud Flow</translation>
 <translation id="2926057806159140518">Introdu numele de utilizator și parola sau scanează codul QR</translation>
+<translation id="2938573842839598578">Pentru un rezultat aproximativ, <ph name="OPERATOR_TEXT" /> valoarea <ph name="CATEGORY_TEXT" /> cu <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Nu se poate testa dispozitivul. Redeschide capacul pentru testare.</translation>
 <translation id="2941112035454246133">Redusă</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
+<translation id="3547264467365135390">Formulă</translation>
 <translation id="3557205324756024651">Identitate locală (opțională)</translation>
 <translation id="3565064564551103223">Adrese IP permise</translation>
 <translation id="3569407787324516067">Screensaver</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7180865173735832675">Personalizează</translation>
 <translation id="7184043045742675738">Dă clic pe orice tastă pentru a personaliza butonul. Repoziționează tasta folosind mouse-ul sau tastele săgeată.</translation>
+<translation id="7206979415662233817">Termeni și condiții</translation>
 <translation id="7212547870105584639">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualizări de firmware pentru dispozitive externe</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">culoarea tastaturii</translation>
 <translation id="7317831949569936035">Înscriere la școală</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Trebuie să ai cel puțin 18 ani și să accepți că folosirea fundalurilor AI se supune <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Termenilor și condițiilor Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> și <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Termenilor și condițiilor suplimentare privind AI generativ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Poți să creezi fundaluri cu AI numai pentru utilizare personală și non-comercială. Când soliciți ajutor pentru fundaluri, textul este trimis la serverele Google AI pentru a genera sugestii de fundaluri, în conformitate cu <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Politica de confidențialitate Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7353413232959255829">Rezultatul căutării <ph name="LIST_POSITION" /> din <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Apasă pe Enter pentru a naviga la comanda rapidă.</translation>

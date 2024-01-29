@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Vidinė klaida</translation>
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">padauginti</translation>
 <translation id="1145018782460575098">Išorinių įrenginių programinės aparatinės įrangos atnaujinimo langas atidarytas. Pasiekiama naujinių: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Pagalbos straipsnių ir atsakymų į dažnai užduodamus su „Chromebook“ susijusius klausimus paieška</translation>
 <translation id="1154390310959620237">Galite tinkinti tik penkis sparčiuosius klavišus. Ištrinkite spartųjį klavišą, jei norite pridėti naują.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pritaikyti pagal nuskaitomą sritį</translation>
 <translation id="1367951781824006909">Pasirinkti failą</translation>
+<translation id="1371650399987522809">Atsiliepimai apie ekrano foną, kurį teikia „Google“ DI</translation>
 <translation id="1387854245479784695">Tai nurodo apibendrintus visų branduolių duomenis</translation>
 <translation id="1394661041439318933">Įrenginio dėklo akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1561927818299383735">fono spalva</translation>
 <translation id="1565038567006703504">Nepavyksta atnaujinti įrenginio „<ph name="DEVICE_NAME" />“</translation>
+<translation id="1566493343215789965">padalyti</translation>
 <translation id="1567064801249837505">Albumai</translation>
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
 <translation id="1578784163189013834">Pasirinkti ekrano užsklandos foną</translation>
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Vaizdai generuojami...</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1626590945318984973">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą nenaudodami funkcijų klavišų ir klavišo „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="2880569433548999039">Debesies srauto ekrano užsklanda</translation>
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
+<translation id="2938573842839598578">Norint apytiksliai apskaičiuoti rezultatą, reikia <ph name="OPERATOR_TEXT" /> kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Nepavyko išbandyti įrenginio. Jei norite išbandyti, iš naujo atidarykite dangtelį.</translation>
 <translation id="2941112035454246133">Žema</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
+<translation id="3547264467365135390">Formulė</translation>
 <translation id="3557205324756024651">Vietinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="3565064564551103223">Leidžiami IP</translation>
 <translation id="3569407787324516067">Ekrano užsklanda</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7180865173735832675">Tinkinti</translation>
 <translation id="7184043045742675738">Spustelėkite bet kurį klavišą, jei norite tinkinti mygtuką. Pakeiskite klavišo padėtį naudodami pelės arba rodyklių klavišus.</translation>
+<translation id="7206979415662233817">Paslaugų teikimo sąlygos</translation>
 <translation id="7212547870105584639">Tvarkyti tinklo APN nustatymus. APN užmezga ryšį tarp mobiliojo ryšio tinklo ir interneto. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">klaviatūros spalva</translation>
 <translation id="7317831949569936035">Mokyklos registracija</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Turite būti ne jaunesni nei aštuoniolikos metų ir sutikti, kad naudojant DI ekrano fonus taikomos <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />„Google“ paslaugų teikimo sąlygos<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ir <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />papildomos generatyvinio DI paslaugų teikimo sąlygos<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ekrano fonus galite kurti naudodami DI tik asmeniniais ir nekomerciniais tikslais. Kai gaunate pagalbos dėl ekrano fono, tekstas siunčiamas į „Google“ DI serverius, kad būtų sugeneruoti ekrano fonų pasiūlymai, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami „Google“ paiešką.</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" /> paieškos rezultatas iš <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Norėdami pereiti prie sparčiojo klavišo, paspauskite „Enter“.</translation>

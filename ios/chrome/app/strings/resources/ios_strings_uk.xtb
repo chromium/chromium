@@ -163,6 +163,7 @@
 <translation id="1847795903283049083">Ви також можете переглядати ці об’єкти й керувати ними в закладках, списку читання або менеджері паролів.</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">Показує цей елемент</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email})}few{{count} закладки збережено у вашому обліковому записі Google ({email})}many{{count} закладок збережено у вашому обліковому записі Google ({email})}other{{count} закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
@@ -181,6 +182,7 @@
 <translation id="1956138802718275401">Як знаходити паролі на головному екрані</translation>
 <translation id="1959441496380398824">Натисніть і утримуйте дату.</translation>
 <translation id="1959679933317802873">Очікується контент</translation>
+<translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> надає вам доступ до пароля для сайту <ph name="WEBSITE" /></translation>
 <translation id="1967461193809857427">{count,plural, =1{Відкрити вкладку, яку ви нещодавно переглядали на пристрої Android?}one{Відкрити вкладки, які ви нещодавно переглядали на пристрої Android?}few{Відкрити вкладки, які ви нещодавно переглядали на пристрої Android?}many{Відкрити вкладки, які ви нещодавно переглядали на пристрої Android?}other{Відкрити вкладки, які ви нещодавно переглядали на пристрої Android?}}</translation>
 <translation id="1972325230031091483">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="1973912524893600642">Зберігати дані</translation>
@@ -215,6 +217,7 @@
 <translation id="2139502497535990641">Увімкнути сповіщення про змінення цін?</translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="214201757571129614">Увійти…</translation>
+<translation id="2147127444698817042">Доступно лише на iPhone</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -227,6 +230,7 @@
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
 <translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2252674110805316998">Пошук в Інтернеті</translation>
+<translation id="2252749852083403809">Зберігання на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Ваша організація дозволяє входити лише в певні облікові записи.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Ви можете зберегти цю закладку у своєму обліковому записі Google ({email}).}one{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}few{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}many{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}other{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}}</translation>
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
@@ -388,6 +392,7 @@
 <translation id="2982481275546140226">Очистити дані</translation>
 <translation id="298306318844797842">Додати спосіб оплати…</translation>
 <translation id="2989805286512600854">Відкрити в новій вкладці</translation>
+<translation id="300455800299409273">Сховати опцію "Продовжити на цій вкладці"</translation>
 <translation id="3010025794097054078">Захистіть себе від порушень безпеки даних, ненадійних веб-сайтів тощо.</translation>
 <translation id="3010171936431626919">Докладніше</translation>
 <translation id="3020183492814296499">Ярлики</translation>
@@ -535,6 +540,7 @@
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="3832419617903252251">Пароль збережено лише на цьому пристрої</translation>
 <translation id="3835964409414434850">Перейти на наступну вкладку</translation>
+<translation id="383781833195845844">Продовжити на цій вкладці</translation>
 <translation id="3838691874161539578">Перевірте збережені паролі, щоб посилити захист і подбати про свою безпеку в Інтернеті</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
@@ -753,6 +759,7 @@
 <translation id="4958444002117714549">Розгорнути список</translation>
 <translation id="4971735654804503942">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень. Попереджає про розкриття паролів через порушення безпеки даних.  Дані веб-перегляду потрібно надсилати в Google.</translation>
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
+<translation id="4989065233040279145">Виберіть, де зберегти <ph name="FILENAME" /></translation>
 <translation id="4996567535980789550">Увімкніть синхронізацію, щоб керувати контентом, який ви бачите</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5016420433031926653">Надсилати на адресу <ph name="USER_EMAIL" /></translation>
@@ -878,6 +885,7 @@
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Щоб використовувати й зберігати паролі в обліковому записі Google, підтвердьте свою особу.</translation>
 <translation id="5684761169742812828">Цей пароль розкрито через порушення безпеки даних в Інтернеті. Якщо у вас немає часу змінити його прямо зараз, радимо не закривати це попередження – воно слугуватиме для вас нагадуванням.</translation>
+<translation id="5694848685995373177">Збережено на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
 <translation id="5701270923492462699">Доступ до камери надано</translation>
 <translation id="5702108177581350218">Якщо ви поділитеся іменем користувача й паролем, учасник вашої сімейної групи зможе заповнювати їх за допомогою Google Менеджера паролів.</translation>
 <translation id="5704908597376970822">Не вдається ввійти.</translation>
@@ -1216,6 +1224,7 @@
 <translation id="7409985198648820906">Непрочитаних статей: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Продовжити</translation>
 <translation id="741204030948306876">Увімкнути</translation>
+<translation id="7418640008860669073">Зберегти в…</translation>
 <translation id="7425346204213733349">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Однак наявні дані залишаться у вашому обліковому записі.</translation>
 <translation id="7431991332293347422">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку тощо</translation>
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
@@ -1234,6 +1243,7 @@
 <translation id="750149195207506638">Закладки приховано</translation>
 <translation id="750228856503700085">Оновлення недоступні</translation>
 <translation id="750493650310597496">Вибрано 0</translation>
+<translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
@@ -1247,6 +1257,7 @@
 <translation id="7554791636758816595">Нова вкладка</translation>
 <translation id="7557508262441527045">Ви вийшли</translation>
 <translation id="7561196759112975576">Завжди</translation>
+<translation id="7564917801238348224">ЗБЕРЕГТИ…</translation>
 <translation id="7582857256643797524">Це налаштування ввімкнено на вашому пристрої</translation>
 <translation id="7583004045319035904">Використовуйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, щоб розблоковувати анонімні вкладки.</translation>
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
@@ -1413,6 +1424,7 @@
 <translation id="8428045167754449968">Місто</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428634594422941299">Зрозуміло</translation>
+<translation id="8430694217306051839">Виберіть, де зберегти <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8449347986464073209">Видалити й вийти</translation>
 <translation id="8459333855531264009">Небезпечно</translation>

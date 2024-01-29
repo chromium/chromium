@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multiply</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
 <translation id="1145516343487477149">Find help articles and answers to common Chromebook questions</translation>
 <translation id="1154390310959620237">You can only customise five shortcuts. Delete a shortcut to add a new one.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1367951781824006909">Choose a file</translation>
+<translation id="1371650399987522809">Feedback for wallpaper powered by Google AI</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
 <translation id="1397738625398125236">Gateway can be pinged</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">backlit colour</translation>
 <translation id="1565038567006703504">Can't update <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">divide</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1578784163189013834">Choose screensaver background</translation>
 <translation id="160633243685262989">Preview image</translation>
 <translation id="1611649489706141841">forward</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generating images…</translation>
 <translation id="1621067168122174824">Run charge test</translation>
 <translation id="1626590945318984973">Shortcut not available. Press a new shortcut without using function and <ph name="META_KEY" /> keys.</translation>
 <translation id="1639239467298939599">Loading</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="2880569433548999039">Cloud flow screen saver</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
+<translation id="2938573842839598578">For an approximate result, <ph name="OPERATOR_TEXT" /> the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Can’t test device. Reopen the lid to test.</translation>
 <translation id="2941112035454246133">Low</translation>
 <translation id="3008341117444806826">REFRESH</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS update</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Local identity (optional)</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
 <translation id="3569407787324516067">Screensaver</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7184043045742675738">Click on any key to customise your button. Reposition key with mouse or arrow keys.</translation>
+<translation id="7206979415662233817">Terms of Service</translation>
 <translation id="7212547870105584639">Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware updates for external devices</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">keyboard colour</translation>
 <translation id="7317831949569936035">School enrolment</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">You must be at least 18 years old and agree that your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7353413232959255829">Search result <ph name="LIST_POSITION" /> of <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Press Enter to navigate to shortcut.</translation>
