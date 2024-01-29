@@ -436,6 +436,13 @@ bool AggregationServiceStorageSql::ReportingOriginHasCapacity(
     return false;
 
   int64_t count = count_request_statement.ColumnInt64(0);
+
+  // Goes above 1000 to ensure the limit is being applied correctly.
+  base::UmaHistogramCustomCounts(
+      "PrivacySandbox.AggregationService.Storage.Sql."
+      "StoredRequestsPerReportingOrigin",
+      count, /*min=*/1, /*exclusive_max=*/2000, /*buckets=*/50);
+
   return count < max_stored_requests_per_reporting_origin_;
 }
 

@@ -711,6 +711,18 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.AggregationService.Storage.Sql.StoredRequestsPerReportingOrigin"
+    units="requests" expires_after="2024-07-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records how many requests were already stored for the reporting origin when
+    the capacity for that origin was checked. Recorded for each StoreRequest
+    attempt.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
     enum="Boolean" expires_after="2024-07-21">
   <owner>alexmt@chromium.org</owner>
