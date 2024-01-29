@@ -127,7 +127,8 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
 void VideoFrameHandlerProxyLacros::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
-  OnFrameReadyInBuffer(std::move(buffer));
+  NOTREACHED_NORETURN()
+      << "This method is deprecated, use OnFrameReadyInBuffer instead.";
 }
 
 void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
