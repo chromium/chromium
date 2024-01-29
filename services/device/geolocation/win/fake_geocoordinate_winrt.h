@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_WIN_FAKE_GEOCOORDINATE_WINRT_H_
 #define SERVICES_DEVICE_GEOLOCATION_WIN_FAKE_GEOCOORDINATE_WINRT_H_
 
+#include <memory>
+
 #include <windows.devices.geolocation.h>
 #include <windows.foundation.h>
 #include <wrl/client.h>
