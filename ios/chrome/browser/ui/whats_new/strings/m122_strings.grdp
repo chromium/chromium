@@ -16,9 +16,6 @@
 <message name="IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensSearch in What's New. [iOS only]">
         Take a photo of your search
 </message>
-<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_SCREENSHOT_TEXT_1" desc="Text in image displaying: n/a for the feature: LensSearch in What's New. [iOS only]">
-        n/a
-</message>
 <message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_TITLE" desc="BottomOmnibox Title displayed in What's New. [iOS only]">
         Bottom Address Bar
 </message>

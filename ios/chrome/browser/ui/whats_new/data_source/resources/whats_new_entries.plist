@@ -13,11 +13,6 @@
 			<string>IDS_IOS_WHATS_NEW_LENSSEARCH_SUBTITLE</string>
 			<key>ImageName</key>
 			<string>LensSearch</string>
-			<key>ImageTexts</key>
-			<dict>
-				<key>n/a</key>
-				<string>IDS_IOS_WHATS_NEW_LENSSEARCH_SCREENSHOT_TEXT_1</string>
-			</dict>
 			<key>IconImageName</key>
 			<string>magnifyingglass</string>
 			<key>IconBackgroundColor</key>
