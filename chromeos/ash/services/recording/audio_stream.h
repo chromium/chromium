@@ -6,9 +6,9 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_STREAM_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/queue.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 namespace media {
@@ -21,12 +21,12 @@ namespace recording {
 // with audio frames in a destination audio bus.
 class AudioStream {
  public:
-  explicit AudioStream(base::StringPiece name);
+  explicit AudioStream(std::string_view name);
   AudioStream(const AudioStream&) = delete;
   AudioStream& operator=(const AudioStream&) = delete;
   ~AudioStream();
 
-  base::StringPiece name() const { return name_; }
+  std::string_view name() const { return name_; }
   int total_frames() const { return total_frames_; }
   bool empty() const { return total_frames_ == 0; }
 

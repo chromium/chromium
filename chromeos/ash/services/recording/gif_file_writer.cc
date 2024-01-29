@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/recording/gif_file_writer.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 
 namespace recording {
@@ -29,7 +31,7 @@ void GifFileWriter::WriteBuffer(const uint8_t* const buffer,
   WriteBytesAndCheck(base::make_span(buffer, buffer_size));
 }
 
-void GifFileWriter::WriteString(base::StringPiece string) {
+void GifFileWriter::WriteString(std::string_view string) {
   WriteBytesAndCheck(base::make_span(
       reinterpret_cast<const uint8_t*>(string.data()), string.size()));
 }
