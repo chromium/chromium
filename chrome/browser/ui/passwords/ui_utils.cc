@@ -226,6 +226,8 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "passwords_google";
       case ManagePasswordsReferrer::kAddUsernameBubble:
         return "add_username_bubble";
+      case ManagePasswordsReferrer::kDefaultStoreChangedBubble:
+        return "default_store_changed_bubble";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
       case ManagePasswordsReferrer::kPasswordBreachDialog:
@@ -251,6 +253,15 @@ void NavigateToManagePasswordsPage(Browser* browser,
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
                             referrer);
   chrome::ShowPasswordManager(browser);
+}
+
+void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser) {
+  GURL url(chrome::kChromeUIPasswordManagerSettingsURL);
+  url = net::AppendQueryParameter(url, "accountStoreIPH", "true");
+
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 
 void NavigateToPasswordCheckupPage(Profile* profile) {

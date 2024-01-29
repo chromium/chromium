@@ -85,6 +85,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void,
+              NavigateToPasswordManagerSettingsAccountStoreToggle,
+              (password_manager::ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(void,
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));

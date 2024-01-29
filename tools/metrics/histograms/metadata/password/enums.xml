@@ -392,6 +392,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Search Passwords widget"/>
   <int value="19" label="Add Username bubble"/>
   <int value="20" label="Omnibox Pedal Suggestion"/>
+  <int value="21" label="Default store changed bubble"/>
 </enum>
 
 <enum name="MigrationToOSCryptEnum">
@@ -480,6 +481,9 @@ chromium-metrics-reviews@google.com.
   <int value="19"
       label="Opened automatically / Offering to relaunch chrome as a result
              of a keychain issue"/>
+  <int value="20"
+      label="Opened automatically / Notifying the user that their password
+             store setting changed"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">

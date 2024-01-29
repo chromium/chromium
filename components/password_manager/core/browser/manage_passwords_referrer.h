@@ -86,10 +86,13 @@ enum class ManagePasswordsReferrer {
   // On iOS, the "Manage Passwords" omnibox pedal suggestion was tapped.
   kOmniboxPedalSuggestion = 20,
 
+  // On Desktop, link clicked in the DefaultStoreChanged bubble.
+  kDefaultStoreChangedBubble = 21,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kOmniboxPedalSuggestion,
+  kMaxValue = kDefaultStoreChangedBubble,
 };
 
 }  // namespace password_manager

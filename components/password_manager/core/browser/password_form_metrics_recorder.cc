@@ -851,6 +851,7 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE:
     case metrics_util::MANUAL_ADD_USERNAME_BUBBLE:
     case metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE:
+    case metrics_util::AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE:
       // Do nothing.
       return;
 

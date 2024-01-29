@@ -817,6 +817,15 @@ void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage(
                                 referrer);
 }
 
+void ManagePasswordsUIController::
+    NavigateToPasswordManagerSettingsAccountStoreToggle(
+        password_manager::ManagePasswordsReferrer referrer) {
+  NavigateToManagePasswordsSettingsAccountStoreToggle(
+      chrome::FindBrowserWithTab(web_contents()));
+  UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
+                            referrer);
+}
+
 void ManagePasswordsUIController::NavigateToPasswordCheckup(
     password_manager::PasswordCheckReferrer referrer) {
   chrome::ShowPasswordCheck(chrome::FindBrowserWithTab(web_contents()));

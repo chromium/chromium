@@ -269,6 +269,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordBubble.DefaultStoreChangedBubble.ContinueButtonInBubbleClicked"
+    enum="BooleanYesNo" expires_after="M133">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the user clicked &quot;Got it&quot; in the DefaultStoreChanged
+    bubble
+  </summary>
+</histogram>
+
 <histogram name="PasswordBubble.DisplayDisposition"
     enum="PasswordBubbleDisplayDisposition" expires_after="2024-07-21">
   <owner>vasilii@chromium.org</owner>
