@@ -2302,13 +2302,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.content_unittests.filter',
         ],
       },
-      'linux-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            'cores': '8',
-          },
-        },
-      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,
@@ -4551,13 +4544,6 @@
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
         'retry_only_failed_tests': True,
-      },
-      'linux-rel-dev': {
-        'swarming': {
-          'dimensions': {
-            'cores': '8',
-          },
-        },
       },
       'linux-ubsan-fyi-rel': {
         'swarming': {

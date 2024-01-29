@@ -448,7 +448,6 @@ _exempted_from_contact_builders = {
         "linux-network-sandbox-rel",
         "linux-official",
         "linux-perfetto-rel",
-        "linux-rel-dev",
         "linux-rel-jammy-dev",
         "linux-rel-no-external-ip",
         "linux-remote-ssd-rel-dev",

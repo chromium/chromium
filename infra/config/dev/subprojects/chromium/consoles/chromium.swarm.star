@@ -8,7 +8,6 @@ luci.console_view(
     header = "//dev/chromium-header.textpb",
     entries = [
         luci.console_view_entry(builder = "ci/android-pie-arm64-rel-dev"),
-        luci.console_view_entry(builder = "ci/linux-rel-dev"),
         luci.console_view_entry(builder = "ci/linux-rel-jammy-dev"),
         luci.console_view_entry(builder = "ci/linux-local-ssd-rel-dev"),
         luci.console_view_entry(builder = "ci/linux-remote-ssd-rel-dev"),

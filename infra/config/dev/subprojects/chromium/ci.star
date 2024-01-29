@@ -131,31 +131,6 @@ ci_builder(
     ),
 )
 
-# TODO(crbug.com/1412588): Delete this builder when bionic image rolls are
-# disabled.
-ci_builder(
-    name = "linux-rel-dev",
-    description_html = "Test description. <b>Test HTML</b>.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "reclient",
-            "devtools_do_typecheck",
-        ],
-    ),
-    os = os.LINUX_BIONIC,
-)
-
 ci_builder(
     name = "linux-rel-jammy-dev",
     builder_spec = builder_config.builder_spec(
