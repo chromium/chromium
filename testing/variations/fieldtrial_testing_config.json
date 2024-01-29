@@ -6816,6 +6816,24 @@
             ]
         }
     ],
+    "EnableReportingMultigenerationStorage": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "PartiallyEnabled",
+                    "params": {
+                        "legacy_storage": "IMMEDIATE,SECURITY"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootMissiveStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
@@ -15600,24 +15618,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReportingServiceAlwaysFlush"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReportingStorageControlledDegradation": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "ReportingStorageControlledDegradation",
-                    "params": {
-                        "controlled_degradation": "true"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootMissiveStorage"
                     ]
                 }
             ]
