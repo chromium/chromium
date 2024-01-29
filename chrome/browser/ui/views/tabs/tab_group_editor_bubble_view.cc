@@ -827,7 +827,19 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
     CHECK(saved_tab_group_service);
     saved_tab_group_service->DisconnectLocalTabGroup(group_);
   }
-  browser_->tab_strip_model()->CloseAllTabsInGroup(group_);
+
+  TabStripModel* const model = browser_->tab_strip_model();
+
+  const int num_tabs_in_group =
+      model->group_model()->GetTabGroup(group_)->tab_count();
+
+  if (model->count() == num_tabs_in_group) {
+    // If the group about to be closed has all of the tabs in the browser, add a
+    // new tab outside the group to prevent the browser from closing.
+    model->delegate()->AddTabAt(GURL(), -1, true);
+  }
+
+  model->CloseAllTabsInGroup(group_);
   // Close the widget because it is no longer applicable.
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
