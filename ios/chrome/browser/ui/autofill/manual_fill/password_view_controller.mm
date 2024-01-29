@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -49,7 +49,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 
 }  // namespace manual_fill
 
-@interface PasswordViewController () <TableViewTextLinkCellDelegate>
+@interface PasswordViewController () <TableViewLinkHeaderFooterItemDelegate>
 
 // Search controller if any.
 @property(nonatomic, strong) UISearchController* searchController;
@@ -110,17 +110,24 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
       [self loadFaviconForCell:cell indexPath:indexPath];
       break;
 
-    case ManualFallbackItemTypeHeader: {
-      TableViewTextLinkCell* linkCell =
-          base::apple::ObjCCastStrict<TableViewTextLinkCell>(cell);
-      linkCell.delegate = self;
-      break;
-    }
-
     default:
       break;
   }
   return cell;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForHeaderInSection:section];
+
+  if ([view isKindOfClass:[TableViewLinkHeaderFooterView class]]) {
+    // Attach `self` as a delegate to ensure taps on the link are handled.
+    TableViewLinkHeaderFooterView* linkHeader =
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkHeader.delegate = self;
+  }
+
+  return view;
 }
 
 #pragma mark - ManualFillPasswordConsumer
@@ -158,11 +165,9 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   [self presentActionItems:actions];
 }
 
-#pragma mark - TableViewTextLinkCellDelegate
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
-            didRequestOpenURL:(CrURL*)URL {
-  // Handle tap on header link.
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   [self.delegate didTapLinkURL:URL];
 }
 
@@ -212,19 +217,16 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 
 // Adds a header containing text and a link.
 - (void)addHeaderItem {
-  TableViewTextLinkItem* headerItem =
-      [[TableViewTextLinkItem alloc] initWithType:ManualFallbackItemTypeHeader];
+  TableViewLinkHeaderFooterItem* headerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ManualFallbackItemTypeHeader];
 
-  StringWithTags headerStringWithTags = ParseStringWithLinks(
-      l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER));
-
-  headerItem.text = headerStringWithTags.string;
-  headerItem.linkURLs = {google_util::AppendGoogleLocaleParam(
-      GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-      GetApplicationContext()->GetApplicationLocale())};
-  DCHECK_EQ(1U, headerStringWithTags.ranges.size());
-  headerItem.linkRanges =
-      @[ [NSValue valueWithRange:headerStringWithTags.ranges[0]] ];
+  headerItem.text =
+      l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+  headerItem.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+                       GetApplicationContext()->GetApplicationLocale())] ];
 
   [self presentHeaderItem:headerItem];
 }

@@ -56,7 +56,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
 @interface FallbackViewController ()
 // Header item to be shown when the loading indicator disappears.
-@property(nonatomic, strong) TableViewItem* queuedHeaderItem;
+@property(nonatomic, strong) TableViewHeaderFooterItem* queuedHeaderItem;
 
 // Data Items to be shown when the loading indicator disappears.
 @property(nonatomic, strong) NSArray<TableViewItem*>* queuedDataItems;
@@ -130,7 +130,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   }
 }
 
-- (void)presentHeaderItem:(TableViewItem*)item {
+- (void)presentHeaderItem:(TableViewHeaderFooterItem*)item {
   if (![self shouldPresentItems]) {
     if (self.queuedHeaderItem) {
       self.queuedHeaderItem = item;
@@ -181,6 +181,16 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   [self presentQueuedActionItems];
 }
 
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  if ([self.tableViewModel headerForSectionIndex:section]) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionHeaderHeight;
+}
+
 #pragma mark - Private
 
 // Calls `presentationBlock` to update the items in `tableView` after
@@ -201,13 +211,15 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   // If there is no header, remove section if it exists.
   if (!self.queuedHeaderItem && sectionExists) {
     [self.tableViewModel removeSectionWithIdentifier:HeaderSectionIdentifier];
-  } else if (self.queuedHeaderItem && !sectionExists) {
-    [self.tableViewModel insertSectionWithIdentifier:HeaderSectionIdentifier
-                                             atIndex:0];
+  } else if (self.queuedHeaderItem) {
+    if (!sectionExists) {
+      [self.tableViewModel insertSectionWithIdentifier:HeaderSectionIdentifier
+                                               atIndex:0];
+    }
+    [self.tableViewModel setHeader:self.queuedHeaderItem
+          forSectionWithIdentifier:HeaderSectionIdentifier];
   }
-  NSArray<TableViewItem*>* fallbackItems =
-      self.queuedHeaderItem ? @[ self.queuedHeaderItem ] : @[];
-  [self presentFallbackItems:fallbackItems inSection:HeaderSectionIdentifier];
+  [self.tableView reloadData];
   self.queuedHeaderItem = nil;
 }
 

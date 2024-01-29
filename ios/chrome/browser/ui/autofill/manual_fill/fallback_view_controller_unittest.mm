@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSampleFour
 };
 
-}
+}  // namespace
 
 class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest {
  protected:
@@ -32,47 +32,59 @@ class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest {
     [viewController loadModel];
     return viewController;
   }
+
+  // Returns the header item at `section`.
+  id GetHeaderItem(int section) {
+    return [controller().tableViewModel headerForSectionIndex:section];
+  }
+
+  // Returns the type of the header item at `section`.
+  NSInteger GetHeaderItemType(int section) {
+    return base::apple::ObjCCastStrict<TableViewHeaderFooterItem>(
+               GetHeaderItem(section))
+        .type;
+  }
+
+  // Returns the type of the table view item at `item` in `section`.
+  NSInteger GetTableViewItemType(int section, int item) {
+    return base::apple::ObjCCastStrict<TableViewItem>(
+               GetTableViewItem(section, item))
+        .type;
+  }
 };
 
-// Test the order of the elements in the view when all of data, action and
-// header items are initialised.
+// Tests the order of the elements in the view when all of data, action and
+// header items are initialized.
 TEST_F(FallbackViewControllerTest, CheckDataAndActionAndHeaderItems) {
   TableViewItem* itemOne =
       [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
   TableViewItem* itemTwo =
       [[TableViewItem alloc] initWithType:ItemTypeSampleTwo];
-
   NSArray<TableViewItem*>* dataItems = @[ itemOne, itemTwo ];
-  FallbackViewController* fallbackViewController =
-      base::apple::ObjCCastStrict<FallbackViewController>(controller());
 
   TableViewItem* itemThree =
       [[TableViewItem alloc] initWithType:ItemTypeSampleThree];
   NSArray<TableViewItem*>* actionItems = @[ itemThree ];
 
-  TableViewItem* itemFour =
-      [[TableViewItem alloc] initWithType:ItemTypeSampleFour];
+  TableViewHeaderFooterItem* itemFour =
+      [[TableViewHeaderFooterItem alloc] initWithType:ItemTypeSampleFour];
+
+  FallbackViewController* fallbackViewController =
+      base::apple::ObjCCastStrict<FallbackViewController>(controller());
 
   [fallbackViewController presentDataItems:dataItems];
   [fallbackViewController presentActionItems:actionItems];
   [fallbackViewController presentHeaderItem:itemFour];
 
   EXPECT_EQ(NumberOfSections(), 3);
-  // Section for header stays at the top.
-  EXPECT_EQ(NumberOfItemsInSection(0), 1);
+  // Header section stays at the top and has no items other than a header.
+  EXPECT_EQ(NumberOfItemsInSection(0), 0);
   EXPECT_EQ(NumberOfItemsInSection(1), 2);
   EXPECT_EQ(NumberOfItemsInSection(2), 1);
 
-  EXPECT_EQ(
-      base::apple::ObjCCastStrict<TableViewItem>(GetTableViewItem(0, 0)).type,
-      ItemTypeSampleFour);
-  EXPECT_EQ(
-      base::apple::ObjCCastStrict<TableViewItem>(GetTableViewItem(1, 0)).type,
-      ItemTypeSampleOne);
-  EXPECT_EQ(
-      base::apple::ObjCCastStrict<TableViewItem>(GetTableViewItem(1, 1)).type,
-      ItemTypeSampleTwo);
-  EXPECT_EQ(
-      base::apple::ObjCCastStrict<TableViewItem>(GetTableViewItem(2, 0)).type,
-      ItemTypeSampleThree);
+  EXPECT_EQ(GetHeaderItemType(/*section=*/0), ItemTypeSampleFour);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0), ItemTypeSampleOne);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/1), ItemTypeSampleTwo);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/2, /*item=*/0),
+            ItemTypeSampleThree);
 }
