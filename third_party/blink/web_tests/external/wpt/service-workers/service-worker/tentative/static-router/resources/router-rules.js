@@ -42,6 +42,8 @@ const routerRules = {
     condition: {requestMethod: String.fromCodePoint(0x3042)},
     source: 'network'
   }],
+  'condition-request-destination-script-network':
+      [{condition: {requestDestination: 'script'}, source: 'network'}],
   'condition-or-source-network': [{
     condition: {
       or: [
