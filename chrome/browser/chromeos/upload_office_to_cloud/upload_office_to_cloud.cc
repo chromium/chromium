@@ -29,11 +29,6 @@ bool IsPrefValueSetToAutomated(base::StringPiece pref_value) {
   return pref_value == cloud_upload::kCloudUploadPolicyAutomated;
 }
 
-bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile) {
-  return chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile) ==
-         Mount::kAutomated;
-}
-
 }  // namespace
 
 bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
@@ -90,7 +85,7 @@ bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
     return false;
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
-         IsMicrosoftOfficeOneDriveIntegrationAutomated(profile) &&
+         IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
              prefs::kMicrosoftOfficeCloudUpload));
 }
