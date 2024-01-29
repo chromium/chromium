@@ -313,7 +313,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
  protected:
   // Disable sub-sampling to deterministically record histograms under test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 
   // This should be defined before |reporting_controller_| so it is created
   // before and destroyed after that.

@@ -384,4 +384,53 @@ TEST(RandUtilTest, InsecureRandomGeneratorRandDouble) {
     EXPECT_LT(x, 1.);
   }
 }
+
+TEST(RandUtilTest, MetricsSubSampler) {
+  MetricsSubSampler sub_sampler;
+  int true_count = 0;
+  int false_count = 0;
+  for (int i = 0; i < 1000; ++i) {
+    if (sub_sampler.ShouldSample(0.5)) {
+      ++true_count;
+    } else {
+      ++false_count;
+    }
+  }
+
+  // Validate that during normal operation MetricsSubSampler::ShouldSample()
+  // does not always give the same result. It's technically possible to fail
+  // this test during normal operation but if the sampling is realistic it
+  // should happen about once every 2^999 times (the likelihood of the [1,999]
+  // results being the same as [0], which can be either). This should not make
+  // this test flaky in the eyes of automated testing.
+  EXPECT_GT(true_count, 0);
+  EXPECT_GT(false_count, 0);
+}
+
+TEST(RandUtilTest, MetricsSubSamplerTestingSupport) {
+  MetricsSubSampler sub_sampler;
+
+  // ScopedAlwaysSampleForTesting makes ShouldSample() return true with
+  // any probability.
+  {
+    MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+    for (int i = 0; i < 100; ++i) {
+      EXPECT_TRUE(sub_sampler.ShouldSample(0));
+      EXPECT_TRUE(sub_sampler.ShouldSample(0.5));
+      EXPECT_TRUE(sub_sampler.ShouldSample(1));
+    }
+  }
+
+  // ScopedNeverSampleForTesting makes ShouldSample() return true with
+  // any probability.
+  {
+    MetricsSubSampler::ScopedNeverSampleForTesting always_sample;
+    for (int i = 0; i < 100; ++i) {
+      EXPECT_FALSE(sub_sampler.ShouldSample(0));
+      EXPECT_FALSE(sub_sampler.ShouldSample(0.5));
+      EXPECT_FALSE(sub_sampler.ShouldSample(1));
+    }
+  }
+}
+
 }  // namespace base
