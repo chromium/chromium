@@ -77,6 +77,7 @@ struct BrowserWindowInstance {
                         uint32_t browser_session_id,
                         uint32_t restored_browser_session_id,
                         bool is_incognito,
+                        uint64_t lacros_profile_id,
                         bool is_active);
   BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                         aura::Window* window);
@@ -97,6 +98,8 @@ struct BrowserWindowInstance {
   const uint32_t browser_session_id;
   const uint32_t restored_browser_session_id;
   const bool is_incognito;
+  // This value will only be non-zero when refer to a lacros browser instance.
+  const uint64_t lacros_profile_id;
 
   bool is_active;
 };

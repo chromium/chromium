@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -78,6 +79,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -1646,7 +1648,20 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   desks_bar_view_->OnNewDeskButtonPressed(
       DesksCreationRemovalSource::kDragToNewDeskButton);
 
-  return move_windows_to_target_desk(desks_controller->desks().back().get());
+  auto* target_desk = desks_controller->desks().back().get();
+
+  // When creating a new desk by by dragging and dropping a lacros browser
+  // window to new desk button, set the desk's default profile based on the
+  // profile lacros window is logged into.
+  const auto windows = dragged_item->GetWindows();
+  if (chromeos::features::IsDeskProfilesEnabled() && windows.size() == 1) {
+    if (auto lacros_profile_id = windows[0]->GetProperty(ash::kLacrosProfileId);
+        lacros_profile_id != 0) {
+      target_desk->SetLacrosProfileId(lacros_profile_id);
+    }
+  }
+
+  return move_windows_to_target_desk(target_desk);
 }
 
 void OverviewGrid::StartScroll() {

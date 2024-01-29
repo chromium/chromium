@@ -104,12 +104,14 @@ BrowserWindowInstance::BrowserWindowInstance(
     uint32_t browser_session_id,
     uint32_t restored_browser_session_id,
     bool is_incognito,
+    uint64_t lacros_profile_id,
     bool is_active)
     : id(id),
       window(window),
       browser_session_id(browser_session_id),
       restored_browser_session_id(restored_browser_session_id),
       is_incognito(is_incognito),
+      lacros_profile_id(lacros_profile_id),
       is_active(is_active) {}
 
 BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
@@ -119,6 +121,7 @@ BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
       browser_session_id(update.browser_session_id),
       restored_browser_session_id(update.restored_browser_session_id),
       is_incognito(update.is_incognito),
+      lacros_profile_id(update.lacros_profile_id),
       is_active(update.is_active) {}
 
 BrowserWindowInstance::~BrowserWindowInstance() = default;
@@ -137,7 +140,8 @@ BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
                                      is_active,
                                      browser_session_id,
                                      restored_browser_session_id,
-                                     is_incognito};
+                                     is_incognito,
+                                     lacros_profile_id};
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
