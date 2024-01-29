@@ -18,7 +18,6 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/invert_bubble_prefs.h"
-#include "chrome/browser/ash/notifications/update_notification_showing_controller.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
@@ -986,6 +985,12 @@ const char kSearchResultsPageFallbackFontsPref[] =
     "cached_fonts.search_results_page.fallback";
 #endif  // BUILDFLAG(IS_WIN)
 
+// Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kUpdateNotificationLastShownMilestone[] =
+    "update_notification_last_shown_milestone";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1398,6 +1403,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_WIN)
   registry->RegisterListPref(kSearchResultsPagePrimaryFontsPref);
   registry->RegisterListPref(kSearchResultsPageFallbackFontsPref);
+#endif
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kUpdateNotificationLastShownMilestone, -10);
 #endif
 }
 
@@ -1974,7 +1984,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   ash::settings::OSSettingsUI::RegisterProfilePrefs(registry);
   ash::StartupUtils::RegisterOobeProfilePrefs(registry);
-  ash::UpdateNotificationShowingController::RegisterProfilePrefs(registry);
   ash::user_image::prefs::RegisterProfilePrefs(registry);
   ash::UserImageSyncObserver::RegisterProfilePrefs(registry);
   ChromeMetricsServiceClient::RegisterProfilePrefs(registry);
@@ -2652,6 +2661,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_WIN)
   profile_prefs->ClearPref(kSearchResultsPagePrimaryFontsPref);
   profile_prefs->ClearPref(kSearchResultsPageFallbackFontsPref);
+#endif
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kUpdateNotificationLastShownMilestone);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

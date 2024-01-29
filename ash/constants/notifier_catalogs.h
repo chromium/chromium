@@ -186,7 +186,7 @@ enum class NotificationCatalogName {
   kMultiCaptureOnLogin = 171,
   kFloatingWorkspace = 172,
   kScalableIphNotification = 173,
-  kUpdateNotification = 174,
+  // [Deprecated] kUpdateNotification = 174,
   kSubAppsUninstall = 175,
   kNetworkCarrierUnlock = 176,
   kCoralFeature = 177,

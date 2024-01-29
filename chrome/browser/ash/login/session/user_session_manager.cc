@@ -90,8 +90,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
-#include "chrome/browser/ash/notifications/update_notification.h"
-#include "chrome/browser/ash/notifications/update_notification_showing_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -2184,9 +2182,6 @@ void UserSessionManager::StartTetherServiceIfPossible(Profile* profile) {
 }
 
 void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
-  // Checks whether to show the update notification.
-  MaybeShowUpdateNotification(profile);
-
   // Check to see if this profile should show TPM Firmware Update Notification
   // and show the message accordingly.
   tpm_firmware_update::ShowNotificationIfNeeded(profile);
@@ -2635,17 +2630,6 @@ void UserSessionManager::MaybeShowU2FNotification() {
   }
 }
 
-void UserSessionManager::MaybeShowUpdateNotification(Profile* profile) {
-  if (!ProfileHelper::IsPrimaryProfile(profile)) {
-    return;
-  }
-
-  if (features::IsUpdateNotificationEnabled() && !update_notification_) {
-    GetUpdateNotificationShowingController(profile)
-        ->MaybeShowUpdateNotification();
-  }
-}
-
 void UserSessionManager::MaybeShowHelpAppReleaseNotesNotification(
     Profile* profile) {
   if (!ProfileHelper::IsPrimaryProfile(profile))
@@ -2737,15 +2721,6 @@ UserSessionManager::GetHelpAppNotificationController(Profile* profile) {
         std::make_unique<HelpAppNotificationController>(profile);
   }
   return help_app_notification_controller_.get();
-}
-
-UpdateNotificationShowingController*
-UserSessionManager::GetUpdateNotificationShowingController(Profile* profile) {
-  if (!update_notification_showing_controller_) {
-    update_notification_showing_controller_ =
-        std::make_unique<UpdateNotificationShowingController>(profile);
-  }
-  return update_notification_showing_controller_.get();
 }
 
 }  // namespace ash

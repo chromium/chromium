@@ -39512,6 +39512,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="UpdateNotificaion.NotificationShown">
+  <obsolete>Not present in the codebase. Removed in M123.</obsolete>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <description>
