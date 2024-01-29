@@ -159,10 +159,6 @@ public class CronetLibraryLoader {
         sWaitForLibLoad.block();
         assert sLibraryLoaded;
 
-        // TODO: override native base::Feature flags based on `resolvedFlags`. Note that this might
-        // be tricky because we can only set up base::Feature overrides after the .so is loaded, but
-        // we have to do it before any native code runs and tries to use any base::Feature flag.
-
         // registerToReceiveNotificationsAlways() is called before the native
         // NetworkChangeNotifierAndroid is created, so as to avoid receiving
         // the undesired initial network change observer notification, which
