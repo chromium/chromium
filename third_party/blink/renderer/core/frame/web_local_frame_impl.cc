@@ -3216,8 +3216,9 @@ void WebLocalFrameImpl::SetLCPPHint(
     return;
   }
 
+  lcpp->Reset();
+
   if (!hint) {
-    lcpp->Reset();
     return;
   }
 
