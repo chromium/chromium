@@ -82,7 +82,8 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   }
 
   void SetUpDnsLatencyRoutine() {
-    dns_latency_routine_ = std::make_unique<DnsLatencyRoutine>();
+    dns_latency_routine_ = std::make_unique<DnsLatencyRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     dns_latency_routine_->set_network_context_for_testing(
         fake_network_context_.get());
     dns_latency_routine_->set_profile_for_testing(test_profile_);

@@ -72,8 +72,9 @@ class HttpFirewallDelegate : public HttpFirewallRoutine::Delegate {
 
 const int HttpFirewallRoutine::kTotalNumRetries;
 
-HttpFirewallRoutine::HttpFirewallRoutine()
-    : delegate_(std::make_unique<HttpFirewallDelegate>()),
+HttpFirewallRoutine::HttpFirewallRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      delegate_(std::make_unique<HttpFirewallDelegate>()),
       num_retries_(kTotalNumRetries) {
   std::vector<std::string> url_strings =
       util::GetRandomAndFixedHostsWithSchemeAndPort(

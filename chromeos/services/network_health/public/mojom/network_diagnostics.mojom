@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 //
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium: chromeos/services/network_health/public/mojom/
@@ -42,6 +42,25 @@ enum RoutineVerdict {
   kProblem,
   // Routine has not been run.
   kNotRun,
+};
+
+// Source of network_diagnostics call.
+[Stable, Extensible]
+enum RoutineCallSource {
+  // Routine was called from an unknown source.
+  [Default] kUnknown,
+  // Routine was called from the Diagnostics page in the Settings UI.
+  kDiagnosticsUI,
+  // Routine was called from the Network Health tab in chrome://network.
+  kChromeNetworkPage,
+  // Routine was called from cros_healthd.
+  kCrosHealthd,
+  // Routine was called from telemetry metrics reporting.
+  // See directory chrome/browser/ash/policy/reporting/metrics_reporting/
+  kMetricsReporting,
+  // Routine was called from Network Health source.
+  // See chrome/browser/ash/system_logs/network_health_source.cc
+  kNetworkHealthSource,
 };
 
 // Problems related to the LanConnectivity routine.
@@ -265,6 +284,8 @@ struct RoutineResult {
   mojo_base.mojom.Time timestamp;
   // Routine specific result values.
   [MinVersion=1] RoutineResultValue? result_value;
+  // The source that invoked the routine.
+  [MinVersion=2] RoutineCallSource source;
 };
 
 // This interface is to be used by any clients that need to run specific
@@ -281,62 +302,77 @@ interface NetworkDiagnosticsRoutines {
 
   // Returns a map of all previously run routine types and their most recent
   // result.
-  GetAllResults@28() => (map<RoutineType, RoutineResult> results);
+  GetAllResults@28() => (map<RoutineType,RoutineResult> results);
 
   // Tests whether the device is connected to a LAN. It is possible that the
   // device may be trapped in a captive portal yet pass this test successfully.
   // Captive portal checks are done separately and are outside of the scope of
-  // this routine. See CaptivePortal() below.
-  RunLanConnectivity@12() => (RoutineResult result);
+  // this routine. See CaptivePortal([MinVersion=2] RoutineCallSource? source)
+  // below.
+  RunLanConnectivity@12([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether there is an acceptable signal strength on wireless networks.
-  RunSignalStrength@13() => (RoutineResult result);
+  RunSignalStrength@13([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether the gateway of connected networks is pingable.
-  RunGatewayCanBePinged@14() => (RoutineResult result);
+  RunGatewayCanBePinged@14([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether the WiFi connection is secure. Note that if WiFi is not
   // connected, the routine will result in a |kNotRun| verdict.
-  RunHasSecureWiFiConnection@15() => (RoutineResult result);
+  RunHasSecureWiFiConnection@15([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether a DNS resolver is available to the browser.
-  RunDnsResolverPresent@16() => (RoutineResult result);
+  RunDnsResolverPresent@16([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether the DNS latency is below an acceptable threshold.
-  RunDnsLatency@17() => (RoutineResult result);
+  RunDnsLatency@17([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether a DNS resolution can be completed successfully.
-  RunDnsResolution@18() => (RoutineResult result);
+  RunDnsResolution@18([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether the internet connection is behind a captive portal.
-  RunCaptivePortal@19() => (RoutineResult result);
+  RunCaptivePortal@19([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTP port 80.
-  RunHttpFirewall@20() => (RoutineResult result);
+  RunHttpFirewall@20([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTPS port 443.
-  RunHttpsFirewall@21() => (RoutineResult result);
+  RunHttpsFirewall@21([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether the HTTPS latency is within established tolerance levels for
   // the system.
-  RunHttpsLatency@22() => (RoutineResult result);
+  RunHttpsLatency@22([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests the device's video conferencing capabilities by testing whether the
   // device can:
   // (1) Contact either a default or specified STUN server via UDP.
   // (2) Contact either a default or specified STUN server via TCP.
   // (3) Reach common media endpoints.
-  RunVideoConferencing@23(string? stun_server_hostname)
-      => (RoutineResult result);
+  RunVideoConferencing@23(string? stun_server_hostname,
+    [MinVersion=2] RoutineCallSource? source) => (RoutineResult result);
 
   // Tests whether ARC can make successful HTTP GET requests to the resources
   // needed during the ARC Provisioning step.
-  RunArcHttp@24() => (RoutineResult result);
+  RunArcHttp@24([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether ARC can reach the connected networks' gateways.
-  RunArcPing@25() => (RoutineResult result);
+  RunArcPing@25([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 
   // Tests whether ARC can make successful DNS queries to the hostnames
   // needed during the ARC Provisioning step.
-  RunArcDnsResolution@26() => (RoutineResult result);
+  RunArcDnsResolution@26([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
 };

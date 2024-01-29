@@ -162,7 +162,8 @@ class VideoConferencingRoutineTest : public ::testing::Test {
                     std::deque<TlsProberReturnValue> fake_tls_probe_results) {
     fake_udp_probe_results_ = std::move(fake_udp_probe_results);
     fake_tls_probe_results_ = std::move(fake_tls_probe_results);
-    video_conferencing_routine_ = std::make_unique<VideoConferencingRoutine>();
+    video_conferencing_routine_ = std::make_unique<VideoConferencingRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     video_conferencing_routine_->set_udp_prober_getter_callback_for_testing(
         base::BindRepeating(
             &VideoConferencingRoutineTest::CreateAndExecuteUdpProber,

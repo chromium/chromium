@@ -32,8 +32,10 @@ const char kDefaultStunServer[] = "stun.l.google.com";
 const char kSupportDetails[] = "https://support.google.com/a/answer/1279090";
 const base::TimeDelta kTimeoutAfterHostResolution = base::Seconds(10);
 
-VideoConferencingRoutine::VideoConferencingRoutine()
-    : stun_server_hostname_(kDefaultStunServer),
+VideoConferencingRoutine::VideoConferencingRoutine(
+    mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      stun_server_hostname_(kDefaultStunServer),
       udp_prober_getter_callback_(base::BindRepeating(
           &VideoConferencingRoutine::CreateAndExecuteUdpProber)),
       tls_prober_getter_callback_(base::BindRepeating(
@@ -43,8 +45,10 @@ VideoConferencingRoutine::VideoConferencingRoutine()
       media_hostnames_(util::GetDefaultMediaUrls()) {}
 
 VideoConferencingRoutine::VideoConferencingRoutine(
+    mojom::RoutineCallSource source,
     const std::string& stun_server_hostname)
-    : stun_server_hostname_(stun_server_hostname),
+    : NetworkDiagnosticsRoutine(source),
+      stun_server_hostname_(stun_server_hostname),
       udp_prober_getter_callback_(base::BindRepeating(
           &VideoConferencingRoutine::CreateAndExecuteUdpProber)),
       tls_prober_getter_callback_(base::BindRepeating(

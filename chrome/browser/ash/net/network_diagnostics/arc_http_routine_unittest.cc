@@ -56,7 +56,8 @@ class ArcHttpRoutineTest : public ::testing::Test {
     fake_net_instance_->set_http_test_result(result);
 
     // Set up routine with fake NetworkInstance service.
-    arc_http_routine_ = std::make_unique<ArcHttpRoutine>();
+    arc_http_routine_ = std::make_unique<ArcHttpRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     arc_http_routine_->set_net_instance_for_testing(fake_net_instance_.get());
   }
 

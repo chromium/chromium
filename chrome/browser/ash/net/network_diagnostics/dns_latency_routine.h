@@ -31,7 +31,8 @@ namespace ash::network_diagnostics {
 // Tests whether the DNS latency is below an acceptable threshold.
 class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
  public:
-  DnsLatencyRoutine();
+  explicit DnsLatencyRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   DnsLatencyRoutine(const DnsLatencyRoutine&) = delete;
   DnsLatencyRoutine& operator=(const DnsLatencyRoutine&) = delete;
   ~DnsLatencyRoutine() override;

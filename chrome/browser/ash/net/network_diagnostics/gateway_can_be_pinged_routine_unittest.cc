@@ -108,7 +108,9 @@ class GatewayCanBePingedRoutineTest : public NetworkDiagnosticsTestHelper {
   void SetUpRoutine(const std::string& icmp_output) {
     debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>(icmp_output);
     gateway_can_be_pinged_routine_ =
-        std::make_unique<GatewayCanBePingedRoutine>(debug_daemon_client_.get());
+        std::make_unique<GatewayCanBePingedRoutine>(
+            mojom::RoutineCallSource::kDiagnosticsUI,
+            debug_daemon_client_.get());
   }
 
   GatewayCanBePingedRoutine* gateway_can_be_pinged_routine() {

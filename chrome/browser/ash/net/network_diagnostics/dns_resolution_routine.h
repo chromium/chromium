@@ -28,7 +28,8 @@ namespace ash::network_diagnostics {
 // Tests whether a DNS resolution can be completed successfully.
 class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
  public:
-  DnsResolutionRoutine();
+  explicit DnsResolutionRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   DnsResolutionRoutine(const DnsResolutionRoutine&) = delete;
   DnsResolutionRoutine& operator=(const DnsResolutionRoutine&) = delete;
   ~DnsResolutionRoutine() override;

@@ -44,7 +44,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   using HttpRequestManagerGetter =
       base::RepeatingCallback<std::unique_ptr<HttpRequestManager>()>;
 
-  HttpsLatencyRoutine();
+  explicit HttpsLatencyRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   HttpsLatencyRoutine(const HttpsLatencyRoutine&) = delete;
   HttpsLatencyRoutine& operator=(const HttpsLatencyRoutine&) = delete;
   ~HttpsLatencyRoutine() override;

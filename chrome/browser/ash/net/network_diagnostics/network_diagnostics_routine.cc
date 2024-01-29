@@ -9,9 +9,11 @@
 namespace ash {
 namespace network_diagnostics {
 
-NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() {
+NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine(
+    chromeos::network_diagnostics::mojom::RoutineCallSource source) {
   result_.verdict =
       chromeos::network_diagnostics::mojom::RoutineVerdict::kNotRun;
+  result_.source = source;
 }
 
 NetworkDiagnosticsRoutine::~NetworkDiagnosticsRoutine() = default;

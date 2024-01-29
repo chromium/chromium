@@ -39,7 +39,8 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
           bool negotiate_tls,
           TlsProber::TlsProbeCompleteCallback callback)>;
 
-  HttpFirewallRoutine();
+  explicit HttpFirewallRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   HttpFirewallRoutine(const HttpFirewallRoutine&) = delete;
   HttpFirewallRoutine& operator=(const HttpFirewallRoutine&) = delete;
   ~HttpFirewallRoutine() override;

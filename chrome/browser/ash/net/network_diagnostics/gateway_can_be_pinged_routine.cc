@@ -41,8 +41,10 @@ constexpr base::TimeDelta kMaxAllowedLatencyMs = base::Milliseconds(1500);
 }  // namespace
 
 GatewayCanBePingedRoutine::GatewayCanBePingedRoutine(
+    chromeos::network_diagnostics::mojom::RoutineCallSource source,
     DebugDaemonClient* debug_daemon_client)
-    : debug_daemon_client_(debug_daemon_client) {
+    : NetworkDiagnosticsRoutine(source),
+      debug_daemon_client_(debug_daemon_client) {
   set_verdict(mojom::RoutineVerdict::kNotRun);
   GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());

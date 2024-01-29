@@ -47,9 +47,12 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
           TlsProber::TlsProbeCompleteCallback callback)>;
 
   // Creates a routine using a default STUN server.
-  VideoConferencingRoutine();
+  explicit VideoConferencingRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   // Creates a routine using a custom STUN server.
-  explicit VideoConferencingRoutine(const std::string& stun_server_hostname);
+  VideoConferencingRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source,
+      const std::string& stun_server_hostname);
   VideoConferencingRoutine(const VideoConferencingRoutine&) = delete;
   VideoConferencingRoutine& operator=(const VideoConferencingRoutine&) = delete;
   ~VideoConferencingRoutine() override;

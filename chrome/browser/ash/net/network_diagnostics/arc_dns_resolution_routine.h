@@ -24,7 +24,8 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   using RunArcDnsResolutionCallback = chromeos::network_diagnostics::mojom::
       NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback;
 
-  ArcDnsResolutionRoutine();
+  explicit ArcDnsResolutionRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   ArcDnsResolutionRoutine(const ArcDnsResolutionRoutine&) = delete;
   ArcDnsResolutionRoutine& operator=(const ArcDnsResolutionRoutine&) = delete;
   ~ArcDnsResolutionRoutine() override;

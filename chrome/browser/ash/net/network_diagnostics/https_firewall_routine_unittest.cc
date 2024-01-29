@@ -93,7 +93,8 @@ class HttpsFirewallRoutineTest : public ::testing::Test {
   void SetUpRoutine(
       base::circular_deque<TlsProberReturnValue> fake_probe_results) {
     fake_probe_results_ = std::move(fake_probe_results);
-    https_firewall_routine_ = std::make_unique<HttpsFirewallRoutine>();
+    https_firewall_routine_ = std::make_unique<HttpsFirewallRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     https_firewall_routine_->set_tls_prober_getter_callback_for_testing(
         base::BindRepeating(
             &HttpsFirewallRoutineTest::CreateAndExecuteTlsProber,

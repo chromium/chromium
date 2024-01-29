@@ -17,6 +17,8 @@ using ::chromeos::network_diagnostics::mojom::RoutineResult;
 
 using HttpsLatencyProblemMojom =
     ::chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+using RoutineCallSourceMojom =
+    ::chromeos::network_diagnostics::mojom::RoutineCallSource;
 
 namespace reporting {
 
@@ -30,7 +32,10 @@ class FakeNetworkDiagnostics : public NetworkDiagnostics {
 
   ~FakeNetworkDiagnostics() override;
 
-  void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
+  void RunHttpsLatency(
+      std::optional<chromeos::network_diagnostics::mojom::RoutineCallSource>
+          source,
+      RunHttpsLatencyCallback callback) override;
 
   void ExecuteCallback();
 

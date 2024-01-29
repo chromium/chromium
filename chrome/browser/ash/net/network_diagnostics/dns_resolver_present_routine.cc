@@ -67,7 +67,9 @@ bool NameServersHaveValidAddresses(
 
 }  // namespace
 
-DnsResolverPresentRoutine::DnsResolverPresentRoutine() {
+DnsResolverPresentRoutine::DnsResolverPresentRoutine(
+    chromeos::network_diagnostics::mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source) {
   set_verdict(mojom::RoutineVerdict::kNotRun);
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
