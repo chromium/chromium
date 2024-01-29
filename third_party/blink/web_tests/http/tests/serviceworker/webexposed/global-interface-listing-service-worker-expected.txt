@@ -950,6 +950,7 @@ interface Observable
     attribute @@toStringTag
     method constructor
     method subscribe
+    method takeUntil
     method toArray
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
