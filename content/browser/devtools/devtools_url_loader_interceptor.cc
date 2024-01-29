@@ -242,7 +242,7 @@ void BodyReader::OnDataComplete() {
   data_complete_ = true;
   body_pipe_drainer_.reset();
   // TODO(caseq): only encode if necessary.
-  base::Base64Encode(body_->data(), &encoded_body_);
+  encoded_body_ = base::Base64Encode(body_->data());
   for (auto& cb : callbacks_)
     cb->sendSuccess(encoded_body_, true);
   callbacks_.clear();

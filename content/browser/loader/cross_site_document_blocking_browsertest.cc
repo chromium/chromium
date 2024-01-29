@@ -1113,8 +1113,8 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, SharedWorker) {
         port.postMessage('WORKER READY');
       };
   )";
-  std::string worker_script;
-  base::Base64Encode(JsReplace(kWorkerScriptTemplate, bar_url), &worker_script);
+  std::string worker_script =
+      base::Base64Encode(JsReplace(kWorkerScriptTemplate, bar_url));
   const char kWorkerStartTemplate[] = R"(
       new Promise(function (resolve, reject) {
           const worker_url = 'data:application/javascript;base64,' + $1;

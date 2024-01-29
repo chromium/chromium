@@ -282,9 +282,7 @@ std::string AXImageAnnotator::GenerateImageSourceId(
   const std::string& content = image_url.GetContent();
   if (content.empty())
     return std::string();
-  std::string source_id;
-  base::Base64Encode(crypto::SHA256HashString(content), &source_id);
-  return source_id;
+  return base::Base64Encode(crypto::SHA256HashString(content));
 }
 
 void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {

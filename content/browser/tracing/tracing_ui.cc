@@ -145,7 +145,7 @@ void ReadProtobufTraceData(
 void TracingCallbackWrapperBase64(WebUIDataSource::GotDataCallback callback,
                                   std::unique_ptr<std::string> data) {
   base::RefCountedString* data_base64 = new base::RefCountedString();
-  base::Base64Encode(*data, &data_base64->data());
+  data_base64->data() = base::Base64Encode(*data);
   std::move(callback).Run(data_base64);
 }
 

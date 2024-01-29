@@ -818,8 +818,7 @@ TEST_F(SignedExchangeCertFetcherTest, CloseClientPipe_AfterReceivingBody) {
 
 TEST_F(SignedExchangeCertFetcherTest, DataURL) {
   std::string data_url_string = "data:application/cert-chain+cbor";
-  std::string output;
-  base::Base64Encode(CreateTestData(), &output);
+  std::string output = base::Base64Encode(CreateTestData());
   data_url_string += ";base64," + output;
   const GURL data_url = GURL(data_url_string);
   std::unique_ptr<SignedExchangeCertFetcher> fetcher =

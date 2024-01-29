@@ -2566,15 +2566,12 @@ void NetworkHandler::OnSignedExchangeReceived(
     }
     if (certificate) {
       auto encoded_certificates = std::make_unique<protocol::Array<String>>();
-      encoded_certificates->emplace_back();
-      base::Base64Encode(
-          net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
-          &encoded_certificates->back());
+      encoded_certificates->emplace_back(
+          base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+              certificate->cert_buffer())));
       for (const auto& cert : certificate->intermediate_buffers()) {
-        encoded_certificates->emplace_back();
-        base::Base64Encode(
-            net::x509_util::CryptoBufferAsStringPiece(cert.get()),
-            &encoded_certificates->back());
+        encoded_certificates->emplace_back(base::Base64Encode(
+            net::x509_util::CryptoBufferAsStringPiece(cert.get())));
       }
       signature->SetCertificates(std::move(encoded_certificates));
     }

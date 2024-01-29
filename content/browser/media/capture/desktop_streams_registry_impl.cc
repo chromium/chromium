@@ -22,9 +22,7 @@ const int kApprovedStreamTimeToLiveSeconds = 10;
 std::string GenerateRandomStreamId() {
   char buffer[kStreamIdLengthBytes];
   crypto::RandBytes(buffer, std::size(buffer));
-  std::string result;
-  base::Base64Encode(base::StringPiece(buffer, std::size(buffer)), &result);
-  return result;
+  return base::Base64Encode(base::StringPiece(buffer, std::size(buffer)));
 }
 
 }  // namespace

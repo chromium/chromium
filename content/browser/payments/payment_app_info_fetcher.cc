@@ -289,10 +289,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched(
   std::vector<unsigned char> bitmap_data;
   bool success = gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &bitmap_data);
   DCHECK(success);
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
-                        bitmap_data.size()),
-      &(fetched_payment_app_info_->icon));
+  fetched_payment_app_info_->icon = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size()));
   RunCallbackAndDestroy();
 }
 

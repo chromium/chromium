@@ -68,9 +68,7 @@
   // will crash. Therefore, for debugging, if the result is nil, substitute in
   // the raw bytes, encoded for safety in base64, to allow for investigation.
   if (!title) {
-    std::string base64;
-    base::Base64Encode(*item->label, &base64);
-    title = base::SysUTF8ToNSString(base64);
+    title = base::SysUTF8ToNSString(base::Base64Encode(*item->label));
   }
   NSMenuItem* menuItem = [_menu addItemWithTitle:title
                                           action:@selector(menuItemSelected:)

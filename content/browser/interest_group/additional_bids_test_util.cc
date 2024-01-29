@@ -65,8 +65,8 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     signed_additional_bid_str = "}" + signed_additional_bid_str;
   }
 
-  std::string encoded_signed_additional_bid;
-  base::Base64Encode(signed_additional_bid_str, &encoded_signed_additional_bid);
+  std::string encoded_signed_additional_bid =
+      base::Base64Encode(signed_additional_bid_str);
   // Prepend some whitespace to make sure the decoder is forgiving.
   encoded_signed_additional_bid = " " + encoded_signed_additional_bid;
 

@@ -275,8 +275,7 @@ class BrowserToPageConnector {
     }
     DCHECK(agent_host == browser_host_.get());
 
-    std::string encoded;
-    base::Base64Encode(message_sp, &encoded);
+    std::string encoded = base::Base64Encode(message_sp);
     std::string eval_code =
         "try { window." + binding_name_ + ".onmessage(atob(\"";
     std::string eval_suffix = "\")); } catch(e) { console.error(e); }";
