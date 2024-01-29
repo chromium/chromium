@@ -767,7 +767,15 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
   RunTest(CompositorMode::THREADED);
 }
 
-TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor15_ScrollChild) {
+// TODO(crbug.com/1517753): Test is flaky on Mac asan.
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceScaleFactor15_ScrollChild \
+  DISABLED_DeviceScaleFactor15_ScrollChild
+#else
+#define MAYBE_DeviceScaleFactor15_ScrollChild DeviceScaleFactor15_ScrollChild
+#endif
+TEST_F(LayerTreeHostScrollTestCaseWithChild,
+       MAYBE_DeviceScaleFactor15_ScrollChild) {
   device_scale_factor_ = 1.5f;
   scroll_child_layer_ = true;
   RunTest(CompositorMode::THREADED);
@@ -803,7 +811,8 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/1521926): Test is flaky on Win asan.
-#if BUILDFLAG(IS_WIN) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/1517753): Test is flaky on Mac asan.
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)) && defined(LEAK_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor15_ScrollRootScrollLayer
 #else
