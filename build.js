@@ -11,9 +11,10 @@ const { spawnSync } = require("child_process");
 // logic.
 const IS_LOCAL_BUILD = !!process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"];
 
-const { REPLAY_LOCAL_DRIVER_DIR } = process.env;
+const { REPLAY_LOCAL_DRIVER_DIR, DRIVER_REVISION } = process.env;
+const driverRevisionIsSet = !!DRIVER_REVISION;
 
-if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
+if (REPLAY_LOCAL_DRIVER_DIR && driverRevisionIsSet) {
   // local driver should generally be latest
   throw new Error(
     "Conflicting build settings: environment variables DRIVER_REVISION and REPLAY_LOCAL_DRIVER_DIR cannot coexist."
@@ -25,9 +26,13 @@ const outdir = buildArm ? "out/Release-ARM" : "out/Release";
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
 // fatal: unsafe repository ('/chromium/src' is owned by someone else)
-spawnChecked("git", ["config", "--global", "--add", "safe.directory", __dirname], {
-  stdio: "inherit",
-});
+spawnChecked(
+  "git",
+  ["config", "--global", "--add", "safe.directory", __dirname],
+  {
+    stdio: "inherit",
+  }
+);
 
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
@@ -42,8 +47,8 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   console.log(`Downloading driver...`);
   let driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
   let downloadArchive = driverArchive;
-  let driverRevisionOverride = process.env.DRIVER_REVISION;
-  if (driverRevisionOverride) {
+  let driverRevisionOverride = DRIVER_REVISION;
+  if (driverRevisionIsSet) {
     if (driverRevisionOverride.length < 12) {
       throw new Error(
         `Invalid DRIVER_REVISION was "${driverRevisionOverride}" but must have a length of at least 12`
@@ -54,7 +59,11 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   }
   spawnChecked(
     "curl",
-    [`https://static.replay.io/downloads/${downloadArchive}`, "-o", driverArchive],
+    [
+      `https://static.replay.io/downloads/${downloadArchive}`,
+      "-o",
+      driverArchive,
+    ],
     { stdio: "inherit" }
   );
   spawnChecked("tar", ["xf", driverArchive], { stdio: "inherit" });
@@ -92,7 +101,8 @@ for (let i = 0; i < driverContents.length; i++) {
 driverString = driverString.join("");
 
 const buildSuffix =
-  process.env["BUILDKITE_BRANCH"] !== process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
+  process.env["BUILDKITE_BRANCH"] !==
+  process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
     ? "-dev"
     : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
@@ -141,14 +151,13 @@ if (!process.env["BUILDKITE"]) {
 }
 
 console.log(`Building...`);
-const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
+const autoninja =
+  currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
 // make the windows build verbose so we can see what's going on
 const platformAutoNinjaArgs = currentPlatform() == "windows" ? ["-v"] : [];
-spawnChecked(
-  autoninja,
-  [...platformAutoNinjaArgs, "-C", outdir, "chrome"],
-  { stdio: "inherit" }
-);
+spawnChecked(autoninja, [...platformAutoNinjaArgs, "-C", outdir, "chrome"], {
+  stdio: "inherit",
+});
 
 console.log(`Build finished.`);
 
@@ -159,7 +168,9 @@ function spawnChecked(cmd, args, options) {
   const rv = spawnSync(cmd, args, options);
 
   if (rv.status != 0 || rv.error) {
-    console.error(`Process failed: err=${rv.error || ""}, signal=${rv.signal || ""}`);
+    console.error(
+      `Process failed: err=${rv.error || ""}, signal=${rv.signal || ""}`
+    );
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 

@@ -453,6 +453,8 @@ function computeBuildId(
   let driverJSONStr = "";
   const driverJSONFile = `${currentPlatform()}-recordreplay.json`;
 
+  const driverRevisionIsSet = !!driverRevision;
+
   if (process.env["REPLAY_LOCAL_DRIVER_DIR"]) {
     const driverJSONFileFull = path.resolve(
       process.env["REPLAY_LOCAL_DRIVER_DIR"],
@@ -464,7 +466,7 @@ function computeBuildId(
 
     const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
     let downloadArchive = driverArchive;
-    if (driverRevision) {
+    if (driverRevisionIsSet) {
       downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision}.tgz`;
     }
     spawnChecked(
@@ -487,7 +489,7 @@ function computeBuildId(
   const { revision: archiveDriverRevision, date: driverDate } =
     JSON.parse(driverJSONStr);
 
-  if (driverRevision) {
+  if (driverRevisionIsSet) {
     assert(driverRevision == archiveDriverRevision);
   } else {
     driverRevision = archiveDriverRevision;
