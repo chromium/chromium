@@ -11,7 +11,7 @@ build_webui("build") {
   web_component_files = [ "internet_config_dialog.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-
+  ts_composite = true
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//third_party/polymer/v3_0:library",

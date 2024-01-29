@@ -165,5 +165,11 @@ export class InternetConfigDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [InternetConfigDialogElement.is]: InternetConfigDialogElement;
+  }
+}
+
 customElements.define(
     InternetConfigDialogElement.is, InternetConfigDialogElement);
