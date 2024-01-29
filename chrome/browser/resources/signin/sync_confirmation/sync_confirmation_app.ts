@@ -103,6 +103,9 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.addWebUiListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
+
+    this.shadowRoot!.querySelector('#confirmButton')!.classList.add(
+        'action-button');
   }
 
   private onConfirm_(e: Event) {
