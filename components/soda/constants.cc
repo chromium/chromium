@@ -243,7 +243,7 @@ const std::string GetInstallationResultMetricForLanguagePack(
                        ".InstallationResult"});
 }
 
-std::vector<std::string> GetEnabledLanguages() {
+std::vector<std::string> GetLiveCaptionEnabledLanguages() {
   std::vector<std::string> enabled_languages = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
           media::kLiveCaptionExperimentalLanguages, "available_languages"),
