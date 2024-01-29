@@ -113,11 +113,21 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     if layout.lastUpdateAction == .insert {
       let isRTL: Bool = self.collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
       if !isRTL {
-        let scrollOffset = self.collectionView.contentSize.width - self.collectionView.frame.width
-        if scrollOffset > 0 {
-          self.collectionView.setContentOffset(
-            CGPoint(x: scrollOffset, y: 0),
-            animated: true)
+        let offset = self.collectionView.contentSize.width - self.collectionView.frame.width
+        if offset > 0 {
+          if #available(iOS 17.0, *) {
+            scrollToContentOffset(offset)
+          } else {
+            // On iOS 16, when the scroll animation and the insert animation
+            // occur simultaneously, the resulting animation lacks of
+            // smoothness.
+            weak var weakSelf = self
+            DispatchQueue.main.asyncAfter(
+              deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
+            ) {
+              weakSelf?.scrollToContentOffset(offset)
+            }
+          }
         }
       }
     }
@@ -286,6 +296,13 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   func tabTripCellAccessibilityIdentifier(index: Int) -> String {
     return String(
       format: "%@%ld", TabStripConstants.CollectionView.tabStripCellPrefixIdentifier, index)
+  }
+
+  /// Scrolls the collection view to the given horizontal `offset`.
+  func scrollToContentOffset(_ offset: CGFloat) {
+    self.collectionView.setContentOffset(
+      CGPoint(x: offset, y: 0),
+      animated: true)
   }
 
   // MARK: - TabStripNewTabButtonDelegate

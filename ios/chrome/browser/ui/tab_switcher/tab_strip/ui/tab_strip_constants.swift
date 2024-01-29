@@ -13,6 +13,7 @@ struct TabStripConstants {
     static let tabStripCellPrefixIdentifier = "tabStripCellPrefixIdentifier"
     static let topInset: CGFloat = 4
     static let horizontalInset: CGFloat = 16
+    static let scrollDelayAfterInsert: DispatchTimeInterval = .milliseconds(500)
   }
 
   /// Tab item constants.
