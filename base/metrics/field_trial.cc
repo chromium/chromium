@@ -1162,12 +1162,15 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
   auto* rendezvous = MachPortRendezvousClient::GetInstance();
   if (!rendezvous) {
     LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
+    // Note: This matches mojo behavior in content/child/child_thread_impl.cc.
     base::Process::TerminateCurrentProcessImmediately(0);
   }
   apple::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
       static_cast<MachPortsForRendezvous::key_type>(field_trial_handle));
   if (!scoped_handle.is_valid()) {
-    return base::unexpected(SharedMemError::kInvalidHandle);
+    LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
+    // Note: This matches mojo behavior in content/child/child_thread_impl.cc.
+    base::Process::TerminateCurrentProcessImmediately(0);
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   static bool startup_handle_taken = false;
