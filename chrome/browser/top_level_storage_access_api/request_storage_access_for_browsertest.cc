@@ -7,7 +7,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -60,7 +59,7 @@ constexpr char kFetchWithCredentialsPath[] = "/respondwithcookies";
 
 constexpr char kQueryTopLevelStorageAccessPermission[] =
     "navigator.permissions.query({name: 'top-level-storage-access', "
-    "requestedOrigin: '%s'}).then("
+    "requestedOrigin: $1}).then("
     "  (permission) => permission.state);";
 constexpr char kVerifyHasStorageAccessPermission[] =
     "navigator.permissions.query({name: 'storage-access'}).then("
@@ -184,8 +183,8 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     content::TestNavigationObserver load_observer(active_web_contents());
     ASSERT_TRUE(ExecJs(
         GetFrame(),
-        base::StringPrintf("document.body.querySelector('iframe').src = '%s';",
-                           https_server_.GetURL(host, path).spec().c_str())));
+        content::JsReplace("document.body.querySelector('iframe').src = $1;",
+                           https_server_.GetURL(host, path))));
     load_observer.Wait();
   }
 
@@ -193,19 +192,19 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     return storage::test::GetFrameContent(GetNestedFrame());
   }
 
-  std::string ReadCookiesViaJS(content::RenderFrameHost* render_frame_host) {
+  content::EvalJsResult ReadCookiesViaJS(
+      content::RenderFrameHost* render_frame_host) {
     return content::EvalJs(render_frame_host, "document.cookie",
-                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-        .ExtractString();
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE);
   }
 
-  std::string QueryPermission(content::RenderFrameHost* render_frame_host,
-                              const std::string& requested_origin) {
+  content::EvalJsResult QueryPermission(
+      content::RenderFrameHost* render_frame_host,
+      const std::string& requested_origin) {
     return content::EvalJs(
-               render_frame_host,
-               base::StringPrintf(kQueryTopLevelStorageAccessPermission,
-                                  GetURL(requested_origin).spec().c_str()))
-        .ExtractString();
+        render_frame_host,
+        content::JsReplace(kQueryTopLevelStorageAccessPermission,
+                           GetURL(requested_origin)));
   }
 
   content::RenderFrameHost* GetPrimaryMainFrame() {
@@ -328,9 +327,9 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
                        RsaForOriginEnabledByDefault) {
   NavigateToPageWithFrame(kHostA);
   // Ensure that the proposed extension is enabled by default
-  EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
-                     "\"requestStorageAccessFor\" in document === true")
-                  .ExtractBool());
+  EXPECT_EQ(
+      EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document"),
+      true);
 }
 
 class RequestStorageAccessForEnabledBrowserTest
@@ -571,8 +570,8 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test");
 
-  EXPECT_TRUE(content::EvalJs(GetFrame(), kVerifyHasStorageAccessPermission)
-                  .ExtractBool());
+  EXPECT_EQ(content::EvalJs(GetFrame(), kVerifyHasStorageAccessPermission),
+            true);
 
   NavigateFrameTo(kHostC, "/");
   // Verify that there was not a side effect on `kHostC`: invoking
