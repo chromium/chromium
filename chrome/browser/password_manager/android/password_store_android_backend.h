@@ -179,6 +179,9 @@ class PasswordStoreAndroidBackend
   // whether the error is recoverable or not.
   virtual PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
       AndroidBackendAPIErrorCode error) = 0;
+  // Subclasses can override this method to react when GMSCore responds
+  // successfully.
+  virtual void OnCallToGMSCoreSucceeded() = 0;
 
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);

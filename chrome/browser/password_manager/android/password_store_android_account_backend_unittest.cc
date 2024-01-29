@@ -17,6 +17,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
+#include "chrome/browser/password_manager/android/mock_password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
@@ -161,35 +162,6 @@ std::string ApiErrorMetricName(const std::string& method_name) {
   return "PasswordManager.PasswordStoreAndroidBackend." + method_name +
          ".APIError";
 }
-
-class MockPasswordStoreAndroidBackendBridgeHelper
-    : public PasswordStoreAndroidBackendBridgeHelper {
- public:
-  MOCK_METHOD(bool, CanUseGetAffiliatedPasswordsAPI, (), (override));
-  MOCK_METHOD(bool, CanUseGetAllLoginsWithBrandingInfoAPI, (), (override));
-  MOCK_METHOD(bool, CanRemoveUnenrollment, (), (override));
-  MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
-  MOCK_METHOD(JobId, GetAllLogins, (std::string), (override));
-  MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (std::string), (override));
-  MOCK_METHOD(JobId, GetAutofillableLogins, (std::string), (override));
-  MOCK_METHOD(JobId,
-              GetLoginsForSignonRealm,
-              (const std::string&, std::string),
-              (override));
-  MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, std::string), (override));
-  MOCK_METHOD(JobId,
-              UpdateLogin,
-              (const PasswordForm&, std::string),
-              (override));
-  MOCK_METHOD(JobId,
-              RemoveLogin,
-              (const PasswordForm&, std::string),
-              (override));
-  MOCK_METHOD(JobId,
-              GetAffiliatedLoginsForSignonRealm,
-              (const std::string&, std::string),
-              (override));
-};
 
 }  // namespace
 

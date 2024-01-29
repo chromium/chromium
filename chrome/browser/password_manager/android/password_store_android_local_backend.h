@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_ACCOUNT_BACKEND_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_ACCOUNT_BACKEND_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_LOCAL_BACKEND_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_LOCAL_BACKEND_H_
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -17,26 +17,22 @@ namespace password_manager {
 
 class AffiliatedMatchHelper;
 class AffiliationsPrefetcher;
-class PasswordSyncControllerDelegateAndroid;
 
 // This class processes passwords only from an account.
-class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
-                                           public PasswordStoreAndroidBackend {
+class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
+                                         public PasswordStoreAndroidBackend {
  public:
-  PasswordStoreAndroidAccountBackend(
+  PasswordStoreAndroidLocalBackend(
       PrefService* prefs,
       AffiliationsPrefetcher* affiliations_prefetcher);
 
-  PasswordStoreAndroidAccountBackend(
-      base::PassKey<class PasswordStoreAndroidAccountBackendTest>,
+  // Only for testing.
+  PasswordStoreAndroidLocalBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-          sync_controller_delegate,
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher,
-      const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb);
-  ~PasswordStoreAndroidAccountBackend() override;
+      AffiliationsPrefetcher* affiliations_prefetcher);
+  ~PasswordStoreAndroidLocalBackend() override;
 
   // PasswordStoreAndroidBackend implementation
   void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
@@ -81,50 +77,16 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+ private:
   // PasswordStoreAndroidBackend implementation.
   PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
       AndroidBackendAPIErrorCode error) override;
   void OnCallToGMSCoreSucceeded() override;
 
- private:
-  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
-  // and branding information for Android credentials in the forms and invokes
-  // |callback| with the result. If an error was received instead, it directly
-  // invokes |callback| with it, as no forms could be fetched. Called on
-  // the main sequence.
-  void InjectAffiliationAndBrandingInformation(
-      LoginsOrErrorReply callback,
-      LoginsResultOrError forms_or_error);
-
-  // Called when password sync flips from disabled to enabled and vice-versa.
-  // If the sync status changes, all pending jobs should be replied to
-  // with the corresponding error since their results are no longer relevant.
-  // This should also interrupt retry chains or other pre-scheduled
-  // chains of calls to the store.
-  void OnPasswordsSyncStateChanged();
-
-  // Clears |sync_service_| when syncer::SyncServiceObserver::OnSyncShutdown is
-  // called.
-  void SyncShutdown();
-
-  // Callback to be invoked when the backend finished initializing with
-  // the success status of the initialization.
-  base::OnceCallback<void(bool)> init_completion_callback_;
-
-  raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
-  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_ = nullptr;
-
-  // Delegate to handle sync events.
-  std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-      sync_controller_delegate_;
-
-  // Nullable.
-  const TryFixPassphraseErrorCb try_fix_passphrase_error_cb_;
-
-  base::WeakPtrFactory<PasswordStoreAndroidAccountBackend> weak_ptr_factory_{
+  base::WeakPtrFactory<PasswordStoreAndroidLocalBackend> weak_ptr_factory_{
       this};
 };
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_ACCOUNT_BACKEND_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_LOCAL_BACKEND_H_

@@ -346,6 +346,11 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
   }
 }
 
+void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {
+  // Since the API call has succeeded, it's safe to reenable saving.
+  prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
+}
+
 void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   // TODO(crbug.com/1335387) Check if this might be called multiple times

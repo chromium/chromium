@@ -691,9 +691,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
 
-  // Since the API call has succeeded, it's safe to reenable saving.
-  prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
-
+  OnCallToGMSCoreSucceeded();
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
@@ -710,9 +708,7 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<PasswordChangesOrErrorReply>());
 
-  // Since the API call has succeeded, it's safe to reenable saving.
-  prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
-
+  OnCallToGMSCoreSucceeded();
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*reply).Get<PasswordChangesOrErrorReply>(),
@@ -738,7 +734,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       PasswordStoreBackendErrorType::kUncategorized,
       PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
 
-  if (error.api_error_code.has_value() && sync_service_) {
+  if (error.api_error_code.has_value()) {
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
@@ -779,6 +775,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
           RecoverOnErrorAndReturnResult(api_error_code);
       reported_error.type = APIErrorCodeToErrorType(
           api_error_code, bridge_helper_->CanRemoveUnenrollment());
+      LOG(ERROR) << static_cast<int>(reported_error.recovery_type);
+      LOG(ERROR) << static_cast<int>(reported_error.type);
     }
   }
 
