@@ -492,7 +492,8 @@ public class ReadAloudController
         // coming.
         mPlayerCoordinator.playTabRequested();
 
-        String playbackLanguage = getLanguageForNewPlayback(tab);
+        final String playbackLanguage = getLanguageForNewPlayback(tab);
+        boolean isTranslated = TranslateBridge.isPageTranslated(tab.getWebContents());
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
         if (voices == null || voices.isEmpty()) {
@@ -505,7 +506,7 @@ public class ReadAloudController
         PlaybackArgs args =
                 new PlaybackArgs(
                         stripUserData(tab.getUrl()).getSpec(),
-                        playbackLanguage,
+                        isTranslated ? playbackLanguage : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
                         /* dateModifiedMsSinceEpoch= */ 0);
@@ -514,10 +515,12 @@ public class ReadAloudController
         Promise<Playback> promise = createPlayback(args);
         promise.then(
                 playback -> {
-                    Log.d(TAG, "Playback created");
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     maybeSetUpHighlighter(playback.getMetadata());
-
+                    updateVoiceMenu(
+                            isTranslated
+                                    ? playbackLanguage
+                                    : getLanguage(playback.getMetadata().languageCode()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
                 },
@@ -525,8 +528,6 @@ public class ReadAloudController
                     Log.e(TAG, exception.getMessage());
                     onCreatePlaybackFailed();
                 });
-
-        updateVoiceMenu(playbackLanguage);
         return promise;
     }
 
@@ -692,8 +693,13 @@ public class ReadAloudController
         }
 
         // If language string is a locale like "en-US", strip the "-US" part.
+        return getLanguage(language);
+    }
+
+    /** Is language string includes locale, strip it */
+    private String getLanguage(String language) {
         if (language.contains("-")) {
-            language = language.split("-")[0];
+            return language.split("-")[0];
         }
         return language;
     }
@@ -828,7 +834,19 @@ public class ReadAloudController
                 new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
                     @Override
                     public void onSuccess(Playback playback) {
-                        promise.fulfill(playback);
+
+                        // If we rely on the backend to detect page language, ensure it is supported
+                        if (args.getLanguage() == null
+                                && !mReadabilityHooks
+                                        .getCompatibleLanguages()
+                                        .contains(
+                                                getLanguage(
+                                                        playback.getMetadata().languageCode()))) {
+                            playback.release();
+                            promise.reject(new Exception("Unsupported language"));
+                        } else {
+                            promise.fulfill(playback);
+                        }
                     }
 
                     @Override

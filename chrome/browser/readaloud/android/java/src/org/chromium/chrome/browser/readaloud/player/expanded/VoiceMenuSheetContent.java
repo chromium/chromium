@@ -51,8 +51,11 @@ class VoiceMenuSheetContent extends MenuSheetContent {
     }
 
     void setVoices(List<PlaybackVoice> voices) {
-        assert voices != null : "Can't populate voice menu with null voice list. Invalid language?";
         mMenu.clearItems();
+        if (voices == null || voices.isEmpty()) {
+            mVoices = new PlaybackVoice[0];
+            return;
+        }
         mVoices = new PlaybackVoice[voices.size()];
 
         int id = 0;
@@ -72,6 +75,9 @@ class VoiceMenuSheetContent extends MenuSheetContent {
     }
 
     void setVoiceSelection(String voiceId) {
+        if (mVoices.length == 0) {
+            return;
+        }
         Integer maybeId = mVoiceIdToMenuItemId.get(voiceId);
         int id = 0;
 
