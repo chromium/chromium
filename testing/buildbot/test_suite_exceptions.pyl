@@ -305,6 +305,7 @@
   'blink_web_tests': {
     'remove_from': [
       'Win10 Tests x64 (dbg)',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'Linux Tests': {
@@ -652,6 +653,7 @@
       'linux-rel-cft',
       'mac-rel-cft',
       'win-rel-cft',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'Linux Tests': {
@@ -975,6 +977,7 @@
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-exp-tsan-fyi-rel',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
+      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'CrWinAsan': {
@@ -1303,11 +1306,19 @@
           'shards': 15,
         }
       },
+      'win11-arm64-rel-tests': {
+        'swarming': {
+          # This is for slow test execution that often becomes a critical path of
+          # swarming jobs. crbug.com/868114
+          'shards': 15,
+        }
+      },
     },
   },
   'browser_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
+      'win11-arm64-rel-tests',
       'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
@@ -1737,6 +1748,7 @@
   'components_browsertests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
+      'win11-arm64-rel-tests',
       'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
@@ -2329,6 +2341,7 @@
     'remove_from': [
       'Win11 Tests x64',
       'win-rel-cft',
+      'win11-arm64-rel-tests',
     ],
     'modifications': {
       'win-rel-cft': {
@@ -3344,10 +3357,11 @@
       },
     },
     'remove_from': [
+      'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win11-arm64-rel-tests',
       'win-arm64-rel',
       'win-rel-cft',
-      'Win11 Tests x64',
     ],
   },
   'ipc_tests': {
@@ -3797,6 +3811,7 @@
     'remove_from': [
       'Win11 Tests x64',
       'win-rel-cft',
+      'win11-arm64-rel-tests',
     ],
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
@@ -4220,6 +4235,7 @@
   'sync_integration_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
+      'win11-arm64-rel-tests',
       'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
@@ -4334,6 +4350,8 @@
       'Win10 Tests x64 (dbg)',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win11-arm64-dbg-tests',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
     ],
   },
@@ -4372,6 +4390,8 @@
       'Win10 Tests x64',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win11-arm64-dbg-tests',
+      'win11-arm64-rel-tests',
       'win-rel-cft',
 
       # TODO(https://crbug.com/1267161): Re-enable when platform is supported.

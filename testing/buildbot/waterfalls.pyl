@@ -6134,8 +6134,6 @@
       },
       'win11-arm64-dbg-tests': {
         'mixins': [
-          # Only run selected test suites on CQ.
-          'ci_only',
           'win-arm64',
         ],
         'test_suites': {
@@ -6145,8 +6143,6 @@
       },
       'win11-arm64-rel-tests': {
         'mixins': [
-          # Only run selected test suites on CQ.
-          'ci_only',
           'win-arm64',
         ],
         'test_suites': {

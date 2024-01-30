@@ -419,8 +419,9 @@ try_.builder(
             "ci/win-arm64-dbg",
         ],
     ),
-    builderless = False,
+    builderless = True,
     cores = 16,
+    os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
     # Enable when stable.
