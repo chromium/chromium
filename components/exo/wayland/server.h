@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/shell_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -46,7 +47,8 @@ class WaylandWatcher;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
 // requests are dispatched into the given Exosphere display.
-class Server : public display::DisplayManagerObserver {
+class Server : public display::DisplayManagerObserver,
+               public ash::ShellObserver {
  public:
   using ServerGetter = base::RepeatingCallback<Server*(wl_display*)>;
   using StartCallback = base::OnceCallback<void(bool)>;
@@ -99,6 +101,9 @@ class Server : public display::DisplayManagerObserver {
   // display::DisplayManagerObserver:
   void OnDidProcessDisplayChanges(
       const DisplayConfigurationChange& configuration_change) override;
+
+  // ash::ShellObserver:
+  void OnDisplayForNewWindowsChanged() override;
 
   // Returns the wl_resource for the wl_output bound to the `client`.
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
