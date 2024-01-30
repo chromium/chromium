@@ -434,7 +434,8 @@ export class RealboxMatchElement extends PolymerElement {
   private showActionsInlined_(): boolean {
     // Always show inlined div when feature is enabled, so that it will
     // grow and push other elements like remove button to the right.
-    return this.inlinedActions && !this.showCrNonInlinedHoverFill;
+    return this.inlinedActions && !this.showCrNonInlinedHoverFill &&
+        this.sideType === SideType.kDefaultPrimary;
   }
 
   private showActionsUnderneath_(match: AutocompleteMatch): boolean {
