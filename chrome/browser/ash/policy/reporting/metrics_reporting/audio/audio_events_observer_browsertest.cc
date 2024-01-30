@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
 IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
                        AudioSevereUnderrunAffiliatedUserAndPolicyEnabled) {
   chromeos::MissiveClientTestObserver missive_observer_(
-      ::reporting::Destination::EVENT_METRIC);
+      Destination::EVENT_METRIC);
 
   EnablePolicy();
 
@@ -113,7 +113,29 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(::reporting::MetricEventType::AUDIO_SEVERE_UNDERRUN));
+              Eq(MetricEventType::AUDIO_SEVERE_UNDERRUN));
+}
+
+IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
+                       PRE_NoAudioEventsWhenPolicyDisabled) {
+  // Dummy case that sets up the affiliated user through SetUpOnMain
+  // PRE-condition.
+}
+
+IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
+                       NoAudioEventsWhenPolicyDisabled) {
+  chromeos::MissiveClientTestObserver missive_observer(
+      Destination::EVENT_METRIC);
+
+  DisablePolicy();
+
+  ash::cros_healthd::mojom::AudioEventInfo info;
+  info.state = ash::cros_healthd::mojom::AudioEventInfo::State::kSevereUnderrun;
+  ash::cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
+      ash::cros_healthd::mojom::EventCategoryEnum::kAudio,
+      ash::cros_healthd::mojom::EventInfo::NewAudioEventInfo(info.Clone()));
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace
