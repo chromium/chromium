@@ -17,8 +17,12 @@ namespace new_tab_page_uma {
 void RecordAction(bool is_incognito,
                   web::WebState* web_state,
                   ActionType action) {
-  if (is_incognito || !web_state ||
-      web_state->GetVisibleURL() != kChromeUINewTabURL) {
+  bool is_ntp = web_state && web_state->GetVisibleURL() == kChromeUINewTabURL;
+  RecordNTPAction(is_incognito, is_ntp, action);
+}
+
+void RecordNTPAction(bool is_incognito, bool is_ntp, ActionType action) {
+  if (is_incognito || !is_ntp) {
     return;
   }
   base::HistogramBase* counter = base::Histogram::FactoryGet(

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
@@ -81,8 +82,10 @@ void TabPickupInfobarDelegate::OpenDistantTab() {
                                   time_since_last_use, base::Minutes(1),
                                   base::Days(24), 50);
 
-    new_tab_page_uma::RecordAction(
-        browser_state->IsOffTheRecord(), web_state_list->GetActiveWebState(),
+    bool is_ntp = web_state_list->GetActiveWebState()->GetVisibleURL() ==
+                  kChromeUINewTabURL;
+    new_tab_page_uma::RecordNTPAction(
+        browser_state->IsOffTheRecord(), is_ntp,
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
 
     std::unique_ptr<web::WebState> web_state =

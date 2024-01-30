@@ -32,10 +32,6 @@ source_set("content_suggestions") {
     "content_suggestions_coordinator.mm",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
-    "content_suggestions_mediator_util.h",
-    "content_suggestions_mediator_util.mm",
-    "content_suggestions_tile_saver.h",
-    "content_suggestions_tile_saver.mm",
   ]
   deps = [
     ":constants",
@@ -118,6 +114,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
@@ -284,12 +281,15 @@ source_set("content_suggestions_ui_util") {
   sources = [
     "content_suggestions_collection_utils.h",
     "content_suggestions_collection_utils.mm",
+    "content_suggestions_mediator_util.h",
+    "content_suggestions_mediator_util.mm",
   ]
   deps = [
     ":content_suggestions_constant",
     "resources:fake_omnibox_placeholder_color",
     "//base",
     "//base:i18n",
+    "//components/ntp_tiles",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
@@ -297,7 +297,9 @@ source_set("content_suggestions_ui_util") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
@@ -316,7 +318,6 @@ source_set("unit_tests") {
   sources = [
     "content_suggestions_collection_utils_unittest.mm",
     "content_suggestions_mediator_unittest.mm",
-    "content_suggestions_tile_saver_unittest.mm",
     "content_suggestions_view_controller_unittest.mm",
     "magic_stack_half_sheet_mediator_unittest.mm",
     "magic_stack_half_sheet_table_view_controller_unittest.mm",

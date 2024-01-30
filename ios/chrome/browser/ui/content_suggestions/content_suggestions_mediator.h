@@ -10,11 +10,8 @@
 #include <memory>
 
 #include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace commerce {
@@ -67,9 +64,6 @@ class WebStateList;
 // Mediator for ContentSuggestions.
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
-                ContentSuggestionsImageDataSource,
-                ContentSuggestionsGestureCommands,
-                ContentSuggestionsMenuProvider,
                 StartSurfaceRecentTabObserving>
 
 // Default initializer.
@@ -85,6 +79,7 @@ class WebStateList;
             authenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
                   shoppingService:(commerce::ShoppingService*)shoppingService
+                    actionFactory:(BrowserActionFactory*)actionFactory
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -98,9 +93,7 @@ class WebStateList;
         dispatcher;
 
 // Command handler for the mediator.
-@property(nonatomic, weak)
-    id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>
-        commandHandler;
+@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
@@ -141,17 +134,8 @@ class WebStateList;
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Trigger a refresh of the Content Suggestions Most Visited tiles.
+// Trigger a refresh of the Most Visited tiles.
 - (void)refreshMostVisitedTiles;
-
-// Block `URL` from Most Visited sites.
-- (void)blockMostVisitedURL:(GURL)URL;
-
-// Always allow `URL` in Most Visited sites.
-- (void)allowMostVisitedURL:(GURL)URL;
-
-// Get the maximum number of sites shown.
-+ (NSUInteger)maxSitesShown;
 
 // Whether the most recent tab tile is being shown. Returns YES if
 // configureMostRecentTabItemWithWebState: has been called.

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
-#import <MaterialComponents/MaterialSnackbar.h>
 
 #import <optional>
 #import <vector>
@@ -26,10 +25,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/history/core/browser/features.h"
-#import "components/ntp_tiles/features.h"
-#import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
-#import "components/ntp_tiles/ntp_tile.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -53,14 +49,12 @@
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -88,16 +82,14 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
@@ -110,7 +102,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -119,7 +110,6 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -131,27 +121,16 @@ using RequestSource = SearchTermsData::RequestSource;
 // The Safety Check (Magic Stack) module runs (at minimum) once every 24 hours.
 constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
-// Maximum number of most visited tiles fetched.
-const NSInteger kMaxNumMostVisitedTiles = 4;
-
-// Size of the favicon returned by the provider for the most visited items.
-const CGFloat kMostVisitedFaviconSize = 48;
-// Size below which the provider returns a colored tile instead of an image.
-const CGFloat kMostVisitedFaviconMinimalSize = 32;
-const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
-
 }  // namespace
 
 @interface ContentSuggestionsMediator () <AppStateObserver,
                                           IdentityManagerObserverBridgeDelegate,
+                                          MostVisitedTilesMediatorDelegate,
                                           SyncObserverModelBridge,
-                                          MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
                                           SafetyCheckManagerObserver,
                                           SyncedSessionsObserver> {
-  std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
-  std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -170,24 +149,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 // Whether the suggestions have been disabled by a policy.
 @property(nonatomic, assign)
     const PrefService::Preference* contentSuggestionsPolicyEnabled;
-// Most visited items from the MostVisitedSites service (copied upon receiving
-// the callback). Those items are up to date with the model.
-@property(nonatomic, strong)
-    NSMutableArray<ContentSuggestionsMostVisitedItem*>* freshMostVisitedItems;
-// Section Info for the logo and omnibox section.
-@property(nonatomic, strong)
-    ContentSuggestionsSectionInformation* logoSectionInfo;
 // Section Info for the "Return to Recent Tab" section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* returnToRecentTabSectionInfo;
 // Item for the "Return to Recent Tab" tile.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabItem* returnToRecentTabItem;
-// Section Info for the Most Visited section.
-@property(nonatomic, strong)
-    ContentSuggestionsSectionInformation* mostVisitedSectionInfo;
-// Whether the page impression has been recorded.
-@property(nonatomic, assign) BOOL recordedPageImpression;
 // Item for the reading list action item.  Reference is used to update the
 // reading list count.
 @property(nonatomic, strong)
@@ -200,8 +167,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 // YES if the Return to Recent Tab tile is being shown.
 @property(nonatomic, assign, getter=mostRecentTabStartSurfaceTileIsShowing)
     BOOL showMostRecentTabStartSurfaceTile;
-// Whether the incognito mode is available.
-@property(nonatomic, assign) BOOL incognitoAvailable;
 // Browser reference.
 @property(nonatomic, assign) Browser* browser;
 
@@ -244,10 +209,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   NSArray<NSNumber*>* _latestMagicStackOrder;
   raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
-  FaviconAttributesProvider* _mostVisitedAttributesProvider;
-  std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
-  // Most visited items from the MostVisitedSites service currently displayed.
-  MostVisitedTilesConfig* _mostVisitedConfig;
+  MostVisitedTilesMediator* _mostVisitedTilesMediator;
   ShortcutsConfig* _shortcutsConfig;
   SetUpListMediator* _setUpListMediator;
 }
@@ -266,36 +228,27 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
                   shoppingService:(commerce::ShoppingService*)shoppingService
+
+                    actionFactory:(BrowserActionFactory*)actionFactory
                           browser:(Browser*)browser {
   self = [super init];
   if (self) {
     _localState = GetApplicationContext()->GetLocalState();
-    _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _articleForYouEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
     _contentSuggestionsPolicyEnabled =
         prefService->FindPreference(prefs::kNTPContentSuggestionsEnabled);
 
-    _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
-        initWithFaviconSize:IsMagicStackEnabled() ? kMagicStackFaviconWidth
-                                                  : kMostVisitedFaviconSize
-             minFaviconSize:IsMagicStackEnabled()
-                                ? kMagicStackMostVisitedFaviconMinimalSize
-                                : kMostVisitedFaviconMinimalSize
-           largeIconService:largeIconService];
-    // Set a cache only for the Most Visited provider, as the cache is
-    // overwritten for every new results and the size of the favicon fetched for
-    // the suggestions is much smaller.
-    _mostVisitedAttributesProvider.cache = largeIconCache;
-
-    _logoSectionInfo = LogoSectionInformation();
-    _mostVisitedSectionInfo = MostVisitedSectionInformation();
-
-    _mostVisitedSites = std::move(mostVisitedSites);
-    _mostVisitedBridge =
-        std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
-    _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
-                                                  kMaxNumMostVisitedTiles);
+    _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
+        initWithMostVisitedSite:std::move(mostVisitedSites)
+                    prefService:prefService
+               largeIconService:largeIconService
+                 largeIconCache:largeIconCache
+         URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(browser)];
+    _mostVisitedTilesMediator.delegate = self;
+    _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
+    _mostVisitedTilesMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+    _mostVisitedTilesMediator.actionFactory = actionFactory;
 
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
@@ -389,8 +342,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (void)disconnect {
   [_setUpListMediator disconnect];
   _setUpListMediator = nil;
-  _mostVisitedBridge.reset();
-  _mostVisitedSites.reset();
+  [_mostVisitedTilesMediator disconnect];
+  _mostVisitedTilesMediator = nil;
   _readingListModelBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
@@ -407,26 +360,13 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 - (void)refreshMostVisitedTiles {
   // Refresh in case there are new MVT to show.
-  _mostVisitedSites->Refresh();
-}
-
-- (void)blockMostVisitedURL:(GURL)URL {
-  _mostVisitedSites->AddOrRemoveBlockedUrl(URL, true);
-  [self useFreshMostVisited];
-}
-
-- (void)allowMostVisitedURL:(GURL)URL {
-  _mostVisitedSites->AddOrRemoveBlockedUrl(URL, false);
-  [self useFreshMostVisited];
+  [_mostVisitedTilesMediator refreshMostVisitedTiles];
 }
 
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
   _consumer = consumer;
+  _mostVisitedTilesMediator.consumer = consumer;
   [self configureConsumer];
-}
-
-+ (NSUInteger)maxSitesShown {
-  return kMaxNumMostVisitedTiles;
 }
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
@@ -628,15 +568,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     }
     return;
   }
-
-  ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
-
-  [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedIndex];
-
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(mostVisitedItem.URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 - (void)openMostRecentTab {
@@ -691,57 +622,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
 
-#pragma mark - ContentSuggestionsGestureCommands
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index
-                            fromPoint:(CGPoint)point {
-  if (incognito &&
-      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
-}
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index {
-  if (incognito &&
-      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:CGPointZero];
-}
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito {
-  [self openNewTabWithMostVisitedItem:item
-                            incognito:incognito
-                              atIndex:item.index];
-}
-
-- (void)removeMostVisited:(ContentSuggestionsMostVisitedItem*)item {
-  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
-  [self blockMostVisitedURL:item.URL];
-  [self showMostVisitedUndoForURL:item.URL];
-}
-
-#pragma mark - ContentSuggestionsImageDataSource
-
-- (void)fetchFaviconForURL:(const GURL&)URL
-                completion:(FaviconCompletionHandler)completion {
-  _mostVisitedFetchFaviconCallbacks[URL] = completion;
-  [_mostVisitedAttributesProvider fetchFaviconAttributesForURL:URL
-                                                    completion:completion];
-}
-
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
@@ -777,140 +657,11 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   }
 }
 
-#pragma mark - MostVisitedSitesObserving
-
-- (void)onMostVisitedURLsAvailable:
-    (const ntp_tiles::NTPTilesVector&)mostVisited {
-  // This is used by the content widget.
-  content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      mostVisited, _mostVisitedAttributesProvider,
-      app_group::ContentWidgetFaviconsFolder());
-
-  self.freshMostVisitedItems = [NSMutableArray array];
-  int index = 0;
-  for (const ntp_tiles::NTPTile& tile : mostVisited) {
-    ContentSuggestionsMostVisitedItem* item =
-        ConvertNTPTile(tile, self.mostVisitedSectionInfo);
-    item.commandHandler = self;
-    item.incognitoAvailable = self.incognitoAvailable;
-    item.index = index;
-    item.menuProvider = self;
-    DCHECK(index < kShortcutMinimumIndex);
-    index++;
-    [self.freshMostVisitedItems addObject:item];
-  }
-
-  [self useFreshMostVisited];
-
-  if (mostVisited.size() && !self.recordedPageImpression) {
-    self.recordedPageImpression = YES;
-    [self recordMostVisitedTilesDisplayed];
-    ntp_tiles::metrics::RecordPageImpression(mostVisited.size());
-  }
-}
-
-- (void)onIconMadeAvailable:(const GURL&)siteURL {
-  // This is used by the content widget.
-  content_suggestions_tile_saver::UpdateSingleFavicon(
-      siteURL, _mostVisitedAttributesProvider,
-      app_group::ContentWidgetFaviconsFolder());
-
-  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedConfig
-           .mostVisitedItems) {
-    if (item.URL == siteURL) {
-      FaviconCompletionHandler completion =
-          _mostVisitedFetchFaviconCallbacks[siteURL];
-      if (completion) {
-        [_mostVisitedAttributesProvider
-            fetchFaviconAttributesForURL:siteURL
-                              completion:completion];
-      }
-      return;
-    }
-  }
-}
-
 #pragma mark - SyncedSessionsObserver
 
 - (void)onForeignSessionsChanged {
   DCHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
   [self showTabResumptionTile];
-}
-
-#pragma mark - ContentSuggestionsMenuProvider
-
-- (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
-                                   (ContentSuggestionsMostVisitedItem*)item
-                                                      fromView:(UIView*)view {
-  __weak __typeof(self) weakSelf = self;
-
-  UIContextMenuActionProvider actionProvider = ^(
-      NSArray<UIMenuElement*>* suggestedActions) {
-    ContentSuggestionsMediator* strongSelf = weakSelf;
-    if (!strongSelf) {
-      // Return an empty menu.
-      return [UIMenu menuWithTitle:@"" children:@[]];
-    }
-
-    // Record that this context menu was shown to the user.
-    RecordMenuShown(kMenuScenarioHistogramMostVisitedEntry);
-
-    NSMutableArray<UIMenuElement*>* menuElements =
-        [[NSMutableArray alloc] init];
-
-    CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];
-
-    [menuElements
-        addObject:[strongSelf.actionFactory actionToOpenInNewTabWithBlock:^{
-          [weakSelf openNewTabWithMostVisitedItem:item
-                                        incognito:NO
-                                          atIndex:item.index
-                                        fromPoint:centerPoint];
-        }]];
-
-    UIAction* incognitoAction =
-        [strongSelf.actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-          [weakSelf openNewTabWithMostVisitedItem:item
-                                        incognito:YES
-                                          atIndex:item.index
-                                        fromPoint:centerPoint];
-        }];
-
-    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-      // Disable the "Open in Incognito" option if the incognito mode is
-      // disabled.
-      incognitoAction.attributes = UIMenuElementAttributesDisabled;
-    }
-
-    [menuElements addObject:incognitoAction];
-
-    if (base::ios::IsMultipleScenesSupported()) {
-      UIAction* newWindowAction = [strongSelf.actionFactory
-          actionToOpenInNewWindowWithURL:item.URL
-                          activityOrigin:
-                              WindowActivityContentSuggestionsOrigin];
-      [menuElements addObject:newWindowAction];
-    }
-
-    CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
-    [menuElements addObject:[strongSelf.actionFactory actionToCopyURL:URL]];
-
-    [menuElements addObject:[strongSelf.actionFactory actionToShareWithBlock:^{
-                    [weakSelf.delegate shareURL:item.URL
-                                          title:item.title
-                                       fromView:view];
-                  }]];
-
-    [menuElements addObject:[strongSelf.actionFactory actionToRemoveWithBlock:^{
-                    [weakSelf removeMostVisited:item];
-                  }]];
-
-    return [UIMenu menuWithTitle:@"" children:menuElements];
-  };
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
 }
 
 #pragma mark - Private
@@ -1042,8 +793,9 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([_mostVisitedConfig.mostVisitedItems count]) {
-    [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
+  if (_mostVisitedTilesMediator.mostVisitedConfig) {
+    [self.consumer
+        setMostVisitedTilesConfig:_mostVisitedTilesMediator.mostVisitedConfig];
   }
   if ([self shouldShowSetUpList]) {
     [self showSetUpList];
@@ -1078,121 +830,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
     }));
   }
-}
-
-// Updates `prefs::kIosSyncSegmentsNewTabPageDisplayCount` with the number of
-// remaining New Tab Page displays that include synced history in the Most
-// Visited Tiles.
-- (void)recordMostVisitedTilesDisplayed {
-  const int displayCount =
-      _localState->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
-      1;
-
-  _localState->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
-                          displayCount);
-}
-
-// Replaces the Most Visited items currently displayed by the most recent ones.
-- (void)useFreshMostVisited {
-  if (IsMagicStackEnabled()) {
-    const base::Value::List& oldMostVisitedSites =
-        _localState->GetList(prefs::kIosLatestMostVisitedSites);
-    base::Value::List freshMostVisitedSites;
-    for (ContentSuggestionsMostVisitedItem* item in self
-             .freshMostVisitedItems) {
-      freshMostVisitedSites.Append(item.URL.spec());
-    }
-    // Don't check for a change in the Most Visited Sites if the device doesn't
-    // have any saved sites to begin with. This will not log for users with no
-    // top sites that have a new top site, but the benefit of not logging for
-    // new installs outweighs it.
-    if (!oldMostVisitedSites.empty()) {
-      [self lookForNewMostVisitedSite:freshMostVisitedSites
-                  oldMostVisitedSites:oldMostVisitedSites];
-    }
-    _localState->SetList(prefs::kIosLatestMostVisitedSites,
-                         std::move(freshMostVisitedSites));
-  }
-
-  _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
-  _mostVisitedConfig.imageDataSource = self;
-  _mostVisitedConfig.commandHandler = self;
-  _mostVisitedConfig.mostVisitedItems = self.freshMostVisitedItems;
-  [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
-  [self.delegate contentSuggestionsWasUpdated];
-}
-
-// Logs a User Action if `freshMostVisitedSites` has at least one site that
-// isn't in `oldMostVisitedSites`.
-- (void)
-    lookForNewMostVisitedSite:(const base::Value::List&)freshMostVisitedSites
-          oldMostVisitedSites:(const base::Value::List&)oldMostVisitedSites {
-  for (auto const& freshSiteURLValue : freshMostVisitedSites) {
-    BOOL freshSiteInOldList = NO;
-    for (auto const& oldSiteURLValue : oldMostVisitedSites) {
-      if (freshSiteURLValue.GetString() == oldSiteURLValue.GetString()) {
-        freshSiteInOldList = YES;
-        break;
-      }
-    }
-    if (!freshSiteInOldList) {
-      // Reset impressions since freshness.
-      _localState->SetInteger(
-          prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, 0);
-      base::RecordAction(
-          base::UserMetricsAction("IOSMostVisitedTopSitesChanged"));
-      return;
-    }
-  }
-}
-
-// Opens the `URL` in a new tab `incognito` or not. `originPoint` is the origin
-// of the new tab animation if the tab is opened in background, in window
-// coordinates.
-- (void)openNewTabWithURL:(const GURL&)URL
-                incognito:(BOOL)incognito
-              originPoint:(CGPoint)originPoint {
-  // Open the tab in background if it is non-incognito only.
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.SetInBackground(!incognito);
-  params.in_incognito = incognito;
-  params.append_to = OpenPosition::kCurrentTab;
-  params.origin_point = originPoint;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-}
-
-// Logs a histogram due to a Most Visited item being opened.
-- (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
-                      atIndex:(NSInteger)mostVisitedIndex {
-  [self.NTPMetricsDelegate mostVisitedTileOpened];
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
-    [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                             kMostVisited];
-  }
-  [self.contentSuggestionsMetricsRecorder
-      recordMostVisitedTileOpened:item
-                          atIndex:mostVisitedIndex
-                         webState:self.webState];
-}
-
-// Shows a snackbar with an action to undo the removal of the most visited item
-// with a `URL`.
-- (void)showMostVisitedUndoForURL:(GURL)URL {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  __weak ContentSuggestionsMediator* weakSelf = self;
-  action.handler = ^{
-    [weakSelf allowMostVisitedURL:URL];
-  };
-  action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
-  action.accessibilityIdentifier = @"Undo";
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage
-      messageWithText:l10n_util::GetNSString(
-                          IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
-  message.action = action;
-  message.category = @"MostVisitedUndo";
-  [self.dispatcher showSnackbarMessage:message];
 }
 
 // Creates a string containing the title and the time string.
@@ -1690,13 +1327,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   return YES;
 }
 
-- (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender {
-  ContentSuggestionsMostVisitedTileView* mostVisitedView =
-      static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
-  [self openMostVisitedItem:mostVisitedView.config
-                    atIndex:mostVisitedView.config.index];
-}
-
 - (void)shortcutsTapped:(UIGestureRecognizer*)sender {
   ContentSuggestionsShortcutTileView* shortcutView =
       static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
@@ -1718,17 +1348,18 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   return shortcuts;
 }
 
-- (void)setCommandHandler:
-    (id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>)
-        commandHandler {
+- (void)setCommandHandler:(id<ContentSuggestionsCommands>)commandHandler {
   if (_commandHandler == commandHandler)
     return;
 
   _commandHandler = commandHandler;
+}
 
-  for (ContentSuggestionsMostVisitedItem* item in self.freshMostVisitedItems) {
-    item.commandHandler = commandHandler;
-  }
+- (void)setDispatcher:
+    (id<ApplicationCommands, BrowserCoordinatorCommands, SnackbarCommands>)
+        dispatcher {
+  _dispatcher = dispatcher;
+  _mostVisitedTilesMediator.snackbarHandler = _dispatcher;
 }
 
 - (void)setContentSuggestionsMetricsRecorder:

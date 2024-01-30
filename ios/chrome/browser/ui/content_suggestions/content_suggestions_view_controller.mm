@@ -254,7 +254,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   if (_mostVisitedTileConfig) {
     if (!IsMagicStackEnabled()) {
       [self createAndInsertMostVisitedModule];
-      [self populateMostVisitedModule];
+      [self addMostVisitedTilesToStackView];
     } else if (!ShouldPutMostVisitedSitesInMagicStack()) {
       [self createAndInsertMostVisitedModule];
     }
@@ -446,7 +446,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       ContentSuggestionsMostVisitedTileView* view =
           [[ContentSuggestionsMostVisitedTileView alloc]
               initWithConfiguration:item];
-      view.menuProvider = self.menuProvider;
+      view.menuProvider = item.menuProvider;
       view.accessibilityIdentifier = [NSString
           stringWithFormat:
               @"%@%li",
@@ -466,7 +466,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             strongItem.attributes = attributes;
             [strongView.faviconView configureWithAttributes:attributes];
           };
-      [self.imageDataSource fetchFaviconForURL:item.URL completion:completion];
+      [config.imageDataSource fetchFaviconForURL:item.URL
+                                      completion:completion];
       [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
                                                                  atIndex:index];
       [self.mostVisitedViews addObject:view];
@@ -477,7 +478,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     if (self.verticalStackView && !self.mostVisitedStackView) {
       [self createAndInsertMostVisitedModule];
     }
-    [self populateMostVisitedModule];
+    [self addMostVisitedTilesToStackView];
   }
 
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
@@ -1106,9 +1107,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 // Add the elements in `mostVisitedViews` into `verticalStackView`.
-- (void)populateMostVisitedModule {
+- (void)addMostVisitedTilesToStackView {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
-    view.menuProvider = self.menuProvider;
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(contentSuggestionsElementTapped:)];

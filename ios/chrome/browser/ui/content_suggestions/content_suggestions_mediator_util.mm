@@ -28,25 +28,8 @@ ContentSuggestionsSectionInformation* EmptySectionInfo(
 }
 }  // namespace
 
-
-ContentSuggestionsSectionInformation* LogoSectionInformation() {
-  ContentSuggestionsSectionInformation* sectionInfo =
-      [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionLogo];
-  sectionInfo.title = nil;
-  sectionInfo.footerTitle = nil;
-  sectionInfo.showIfEmpty = YES;
-  sectionInfo.layout = ContentSuggestionsSectionLayoutCustom;
-
-  return sectionInfo;
-}
-
 ContentSuggestionsSectionInformation* ReturnToRecentTabSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionReturnToRecentTab);
-}
-
-ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
-  return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }
 
 ContentSuggestionsSectionInformation* SingleCellSectionInformation() {
@@ -54,8 +37,7 @@ ContentSuggestionsSectionInformation* SingleCellSectionInformation() {
 }
 
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
-    const ntp_tiles::NTPTile& tile,
-    ContentSuggestionsSectionInformation* sectionInfo) {
+    const ntp_tiles::NTPTile& tile) {
   ContentSuggestionsMostVisitedItem* suggestion =
       [[ContentSuggestionsMostVisitedItem alloc] init];
 

@@ -239,15 +239,17 @@
               authenticationService:authenticationService
                     identityManager:identityManager
                     shoppingService:shoppingService
+                      actionFactory:
+                          [[BrowserActionFactory alloc]
+                              initWithBrowser:self.browser
+                                     scenario:
+                                         kMenuScenarioHistogramMostVisitedEntry]
                             browser:self.browser];
   self.contentSuggestionsMediator.delegate = self.delegate;
   self.contentSuggestionsMediator.presentationDelegate = self;
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  self.contentSuggestionsMediator.actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:self.browser
-             scenario:kMenuScenarioHistogramMostVisitedEntry];
   if (base::FeatureList::IsEnabled(segmentation_platform::features::
                                        kSegmentationPlatformIosModuleRanker)) {
     self.contentSuggestionsMediator.segmentationService =
@@ -269,11 +271,7 @@
       [[ContentSuggestionsViewController alloc] init];
   self.contentSuggestionsViewController.suggestionCommandHandler =
       self.contentSuggestionsMediator;
-  self.contentSuggestionsViewController.imageDataSource =
-      self.contentSuggestionsMediator;
   self.contentSuggestionsViewController.audience = self;
-  self.contentSuggestionsViewController.menuProvider =
-      self.contentSuggestionsMediator;
   self.contentSuggestionsViewController.urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =

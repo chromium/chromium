@@ -37,6 +37,8 @@ void RecordAction(bool is_incognito,
                   web::WebState* web_state,
                   ActionType action);
 
+void RecordNTPAction(bool is_incognito, bool is_ntp, ActionType action);
+
 void RecordActionFromOmnibox(bool is_incognito,
                              web::WebState* web_state,
                              const GURL& url,

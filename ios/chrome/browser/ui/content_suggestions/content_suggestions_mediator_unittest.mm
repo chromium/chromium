@@ -317,6 +317,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                 authenticationService:authentication_service
                       identityManager:identityManager
                       shoppingService:shopping_service_.get()
+                        actionFactory:nil
                               browser:browser_.get()];
     mediator_.dispatcher = dispatcher_;
     mediator_.webStateList = browser_.get()->GetWebStateList();
@@ -395,24 +396,6 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
-}
-
-// Tests that the command is sent to the loader when opening a most visited.
-TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
-  GURL url = GURL("http://chromium.org");
-  ContentSuggestionsMostVisitedItem* item =
-      [[ContentSuggestionsMostVisitedItem alloc] init];
-  item.URL = url;
-  OCMExpect([mediator_.NTPMetricsDelegate mostVisitedTileOpened]);
-
-  // Action.
-  [mediator_ openMostVisitedItem:item atIndex:0];
-
-  // Test.
-  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      url_loader_->last_params.web_params.transition_type));
 }
 
 // Tests that MostRecentTab can be opened and that its title is correct when
@@ -746,9 +729,8 @@ TEST_F(ContentSuggestionsMediatorTest, TestModuleClickIndexMetric) {
   histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.SetUpList",
                                         0, 1);
 
-  [mediator_
-      openMostVisitedItem:[[ContentSuggestionsMostVisitedItem alloc] init]
-                  atIndex:0];
+  [mediator_ logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                                kMostVisited];
   histogram_tester_->ExpectUniqueSample(
       "IOS.MagicStack.Module.Click.MostVisited", 3, 1);
 

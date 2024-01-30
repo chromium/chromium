@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -184,8 +185,10 @@ void TabResumptionHelper::OpenDistantTab() {
 
   const sessions::SessionTab* session_tab = nullptr;
   if (open_tabs_delegate->GetForeignTab(session_tag_, tab_id_, &session_tab)) {
-    new_tab_page_uma::RecordAction(
-        browser_state->IsOffTheRecord(), web_state_list->GetActiveWebState(),
+    bool is_ntp = web_state_list->GetActiveWebState()->GetVisibleURL() ==
+                  kChromeUINewTabURL;
+    new_tab_page_uma::RecordNTPAction(
+        browser_state->IsOffTheRecord(), is_ntp,
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
 
     std::unique_ptr<web::WebState> web_state =

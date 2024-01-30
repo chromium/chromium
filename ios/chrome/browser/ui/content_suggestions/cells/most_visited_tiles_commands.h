@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_GESTURE_COMMANDS_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_GESTURE_COMMANDS_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_COMMANDS_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_COMMANDS_H_
 
 #import <UIKit/UIKit.h>
 
 @class ContentSuggestionsMostVisitedItem;
 
-// Command protocol for the interactions based on a gesture, handling the
-// callbacks from the alerts and the accessibility custom actions.
-@protocol ContentSuggestionsGestureCommands
+// Command protocol for events for the Most Visited Tiles.
+@protocol MostVisitedTilesCommands
+
+// Indicates to the receiver that a Most Visited tile `sender` was tapped.
+- (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender;
 
 // Open the URL corresponding to the `item` in a new tab, `incognito` or not.
 // Animate the opening of a new tab from `point`.
@@ -38,4 +40,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_GESTURE_COMMANDS_H_
+#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_COMMANDS_H_
