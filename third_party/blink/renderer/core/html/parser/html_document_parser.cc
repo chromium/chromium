@@ -255,6 +255,29 @@ base::TimeDelta GetTimedBudget(int times_yielded) {
   return kLongParserBudgetValue;
 }
 
+// TODO(crbug.com/1519635): This is a temporary class that will be removed after
+// investigation for TopChrome.TabSearch is done. ScopedHistogramTimer is a
+// class that will record the time taken from when the class is created to when
+// it is destroyed. This is intended to be used when the parser finishes calls
+// NotifyScriptLoaded. This is only for url: "chrome://tab-search.top-chrome/".
+class ScopedHistogramTimer {
+ public:
+  ScopedHistogramTimer(base::TimeTicks start_time) : constructed_(start_time) {}
+
+  ~ScopedHistogramTimer() {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - constructed_;
+    UMA_HISTOGRAM_TIMES("Blink.NotifyScriptLoaded.TabSearch", elapsed);
+  }
+
+  static bool ShouldCreateScopedTabSearchTimer(const KURL& url) {
+    return (!url.IsEmpty() && url.IsValid() &&
+            url.GetString() == "chrome://tab-search.top-chrome/");
+  }
+
+ private:
+  base::TimeTicks constructed_;
+};
+
 class EndIfDelayedForbiddenScope {
   STACK_ALLOCATED();
 
@@ -1216,6 +1239,14 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
 
   scheduler::CooperativeSchedulingManager::AllowedStackScope
       allowed_stack_scope(scheduler::CooperativeSchedulingManager::Instance());
+
+  // TODO(crbug.com/1519635): Remove timer after investigation of Tab search
+  // WebUI startup time is complete.
+  std::optional<ScopedHistogramTimer> tab_search_histogram_timer;
+  if (!IsDetached() && ScopedHistogramTimer::ShouldCreateScopedTabSearchTimer(
+                           GetDocument()->Url())) {
+    tab_search_histogram_timer.emplace(base::TimeTicks::Now());
+  }
 
   if (IsStopped()) {
     return;
