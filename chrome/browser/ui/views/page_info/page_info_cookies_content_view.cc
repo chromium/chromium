@@ -59,6 +59,8 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
     cookies_description_label_->SetDefaultTextStyle(
         views::style::STYLE_SECONDARY);
   }
+  cookies_description_label_->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
+                                        button_insets.width());
 
   AddThirdPartyCookiesContainer();
 
