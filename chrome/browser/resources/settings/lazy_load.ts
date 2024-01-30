@@ -13,7 +13,6 @@ import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
 import './simple_confirmation_dialog.js';
 import './privacy_page/anti_abuse_page.js';
-import './privacy_page/preloading_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
@@ -183,7 +182,6 @@ export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
 export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
-export {PreloadingPageElement} from './privacy_page/preloading_page.js';
 export {PrivacyGuideStep} from './privacy_page/privacy_guide/constants.js';
 export {PrivacyGuideCompletionFragmentElement} from './privacy_page/privacy_guide/privacy_guide_completion_fragment.js';
 export {PrivacyGuideCookiesFragmentElement} from './privacy_page/privacy_guide/privacy_guide_cookies_fragment.js';

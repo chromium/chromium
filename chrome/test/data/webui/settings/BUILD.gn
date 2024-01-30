@@ -54,7 +54,6 @@ build_webui_tests("build") {
     "people_page_test.ts",
     "performance_page_test.ts",
     "personalization_options_test.ts",
-    "preloading_page_test.ts",
     "privacy_guide_fragments_test.ts",
     "privacy_guide_integration_test.ts",
     "privacy_guide_page_test.ts",
