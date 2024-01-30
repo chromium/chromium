@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -1238,6 +1239,48 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_NotAddedIfNoLastTargetedField) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/std::nullopt, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_THAT(suggestions[0].children,
+              Not(Contains(EqualsSuggestion(
+                  PopupItemId::kFillEverythingFromAddressProfile))))
+      << "Children should not contain the 'fill everything' suggestion because "
+         "there is no `last_targeted_fields`.";
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_NotAddedIfLastTargetedAllFieldTypes) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_THAT(suggestions[0].children,
+              Not(Contains(EqualsSuggestion(
+                  PopupItemId::kFillEverythingFromAddressProfile))))
+      << "Children should not contain the 'fill everything' suggestion because "
+         "the last targeted fields is `kAllFieldTypes`.";
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_AddedIfFieldByFieldFilling) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/FieldTypeSet{IBAN_VALUE}, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_THAT(suggestions[0].children,
+              Contains(EqualsSuggestion(
+                  PopupItemId::kFillEverythingFromAddressProfile)))
+      << "Children should contain the 'fill everything' suggestion because of "
+         "the last field-by-field filling.";
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
