@@ -17089,36 +17089,6 @@
             ]
         }
     ],
-    "SecagentdEnableXDRAuthenticateEvents": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdXDRAuthenticateEvents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SecagentdEnableXDRAuthenticateEventsControl": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdXDRAuthenticateEventsControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecagentdEnableXDRNetworkEvents": [
         {
             "platforms": [
