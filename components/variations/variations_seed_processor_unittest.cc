@@ -171,6 +171,8 @@ class ChromeEnvironment {
     auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
+    // TODO(crbug.com/1518674): Add test cases for seeds with a layer of LIMITED
+    // entropy mode.
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
         .high_entropy = kAlwaysUseFirstGroup,

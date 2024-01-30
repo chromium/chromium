@@ -130,20 +130,29 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
 }
 
 // Process the seed and return which group the user is assigned for Uniformity.
+// TODO(crbug.com/1518404) Add cases to test studies constrained to a layer
+// with LIMITED entropy mode after the limited entropy randomization logic
+// lands.
 std::vector<std::string> GetUniformityAssignments(
     const VariationsSeed& seed,
     bool enable_benchmarking = false) {
   std::vector<std::string> result;
   // Add 20 clients that do not have client IDs, 1 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy; i++) {
-    EntropyProviders providers("", {i, kMaxEntropy}, enable_benchmarking);
+    EntropyProviders providers(
+        "", {i, kMaxEntropy},
+        /*limited_entropy_randomization_source=*/std::string_view(),
+        enable_benchmarking);
     result.push_back(GetUniformityAssignment(seed, providers));
   }
   // Add 100 clients that do have client IDs, 5 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy * 5; i++) {
     auto high_entropy = base::StringPrintf("clientid_%02d", i);
     ValueInRange low_entropy = {i % kMaxEntropy, kMaxEntropy};
-    EntropyProviders providers(high_entropy, low_entropy, enable_benchmarking);
+    EntropyProviders providers(
+        high_entropy, low_entropy,
+        /*limited_entropy_randomization_source=*/std::string_view(),
+        enable_benchmarking);
     result.push_back(GetUniformityAssignment(seed, providers));
   }
   return result;
@@ -342,7 +351,9 @@ TEST(VariationsUniformityTest, SessionEntropyStudyChiSquare) {
   }
 
   // The persistent entropy shouldn't matter here.
-  EntropyProviders entropy_providers("not_used", {0, 8000});
+  EntropyProviders entropy_providers(
+      "not_used", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
 
   for (size_t i = 1; i <= kMaxIterationCount; i += kCheckIterationCount) {
     for (size_t j = 0; j < kCheckIterationCount; j++) {

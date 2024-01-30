@@ -110,6 +110,11 @@ class MetricsStateManager final {
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
 
+  // Gets the limited entropy randomization source. For clients that only use
+  // the low entropy source (e.g. Android Webview), this will return the empty
+  // string.
+  std::string_view GetLimitedEntropyRandomizationSource();
+
   // The CleanExitBeacon, used to determine whether the previous Chrome browser
   // session terminated gracefully.
   CleanExitBeacon* clean_exit_beacon() { return &clean_exit_beacon_; }
@@ -182,7 +187,14 @@ class MetricsStateManager final {
   // this method returns an entropy provider that has a high source of entropy,
   // partially based on the client ID or provisional client ID. Otherwise, it
   // only returns an entropy provider that is based on a low entropy source.
-  std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders();
+  //
+  // When |enable_limited_entropy_mode| is true, a limited entropy
+  // randomization source value will be generated for this client. This
+  // parameter can only be false before the limited entropy synthetic trial
+  // completes (See limited_entropy_synthetic_trial.h), after which it should be
+  // removed (TODO(crbug.com/1508150)).
+  std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders(
+      bool enable_limited_entropy_mode);
 
   ClonedInstallDetector* cloned_install_detector_for_testing() {
     return &cloned_install_detector_;

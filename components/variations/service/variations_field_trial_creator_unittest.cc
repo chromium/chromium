@@ -48,6 +48,7 @@
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_field_trial_creator_base.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
@@ -271,6 +272,19 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
   std::string restrict_parameter_;
   std::string limited_entropy_synthetic_trial_group_;
+};
+
+class TestLimitedEntropySyntheticTrial : public LimitedEntropySyntheticTrial {
+ public:
+  TestLimitedEntropySyntheticTrial(std::string_view group_name)
+      : LimitedEntropySyntheticTrial(group_name) {}
+
+  TestLimitedEntropySyntheticTrial(const TestLimitedEntropySyntheticTrial&) =
+      delete;
+  TestLimitedEntropySyntheticTrial& operator=(
+      const TestLimitedEntropySyntheticTrial&) = delete;
+
+  ~TestLimitedEntropySyntheticTrial() = default;
 };
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
@@ -1431,14 +1445,72 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
 
 namespace {
 
-struct TestCase {
+TestLimitedEntropySyntheticTrial kEnabledTrial(
+    kLimitedEntropySyntheticTrialEnabled);
+TestLimitedEntropySyntheticTrial kControlTrial(
+    kLimitedEntropySyntheticTrialControl);
+TestLimitedEntropySyntheticTrial kDefaultTrial(
+    kLimitedEntropySyntheticTrialDefault);
+const raw_ptr<LimitedEntropySyntheticTrial> kNoLimitedLayerSupport = nullptr;
+
+// LERS: Limited Entropy Randomization Source.
+struct GenerateLERSTestCase {
+  std::string test_name;
+  // Whether the client is behind a channel gate. If so, the client should not
+  // be generating a limited entropy randomization source.
+  bool is_channel_gated;
+  raw_ptr<LimitedEntropySyntheticTrial> trial;
+
+  // Whether a limited entropy randomization source is expected to be generated.
+  bool expected;
+};
+
+class IsLimitedEntropyRandomizationSourceEnabledTest
+    : public FieldTrialCreatorTest,
+      public ::testing::WithParamInterface<GenerateLERSTestCase> {};
+
+const GenerateLERSTestCase kGenerateLERSTestCases[] = {
+    {"GenerateForNonGatedEnabledClient",
+     /*is_channel_gated=*/false, &kEnabledTrial, true},
+    {"DoNotGenerateForGatedEnabledClient",
+     /*is_channel_gated=*/true, &kEnabledTrial, false},
+    {"DoNotGenerateForNonGatedControlClient",
+     /*is_channel_gated=*/false, &kControlTrial, false},
+    {"DoNotGenerateForNonGatedIneligibleClient",
+     /*is_channel_gated=*/false, kNoLimitedLayerSupport, false},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldTrialCreatorTest,
+    IsLimitedEntropyRandomizationSourceEnabledTest,
+    ::testing::ValuesIn(kGenerateLERSTestCases),
+    [](const ::testing::TestParamInfo<GenerateLERSTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(IsLimitedEntropyRandomizationSourceEnabledTest, ) {
+  const GenerateLERSTestCase test_case = GetParam();
+  TestVariationsServiceClient client;
+  if (test_case.is_channel_gated) {
+    DisableLimitedEntropyModeForTesting();
+  } else {
+    EnableLimitedEntropyModeForTesting();
+  }
+
+  const bool actual = VariationsFieldTrialCreatorBase::
+      IsLimitedEntropyRandomizationSourceEnabled(
+          client.GetChannelForVariations(), test_case.trial);
+  EXPECT_EQ(test_case.expected, actual);
+}
+
+struct LimitedEntropyProcessingTestCase {
   bool is_limited_layer_in_seed;
   bool is_limited_entropy_synthetic_trial_applicable;
   std::string test_name;
   bool is_group_registration_expected;
 };
 
-const TestCase kTestCases[] = {
+const LimitedEntropyProcessingTestCase kTestCases[] = {
     {true, true, "ApplicableClientWithLimitedLayer", true},
     {true, false, "NonApplicableClientWithLimitedLayer", false},
     {false, true, "ApplicableClientWithoutLimitedLayer", false},
@@ -1447,23 +1519,24 @@ const TestCase kTestCases[] = {
 
 class LimitedEntropySyntheticTrialGroupRegistrationTest
     : public FieldTrialCreatorTest,
-      public ::testing::WithParamInterface<TestCase> {
+      public ::testing::WithParamInterface<LimitedEntropyProcessingTestCase> {
  public:
   LimitedEntropySyntheticTrialGroupRegistrationTest() {
     EnableLimitedEntropyModeForTesting();
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         LimitedEntropySyntheticTrialGroupRegistrationTest,
-                         ::testing::ValuesIn(kTestCases),
-                         [](const ::testing::TestParamInfo<TestCase>& info) {
-                           return info.param.test_name;
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LimitedEntropySyntheticTrialGroupRegistrationTest,
+    ::testing::ValuesIn(kTestCases),
+    [](const ::testing::TestParamInfo<LimitedEntropyProcessingTestCase>& info) {
+      return info.param.test_name;
+    });
 
 TEST_P(LimitedEntropySyntheticTrialGroupRegistrationTest,
        RegisterGroupMembership) {
-  const TestCase test_case = GetParam();
+  const LimitedEntropyProcessingTestCase test_case = GetParam();
 
   VariationsSeed seed;
   if (test_case.is_limited_layer_in_seed) {

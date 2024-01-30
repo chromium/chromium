@@ -58,7 +58,11 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   base::FeatureList feature_list;
 
   TestOverrideStringCallback override_callback;
-  EntropyProviders entropy_providers("client_id", {7999, 8000});
+  // TODO(crbug.com/1518402): Support limited entropy randomization for the
+  // study fuzzer.
+  EntropyProviders entropy_providers(
+      "client_id", {7999, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
   ProcessedStudy processed_study;
   VariationsLayers layers;
   if (processed_study.Init(&study)) {

@@ -523,12 +523,18 @@ MetricsStateManager::AddOnClonedInstallDetectedCallback(
 }
 
 std::unique_ptr<const variations::EntropyProviders>
-MetricsStateManager::CreateEntropyProviders() {
+MetricsStateManager::CreateEntropyProviders(bool enable_limited_entropy_mode) {
+  // TODO(crbug.com/1508150): remove `enable_limited_entropy_mode` when it's
+  // true for all callers.
+  auto limited_entropy_randomization_source =
+      enable_limited_entropy_mode ? GetLimitedEntropyRandomizationSource()
+                                  : std::string_view();
   return std::make_unique<variations::EntropyProviders>(
       GetHighEntropySource(),
       variations::ValueInRange{
           .value = base::checked_cast<uint32_t>(GetLowEntropySource()),
           .range = EntropyState::kMaxLowEntropySize},
+      limited_entropy_randomization_source,
       ShouldEnableBenchmarking(entropy_params_.force_benchmarking_mode));
 }
 
@@ -602,10 +608,21 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
   return client_info;
 }
 
+std::string_view MetricsStateManager::GetLimitedEntropyRandomizationSource() {
+  // No limited entropy randomization source will be generated if limited
+  // entropy randomization is not supported in this context (e.g. in Android
+  // Webview).
+  if (entropy_params_.default_entropy_provider_type ==
+      EntropyProviderType::kLow) {
+    return std::string_view();
+  }
+  return entropy_state_.GetLimitedEntropyRandomizationSource();
+}
+
 std::string MetricsStateManager::GetHighEntropySource() {
   // If high entropy randomization is not supported in this context (e.g. in
-  // webview), or if UMA is not enabled (so there is no client id), then high
-  // entropy randomization is disabled.
+  // Android Webview), or if UMA is not enabled (so there is no client id), then
+  // high entropy randomization is disabled.
   if (entropy_params_.default_entropy_provider_type ==
           EntropyProviderType::kLow ||
       initial_client_id_.empty()) {
