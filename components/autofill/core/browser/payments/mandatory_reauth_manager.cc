@@ -18,12 +18,16 @@ using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
-    : client_(client) {}
+    : client_(client) {
+  if (client_) {
+    device_authenticator_ = client_->GetDeviceAuthenticator();
+  }
+}
+
 MandatoryReauthManager::~MandatoryReauthManager() = default;
 
 void MandatoryReauthManager::Authenticate(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
-  device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
   device_authenticator_->AuthenticateWithMessage(
       u"", base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
@@ -33,7 +37,6 @@ void MandatoryReauthManager::Authenticate(
 void MandatoryReauthManager::AuthenticateWithMessage(
     const std::u16string& message,
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
-  device_authenticator_ = client_->GetDeviceAuthenticator();
   CHECK(device_authenticator_);
   device_authenticator_->AuthenticateWithMessage(
       message,
@@ -44,7 +47,6 @@ void MandatoryReauthManager::AuthenticateWithMessage(
 void MandatoryReauthManager::OnAuthenticationCompleted(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
     bool success) {
-  device_authenticator_.reset();
   std::move(callback).Run(success);
 }
 
@@ -70,10 +72,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // If the device authenticator is not present or we can not authenticate with
   // biometric or screen lock, there will be no way to re-auth if the user
   // enrolls, so return that we should not offer mandatory re-auth opt-in.
-  if (std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
-          client_->GetDeviceAuthenticator();
-      !device_authenticator ||
-      !device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+  if (!device_authenticator_ ||
+      !device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
     LogMandatoryReauthOfferOptInDecision(
         MandatoryReauthOfferOptInDecision::kNoSupportedReauthMethod);
     return false;
@@ -186,16 +186,14 @@ void MandatoryReauthManager::OnUserClosedOptInPrompt() {
 
 MandatoryReauthAuthenticationMethod
 MandatoryReauthManager::GetAuthenticationMethod() {
-  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client_->GetDeviceAuthenticator();
-  if (!device_authenticator) {
+  if (!device_authenticator_) {
     return MandatoryReauthAuthenticationMethod::kUnknown;
   }
   // Order matters here.
-  if (device_authenticator->CanAuthenticateWithBiometrics()) {
+  if (device_authenticator_->CanAuthenticateWithBiometrics()) {
     return MandatoryReauthAuthenticationMethod::kBiometric;
   }
-  if (device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+  if (device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
     return MandatoryReauthAuthenticationMethod::kScreenLock;
   }
   return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
