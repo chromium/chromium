@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, OsSettingsSanitizeDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, LifetimeBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -14,6 +14,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 
@@ -42,7 +43,6 @@ suite('<reset-settings-card>', () => {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(
         eSimManagerRemote as unknown as ESimManagerRemote);
-
     Router.getInstance().navigateTo(route);
     resetSettingsCard = document.createElement('reset-settings-card');
     document.body.appendChild(resetSettingsCard);
@@ -64,11 +64,25 @@ suite('<reset-settings-card>', () => {
     return powerwashButton;
   }
 
+  function getSanitizeButton(): HTMLElement|null {
+    const sanitizeButton =
+        resetSettingsCard.shadowRoot!.querySelector<CrButtonElement>(
+            '#sanitizeButton');
+    return sanitizeButton;
+  }
+
   function getPowerwashDialog(): OsSettingsPowerwashDialogElement {
     const powerwashDialog = resetSettingsCard.shadowRoot!.querySelector(
         'os-settings-powerwash-dialog');
     assertTrue(!!powerwashDialog);
     return powerwashDialog;
+  }
+
+  function getSanitizeDialog(): OsSettingsSanitizeDialogElement {
+    const sanitizeDialog = resetSettingsCard.shadowRoot!.querySelector(
+        'os-settings-sanitize-dialog');
+    assertTrue(!!sanitizeDialog);
+    return sanitizeDialog;
   }
 
   async function testOpenClosePowerwashDialog(
@@ -250,4 +264,24 @@ suite('<reset-settings-card>', () => {
             'type=Cellular',
             Router.getInstance().getQueryParameters().toString());
       });
+
+  // Tests that the sanitize button is shown when sanitization is allowed and
+  // is not visible otherwise. When it is enabled, the dialog should pop up
+  // once the button is clicked.
+  const sanitizeFeatureEnabled = loadTimeData.getBoolean('allowSanitize');
+  if (sanitizeFeatureEnabled) {
+    test('Clicking the sanitizeButton shows its dialog.', async () => {
+      const sanitizeButton = getSanitizeButton();
+      assertTrue(!!sanitizeButton);
+      sanitizeButton.click();
+      await flushTasks();
+      const dialog = getSanitizeDialog();
+      assertTrue(!!dialog);
+    });
+  } else {
+    test('The sanitizeButton does not show.', () => {
+      const sanitizeButton = getSanitizeButton();
+      assertFalse(isVisible(sanitizeButton));
+    });
+  }
 });

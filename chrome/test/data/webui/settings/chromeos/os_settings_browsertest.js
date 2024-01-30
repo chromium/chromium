@@ -48,6 +48,24 @@ var OSSettingsBrowserTest = class extends PolymerTest {
      ]
    }
  ],
+ ['OsResetPage', 'os_reset_page/os_reset_page_test.js'],
+ [
+   'OsResetPageResetSettingsCardWithSanitize',
+   'os_reset_page/reset_settings_card_test.js',
+   {
+     disabled: ['ash::features::kOsSettingsRevampWayfinding'],
+     enabled: ['ash::features::kSanitize']
+   },
+ ],
+ [
+   'OsResetPageResetSettingsCardWithoutSanitize',
+   'os_reset_page/reset_settings_card_test.js',
+   {
+     disabled: [
+       'ash::features::kOsSettingsRevampWayfinding', 'ash::features::kSanitize'
+     ]
+   },
+ ],
  [
    'OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
    'os_people_page/account_manager_subpage_test.js',

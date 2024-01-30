@@ -13,7 +13,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
+#include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class BrandcodeConfigFetcher;
 class Profile;
@@ -27,6 +29,14 @@ namespace settings {
 //  2) 'Powerwash' dialog (ChromeOS only)
 class ResetSettingsHandler : public SettingsPageUIHandler {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Hash used by the Chrome Cleanup Tool when launching chrome with the reset
+  // profile settings URL.
+  static const char kCctResetSettingsHash[];
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   static bool ShouldShowResetProfileBanner(Profile* profile);
 
   explicit ResetSettingsHandler(Profile* profile);
@@ -67,11 +77,21 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   // Retrieve the triggered reset tool name, called from Javascript.
   void HandleGetTriggeredResetToolName(const base::Value::List& args);
 
+  // Fetches the settings via BrandcodeConfigFetcher.
+  void FetchSettings();
+
   // Called when BrandcodeConfigFetcher completed fetching settings.
   void OnSettingsFetched();
 
-  // Resets profile settings to default values. |send_settings| is true if user
-  // gave their consent to upload broken settings to Google for analysis.
+  // Resets the settings that are marked in the resettable flags to the default
+  // value, callback will be called once the reset is complete. The difference
+  // between this function and |ResetProfile| function is that individual
+  // settings could be reset with this function.
+  void ResetSettings(ProfileResetter::ResettableFlags resettable_flags,
+                     base::OnceClosure callback);
+
+  // Resets all profile settings to default values. |send_settings| is true if
+  // user gave their consent to upload broken settings to Google for analysis.
   void ResetProfile(
       const std::string& callback_id,
       bool send_settings,
@@ -82,6 +102,17 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
       std::string callback_id,
       bool send_feedback,
       reset_report::ChromeResetReport::ResetRequestOrigin request_origin);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Will be called when sanitize dialog is shown.
+  void OnShowSanitizeDialog(const base::Value::List& args);
+
+  // Javascript callback to perform settings sanitization.
+  void HandleSanitizeSettings(const base::Value::List& args);
+
+  void SanitizeSettings();
+  void OnSanitizeDone();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;
 

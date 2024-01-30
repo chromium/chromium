@@ -297,6 +297,7 @@ enum Setting {
 
   // Reset section.
   kPowerwash = 1600,
+  kSanitizeCrosSettings = 1601,
 
   // About Chrome OS section.
   kChangeChromeChannel = 1700,
