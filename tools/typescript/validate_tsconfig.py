@@ -204,10 +204,20 @@ def isMigratedAshFolder(path):
   migrated_ash_folders = [
       "ash/webui/os_feedback_ui",
       "ash/webui/scanning",
+      "chrome/browser/resources/chromeos/add_supervision",
+      "chrome/browser/resources/chromeos/app_install",
+      "chrome/browser/resources/chromeos/borealis_installer",
       "chrome/browser/resources/chromeos/cloud_upload",
+      "chrome/browser/resources/chromeos/emoji_picker",
       "chrome/browser/resources/chromeos/enterprise_reporting",
       "chrome/browser/resources/chromeos/healthd_internals",
+      "chrome/browser/resources/chromeos/parent_access",
+      "chrome/browser/resources/chromeos/set_time_dialog",
+      "chrome/browser/resources/chromeos/vc_tray_tester",
+      "chrome/test/data/webui/chromeos/borealis_installer",
+      "chrome/test/data/webui/chromeos/emoji_picker",
       "chrome/test/data/webui/chromeos/os_feedback_ui",
+      "chrome/test/data/webui/chromeos/parent_access",
   ]
   return any(path.startswith(folder) for folder in migrated_ash_folders)
 
