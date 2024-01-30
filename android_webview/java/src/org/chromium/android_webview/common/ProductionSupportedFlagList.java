@@ -327,6 +327,11 @@ public final class ProductionSupportedFlagList {
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_LABEL_PRECEDENCE_FOR_TURKISH_ADDRESSES,
+                "When enabled, the precedence is given to the field label over the name when they"
+                        + " match different types. Applied only for parsing of address forms in"
+                        + " Turkish."),
+        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
