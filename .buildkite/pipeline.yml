@@ -211,6 +211,14 @@ steps:
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-linux-x86_64"
+    build:
+      env:
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
+        RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
+        RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
+        RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
+        # this is passed as a git URL which the replay plugin expects and parses
+        RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 
   # wait for all steps above, but also continue if they fail
   - wait: ~
