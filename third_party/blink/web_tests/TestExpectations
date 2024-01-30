@@ -2552,7 +2552,18 @@ crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cann
 # Flaky output (https://crrev.com/c/5228398)
 crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Failure ]
 
+# Flaky output on multiple platforms:
+# https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8757448685637289873/+/u/Import_changes_from_WPT_to_Chromium/stdout
+crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-004.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-005.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-overflow/scrollbar-gutter-fixedpos-002.html [ Failure ]
+crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/invokers/invoketarget-on-popover-behavior.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/mediacapture-insertable-streams/VideoTrackGenerator-with-window-tracks.https.html [ Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/selection/crashtests/selectall-and-find-svg-text-on-selectstart.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/selection/crashtests/selectall-and-find-svg-text-on-selectstart.html [ Timeout ]
 crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Timeout ]
@@ -2746,6 +2757,7 @@ crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-munder
 crbug.com/626703 [ Linux ] external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/table-width-3.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-nonce.sub.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/fsa-incognito/external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/fetch.https.window.html [ Timeout ]

@@ -744,7 +744,7 @@ crbug.com/1485918 external/wpt/cookies/samesite/setcookie-lax.https.html [ Failu
 crbug.com/1485918 external/wpt/cookies/samesite/setcookie-navigation.https.html [ Failure Timeout ]
 crbug.com/1485918 external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
 crbug.com/1485918 external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
-crbug.com/1485918 external/wpt/credential-management/fedcm-context.https.html [ Failure ]
+crbug.com/1485918 external/wpt/credential-management/fedcm-context.https.html [ Failure Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-error-basic.https.html [ Crash Failure Timeout ]
 crbug.com/1485918 external/wpt/html/anonymous-iframe/fenced-frame-bypass.tentative.https.window.html [ Failure ]
 crbug.com/1485918 external/wpt/html/anonymous-iframe/fenced-frame.tentative.https.window.html [ Failure ]

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] clientLeft and clientTop don't round 44.9
+  assert_equals: scrollLeft expected 44.9 but got 45
+[FAIL] clientLeft and clientTop don't round 44.5
+  assert_equals: scrollLeft expected 44.5 but got 44
+[FAIL] clientLeft and clientTop don't round 44.1
+  assert_equals: scrollLeft expected 44.1 but got 44
+Harness: the test ran to completion.
+
