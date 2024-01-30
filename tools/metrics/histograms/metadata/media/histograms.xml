@@ -5338,15 +5338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VAJEA.EncoderResult" enum="VAJEAEncoderResult"
-    expires_after="M95">
-  <owner>wtlee@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
-  <summary>
-    Result codes reported by jpeg encode using VA-API hardware jpeg encoder.
-  </summary>
-</histogram>
-
 <histogram name="Media.VAVDA.VaapiWrapperCreationSuccess" enum="BooleanSuccess"
     expires_after="2023-02-12">
   <owner>mcasas@chromium.org</owner>
