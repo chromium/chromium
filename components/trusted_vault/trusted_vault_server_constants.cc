@@ -34,13 +34,13 @@ GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
 
 GURL GetGetSecurityDomainURL(const GURL& server_url,
                              SecurityDomainId security_domain) {
-  return GURL(server_url.spec() + GetSecurityDomainName(security_domain) +
+  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
               "?view=2");
 }
 
 GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain) {
-  return GURL(server_url.spec() + GetSecurityDomainName(security_domain) +
+  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
               ":join");
 }
 
@@ -77,12 +77,13 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 
-std::string GetSecurityDomainName(SecurityDomainId domain) {
+std::string GetSecurityDomainPath(SecurityDomainId domain) {
   switch (domain) {
     case SecurityDomainId::kChromeSync:
-      return kSyncSecurityDomainName;
+      return std::string(kSecurityDomainPathPrefix) + kSyncSecurityDomainName;
     case SecurityDomainId::kPasskeys:
-      return kPasskeysSecurityDomainName;
+      return std::string(kSecurityDomainPathPrefix) +
+             kPasskeysSecurityDomainName;
   }
 }
 

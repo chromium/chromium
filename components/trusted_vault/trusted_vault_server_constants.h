@@ -19,10 +19,9 @@ namespace trusted_vault {
 
 inline constexpr int kUnknownConstantKeyVersion = 0;
 
-inline constexpr char kSyncSecurityDomainName[] =
-    "users/me/securitydomains/chromesync";
-inline constexpr char kPasskeysSecurityDomainName[] =
-    "users/me/securitydomains/hw_protected";
+inline constexpr char kSecurityDomainPathPrefix[] = "users/me/securitydomains/";
+inline constexpr char kSyncSecurityDomainName[] = "chromesync";
+inline constexpr char kPasskeysSecurityDomainName[] = "hw_protected";
 inline constexpr char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 inline constexpr char kJoinSecurityDomainsErrorDetailTypeURL[] =
     "type.googleapis.com/"
@@ -70,7 +69,7 @@ GURL GetFullGetSecurityDomainMemberURLForTesting(
 GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
                                            SecurityDomainId security_domain);
 
-std::string GetSecurityDomainName(SecurityDomainId domain);
+std::string GetSecurityDomainPath(SecurityDomainId domain);
 std::optional<SecurityDomainId> GetSecurityDomainByName(
     base::StringPiece domain);
 

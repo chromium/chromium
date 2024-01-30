@@ -67,7 +67,7 @@ trusted_vault_pb::SecurityDomain MakeSecurityDomainWithDegradedRecoverability(
     SecurityDomainId security_domain_id,
     bool recoverability_degraded) {
   trusted_vault_pb::SecurityDomain security_domain;
-  security_domain.set_name(GetSecurityDomainName(security_domain_id));
+  security_domain.set_name(GetSecurityDomainPath(security_domain_id));
   security_domain.mutable_security_domain_details()
       ->mutable_sync_details()
       ->set_degraded_recoverability(recoverability_degraded);
@@ -80,7 +80,7 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
   trusted_vault_pb::JoinSecurityDomainsResponse response;
   trusted_vault_pb::SecurityDomain* security_domain =
       response.mutable_security_domain();
-  security_domain->set_name(GetSecurityDomainName(security_domain_id));
+  security_domain->set_name(GetSecurityDomainPath(security_domain_id));
   security_domain->set_current_epoch(current_epoch);
   return response;
 }
@@ -105,7 +105,7 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
     member->add_memberships()->set_security_domain("other security domain");
     if (member_type != Member::kOtherSecurityDomain) {
       member->add_memberships()->set_security_domain(
-          GetSecurityDomainName(security_domain_id));
+          GetSecurityDomainPath(security_domain_id));
     }
 
     switch (member_type) {
@@ -279,7 +279,7 @@ TEST_P(TrustedVaultConnectionImplTest,
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.security_domain().name(),
-              Eq(GetSecurityDomainName(security_domain())));
+              Eq(GetSecurityDomainPath(security_domain())));
 
   std::string public_key_string;
   AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),
@@ -343,7 +343,7 @@ TEST_P(TrustedVaultConnectionImplTest,
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.security_domain().name(),
-              Eq(GetSecurityDomainName(security_domain())));
+              Eq(GetSecurityDomainPath(security_domain())));
 
   std::string public_key_string;
   AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),

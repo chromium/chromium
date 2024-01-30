@@ -163,7 +163,7 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
   trusted_vault_pb::SecurityDomain* security_domain =
       response.mutable_security_domain();
   security_domain->set_name(
-      GetSecurityDomainName(trusted_vault::SecurityDomainId::kPasskeys));
+      GetSecurityDomainPath(trusted_vault::SecurityDomainId::kPasskeys));
   security_domain->set_current_epoch(current_epoch);
   return response;
 }

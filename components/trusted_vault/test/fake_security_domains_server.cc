@@ -32,7 +32,8 @@ CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(int current_epoch) {
   trusted_vault_pb::JoinSecurityDomainsResponse response_proto;
   trusted_vault_pb::SecurityDomain* security_domain =
       response_proto.mutable_security_domain();
-  security_domain->set_name(kSyncSecurityDomainName);
+  security_domain->set_name(
+      GetSecurityDomainPath(SecurityDomainId::kChromeSync));
   security_domain->set_current_epoch(current_epoch);
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -44,7 +45,9 @@ CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(int current_epoch) {
 // Returns whether |request| satisfies protocol expectations.
 bool ValidateJoinSecurityDomainsRequest(
     const trusted_vault_pb::JoinSecurityDomainsRequest& request) {
-  if (request.security_domain().name() != kSyncSecurityDomainName) {
+  const std::string expected_name =
+      GetSecurityDomainPath(SecurityDomainId::kChromeSync);
+  if (request.security_domain().name() != expected_name) {
     DVLOG(1)
         << "JoinSecurityDomains request has unexpected security domain name: "
         << request.security_domain().name();
@@ -426,7 +429,8 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
 
   trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership* membership =
       member.add_memberships();
-  membership->set_security_domain(kSyncSecurityDomainName);
+  membership->set_security_domain(
+      GetSecurityDomainPath(SecurityDomainId::kChromeSync));
   for (const trusted_vault_pb::SharedMemberKey& shared_key :
        state_.public_key_to_shared_keys[member_public_key]) {
     *membership->add_keys() = shared_key;
