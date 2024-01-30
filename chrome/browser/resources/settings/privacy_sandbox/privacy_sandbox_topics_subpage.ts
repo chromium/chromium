@@ -168,6 +168,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     if (newRoute === routes.PRIVACY_SANDBOX_TOPICS) {
       HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
           TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
+      // Updating the TopicsState because it can be changed by being
+      // blocked/unblocked in the Manage Topics Page. Need to keep the data
+      // between the two pages up to date.
+      if (this.shouldShowV2_) {
+        this.privacySandboxBrowserProxy_.getTopicsState().then(
+            state => this.onTopicsStateChanged_(state));
+      }
     }
   }
 

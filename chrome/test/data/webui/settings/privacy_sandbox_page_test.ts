@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrDialogElement, CrExpandButtonElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxManageTopicsSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {SettingsPrivacySandboxFledgeSubpageElement} from 'chrome://settings/lazy_load.js';
-import type {CrButtonElement, CrLinkRowElement, SettingsPrefsElement, TopicsState} from 'chrome://settings/settings.js';
+import type {CrButtonElement, CrLinkRowElement, FirstLevelTopicsState, SettingsPrefsElement, TopicsState} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -1139,7 +1139,7 @@ suite('ManageTopics', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  function getFirstLevelTopicsState() {
+  function getFirstLevelTopicsState(): FirstLevelTopicsState {
     return {
       firstLevelTopics: [
         {
@@ -1270,6 +1270,216 @@ suite('ManageTopics', function() {
     // dialog does not appear and the toggle is turned OFF.
     toggles[1]!.click();
     await flushTasks();
+    assertFalse(toggles[1]!.checked);
+  });
+});
+
+suite('ManageTopicsAndAdTopicsPageState', function() {
+  let adTopicsPage: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isProactiveTopicsBlockingEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
+        getInitialFirstLevelTopicsState());
+    testPrivacySandboxBrowserProxy.setTestTopicState(getInitialTopicsState());
+    document.body.appendChild(settingsPrefs);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    adTopicsPage =
+        document.createElement('settings-privacy-sandbox-topics-subpage');
+    adTopicsPage.prefs = settingsPrefs.prefs;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(adTopicsPage);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  function getInitialTopicsState(): TopicsState {
+    return {
+      topTopics: [],
+      blockedTopics: [{
+        topicId: 1,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-1',
+        description: 'test-topic-1-description',
+      }],
+    };
+  }
+
+  function getInitialFirstLevelTopicsState(): FirstLevelTopicsState {
+    return {
+      firstLevelTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+        {
+          topicId: 2,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-2',
+          description: 'test-topic-2-description',
+        },
+      ],
+      blockedTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+      ],
+    };
+  }
+
+  function getFinalTopicsState(): TopicsState {
+    return {
+      topTopics: [],
+      blockedTopics: [
+        {
+          topicId: 2,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-2',
+          description: 'test-topic-2-description',
+        },
+      ],
+    };
+  }
+
+  function getFinalFirstLevelTopicsState(): FirstLevelTopicsState {
+    return {
+      firstLevelTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+        {
+          topicId: 2,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-2',
+          description: 'test-topic-2-description',
+        },
+      ],
+      blockedTopics: [
+        {
+          topicId: 1,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-1',
+          description: 'test-topic-1-description',
+        },
+        {
+          topicId: 2,
+          taxonomyVersion: 1,
+          displayString: 'test-topic-2',
+          description: 'test-topic-2-description',
+        },
+      ],
+    };
+  }
+
+  test('BlockAndAllowVerifyUpToDateState', async function() {
+    // Start with Ad Topics Page.
+    adTopicsPage.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    let blockedTopicsRow = adTopicsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedTopicsRow');
+    blockedTopicsRow!.click();
+    await flushTasks();
+
+    // Assert initial values
+    let blockedTopicsList =
+        adTopicsPage.shadowRoot!.querySelector('#blockedTopicsList')!;
+    let blockedTopics =
+        blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
+    assertTrue(!!blockedTopics);
+    assertEquals(1, blockedTopics.length);
+    assertEquals(
+        'test-topic-1', blockedTopics[0]!.interest.topic!.displayString);
+
+    // Navigate to Manage Topics Page.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const manageTopicsPage = document.createElement(
+        'settings-privacy-sandbox-manage-topics-subpage');
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    document.body.appendChild(manageTopicsPage);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
+    flushTasks();
+
+    // Assert initial values and unblock test-topic-1 and block test-topic-2.
+    let toggles = manageTopicsPage.shadowRoot!.querySelectorAll('cr-toggle');
+    assertEquals(2, toggles.length);
+    let toggleIds = Array.from(toggles).map(topicToggle => topicToggle.id);
+    assertDeepEquals(['toggle-1', 'toggle-2'], toggleIds);
+    assertFalse(toggles[0]!.checked);
+    assertTrue(toggles[1]!.checked);
+    toggles[0]!.click();
+    assertTrue(toggles[0]!.checked);
+    toggles[1]!.click();
+    assertFalse(toggles[1]!.checked);
+
+    // Setting TopicState to reflect changes in Manage Topics page.
+    testPrivacySandboxBrowserProxy.setTestTopicState(getFinalTopicsState());
+
+    // Navigate back to Ad Topics Page
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(adTopicsPage);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    flushTasks();
+
+    // Check that unblocking test-topic-1 and blocking test-topic-2 in Manage
+    // Topics Page are reflected in Ad Topics Page.
+    blockedTopicsRow = adTopicsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedTopicsRow');
+    blockedTopicsRow!.click();
+    await flushTasks();
+    blockedTopicsList =
+        adTopicsPage.shadowRoot!.querySelector('#blockedTopicsList')!;
+    blockedTopics =
+        blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
+    assertTrue(!!blockedTopics);
+    assertEquals(1, blockedTopics.length);
+    assertEquals(
+        'test-topic-2', blockedTopics[0]!.interest.topic!.displayString);
+    blockedTopics[0]!.shadowRoot!.querySelector('cr-button')!.click();
+    await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+
+    // Setting FirstLevelTopicsState to reflect changes in Ad Topics Page.
+    testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
+        getFinalFirstLevelTopicsState());
+
+    // Navigate back to Manage Topics Page.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    document.body.appendChild(manageTopicsPage);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
+    flushTasks();
+
+    // Confirm that blocking test-topic-2 in Ad Topics Page are reflected in
+    // Manage Topics Page. Both topics should be unchecked (blocked).
+    toggles = manageTopicsPage.shadowRoot!.querySelectorAll('cr-toggle');
+    assertEquals(2, toggles.length);
+    toggleIds = Array.from(toggles).map(topicToggle => topicToggle.id);
+    assertDeepEquals(['toggle-1', 'toggle-2'], toggleIds);
+    assertFalse(toggles[0]!.checked);
     assertFalse(toggles[1]!.checked);
   });
 });

@@ -13,6 +13,9 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin} from '../router.js';
 
 import type {FirstLevelTopicsState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
@@ -24,7 +27,7 @@ export interface SettingsPrivacySandboxManageTopicsSubpageElement {
   };
 }
 const SettingsPrivacySandboxManageTopicsSubpageElementBase =
-    I18nMixin(PolymerElement);
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 // First Level Topics for Taxonomy v2
 // This list comes from here:
@@ -106,6 +109,16 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
     this.privacySandboxBrowserProxy_.getFirstLevelTopics().then(
         state => this.onFirstLevelTopicsStateChanged_(state));
+  }
+
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
+      // Updating the FirstLevelTopicsState because it can be changed by being
+      // blocked/unblocked in the Ad Topics Page. Need to keep the data between
+      // the two pages up to date.
+      this.privacySandboxBrowserProxy_.getFirstLevelTopics().then(
+          state => this.onFirstLevelTopicsStateChanged_(state));
+    }
   }
 
   private onFirstLevelTopicsStateChanged_(state: FirstLevelTopicsState) {
