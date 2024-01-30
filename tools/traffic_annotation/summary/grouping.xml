@@ -291,6 +291,8 @@ after discussions on the right group.
       <annotation id="remoting_report_provisioning_error"/>
       <annotation id="webauthn_rp_id_check"/>
       <annotation id="tasks_integration"/>
+      <annotation id="metrics_report_appkm"/>
+      <annotation id="metrics_report_ukm_and_appkm"/>
       <annotation id="search_engine_adapter"/>
       <annotation id="launcher_manatee"/>
       <annotation id="chromeos_picker_gif_fetcher"/>
