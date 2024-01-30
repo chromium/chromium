@@ -192,11 +192,7 @@ TEST_F(OmniboxViewTest, GetIcon_Default) {
 }
 
 // Tests GetIcon returns the bookmark icon when the match is bookmarked.
-// TODO (crbug/1520009): Investigate and re-enable.
 TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
   const GURL kUrl("https://bookmarks.com");
 
   AutocompleteMatch match;
@@ -207,7 +203,9 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
                            u"a bookmark", kUrl);
 
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
-      omnibox::kBookmarkIcon, gfx::kPlaceholderColor, gfx::kFaviconSize);
+      features::IsChromeRefresh2023() ? omnibox::kBookmarkChromeRefreshIcon
+                                      : omnibox::kBookmarkIcon,
+      gfx::kPlaceholderColor, gfx::kFaviconSize);
 
   ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
