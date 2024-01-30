@@ -1,0 +1,76 @@
+<style include="cr-icons">
+  iron-icon {
+    --icon-size: 20px;
+    height: var(--icon-size);
+    width: var(--icon-size);
+    margin: 0px 8px 0px 4px;
+  }
+  cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    margin: 0 4px;
+    color: var(--color-sys-on-surface-subtle);
+  }
+  cr-icon-button.active {
+    background-color: var(--cr-active-background-color);
+  }
+  #voiceSelectionMenu::part(dialog) {
+    min-width: 304px;
+    width: 304px;
+    margin-left: var(--sp-body-padding);
+    max-height: 95%;
+  }
+  .dropdown-voice-selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .display-false {
+    display: none;
+  }
+  .dropdown-voice-selection cr-icon-button {
+    margin: 0;
+  }
+  .voice-name {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-invisible-true {
+    visibility: hidden;
+  }
+</style>
+
+<cr-icon-button
+  id="voice-selection"
+  on-click="onVoiceSelectionMenuClick_"
+  class="toolbar-button"
+  tabindex="-1"
+  aria-label="$i18n{voiceSelectionLabel}"
+  aria-haspopup="menu"
+  iron-icon="read-anything:voice-selection">
+</cr-icon-button>
+
+<cr-action-menu id="voiceSelectionMenu">
+  <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
+    <!--  TODO(crbug.com/1474951): show a header for each locale group before
+          listing the languages of the locale -->
+    <button class="dropdown-item dropdown-voice-selection"
+      on-click="onVoiceSelectClick_">
+      <span class="voice-name">
+        <iron-icon
+        class$="button-image item-invisible-[[!item.selected]]"
+          icon="read-anything-20:check-mark"></iron-icon>
+        [[item.title]]
+      </span>
+      <cr-icon-button on-click="onVoicePreviewClick_"
+        class$="button-image display-[[!item.previewPlaying]]"
+        iron-icon="read-anything-20:play-circle"></cr-icon-button>
+      <!-- TODO(crbug.com/1474951) Pause the preview when pause button is
+                  pressed -->
+      <cr-icon-button on-click="onVoicePreviewClick_"
+        class$="button-image display-[[item.previewPlaying]]"
+        iron-icon="read-anything-20:pause-circle"></cr-icon-button>
+    </button>
+  </template>
+</cr-action-menu>

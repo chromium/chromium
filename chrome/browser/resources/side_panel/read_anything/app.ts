@@ -203,10 +203,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   synth = window.speechSynthesis;
 
-  // State for speech synthesis needs to be tracked separately because there
-  // are bugs with window.speechSynthesis.paused and
+  private selectedVoice: SpeechSynthesisVoice|undefined;
+
+  private availableVoices: SpeechSynthesisVoice[];
+  // If a preview is playing, this is set to the voice the preview is playing.
+  // Otherwise, this is undefined.
+  private previewVoicePlaying: SpeechSynthesisVoice|null;
+
+  // State for speech synthesis paused/play state needs to be tracked explicitly
+  // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
-  private voice: SpeechSynthesisVoice|undefined;
   paused = true;
   speechStarted = false;
   maxSpeechLength = 175;
@@ -476,10 +482,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
-    if (!this.voice) {
-      this.voice = this.defaultVoice();
+    if (!this.selectedVoice) {
+      this.selectedVoice = this.defaultVoice();
     }
-    return this.voice;
+    return this.selectedVoice;
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
@@ -492,11 +498,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices = this.synth.getVoices().filter(
+    const voices = this.getVoices().filter(
         voice => voice.lang.startsWith(languageCode));
+
     if (!voices || (voices.length === 0)) {
       // If no voices in the given language are found, use the default voice.
-      return this.synth.getVoices().find(
+      return this.getVoices().find(
           ({default: isDefaultVoice}) => isDefaultVoice);
     }
 
@@ -510,10 +517,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return voice;
   }
 
-  getVoices(): VoicesByLanguage {
+  private getVoicesByLanguage(): VoicesByLanguage {
     // TODO(crbug.com/1474951): Filter by localService. Doing this now prevents
     // voices from loading on Linux, which slows down development.
-    return this.synth.getVoices().reduce(
+    return this.getVoices().reduce(
         (voicesByLang: VoicesByLanguage, voice: SpeechSynthesisVoice) => {
           (voicesByLang[voice.lang] = voicesByLang[voice.lang] || [])
               .push(voice);
@@ -522,11 +529,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         {});
   }
 
-  setSpeechSynthesisVoice(voice: SpeechSynthesisVoice|undefined) {
-    this.voice = voice;
+  private getVoices(): SpeechSynthesisVoice[] {
+    if (!this.availableVoices) {
+      this.availableVoices = this.synth.getVoices();
+    }
+    return this.availableVoices;
   }
 
-  previewSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
+  private onPreviewVoice_(
+      event: CustomEvent<{previewVoice: SpeechSynthesisVoice}>) {
+    event.preventDefault();
+    event.stopPropagation();
+
+
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
 
     // TODO(crbug.com/1474951): Finalize the default voice preview text.
@@ -534,6 +549,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // and reset the play icon.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));
+    const voice = event.detail.previewVoice;
     utterance.voice = voice;
     utterance.lang = defaultUtteranceSettings.lang;
     utterance.volume = defaultUtteranceSettings.volume;
@@ -542,11 +558,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Add tests for pause button
     utterance.onstart = event => {
-      this.$.toolbar.showVoicePreviewPlaying(event.utterance.voice);
+      this.previewVoicePlaying = event.utterance.voice;
     };
 
     utterance.onend = () => {
-      this.$.toolbar.showVoicePreviewDone();
+      this.previewVoicePlaying = null;
     };
 
     this.synth.speak(utterance);
@@ -827,6 +843,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.previousHighlight_ = [];
   }
 
+  private onSelectVoice_(
+      event: CustomEvent<{selectedVoice: SpeechSynthesisVoice}>) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.selectedVoice = event.detail.selectedVoice;
+    chrome.readingMode.onVoiceChange(
+        this.selectedVoice.name, this.selectedVoice.lang.split('-')[0]);
+  }
+
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
   // this should be renamed to just validatedFontName_ and the current
   // validatedFontName_ method can be removed.
@@ -926,15 +952,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private restoreVoiceFromPrefs_() {
     const storedLang = chrome.readingMode.speechSynthesisLanguageCode;
     const storedVoice = chrome.readingMode.getStoredVoice(storedLang);
+
     if (!storedVoice) {
-      this.setSpeechSynthesisVoice(this.defaultVoice());
+      this.selectedVoice = this.defaultVoice();
       return;
     }
 
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices: VoicesByLanguage = this.getVoices();
+    const voices: VoicesByLanguage = this.getVoicesByLanguage();
     const entry =
         Object.entries(voices).find(([key, _]) => key.startsWith(storedLang));
     let voice;
@@ -944,8 +971,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         voice = voicesForLang.find(voice => voice.name === storedVoice);
       }
     }
-    this.setSpeechSynthesisVoice(
-        (voice === null) ? this.defaultVoice() : voice);
+    this.selectedVoice = (voice === null) ? this.defaultVoice() : voice;
   }
 
   updateLineSpacing(newLineHeight: number) {
