@@ -32,17 +32,22 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
 
 namespace {
 
-// TODO(sammiequon|zxdan): Localize all these strings.
-// TODO(sammiequon|zxdan): Match specs.
-// TODO(sammiequon|zxdan): Replace all hardcoded colors with tokens.
+// TODO(http://b/322359738): Localize all these strings.
+// TODO(http://b/322360273): Match specs.
+// TODO(http://b/322360373): Replace all hardcoded colors with tokens.
+// TODO(hewer): Update `SetFontList()` to use
+// `ash::TypographyProvider`.
 
 constexpr int kMaxItems = 4;
+constexpr int kOverflowMinElements = kMaxItems + 1;
+constexpr int kOverflowThreshold = kMaxItems - 1;
 
 // Constants for `PineItemView`.
 constexpr gfx::Size kFaviconPreferredSize(16, 16);
@@ -51,6 +56,12 @@ constexpr gfx::Size kItemIconBackgroundPreferredSize(40, 40);
 constexpr int kItemIconBackgroundRounding = 10;
 constexpr gfx::Size kItemIconPreferredSize(32, 32);
 constexpr int kItemTitleFontSize = 16;
+
+// Constants for `PineItemsOverflowView`.
+constexpr int kOverflowTablePadding = 2;
+constexpr int kOverflowTableSize = 20;
+constexpr int kOverflowBackgroundRounding = 20;
+constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 
 // Constants for `PineItemsContainerView`.
 constexpr int kAppIdImageSize = 64;
@@ -184,6 +195,111 @@ class PineItemView : public views::BoxLayoutView {
 BEGIN_METADATA(PineItemView, views::BoxLayoutView)
 END_METADATA
 
+// An alternative to `PineItemView` when there are more than four windows in
+// `apps` and the remaining information needs to be condensed.
+class PineItemsOverflowView : public views::BoxLayoutView {
+ public:
+  METADATA_HEADER(PineItemsOverflowView);
+
+  explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
+    const int elements = static_cast<int>(apps.size());
+    CHECK_GE(elements, kOverflowMinElements);
+    // TODO(http://b/322396902): Remove check when 5+ the overflow case is
+    // added.
+    CHECK_LT(elements, 8);
+
+    // TODO(hewer): Fix margins so the icons and text are aligned with
+    // `PineItemView` elements.
+    SetBetweenChildSpacing(kItemChildSpacing);
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+    SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+
+    // Create a 2x2 table view to display the icons for 4 or more windows, or
+    // the count of the remaining windows, rather than a single icon.
+    views::TableLayoutView* table_layout_view;
+    AddChildView(
+        views::Builder<views::TableLayoutView>()
+            .CopyAddressTo(&table_layout_view)
+            .AddColumn(
+                views::LayoutAlignment::kCenter,
+                views::LayoutAlignment::kCenter, views::TableLayout::kFixedSize,
+                views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
+            .AddPaddingColumn(views::TableLayout::kFixedSize,
+                              kOverflowTablePadding)
+            .AddColumn(
+                views::LayoutAlignment::kCenter,
+                views::LayoutAlignment::kCenter, views::TableLayout::kFixedSize,
+                views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
+            .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+            .AddPaddingRow(views::TableLayout::kFixedSize,
+                           kOverflowTablePadding)
+            .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+            .SetBackground(views::CreateRoundedRectBackground(
+                SK_ColorLTGRAY, kOverflowBackgroundRounding))
+            .Build());
+
+    // TODO(sammiequon): Handle case where the app is not ready or installed.
+    auto* delegate = Shell::Get()->saved_desk_delegate();
+
+    // Add the overflow apps to the table.
+    // TODO(http://b/322361367): Handle case where there are 2 overflow windows.
+    // TODO(http://b/322361588): Handle case where there are 3 overflow windows.
+    // TODO(http://b/322396902): Handle cases where there are 5+ overflow
+    // windows, and the last cell in the table should be the number that remain.
+    for (int count = kOverflowThreshold; count < elements; ++count) {
+      const auto& [app_id, favicons] = apps[count];
+
+      // Add the icon to the table.
+      views::ImageView* image_view = table_layout_view->AddChildView(
+          views::Builder<views::ImageView>()
+              .SetImageSize(kOverflowIconPreferredSize)
+              .SetPreferredSize(kOverflowIconPreferredSize)
+              .Build());
+
+      // Insert `image_view` into a map so it can be retrieved in a callback.
+      image_view_map_[count] = image_view;
+
+      // The callback may be called synchronously.
+      delegate->GetIconForAppId(
+          app_id, kAppIdImageSize,
+          base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
+                         weak_ptr_factory_.GetWeakPtr(), count));
+    }
+
+    // TODO(hewer): List the titles of the remaining windows.
+    views::Label* remaining_windows_label;
+    AddChildView(views::Builder<views::Label>()
+                     .CopyAddressTo(&remaining_windows_label)
+                     .SetEnabledColor(SK_ColorBLACK)
+                     .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
+                                                kItemTitleFontSize,
+                                                gfx::Font::Weight::BOLD))
+                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                     // TODO(hewer): Change hardcoded string to count remaining
+                     // elements.
+                     .SetText(u"16 more current windows")
+                     .Build());
+    SetFlexForView(remaining_windows_label, 1);
+  }
+
+  PineItemsOverflowView(const PineItemsOverflowView&) = delete;
+  PineItemsOverflowView& operator=(const PineItemsOverflowView&) = delete;
+  ~PineItemsOverflowView() override = default;
+
+  void SetIconForIndex(int index, const gfx::ImageSkia& icon) {
+    views::ImageView* image_view = image_view_map_[index];
+    CHECK(image_view);
+    image_view->SetImage(ui::ImageModel::FromImageSkia(icon));
+  }
+
+ private:
+  base::flat_map<int, views::ImageView*> image_view_map_;
+  base::WeakPtrFactory<PineItemsOverflowView> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(PineItemsOverflowView, views::BoxLayoutView)
+END_METADATA
+
 // The right side contents (in LTR) of the `PineContentsView`. It is a vertical
 // list of `PineItemView`, with each view representing an app. Shows a maximum
 // of `kMaxItems` items.
@@ -194,7 +310,6 @@ class PineItemsContainerView : public views::BoxLayoutView {
   explicit PineItemsContainerView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GT(elements, 0);
-    CHECK_LE(elements, kMaxItems);
 
     SetBackground(views::CreateRoundedRectBackground(SK_ColorWHITE,
                                                      kItemsContainerRounding));
@@ -208,7 +323,16 @@ class PineItemsContainerView : public views::BoxLayoutView {
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
             Shell::Get()->session_controller()->GetActiveAccountId());
     auto* delegate = Shell::Get()->saved_desk_delegate();
-    for (const auto& [app_id, favicons] : apps) {
+
+    for (int i = 0; i < elements; ++i) {
+      const auto& [app_id, favicons] = apps[i];
+      // If there are more than four elements, we will need to save the last
+      // space for the overflow view to condense the remaining info.
+      if (elements >= kOverflowMinElements && i >= kOverflowThreshold) {
+        AddChildView(std::make_unique<PineItemsOverflowView>(apps));
+        break;
+      }
+
       std::string title;
       // `cache` might be null in a test environment. In that case, we will use
       // an empty title.
@@ -311,7 +435,7 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
       ->SetFlexForView(spacer, 1);
 
   if (pine_image.isNull()) {
-    // TODO(sammiequon|zxdan): Remove this temporary data used for testing.
+    // TODO(hewer|sammiequon): Remove this temporary data used for testing.
     AppsData kTestingAppsData = {
         {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
          {"https://www.cnn.com/", "https://www.youtube.com/",
@@ -319,6 +443,9 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
         {"njfbnohfdkmbmnjapinfcopialeghnmh", {}},  // Camera
         {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
         {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
+        {"oabkinaljpjeilageghcdlnekhphhphl", {}},  // Calculator
+        {"agimnkijcaahngcdmfeangaknmldooml", {}},  // YouTube
+        {"kefjledonklijopmnomlcbpllchaibag", {}},  // Google Slides
     };
     PineItemsContainerView* container_view = AddChildView(
         std::make_unique<PineItemsContainerView>(kTestingAppsData));
