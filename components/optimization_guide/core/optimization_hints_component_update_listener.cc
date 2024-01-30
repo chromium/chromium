@@ -44,6 +44,10 @@ void OptimizationHintsComponentUpdateListener::MaybeUpdateHintsComponent(
   DCHECK(info.version.IsValid());
   DCHECK(!info.path.empty());
 
+  base::UmaHistogramSparse(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion2",
+      info.version.components()[0]);
+
   // Do not update the component if the version isn't newer. This differs from
   // the check in ComponentInstaller::InstallHelper(), because this rejects
   // version equality, whereas InstallHelper() accepts it.
@@ -51,10 +55,6 @@ void OptimizationHintsComponentUpdateListener::MaybeUpdateHintsComponent(
       hints_component_info_->version.CompareTo(info.version) >= 0) {
     return;
   }
-
-  base::UmaHistogramSparse(
-      "OptimizationGuide.OptimizationHintsComponent.MajorVersion",
-      info.version.components()[0]);
 
   hints_component_info_.emplace(info.version, info.path);
   for (auto& observer : observers_) {

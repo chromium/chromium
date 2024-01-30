@@ -1118,14 +1118,14 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
-<histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion"
+<histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion2"
     units="major version number" expires_after="2024-07-14">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Records the major version of the Optimization Hints component that was
     pushed to the client. This will be recorded at startup and when a new
-    component is received.
+    component is received each time the component was loaded.
   </summary>
 </histogram>
 
