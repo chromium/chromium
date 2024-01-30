@@ -14,12 +14,12 @@
 #include "base/system/system_monitor.h"
 #include "base/win/wrapped_window_proc.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "ui/gfx/win/singleton_hwnd.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace media {
 
 namespace {
-const wchar_t kWindowClassName[] = L"Chrome_SystemMessageWindow";
-
 // A static map from a device category guid to base::SystemMonitor::DeviceType.
 struct DeviceCategoryToType {
   const GUID device_category;
@@ -90,26 +90,16 @@ class SystemMessageWindowWin::DeviceNotifications {
 };
 
 SystemMessageWindowWin::SystemMessageWindowWin() {
-  WNDCLASSEX window_class;
-  base::win::InitializeWindowClass(
-      kWindowClassName,
-      &base::win::WrappedWindowProc<SystemMessageWindowWin::WndProcThunk>, 0, 0,
-      0, NULL, NULL, NULL, NULL, NULL, &window_class);
-  instance_ = window_class.hInstance;
-  ATOM clazz = RegisterClassEx(&window_class);
-  DCHECK(clazz);
-
-  window_ =
-      CreateWindow(kWindowClassName, 0, 0, 0, 0, 0, 0, 0, 0, instance_, 0);
-  SetWindowLongPtr(window_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-  device_notifications_ = std::make_unique<DeviceNotifications>(window_);
+  // base:Unretained() is safe because the observer handles the correct cleanup
+  // if either the SingletonHwnd or forwarded object is destroyed first.
+  singleton_hwnd_observer_ =
+      std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
+          &SystemMessageWindowWin::WndProc, base::Unretained(this)));
+  device_notifications_ = std::make_unique<DeviceNotifications>(
+      gfx::SingletonHwnd::GetInstance()->hwnd());
 }
 
 SystemMessageWindowWin::~SystemMessageWindowWin() {
-  if (window_) {
-    DestroyWindow(window_);
-    UnregisterClass(kWindowClassName, instance_);
-  }
 }
 
 LRESULT SystemMessageWindowWin::OnDeviceChange(UINT event_type, LPARAM data) {
@@ -156,18 +146,13 @@ LRESULT SystemMessageWindowWin::OnDeviceChange(UINT event_type, LPARAM data) {
   return TRUE;
 }
 
-LRESULT CALLBACK SystemMessageWindowWin::WndProc(HWND hwnd,
-                                                 UINT message,
-                                                 WPARAM wparam,
-                                                 LPARAM lparam) {
-  switch (message) {
-    case WM_DEVICECHANGE:
-      return OnDeviceChange(static_cast<UINT>(wparam), lparam);
-    default:
-      break;
+void SystemMessageWindowWin::WndProc(HWND hwnd,
+                                     UINT message,
+                                     WPARAM wparam,
+                                     LPARAM lparam) {
+  if (message == WM_DEVICECHANGE) {
+    OnDeviceChange(static_cast<UINT>(wparam), lparam);
   }
-
-  return ::DefWindowProc(hwnd, message, wparam, lparam);
 }
 
 }  // namespace media
