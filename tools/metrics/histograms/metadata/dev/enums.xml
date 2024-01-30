@@ -757,6 +757,10 @@ Called by update_protocol_commands_enum.py.-->
   <int value="123" label="Self-XSS warning dialog shown"/>
   <int value="124" label="Self-XSS pasting allowed in console"/>
   <int value="125" label="Self-XSS pasting allowed in dialog"/>
+  <int value="126" label="Toggle Emulate Focused Page from Styles tab on"/>
+  <int value="127" label="Toggle Emulate Focused Page from Styles tab off"/>
+  <int value="128" label="Toggle Emulate Focused Page from Rendering tab"/>
+  <int value="129" label="Toggle Emulate Focused Page from Command Menu"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
