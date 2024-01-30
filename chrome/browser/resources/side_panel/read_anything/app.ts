@@ -39,9 +39,7 @@ interface VoicesByLanguage {
 }
 
 // TODO(crbug.com/1465029): Remove colors defined here once the Views toolbar is
-// removed. Note: if crbug.com/1516972 still exists, these colors will need
-// to remain to provide a workaround when color ids are blocked from being
-// loaded on first launch.
+// removed.
 const style = getComputedStyle(document.body);
 const darkThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
@@ -49,10 +47,6 @@ const lightThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
 const yellowThemeBackgroundSkColor =
     rgbToSkColor(style.getPropertyValue('--google-yellow-100-rgb'));
-const blueThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-blue-100-rgb'));
-const lightForegroundSkColor = rgbToSkColor('31,31,31');
-const darkForegroundSkColor = rgbToSkColor('227,227,227');
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const darkThemeLinkColors: LinkColor = {
@@ -222,15 +216,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   constructor() {
     super();
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
-      // TODO(crbug.com/1516972): This does not load stylesheets for
-      // chrome-untrusted when Chrome is first launched until a new tab is
-      // opened. #refreshColorsCss hangs and the Promise never resolves until
-      // a new tab is opened. #updateThemeWhenColorTokensAreUnavailable gives
-      // a workaround for Reading Mode to allow colors to work when this
-      // happens.
-      // Longer term, we should investigate if there's a way to force a
-      // stylesheet to load when we detect that we've entered the blocked
-      // state.
       ColorChangeUpdater.forDocument().start();
     }
   }
@@ -1011,26 +996,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  areColorTokensUnavailable(): boolean {
-    // This check is arbitrarily for color-read-anything-text-selection-dark-
-    // checking for any color token defined in
-    // chrome/browser/ui/color/chrome_color_id.h will work.
-    return !window.getComputedStyle(document.documentElement)
-                .getPropertyValue('--color-read-anything-text-selection-dark');
-  }
-
   // TODO(crbug.com/1465029): This method should be renamed to updateTheme()
   // and replace the one below once we've removed the Views toolbar.
   updateThemeFromWebUi(colorSuffix: string) {
     this.currentColorSuffix_ = colorSuffix;
-    // Check if some property is undefined. If it is, Reading Mode is in a
-    // state where stylesheets cannot be loaded without opening a new tab.
-    // When this happens, default to using predefined colors. If we do nothing,
-    // Reading Mode colors stop working and the overall experience feels broken.
-    if (this.areColorTokensUnavailable()) {
-      this.updateThemeWhenColorTokensAreUnavailable(colorSuffix);
-      return;
-    }
     const emptyStateBodyColor = colorSuffix ?
         this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
         'var(--color-side-panel-card-secondary-foreground)';
@@ -1102,68 +1071,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return `var(--google-grey-800)`;
   }
 
-  // When Chrome is first launched, it's possible for Reading Mode to be opened
-  // in a state when stylesheets haven't been loaded and will never be loaded
-  // until a new tab is opened and Reading Mode is reopened. When Reading Mode
-  // is in this state, color tokens defined in
-  // chrome/browser/ui/color/chrome_color_id.h appear as undefined until the
-  // new tab is opened. When in this state without a workaround, some colors
-  // like selection colors don't work and theme colors cannot be changed. This
-  // method serves as a workaround by using colors defined in this file,
-  // instead of in chrome_color_id.h.
-  // This means that Chrome Refresh colors won't work when the theme is set to
-  // default until a new tab is opened, but this is preferable to all colors
-  // being broken.
-  // This method should only be called in the buggy state. Otherwise,
-  // use updateTheme for the Views toolbar or updateThemeForWebUI for the WebUI
-  // toolbar.
-  // See b/293464821#comment4 or crbug.com/1516972 for more details.
-  updateThemeWhenColorTokensAreUnavailable(colorSuffix: string) {
-    const foregroundColor =
-        this.getForegroundColorForUnavailableColorTokens(colorSuffix);
-    const backgroundColor =
-        this.getBackgroundColorForUnavailableColorTokens(colorSuffix);
-    this.updateThemeWithColors(foregroundColor, backgroundColor);
-
-    // TODO(crbug.com/1474951): Also handle Read Aloud-specific colors, such
-    // as the Read Aloud highlights, when in this state.
-  }
-
-  getBackgroundColorForUnavailableColorTokens(colorSuffix: string): SkColor {
-    if (colorSuffix.includes('light')) {
-      return lightThemeBackgroundSkColor;
-    }
-
-    if (colorSuffix.includes('dark')) {
-      return darkThemeBackgroundSkColor;
-    }
-
-    if (colorSuffix.includes('yellow')) {
-      return yellowThemeBackgroundSkColor;
-    }
-    if (colorSuffix.includes('blue')) {
-      return blueThemeBackgroundSkColor;
-    }
-
-    return lightThemeBackgroundSkColor;
-  }
-
-  getForegroundColorForUnavailableColorTokens(colorSuffix: string): SkColor {
-    if (colorSuffix.includes('dark')) {
-      return darkForegroundSkColor;
-    }
-    return lightForegroundSkColor;
-  }
-
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readingMode.foregroundColor};
     const backgroundColor:
         SkColor = {value: chrome.readingMode.backgroundColor};
-    this.updateThemeWithColors(foregroundColor, backgroundColor);
-  }
-
-  updateThemeWithColors(foregroundColor: SkColor, backgroundColor: SkColor) {
     const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({
