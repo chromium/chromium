@@ -1613,9 +1613,6 @@ void BrowserAutofillManager::DidShowSuggestions(
 }
 
 void BrowserAutofillManager::OnHidePopupImpl() {
-  if (!IsAutofillEnabled())
-    return;
-
   single_field_form_fill_router_->CancelPendingQueries();
   client().HideAutofillPopup(PopupHidingReason::kRendererEvent);
   if (fast_checkout_delegate_) {
