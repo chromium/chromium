@@ -224,9 +224,13 @@ void InterestGroupLazyFiller::HandleUseBiddingSignalsPrioritization(
   self->v8_logger_->LogConsoleWarning(
       "interestGroup.useBiddingSignalsPrioritization is deprecated."
       " Please use interestGroup.enableBiddingSignalsPrioritization instead.");
-  SetResult(info, v8::Boolean::New(
-                      isolate, self->bidder_worklet_non_shared_params_
-                                   ->enable_bidding_signals_prioritization));
+  if (self->bidder_worklet_non_shared_params_) {
+    SetResult(info, v8::Boolean::New(
+                        isolate, self->bidder_worklet_non_shared_params_
+                                     ->enable_bidding_signals_prioritization));
+  } else {
+    SetResult(info, v8::Null(isolate));
+  }
 }
 
 BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(
