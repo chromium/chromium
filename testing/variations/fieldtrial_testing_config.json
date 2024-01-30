@@ -9458,6 +9458,21 @@
             ]
         }
     ],
+    "IOSTabGridAlwaysBounce": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridAlwaysBounce"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabGridCompositionalLayout": [
         {
             "platforms": [

@@ -268,6 +268,10 @@ BASE_DECLARE_FEATURE(kDynamicThemeColor);
 // toolbars.
 BASE_DECLARE_FEATURE(kDynamicBackgroundColor);
 
+// Feature flag enabling the Tab Grid to always bounce (even when the content
+// fits the screen already).
+BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
+
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 

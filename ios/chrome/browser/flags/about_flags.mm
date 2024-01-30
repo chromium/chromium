@@ -1590,6 +1590,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncRememberCustomPassphraseAfterSignoutDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncRememberCustomPassphraseAfterSignout)},
+    {"tab-grid-always-bounce", flag_descriptions::kTabGridAlwaysBounceName,
+     flag_descriptions::kTabGridAlwaysBounceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridAlwaysBounce)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

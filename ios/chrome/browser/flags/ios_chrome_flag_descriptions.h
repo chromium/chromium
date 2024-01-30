@@ -845,6 +845,11 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableSessionSerializationOptimizationsName[];
 extern const char kEnableSessionSerializationOptimizationsDescription[];
 
+// Title and description for the flag to let the Tab Grid always bounce (even
+// when the content fits the screen already).
+extern const char kTabGridAlwaysBounceName[];
+extern const char kTabGridAlwaysBounceDescription[];
+
 // Title and description for the tab grid new compositional layout.
 extern const char kTabGridCompositionalLayoutName[];
 extern const char kTabGridCompositionalLayoutDescription[];
