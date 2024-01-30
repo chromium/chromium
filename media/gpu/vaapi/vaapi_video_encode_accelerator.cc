@@ -101,7 +101,8 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
       // performance is affected.
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
+          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);

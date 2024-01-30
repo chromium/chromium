@@ -110,7 +110,8 @@ scoped_refptr<base::SequencedTaskRunner> CreateEncoderTaskRunner() {
          base::MayBlock()});
   } else {
     return base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::WithBaseSyncPrimitives(), base::MayBlock()},
+        {base::WithBaseSyncPrimitives(), base::MayBlock(),
+         base::TaskPriority::USER_VISIBLE},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   }
 }
