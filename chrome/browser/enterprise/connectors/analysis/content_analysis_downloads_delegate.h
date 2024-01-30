@@ -42,6 +42,9 @@ class ContentAnalysisDownloadsDelegate
 
   std::optional<GURL> GetCustomLearnMoreUrl() const override;
 
+  std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+  GetCustomRuleMessageRanges() const override;
+
   bool BypassRequiresJustification() const override;
   std::u16string GetBypassJustificationLabel() const override;
 

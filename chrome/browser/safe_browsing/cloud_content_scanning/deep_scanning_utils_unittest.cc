@@ -106,11 +106,11 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   RecordDeepScanMetrics(is_cloud(), access_point(), kDuration, kTotalBytes,
                         result(),
                         enterprise_connectors::ContentAnalysisResponse());
-  RecordDeepScanMetrics(is_cloud(), access_point(), kDuration, kTotalBytes,
-                        result(),
-                        SimpleContentAnalysisResponseForTesting(
-                            /*dlp_success*/ true,
-                            /*malware_success*/ std::nullopt));
+  RecordDeepScanMetrics(
+      is_cloud(), access_point(), kDuration, kTotalBytes, result(),
+      SimpleContentAnalysisResponseForTesting(
+          /*dlp_success*/ true,
+          /*malware_success*/ std::nullopt, /*has_custom_rule_message*/ false));
   for (const std::string& verdict : {"malware", "uws", "safe"}) {
     enterprise_connectors::ContentAnalysisResponse response;
     auto* malware_result = response.add_results();

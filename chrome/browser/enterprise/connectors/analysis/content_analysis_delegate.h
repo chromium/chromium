@@ -190,9 +190,16 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // "CancelledByUser" metrics should not be recorded.
   void Cancel(bool warning) override;
 
+  // Returns both rule-based and policy-based custom message without the prefix
+  // if DialogCustomRuleMessageEnabled flag enabled.
+  // TODO(b/322999022) Cleanup comments after custom rule message finch flag
+  // experiment.
   std::optional<std::u16string> GetCustomMessage() const override;
 
   std::optional<GURL> GetCustomLearnMoreUrl() const override;
+
+  std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+  GetCustomRuleMessageRanges() const override;
 
   bool BypassRequiresJustification() const override;
 
@@ -360,8 +367,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Updates `final_result_` following the precedence established by the
   // FinalResult enum.
-  void UpdateFinalResult(FinalContentAnalysisResult message,
-                         const std::string& tag);
+  void UpdateFinalResult(
+      FinalContentAnalysisResult message,
+      const std::string& tag,
+      const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+          custom_rule_message);
 
   // Send an acknowledgement to the service provider of the final result
   // for the requests of this ContentAnalysisDelegate instance.
@@ -483,6 +493,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   std::string page_content_type_;
 
   base::TimeTicks upload_start_time_;
+
+  // Custom message for rule.
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_rule_message_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };

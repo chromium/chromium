@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -208,11 +209,23 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
 
 std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
+  // Rule-based custom messages take precedence over policy-based.
+  if (IsDialogCustomRuleMessageEnabled()) {
+    std::u16string custom_rule_message =
+        GetCustomRuleString(custom_rule_message_);
+    if (!custom_rule_message.empty()) {
+      return custom_rule_message;
+    }
+  }
+
   auto element = data_.settings.tags.find(final_result_tag_);
   if (element != data_.settings.tags.end() &&
       !element->second.custom_message.message.empty()) {
-    return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                      element->second.custom_message.message);
+    return IsDialogCustomRuleMessageEnabled()
+               ? element->second.custom_message.message
+               : l10n_util::GetStringFUTF16(
+                     IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                     element->second.custom_message.message);
   }
 
   return std::nullopt;
@@ -226,6 +239,16 @@ std::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
     return element->second.custom_message.learn_more_url;
   }
 
+  return std::nullopt;
+}
+
+std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+ContentAnalysisDelegate::GetCustomRuleMessageRanges() const {
+  std::vector<std::pair<gfx::Range, GURL>> custom_rule_message_ranges =
+      GetCustomRuleStyles(custom_rule_message_);
+  if (!custom_rule_message_ranges.empty()) {
+    return custom_rule_message_ranges;
+  }
   return std::nullopt;
 }
 
@@ -471,7 +494,8 @@ void ContentAnalysisDelegate::StringRequestCallback(
       CalculateEventResult(data_.settings, text_complies, should_warn));
 
   UpdateFinalResult(string_request_result_.final_result,
-                    string_request_result_.tag);
+                    string_request_result_.tag,
+                    string_request_result_.custom_rule_message);
 
   if (should_warn) {
     text_warning_ = true;
@@ -516,7 +540,8 @@ void ContentAnalysisDelegate::ImageRequestCallback(
       CalculateEventResult(data_.settings, image_complies, should_warn));
 
   UpdateFinalResult(image_request_result_.final_result,
-                    image_request_result_.tag);
+                    image_request_result_.tag,
+                    image_request_result_.custom_rule_message);
 
   if (should_warn) {
     image_warning_ = true;
@@ -541,7 +566,8 @@ void ContentAnalysisDelegate::FilesRequestCallback(
     if (result == FinalContentAnalysisResult::WARNING) {
       warned_file_indices_.push_back(index);
     }
-    UpdateFinalResult(result, results[index].tag);
+    UpdateFinalResult(result, results[index].tag,
+                      results[index].custom_rule_message);
   }
   files_request_results_ = std::move(results);
   files_request_complete_ = true;
@@ -603,7 +629,8 @@ void ContentAnalysisDelegate::PageRequestCallback(
       CalculateEventResult(data_.settings, result_.page_result, should_warn));
 
   UpdateFinalResult(request_handler_result.final_result,
-                    request_handler_result.tag);
+                    request_handler_result.tag,
+                    request_handler_result.custom_rule_message);
 
   if (should_warn) {
     page_warning_ = true;
@@ -929,10 +956,13 @@ void ContentAnalysisDelegate::RunCallback() {
 
 void ContentAnalysisDelegate::UpdateFinalResult(
     FinalContentAnalysisResult result,
-    const std::string& tag) {
+    const std::string& tag,
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message) {
   if (result < final_result_) {
     final_result_ = result;
     final_result_tag_ = tag;
+    custom_rule_message_ = custom_rule_message;
   }
 }
 

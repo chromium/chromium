@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -31,6 +32,12 @@ class ContentAnalysisDelegateBase {
   // Returns the custom "learn more" URL specified by the admin to display in
   // the dialog, or std::nullopt if there isn't any.
   virtual std::optional<GURL> GetCustomLearnMoreUrl() const = 0;
+
+  // Returns ranges and associated url link specified for the custom rule
+  // message specified by the admin to display in the dialog, or std::nullopt if
+  // there isn't any.
+  virtual std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+  GetCustomRuleMessageRanges() const = 0;
 
   // Returns true if the final verdict is from a type of analysis that requires
   // user justification to bypass, as per the connector policy.

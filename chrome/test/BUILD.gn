@@ -2985,6 +2985,7 @@ if (!is_android) {
           "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
           "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
         ]
+        deps += [ "../browser/enterprise/connectors/analysis:features" ]
       }
     }
 
@@ -3816,6 +3817,7 @@ if (!is_android) {
           "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_browsertest.cc",
         ]
         deps += [
+          "//chrome/browser/enterprise/connectors/analysis:features",
           "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/enterprise/buildflags",
         ]
@@ -9354,10 +9356,10 @@ test("unit_tests") {
       "../browser/safe_browsing/client_side_detection_service_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/binary_fcm_service_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_unittest.cc",
+      "../browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_utils_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/file_analysis_request_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/file_opening_job_unittest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/multipart_uploader_unittest.cc",
       "../browser/safe_browsing/download_protection/download_feedback_service_unittest.cc",
       "../browser/safe_browsing/download_protection/download_feedback_unittest.cc",
