@@ -14,27 +14,39 @@ class TranslateTest(unittest.TestCase):
   def testSimpleArray(self):
     """Tests a simple int32[]."""
     # pylint: disable=W0212
-    self.assertEquals(translate._MapKind("int32[]"), "a:i32")
+    self.assertEquals(
+        translate._MapKind(ast.Array(ast.Typename(ast.Identifier('int32')))),
+        "a:i32")
 
   def testAssociativeArray(self):
     """Tests a simple uint8{string}."""
     # pylint: disable=W0212
-    self.assertEquals(translate._MapKind("uint8{string}"), "m[s][u8]")
+    self.assertEquals(
+        translate._MapKind(
+            ast.Map(ast.Identifier('string'),
+                    ast.Typename(ast.Identifier('uint8')))), "m[s][u8]")
 
   def testLeftToRightAssociativeArray(self):
     """Makes sure that parsing is done from right to left on the internal kinds
        in the presence of an associative array."""
     # pylint: disable=W0212
-    self.assertEquals(translate._MapKind("uint8[]{string}"), "m[s][a:u8]")
+    self.assertEquals(
+        translate._MapKind(
+            ast.Map(
+                ast.Identifier('string'),
+                ast.Typename(ast.Array(ast.Typename(
+                    ast.Identifier('uint8')))))), "m[s][a:u8]")
 
   def testTranslateSimpleUnions(self):
     """Makes sure that a simple union is translated correctly."""
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Union(
-            "SomeUnion", None,
+            ast.Name("SomeUnion"), None,
             ast.UnionBody([
-                ast.UnionField("a", None, None, "int32"),
-                ast.UnionField("b", None, None, "string")
+                ast.UnionField(ast.Name("a"), None, None,
+                               ast.Typename(ast.Identifier("int32"))),
+                ast.UnionField(ast.Name("b"), None, None,
+                               ast.Typename(ast.Identifier("string")))
             ]))
     ])
 
@@ -54,8 +66,8 @@ class TranslateTest(unittest.TestCase):
     """Verifies _MapTreeForType() raises when passed two values with the same
        name."""
     methods = [
-        ast.Method('dup', None, None, ast.ParameterList(), None),
-        ast.Method('dup', None, None, ast.ParameterList(), None)
+        ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None),
+        ast.Method(ast.Name('dup'), None, None, ast.ParameterList(), None)
     ]
     with self.assertRaises(Exception):
       translate._ElemsOfType(methods, ast.Method, 'scope')
@@ -63,22 +75,33 @@ class TranslateTest(unittest.TestCase):
   def testAssociatedKinds(self):
     """Tests type spec translation of associated interfaces and requests."""
     # pylint: disable=W0212
-    self.assertEquals(translate._MapKind("rca<SomeInterface>?"),
-                      "?rca:x:SomeInterface")
+    self.assertEquals(
+        translate._MapKind(
+            ast.Typename(ast.Receiver(ast.Identifier('SomeInterface'),
+                                      associated=True),
+                         nullable=True)), "?rca:x:SomeInterface")
 
   def testSelfRecursiveUnions(self):
     """Verifies _UnionField() raises when a union is self-recursive."""
     tree = ast.Mojom(None, ast.ImportList(), [
-        ast.Union("SomeUnion", None,
-                  ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion")]))
+        ast.Union(
+            ast.Name("SomeUnion"), None,
+            ast.UnionBody([
+                ast.UnionField(ast.Name("a"), None, None,
+                               ast.Typename(ast.Identifier("SomeUnion")))
+            ]))
     ])
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
 
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Union(
-            "SomeUnion", None,
-            ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion?")]))
+            ast.Name("SomeUnion"), None,
+            ast.UnionBody([
+                ast.UnionField(
+                    ast.Name("a"), None, None,
+                    ast.Typename(ast.Identifier("SomeUnion"), nullable=True))
+            ]))
     ])
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
@@ -86,14 +109,16 @@ class TranslateTest(unittest.TestCase):
   def testDuplicateAttributesException(self):
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Union(
-            "FakeUnion",
+            ast.Name("FakeUnion"),
             ast.AttributeList([
-                ast.Attribute("key1", "value"),
-                ast.Attribute("key1", "value")
+                ast.Attribute(ast.Name("key1"), ast.Name("value")),
+                ast.Attribute(ast.Name("key1"), ast.Name("value"))
             ]),
             ast.UnionBody([
-                ast.UnionField("a", None, None, "int32"),
-                ast.UnionField("b", None, None, "string")
+                ast.UnionField(ast.Name("a"), None, None,
+                               ast.Typename(ast.Identifier("int32"))),
+                ast.UnionField(ast.Name("b"), None, None,
+                               ast.Typename(ast.Identifier("string")))
             ]))
     ])
     with self.assertRaises(Exception):
@@ -104,9 +129,10 @@ class TranslateTest(unittest.TestCase):
     # -128 is reserved for the empty representation in WTF::HashTraits.
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Enum(
-            "MyEnum", None,
+            ast.Name("MyEnum"), None,
             ast.EnumValueList([
-                ast.EnumValue('kReserved', None, '-128'),
+                ast.EnumValue(ast.Name('kReserved'), None,
+                              ast.Literal('int', '-128')),
             ]))
     ])
     with self.assertRaises(Exception) as context:
@@ -116,9 +142,10 @@ class TranslateTest(unittest.TestCase):
     # -127 is reserved for the deleted representation in WTF::HashTraits.
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Enum(
-            "MyEnum", None,
+            ast.Name("MyEnum"), None,
             ast.EnumValueList([
-                ast.EnumValue('kReserved', None, '-127'),
+                ast.EnumValue(ast.Name('kReserved'), None,
+                              ast.Literal('int', '-127')),
             ]))
     ])
     with self.assertRaises(Exception) as context:
@@ -128,10 +155,11 @@ class TranslateTest(unittest.TestCase):
     # Implicitly assigning a reserved value should also fail.
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Enum(
-            "MyEnum", None,
+            ast.Name("MyEnum"), None,
             ast.EnumValueList([
-                ast.EnumValue('kNotReserved', None, '-129'),
-                ast.EnumValue('kImplicitlyReserved', None, None),
+                ast.EnumValue(ast.Name('kNotReserved'), None,
+                              ast.Literal('int', '-129')),
+                ast.EnumValue(ast.Name('kImplicitlyReserved'), None, None),
             ]))
     ])
     with self.assertRaises(Exception) as context:
