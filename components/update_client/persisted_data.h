@@ -117,6 +117,15 @@ class PersistedData {
   virtual void SetProductVersion(const std::string& id,
                                  const base::Version& pv) = 0;
 
+  // These functions access the maximum previous product version for the
+  // specified |id|. Returns an empty version if the version is not found.
+  // It will only be set if |max_version| exceeds the the existing value.
+  virtual base::Version GetMaxPreviousProductVersion(
+      const std::string& id) const = 0;
+  virtual void SetMaxPreviousProductVersion(
+      const std::string& id,
+      const base::Version& max_version) = 0;
+
   // These functions access the fingerprint for the specified |id|.
   virtual std::string GetFingerprint(const std::string& id) const = 0;
   virtual void SetFingerprint(const std::string& id,

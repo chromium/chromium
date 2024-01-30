@@ -146,6 +146,11 @@ class ComponentUpdateService {
   // |app_id|. Returns kNullVersion if no suitable version is found.
   virtual base::Version GetRegisteredVersion(const std::string& app_id) = 0;
 
+  // Returns the max previous product version for the component associated with
+  // |app_id|. Returns kNullVersion if no suitable version is found.
+  virtual base::Version GetMaxPreviousProductVersion(
+      const std::string& app_id) = 0;
+
   // Add component to be checked for updates.
   virtual bool RegisterComponent(const ComponentRegistration& component) = 0;
 

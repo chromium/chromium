@@ -68,6 +68,17 @@ TEST(PersistedDataTest, Simple) {
   metadata->SetProductVersion("someappid", base::Version("1.0"));
   EXPECT_EQ(base::Version("1.0"), metadata->GetProductVersion("someappid"));
 
+  EXPECT_FALSE(metadata->GetMaxPreviousProductVersion("someappid").IsValid());
+  metadata->SetMaxPreviousProductVersion("someappid", base::Version("1.0"));
+  EXPECT_EQ(base::Version("1.0"),
+            metadata->GetMaxPreviousProductVersion("someappid"));
+  metadata->SetMaxPreviousProductVersion("someappid", base::Version("2.0"));
+  EXPECT_EQ(base::Version("2.0"),
+            metadata->GetMaxPreviousProductVersion("someappid"));
+  metadata->SetMaxPreviousProductVersion("someappid", base::Version("1.5"));
+  EXPECT_EQ(base::Version("2.0"),
+            metadata->GetMaxPreviousProductVersion("someappid"));
+
   EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
   metadata->SetFingerprint("someappid", "somefingerprint");
   EXPECT_STREQ("somefingerprint",

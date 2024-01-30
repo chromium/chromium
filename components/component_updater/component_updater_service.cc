@@ -148,6 +148,15 @@ base::Version CrxUpdateService::GetRegisteredVersion(
                                       : base::Version(kNullVersion);
 }
 
+base::Version CrxUpdateService::GetMaxPreviousProductVersion(
+    const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Version max_previous_product_version =
+      config_->GetPersistedData()->GetMaxPreviousProductVersion(app_id);
+  return max_previous_product_version.IsValid() ? max_previous_product_version
+                                                : base::Version(kNullVersion);
+}
+
 void CrxUpdateService::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CrxUpdateService starting up. "

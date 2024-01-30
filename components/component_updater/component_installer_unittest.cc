@@ -543,7 +543,8 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   auto registration_info =
       base::MakeRefCounted<ComponentInstaller::RegistrationInfo>();
   selected_component = installer->SelectComponentVersion(
-      base::Version("1.0.0.0"), base_dir, registration_info);
+      base::Version("1.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_TRUE(selected_component &&
               selected_component == base::Version("1.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("1.0.0.0"));
@@ -552,37 +553,58 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   registration_info =
       base::MakeRefCounted<ComponentInstaller::RegistrationInfo>();
   selected_component = installer->SelectComponentVersion(
-      base::Version("0.0.0.0"), base_dir, registration_info);
+      base::Version("0.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_TRUE(selected_component &&
               *selected_component == base::Version("7.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
 
   registration_info->version = base::Version("3.0.0.0");
   selected_component = installer->SelectComponentVersion(
-      base::Version("5.0.0.0"), base_dir, registration_info);
+      base::Version("5.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_TRUE(selected_component &&
               *selected_component == base::Version("5.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("5.0.0.0"));
 
   registration_info->version = base::Version("4.0.0.0");
   selected_component = installer->SelectComponentVersion(
-      base::Version("0.0.0.0"), base_dir, registration_info);
+      base::Version("0.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_TRUE(selected_component &&
               *selected_component == base::Version("7.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
 
   registration_info->version = base::Version("12.0.0.0");
   selected_component = installer->SelectComponentVersion(
-      base::Version("1.0.0.0"), base_dir, registration_info);
+      base::Version("1.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_FALSE(selected_component);
   ASSERT_EQ(registration_info->version, base::Version("12.0.0.0"));
 
   registration_info->version = base::Version("6.0.0.0");
   selected_component = installer->SelectComponentVersion(
-      base::Version("1.0.0.0"), base_dir, registration_info);
+      base::Version("1.0.0.0"), base::Version("0.0.0.0"), base_dir,
+      registration_info);
   ASSERT_TRUE(selected_component &&
               *selected_component == base::Version("7.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
+
+  // Case where there is a version downgrade.
+  registration_info->version = base::Version("8.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("1.0.0.0"), base::Version("8.0.0.0"), base_dir,
+      registration_info);
+  ASSERT_EQ(selected_component, base::Version("7.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
+
+  // New version available after downgrade. Use the new version.
+  registration_info->version = base::Version("9.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("1.0.0.0"), base::Version("8.0.0.0"), base_dir,
+      registration_info);
+  ASSERT_EQ(selected_component, std::nullopt);
+  ASSERT_EQ(registration_info->version, base::Version("9.0.0.0"));
 }
 
 TEST_F(ComponentInstallerTest, Uninstall) {

@@ -134,6 +134,10 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   base::Version GetProductVersion(const std::string& id) const override;
   void SetProductVersion(const std::string& id,
                          const base::Version& pv) override;
+  base::Version GetMaxPreviousProductVersion(
+      const std::string& id) const override;
+  void SetMaxPreviousProductVersion(const std::string& id,
+                                    const base::Version& max_version) override;
   std::string GetFingerprint(const std::string& id) const override;
   void SetFingerprint(const std::string& id, const std::string& fp) override;
   int GetDateLastActive(const std::string& id) const override;
