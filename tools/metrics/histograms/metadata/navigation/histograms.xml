@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
     enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
-    expires_after="2024-03-03">
+    expires_after="2024-09-03">
   <owner>xiaochenzh@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
