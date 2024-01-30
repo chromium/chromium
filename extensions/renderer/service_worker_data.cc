@@ -30,7 +30,6 @@ ServiceWorkerData::ServiceWorkerData(
       context_(context),
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // `bindings_system_` is null if `ExtensionAPIEnabledForServiceWorkerScript`
   // returns false. That means we aren't exposing any bindings to the service
   // worker, but we will have ServiceWorkerData for it so that the
@@ -41,12 +40,10 @@ ServiceWorkerData::ServiceWorkerData(
         base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-#endif
 }
 
 ServiceWorkerData::~ServiceWorkerData() = default;
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ServiceWorkerData::OnServiceWorkerRequest(
     mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver) {
   CHECK(bindings_system_);
@@ -99,7 +96,6 @@ mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
   }
   return renderer_automation_registry_remote_.get();
 }
-#endif
 
 mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
   // We allow access to mojom::RendererHost without a `bindings_system_`.
@@ -115,18 +111,12 @@ void ServiceWorkerData::Init() {
   if (!bindings_system_) {
     return;
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  WorkerThreadDispatcher::Get()->DidInitializeContext(
-      service_worker_version_id_);
-#else
   const int thread_id = content::WorkerThread::GetCurrentId();
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
       context_->GetExtensionID(), service_worker_version_id_, thread_id,
       event_dispatcher_receiver_.BindNewEndpointAndPassRemote());
-#endif
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                       base::Value::List event_args,
                                       DispatchEventCallback callback) {
@@ -168,7 +158,5 @@ void ServiceWorkerData::DispatchOnConnect(
                           // Render frames do not matter.
                           nullptr, std::move(callback));
 }
-
-#endif
 
 }  // namespace extensions

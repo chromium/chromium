@@ -7155,8 +7155,6 @@ static_library("browser") {
       "renderer_context_menu/context_menu_content_type_extension_popup.h",
       "renderer_context_menu/context_menu_content_type_platform_app.cc",
       "renderer_context_menu/context_menu_content_type_platform_app.h",
-      "renderer_host/chrome_extension_message_filter.cc",
-      "renderer_host/chrome_extension_message_filter.h",
       "speech/extension_api/tts_engine_extension_api.cc",
       "speech/extension_api/tts_engine_extension_api.h",
       "speech/extension_api/tts_extension_api.cc",

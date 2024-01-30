@@ -11,7 +11,6 @@
 #include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
@@ -26,15 +25,6 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     content::RenderProcessHost* host) {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  associated_registry->AddInterface<mojom::EventRouter>(
-      base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<mojom::ServiceWorkerHost>(
-      base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
-  associated_registry->AddInterface<mojom::RendererAutomationRegistry>(
-      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                          host->GetID()));
-#endif
 }
 
 void ChromeContentBrowserClientExtensionsPart::
@@ -47,7 +37,6 @@ void ChromeContentBrowserClientExtensionsPart::
   associated_registry.AddInterface<mojom::RendererHost>(
       base::BindRepeating(&RendererStartupHelper::BindForRenderer,
                           service_worker_version_info.process_id));
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   associated_registry.AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
@@ -56,7 +45,6 @@ void ChromeContentBrowserClientExtensionsPart::
                           service_worker_version_info.process_id));
   associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, service_worker_version_info.process_id));
-#endif
 }
 
 void ChromeContentBrowserClientExtensionsPart::

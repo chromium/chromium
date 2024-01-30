@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/renderer_host/chrome_extension_message_filter.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -49,14 +48,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
@@ -66,7 +62,6 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
@@ -803,23 +798,6 @@ base::AutoReset<const GURL*> ChromeContentBrowserClientExtensionsPart::
     AllowServiceWorkerUnregistrationForScopeForTesting(const GURL* scope) {
   return base::AutoReset<const GURL*>(
       &g_allow_service_worker_unregistration_scope, scope);
-}
-
-void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
-    content::RenderProcessHost* host) {
-  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
-  if (AreExtensionsDisabledForProfile(profile)) {
-    return;
-  }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  host->AddFilter(new ChromeExtensionMessageFilter(profile));
-  int id = host->GetID();
-  host->AddFilter(new ExtensionMessageFilter(id, profile));
-  host->AddFilter(new ExtensionServiceWorkerMessageFilter(
-      id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
-  host->AddFilter(new MessagingAPIMessageFilter(id, profile));
-#endif
 }
 
 void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
