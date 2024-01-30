@@ -56,6 +56,8 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
   std::vector<tab_groups::TabGroupColorId> _colorIDList;
   // Default color.
   tab_groups::TabGroupColorId _defaultColor;
+  // StackView which contains all bottom views.
+  UIStackView* _bottomStackView;
 }
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
@@ -149,12 +151,18 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
   UIView* colorsView = [self listOfColorView];
   UIButton* creationButton = [self configuredCreateGroupButton];
   UIButton* cancelButton = [self configuredCancelButton];
+
+  _bottomStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ colorsView, creationButton, cancelButton ]];
+  _bottomStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _bottomStackView.axis = UILayoutConstraintAxisVertical;
+  [_bottomStackView setCustomSpacing:kColorListBottomMargin
+                           afterView:colorsView];
+
   [self.view addSubview:dotAndFieldContainer];
   [self.view addSubview:snapshotsContainer];
   [self.view addLayoutGuide:snapshotsContainerLayoutGuide];
-  [self.view addSubview:colorsView];
-  [self.view addSubview:creationButton];
-  [self.view addSubview:cancelButton];
+  [self.view addSubview:_bottomStackView];
 
   [NSLayoutConstraint activateConstraints:@[
     [dotAndFieldContainer.leadingAnchor
@@ -166,34 +174,13 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
     [dotAndFieldContainer.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
-    [cancelButton.bottomAnchor
+    [_bottomStackView.bottomAnchor
         constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
                        constant:-kButtonsMargin],
-    [cancelButton.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [cancelButton.leadingAnchor
+    [_bottomStackView.leadingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kHorizontalMargin],
-    [cancelButton.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kHorizontalMargin],
-    [creationButton.bottomAnchor
-        constraintEqualToAnchor:cancelButton.topAnchor],
-    [creationButton.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [creationButton.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kHorizontalMargin],
-    [creationButton.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kHorizontalMargin],
-    [colorsView.bottomAnchor constraintEqualToAnchor:creationButton.topAnchor
-                                            constant:-kColorListBottomMargin],
-    [colorsView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    [colorsView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kHorizontalMargin],
-    [colorsView.trailingAnchor
+    [_bottomStackView.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
     [snapshotsContainerLayoutGuide.topAnchor
@@ -390,6 +377,10 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
 
 // Dismisses the current view.
 - (void)dismissViewController {
+  // Hide the stack view before dismissing the view. The keyboard dismissing
+  // animation is longer than the view one, and element attached to the keyboard
+  // are still visible for a frame after the end of the view animation.
+  _bottomStackView.hidden = YES;
   [_tabGroupsHandler hideTabGroupCreation];
 }
 
