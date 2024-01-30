@@ -1193,7 +1193,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.PageLoad.TimeSinceActive" units="ms"
+<histogram name="Tabs.PageLoad.TimeSinceActive2" units="ms"
     expires_after="2024-07-07">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -1203,7 +1203,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.PageLoad.TimeSinceCreated" units="ms"
+<histogram name="Tabs.PageLoad.TimeSinceCreated2" units="ms"
     expires_after="2024-07-07">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
