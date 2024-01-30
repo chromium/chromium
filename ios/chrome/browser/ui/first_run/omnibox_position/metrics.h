@@ -8,6 +8,10 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+}  // namespace segmentation_platform
+
 // Enum for the IOS.Omnibox.Promo.Events histogram.
 // Keep in sync with "OmniboxPositionChoiceScreenEvents".
 // LINT.IfChange
@@ -45,9 +49,14 @@ void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event,
 /// `toolbar_type`: The selected toolbar for the omnibox.
 /// `is_default`: Whether the selected option is the default option.
 /// `is_first_run`: Whether the screen is presented during first run.
-void RecordSelectedPosition(ToolbarType toolbar_type,
-                            BOOL is_default,
-                            BOOL is_first_run);
+/// `device_switcher_result_dispatcher`: Used to classify user as Safari
+/// switcher.
+void RecordSelectedPosition(
+    ToolbarType toolbar_type,
+    BOOL is_default,
+    BOOL is_first_run,
+    segmentation_platform::DeviceSwitcherResultDispatcher*
+        device_switcher_result_dispatcher);
 
 /// Records the time `elapsed` between the screen show and dismiss.
 void RecordTimeOpen(base::TimeDelta elapsed, BOOL is_first_run);

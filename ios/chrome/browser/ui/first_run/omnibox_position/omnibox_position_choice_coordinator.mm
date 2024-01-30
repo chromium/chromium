@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -72,6 +73,11 @@
   _mediator.originalPrefService = self.browser->GetBrowserState()
                                       ->GetOriginalChromeBrowserState()
                                       ->GetPrefs();
+  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+    _mediator.deviceSwitcherResultDispatcher =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForBrowserState(self.browser->GetBrowserState());
+  }
 
   _viewController =
       [[OmniboxPositionChoiceViewController alloc] initWithFirstRun:_firstRun];

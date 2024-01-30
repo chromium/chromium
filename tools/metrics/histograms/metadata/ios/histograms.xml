@@ -1814,6 +1814,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="IOS.Omnibox.Promo.SelectedPosition.{Context}.{OmniboxDeviceSwitcherResult}"
+    enum="OmniboxPromoSelectedPositions" expires_after="2024-05-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the selected omnibox position when the promo is presented during
+    {Context}. Also records whether the selected position is the default one.
+    Record in a different buckets depending on omnibox device switcher result,
+    current classification is {OmniboxDeviceSwitcherResult}.
+  </summary>
+  <token key="Context">
+    <variant name="FRE" summary="FRE"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
+  <token key="OmniboxDeviceSwitcherResult">
+    <variant name="IsSwitcher" summary="safari switcher"/>
+    <variant name="NotNew" summary="not a new user"/>
+    <variant name="NotSwitcher" summary="not safari switcher"/>
+    <variant name="Unavailable" summary="result unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Omnibox.Promo.TimeOpen.{Context}" units="ms"
     expires_after="2024-05-31">
   <owner>christianxu@chromium.org</owner>
