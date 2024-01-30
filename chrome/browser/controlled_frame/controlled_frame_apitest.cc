@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/service_worker_apitest.h"
@@ -53,11 +54,12 @@ const content::EvalJsResult CreateContextMenuItem(
   return content::EvalJs(app_contents, content::JsReplace(R"(
       (async function() {
         const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
-          return 'FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.create is undefined';
-        }
         return await new Promise((resolve, reject) => {
+          if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
+            reject('FAIL: frame, frame.contextMenus, or ' +
+                'frame.contextMenus.create is undefined');
+            return;
+          }
           frame.contextMenus.create(
               { title: $2, id: $1 },
               () => { resolve('SUCCESS'); });
@@ -74,12 +76,13 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
   return content::EvalJs(app_contents, content::JsReplace(R"(
     (async function() {
       const frame = document.getElementsByTagName('controlledframe')[0];
+      return await new Promise((resolve, reject) =>{
         if (!frame || !frame.contextMenus || !frame.contextMenus.update) {
-          return 'FAIL: frame, frame.contextMenus, or ' +
-              'frame.contextMenus.update is undefined';
+          reject('FAIL: frame, frame.contextMenus, or ' +
+              'frame.contextMenus.update is undefined');
+          return;
         }
 
-      return await new Promise((resolve, reject) =>{
         frame.contextMenus.update(
             /*id=*/$1,
             { title: $2 },
@@ -95,13 +98,14 @@ const content::EvalJsResult RemoveContextMenuItem(
     const std::string& id) {
   return content::EvalJs(app_contents, content::JsReplace(R"(
     (async function() {
-      const frame = document.getElementsByTagName('controlledframe')[0];
-      if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
-        return 'FAIL: frame, frame.contextMenus, or ' +
-            'frame.contextMenus.remove is undefined';
-      }
-
       return await new Promise((resolve, reject) =>{
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
+          reject('FAIL: frame, frame.contextMenus, or ' +
+              'frame.contextMenus.remove is undefined');
+          return;
+        }
+
         frame.contextMenus.remove(
             /*id=*/$1,
             () => { resolve('SUCCESS'); });
@@ -115,13 +119,14 @@ const content::EvalJsResult RemoveAllContextMenuItems(
     content::WebContents* app_contents) {
   return content::EvalJs(app_contents, R"(
     (async function() {
-      const frame = document.getElementsByTagName('controlledframe')[0];
-      if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
-        return 'FAIL: frame, frame.contextMenus, or ' +
-            'frame.contextMenus.removeAll is undefined';
-      }
-
       return await new Promise((resolve, reject) =>{
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
+          reject('FAIL: frame, frame.contextMenus, or ' +
+              'frame.contextMenus.removeAll is undefined');
+          return;
+        }
+
         frame.contextMenus.removeAll(() => { resolve('SUCCESS'); });
       });
     })();
@@ -130,55 +135,53 @@ const content::EvalJsResult RemoveAllContextMenuItems(
 
 const content::EvalJsResult SetBackgroundColorToWhite(
     content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, content::JsReplace(
-                                           R"(
+  return content::EvalJs(app_contents, R"(
     (function() {
       document.body.style.backgroundColor = 'white';
       return 'SUCCESS';
     })();
-  )"));
+  )");
 }
 
 const content::EvalJsResult ExecuteScriptRedBackgroundCode(
     content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, content::JsReplace(
-                                           R"(
+  return content::EvalJs(app_contents, R"(
     (async function() {
       return await new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.request) {
           reject('FAIL');
+          return;
         }
         frame.executeScript(
           {code: "document.body.style.backgroundColor = 'red';"},
           () => { resolve('SUCCESS') });
       });
     })();
-  )"));
+  )");
 }
 
 const content::EvalJsResult ExecuteScriptRedBackgroundFile(
     content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, content::JsReplace(
-                                           R"(
+  return content::EvalJs(app_contents, R"(
     (async function() {
       return await new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.request) {
           reject('FAIL');
+          return;
         }
         frame.executeScript(
           {file: "/execute_script.input.js"},
           () => { resolve('SUCCESS') });
       });
     })();
-  )"));
+  )");
 }
 
 const content::EvalJsResult VerifyBackgroundColorIsRed(
     content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, content::JsReplace(
-                                           R"(
+  return content::EvalJs(app_contents, R"(
     (function() {
       if (document.body.style.backgroundColor === 'red') {
         return 'SUCCESS';
@@ -186,7 +189,7 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
         return 'FAIL';
       }
     })();
-  )"));
+  )");
 }
 
 // TODO(odejesush): Add tests for the rest of the Promise API methods.
@@ -215,9 +218,14 @@ class ControlledFrameApiTest
                                            const GURL& src) {
     static std::string kCreateControlledFrame = R"(
       (async function() {
-        const controlledframe = document.createElement('controlledframe');
-        controlledframe.setAttribute('src', $1);
         await new Promise((resolve, reject) => {
+          const controlledframe = document.createElement('controlledframe');
+          if (!('src' in controlledframe)) {
+            // Tag is undefined or generates a malformed response.
+            reject('FAIL');
+            return;
+          }
+          controlledframe.setAttribute('src', $1);
           controlledframe.addEventListener('loadstop', resolve);
           controlledframe.addEventListener('loadabort', reject);
           document.body.appendChild(controlledframe);
@@ -864,6 +872,96 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(guest_web_contents));
   EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
   EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(guest_web_contents));
+}
+
+class ControlledFrameAvailableChannelTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<version_info::Channel> {
+ protected:
+  ControlledFrameAvailableChannelTest() : channel_(GetParam()) {}
+  ~ControlledFrameAvailableChannelTest() = default;
+  ControlledFrameAvailableChannelTest(
+      const ControlledFrameAvailableChannelTest&) = delete;
+  ControlledFrameAvailableChannelTest& operator=(
+      const ControlledFrameAvailableChannelTest&) = delete;
+
+  void CheckIsAvailable() {
+    // Test if Controlled Frame is available.
+    const GURL& kOriginalControlledFrameUrl =
+        isolated_web_app_dev_server().GetURL("/controlled_frame.html");
+    ASSERT_TRUE(
+        CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+    EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
+  }
+
+ private:
+  extensions::ScopedCurrentChannel channel_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ControlledFrameAvailableChannels,
+                         ControlledFrameAvailableChannelTest,
+                         testing::Values(version_info::Channel::STABLE,
+                                         version_info::Channel::BETA,
+                                         version_info::Channel::DEV,
+                                         version_info::Channel::CANARY,
+                                         version_info::Channel::DEFAULT));
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameAvailableChannelTest, Test) {
+  CheckIsAvailable();
+}
+
+class ControlledFrameNotAvailableChannelTest
+    : public web_app::WebAppControllerBrowserTest,
+      public testing::WithParamInterface<version_info::Channel> {
+ protected:
+  ControlledFrameNotAvailableChannelTest() : channel_(GetParam()) {}
+  ~ControlledFrameNotAvailableChannelTest() = default;
+  ControlledFrameNotAvailableChannelTest(
+      const ControlledFrameNotAvailableChannelTest&) = delete;
+  ControlledFrameNotAvailableChannelTest& operator=(
+      const ControlledFrameNotAvailableChannelTest&) = delete;
+
+  [[nodiscard]] bool IsControlledFramePresent(
+      content::WebContents* web_contents) {
+    return ExecJs(web_contents, R"(
+      (async function() {
+        return await new Promise((resolve, reject) => {
+          const controlledframe = document.createElement('controlledframe');
+          if (('src' in controlledframe)) {
+            // Tag is defined.
+            resolve('SUCCESS');
+          } else {
+            reject('FAIL');
+          }
+        });
+      })();
+    )");
+  }
+
+  void CheckIsNotAvailable() {
+    // Test if Controlled Frame is not available.
+    const GURL start_url("https://app.site.test/example/index");
+    const webapps::AppId app_id = InstallPWA(start_url);
+    content::WebContents* app_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    ASSERT_FALSE(IsControlledFramePresent(app_contents));
+  }
+
+ private:
+  extensions::ScopedCurrentChannel channel_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ControlledFrameNotAvailableChannels,
+                         ControlledFrameNotAvailableChannelTest,
+                         testing::Values(version_info::Channel::STABLE,
+                                         version_info::Channel::BETA,
+                                         version_info::Channel::DEV,
+                                         version_info::Channel::CANARY,
+                                         version_info::Channel::DEFAULT));
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameNotAvailableChannelTest, Test) {
+  CheckIsNotAvailable();
 }
 
 }  // namespace controlled_frame

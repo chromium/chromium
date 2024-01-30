@@ -31,6 +31,27 @@ bool IsRunningInKioskMode() {
 
 namespace controlled_frame {
 
+// |AvailabilityCheck()| inspects the current environment to determine whether
+// ControlledFrame or its dependencies should be made available to that
+// environment. The function is configured using |CreateAvailabilityCheckMap()|
+// which assigns the function to each of the Controlled Frame-associated
+// features. Those features are defined in and provided by the extensions
+// features system. For Controlled Frame to work in a given channel, all of the
+// features Controlled Frame depends upon and Controlled Frame itself must be
+// available in that channel. See |GetControlledFrameFeatureList()|.
+//
+// |AvailabilityCheck()| will be called by
+// |SimpleFeature::IsAvailableToContextImpl()| once that function determines
+// that the feature has a "delegated availability check" and runs the check that
+// was installed by |CreateAvailabilityCheckMap()|.
+//
+// SimpleFeature is defined in //extensions/common/ and is called by code
+// defined by //extensions/browser/ and //extensions/renderer/, appearing in
+// call stacks that originate in either the browser or renderer processes. In
+// the browser process, it may be called from contexts that have a
+// RendererFrameHost or a RendererProcessHost. In the renderer process, it is
+// called and checks for a process wide isolation setting and whether the
+// isolation flag is enabled for the process.
 bool AvailabilityCheck(const std::string& api_full_name,
                        const extensions::Extension* extension,
                        extensions::mojom::ContextType context,
