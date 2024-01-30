@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +52,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Mock private ViewStub mViewStub;
 
     @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mFetchSuggestionCallbackCaptor;
+    @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
 
     private Activity mActivity;
     private TabResumptionModuleView mModuleView;
@@ -169,6 +172,12 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(1, bundle.entries.size());
         Assert.assertEquals(entryValid, bundle.entries.get(0));
 
+        // Check image URL load request.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(mFetchImagePageUrlCaptor.capture(), any());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(entryValid.url, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
         // Simulate click (without UI) by calling the stored handler directly.
         Assert.assertEquals(0, mClickCount);
         Assert.assertEquals(null, mLastClickUrl);
@@ -215,5 +224,12 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(2, bundle.entries.size());
         Assert.assertEquals(entryNewest, bundle.entries.get(0));
         Assert.assertEquals(entryNewer, bundle.entries.get(1));
+
+        // Check image URL load request.
+        // TODO(crbug.com/1515325): Test load of second image URL once multi-tile support is added.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(mFetchImagePageUrlCaptor.capture(), any());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(entryNewest.url, mFetchImagePageUrlCaptor.getAllValues().get(0));
     }
 }

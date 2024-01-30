@@ -16,6 +16,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtils.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleView.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionTileContainerView.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionTileView.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/UrlImageProvider.java",
   ]
   deps = [
@@ -43,7 +45,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/tab_resumption_module_icon_background.xml",
+    "java/res/drawable/tab_resumption_module_ripple.xml",
     "java/res/layout/tab_resumption_module_layout.xml",
+    "java/res/layout/tab_resumption_module_single_tile_layout.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

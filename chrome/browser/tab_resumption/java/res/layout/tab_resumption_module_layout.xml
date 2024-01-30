@@ -28,5 +28,15 @@ found in the LICENSE file.
         android:singleLine="true"
         android:text="@string/tab_resumption_module_title"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:paddingLeft="@dimen/tab_resumption_module_tile_bleed"
+        android:paddingRight="@dimen/tab_resumption_module_tile_bleed" />
+
+    <org.chromium.chrome.browser.tab_resumption.TabResumptionTileContainerView
+        android:id="@+id/tab_resumption_module_tiles_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="vertical">
+    </org.chromium.chrome.browser.tab_resumption.TabResumptionTileContainerView>
 </org.chromium.chrome.browser.tab_resumption.TabResumptionModuleView>

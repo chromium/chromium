@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import android.content.res.Resources;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -12,6 +13,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeUnit;
 
 /** Utilities for the tab resumption module. */
 public class TabResumptionModuleUtils {
@@ -48,6 +51,35 @@ public class TabResumptionModuleUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Computes the string representation of how recent an event was, given the time delta.
+     *
+     * @param res Resources for string resource retrieval.
+     * @param timeDelta Time delta in milliseconds.
+     */
+    static String getRecencyString(Resources res, long timeDeltaMs) {
+        if (timeDeltaMs < 0) timeDeltaMs = 0;
+
+        long daysElapsed = TimeUnit.MILLISECONDS.toDays(timeDeltaMs);
+        long hoursElapsed = TimeUnit.MILLISECONDS.toHours(timeDeltaMs);
+        long minutesElapsed = TimeUnit.MILLISECONDS.toMinutes(timeDeltaMs);
+
+        if (daysElapsed > 0L) {
+            return res.getQuantityString(R.plurals.n_days_ago, (int) daysElapsed, daysElapsed);
+        }
+
+        if (hoursElapsed > 0L) {
+            return res.getQuantityString(R.plurals.n_hours_ago, (int) hoursElapsed, hoursElapsed);
+        }
+
+        if (minutesElapsed > 0L) {
+            return res.getQuantityString(
+                    R.plurals.n_minutes_ago, (int) minutesElapsed, minutesElapsed);
+        }
+
+        return res.getString(R.string.just_now);
     }
 
     /**

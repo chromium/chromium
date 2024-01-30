@@ -8,6 +8,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import android.content.res.Resources;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -31,6 +34,8 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 
+import java.util.concurrent.TimeUnit;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabResumptionModuleUtilsUnitTest {
@@ -49,6 +54,36 @@ public class TabResumptionModuleUtilsUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecencyString() {
+        Resources res = ApplicationProvider.getApplicationContext().getResources();
+        long dayInMs = TimeUnit.DAYS.toMillis(1);
+        Assert.assertEquals("just now", TabResumptionModuleUtils.getRecencyString(res, -1000000L));
+        Assert.assertEquals("just now", TabResumptionModuleUtils.getRecencyString(res, 0L));
+        Assert.assertEquals("just now", TabResumptionModuleUtils.getRecencyString(res, 59999L));
+        Assert.assertEquals("1 minute ago", TabResumptionModuleUtils.getRecencyString(res, 60000L));
+        Assert.assertEquals(
+                "1 minute ago", TabResumptionModuleUtils.getRecencyString(res, 119999L));
+        Assert.assertEquals(
+                "2 minutes ago", TabResumptionModuleUtils.getRecencyString(res, 120000L));
+        Assert.assertEquals(
+                "59 minutes ago", TabResumptionModuleUtils.getRecencyString(res, 3599999L));
+        Assert.assertEquals("1 hour ago", TabResumptionModuleUtils.getRecencyString(res, 3600000L));
+        Assert.assertEquals("1 hour ago", TabResumptionModuleUtils.getRecencyString(res, 7199999L));
+        Assert.assertEquals(
+                "2 hours ago", TabResumptionModuleUtils.getRecencyString(res, 7200000L));
+        Assert.assertEquals(
+                "23 hours ago", TabResumptionModuleUtils.getRecencyString(res, dayInMs - 1));
+        Assert.assertEquals("1 day ago", TabResumptionModuleUtils.getRecencyString(res, dayInMs));
+        Assert.assertEquals(
+                "1 day ago", TabResumptionModuleUtils.getRecencyString(res, dayInMs * 2 - 1));
+        Assert.assertEquals(
+                "2 days ago", TabResumptionModuleUtils.getRecencyString(res, dayInMs * 2));
+        Assert.assertEquals(
+                "100 days ago", TabResumptionModuleUtils.getRecencyString(res, dayInMs * 100));
     }
 
     @Test

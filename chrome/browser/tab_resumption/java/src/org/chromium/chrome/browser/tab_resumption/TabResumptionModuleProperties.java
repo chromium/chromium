@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 interface TabResumptionModuleProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
-    WritableObjectPropertyKey DATA_PROVIDER = new WritableObjectPropertyKey();
-    WritableObjectPropertyKey URL_IMAGE_PROVIDER = new WritableObjectPropertyKey();
-    WritableObjectPropertyKey CLICK_CALLBACK = new WritableObjectPropertyKey();
-    WritableObjectPropertyKey SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<TabResumptionDataProvider> DATA_PROVIDER =
+            new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<UrlImageProvider> URL_IMAGE_PROVIDER =
+            new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<SuggestionClickCallback> CLICK_CALLBACK =
+            new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<SuggestionBundle> SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {

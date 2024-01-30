@@ -1,0 +1,56 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tab_resumption;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.url.GURL;
+
+/**
+ * The view for a tab suggestion tile. These tile comes in two variants: A larger one for the
+ * "single-tile" case, and a smaller one for the "multi-tile" case.
+ */
+public class TabResumptionTileView extends RelativeLayout {
+    public TabResumptionTileView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    void destroy() {
+        setOnClickListener(null);
+    }
+
+    /**
+     * Assigns all texts for the "single-tile" case.
+     *
+     * @param preInfoText Info to show above main text.
+     * @param displayText Main text (page title).
+     * @param postInfoText Info to show below main text.
+     */
+    public void setSuggestionTextsSingle(
+            String preInfoText, String displayText, String postInfoText) {
+        ((TextView) findViewById(R.id.tile_pre_info_text)).setText(preInfoText);
+        ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
+        ((TextView) findViewById(R.id.tile_post_info_text)).setText(postInfoText);
+        setContentDescription(displayText);
+    }
+
+    /** Assigns the main URL image. */
+    public void setImageDrawable(Drawable drawable) {
+        ((ImageView) findViewById(R.id.tile_icon)).setImageDrawable(drawable);
+    }
+
+    /** Binds the click handler with an associated URL. */
+    public void bindSuggestionClickCallback(SuggestionClickCallback callback, GURL url) {
+        setOnClickListener(v -> callback.onSuggestionClick(url));
+    }
+}
