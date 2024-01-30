@@ -209,7 +209,8 @@ int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
 
 bool ShouldStartModelValidator() {
   return switches::ShouldValidateModel() ||
-         switches::ShouldValidateModelExecution();
+         switches::ShouldValidateModelExecution() ||
+         switches::GetOnDeviceValidationRequestOverride();
 }
 
 }  // namespace optimization_guide

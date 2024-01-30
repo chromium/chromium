@@ -46,6 +46,7 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
 class ModelQualityLogsUploaderService;
+class ModelValidatorKeyedService;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class PredictionManager;
@@ -190,6 +191,7 @@ class OptimizationGuideKeyedService
   friend class OptimizationGuideWebContentsObserver;
   friend class optimization_guide::ModelExecutionEnterprisePolicyBrowserTest;
   friend class optimization_guide::ModelExecutionLiveTest;
+  friend class optimization_guide::ModelValidatorKeyedService;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionModelStoreBrowserTestBase;

@@ -89,6 +89,14 @@ const char kModelOverride[] = "optimization-guide-model-override";
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
+// Enables the on-device model to run validation at startup after a delay. A
+// text file can be provided used as input for the validation job and an output
+// file path can be provided to write the response to.
+const char kOnDeviceValidationRequestOverride[] =
+    "ondevice-validation-request-override";
+const char kOnDeviceValidationWriteToFile[] =
+    "ondevice-validation-write-to-file";
+
 // Triggers validation of the model. Used for manual testing.
 const char kModelValidate[] = "optimization-guide-model-validate";
 
@@ -254,6 +262,22 @@ std::optional<std::string> GetOnDeviceModelExecutionOverride() {
     return std::nullopt;
   }
   return command_line->GetSwitchValueASCII(kOnDeviceModelExecutionOverride);
+}
+
+std::optional<base::FilePath> GetOnDeviceValidationRequestOverride() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kOnDeviceValidationRequestOverride)) {
+    return std::nullopt;
+  }
+  return command_line->GetSwitchValuePath(kOnDeviceValidationRequestOverride);
+}
+
+std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kOnDeviceValidationWriteToFile)) {
+    return std::nullopt;
+  }
+  return command_line->GetSwitchValuePath(kOnDeviceValidationWriteToFile);
 }
 
 bool ShouldLogPageContentAnnotationsInput() {

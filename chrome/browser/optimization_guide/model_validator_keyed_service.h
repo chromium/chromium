@@ -26,15 +26,29 @@ class ModelValidatorKeyedService : public KeyedService,
  private:
   void StartModelExecutionValidation();
 
+  // Kicks off the validation process for the Compose on-device model.
+  void StartOnDeviceModelExecutionValidation(
+      std::unique_ptr<optimization_guide::proto::ComposeRequest> request);
+
+  // Calls the on-device model executor to execute the Compose model.
+  void PerformOnDeviceModelExecutionValidation(
+      std::unique_ptr<optimization_guide::proto::ComposeRequest> request);
+
   // Invoked when model execution completes.
   void OnModelExecuteResponse(OptimizationGuideModelExecutionResult result,
                               std::unique_ptr<ModelQualityLogEntry> log_entry);
+
+  // Invoked when on-device model execution completes.
+  void OnDeviceModelExecuteResponse(
+      OptimizationGuideModelStreamingExecutionResult result);
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   raw_ptr<Profile> profile_;
+  std::unique_ptr<OptimizationGuideModelExecutor::Session>
+      on_device_validation_session_;
 
   base::ScopedObservation<signin::IdentityManager, ModelValidatorKeyedService>
       identity_manager_observation_{this};
