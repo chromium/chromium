@@ -761,7 +761,15 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   raw_ptr<Layer> expected_no_scroll_layer_;
 };
 
-TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
+// TODO(crbug.com/1517753): Test is flaky on asan on multiple platforms.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceScaleFactor1_ScrollChild \
+  DISABLED_DeviceScaleFactor1_ScrollChild
+#else
+#define MAYBE_DeviceScaleFactor1_ScrollChild DeviceScaleFactor1_ScrollChild
+#endif
+TEST_F(LayerTreeHostScrollTestCaseWithChild,
+       MAYBE_DeviceScaleFactor1_ScrollChild) {
   device_scale_factor_ = 1.f;
   scroll_child_layer_ = true;
   RunTest(CompositorMode::THREADED);
