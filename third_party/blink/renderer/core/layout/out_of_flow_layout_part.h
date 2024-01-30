@@ -306,7 +306,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   void CreateAnchorEvaluator(
       absl::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
       const ContainingBlockInfo& container_info,
-      const ComputedStyle& candidate_style,
+      WritingDirectionMode self_writing_direction,
+      const ScopedCSSName* default_anchor_specifier,
       const LayoutBox& candidate_layout_box,
       const LogicalAnchorQueryMap* anchor_queries,
       const LayoutObject* implicit_anchor);

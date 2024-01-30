@@ -609,9 +609,11 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   }
 
   absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(
-      anchor_evaluator_storage, container_info, candidate.Node().Style(),
-      *candidate.Node().GetLayoutBox(), anchor_queries, implicit_anchor);
+  CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
+                        candidate.Node().Style().GetWritingDirection(),
+                        candidate.Node().Style().AnchorDefault(),
+                        *candidate.Node().GetLayoutBox(), anchor_queries,
+                        implicit_anchor);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
   if (!anchor_evaluator) {
     return container_info;
@@ -1709,7 +1711,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 void OutOfFlowLayoutPart::CreateAnchorEvaluator(
     absl::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
     const ContainingBlockInfo& container_info,
-    const ComputedStyle& candidate_style,
+    WritingDirectionMode self_writing_direction,
+    const ScopedCSSName* default_anchor_specifier,
     const LayoutBox& candidate_layout_box,
     const LogicalAnchorQueryMap* anchor_queries,
     const LayoutObject* implicit_anchor) {
@@ -1718,8 +1721,6 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
       container_content_size, GetConstraintSpace().GetWritingMode());
   const WritingModeConverter container_converter(
       container_info.writing_direction, container_physical_content_size);
-  const WritingDirectionMode candidate_writing_direction =
-      candidate_style.GetWritingDirection();
   if (anchor_queries) {
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
@@ -1727,16 +1728,16 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
     const LayoutObject* css_containing_block = candidate_layout_box.Container();
     CHECK(css_containing_block);
     anchor_evaluator_storage.emplace(
-        candidate_layout_box, *anchor_queries, candidate_style.AnchorDefault(),
+        candidate_layout_box, *anchor_queries, default_anchor_specifier,
         implicit_anchor, *css_containing_block, container_converter,
-        candidate_writing_direction,
+        self_writing_direction,
         container_converter.ToPhysical(container_info.rect).offset);
   } else if (const LogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
-        candidate_layout_box, *anchor_query, candidate_style.AnchorDefault(),
-        implicit_anchor, container_converter, candidate_writing_direction,
+        candidate_layout_box, *anchor_query, default_anchor_specifier,
+        implicit_anchor, container_converter, self_writing_direction,
         container_converter.ToPhysical(container_info.rect).offset);
   } else {
     anchor_evaluator_storage.emplace();
@@ -2047,9 +2048,10 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
-                        candidate_style, *node_info.node.GetLayoutBox(),
-                        anchor_queries, implicit_anchor);
+  CreateAnchorEvaluator(
+      anchor_evaluator_storage, node_info.container_info,
+      candidate_writing_direction, candidate_style.AnchorDefault(),
+      *node_info.node.GetLayoutBox(), anchor_queries, implicit_anchor);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
   const LogicalAlignment alignment =
