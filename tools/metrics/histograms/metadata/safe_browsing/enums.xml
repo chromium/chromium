@@ -136,6 +136,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received"/>
 </enum>
 
+<enum name="BooleanTransferred">
+  <int value="0" label="Did not transfer"/>
+  <int value="1" label="Transferred"/>
+</enum>
+
 <enum name="BooleanUnavailable">
   <int value="0" label="Available"/>
   <int value="1" label="Unavailable"/>

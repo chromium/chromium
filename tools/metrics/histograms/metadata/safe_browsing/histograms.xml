@@ -214,6 +214,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped"
+    enum="BooleanSkipped" expires_after="2024-07-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether post commit interstitial is skipped when the check is completed
+    and the result is don't proceed. Skipped means the check is completed before
+    the navigation is finished, so the delay of the warning is minimum.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.AsyncCheck.PendingCheckersSize" units="count"
     expires_after="2024-07-19">
   <owner>xinghuilu@chromium.org</owner>
@@ -245,6 +256,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records how long the BrowserURLLoaderThrottle::CheckerOnIO object exists
     for. Logged when the object destructs.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.IsAsyncCheckerTransferred"
+    enum="BooleanTransferred" expires_after="2024-07-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the async checker is transferred to the tracker when it can be
+    transferred (sync check is completed and WillProcessResponse is called). If
+    false, it means the async check is already completed. Only logged when async
+    check is eligible for this URL loader.
   </summary>
 </histogram>
 

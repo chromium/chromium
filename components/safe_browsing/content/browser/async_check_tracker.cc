@@ -100,6 +100,11 @@ void AsyncCheckTracker::PendingCheckerCompleted(
   if (!base::Contains(pending_checkers_, navigation_id)) {
     return;
   }
+  if (!result.proceed) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
+        result.has_post_commit_interstitial_skipped);
+  }
   if (result.has_post_commit_interstitial_skipped) {
     CHECK(!result.proceed);
     if (IsNavigationPending(navigation_id)) {

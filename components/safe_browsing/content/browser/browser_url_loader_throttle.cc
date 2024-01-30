@@ -642,6 +642,11 @@ void BrowserURLLoaderThrottle::MaybeTransferAsyncChecker() {
   // If the sync check has completed but the async check has not, move the async
   // check to AsyncCheckTracker.
   DCHECK_EQ(pending_sync_checks_, 0u);
+  if (async_sb_checker_) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.BrowserThrottle.IsAsyncCheckerTransferred",
+        pending_async_checks_ > 0);
+  }
   if (pending_async_checks_ > 0) {
     async_check_tracker_->TransferUrlChecker(std::move(async_sb_checker_));
   }
