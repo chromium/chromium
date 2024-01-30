@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/demuxer_stream.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -91,7 +92,8 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
     std::vector<mojom::DecoderBufferPtr> batch_buffers,
     const absl::optional<AudioDecoderConfig>& audio_config,
     const absl::optional<VideoDecoderConfig>& video_config) {
-  DVLOG(3) << __func__ << ": status=" << status
+  DVLOG(3) << __func__
+           << ": status=" << ::media::DemuxerStream::GetStatusName(status)
            << ", batch_buffers.size=" << batch_buffers.size();
   DCHECK(read_cb_);
   DCHECK_NE(type_, UNKNOWN);
@@ -123,11 +125,13 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
 void MojoDemuxerStreamAdapter::OnBufferRead(
     scoped_refptr<DecoderBuffer> buffer) {
   if (!buffer) {
-    std::move(read_cb_).Run(kAborted, {});
+    DVLOG(1) << __func__ << ": null buffer";
     buffer_queue_.clear();
+    std::move(read_cb_).Run(kAborted, {});
     return;
   }
   buffer_queue_.push_back(buffer);
+
   if (buffer_queue_.size() < actual_read_count_) {
     int next_read_index = buffer_queue_.size();
     // The `mojo_decoder_buffer_reader_` will run callback(OnBufferRead()) after
@@ -140,13 +144,14 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
                            weak_factory_.GetWeakPtr())));
-  } else if (buffer_queue_.size() == actual_read_count_) {
-    std::move(read_cb_).Run(status_, buffer_queue_);
-    actual_read_count_ = 0;
-    buffer_queue_.clear();
-  } else {
-    NOTREACHED();
+    return;
   }
+
+  DCHECK_EQ(buffer_queue_.size(), actual_read_count_);
+  actual_read_count_ = 0;
+  DemuxerStream::DecoderBufferVector buffer_queue;
+  buffer_queue_.swap(buffer_queue);
+  std::move(read_cb_).Run(status_, std::move(buffer_queue));
 }
 
 void MojoDemuxerStreamAdapter::UpdateConfig(

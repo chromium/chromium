@@ -268,6 +268,9 @@ class MEDIA_EXPORT DecoderBuffer
   std::unique_ptr<uint8_t[]> data_;
 
  private:
+  // Constructor helper method for memory allocations.
+  void Initialize();
+
   TimeInfo time_info_;
 
   // Size of the encoded data.
@@ -289,9 +292,6 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Whether the frame was marked as a keyframe in the container.
   bool is_key_frame_ = false;
-
-  // Constructor helper method for memory allocations.
-  void Initialize();
 };
 
 }  // namespace media
