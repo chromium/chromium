@@ -2333,6 +2333,13 @@ void OverviewGrid::OnSplitViewStateChanged(
     return;
   }
 
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    // When an activated window is auto snapped, it will send a state change and
+    // try to end overview here. Ignore split view state when
+    // `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
+    return;
+  }
+
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   const bool unsnappable_window_activated =
@@ -2346,8 +2353,7 @@ void OverviewGrid::OnSplitViewStateChanged(
   if (state == SplitViewController::State::kBothSnapped ||
       unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
-       overview_session_->IsEmpty() &&
-       !window_util::IsInFasterSplitScreenSetupSession(root_window_))) {
+       overview_session_->IsEmpty())) {
     overview_session_->RestoreWindowActivation(false);
     overview_controller->EndOverview(
         state == SplitViewController::State::kBothSnapped

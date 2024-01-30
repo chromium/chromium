@@ -260,8 +260,7 @@ void BackdropController::OnPostWindowStateTypeChange(aura::Window* window) {
   // from being seen during the overview starting animation.
   if (backdrop_ && backdrop_->IsVisible() &&
       WindowState::Get(window)->IsSnapped() &&
-      SplitViewController::Get(window->GetRootWindow())
-          ->WillStartPartialOverview(window)) {
+      SplitViewController::Get(window->GetRootWindow())->WillStartOverview()) {
     Hide(/*destroy=*/false, /*animate=*/false);
     return;
   }

@@ -196,9 +196,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Returns true if `window` can keep snapped with the current snap ratio.
   bool CanKeepCurrentSnapRatio(aura::Window* window) const;
 
-  // Returns true if partial overview should start on the opposite side of the
-  // screen on the given `window` snapped.
-  bool WillStartPartialOverview(aura::Window* window) const;
+  // Returns true if, after a window is snapped, it will get put into split
+  // overview eventually.
+  bool WillStartOverview() const;
 
   // Returns the snap ratio (if valid) for `window` depending on the default
   // window. Returns null if `window` cannot get snapped. If there is no default
@@ -384,7 +384,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // SnapGroupController::Observer:
   void OnSnapGroupCreated() override;
-  void OnSnapGroupRemoved(SnapGroup* snap_group) override;
+  void OnSnapGroupRemoved() override;
 
   // LayoutDividerController:
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
@@ -432,15 +432,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Notifies observers that the windows are swappped.
   void NotifyWindowSwapped();
 
-  // Creates a snap group and its associated `split_view_divider_` for two
-  // eligible windows. Or just refreshes the `split_view_divider_` when
-  // restoring the snap group.
-  void RefreshSnapGroup();
-
-  // Creates the `split_view_divider_` for snap group, adjusts its stacking
-  // order, updates the windows bounds and notifies the divider position
-  // changes.
-  void RefreshSplitViewDividerInClamshell();
+  // Creates the `split_view_divider_`, adjusts its stacking order, updates the
+  // windows bounds and notifies the divider position changes.
+  void CreateSplitViewDividerInClamshell();
 
   // Updates the black scrim layer's bounds and opacity while dragging the
   // divider. The opacity increases as the split divider gets closer to the edge

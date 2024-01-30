@@ -10,7 +10,10 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/splitview/auto_snap_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
@@ -18,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -49,6 +53,11 @@ SplitViewOverviewSession::SplitViewOverviewSession(
   CHECK(!Shell::Get()->IsInTabletMode());
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);
+
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    auto_snap_controller_ =
+        std::make_unique<AutoSnapController>(window->GetRootWindow());
+  }
 }
 
 SplitViewOverviewSession::~SplitViewOverviewSession() {
@@ -64,7 +73,7 @@ void SplitViewOverviewSession::Init(std::optional<OverviewStartAction> action,
     return;
   }
 
-  OverviewController::Get()->StartOverview(
+  Shell::Get()->overview_controller()->StartOverview(
       action.value_or(OverviewStartAction::kFasterSplitScreenSetup),
       type.value_or(OverviewEnterExitType::kNormal));
   setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
@@ -207,6 +216,7 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
   GetOverviewSession()
       ->GetGridWithRootWindow(window->GetRootWindow())
       ->RefreshGridBounds(/*animate=*/false);
+  return;
 }
 
 void SplitViewOverviewSession::OnWindowDestroying(aura::Window* window) {

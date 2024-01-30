@@ -1110,7 +1110,7 @@ void RootWindowController::Init(RootWindowType root_window_type) {
       std::make_unique<WallpaperWidgetController>(root_window);
 
   wallpaper_widget_controller_->Init(
-      shell->session_controller()->IsUserSessionBlocked());
+      Shell::Get()->session_controller()->IsUserSessionBlocked());
   root_window_layout_manager_->OnWindowResized();
 
   CreateAmbientWidget();
