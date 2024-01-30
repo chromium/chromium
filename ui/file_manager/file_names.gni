@@ -554,6 +554,7 @@ ts_test_files = [
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.ts",
 
   # Image Loader:
+  "image_loader/cache_unittest.ts",
   "image_loader/image_orientation_unittest.ts",
   "image_loader/scheduler_unittest.ts",
 ]
@@ -612,7 +613,6 @@ unittest_files = [
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 
   # Image Loader:
-  "image_loader/cache_unittest.js",
   "image_loader/image_loader_client_unittest.js",
   "image_loader/image_loader_unittest.js",
 ]
