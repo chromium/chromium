@@ -630,6 +630,23 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "optimization_guide_gpu_unittests Intel UHD 630",
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "Intel UHD 630"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -769,6 +786,23 @@
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
         "variant_id": "AMD Radeon RX 5500 XT"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests Intel UHD 630",
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "Intel UHD 630"
       },
       {
         "merge": {

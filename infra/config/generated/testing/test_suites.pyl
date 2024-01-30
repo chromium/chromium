@@ -7899,6 +7899,7 @@
       'optimization_guide_gpu_gtests': {
         'variants': [
           'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630',
         ],
       },
       'optimization_guide_nogpu_gtests': {},

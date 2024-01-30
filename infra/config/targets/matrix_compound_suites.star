@@ -1381,10 +1381,10 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "optimization_guide_nogpu_gtests": None,
         "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
-            # TODO(b:321865883): Add Intel and NVIDIA variants once deployment
-            # is complete and stable.
+            # TODO(b:321865883): Add NVIDIA variant once deployment is stable.
             variants = [
                 "AMD_RADEON_RX_5500_XT",
+                "INTEL_UHD_630",
             ],
         ),
     },
