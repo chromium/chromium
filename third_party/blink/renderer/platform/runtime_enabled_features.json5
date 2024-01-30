@@ -3002,7 +3002,7 @@
       // When enabled, gives the option to pretty-print JSON documents to
       // cleanly format the JSON and make it readable.
       name:"PrettyPrintJSONDocument",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Privacy intervention to disable reading the system accent-color via
