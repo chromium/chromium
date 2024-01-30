@@ -315,6 +315,25 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   if (GetResource() && GetResource()->IsLinkPreload())
     return false;
 
+  bool is_ad_resource =
+      GetResource() && GetResource()->GetResourceRequest().IsAdResource();
+  static const features::LowPriorityAsyncScriptExecutionTarget target =
+      features::kLowPriorityAsyncScriptExecutionTargetParam.Get();
+  switch (target) {
+    case features::LowPriorityAsyncScriptExecutionTarget::kAds:
+      if (!is_ad_resource) {
+        return false;
+      }
+      break;
+    case features::LowPriorityAsyncScriptExecutionTarget::kNonAds:
+      if (is_ad_resource) {
+        return false;
+      }
+      break;
+    case features::LowPriorityAsyncScriptExecutionTarget::kBoth:
+      break;
+  }
+
   return true;
 }
 

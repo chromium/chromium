@@ -817,6 +817,14 @@ enum class AsyncScriptPrioritisationType {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptPrioritisationType>
     kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam;
+enum class LowPriorityAsyncScriptExecutionTarget {
+  kAds,
+  kNonAds,
+  kBoth,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    LowPriorityAsyncScriptExecutionTarget>
+    kLowPriorityAsyncScriptExecutionTargetParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);
