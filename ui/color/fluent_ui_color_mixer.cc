@@ -20,11 +20,11 @@ void AddFluentUiColorMixer(ColorProvider* provider,
     const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
     mixer[kColorWebNativeControlScrollbarArrowForeground] = {
-        dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
-                  : SkColorSetA(SK_ColorBLACK, 0x72)};
+        dark_mode ? SkColorSetRGB(0x9F, 0x9F, 0x9F)
+                  : SkColorSetRGB(0x8B, 0x8B, 0x8B)};
     mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
-        dark_mode ? SkColorSetA(SK_ColorWHITE, 0xC8)
-                  : SkColorSetA(SK_ColorBLACK, 0x9B)};
+        dark_mode ? SkColorSetRGB(0xD1, 0xD1, 0xD1)
+                  : SkColorSetRGB(0x63, 0x63, 0x63)};
     mixer[kColorWebNativeControlScrollbarCorner] = {
         dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
                   : SkColorSetRGB(0xFC, 0xFC, 0xFC)};

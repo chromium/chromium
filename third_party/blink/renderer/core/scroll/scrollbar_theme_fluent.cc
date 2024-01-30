@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -160,6 +161,24 @@ void ScrollbarThemeFluent::PaintButton(GraphicsContext& context,
       context, scrollbar,
       UsesOverlayScrollbars() ? InsetButtonRect(scrollbar, rect, part) : rect,
       part);
+}
+WebThemeEngine::ScrollbarThumbExtraParams
+ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
+    const Scrollbar& scrollbar) {
+  WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  } else if (scrollbar.IsFluentOverlayScrollbarMinimalMode() &&
+             WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() ==
+                 ForcedColors::kNone) {
+    const bool dark_mode =
+        (scrollbar.UsedColorScheme() == mojom::blink::ColorScheme::kDark);
+    // TODO(crbug.com/1518945): Find a better way to define these colors.
+    scrollbar_thumb.thumb_color = dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
+                                            : SkColorSetA(SK_ColorBLACK, 0x72);
+  }
+  return scrollbar_thumb;
 }
 
 gfx::Rect ScrollbarThemeFluent::InsetTrackRect(const Scrollbar& scrollbar,
