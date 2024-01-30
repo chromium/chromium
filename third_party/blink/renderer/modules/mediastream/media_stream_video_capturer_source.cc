@@ -270,7 +270,7 @@ void MediaStreamVideoCapturerSource::GetZoomLevel(
   const absl::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(false, "Missing session ID.");
+    std::move(callback).Run(absl::nullopt, "Missing session ID.");
     return;
   }
 
