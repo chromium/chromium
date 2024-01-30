@@ -97,7 +97,50 @@ void DeskButton::Layout() {
   }
 
   if (desk_avatar_view_ && desk_avatar_view_->GetVisible()) {
-    // TODO(yongshun): Add support to the desk profile avatar.
+    if (base::i18n::IsRTL()) {
+      // Layout when the desk avatar is visible and it's rtl.
+      gfx::Insets desk_button_insets =
+          zero_state_ ? kDeskButtonInsectHorizontalZeroWithAvatar
+                      : kDeskButtonInsectHorizontalExpandedWithAvatar;
+      desk_button_insets.set_left_right(desk_button_insets.right(),
+                                        desk_button_insets.left());
+      available_bounds.Inset(desk_button_insets);
+      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
+          {available_bounds.right() - kDeskButtonAvatarSize.width(),
+           available_bounds.y() +
+               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
+                   2},
+          kDeskButtonAvatarSize);
+      gfx::Insets insets_taken = gfx::Insets::TLBR(
+          0, 0, 0,
+          kDeskButtonAvatarSize.width() +
+              (zero_state_ ? kDeskButtonChildSpacingHorizontalZero
+                           : kDeskButtonChildSpacingHorizontalExpanded));
+      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
+      available_bounds.Inset(insets_taken);
+      desk_name_label_->SetBoundsRect(available_bounds);
+    } else {
+      // Layout when the desk avatar is visible and it's *not* rtl.
+      gfx::Insets desk_button_insets =
+          zero_state_ ? kDeskButtonInsectHorizontalZeroWithAvatar
+                      : kDeskButtonInsectHorizontalExpandedWithAvatar;
+      available_bounds.Inset(desk_button_insets);
+      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
+          {available_bounds.x(),
+           available_bounds.y() +
+               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
+                   2},
+          kDeskButtonAvatarSize);
+      gfx::Insets insets_taken = gfx::Insets::TLBR(
+          0,
+          kDeskButtonAvatarSize.width() +
+              (zero_state_ ? kDeskButtonChildSpacingHorizontalZero
+                           : kDeskButtonChildSpacingHorizontalExpanded),
+          0, 0);
+      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
+      available_bounds.Inset(insets_taken);
+      desk_name_label_->SetBoundsRect(available_bounds);
+    }
   } else {
     // Layout when the desk avatar is *not* visible.
     available_bounds.Inset(zero_state_
@@ -181,7 +224,13 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
       kDeskButtonCornerRadius);
 
   if (features::IsDeskButtonEnabled()) {
-    // TODO(yongshun): Add support to the desk profile avatar.
+    AddChildView(views::Builder<views::ImageView>()
+                     .CopyAddressTo(&desk_avatar_view_)
+                     .SetPaintToLayer()
+                     .Build());
+    desk_avatar_view_->layer()->SetFillsBoundsOpaquely(false);
+    desk_avatar_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kDeskButtonAvatarSize.width()));
   }
 
   AddChildView(
@@ -236,7 +285,27 @@ void DeskButton::UpdateUi(const Desk* active_desk) {
 }
 
 void DeskButton::UpdateAvatar(const Desk* active_desk) {
-  // TODO(yongshun): Add support to the desk profile avatar.
+  if (!desk_avatar_view_) {
+    return;
+  }
+
+  if (desk_button_container_->IsHorizontalShelf() &&
+      desk_button_container_->ShouldShowDeskProfilesUi()) {
+    if (auto* desk_profiles_delegate =
+            Shell::Get()->GetDeskProfilesDelegate()) {
+      if (auto* summary =
+              desk_profiles_delegate->GetProfilesSnapshotByProfileId(
+                  active_desk->lacros_profile_id())) {
+        desk_avatar_image_ = summary->icon;
+        desk_avatar_view_->SetImage(desk_avatar_image_);
+        desk_avatar_view_->SetImageSize(kDeskButtonAvatarSize);
+        desk_avatar_view_->SetVisible(true);
+        return;
+      }
+    }
+  }
+
+  desk_avatar_view_->SetVisible(false);
 }
 
 void DeskButton::UpdateLocaleSpecificSettings() {
