@@ -60,6 +60,7 @@ enum class MakeCredentialStatus {
   kWinInvalidStateError,
   kWinNotAllowedError,
   kHybridTransportError,
+  kEnclaveError,
 };
 
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler

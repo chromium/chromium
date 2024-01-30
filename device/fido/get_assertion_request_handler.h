@@ -51,6 +51,7 @@ enum class GetAssertionStatus {
   kWinNotAllowedError,
   kHybridTransportError,
   kICloudKeychainNoCredentials,
+  kEnclaveError,
 };
 
 class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler

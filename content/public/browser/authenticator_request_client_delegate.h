@@ -194,6 +194,11 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     kWinUserCancelled,
     kHybridTransportError,
     kNoPasskeys,
+    // kEnclaveError means that there was some error communicating with a
+    // passkeys enclave. This is a fatal (like `kHybridTransportError` but
+    // unlike security keys) because, like hybrid, the user has taken some
+    // action to send the request to the enclave.
+    kEnclaveError,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web

@@ -632,6 +632,8 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
       return dialog_model_->OnHybridTransportError();
     case InterestingFailureReason::kNoPasskeys:
       return dialog_model_->OnNoPasskeys();
+    case InterestingFailureReason::kEnclaveError:
+      return dialog_model_->OnEnclaveError();
   }
   return true;
 }

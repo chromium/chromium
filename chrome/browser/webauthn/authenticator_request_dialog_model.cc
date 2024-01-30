@@ -1173,6 +1173,13 @@ bool AuthenticatorRequestDialogModel::OnHybridTransportError() {
   return true;
 }
 
+bool AuthenticatorRequestDialogModel::OnEnclaveError() {
+  // TODO(enclave): this is just a placeholder. We'll need a specific error
+  // sheet for this case.
+  SetCurrentStep(Step::kCableV2Error);
+  return true;
+}
+
 bool AuthenticatorRequestDialogModel::OnNoPasskeys() {
   SetCurrentStep(Step::kErrorNoPasskeys);
   return true;

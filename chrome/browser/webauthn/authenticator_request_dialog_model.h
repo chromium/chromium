@@ -490,6 +490,10 @@ class AuthenticatorRequestDialogModel
   // was handled.
   bool OnHybridTransportError();
 
+  // To be called when an enclave transaction fails. Returns true if the event
+  // was handled.
+  bool OnEnclaveError();
+
   // To be called when there are no passkeys from an internal authenticator.
   // This is a rare case but can happen when the user grants passkeys permission
   // on macOS as part of a request flow and then Chromium realises that the
