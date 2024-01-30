@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 
 #include <optional>
@@ -83,11 +84,7 @@ std::optional<uint64_t> PmfDiff(std::optional<uint64_t> pmf_before,
 }
 
 void RecordMetrics(std::optional<uint64_t> pmf_before) {
-  // We need the process type to record the metrics below, which we get from
-  // the command line.
-  if (!base::CommandLine::InitializedForCurrentProcess()) {
-    return;
-  }
+  CHECK(base::CommandLine::InitializedForCurrentProcess());
 
   std::string before_name = GetMetricName("Before");
   std::string after_name = GetMetricName("After");
@@ -106,6 +103,15 @@ void PostMetricsTask(std::optional<uint64_t> pmf_before) {
   if (!IsAndroidUPlus()) {
     return;
   }
+
+  // We need the process type to record the metrics below, which we get from
+  // the command line. We cannot post the task below if the thread pool is not
+  // initialized yet.
+  if (!base::CommandLine::InitializedForCurrentProcess() ||
+      !base::ThreadPoolInstance::Get()) {
+    return;
+  }
+
   // The posted task will be more likely to survive background killing in
   // experiments that change the memory trimming behavior. Run as USER_BLOCKING
   // to reduce this sample imbalance in experiment groups. Normally tasks
