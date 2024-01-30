@@ -600,8 +600,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // attributes in a start tag were added to the element.
   virtual void AttributeChanged(const AttributeModificationParams&);
 
-  // |parseAttribute| is called by |attributeChanged|. If an element
+  // |ParseAttribute()| is called by |AttributeChanged()|. If an element
   // implementation needs to check an attribute update, override this function.
+  // This function is called before Element handles the change. This means
+  // changes like `kSlotAttr` will not have been processed. Subclasses should
+  // take care to avoid any processing that needs Element to have handled the
+  // change. For example, flat-tree-travesal could be problematic. In such
+  // cases subclasses should override AttributeChanged() and do the processing
+  // after calling Element::AttributeChanged().
   //
   // While the owner document is parsed, this function is called after all
   // attributes in a start tag were added to the element.

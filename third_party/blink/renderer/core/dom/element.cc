@@ -2585,19 +2585,13 @@ void Element::setAttribute(const QualifiedName& name,
 
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
-  const QualifiedName& name = params.name;
-  if (name == html_names::kSlotAttr && params.old_value != params.new_value) {
-    if (ShadowRoot* root = ShadowRootOfParent()) {
-      root->DidChangeHostChildSlotName(params.old_value, params.new_value);
-    }
-  }
-
   ParseAttribute(params);
 
   GetDocument().IncDOMTreeVersion();
   GetDocument().NotifyAttributeChanged(*this, params.name, params.old_value,
                                        params.new_value);
 
+  const QualifiedName& name = params.name;
   if (name == html_names::kIdAttr) {
     AtomicString lowercase_id;
     if (GetDocument().InQuirksMode() && !params.new_value.IsLowerASCII()) {
@@ -2632,6 +2626,14 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     EnsureElementRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
   } else if (name == html_names::kTabindexAttr) {
+    int tabindex = 0;
+    if (params.new_value.empty() ||
+        !ParseHTMLInteger(params.new_value, tabindex)) {
+      ClearTabIndexExplicitlyIfNeeded();
+    } else {
+      // We only set when value is in integer range.
+      SetTabIndexExplicitly();
+    }
     if (params.reason == AttributeModificationReason::kDirectly &&
         AdjustedFocusedElementInTreeScope() == this) {
       // The attribute change may cause supportsFocus() to return false
@@ -2645,10 +2647,25 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         blur();
       }
     }
-  } else if (params.name == html_names::kAnchorAttr &&
-             RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    EnsureAnchorElementObserver().Notify();
-    return;
+  } else if (params.name == html_names::kAnchorAttr) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+      EnsureAnchorElementObserver().Notify();
+      return;
+    }
+  } else if (name == html_names::kSlotAttr) {
+    if (params.old_value != params.new_value) {
+      if (ShadowRoot* root = ShadowRootOfParent()) {
+        root->DidChangeHostChildSlotName(params.old_value, params.new_value);
+      }
+    }
+  } else if (name == html_names::kFocusgroupAttr) {
+    // Only update the focusgroup flags when the node has been added to the
+    // tree. This is because the computed focusgroup value will depend on the
+    // focusgroup value of its closest ancestor node that is a focusgroup, if
+    // any.
+    if (parentNode()) {
+      UpdateFocusgroup(params.new_value);
+    }
   } else if (IsElementReflectionAttribute(name)) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
@@ -5604,24 +5621,7 @@ void Element::LangAttributeChanged() {
 }
 
 void Element::ParseAttribute(const AttributeModificationParams& params) {
-  if (params.name == html_names::kTabindexAttr) {
-    int tabindex = 0;
-    if (params.new_value.empty() ||
-        !ParseHTMLInteger(params.new_value, tabindex)) {
-      ClearTabIndexExplicitlyIfNeeded();
-    } else {
-      // We only set when value is in integer range.
-      SetTabIndexExplicitly();
-    }
-  } else if (params.name == html_names::kFocusgroupAttr) {
-    // Only update the focusgroup flags when the node has been added to the
-    // tree. This is because the computed focusgroup value will depend on the
-    // focusgroup value of its closest ancestor node that is a focusgroup, if
-    // any.
-    if (parentNode()) {
-      UpdateFocusgroup(params.new_value);
-    }
-  } else if (params.name.Matches(xml_names::kLangAttr)) {
+  if (params.name.Matches(xml_names::kLangAttr)) {
     LangAttributeChanged();
   }
 }

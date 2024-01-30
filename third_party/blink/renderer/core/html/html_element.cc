@@ -388,12 +388,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
       {html_names::kPopoverAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnPopoverChanged},
 
-      // Attributes handled by base class
-      {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
-      {html_names::kTabindexAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
-
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
       {html_names::kOnanimationendAttr, kNoWebFeature,
@@ -3021,10 +3015,6 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
 
 void HTMLElement::OnPopoverChanged(const AttributeModificationParams& params) {
   UpdatePopoverAttribute(params.new_value);
-}
-
-void HTMLElement::ReparseAttribute(const AttributeModificationParams& params) {
-  Element::ParseAttribute(params);
 }
 
 void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {
