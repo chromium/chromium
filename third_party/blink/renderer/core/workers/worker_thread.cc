@@ -607,6 +607,7 @@ void WorkerThread::InitializeOnWorkerThread(
     DCHECK_EQ(ThreadState::kNotStarted, thread_state_);
 
     if (IsOwningBackingThread()) {
+      global_scope_creation_params->is_default_world_of_isolate = true;
       DCHECK(thread_startup_data.has_value());
       GetWorkerBackingThread().InitializeOnBackingThread(*thread_startup_data);
     } else {

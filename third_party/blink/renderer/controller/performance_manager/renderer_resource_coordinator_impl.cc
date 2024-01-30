@@ -169,7 +169,7 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
       // This should not happen in the production browser.
       NOTREACHED();
     } break;
-    case DOMWrapperWorld::WorldType::kWorker: {
+    case DOMWrapperWorld::WorldType::kWorkerOrWorklet: {
       v8_desc->world_type = V8ContextWorldType::kWorkerOrWorklet;
     } break;
     case DOMWrapperWorld::WorldType::kShadowRealm: {

@@ -56,7 +56,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  const HeapVector<ScriptValue>& arguments)
     : script_state_(
           MakeGarbageCollected<ScriptStateProtectingContext>(script_state)) {
-  if (script_state->World().IsWorkerWorld() ||
+  if (script_state->World().IsWorkerOrWorkletWorld() ||
       BindingSecurity::ShouldAllowAccessTo(
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {
@@ -76,7 +76,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
                                  const String& handler)
     : script_state_(
           MakeGarbageCollected<ScriptStateProtectingContext>(script_state)) {
-  if (script_state->World().IsWorkerWorld() ||
+  if (script_state->World().IsWorkerOrWorkletWorld() ||
       BindingSecurity::ShouldAllowAccessTo(
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {

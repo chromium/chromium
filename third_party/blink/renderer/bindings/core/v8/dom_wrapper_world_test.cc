@@ -38,10 +38,10 @@ void WorkerThreadFunc(
   EXPECT_TRUE(initial_worlds.empty());
 
   // Create worlds on the worker thread and verify them.
-  auto worker_world1 =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
-  auto worker_world2 =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
+  auto worker_world1 = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
+  auto worker_world2 = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   EXPECT_EQ(worlds.size(), initial_worlds.size() + 2);
@@ -95,15 +95,15 @@ TEST(DOMWrapperWorldTest, Basic) {
   worlds.clear();
 
   // Worker worlds
-  auto worker_world1 =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
-  auto worker_world2 =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
-  auto worker_world3 =
-      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
-  EXPECT_TRUE(worker_world1->IsWorkerWorld());
-  EXPECT_TRUE(worker_world2->IsWorkerWorld());
-  EXPECT_TRUE(worker_world3->IsWorkerWorld());
+  auto worker_world1 = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
+  auto worker_world2 = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
+  auto worker_world3 = DOMWrapperWorld::Create(
+      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
+  EXPECT_TRUE(worker_world1->IsWorkerOrWorkletWorld());
+  EXPECT_TRUE(worker_world2->IsWorkerOrWorkletWorld());
+  EXPECT_TRUE(worker_world3->IsWorkerOrWorkletWorld());
   HashSet<int32_t> worker_world_ids;
   EXPECT_TRUE(
       worker_world_ids.insert(worker_world1->GetWorldId()).is_new_entry);

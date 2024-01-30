@@ -86,7 +86,9 @@ WorkletGlobalScope::WorkletGlobalScope(
           std::move(creation_params->content_settings_client),
           std::move(creation_params->web_worker_fetch_context),
           reporting_proxy,
-          /*is_worker_loaded_from_data_url=*/false),
+          /*is_worker_loaded_from_data_url=*/false,
+          /*is_default_world_of_isolate=*/
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
@@ -108,6 +110,12 @@ WorkletGlobalScope::WorkletGlobalScope(
       parent_is_isolated_context_(creation_params->parent_is_isolated_context) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
+
+  // Default world implies that we are at least off main thread. Off main
+  // thread may still have cases where threads are shared between multiple
+  // worklets (and thus the Isolate may not be owned by this world)..
+  CHECK(!creation_params->is_default_world_of_isolate ||
+        thread_type == ThreadType::kOffMainThread);
 
   // Worklet should be in the owner's agent cluster.
   // https://html.spec.whatwg.org/C/#obtain-a-worklet-agent

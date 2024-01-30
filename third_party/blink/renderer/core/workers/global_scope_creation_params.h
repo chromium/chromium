@@ -226,6 +226,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Whether the parent ExecutionContext has storage access (via the Storage
   // Access API).
   const bool parent_has_storage_access;
+
+  // Late initialized on thread creation. This signals whether the world created
+  // is the default world for an isolate.
+  bool is_default_world_of_isolate = false;
 };
 
 }  // namespace blink

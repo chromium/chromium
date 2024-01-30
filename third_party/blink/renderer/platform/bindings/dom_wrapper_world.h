@@ -82,13 +82,25 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kUnspecifiedWorldIdStart,
   };
 
+  // Various world types. Isolated worlds get their own security policy.
   enum class WorldType {
+    // The main world for the main rendering thread. World id is 0. Considered
+    // an isolated world.
     kMain,
+    // An isolated world created via `EnsureIsolatedWorld()`. The caller passes
+    // in a world id that should be used. The embedder is supposed to respect
+    // the `kEmbedderWorldIdLimit` for creating the isolated world.
     kIsolated,
+    // An isolated world for the inspector. The world id is generated
+    // internally.
     kInspectorIsolated,
+    // A utility world that is not considered an isolated world.
     kBlinkInternalNonJSExposed,
+    // A utility world for context snapshotting that is not considered an
+    // isolated world.
     kForV8ContextSnapshotNonMain,
-    kWorker,
+    // A world for each worker/worklet. Not considered an isolated world.
+    kWorkerOrWorklet,
     // Shadow realms do not have a corresponding Frame nor DOMWindow so they're
     // very different from the main world. Shadow realms are not workers nor
     // worklets obviously, nor Chrome extensions' content scripts. So, we use
@@ -104,7 +116,8 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 
   // Creates a world other than IsolatedWorld. Note this can return nullptr if
   // GenerateWorldIdForType fails to allocate a valid id.
-  static scoped_refptr<DOMWrapperWorld> Create(v8::Isolate*, WorldType);
+  static scoped_refptr<DOMWrapperWorld>
+  Create(v8::Isolate*, WorldType, bool is_default_world_of_isolate = false);
 
   // Ensures an IsolatedWorld for |worldId|.
   static scoped_refptr<DOMWrapperWorld> EnsureIsolatedWorld(v8::Isolate*,
@@ -155,7 +168,9 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       const base::UnguessableToken& cluster_id) const;
 
   bool IsMainWorld() const { return world_type_ == WorldType::kMain; }
-  bool IsWorkerWorld() const { return world_type_ == WorldType::kWorker; }
+  bool IsWorkerOrWorkletWorld() const {
+    return world_type_ == WorldType::kWorkerOrWorklet;
+  }
   bool IsShadowRealmWorld() const {
     return world_type_ == WorldType::kShadowRealm;
   }
@@ -189,7 +204,10 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       ScriptWrappable* object,
       const v8::TracedReference<v8::Object>& handle);
 
-  DOMWrapperWorld(v8::Isolate*, WorldType, int32_t world_id);
+  DOMWrapperWorld(v8::Isolate*,
+                  WorldType,
+                  int32_t world_id,
+                  bool is_default_world_of_isolate);
 
   static unsigned number_of_non_main_worlds_in_main_thread_;
 

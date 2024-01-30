@@ -674,7 +674,7 @@ WorldType GetWorldType(const ExecutionContext& execution_context) {
       return WorldType::WORLD_BLINK_INTERNAL_NON_JS_EXPOSED;
     case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
       return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
-    case DOMWrapperWorld::WorldType::kWorker:
+    case DOMWrapperWorld::WorldType::kWorkerOrWorklet:
       return WorldType::WORLD_WORKER;
     case DOMWrapperWorld::WorldType::kShadowRealm:
       return WorldType::WORLD_SHADOW_REALM;

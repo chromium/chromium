@@ -44,7 +44,7 @@ ScriptValue CustomLayoutFragment::data(ScriptState* script_state) const {
   // to return the same deserialized object. We don't need to check which world
   // it is being accessed from.
   DCHECK(ExecutionContext::From(script_state)->IsLayoutWorkletGlobalScope());
-  DCHECK(script_state->World().IsWorkerWorld());
+  DCHECK(script_state->World().IsWorkerOrWorkletWorld());
 
   if (layout_worklet_world_v8_data_.IsEmpty())
     return ScriptValue::CreateNull(script_state->GetIsolate());

@@ -602,7 +602,9 @@ WorkerGlobalScope::WorkerGlobalScope(
           std::move(creation_params->content_settings_client),
           std::move(creation_params->web_worker_fetch_context),
           thread->GetWorkerReportingProxy(),
-          creation_params->script_url.ProtocolIsData()),
+          creation_params->script_url.ProtocolIsData(),
+          /*is_default_world_of_isolate=*/
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
@@ -616,6 +618,9 @@ WorkerGlobalScope::WorkerGlobalScope(
       ukm_source_id_(creation_params->ukm_source_id),
       top_level_frame_security_origin_(
           std::move(creation_params->top_level_frame_security_origin)) {
+  // Workers should always maintain the default world of an isolate.
+  CHECK(creation_params->is_default_world_of_isolate);
+
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
 
