@@ -6690,6 +6690,11 @@ const char kImeSystemEmojiPickerJellySupportDescription[] =
     "Enable jelly colors for the System Emoji Picker. Requires "
     "jelly-colors flag to be enabled.";
 
+const char kImeSystemEmojiPickerMojoSearchName[] =
+    "Enable mojo search for the System Emoji Picker";
+const char kImeSystemEmojiPickerMojoSearchDescription[] =
+    "Enable mojo search for the System Emoji Picker.";
+
 const char kImeSystemEmojiPickerSearchExtensionName[] =
     "System emoji picker search extension";
 const char kImeSystemEmojiPickerSearchExtensionDescription[] =

@@ -18714,6 +18714,7 @@ from previous Chrome versions.
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
   <int value="-864232986" label="StartSurfaceAndroid:disabled"/>
   <int value="-864205629" label="enable-offline-load-stale-cache"/>
+  <int value="-864010507" label="SystemEmojiPickerMojoSearch:disabled"/>
   <int value="-863738382" label="CbdTimeframeRequired:disabled"/>
   <int value="-863581676" label="BluetoothFixA2dpPacketSize:disabled"/>
   <int value="-863269581" label="WebFeedOnboarding:disabled"/>
@@ -20864,6 +20865,7 @@ from previous Chrome versions.
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
   <int value="132907995" label="DownloadProgressMessage:enabled"/>
+  <int value="133215861" label="SystemEmojiPickerMojoSearch:enabled"/>
   <int value="133482330" label="AppNotificationStatusMessaging:enabled"/>
   <int value="134009318" label="FastPairSavedDevices:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
