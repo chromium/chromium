@@ -70,12 +70,8 @@
     margin-inline-end: 0px;
   }
 
-  :host-context([chrome-refresh-hover-shape]):host([side-type-class_='primary-side']) .container:not(.actions):hover {
-    background-color: var(--color-realbox-results-background-hovered);
-  }
-
-  :host-context([chrome-refresh-hover-shape]):host(:is(:focus-visible, [selected]):not(
-      [side-type-class_='secondary-side']))  .container:not(.actions) {
+  :host-context([chrome-refresh-hover-shape]) .container:not(.actions):hover,
+  :host-context([chrome-refresh-hover-shape]):host(:is(:focus-visible, [selected]))  .container:not(.actions) {
     background-color: var(--color-realbox-results-background-hovered);
   }
 
@@ -220,7 +216,8 @@
         var(--color-realbox-results-icon-focused-outline);
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) {
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]),
+  :host-context([chrome-refresh-hover-shape]):host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) .container {
     border-radius: 16px;
   }
 
