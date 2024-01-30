@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration"
-    units="ms" expires_after="M125">
+    units="ms" expires_after="M130">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1518,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.NumRequestsPerDocument" units="count"
-    expires_after="M125">
+    expires_after="M130">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1576,7 +1576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.SignUp.PrivacyPolicyClicked" enum="BooleanHit"
-    expires_after="M125">
+    expires_after="M130">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1586,7 +1586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.SignUp.TermsOfServiceClicked" enum="BooleanHit"
-    expires_after="M125">
+    expires_after="M130">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1613,7 +1613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Status.Disconnect" enum="FedCmDisconnectStatus"
-    expires_after="M125">
+    expires_after="M130">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
