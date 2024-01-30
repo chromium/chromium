@@ -48,6 +48,8 @@ constexpr char kOutputSliderSelector[] = "#outputVolumeSlider";
 constexpr char kInputDeviceDropdownSelector[] = "#audioInputDeviceDropdown";
 constexpr char kInputMuteSelector[] = "#audioInputGainMuteButton";
 constexpr char kInputSliderSelector[] = "#audioInputGainVolumeSlider";
+constexpr char kInputNoiseCancellationToggle[] =
+    "#audioInputNoiseCancellationToggle";
 
 // Devices' ID configured here:
 // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
@@ -466,6 +468,69 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeInputVolume) {
 
   // Expect that input volume has increased.
   EXPECT_GE(audio_handler()->GetInputGainPercent(), initial_volume);
+}
+
+// Verify toggling input noise cancellation in UI is reflected in cras.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
+                       ToggleInputNoiseCancellation) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputNoiseCancellationToggleEvent);
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+
+  // Set noise cancellation as supported.
+  audio_handler()->SetNoiseCancellationSupportedForTesting(true);
+
+  // Expect noise cancellation is default to off.
+  EXPECT_FALSE(audio_handler()->GetNoiseCancellationState());
+
+  StateChange input_noise_cancellation_checked;
+  input_noise_cancellation_checked.type =
+      StateChange::Type::kExistsAndConditionTrue;
+  input_noise_cancellation_checked.event = kInputNoiseCancellationToggleEvent;
+  input_noise_cancellation_checked.where =
+      CreateAudioPageDeepQueryForSelector(kInputNoiseCancellationToggle);
+  input_noise_cancellation_checked.test_function = "toggle => toggle.checked";
+
+  RunTestSequence(
+      // Set fake internal mic as active device.
+      DoSetActiveDevice(fake_internal_mic),
+      Log("Expected internal mic configured"),
+
+      Log("Open audio settings page and ensure it exists"),
+      LoadAudioSettingsPage(),
+
+      Log("Toggle input noise cancellation in UI"),
+      ClickElement(kOsSettingsElementId, CreateAudioPageDeepQueryForSelector(
+                                             kInputNoiseCancellationToggle)),
+
+      // Test input noise cancallation is checked in UI.
+      WaitForStateChange(kOsSettingsElementId,
+                         input_noise_cancellation_checked),
+      Log("Expected input noise cancallation is checked in UI"));
+
+  // Expect noise cancellation is on now.
+  EXPECT_TRUE(audio_handler()->GetNoiseCancellationState());
+
+  StateChange input_noise_cancellation_unchecked;
+  input_noise_cancellation_unchecked.type =
+      StateChange::Type::kExistsAndConditionTrue;
+  input_noise_cancellation_unchecked.event = kInputNoiseCancellationToggleEvent;
+  input_noise_cancellation_unchecked.where =
+      CreateAudioPageDeepQueryForSelector(kInputNoiseCancellationToggle);
+  input_noise_cancellation_unchecked.test_function =
+      "toggle => !toggle.checked";
+
+  RunTestSequence(
+      Log("Toggle input noise cancellation in UI"),
+      ClickElement(kOsSettingsElementId, CreateAudioPageDeepQueryForSelector(
+                                             kInputNoiseCancellationToggle)),
+
+      // Test input noise cancallation is unchecked in UI.
+      WaitForStateChange(kOsSettingsElementId,
+                         input_noise_cancellation_unchecked),
+      Log("Expected input noise cancallation is unchecked in UI"));
+
+  // Expect noise cancellation is off now.
+  EXPECT_FALSE(audio_handler()->GetNoiseCancellationState());
 }
 
 }  // namespace
