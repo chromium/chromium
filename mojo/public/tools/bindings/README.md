@@ -107,7 +107,7 @@ for message parameters.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
 | *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
 | *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#Associated-Interfaces)
-| *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) are not nullable. All other types are nullable.
+| *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) used to be non-nullable, but they are now nullable. (see https://crbug.com/657632)
 
 ### Modules
 
@@ -197,19 +197,21 @@ interface SampleInterface {
 };
 
 struct AllTheThings {
-  // Note that these types can never be marked nullable!
+  // All the primitive numeric types may be nullable.
   bool boolean_value;
+  bool? maybe_a_bool;
   int8 signed_8bit_value = 42;
-  uint8 unsigned_8bit_value;
-  int16 signed_16bit_value;
-  uint16 unsigned_16bit_value;
-  int32 signed_32bit_value;
-  uint32 unsigned_32bit_value;
-  int64 signed_64bit_value;
-  uint64 unsigned_64bit_value;
-  float float_value_32bit;
-  double float_value_64bit;
-  AnEnum enum_value = AnEnum.kYes;
+  int8? maybe_signed_8bit_value = 42;
+  uint8? maybe_unsigned_8bit_value;
+  int16? maybe_signed_16bit_value;
+  uint16? maybe_unsigned_16bit_value;
+  int32? maybe_signed_32bit_value;
+  uint32? maybe_unsigned_32bit_value;
+  int64? maybe_signed_64bit_value;
+  uint64? maybe_unsigned_64bit_value;
+  float? maybe_float_value_32bit;
+  double? maybe_float_value_64bit;
+  AnEnum? maybe_enum_value = AnEnum.kYes;
 
   // Strings may be nullable.
   string? maybe_a_string_maybe_not;
@@ -230,9 +232,9 @@ struct AllTheThings {
   // Arrays of arrays of arrays... are fine.
   array<array<array<AnEnum>>> this_works_but_really_plz_stop;
 
-  // The element type may be nullable if it's a type which is allowed to be
-  // nullable.
+  // The element type may be nullable unless it's a primitive numeric type.
   array<AllTheThings?> more_maybe_things;
+  // array<int32?> no_primitive_in_array; This doesn't work.
 
   // Fixed-size arrays get some extra validation on the receiving end to ensure
   // that the correct number of elements is always received.
@@ -240,11 +242,13 @@ struct AllTheThings {
 
   // Maps follow many of the same rules as arrays. Key types may be any
   // non-handle, non-collection type, and value types may be any supported
-  // struct field type. Maps may also be nullable.
+  // struct field type. Please note that nullable primitive numeric types
+  // cannot be the key or value. Maps themselves may be nullable.
   map<string, int32> one_map;
   map<AnEnum, string>? maybe_another_map;
   map<StringPair, AllTheThings?>? maybe_a_pretty_weird_but_valid_map;
   map<StringPair, map<int32, array<map<string, string>?>?>?> ridiculous;
+  // map<string?, int32?>; This doesn't work.
 
   // And finally, all handle types are valid as struct fields and may be
   // nullable. Note that interfaces and interface requests (the "Foo" and
