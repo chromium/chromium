@@ -294,8 +294,9 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
 
 void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     LocalFrame* frame) {
-  if (!paint_conditions_met_ || !soft_navigation_conditions_met_ ||
-      !soft_navigation_interaction_data_ ||
+  // TODO(crbug.com/1510706): See if we need to add `paint_conditions_met_` back
+  // into this condition.
+  if (!soft_navigation_conditions_met_ || !soft_navigation_interaction_data_ ||
       soft_navigation_interaction_data_->url.IsNull() ||
       soft_navigation_interaction_data_->user_interaction_timestamp.is_null() ||
       !frame || !frame->IsOutermostMainFrame()) {
@@ -341,41 +342,60 @@ SoftNavigationHeuristics::GetCurrentInteractionData(
 }
 
 // This is called from Text/ImagePaintTimingDetector when a paint is recorded
-// there. If the accumulated paints are large enough, a soft navigation entry is
-// emitted.
+// there.
 void SoftNavigationHeuristics::RecordPaint(
     LocalFrame* frame,
     uint64_t painted_area,
     bool is_modified_by_soft_navigation) {
-  if (is_modified_by_soft_navigation) {
-    softnav_painted_area_ += painted_area;
-    uint64_t considered_area = std::min(initial_painted_area_, viewport_area_);
-    uint64_t paint_threshold =
-        considered_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
-
-    float softnav_painted_area_ratio =
-        paint_threshold != 0
-            ? (float)softnav_painted_area_ / (float)paint_threshold
-            : 0;
-
-    bool is_above_threshold =
-        ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold);
-
-    TRACE_EVENT_INSTANT("loading", "SoftNavigationHeuristics_RecordPaint",
-                        "softnav_painted_area", softnav_painted_area_,
-                        "softnav_painted_area_ratio",
-                        softnav_painted_area_ratio, "url",
-                        (soft_navigation_interaction_data_
-                             ? soft_navigation_interaction_data_->url
-                             : ""),
-                        "is_above_threshold", is_above_threshold);
-
-    if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
-      paint_conditions_met_ = true;
-      EmitSoftNavigationEntryIfAllConditionsMet(frame);
-    }
-  } else if (!initial_interaction_encountered_) {
+  if (!initial_interaction_encountered_) {
+    // We haven't seen an interaction yet, so we are still measuring initial
+    // paint area.
+    CHECK(!is_modified_by_soft_navigation);
+    CHECK(!has_potential_soft_navigation_task_);
     initial_painted_area_ += painted_area;
+    return;
+  }
+
+  if (!has_potential_soft_navigation_task_) {
+    // We aren't measuring a soft-nav so we can just exit.
+    return;
+  }
+
+  if (!is_modified_by_soft_navigation) {
+    return;
+  }
+
+  softnav_painted_area_ += painted_area;
+
+  uint64_t required_paint_area =
+      std::min(initial_painted_area_, viewport_area_);
+
+  if (required_paint_area == 0) {
+    return;
+  }
+
+  float softnav_painted_area_ratio =
+      (float)softnav_painted_area_ / (float)required_paint_area;
+
+  uint64_t required_paint_area_scaled =
+      required_paint_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
+  uint64_t softnav_painted_area_scaled =
+      softnav_painted_area_ * HUNDRED_PERCENT;
+  bool is_above_threshold =
+      (softnav_painted_area_scaled > required_paint_area_scaled);
+
+  TRACE_EVENT_INSTANT("loading", "SoftNavigationHeuristics_RecordPaint",
+                      "softnav_painted_area", softnav_painted_area_,
+                      "softnav_painted_area_ratio", softnav_painted_area_ratio,
+                      "url",
+                      (soft_navigation_interaction_data_
+                           ? soft_navigation_interaction_data_->url
+                           : ""),
+                      "is_above_threshold", is_above_threshold);
+
+  if (is_above_threshold) {
+    paint_conditions_met_ = true;
+    EmitSoftNavigationEntryIfAllConditionsMet(frame);
   }
 }
 
