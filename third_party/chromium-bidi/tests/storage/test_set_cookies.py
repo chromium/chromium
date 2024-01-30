@@ -32,7 +32,7 @@ SOME_URL = 'https://some_domain.com:1234/some/path?some=query#some-fragment'
 
 
 @pytest.mark.asyncio
-async def test_cookie_set_with_required_fields(websocket, context_id):
+async def test_cookie_set_required_fields(websocket, context_id):
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -66,7 +66,7 @@ async def test_cookie_set_with_required_fields(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_cookie_set_partition_context(websocket, context_id):
+async def test_cookie_set_partition_browsing_context(websocket, context_id):
     resp = await execute_command(
         websocket, {
             'method': 'storage.setCookie',
@@ -101,6 +101,93 @@ async def test_cookie_set_partition_context(websocket, context_id):
                                 secure=True))
         ],
         'partitionKey': {}
+    }
+
+
+@pytest.mark.asyncio
+async def test_cookie_set_partition_user_context(websocket, context_id):
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.setCookie',
+            'params': {
+                'cookie': {
+                    'secure': True,
+                    'name': SOME_COOKIE_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': SOME_COOKIE_VALUE
+                    },
+                    'domain': SOME_DOMAIN,
+                },
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
+    assert resp == {'partitionKey': {}}
+
+    resp = await execute_command(websocket, {
+        'method': 'storage.getCookies',
+        'params': {}
+    })
+    assert resp == {
+        'cookies': [
+            AnyExtending(
+                get_bidi_cookie(SOME_COOKIE_NAME,
+                                SOME_COOKIE_VALUE,
+                                SOME_DOMAIN,
+                                secure=True))
+        ],
+        'partitionKey': {}
+    }
+
+
+async def test_cookie_set_partition_browsing_context_from_user_context(
+        websocket, create_context, user_context_id):
+    context_id = await create_context(user_context_id)
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.setCookie',
+            'params': {
+                'cookie': {
+                    'secure': True,
+                    'name': SOME_COOKIE_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': SOME_COOKIE_VALUE
+                    },
+                    'domain': SOME_DOMAIN,
+                },
+                'partition': {
+                    'type': 'context',
+                    'context': context_id,
+                }
+            }
+        })
+    assert resp == {'partitionKey': {'userContext': user_context_id, }}
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'storageKey',
+                    'userContext': user_context_id,
+                }
+            }
+        })
+    assert resp == {
+        'cookies': [
+            AnyExtending(
+                get_bidi_cookie(SOME_COOKIE_NAME,
+                                SOME_COOKIE_VALUE,
+                                SOME_DOMAIN,
+                                secure=True))
+        ],
+        'partitionKey': {
+            'userContext': user_context_id,
+        }
     }
 
 
@@ -144,7 +231,7 @@ async def test_cookie_set_partition_source_origin(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_cookie_set_with_all_fields(websocket, context_id):
+async def test_cookie_set_params_cookie_all_fields(websocket, context_id):
     some_path = "/SOME_PATH"
     http_only = True
     secure = True
@@ -188,7 +275,7 @@ async def test_cookie_set_with_all_fields(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_cookie_set_expired(websocket, context_id):
+async def test_cookie_set_params_cookie_expired(websocket, context_id):
     expiry = int((datetime.now() - timedelta(seconds=1)).timestamp())
     resp = await execute_command(
         websocket, {
@@ -210,7 +297,8 @@ async def test_cookie_set_expired(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_cookies_set_cdp_specific_fields(websocket, context_id):
+async def test_cookies_set_params_cookie_cdp_specific_fields(
+        websocket, context_id):
     resp = await execute_command(
         websocket,
         {

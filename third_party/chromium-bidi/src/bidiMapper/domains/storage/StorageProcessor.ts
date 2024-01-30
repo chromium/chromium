@@ -49,7 +49,9 @@ export class StorageProcessor {
 
     const cdpResponse = await this.#browserCdpClient.sendCommand(
       'Storage.getCookies',
-      {}
+      {
+        browserContextId: partitionKey.userContext,
+      }
     );
 
     const filteredBiDiCookies = cdpResponse.cookies
@@ -79,6 +81,7 @@ export class StorageProcessor {
     try {
       await this.#browserCdpClient.sendCommand('Storage.setCookies', {
         cookies: [cdpCookie],
+        browserContextId: partitionKey.userContext,
       });
     } catch (e: any) {
       this.#logger?.(LogType.debugError, e);
@@ -93,14 +96,18 @@ export class StorageProcessor {
     descriptor: Storage.BrowsingContextPartitionDescriptor
   ): Storage.PartitionKey {
     const browsingContextId: string = descriptor.context;
-    // Assert the browsing context exists.
-    this.#browsingContextStorage.getContext(browsingContextId);
+    const browsingContext =
+      this.#browsingContextStorage.getContext(browsingContextId);
     // https://w3c.github.io/webdriver-bidi/#associated-storage-partition.
     // Each browsing context also has an associated storage partition, which is the
     // storage partition it uses to persist data. In Chromium it's a `BrowserContext`
     // which maps to BiDi `UserContext`.
-    // TODO: extend with UserContext.
-    return {};
+    return {
+      userContext:
+        browsingContext.userContext === 'default'
+          ? undefined
+          : browsingContext.userContext,
+    };
   }
 
   #expandStoragePartitionSpecByStorageKey(
@@ -120,13 +127,16 @@ export class StorageProcessor {
       }
     }
 
+    const userContext =
+      descriptor.userContext === 'default' ? undefined : descriptor.userContext;
+
     // Partition spec is a storage partition.
     // Let partition key be partition spec.
     for (const [key, value] of Object.entries(descriptor)) {
       if (
         key !== undefined &&
         value !== undefined &&
-        !['type', 'sourceOrigin'].includes(key)
+        !['type', 'sourceOrigin', 'userContext'].includes(key)
       ) {
         unsupportedPartitionKeys.set(key, value);
       }
@@ -143,6 +153,7 @@ export class StorageProcessor {
 
     return {
       ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
+      ...(userContext === undefined ? {} : {userContext}),
     };
   }
 
