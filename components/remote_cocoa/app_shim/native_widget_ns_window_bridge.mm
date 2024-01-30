@@ -1406,6 +1406,8 @@ bool NativeWidgetNSWindowBridge::ShouldWaitInPreCommit() {
     return false;
   if (!bridged_view_)
     return false;
+  if (content_dip_size_.IsEmpty())
+    return false;
   // Suppress synchronous CA transactions during AppKit fullscreen transition
   // since there is no need for updates during such transition.
   // Re-layout and re-paint will be done after the transition. See
