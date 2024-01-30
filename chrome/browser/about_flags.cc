@@ -6517,6 +6517,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kReaderModeInCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"product-specifications",
+     commerce::flag_descriptions::kProductSpecificationsName,
+     commerce::flag_descriptions::kProductSpecificationsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kProductSpecifications)},
+
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},

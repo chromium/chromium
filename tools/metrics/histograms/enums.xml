@@ -17783,6 +17783,7 @@ from previous Chrome versions.
   <int value="-1301804101"
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:disabled"/>
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
+  <int value="-1301157018" label="ProductSpecifications:enabled"/>
   <int value="-1300934428" label="ExternalNavigationDebugLogs:enabled"/>
   <int value="-1300692087" label="SplitTabStrip:enabled"/>
   <int value="-1299599424" label="VcDlcUi:disabled"/>
@@ -23925,6 +23926,7 @@ from previous Chrome versions.
   <int value="1568172566"
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
   <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
+  <int value="1570051274" label="ProductSpecifications:disabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>

@@ -6692,6 +6692,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "product-specifications",
+    "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 106
