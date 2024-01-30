@@ -272,6 +272,10 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_language_code);
   VISIT_REP(phone_home_whole_number);
   VISIT(validity_state_bitfield);
+
+  VISIT(birthdate_day);
+  VISIT(birthdate_month);
+  VISIT(birthdate_year);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillSpecifics& proto) {
@@ -371,6 +375,9 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_between_streets_2);
   VISIT(address_between_streets_or_landmark);
   VISIT(address_overflow_and_landmark);
+  VISIT(birthdate_day);
+  VISIT(birthdate_month);
+  VISIT(birthdate_year);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::Observation& proto) {

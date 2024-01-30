@@ -191,13 +191,10 @@ message AutofillProfileSpecifics {
   reserved 63;
   reserved "disallow_settings_visible_updates";
 
-  // Removed in M123.
-  reserved 64;
-  reserved "birthdate_day";
-  reserved 65;
-  reserved "birthdate_month";
-  reserved 66;
-  reserved "birthdate_year";
+  // Birthdate fields.
+  optional int32 birthdate_day = 64;
+  optional int32 birthdate_month = 65;
+  optional int32 birthdate_year = 66;  // 4 digits.
 
   // Deprecated.
   optional string deprecated_label = 1 [deprecated = true];
