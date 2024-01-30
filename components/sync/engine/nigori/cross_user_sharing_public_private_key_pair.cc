@@ -131,7 +131,8 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
     return std::nullopt;
   }
 
-  base::span<const uint8_t> enc = encrypted_data.first(X25519_PUBLIC_VALUE_LEN);
+  base::span<const uint8_t> enc =
+      encrypted_data.first<X25519_PUBLIC_VALUE_LEN>();
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_auth_recipient(

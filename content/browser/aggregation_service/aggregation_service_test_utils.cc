@@ -350,7 +350,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info) {
-  base::span<const uint8_t> enc = payload.first(X25519_PUBLIC_VALUE_LEN);
+  base::span<const uint8_t> enc = payload.first<X25519_PUBLIC_VALUE_LEN>();
 
   std::string authenticated_info_str =
       base::StrCat({AggregatableReport::kDomainSeparationPrefix,
