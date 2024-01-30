@@ -235,11 +235,10 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   }
 
   // Usage flags to allow the display compositor to draw from it, video to
-  // decode, and allow webgl/canvas access to read from it.
+  // decode from it, and webgl/canvas to read from it.
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
