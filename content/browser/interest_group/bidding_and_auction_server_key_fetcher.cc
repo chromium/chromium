@@ -126,7 +126,7 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys(
   }
   did_prefetch_keys_ = true;
   for (auto& [coordinator, state] : fetcher_state_map_) {
-    if (state.keys.size() == 0 || state.expiration > base::Time::Now()) {
+    if (state.keys.size() == 0 || state.expiration < base::Time::Now()) {
       FetchKeys(loader_factory, coordinator, state, base::DoNothing());
     }
   }

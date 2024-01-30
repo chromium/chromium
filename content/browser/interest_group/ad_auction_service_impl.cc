@@ -184,7 +184,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(updated_group), main_frame_url_, origin(),
       GetFrame()->GetNetworkIsolationKey(), report_result_only,
-      *GetFrameURLLoaderFactory(),
+      *GetFrameURLLoaderFactory(), GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())),

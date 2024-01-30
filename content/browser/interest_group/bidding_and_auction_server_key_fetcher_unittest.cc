@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -54,7 +55,8 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   data_decoder::test::InProcessDataDecoder decoder_;
 };
@@ -398,6 +400,53 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
                                                             R"({ "keys": [{
         "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
         "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})"));
+}
+
+TEST_F(BiddingAndAuctionServerKeyFetcherTest,
+       MaybePrefetchKeysUpdatesExpiredValue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
+
+  // Get a key that we will let expire.
+  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  {
+    content::BiddingAndAuctionServerKey key;
+    base::RunLoop run_loop;
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
+    EXPECT_TRUE(
+        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
+                                                              R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})"));
+    run_loop.Run();
+    EXPECT_EQ(0x12, key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+  }
+
+  // Let the key expire.
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Days(7) + base::Seconds(1));
+
+  fetcher.MaybePrefetchKeys(&url_loader_factory_);
+  task_environment_.RunUntilIdle();
+  // We should still try fetching all the keys, including for kDefaultGCPKeyURL.
+  EXPECT_TRUE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
+  EXPECT_TRUE(url_loader_factory_.IsPending(kCoordinator1KeyURL));
+  EXPECT_TRUE(url_loader_factory_.IsPending(kCoordinator2KeyURL));
+  EXPECT_TRUE(
+      url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
+                                                            R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
+        "id": "23456789-abcd-ef01-2345-6789abcdef01"
         }]})"));
 }
 
