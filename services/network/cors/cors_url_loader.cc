@@ -4,6 +4,7 @@
 
 #include "services/network/cors/cors_url_loader.h"
 
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "net/log/net_log_values.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_util.h"
+#include "services/network/cors/preflight_controller.h"
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache.h"
@@ -62,9 +64,7 @@ enum class PreflightRequiredReason {
   kDisallowedHeader
 };
 
-// Returns std::nullopt when a CORS preflight isn't needed. Otherwise
-// returns the reason why a preflight is needed.
-std::optional<PreflightRequiredReason> NeedsPreflight(
+std::optional<PreflightRequiredReason> NeedsPrivateNetworkAccessPreflight(
     const ResourceRequest& request) {
   if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
     // Force a preflight after a private network request was detected. See the
@@ -74,6 +74,11 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
     return PreflightRequiredReason::kPrivateNetworkAccess;
   }
 
+  return std::nullopt;
+}
+
+std::optional<PreflightRequiredReason> NeedsCorsPreflight(
+    const ResourceRequest& request) {
   if (!IsCorsEnabledRequestMode(request.mode))
     return std::nullopt;
 
@@ -95,6 +100,18 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
     return PreflightRequiredReason::kDisallowedHeader;
 
   return std::nullopt;
+}
+
+// Returns std::nullopt when a preflight isn't needed. Otherwise returns the
+// reason why a preflight is needed.
+std::optional<PreflightRequiredReason> NeedsPreflight(
+    const ResourceRequest& request) {
+  std::optional<PreflightRequiredReason> needs_pna_preflight =
+      NeedsPrivateNetworkAccessPreflight(request);
+  if (needs_pna_preflight.has_value()) {
+    return needs_pna_preflight;
+  }
+  return NeedsCorsPreflight(request);
 }
 
 base::Value::Dict NetLogCorsURLLoaderStartParams(
@@ -872,6 +889,16 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
+  preflight_mode_.Clear();
+  if (fetch_cors_flag_ && NeedsCorsPreflight(request_).has_value()) {
+    preflight_mode_.Put(PreflightController::PreflightType::kCors);
+  }
+  if (NeedsPrivateNetworkAccessPreflight(request_).has_value()) {
+    preflight_mode_.Put(
+        PreflightController::PreflightType::kPrivateNetworkAccess);
+  }
+  CHECK(!preflight_mode_.Empty());
+
   // Since we're doing a preflight, we won't reuse the original request. Cancel
   // it now to free up the socket.
   network_loader_.reset();
@@ -910,7 +937,8 @@ void CorsURLLoader::StartRequest() {
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
       weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
-      context_->acam_preflight_spec_conformant(), std::move(remote_observer));
+      context_->acam_preflight_spec_conformant(), std::move(remote_observer),
+      preflight_mode_);
 }
 
 void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,

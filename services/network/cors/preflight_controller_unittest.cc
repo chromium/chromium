@@ -46,6 +46,8 @@ namespace {
 
 using ::testing::Optional;
 using WithTrustedHeaderClient = PreflightController::WithTrustedHeaderClient;
+using PreflightMode = PreflightController::PreflightMode;
+using PreflightType = PreflightController::PreflightType;
 
 TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   ResourceRequest request;
@@ -230,32 +232,57 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   request.request_initiator = url::Origin();
   net::NetLogWithSource net_log = net::NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
-  preflight_controller.PerformPreflightCheck(
-      base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}), request,
-      WithTrustedHeaderClient(false), NonWildcardRequestHeadersSupport(false),
-      PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
-      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
-      /*client_security_state=*/nullptr,
-      /*devtools_observer=*/
-      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
-      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>());
 
-  preflight_controller.PerformPreflightCheck(
-      base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}), request,
-      WithTrustedHeaderClient(true), NonWildcardRequestHeadersSupport(false),
-      PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
-      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
-      /*client_security_state=*/nullptr,
-      /*devtools_observer=*/
-      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
-      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>());
+  for (const PreflightMode& preflight_mode :
+       {PreflightMode{PreflightType::kCors},
+        PreflightMode{PreflightType::kPrivateNetworkAccess},
+        PreflightMode{PreflightType::kCors,
+                      PreflightType::kPrivateNetworkAccess}}) {
+    request.target_ip_address_space =
+        preflight_mode.Has(PreflightType::kPrivateNetworkAccess)
+            ? network::mojom::IPAddressSpace::kPrivate
+            : network::mojom::IPAddressSpace::kUnknown;
+    preflight_controller.PerformPreflightCheck(
+        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}),
+        request, WithTrustedHeaderClient(false),
+        NonWildcardRequestHeadersSupport(false),
+        PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
+        TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+        /*client_security_state=*/nullptr,
+        /*devtools_observer=*/
+        base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
+        mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>(),
+        preflight_mode);
 
-  ASSERT_EQ(2, url_loader_factory.NumPending());
+    preflight_controller.PerformPreflightCheck(
+        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}),
+        request, WithTrustedHeaderClient(true),
+        NonWildcardRequestHeadersSupport(false),
+        PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
+        TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+        /*client_security_state=*/nullptr,
+        /*devtools_observer=*/
+        base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
+        mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>(),
+        preflight_mode);
+  }
+
+  ASSERT_EQ(6, url_loader_factory.NumPending());
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
             url_loader_factory.GetPendingRequest(0)->options);
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight |
                 mojom::kURLLoadOptionUseHeaderClient,
             url_loader_factory.GetPendingRequest(1)->options);
+  EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
+            url_loader_factory.GetPendingRequest(2)->options);
+  EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight |
+                mojom::kURLLoadOptionUseHeaderClient,
+            url_loader_factory.GetPendingRequest(3)->options);
+  EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
+            url_loader_factory.GetPendingRequest(4)->options);
+  EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight |
+                mojom::kURLLoadOptionUseHeaderClient,
+            url_loader_factory.GetPendingRequest(5)->options);
 }
 
 class MockDevToolsObserver : public mojom::DevToolsObserver {
@@ -461,7 +488,9 @@ class PreflightControllerTest : public testing::Test {
       net::IsolationInfo isolation_info = net::IsolationInfo(),
       PrivateNetworkAccessPreflightBehavior private_network_access_behavior =
           PrivateNetworkAccessPreflightBehavior::kWarn,
-      mojom::ClientSecurityStatePtr client_security_state = nullptr) {
+      mojom::ClientSecurityStatePtr client_security_state = nullptr,
+      const PreflightMode& preflight_mode = PreflightMode{
+          PreflightType::kCors}) {
     DCHECK(preflight_controller_);
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -479,7 +508,8 @@ class PreflightControllerTest : public testing::Test {
         weak_devtools_observer_factory.GetWeakPtr(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
                                     net::NetLogSourceType::URL_REQUEST),
-        true, mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>());
+        true, mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>(),
+        preflight_mode);
     run_loop_->Run();
   }
 
@@ -746,7 +776,8 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kEnforce,
-                        std::move(client_security_state));
+                        std::move(client_security_state),
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::ERR_FAILED, net_error());
 
   CorsErrorStatus expected_status(
@@ -780,7 +811,8 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequestWarningOnly) {
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kWarn,
-                        std::move(client_security_state));
+                        std::move(client_security_state),
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::OK, net_error());
 
   CorsErrorStatus expected_status(
@@ -832,7 +864,8 @@ TEST_F(PreflightControllerTest,
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kEnforce,
-                        /*client_security_state=*/nullptr);
+                        /*client_security_state=*/nullptr,
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::OK, net_error());
 }
 
@@ -866,7 +899,8 @@ TEST_F(PreflightControllerTest,
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout,
-                        /*client_security_state=*/nullptr);
+                        /*client_security_state=*/nullptr,
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::ERR_TIMED_OUT, net_error());
 }
 
@@ -900,7 +934,8 @@ TEST_F(PreflightControllerTest,
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kWarn,
-                        /*client_security_state=*/nullptr);
+                        /*client_security_state=*/nullptr,
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::OK, net_error());
 }
 
@@ -946,7 +981,8 @@ TEST_F(PreflightControllerNoPNAPreflightShortTimeoutTest,
 
   PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
                         PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout,
-                        /*client_security_state=*/nullptr);
+                        /*client_security_state=*/nullptr,
+                        PreflightMode{PreflightType::kPrivateNetworkAccess});
   EXPECT_EQ(net::OK, net_error());
 }
 

@@ -322,6 +322,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   bool has_authorization_covered_by_wildcard_ = false;
 
+  PreflightController::PreflightMode preflight_mode_;
+
   // Whether the current preflight request is 1) solely sent for PNA, not for
   // CORS and PNA at the same time, and 2) in warning mode.
   //
