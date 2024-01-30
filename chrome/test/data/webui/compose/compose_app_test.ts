@@ -10,7 +10,7 @@ import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
@@ -131,13 +131,13 @@ suite('ComposeApp', () => {
     }
     const appWithTextSelected =
         await initializeNewAppWithTextSelectedState(true);
-    assertTrue(
-        appWithTextSelected.$.acceptButton.textContent!.includes('Replace'));
+    assertStringContains(
+        appWithTextSelected.$.acceptButton.textContent!, 'Replace');
 
     const appWithNoTextSelected =
         await initializeNewAppWithTextSelectedState(false);
-    assertTrue(
-        appWithNoTextSelected.$.acceptButton.textContent!.includes('Insert'));
+    assertStringContains(
+        appWithNoTextSelected.$.acceptButton.textContent!, 'Insert');
   });
 
   test('RefreshesResult', async () => {
@@ -165,8 +165,8 @@ suite('ComposeApp', () => {
     assertTrue(
         isVisible(app.$.resultContainer),
         'App result container should be visible.');
-    assertTrue(
-        app.$.resultContainer.textContent!.includes('Refreshed output.'));
+    assertStringContains(
+        app.$.resultText.$.root.innerText, 'Refreshed output.');
   });
 
   test('UpdatesScrollableBodyAfterResize', async () => {
@@ -306,8 +306,8 @@ suite('ComposeApp', () => {
       },
     });
     assertTrue(isVisible(appWithResult.$.resultContainer));
-    assertTrue(appWithResult.$.resultContainer.textContent!.includes(
-        'here is a result'));
+    assertStringContains(
+        appWithResult.$.resultText.$.root.innerText, 'here is a result');
     assertTrue(appWithResult.$.undoButton.disabled);
 
     // Input with response with undo available.
@@ -464,7 +464,7 @@ suite('ComposeApp', () => {
       await mockResponse('', status);
 
       assertTrue(isVisible(app.$.errorFooter));
-      assertTrue(app.$.errorFooter.textContent!.includes(errorMessage));
+      assertStringContains(app.$.errorFooter.textContent!, errorMessage);
     }
 
     await testError(ComposeStatus.kFiltered, 'errorFiltered');
@@ -559,7 +559,7 @@ suite('ComposeApp', () => {
     await mockResponse('new response');
     assertEquals('Here is an even better input.', args.input);
     assertTrue(args.edited);
-    assertTrue(app.$.resultContainer.textContent!.includes('new response'));
+    assertStringContains(app.$.resultText.$.root.innerText, 'new response');
   });
 
   test('ComposeWithLengthToneOptionResult', async () => {
@@ -635,8 +635,8 @@ suite('ComposeApp', () => {
     // UI is updated.
     assertEquals('my old input', appWithUndo.$.textarea.value);
     assertTrue(isVisible(appWithUndo.$.resultContainer));
-    assertTrue(appWithUndo.$.resultContainer.textContent!.includes(
-        'some undone result'));
+    assertStringContains(
+        appWithUndo.$.resultText.$.root.innerText, 'some undone result');
     assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
     assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
   });
@@ -654,19 +654,41 @@ suite('ComposeApp', () => {
   });
 
   test('PartialResponseIsShown', async () => {
+    // Make streaming work instantly.
+    app.$.resultText.enableInstantStreamingForTesting();
+
+    // Although streaming happens immediately, it requires a sequence of events.
+    // Wait for those events to complete.
+    const wait = async () => {
+      for (let i = 0; i < 5; i++) {
+        await flushTasks();
+      }
+    };
+
     mockInput('Some fake input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
 
     // A partial response is shown.
-    await mockPartialResponse('partial response');
-    assertTrue(isVisible(app.$.partialResultText));
-    assertEquals(app.$.partialResultText.innerText.trim(), 'partial response');
+    await mockPartialResponse('partial response here');
+    await wait();
+    assertTrue(
+        isVisible(app.$.resultText.$.partialResultText),
+        'partial result text should be shown');
+    assertEquals(app.$.resultText.$.root.innerText, 'partial response');
 
     // The final response hides the partial response text.
     await mockResponse(
-        'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/ true);
-    assertFalse(isVisible(app.$.partialResultText));
-    assertTrue(isVisible(app.$.onDeviceUsedFooter));
+        'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/
+        true);
+    await flushTasks();
+    assertTrue(
+        (app as any).showOnDeviceDogfoodFooter_(),
+        'show footer should be true');
+    await wait();
+    assertTrue(
+        isVisible(app.$.onDeviceUsedFooter),
+        'on-device footer should be shown');
+    assertEquals(app.$.resultText.$.root.innerText.trim(), 'some response');
   });
 });
