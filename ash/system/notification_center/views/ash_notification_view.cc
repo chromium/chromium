@@ -168,9 +168,6 @@ constexpr int kIconViewSizeRenderArcInChromeEnabled = 36;
 // than this value, we draw a background around the image.
 constexpr int kSmallImageBackgroundThreshold = 6;
 
-// The horizontal spacing between control button icons.
-constexpr int kControlButtonsHorizontalSpacing = 6;
-
 // The size of an icon within a control button. Note that this is not the size
 // of a control button itself.
 constexpr int kControlButtonsIconSize = 14;
@@ -533,7 +530,7 @@ AshNotificationView::AshNotificationView(
                                       CreateControlButtonsBuilder()
                                           .CopyAddressTo(&control_buttons_view_)
                                           .SetBetweenButtonSpacing(
-                                              kControlButtonsHorizontalSpacing)
+                                              kNotificationControlButtonsHorizontalSpacing)
                                           .SetCloseButtonIcon(
                                               kNotificationCloseControlButtonIcon)
                                           .SetSettingsButtonIcon(

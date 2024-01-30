@@ -49,6 +49,17 @@ gfx::ImageSkia CreateNotificationAppIcon(
       kNotificationAppIconViewSize / 2, icon_background_color, app_icon);
 }
 
+gfx::ImageSkia CreateNotificationItemIcon(
+    const message_center::NotificationItem* item) {
+  // TODO(b/284512022): Return a resized image provided in `item` or a
+  // default contact icon. Remove the temporary implementation returning a
+  // hardcoded chrome icon.
+  return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+      kNotificationAppIconViewSize / 2, SK_ColorRED,
+      gfx::CreateVectorIcon(message_center::kProductIcon,
+                            kNotificationAppIconImageSize, SK_ColorBLACK));
+}
+
 SkColor CalculateIconBackgroundColor(
     const message_center::Notification* notification) {
   SkColor default_color = AshColorProvider::Get()->GetControlsLayerColor(

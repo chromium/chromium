@@ -11,6 +11,7 @@
 
 namespace message_center {
 class Notification;
+class NotificationItem;
 }  // namespace message_center
 
 namespace ui {
@@ -30,6 +31,11 @@ namespace ash::notification_style_utils {
 // icon.
 gfx::ImageSkia CreateNotificationAppIcon(
     const message_center::Notification* notification);
+
+// Returns a circular icon using the `ImageModel` provided in
+// `NotificationItem`. If no image is provided a default icon is returned.
+gfx::ImageSkia CreateNotificationItemIcon(
+    const message_center::NotificationItem* item);
 
 // Calculates the background color for the icon based on the current theme.
 SkColor CalculateIconBackgroundColor(
