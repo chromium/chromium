@@ -609,12 +609,17 @@ OutOfFlowLayoutPart::ApplyInsetArea(
     }
   }
 
+  PhysicalSize container_physical_content_size = ToPhysicalSize(
+      container_info.rect.size, GetConstraintSpace().GetWritingMode());
+  LayoutUnit available_width = container_physical_content_size.width;
+  LayoutUnit available_height = container_physical_content_size.height;
+
   absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
-                        candidate.Node().Style().GetWritingDirection(),
-                        candidate.Node().Style().AnchorDefault(),
-                        *candidate.Node().GetLayoutBox(), anchor_queries,
-                        implicit_anchor);
+  CreateAnchorEvaluator(
+      anchor_evaluator_storage, container_info, container_physical_content_size,
+      candidate.Node().Style().GetWritingDirection(),
+      candidate.Node().Style().AnchorDefault(),
+      *candidate.Node().GetLayoutBox(), anchor_queries, implicit_anchor);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
   if (!anchor_evaluator) {
     return container_info;
@@ -630,11 +635,6 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   const bool right_or_bottom = true;
   const bool left_or_top = false;
 
-  PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_info.rect.size, GetConstraintSpace().GetWritingMode());
-  LayoutUnit available_width = container_physical_content_size.width;
-  LayoutUnit available_height = container_physical_content_size.height;
-
   // The InsetArea::Used*() methods either return a 0px length or an anchor()
   // function, using top/left/right/bottom, to adjust the containing block to
   // align with either of the physical edges of the default anchor.
@@ -642,22 +642,22 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // IsCalculated() means the value is an anchor() function, otherwise the inset
   // adjustment is already set to 0 above.
   if (inset_area.UsedTop().IsCalculated()) {
-    anchor_evaluator->SetAxis(y_axis, left_or_top, available_height);
+    anchor_evaluator->SetAxis(y_axis, left_or_top);
     top = inset_area.UsedTop().NonNanCalculatedValue(available_height,
                                                      anchor_evaluator);
   }
   if (inset_area.UsedBottom().IsCalculated()) {
-    anchor_evaluator->SetAxis(y_axis, right_or_bottom, available_height);
+    anchor_evaluator->SetAxis(y_axis, right_or_bottom);
     bottom = inset_area.UsedBottom().NonNanCalculatedValue(available_height,
                                                            anchor_evaluator);
   }
   if (inset_area.UsedLeft().IsCalculated()) {
-    anchor_evaluator->SetAxis(x_axis, left_or_top, available_width);
+    anchor_evaluator->SetAxis(x_axis, left_or_top);
     left = inset_area.UsedLeft().NonNanCalculatedValue(available_width,
                                                        anchor_evaluator);
   }
   if (inset_area.UsedRight().IsCalculated()) {
-    anchor_evaluator->SetAxis(x_axis, right_or_bottom, available_width);
+    anchor_evaluator->SetAxis(x_axis, right_or_bottom);
     right = inset_area.UsedRight().NonNanCalculatedValue(available_width,
                                                          anchor_evaluator);
   }
@@ -1712,6 +1712,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 void OutOfFlowLayoutPart::CreateAnchorEvaluator(
     absl::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
     const ContainingBlockInfo& container_info,
+    const PhysicalSize& available_size,
     WritingDirectionMode self_writing_direction,
     const ScopedCSSName* default_anchor_specifier,
     const LayoutBox& candidate_layout_box,
@@ -1732,14 +1733,16 @@ void OutOfFlowLayoutPart::CreateAnchorEvaluator(
         candidate_layout_box, *anchor_queries, default_anchor_specifier,
         implicit_anchor, *css_containing_block, container_converter,
         self_writing_direction,
-        container_converter.ToPhysical(container_info.rect).offset);
+        container_converter.ToPhysical(container_info.rect).offset,
+        available_size);
   } else if (const LogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
         candidate_layout_box, *anchor_query, default_anchor_specifier,
         implicit_anchor, container_converter, self_writing_direction,
-        container_converter.ToPhysical(container_info.rect).offset);
+        container_converter.ToPhysical(container_info.rect).offset,
+        available_size);
   } else {
     anchor_evaluator_storage.emplace();
   }
@@ -1960,10 +1963,13 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   WritingDirectionMode self_writing_direction =
       node_info.node.Style().GetWritingDirection();
+  PhysicalSize available_size =
+      ToPhysicalSize(node_info.constraint_space.AvailableSize(),
+                     self_writing_direction.GetWritingMode());
   // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
   absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(
-      anchor_evaluator_storage, node_info.container_info,
+      anchor_evaluator_storage, node_info.container_info, available_size,
       self_writing_direction, node_info.node.Style().AnchorDefault(),
       *node_info.node.GetLayoutBox(), anchor_queries, implicit_anchor);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;

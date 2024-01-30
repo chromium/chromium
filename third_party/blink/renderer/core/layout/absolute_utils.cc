@@ -417,8 +417,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   std::optional<LayoutUnit> left;
   if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
-                              /* is_right_or_bottom */ false,
-                              available_size.width);
+                              /* is_right_or_bottom */ false);
     left = MinimumValueForLength(left_length, available_size.width,
                                  anchor_evaluator);
   } else if (force_x_insets_to_zero) {
@@ -427,8 +426,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   std::optional<LayoutUnit> right;
   if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
-                              /* is_right_or_bottom */ true,
-                              available_size.width);
+                              /* is_right_or_bottom */ true);
     right = MinimumValueForLength(right_length, available_size.width,
                                   anchor_evaluator);
   } else if (force_x_insets_to_zero) {
@@ -438,8 +436,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   std::optional<LayoutUnit> top;
   if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
-                              /* is_right_or_bottom */ false,
-                              available_size.height);
+                              /* is_right_or_bottom */ false);
     top = MinimumValueForLength(top_length, available_size.height,
                                 anchor_evaluator);
   } else if (force_y_insets_to_zero) {
@@ -449,8 +446,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   if (const Length& bottom_length = style.UsedBottom();
       !bottom_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
-                              /* is_right_or_bottom */ true,
-                              available_size.height);
+                              /* is_right_or_bottom */ true);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    anchor_evaluator);
   } else if (force_y_insets_to_zero) {
@@ -508,13 +504,12 @@ LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
       available_logical_size, writing_direction.GetWritingMode());
   absl::optional<LayoutUnit> left;
   if (has_anchor_center_in_x) {
-    left = anchor_evaluator->GetPhysicalAnchorCenterOffset(
-        /* is_y_axis */ false, available_size.width);
+    left =
+        anchor_evaluator->GetPhysicalAnchorCenterOffset(/* is_y_axis */ false);
   }
   absl::optional<LayoutUnit> top;
   if (has_anchor_center_in_y) {
-    top = anchor_evaluator->GetPhysicalAnchorCenterOffset(
-        /* is_y_axis */ true, available_size.height);
+    top = anchor_evaluator->GetPhysicalAnchorCenterOffset(/* is_y_axis */ true);
   }
 
   // Convert result back to logical against `writing_direction`.

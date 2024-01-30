@@ -469,7 +469,7 @@ absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 
   DCHECK(AnchorQuery());
   if (absl::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
-          *anchor_reference, anchor_value, percentage, available_size_,
+          *anchor_reference, anchor_value, percentage, AvailableSizeAlongAxis(),
           container_converter_, self_writing_direction_, offset_to_padding_box_,
           is_y_axis_, is_right_or_bottom_)) {
     bool& needs_scroll_adjustment = is_y_axis_ ? needs_scroll_adjustment_in_y_
@@ -523,9 +523,8 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
 }
 
 absl::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
-    bool is_y_axis,
-    LayoutUnit available_size) {
-  SetAxis(is_y_axis, /* is_right_or_bottom */ false, available_size);
+    bool is_y_axis) {
+  SetAxis(is_y_axis, /* is_right_or_bottom */ false);
   // Parameter `percentage` is unused for any non-percentage anchor value.
   const double dummy_percentage = 0;
   return EvaluateAnchor(*AnchorSpecifierValue::Default(),

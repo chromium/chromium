@@ -263,14 +263,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box)
+                      const PhysicalOffset& offset_to_padding_box,
+                      const PhysicalSize& available_size)
       : query_object_(&query_object),
         anchor_query_(&anchor_query),
         default_anchor_specifier_(default_anchor_specifier),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        available_size_(available_size) {
     DCHECK(anchor_query_);
   }
 
@@ -283,7 +285,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box)
+                      const PhysicalOffset& offset_to_padding_box,
+                      const PhysicalSize& available_size)
       : query_object_(&query_object),
         anchor_queries_(&anchor_queries),
         default_anchor_specifier_(default_anchor_specifier),
@@ -291,7 +294,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        available_size_(available_size) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -311,10 +315,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   }
 
   // This must be set before evaluating `anchor()` function.
-  void SetAxis(bool is_y_axis,
-               bool is_right_or_bottom,
-               LayoutUnit available_size) {
-    available_size_ = available_size;
+  void SetAxis(bool is_y_axis, bool is_right_or_bottom) {
     is_y_axis_ = is_y_axis;
     is_right_or_bottom_ = is_right_or_bottom;
   }
@@ -330,9 +331,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   // Returns the offset `anchor-center` aligns to in the current physical axis,
   // or nullopt if there's no default anchor.
-  absl::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(
-      bool is_y_axis,
-      LayoutUnit available_size);
+  absl::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(bool is_y_axis);
 
   bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
 
@@ -353,6 +352,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   const LayoutObject* DefaultAnchor() const;
   const PaintLayer* DefaultAnchorScrollContainerLayer() const;
 
+  LayoutUnit AvailableSizeAlongAxis() const {
+    return is_y_axis_ ? available_size_.height : available_size_.width;
+  }
+
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
   const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
@@ -365,7 +368,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
                                                TextDirection::kLtr};
 
   PhysicalOffset offset_to_padding_box_;
-  LayoutUnit available_size_;
+
+  // Either width or height will be used, depending on `is_y_axis_`.
+  PhysicalSize available_size_;
 
   // These fields will be populated during `anchor()` evaluation if needed.
   mutable absl::optional<const LayoutObject*> default_anchor_;

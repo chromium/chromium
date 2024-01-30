@@ -117,7 +117,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* available_size */
+        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
@@ -158,7 +160,9 @@ class AbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* available_size */
+        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
