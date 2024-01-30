@@ -559,6 +559,11 @@ bool IsFeedAblationEnabled() {
 }
 
 bool IsFollowUIUpdateEnabled() {
+  std::string launched_countries[1] = {"US"};
+  if (base::Contains(launched_countries,
+                     country_codes::GetCurrentCountryCode())) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);
 }
 
