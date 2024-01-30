@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
+#include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
 
 #include <string>
 
@@ -16,8 +16,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/profile_token_web_signin_interceptor_factory.h"
-#include "chrome/browser/signin/token_managed_profile_creator.h"
+#include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor_factory.h"
+#include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -139,16 +139,19 @@ void ProfileTokenWebSigninInterceptor::OnProfileCreationChoice(
   DCHECK(!profile_creator_);
   if (switch_to_entry_) {
     // Unretained is fine because the profile creator is owned by this.
-    profile_creator_ = std::make_unique<TokenManagedProfileCreator>(
+    profile_creator_ = std::make_unique<ManagedProfileCreator>(
         profile_, switch_to_entry_->GetPath(),
+        std::make_unique<TokenManagedProfileCreationDelegate>(),
         base::BindOnce(
             &ProfileTokenWebSigninInterceptor::OnNewSignedInProfileCreated,
             base::Unretained(this)));
   } else {
     // Unretained is fine because the profile creator is owned by this.
-    profile_creator_ = std::make_unique<TokenManagedProfileCreator>(
-        profile_, intercepted_id_, enrollment_token_,
+    profile_creator_ = std::make_unique<ManagedProfileCreator>(
+        profile_, intercepted_id_,
         profiles::GetDefaultNameForNewEnterpriseProfile(),
+        std::make_unique<TokenManagedProfileCreationDelegate>(
+            enrollment_token_),
         base::BindOnce(
             &ProfileTokenWebSigninInterceptor::OnNewSignedInProfileCreated,
             base::Unretained(this)));

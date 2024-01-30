@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
+#include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

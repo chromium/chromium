@@ -9552,9 +9552,11 @@ test("unit_tests") {
       "../browser/enterprise/profile_management/profile_management_navigation_throttle_unittest.cc",
       "../browser/enterprise/profile_management/saml_response_parser_unittest.cc",
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
+      "../browser/enterprise/signin/managed_profile_creator_unittest.cc",
+      "../browser/enterprise/signin/oidc_managed_profile_creation_delegate_unittest.cc",
+      "../browser/enterprise/signin/profile_token_web_signin_interceptor_unittest.cc",
+      "../browser/enterprise/signin/token_managed_profile_creation_delegate_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
-      "../browser/signin/profile_token_web_signin_interceptor_unittest.cc",
-      "../browser/signin/token_managed_profile_creator_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 

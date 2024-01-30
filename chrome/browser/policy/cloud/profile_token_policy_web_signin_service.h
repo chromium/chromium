@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 

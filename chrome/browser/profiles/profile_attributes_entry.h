@@ -38,6 +38,11 @@ enum class NameForm {
   kGaiaAndLocalName,
 };
 
+struct ProfileManagementOicdTokens {
+  std::string auth_token;
+  std::string id_token;
+};
+
 class ProfileAttributesEntry {
  public:
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -155,6 +160,11 @@ class ProfileAttributesEntry {
   // Returns the enrollment token to get policies for a profile.
   std::string GetProfileManagementEnrollmentToken() const;
 
+  // Returns the Oauth token and Id token from the OIDC authentication response
+  // that created the profile. The existence of these tokens are also used to
+  // check whether the profile is created by an OIDC authentication response.
+  ProfileManagementOicdTokens GetProfileManagementOidcTokens() const;
+
   // Returns the signin id for a profile managed by a token. This may be empty
   // even if there is an enrollment token.
   std::string GetProfileManagementId() const;
@@ -199,6 +209,8 @@ class ProfileAttributesEntry {
   void SetHostedDomain(std::string hosted_domain);
 
   void SetProfileManagementEnrollmentToken(const std::string& enrollment_token);
+  void SetProfileManagementOidcTokens(
+      const ProfileManagementOicdTokens& oidc_tokens);
   void SetProfileManagementId(const std::string& id);
 
   void SetAuthInfo(const std::string& gaia_id,

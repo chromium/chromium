@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
-#define CHROME_BROWSER_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
+#define CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/signin/token_managed_profile_creator.h"
+#include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -29,7 +29,7 @@ class ProfileAttributesEntry;
 // * MaybeInterceptSigninProfile() is called after an enrollment token is found.
 // * Interception UI is shown by the delegate.
 // * If the user approved, a new profile is created and the token written in the
-//   new profile's storage, using TokenManagedProfileCreator.
+//   new profile's storage, using `TokenManagedProfileCreationDelegate`.
 // * At this point, the flow ends in this profile, and continues in the new
 //   profile.
 // * When the account is available on the web in the new profile:
@@ -82,7 +82,7 @@ class ProfileTokenWebSigninInterceptor : public WebSigninInterceptor,
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Delegate> delegate_;
-  std::unique_ptr<TokenManagedProfileCreator> profile_creator_;
+  std::unique_ptr<ManagedProfileCreator> profile_creator_;
 
   // Members below are related to the interception in progress.
   base::WeakPtr<content::WebContents> web_contents_;
@@ -96,4 +96,4 @@ class ProfileTokenWebSigninInterceptor : public WebSigninInterceptor,
       interception_bubble_handle_;
 };
 
-#endif  // CHROME_BROWSER_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_
