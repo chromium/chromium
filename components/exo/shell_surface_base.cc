@@ -1223,7 +1223,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     }
   }
 
-  widget_->GetRootView()->Layout();
+  widget_->GetRootView()->DeprecatedLayoutImmediately();
   // TODO(oshima): We probably should wait applying these if the
   // window is animating.
   set_bounds_is_dirty(true);

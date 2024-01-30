@@ -298,7 +298,7 @@ void MediaNotificationViewImpl::SetExpanded(bool expanded) {
   UpdateViewForExpandedState();
 
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -369,7 +369,7 @@ void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
   container_->OnMediaSessionInfoChanged(session_info);
 
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -411,7 +411,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
 
   MaybeShowOrHideArtistLabel();
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -425,7 +425,7 @@ void MediaNotificationViewImpl::UpdateWithMediaActions(
   UpdateViewForExpandedState();
 
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -444,7 +444,7 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 
   MaybeShowOrHideArtistLabel();
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -572,7 +572,7 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
         ->SetFlexForView(title_artist_row_, 1);
   }
 
-  main_row_->Layout();
+  main_row_->DeprecatedLayoutImmediately();
 
   if (GetMediaNotificationBackground()->UpdateArtworkMaxWidthPct(
           expanded ? kMediaImageMaxWidthExpandedPct : kMediaImageMaxWidthPct)) {
