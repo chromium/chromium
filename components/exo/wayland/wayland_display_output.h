@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/exo/wayland/output_metrics.h"
 
 struct wl_client;
 struct wl_global;
@@ -30,7 +31,7 @@ namespace wayland {
 // they're removed immediately.
 class WaylandDisplayOutput {
  public:
-  explicit WaylandDisplayOutput(int64_t display_id);
+  explicit WaylandDisplayOutput(const display::Display& display);
 
   WaylandDisplayOutput(const WaylandDisplayOutput&) = delete;
   WaylandDisplayOutput& operator=(const WaylandDisplayOutput&) = delete;
@@ -42,8 +43,11 @@ class WaylandDisplayOutput {
   // Number of times to retry deletion.
   static constexpr int kDeleteRetries = 3;
 
-  int64_t id() const;
-  void set_global(wl_global* global);
+  int64_t id() const { return id_; }
+  const OutputMetrics& metrics() const { return metrics_; }
+
+  void set_global(wl_global* global) { global_ = global; }
+  const wl_global* global() const { return global_; }
 
   // Register/Unregister output resources, which will be used to
   // notify surface when enter/leave the output.
@@ -72,6 +76,7 @@ class WaylandDisplayOutput {
 
  private:
   const int64_t id_;
+  OutputMetrics metrics_;
   raw_ptr<wl_global, DanglingUntriaged> global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
   bool had_registered_output_ = false;

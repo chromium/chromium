@@ -55,7 +55,7 @@ void OutputController::OnDidProcessDisplayChanges(
   // clients in a temporary state where no outputs are present.
   for (const display::Display& added_display :
        configuration_change.added_displays) {
-    auto output = std::make_unique<WaylandDisplayOutput>(added_display.id());
+    auto output = std::make_unique<WaylandDisplayOutput>(added_display);
     output->set_global(wl_global_create(delegate_->GetWaylandDisplay(),
                                         &wl_output_interface, kWlOutputVersion,
                                         output.get(), bind_output));

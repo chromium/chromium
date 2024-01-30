@@ -103,6 +103,9 @@ class Server : public OutputController::Delegate {
   bool IsClientDestroyed(wl_client* client) const;
 
   SerialTracker* serial_tracker_for_test() { return serial_tracker_.get(); }
+  OutputController* output_controller_for_testing() {
+    return output_controller_.get();
+  }
 
  protected:
   friend class UiControls;
