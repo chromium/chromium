@@ -90,7 +90,6 @@ component("clipboard") {
   sources = [
     "clipboard.cc",
     "clipboard.h",
-    "clipboard_content_type.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",
     "clipboard_monitor.cc",

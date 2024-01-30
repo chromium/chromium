@@ -916,9 +916,9 @@ void ClipboardNonBacked::WriteText(base::StringPiece text) {
   ClipboardDataBuilder::WriteText(text);
 }
 
-void ClipboardNonBacked::WriteHTML(base::StringPiece markup,
-                                   absl::optional<base::StringPiece> source_url,
-                                   ClipboardContentType /* content_type */) {
+void ClipboardNonBacked::WriteHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   ClipboardDataBuilder::WriteHTML(markup, source_url);
 }
 

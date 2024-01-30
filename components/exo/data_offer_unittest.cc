@@ -765,7 +765,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteHTML(u"Test data", "", ui::ClipboardContentType::kSanitized);
+    writer.WriteHTML(u"Test data", "");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());

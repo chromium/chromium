@@ -501,11 +501,10 @@ void ClipboardHostImpl::WriteText(const std::u16string& text) {
 
 void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
-  CopyIfAllowed(
-      markup.size() * sizeof(std::u16string::value_type),
-      base::BindOnce(&ui::ScopedClipboardWriter::WriteHTML,
-                     base::Unretained(clipboard_writer_.get()), markup,
-                     url.spec(), ui::ClipboardContentType::kSanitized));
+  CopyIfAllowed(markup.size() * sizeof(std::u16string::value_type),
+                base::BindOnce(&ui::ScopedClipboardWriter::WriteHTML,
+                               base::Unretained(clipboard_writer_.get()),
+                               markup, url.spec()));
 }
 
 void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {

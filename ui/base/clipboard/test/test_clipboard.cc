@@ -339,8 +339,7 @@ void TestClipboard::WriteText(base::StringPiece text) {
 }
 
 void TestClipboard::WriteHTML(base::StringPiece markup,
-                              absl::optional<base::StringPiece> source_url,
-                              ClipboardContentType /* content_type */) {
+                              absl::optional<base::StringPiece> source_url) {
   GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
   GetDefaultStore().html_src_url = source_url.value_or("");
 }

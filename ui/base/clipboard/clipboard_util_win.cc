@@ -853,9 +853,7 @@ bool GetWebCustomData(
 // Helper method for converting from text/html to MS CF_HTML.
 // Documentation for the CF_HTML format is available at
 // http://msdn.microsoft.com/en-us/library/aa767917(VS.85).aspx
-std::string HtmlToCFHtml(base::StringPiece html,
-                         base::StringPiece base_url,
-                         ClipboardContentType content_type) {
+std::string HtmlToCFHtml(base::StringPiece html, base::StringPiece base_url) {
   if (html.empty()) {
     return std::string();
   }
@@ -935,14 +933,9 @@ std::string HtmlToCFHtml(base::StringPiece html,
   // getData calls for apps that rely on markup with duplicate tags (e.g. Excel
   // Online expects this type of markup). As a result, if the HTML is sanitized,
   // we only "stick" the CF_HTML headers to the HTML string.
-  std::string markup;
-  if (content_type == ClipboardContentType::kSanitized) {
-    markup = kStartMarkup;
-  }
+  std::string markup = kStartMarkup;
   base::StrAppend(&markup, {kStartFragment, html, kEndFragment});
-  if (content_type == ClipboardContentType::kSanitized) {
-    markup += kEndMarkup;
-  }
+  markup += kEndMarkup;
 
   // Calculate the offsets required for the HTML headers. This is used by Apps
   // on Windows to figure out the length of the HTML document and fragments.
@@ -958,14 +951,10 @@ std::string HtmlToCFHtml(base::StringPiece html,
 
   size_t start_html_offset = headers_offset;
   size_t start_fragment_offset = headers_offset + strlen(kStartFragment);
-  if (content_type == ClipboardContentType::kSanitized) {
-    start_fragment_offset += strlen(kStartMarkup);
-  }
+  start_fragment_offset += strlen(kStartMarkup);
   size_t end_fragment_offset = start_fragment_offset + html.length();
   size_t end_html_offset = end_fragment_offset + strlen(kEndFragment);
-  if (content_type == ClipboardContentType::kSanitized) {
-    end_html_offset += strlen(kEndMarkup);
-  }
+  end_html_offset += strlen(kEndMarkup);
 
   std::string result =
       base::StringPrintf(kHeader, start_html_offset, end_html_offset,

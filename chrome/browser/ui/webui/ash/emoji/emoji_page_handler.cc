@@ -96,8 +96,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
   auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste);
 
-  clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "",
-                       ui::ClipboardContentType::kSanitized);
+  clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "");
 
   // Show a toast that says "GIF not supported. Copied to clipboard.".
   ToastManager::Get()->Show(ToastData(

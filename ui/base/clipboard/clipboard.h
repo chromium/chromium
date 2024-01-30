@@ -31,7 +31,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/base/clipboard/clipboard_content_type.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/file_info.h"
@@ -394,7 +393,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
   struct ObjectMapParams {
     ObjectMapParams();
-    ObjectMapParams(Data data, ClipboardContentType content_type);
+    explicit ObjectMapParams(Data data);
 
     ObjectMapParams(const ObjectMapParams& other);
     ObjectMapParams& operator=(const ObjectMapParams& other);
@@ -405,7 +404,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     // The index is the variant's index, to ensure that this map only holds one
     // of each possible variant subtype.
     Data data;
-    ClipboardContentType content_type;
   };
   using ObjectMap = std::map<size_t, ObjectMapParams>;
 
@@ -446,8 +444,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteText(base::StringPiece text) = 0;
 
   virtual void WriteHTML(base::StringPiece markup,
-                         absl::optional<base::StringPiece> source_url,
-                         ClipboardContentType content_type) = 0;
+                         absl::optional<base::StringPiece> source_url) = 0;
 
   virtual void WriteSvg(base::StringPiece markup) = 0;
 

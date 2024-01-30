@@ -356,8 +356,7 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
       scw.WriteText(base::UTF8ToUTF16(text));
-      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"",
-                    ui::ClipboardContentType::kSanitized);
+      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"");
     }
 
     // ClipboardHistory will post a task to process clipboard data in order to

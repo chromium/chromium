@@ -1021,8 +1021,7 @@ class ClipboardHistoryRefreshDisplayFormatTest
   void WriteHtmlAndConfirm(const std::string& html) {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"",
-                    ui::ClipboardContentType::kUnsanitized);
+      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"");
     }
 
     WaitForOperationConfirmed();
