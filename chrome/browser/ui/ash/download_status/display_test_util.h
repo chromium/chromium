@@ -27,6 +27,10 @@ crosapi::mojom::DownloadStatusPtr CreateInProgressDownloadStatus(
     int64_t received_bytes,
     const std::optional<int64_t>& total_bytes = std::nullopt);
 
+// Updates `status` to indicate a completed download.
+// NOTE: It should be called only when `status` has a defined progress.
+void MarkDownloadStatusCompleted(crosapi::mojom::DownloadStatus& status);
+
 }  // namespace ash::download_status
 
 #endif  // CHROME_BROWSER_UI_ASH_DOWNLOAD_STATUS_DISPLAY_TEST_UTIL_H_

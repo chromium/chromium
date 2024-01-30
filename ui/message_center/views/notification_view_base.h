@@ -125,9 +125,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Whether the notification view is showing `icon_view_`.
   virtual bool IsIconViewShown() const;
 
+  views::Label* message_label_for_testing() { return message_label_; }
+
   views::ProgressBar* progress_bar_view_for_testing() {
     return progress_bar_view_;
   }
+
+  views::Label* status_view_for_testing() { return status_view_; }
 
  protected:
   explicit NotificationViewBase(const Notification& notification);

@@ -112,6 +112,34 @@ class DownloadNotificationDelegate
 
 // Helpers ---------------------------------------------------------------------
 
+// Calculates the progress value accepted by the notification progress bar.
+// Returns a `std::nullopt` if the notification progress bar should be hidden.
+std::optional<int> CalculateProgressValue(const Progress& progress) {
+  // When `progress` is hidden, the notification's progress bar does not show.
+  if (progress.hidden()) {
+    return std::nullopt;
+  }
+
+  const std::optional<int64_t>& received_bytes = progress.received_bytes();
+  const std::optional<int64_t>& total_bytes = progress.total_bytes();
+
+  // NOTE: `total_bytes` could be zero. Therefore, check the equality of
+  // `received_bytes` and `total_bytes` before division. In addition, the
+  // equality of `received_bytes` and `total_bytes` does not necessarily mean
+  // that `complete` is true.
+  if (progress.complete() ||
+      (received_bytes && received_bytes == total_bytes)) {
+    return 100;
+  }
+
+  if (received_bytes >= 0 && total_bytes > 0) {
+    return *received_bytes * 100.f / *total_bytes;
+  }
+
+  // Indicate an indeterminate progress bar.
+  return -1;
+}
+
 const char* GetMetricString(CommandType command) {
   switch (command) {
     case CommandType::kCancel:
@@ -270,32 +298,20 @@ void NotificationDisplayClient::AddOrUpdate(
     }
   }
 
-  // Calculate `progress_value` from `display_metadata`. Initialize with a
-  // negative value that shows an indeterminate progress bar.
-  int progress_value = -1;
-  const Progress& progress = display_metadata.progress;
-  const std::optional<int64_t>& received_bytes = progress.received_bytes();
-  const std::optional<int64_t>& total_bytes = progress.total_bytes();
-  const bool complete = progress.complete();
-  if (complete || (received_bytes && received_bytes == total_bytes)) {
-    // NOTE: `total_bytes` could be zero. Therefore, check the equality of
-    // `received_bytes` and `total_bytes` before division.
-    // In addition, the equality of `received_bytes` and `total_bytes` does not
-    // necessarily mean that `complete` is true.
-    progress_value = 100;
-  } else if (received_bytes >= 0 && total_bytes > 0) {
-    progress_value = *received_bytes * 100.f / *total_bytes;
-  }
-
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons = std::move(buttons);
   rich_notification_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
-  rich_notification_data.progress = progress_value;
-  rich_notification_data.progress_status =
-      display_metadata.secondary_text.value_or(std::u16string());
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
   rich_notification_data.vector_small_image = &kNotificationDownloadIcon;
+
+  const Progress& progress = display_metadata.progress;
+  if (const std::optional<int> progress_value =
+          CalculateProgressValue(progress)) {
+    rich_notification_data.progress = *progress_value;
+    rich_notification_data.progress_status =
+        display_metadata.secondary_text.value_or(std::u16string());
+  }
 
   message_center::Notification notification =
       SystemNotificationBuilder()
@@ -308,6 +324,10 @@ void NotificationDisplayClient::AddOrUpdate(
           .SetDisplaySource(l10n_util::GetStringUTF16(
               IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE))
           .SetId(GetNotificationIdFromGuid(guid))
+          .SetMessage(
+              progress.hidden()
+                  ? display_metadata.secondary_text.value_or(std::u16string())
+                  : std::u16string())
           .SetNotifierId(message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotificationNotifierId,
@@ -315,8 +335,9 @@ void NotificationDisplayClient::AddOrUpdate(
           .SetOptionalFields(std::move(rich_notification_data))
           .SetOriginUrl(GURL(kNotificationOrigin))
           .SetTitle(display_metadata.text.value_or(std::u16string()))
-          .SetType(complete ? message_center::NOTIFICATION_TYPE_SIMPLE
-                            : message_center::NOTIFICATION_TYPE_PROGRESS)
+          .SetType(progress.hidden()
+                       ? message_center::NOTIFICATION_TYPE_SIMPLE
+                       : message_center::NOTIFICATION_TYPE_PROGRESS)
           .Build(/*keep_timestamp=*/false);
 
   if (const gfx::ImageSkia& image = display_metadata.image;
@@ -329,7 +350,7 @@ void NotificationDisplayClient::AddOrUpdate(
       NotificationHandler::Type::TRANSIENT, std::move(notification),
       /*metadata=*/nullptr);
 
-  if (complete) {
+  if (progress.complete()) {
     // The download associated with `guid` completes. We no longer anticipate
     // receiving download updates. Therefore, remove `guid` from the collection.
     notifications_closed_by_user_guids_.erase(guid);

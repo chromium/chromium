@@ -58,8 +58,7 @@ class Progress {
  public:
   Progress();
 
-  // Creates an instance for the specified `received_bytes`, `total_bytes` and
-  // `complete`. NOTE:
+  // Creates an instance for the specified progress attributes. NOTE:
   // 1. The values of `received_bytes` and `total_bytes`, if any, must be
   //    non-negative.
   // 2. `received_bytes` must not be greater than `total_bytes` unless the
@@ -68,9 +67,12 @@ class Progress {
   //    values and be equal.
   Progress(const std::optional<int64_t>& received_bytes,
            const std::optional<int64_t>& total_bytes,
-           bool complete);
+           bool complete,
+           bool hidden);
 
   bool complete() const { return complete_; }
+
+  bool hidden() const { return hidden_; }
 
   const std::optional<int64_t>& received_bytes() const {
     return received_bytes_;
@@ -82,6 +84,9 @@ class Progress {
   std::optional<int64_t> received_bytes_;
   std::optional<int64_t> total_bytes_;
   bool complete_;
+
+  // True if progress data should not be visibly represented.
+  bool hidden_;
 };
 
 // The metadata used to display downloads.

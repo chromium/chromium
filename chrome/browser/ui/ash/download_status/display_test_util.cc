@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
@@ -42,6 +43,17 @@ crosapi::mojom::DownloadStatusPtr CreateInProgressDownloadStatus(
       crosapi::mojom::DownloadProgress::New(
           /*loop=*/false, received_bytes,
           total_bytes.value_or(kUnknownTotalBytes), /*visible=*/true));
+}
+
+void MarkDownloadStatusCompleted(crosapi::mojom::DownloadStatus& status) {
+  crosapi::mojom::DownloadProgressPtr& progress_ptr = status.progress;
+  CHECK(progress_ptr);
+
+  progress_ptr->received_bytes = progress_ptr->total_bytes = base::ranges::max(
+      {progress_ptr->received_bytes, progress_ptr->total_bytes, 0L});
+  progress_ptr->visible = false;
+
+  status.state = crosapi::mojom::DownloadState::kComplete;
 }
 
 }  // namespace ash::download_status

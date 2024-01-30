@@ -59,6 +59,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_client.h"
@@ -432,7 +433,6 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
       service_observer(),
       OnNotificationDisplayed(
           AllOf(
-              Property(&message_center::Notification::progress, Eq(-1)),
               Property(&message_center::Notification::progress_status,
                        Eq(std::u16string())),
               Property(&message_center::Notification::title,
@@ -445,12 +445,18 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
+  // The progress of `download` is not set so the progress bar should not show.
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
+
   // Update the download's received bytes and total bytes. Then check the
   // notification's progress.
   download->progress = crosapi::mojom::DownloadProgress::New();
   crosapi::mojom::DownloadProgressPtr& progress = download->progress;
   progress->received_bytes = 0;
   progress->total_bytes = 1024;
+  progress->visible = true;
   EXPECT_CALL(
       service_observer(),
       OnNotificationDisplayed(
@@ -460,6 +466,15 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
           _));
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
+
+  // The notification view should have a visible progress bar because `progress`
+  // specifies the visibility to be true.
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const views::ProgressBar* progress_bar =
+      popup_view->progress_bar_view_for_testing();
+  ASSERT_TRUE(progress_bar);
+  EXPECT_TRUE(progress_bar->GetVisible());
 
   // Update the download's:
   // 1. Received bytes
@@ -476,8 +491,6 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
           AllOf(
               Property(&message_center::Notification::id, Eq(notification_id)),
               Property(&message_center::Notification::progress, Eq(50)),
-              Property(&message_center::Notification::progress_status,
-                       Eq(u"Random text")),
               Property(&message_center::Notification::title,
                        Eq(download->target_file_path->BaseName()
                               .LossyDisplayName()))),
@@ -486,24 +499,22 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Mock::VerifyAndClearExpectations(&service_observer());
 
   // Verify that the notification view of an in-progress download has a visible
-  // progress bar.
-  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  // progress bar with the expected status text.
+  popup_view = GetPopupView(profile, notification_id);
   ASSERT_TRUE(popup_view);
-  const views::ProgressBar* const progress_bar =
-      popup_view->progress_bar_view_for_testing();
+  progress_bar = popup_view->progress_bar_view_for_testing();
   ASSERT_TRUE(progress_bar);
   EXPECT_TRUE(progress_bar->GetVisible());
+  const views::Label* const status_view = popup_view->status_view_for_testing();
+  ASSERT_TRUE(status_view);
+  EXPECT_EQ(status_view->GetText(), u"Random text");
 
-  // Complete download and then check the notification.
-  progress->received_bytes = progress->total_bytes;
-  download->state = crosapi::mojom::DownloadState::kComplete;
+  // Complete download. Then check the notification.
+  MarkDownloadStatusCompleted(*download);
   EXPECT_CALL(
       service_observer(),
       OnNotificationDisplayed(
-          AllOf(
-              Property(&message_center::Notification::id, Eq(notification_id)),
-              Property(&message_center::Notification::progress, Eq(100))),
-          _));
+          Property(&message_center::Notification::id, Eq(notification_id)), _));
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
 
@@ -512,6 +523,12 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   popup_view = GetPopupView(profile, notification_id);
   ASSERT_TRUE(popup_view);
   EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
+
+  // Check the notification view's message label.
+  const views::Label* const message_label =
+      popup_view->message_label_for_testing();
+  ASSERT_TRUE(message_label);
+  EXPECT_EQ(message_label->GetText(), u"Random text");
 }
 
 // Verifies that a download notification should not show again if it has been
@@ -628,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Complete the download. Check the existence of the associated notification.
-  download->state = crosapi::mojom::DownloadState::kComplete;
+  MarkDownloadStatusCompleted(*download);
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
 

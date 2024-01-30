@@ -69,9 +69,9 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
 
   // Create a `HoldingSpaceProgress` instance from a `Progress` instance.
   const Progress& download_progress = display_metadata.progress;
-  const HoldingSpaceProgress progress(download_progress.received_bytes(),
-                                      download_progress.total_bytes(),
-                                      download_progress.complete());
+  const HoldingSpaceProgress progress(
+      download_progress.received_bytes(), download_progress.total_bytes(),
+      download_progress.complete(), download_progress.hidden());
 
   if (item_id_by_guid == item_ids_by_guids_.end() ||
       !HoldingSpaceController::Get()->model()->GetItem(
