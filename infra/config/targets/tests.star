@@ -517,44 +517,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "chrome_public_test_vr_apk-ddready-cardboard",
-    mixins = [
-        "vr_instrumentation_test",
-    ],
-    args = [
-        "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
-    ],
-    binary = "chrome_public_test_vr_apk",
-)
-
-targets.tests.gtest_test(
-    name = "chrome_public_test_vr_apk-ddready-ddview",
-    mixins = [
-        "skia_gold_test",
-        "vr_instrumentation_test",
-    ],
-    args = [
-        "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json",
-        "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-    ],
-    binary = "chrome_public_test_vr_apk",
-)
-
-targets.tests.gtest_test(
-    name = "chrome_public_test_vr_apk-ddready-don-enabled",
-    mixins = [
-        "vr_instrumentation_test",
-    ],
-    args = [
-        "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json",
-        "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-        "--annotation=Restriction=VR_DON_Enabled",
-        "--vr-don-enabled",
-    ],
-    binary = "chrome_public_test_vr_apk",
-)
-
-targets.tests.gtest_test(
     name = "chrome_public_unit_test_apk",
     mixins = [
         "skia_gold_test",
