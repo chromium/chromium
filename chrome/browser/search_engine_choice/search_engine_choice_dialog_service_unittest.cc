@@ -23,6 +23,35 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+void SetUserSelectedDefaultSearchProvider(
+    TemplateURLService* template_url_service,
+    bool created_by_policy) {
+  constexpr char kCustomSearchEngineDomain[] = "bar.com";
+  constexpr char16_t kCustomSearchEngineKeyword[] = u"bar.com";
+
+  TemplateURLData data;
+  data.SetShortName(kCustomSearchEngineKeyword);
+  data.SetKeyword(kCustomSearchEngineKeyword);
+  data.SetURL(base::StringPrintf("https://%s/url?bar={searchTerms}",
+                                 kCustomSearchEngineDomain));
+  data.new_tab_url =
+      base::StringPrintf("https://%s/newtab", kCustomSearchEngineDomain);
+  data.alternate_urls.push_back(base::StringPrintf(
+      "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
+
+  if (created_by_policy) {
+    data.created_by_policy =
+        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+  }
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+}
+}  // namespace
+
 class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  public:
   SearchEngineChoiceDialogServiceTest() {
@@ -159,6 +188,29 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
           kProfileCreationDefaultWasSet,
       1);
 }
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       DoNotDisplayDialogIfPolicyIsSetDynamically) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_dialog_service);
+
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+  EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(search_engine_choice_dialog_service);
+}
+
 #else
 TEST_F(SearchEngineChoiceDialogServiceTest,
        ServiceNotInitializedInChromeForTesting) {
