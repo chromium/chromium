@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Result" enum="BooleanSuccess"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

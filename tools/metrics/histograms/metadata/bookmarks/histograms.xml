@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2{StorageState}"
-    units="ms" expires_after="2024-05-26">
+    units="ms" expires_after="2024-07-28">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays"
-    units="days" expires_after="2024-05-26">
+    units="days" expires_after="2024-07-28">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>

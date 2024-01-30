@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount"
-    units="hostnames" expires_after="2024-05-26">
+    units="hostnames" expires_after="2024-07-28">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.Duration"
-    units="seconds" expires_after="2024-05-26">
+    units="seconds" expires_after="2024-07-28">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
-    units="hostnames" expires_after="2024-05-26">
+    units="hostnames" expires_after="2024-07-28">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2024-05-26">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2024-07-28">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.State"
-    enum="SiteEngagementHeuristicState" expires_after="2024-05-26">
+    enum="SiteEngagementHeuristicState" expires_after="2024-07-28">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

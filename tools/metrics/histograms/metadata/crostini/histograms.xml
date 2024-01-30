@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.AppLaunchResult" enum="CrostiniResult"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

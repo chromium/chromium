@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors" enum="LevelDBErrorTypes"
-    expires_after="2024-05-24">
+    expires_after="2024-07-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2024-05-24">
+    enum="LevelDBIOErrorMethods" expires_after="2024-07-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.SizeOnCommit2"
-    units="KB" expires_after="2024-05-24">
+    units="KB" expires_after="2024-07-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -617,7 +617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
-    units="ms" expires_after="2024-05-24">
+    units="ms" expires_after="2024-07-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

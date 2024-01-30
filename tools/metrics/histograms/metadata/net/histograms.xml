@@ -1979,7 +1979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.PrefilterBytesRead{Source}" units="bytes"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -2288,7 +2288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicChromiumClientStream.HandleOnCloseConnectionError"
-    enum="QuicErrorCodes" expires_after="2024-05-26">
+    enum="QuicErrorCodes" expires_after="2024-07-28">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

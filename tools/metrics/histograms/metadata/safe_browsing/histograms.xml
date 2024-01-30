@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay" units="ms"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.EsbDisabled.LastBypassEventType"
-    enum="SBMetricsCollectorEventType" expires_after="2024-05-26">
+    enum="SBMetricsCollectorEventType" expires_after="2024-07-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2119,7 +2119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-05-26">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-07-28">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2348,7 +2348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurity.IsRecoveryTriggered"
-    enum="Boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2024-07-28">
   <owner>awado@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

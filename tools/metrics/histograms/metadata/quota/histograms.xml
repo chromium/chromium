@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2024-05-24">
+<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2024-07-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

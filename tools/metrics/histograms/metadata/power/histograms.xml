@@ -1710,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ShutdownReason" enum="ShutdownReason"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The reason for the Chrome OS power manager shutting down or rebooting the
@@ -1974,7 +1974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2024-05-26">
+    enum="PowerMLSmartDimModelResult" expires_after="2024-07-28">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1989,7 +1989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2024-05-26">
+    enum="PowerMLSmartDimParameterResult" expires_after="2024-07-28">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
