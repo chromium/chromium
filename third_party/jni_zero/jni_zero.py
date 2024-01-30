@@ -106,10 +106,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
                        action='store_true',
                        help='Whether to maintain ForTesting JNI methods.')
   else:
-    group.add_argument('--extra-include',
-                       action='append',
-                       dest='extra_includes',
-                       help='Header file to #include in the generated header.')
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')

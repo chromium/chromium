@@ -26,7 +26,6 @@ import zipfile
 
 _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
-_EXTRA_INCLUDES = 'third_party/jni_zero/jni_zero_helper.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'samples', 'java', 'src', 'org',
                              'jni_zero', 'samples')
 
@@ -54,7 +53,6 @@ class CliOptions:
     self.enable_jni_multiplexing = False
     self.package_prefix = None
     self.use_proxy_hash = False
-    self.extra_include = None if is_final else _EXTRA_INCLUDES
     self.module_name = None
     self.add_stubs_for_missing_native = False
     self.enable_proxy_mocks = False
@@ -80,8 +78,6 @@ class CliOptions:
       ret += ['--output-name', self.output_name]
     if self.jar_file:
       ret += ['--jar-file', self.jar_file]
-    if self.extra_include:
-      ret += ['--extra-include', self.extra_include]
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
     if self.enable_proxy_mocks:

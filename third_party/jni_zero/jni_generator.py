@@ -516,7 +516,7 @@ class InlHeaderFileGenerator(object):
 #include <jni.h>
 
 #include "third_party/jni_zero/jni_export.h"
-${INCLUDES}
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 // Step 1: Forward declarations.
 $CLASS_PATH_DEFINITIONS
@@ -537,7 +537,6 @@ $METHOD_STUBS
         'CONSTANT_FIELDS': self.GetConstantFieldsString(),
         'METHOD_STUBS': self.GetMethodStubsString(),
         'HEADER_GUARD': self.header_guard,
-        'INCLUDES': self.GetIncludesString(),
     }
     open_namespace = self.GetOpenNamespaceString()
     if open_namespace:
@@ -579,12 +578,6 @@ $METHOD_STUBS
         self.GetLazyCalledByNativeMethodStub(called_by_native)
         for called_by_native in self.called_by_natives
     ]
-
-  def GetIncludesString(self):
-    if not self.options.extra_includes:
-      return ''
-    includes = self.options.extra_includes
-    return '\n'.join('#include "%s"' % x for x in includes) + '\n'
 
   def GetOpenNamespaceString(self):
     if self.namespace:
