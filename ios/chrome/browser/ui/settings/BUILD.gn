@@ -445,6 +445,7 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "search_engine_settings_choice_screen_egtest.mm",
     "search_engine_settings_egtest.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",
@@ -456,6 +457,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//components/policy:generated",
+    "//components/search_engines",
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
@@ -472,6 +474,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/authentication/history_sync:pref_names",
     "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/search_engine_choice:earl_grey_ui_test_util",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/elements:constants",
     "//ios/chrome/common/ui/promo_style:constants",

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,14 +89,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 }  // namespace
 
-@interface SearchEngineSettingsTestCase : ChromeTestCase {
+@interface SearchEngineSettingsChoiceScreenTestCase : ChromeTestCase {
   std::string _serverURL;
   bool _openSearchCalled;
 }
 
 @end
 
-@implementation SearchEngineSettingsTestCase
+@implementation SearchEngineSettingsChoiceScreenTestCase
 
 - (void)setUp {
   [super setUp];
@@ -111,7 +111,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.additional_args.push_back(
-      std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
+      std::string("--") + switches::kSearchEngineChoiceCountry + "=FR");
   config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   return config;
 }
@@ -137,7 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"firstsearch")];
+      performAction:grey_replaceText(@"test")];
   // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -150,7 +150,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Yahoo!")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Yahoo! France")]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -167,10 +167,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
-  // Search something different than the first search to make sure the omnibox
-  // doesn't use the history instead of really searching.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"secondsearch")];
+      performAction:grey_replaceText(@"test")];
   // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -212,12 +210,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
-// Deletes the selected custom engine by swiping it.
-- (void)testDeleteSelectedCustomSearchEngineBySwipe {
+// Tests that the selected custom search engine cannot be deleted.
+- (void)testRefuseToDeleteSelectedCustomSearchEngineBySwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_tap()];
+  // Scroll back up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSearchEngineTableViewControllerId)]
+      performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
+                                                           0.1f, 0.1f)];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
@@ -225,16 +228,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
       settingsCustomSearchEngineAccessibilityLabelWithName:
           kCustomSearchEngineName];
-  // Verify that the custom search engine disappeared.
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
-      assertWithMatcher:grey_nil()];
-  // Verify the default search engine is back to Google.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-  [SearchEngineChoiceEarlGreyUI verifyDefaultSearchEngineSetting:@"Google"];
+      assertWithMatcher:grey_notNil()];
 }
 
-// Deletes a non-selecetd custom search engine by entering edit mode.
+// Deletes a custom search engine by entering edit mode.
 - (void)testDeleteCustomSearchEngineEdit {
   [self enterSettingsWithCustomSearchEngine];
 
@@ -262,10 +260,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       assertWithMatcher:grey_nil()];
-  // Verify the default search engine is still Google.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-  [SearchEngineChoiceEarlGreyUI verifyDefaultSearchEngineSetting:@"Google"];
 }
 
 #pragma mark - helpers
@@ -284,7 +278,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGrey loadURL:pageURL];
 
-  __weak SearchEngineSettingsTestCase* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   GREYCondition* openSearchQuery =
       [GREYCondition conditionWithName:@"Wait for Open Search query"
                                  block:^BOOL {
