@@ -45,10 +45,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/values-sw600dp-w840dp/bools.xml",
-    "java/res/values/bools.xml",
-  ]
+  sources = []
   deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 
