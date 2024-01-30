@@ -4048,12 +4048,6 @@ class PersistentPermissionsSiteSettingsHandlerTest
 
  public:
   PersistentPermissionsSiteSettingsHandlerTest() {
-    // TODO(crbug.com/1373962): Remove this feature list enabler
-    // when Persistent Permissions is launched.
-
-    // Enable Persisted Permissions.
-    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
-    // flag after FSA Persistent Permissions feature launch.
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }
