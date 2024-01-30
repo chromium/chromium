@@ -35,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/platform_features.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -463,6 +464,14 @@ bool CreateSpatialLayersConfig(
           *inter_layer_pred = CopyFromWebRtcInterLayerPredMode(
               codec_settings.VP9().interLayerPred);
         }
+      }
+      break;
+    case webrtc::kVideoCodecAV1:
+      // No hardware encoder supports for AV1 either temporal layer or spatial
+      // layer encoding.
+      if (scalability_mode.value_or(webrtc::ScalabilityMode::kL1T1) !=
+          webrtc::ScalabilityMode::kL1T1) {
+        return false;
       }
       break;
     default:
