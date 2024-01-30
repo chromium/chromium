@@ -269,7 +269,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       has_pending_layout_(false),
       layout_scheduling_enabled_(true),
       layout_count_for_testing_(0),
-      lifecycle_update_count_for_testing_(0),
       // We want plugin updates to happen in FIFO order with loading tasks.
       update_plugins_timer_(frame.GetTaskRunner(TaskType::kInternalLoading),
                             this,
@@ -282,7 +281,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       layout_size_fixed_to_frame_size_(true),
       needs_update_geometries_(false),
       root_layer_did_scroll_(false),
-      frame_timing_requests_dirty_(true),
       // The compositor throttles the main frame using deferred begin main frame
       // updates. We can't throttle it here or it seems the root compositor
       // doesn't get setup properly.
@@ -290,7 +288,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       target_state_(DocumentLifecycle::kUninitialized),
       suppress_adjust_view_size_(false),
       intersection_observation_state_(kNotNeeded),
-      needs_focus_on_fragment_(false),
       main_thread_scrolling_reasons_(0),
       forced_layout_stack_depth_(0),
       forced_layout_start_time_(base::TimeTicks()),
@@ -571,11 +568,6 @@ Page* LocalFrameView::GetPage() const {
 
 LayoutView* LocalFrameView::GetLayoutView() const {
   return GetFrame().ContentLayoutObject();
-}
-
-ScrollingCoordinator* LocalFrameView::GetScrollingCoordinator() const {
-  Page* p = GetPage();
-  return p ? p->GetScrollingCoordinator() : nullptr;
 }
 
 cc::AnimationHost* LocalFrameView::GetCompositorAnimationHost() const {
@@ -1672,7 +1664,6 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   DCHECK(!IsInPerformLayout());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::performPostLayoutTasks");
 
-  frame_timing_requests_dirty_ = true;
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
       TracedLayoutObject::Create(*GetLayoutView(), true));
@@ -2110,7 +2101,6 @@ bool LocalFrameView::UpdateLifecyclePhases(
          target_state == DocumentLifecycle::kCompositingInputsClean ||
          target_state == DocumentLifecycle::kPrePaintClean ||
          target_state == DocumentLifecycle::kPaintClean);
-  lifecycle_update_count_for_testing_++;
 
   // If the document is not active then it is either not yet initialized, or it
   // is stopping. In either case, we can't reach one of the supported target
@@ -3472,12 +3462,6 @@ gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
   }
 
   return parent_point;
-}
-
-gfx::Point LocalFrameView::ConvertToContainingEmbeddedContentView(
-    const gfx::Point& local_point) const {
-  return ToRoundedPoint(
-      ConvertToContainingEmbeddedContentView(PhysicalOffset(local_point)));
 }
 
 void LocalFrameView::SetTracksRasterInvalidations(
