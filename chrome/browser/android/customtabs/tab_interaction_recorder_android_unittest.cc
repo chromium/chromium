@@ -274,7 +274,8 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   EXPECT_FALSE(helper->HadFormInteractionInActivePage(env));
 }
 
-TEST_F(TabInteractionRecorderAndroidTest, TestFormSeen) {
+// TODO(crbug.com/1523245): Re-enable this test.
+TEST_F(TabInteractionRecorderAndroidTest, DISABLED_TestFormSeen) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   OnFormsSeenForAutofillManager(autofill_manager(),
                                 contents->GetPrimaryMainFrame());
