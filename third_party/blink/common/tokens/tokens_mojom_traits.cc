@@ -212,6 +212,12 @@ bool UnionTraits<blink::mojom::WebGPUExecutionContextTokenDataView,
       *output = token;
       return ret;
     }
+    case DataView::Tag::kServiceWorkerToken: {
+      blink::ServiceWorkerToken token;
+      bool ret = input.ReadServiceWorkerToken(&token);
+      *output = token;
+      return ret;
+    }
   }
   return false;
 }

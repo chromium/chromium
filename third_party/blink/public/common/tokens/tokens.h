@@ -132,7 +132,7 @@ using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
 //     ExecutionContextToken from above whif DocumentToken gets encapsulated
 //     there later on.
 using WebGPUExecutionContextToken =
-    MultiToken<DocumentToken, DedicatedWorkerToken>;
+    MultiToken<DocumentToken, DedicatedWorkerToken, ServiceWorkerToken>;
 
 }  // namespace blink
 

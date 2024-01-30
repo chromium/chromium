@@ -4239,6 +4239,11 @@
       public: true,
     },
     {
+      name: "WebGPU",
+      base_feature: "none",
+      status: "stable",
+    },
+    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",

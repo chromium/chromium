@@ -2193,6 +2193,12 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
           blink::DedicatedWorkerToken(unguessable_token.value()));
       break;
     }
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::ServiceWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::ServiceWorkerToken(unguessable_token.value()));
+      break;
+    }
     default:
       NOTREACHED();
       return error::kInvalidArguments;
