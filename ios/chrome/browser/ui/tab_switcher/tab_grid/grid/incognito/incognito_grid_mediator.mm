@@ -30,17 +30,6 @@
 // refactored.
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
-namespace {
-
-// Returns whether the feature kFilterWebsitesForSupervisedUsersOnDesktopAndIOS
-// is enabled or not.
-bool ShouldFilterWebSitesForSupervisedUsers() {
-  return base::FeatureList::IsEnabled(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-}
-
-}  // namespace
-
 @interface IncognitoGridMediator () <IncognitoReauthObserver,
                                      PrefObserverDelegate>
 @end
@@ -197,18 +186,16 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   [super setBrowser:browser];
 
   if (browser) {
-    if (ShouldFilterWebSitesForSupervisedUsers()) {
-      PrefService* prefService = browser->GetBrowserState()->GetPrefs();
-      DCHECK(prefService);
+    PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+    DCHECK(prefService);
 
-      _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-      _prefChangeRegistrar->Init(prefService);
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(prefService);
 
-      // Register to observe any changes on supervised_user status.
-      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kSupervisedUserId, _prefChangeRegistrar.get());
-    }
+    // Register to observe any changes on supervised_user status.
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kSupervisedUserId, _prefChangeRegistrar.get());
 
     _incognitoDisabled = [self isIncognitoModeDisabled];
   }
@@ -253,8 +240,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
     return YES;
   }
 
-  return ShouldFilterWebSitesForSupervisedUsers() &&
-         supervised_user::IsSubjectToParentalControls(*prefService);
+  return supervised_user::IsSubjectToParentalControls(*prefService);
 }
 
 @end

@@ -129,15 +129,13 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
 
-  scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs;
-  if (supervised_user::IsChildAccountSupervisionEnabled()) {
-    // Create a SupervisedUserPrefStore and initialize it with empty data.
-    // The pref store will load SupervisedUserSettingsService disk data after
-    // the creation of PrefService.
-    supervised_user_prefs = base::MakeRefCounted<SupervisedUserPrefStore>();
-    supervised_user_prefs->OnNewSettingsAvailable(base::Value::Dict());
-    DCHECK(supervised_user_prefs->IsInitializationComplete());
-  }
+  // Create a SupervisedUserPrefStore and initialize it with empty data.
+  // The pref store will load SupervisedUserSettingsService disk data after
+  // the creation of PrefService.
+  scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs =
+      base::MakeRefCounted<SupervisedUserPrefStore>();
+  supervised_user_prefs->OnNewSettingsAvailable(base::Value::Dict());
+  DCHECK(supervised_user_prefs->IsInitializationComplete());
 
   prefs_ = CreateBrowserStatePrefs(
       state_path, GetIOTaskRunner().get(), pref_registry_,
@@ -165,17 +163,15 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   supervised_user_settings->Init(state_path, GetIOTaskRunner(),
                                  /*load_synchronously=*/true);
 
-  if (supervised_user::IsChildAccountSupervisionEnabled()) {
-    supervised_user_prefs->Init(supervised_user_settings);
+  supervised_user_prefs->Init(supervised_user_settings);
 
-    auto supervised_provider = std::make_unique<
-        supervised_user::SupervisedUserContentSettingsProvider>(
-        supervised_user_settings);
+  auto supervised_provider =
+      std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
+          supervised_user_settings);
 
-    ios::HostContentSettingsMapFactory::GetForBrowserState(this)
-        ->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
-                           std::move(supervised_provider));
-  }
+  ios::HostContentSettingsMapFactory::GetForBrowserState(this)
+      ->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
+                         std::move(supervised_provider));
 
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
   base::FilePath cache_path = GetCachePath(base_cache_path);

@@ -190,9 +190,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   // Supervised user services are not supported for off-the-record browser
   // state.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) &&
-      !is_off_the_record) {
+  if (!is_off_the_record) {
     SupervisedUserURLFilterTabHelper::CreateForWebState(web_state);
     SupervisedUserErrorContainer::CreateForWebState(web_state);
   }

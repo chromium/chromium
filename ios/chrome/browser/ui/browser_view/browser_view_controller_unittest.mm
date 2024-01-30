@@ -87,10 +87,6 @@
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
-  BrowserViewControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  }
 
   void SetUp() override {
     BlockCleanupTest::SetUp();
@@ -418,7 +414,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SafeAreaProvider* safe_area_provider_;
   raw_ptr<PagePlaceholderBrowserAgent> page_placeholder_browser_agent_;
   id mockApplicationCommandHandler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

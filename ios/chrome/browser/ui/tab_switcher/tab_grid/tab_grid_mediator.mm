@@ -54,12 +54,8 @@
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
     // Register to observe any changes on supervised_user status.
-    if (base::FeatureList::IsEnabled(
-            supervised_user::
-                kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
-      _prefObserverBridge->ObserveChangesForPreference(prefs::kSupervisedUserId,
-                                                       &_prefChangeRegistrar);
-    }
+    _prefObserverBridge->ObserveChangesForPreference(prefs::kSupervisedUserId,
+                                                     &_prefChangeRegistrar);
   }
   return self;
 }
