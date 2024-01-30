@@ -346,7 +346,6 @@ component("core") {
 
   deps = [
     ":generate_eventhandler_names",
-    ":generated_settings_macros",
     ":make_deprecation_info",
     "//base",
     "//build:chromeos_buildflags",
@@ -608,21 +607,25 @@ action_with_pydeps("core_event_interfaces") {
 
 group("generated_testing_idls") {
   public_deps = [
-    ":generated_settings_macros",
     ":generated_testing_idls_internal_runtime_flags",
     ":generated_testing_idls_settings",
+    ":make_core_generated_settings",
   ]
 }
 
-blink_python_runner("generated_settings_macros") {
+blink_python_runner("make_core_generated_settings") {
   script = "../build/scripts/make_settings.py"
 
   inputs = scripts_for_json5_files + [
              "../build/scripts/make_settings.py",
-             "../build/scripts/templates/settings_macros.h.tmpl",
+             "../build/scripts/templates/settings_base.cc.tmpl",
+             "../build/scripts/templates/settings_base.h.tmpl",
              "frame/settings.json5",
            ]
-  outputs = [ "$blink_core_output_dir/settings_macros.h" ]
+  outputs = [
+    "$blink_core_output_dir/settings_base.cc",
+    "$blink_core_output_dir/settings_base.h",
+  ]
 
   args = [
     rebase_path("frame/settings.json5", root_build_dir),
@@ -1202,6 +1205,7 @@ targets_generating_sources = [
   ":make_core_generated_property_bitsets",
   ":make_core_generated_script_type_names",
   ":make_core_generated_securitypolicyviolation_disposition_names",
+  ":make_core_generated_settings",
   ":make_core_generated_shadow_element_names",
   ":make_core_generated_style_property_shorthand",
   ":make_core_generated_svg_element_type_helpers",

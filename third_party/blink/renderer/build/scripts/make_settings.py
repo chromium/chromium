@@ -67,22 +67,38 @@ class MakeSettingsWriter(json5_generator.Writer):
             key=lambda entry: entry['name'].original)
 
         self._outputs = {
-            ('settings_macros.h'): self.generate_macros,
+            'settings_base.cc': self.generate_cc,
+            'settings_base.h': self.generate_h,
         }
-        self._template_context = {
+
+    def _get_include_paths(self):
+        include_paths = set()
+        for setting in self.json5_file.name_dictionaries:
+            include_paths.update(setting['include_paths'])
+        return list(sorted(include_paths))
+
+    @template_expander.use_jinja('templates/settings_base.cc.tmpl',
+                                 filters=filters)
+    def generate_cc(self):
+        return {
+            'input_files': self._input_files,
+            'settings': self.json5_file.name_dictionaries,
+        }
+
+    @template_expander.use_jinja('templates/settings_base.h.tmpl',
+                                 filters=filters)
+    def generate_h(self):
+        return {
             'input_files':
             self._input_files,
+            'include_paths':
+            self._get_include_paths(),
             'settings':
             self.json5_file.name_dictionaries,
             'header_guard':
             self.make_header_guard(self._relative_output_dir +
-                                   'settings_macros.h')
+                                   'settings_base.h')
         }
-
-    @template_expander.use_jinja(
-        'templates/settings_macros.h.tmpl', filters=filters)
-    def generate_macros(self):
-        return self._template_context
 
 
 if __name__ == '__main__':

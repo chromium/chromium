@@ -203,6 +203,7 @@ blink_core_sources_frame = [
   "settings.h",
   "settings_delegate.cc",
   "settings_delegate.h",
+  "settings_string_converter.h",
   "smart_clip.cc",
   "smart_clip.h",
   "sticky_ad_detector.cc",

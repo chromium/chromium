@@ -1,0 +1,90 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license() }}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/settings_base.h"
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/blink/renderer/core/frame/settings_string_converter.h"
+
+namespace blink {
+
+// TODO(fs): Move per-platform defaults into the JSON file.
+namespace {
+
+// NOTEs
+//  1) EditingMacBehavior comprises builds on Mac;
+//  2) EditingWindowsBehavior comprises builds on Windows;
+//  3) EditingUnixBehavior comprises all unix-based systems, but
+//     Darwin/MacOS/Android (and then abusing the terminology);
+//  4) EditingAndroidBehavior comprises Android builds.
+// 99) MacEditingBehavior is used a fallback.
+static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
+  return
+#if BUILDFLAG(IS_MAC)
+      mojom::blink::EditingBehavior::kEditingMacBehavior
+#elif BUILDFLAG(IS_WIN)
+      mojom::blink::EditingBehavior::kEditingWindowsBehavior
+#elif BUILDFLAG(IS_ANDROID)
+      mojom::blink::EditingBehavior::kEditingAndroidBehavior
+#elif BUILDFLAG(IS_CHROMEOS)
+      mojom::blink::EditingBehavior::kEditingChromeOSBehavior
+#else  // Rest of the UNIX-like systems
+      mojom::blink::EditingBehavior::kEditingUnixBehavior
+#endif
+      ;
+}
+
+#if BUILDFLAG(IS_WIN)
+static const bool kDefaultSelectTrailingWhitespaceEnabled = true;
+#else
+static const bool kDefaultSelectTrailingWhitespaceEnabled = false;
+#endif
+}  // namespace
+
+SettingsBase::SettingsBase()
+    : delegate_(nullptr)
+{% for setting in settings if setting.initial is not none and setting.type != 'bool' %}
+    , {{setting.name.to_class_data_member()}}({{setting.initial}})
+{% endfor %}
+{% for setting in settings if setting.initial is not none and setting.type == 'bool' %}
+    , {{setting.name.to_class_data_member()}}({{setting.initial|cpp_bool}})
+{% endfor %}
+    {}
+
+{% for setting in settings %}
+void SettingsBase::Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name.to_snake_case()}}) {
+  if ({{setting.name.to_class_data_member()}} == {{setting.name.to_snake_case()}})
+    return;
+  {{setting.name.to_class_data_member()}} = {{setting.name.to_snake_case()}};
+  {% if setting.invalidate %}
+    {% for type in setting.invalidate %}
+  Invalidate(SettingsDelegate::ChangeType::k{{type}});
+    {% endfor %}
+  {% endif  %}
+}
+
+{% endfor %}
+
+void SettingsBase::SetFromStrings(const String& name, const String& value) {
+{% for setting in settings %}
+  if (name == "{{setting.name}}") {
+    Set{{setting.name.to_upper_camel_case()}}(FromString<{{setting.type}}>()(value));
+    return;
+  }
+{% endfor %}
+}
+
+void SettingsBase::SetDelegate(SettingsDelegate* delegate) {
+  delegate_ = delegate;
+}
+
+void SettingsBase::Invalidate(SettingsDelegate::ChangeType change_type) {
+  if (delegate_) {
+    delegate_->SettingsChanged(change_type);
+  }
+}
+
+}  // namespace blink
