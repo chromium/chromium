@@ -279,7 +279,8 @@ std::vector<net::CanonicalCookie> FilterCookies(
     const std::vector<net::CanonicalCookie>& cookies,
     const std::string& name,
     const std::string& normalized_domain,
-    const std::string& path) {
+    const std::string& path,
+    const std::string& partition_key) {
   std::vector<net::CanonicalCookie> result;
 
   for (const auto& cookie : cookies) {
@@ -289,6 +290,13 @@ std::vector<net::CanonicalCookie> FilterCookies(
       continue;
     if (!path.empty() && cookie.Path() != path)
       continue;
+
+    std::string serialized_key;
+    if (!net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
+                                            serialized_key) ||
+        serialized_key != partition_key) {
+      continue;
+    }
     result.push_back(cookie);
   }
 
@@ -299,10 +307,11 @@ void DeleteFilteredCookies(network::mojom::CookieManager* cookie_manager,
                            const std::string& name,
                            const std::string& normalized_domain,
                            const std::string& path,
+                           const std::string& partition_key,
                            std::unique_ptr<DeleteCookiesCallback> callback,
                            const std::vector<net::CanonicalCookie>& cookies) {
   std::vector<net::CanonicalCookie> filtered_list =
-      FilterCookies(cookies, name, normalized_domain, path);
+      FilterCookies(cookies, name, normalized_domain, path, partition_key);
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       filtered_list.size(),
@@ -1738,6 +1747,7 @@ void NetworkHandler::DeleteCookies(
     Maybe<std::string> url_spec,
     Maybe<std::string> domain,
     Maybe<std::string> path,
+    Maybe<std::string> partition_key,
     std::unique_ptr<DeleteCookiesCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1762,9 +1772,10 @@ void NetworkHandler::DeleteCookies(
   auto* cookie_manager =
       storage_partition_->GetCookieManagerForBrowserProcess();
 
-  cookie_manager->GetAllCookies(base::BindOnce(
-      &DeleteFilteredCookies, base::Unretained(cookie_manager), name,
-      normalized_domain, path.value_or(""), std::move(callback)));
+  cookie_manager->GetAllCookies(
+      base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
+                     name, normalized_domain, path.value_or(""),
+                     partition_key.value_or(""), std::move(callback)));
 }
 
 Response NetworkHandler::SetExtraHTTPHeaders(

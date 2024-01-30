@@ -6273,7 +6273,7 @@ domain Network
       # Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
       optional AuthChallengeResponse authChallengeResponse
 
-  # Deletes browser cookies with matching name and url or domain/path pair.
+  # Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
   command deleteCookies
     parameters
       # Name of the cookies to remove.
@@ -6285,6 +6285,9 @@ domain Network
       optional string domain
       # If specified, deletes only cookies with the exact path.
       optional string path
+      # If specified, deletes only cookies with the the given name and partitionKey where domain
+      # matches provided URL.
+      optional string partitionKey
 
   # Disables network tracking, prevents network events from being sent to the client.
   command disable
