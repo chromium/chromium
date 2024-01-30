@@ -242,6 +242,11 @@ bool HasRecentValidURLPastesAndRecordsCurrentPaste();
 // user session (default 6 hours). If not, it records the timestamp.
 bool HasRecentTimestampForKey(NSString* eventKey);
 
+// Returns true if the last URL open is within the specified number of `days`
+// which would indicate Chrome is likely still the default browser. Returns
+// false otherwise.
+bool IsChromeLikelyDefaultBrowserXDays(int days);
+
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser();
