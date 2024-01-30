@@ -137,12 +137,21 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {
   if (layout_manager_)
     UpdateLayout();
+
+  // In the parent View. We will layout in ChildPreferredSizeChanged. But due to
+  // the calling order in View::PreferredSizeChanged ChildPreferredSizeChanged
+  // happens before InvalidateLayout. This causes the cache of LayoutManagerBase
+  // to not be invalidated during layout
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 
 void TrayContainer::ChildVisibilityChanged(View* child) {
   if (layout_manager_)
     UpdateLayout();
+
+  // Same as ChildPreferredSizeChanged
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 

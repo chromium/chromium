@@ -152,6 +152,7 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
     DCHECK(start_view->GetVisible());
     start_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, 0, end_width - start_width)));
+    start_view->InvalidateLayout();
   } else {
     // Ensure the end container is visible, even if it has no buttons.
     tri_view_->SetContainerVisible(TriView::Container::END, true);
