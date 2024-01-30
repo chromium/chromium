@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_PAGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 
@@ -45,6 +46,8 @@ class EnterpriseWarnPage
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
+  std::string GetCustomMessageForTesting();
+
  protected:
   // SecurityInterstitialPage implementation:
   void CommandReceived(const std::string& command) override;
@@ -54,8 +57,7 @@ class EnterpriseWarnPage
 
  private:
   const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
-  const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
-      unsafe_resources_;
+  safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList unsafe_resources_;
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
 };
 

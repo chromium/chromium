@@ -6,8 +6,12 @@
 
 #include <utility>
 
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/grit/components_resources.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/urls.h"
@@ -18,6 +22,28 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using security_interstitials::MetricsHelper;
+
+namespace {
+std::u16string GetUrlFilteringCustomMessage(
+    const safe_browsing::MatchedUrlNavigationRule& rule) {
+  std::u16string custom_message = u"";
+  if (rule.has_custom_message()) {
+    for (const auto& custom_segment :
+         rule.custom_message().message_segments()) {
+      if (custom_segment.has_link() && GURL(custom_segment.link()).is_valid()) {
+        base::StrAppend(&custom_message,
+                        {u"<a target=\"_blank\" href=\"",
+                         base::UTF8ToUTF16(custom_segment.link()), u"\">",
+                         base::UTF8ToUTF16(custom_segment.text()), u"</a>"});
+      } else {
+        base::StrAppend(&custom_message,
+                        {base::UTF8ToUTF16(custom_segment.text())});
+      }
+    }
+  }
+  return custom_message;
+}
+}  // namespace
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -63,14 +89,36 @@ void EnterpriseWarnPage::PopulateInterstitialStrings(
 
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_HEADING));
-  load_time_data.Set(
-      "primaryParagraph",
-      l10n_util::GetStringFUTF16(
-          IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH,
-          security_interstitials::common_string_util::GetFormattedHostName(
-              request_url()),
-          l10n_util::GetStringUTF16(
-              IDS_ENTERPRISE_INTERSTITIALS_LEARN_MORE_ACCCESSIBILITY_TEXT)));
+
+  std::u16string custom_message = u"";
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kRealTimeUrlFilteringCustomMessage) &&
+      !unsafe_resources_.empty()) {
+    // Threat info already ordered by severity
+    if (!unsafe_resources_.empty() &&
+        !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
+      custom_message =
+          GetUrlFilteringCustomMessage(unsafe_resources_[0]
+                                           .rt_lookup_response.threat_info()[0]
+                                           .matched_url_navigation_rule());
+    }
+  }
+  if (!custom_message.empty()) {
+    load_time_data.Set("primaryParagraph",
+                       l10n_util::GetStringFUTF16(
+                           IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH_CUSTOM_MESSAGE,
+                           custom_message));
+  } else {
+    load_time_data.Set(
+        "primaryParagraph",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH,
+            security_interstitials::common_string_util::GetFormattedHostName(
+                request_url()),
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_INTERSTITIALS_LEARN_MORE_ACCCESSIBILITY_TEXT)));
+  }
+
   load_time_data.Set(
       "proceedButtonText",
       l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_CONTINUE_TO_SITE));
@@ -132,6 +180,13 @@ void EnterpriseWarnPage::CommandReceived(const std::string& command) {
 
 int EnterpriseWarnPage::GetHTMLTemplateId() {
   return IDR_SECURITY_INTERSTITIAL_HTML;
+}
+
+std::string EnterpriseWarnPage::GetCustomMessageForTesting() {
+  base::Value::Dict load_time_data;
+  PopulateInterstitialStrings(load_time_data);
+  std::string custom_message = *load_time_data.FindString("primaryParagraph");
+  return custom_message;
 }
 
 void EnterpriseWarnPage::PopulateStringsForSharedHTML(
