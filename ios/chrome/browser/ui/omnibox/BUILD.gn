@@ -300,6 +300,7 @@ source_set("unit_tests") {
     ":features",
     ":omnibox",
     ":omnibox_internal",
+    ":omnibox_popup_shared",
     ":resources_unit_tests",
     ":test_support",
     "//base",

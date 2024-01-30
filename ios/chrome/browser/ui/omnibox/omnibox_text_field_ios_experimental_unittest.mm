@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "testing/gtest_mac.h"
@@ -175,6 +176,48 @@ TEST_F(OmniboxTextFieldExperimentalTest, CutInPreedit) {
   [textfield_ cut:nil];
   EXPECT_TRUE([textfield_.text isEqualToString:@""]);
   [delegateMock verify];
+}
+
+// Tests that performing a keyboard action calls canPerformKeyboardAction and
+// performKeyboardAction with the correct parameters.
+TEST_F(OmniboxTextFieldExperimentalTest, OmniboxKeyboardDelegate) {
+  NSArray<UIKeyCommand*>* keyCommands = textfield_.keyCommands;
+  // Update this when adding new keyboard commands.
+  EXPECT_EQ(keyCommands.count, 4ul);
+  for (UIKeyCommand* keyCommand in keyCommands) {
+    OmniboxKeyboardAction omniboxKeyboardAction;
+    if (keyCommand.input == UIKeyInputUpArrow) {
+      omniboxKeyboardAction = OmniboxKeyboardActionUpArrow;
+    } else if (keyCommand.input == UIKeyInputDownArrow) {
+      omniboxKeyboardAction = OmniboxKeyboardActionDownArrow;
+    } else if (keyCommand.input == UIKeyInputLeftArrow) {
+      omniboxKeyboardAction = OmniboxKeyboardActionLeftArrow;
+    } else if (keyCommand.input == UIKeyInputRightArrow) {
+      omniboxKeyboardAction = OmniboxKeyboardActionRightArrow;
+    } else {
+      NOTREACHED();
+    }
+
+    id keyboardDelegateMock =
+        OCMStrictProtocolMock(@protocol(OmniboxKeyboardDelegate));
+    textfield_.omniboxKeyboardDelegate = keyboardDelegateMock;
+
+    OCMExpect(
+        [keyboardDelegateMock canPerformKeyboardAction:omniboxKeyboardAction])
+        .andReturn(YES);
+    OCMExpect(
+        [keyboardDelegateMock performKeyboardAction:omniboxKeyboardAction]);
+
+    // Verify that canPerformAction retruns YES when the delegate
+    // canPerformKeyboardAction returns YES.
+    EXPECT_TRUE([textfield_ canPerformAction:keyCommand.action withSender:nil]);
+
+    // Verify that performing the keyboard action calls performKeyboardAction
+    // wit the correct parameters.
+    [keyCommand performWithSender:nil target:textfield_];
+
+    [keyboardDelegateMock verify];
+  }
 }
 
 }  // namespace
