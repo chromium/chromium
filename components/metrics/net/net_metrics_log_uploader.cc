@@ -57,7 +57,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         semantics {
           sender: "Metrics UMA Log Uploader"
           description:
-            "Report of usage statistics and crash-related data about Chromium. "
+            "Report of usage statistics and crash-related data about Chrome. "
             "Usage statistics contain information such as preferences, button "
             "clicks, and memory usage and do not include web page URLs or "
             "personal information. See more at "
@@ -66,7 +66,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "pseudonymous machine identifier and not to your email address."
           trigger:
             "Reports are automatically generated on startup and at intervals "
-            "while Chromium is running."
+            "while Chrome is running."
           data:
             "A protocol buffer with usage statistics and crash related data."
           destination: GOOGLE_OWNED_SERVICE
@@ -74,10 +74,10 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         policy {
           cookies_allowed: NO
           setting:
-            "Users can enable or disable this feature by disabling "
-            "'Automatically send usage statistics and crash reports to Google' "
-            "in Chromium's settings under Advanced Settings, Privacy. The "
-            "feature is enabled by default."
+            "Users can enable or disable this feature via "
+            "\"Help improve Chrome's features and performance\" in Chrome "
+            "settings under Sync and Google services > Other Google services. "
+            "The feature is enabled by default."
           chrome_policy {
             MetricsReportingEnabled {
               policy_options {mode: MANDATORY}

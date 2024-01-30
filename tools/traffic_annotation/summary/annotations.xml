@@ -121,7 +121,7 @@ Refer to README.md for content description and update process.
  <item id="managed_configuration_loader" added_in_milestone="89" content_hash_code="060dc999" os_list="linux,windows,chromeos" file_path="chrome/browser/device_api/managed_configuration_api.cc" />
  <item id="media_router_global_media_controls_image" added_in_milestone="81" content_hash_code="02e96911" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/global_media_controls/cast_media_notification_item.cc" />
  <item id="metrics_report_ukm" added_in_milestone="62" content_hash_code="05fe6617" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
- <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="009b46c5" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
+ <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="01d3863c" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="missing" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="navigation_url_loader" added_in_milestone="62" content_hash_code="060edd12" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_url_loader_impl.cc" />
  <item id="network_location_provider" added_in_milestone="64" type="partial" second_id="network_location_request" content_hash_code="0272f3e8" os_list="linux,windows,chromeos" semantics_fields="1" policy_fields="3,4" file_path="services/device/geolocation/network_location_provider.cc" />
