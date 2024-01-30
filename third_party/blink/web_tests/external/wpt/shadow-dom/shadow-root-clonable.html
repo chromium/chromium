@@ -47,3 +47,22 @@ test(() => {
   assert_equals(clonedRoot.children[0].localName, "input", "children content");
 }, "declarative shadow roots get clonable: true automatically");
 </script>
+
+<template id="test">
+  <div id="host">
+    <template shadowrootmode=open><input></template>
+  </div>
+</template>
+
+<script>
+test(() => {
+  const template = document.querySelector('#test');
+  const root = template.content.querySelector('#host').shadowRoot;
+  assert_true(!!root);
+  const clone = template.content.cloneNode(true);
+  const clonedRoot = clone.querySelector('#host').shadowRoot;
+  assert_true(!!clonedRoot);
+  assert_equals(clonedRoot.children.length, 1, "children count");
+  assert_equals(clonedRoot.children[0].localName, "input", "children content");
+}, "declarative shadow roots inside templates also get cloned automatically");
+</script>

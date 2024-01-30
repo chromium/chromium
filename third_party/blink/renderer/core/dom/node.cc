@@ -925,6 +925,12 @@ Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
   NodeCloningData data;
   if (deep) {
     data.Put(CloneOption::kIncludeDescendants);
+    if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+      auto* fragment = DynamicTo<DocumentFragment>(this);
+      if (fragment && fragment->IsTemplateContent()) {
+        data.Put(CloneOption::kIncludeAllShadowRoots);
+      }
+    }
   }
   return Clone(GetDocument(), data, /*append_to*/ nullptr);
 }

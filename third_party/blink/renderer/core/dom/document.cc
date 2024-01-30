@@ -1432,6 +1432,12 @@ Node* Document::importNode(Node* imported_node,
   NodeCloningData data;
   if (deep) {
     data.Put(CloneOption::kIncludeDescendants);
+    if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+      auto* fragment = DynamicTo<DocumentFragment>(imported_node);
+      if (fragment && fragment->IsTemplateContent()) {
+        data.Put(CloneOption::kIncludeAllShadowRoots);
+      }
+    }
   }
   return imported_node->Clone(*this, data, /*append_to*/ nullptr);
 }

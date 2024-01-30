@@ -676,7 +676,13 @@ Node* Element::Clone(Document& factory,
       &CloneWithChildren(data, &factory, append_to, append_exception_state);
   // 7. If node is a shadow host whose shadow root’s clonable is true:
   auto* shadow_root = GetShadowRoot();
-  if (shadow_root && shadow_root->clonable()) {
+  if (!shadow_root) {
+    return copy;
+  }
+  if ((RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+       shadow_root->clonable()) ||
+      (!RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+       data.Has(CloneOption::kIncludeAllShadowRoots))) {
     if (shadow_root->GetType() == ShadowRootType::kOpen ||
         shadow_root->GetType() == ShadowRootType::kClosed) {
       // 7.1 Run attach a shadow root with shadow host equal to copy, mode equal
