@@ -1,7 +1,6 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
@@ -27,6 +26,8 @@ ImageLoaderUtil.shouldProcess = function(width, height, request) {
   }
 
   // Orientation has to be adjusted.
+  // @ts-ignore: error TS2339: Property 'isIdentity' does not exist on type
+  // 'ImageTransformParam | ImageOrientation'.
   if (!request.orientation.isIdentity()) {
     return true;
   }
@@ -50,6 +51,8 @@ ImageLoaderUtil.shouldProcess = function(width, height, request) {
 ImageLoaderUtil.resizeDimensions = function(width, height, request) {
   const scale = request.scale || 1;
   const targetDimensions =
+      // @ts-ignore: error TS2339: Property 'getSizeAfterCancelling' does not
+      // exist on type 'ImageTransformParam | ImageOrientation'.
       request.orientation.getSizeAfterCancelling(width * scale, height * scale);
   let targetWidth = targetDimensions.width;
   let targetHeight = targetDimensions.height;
@@ -83,7 +86,7 @@ ImageLoaderUtil.resizeDimensions = function(width, height, request) {
 /**
  * Performs resizing and cropping of the source image into the target canvas.
  *
- * @param {HTMLCanvasElement|Image} source Source image or canvas.
+ * @param {HTMLCanvasElement|HTMLImageElement} source Source image or canvas.
  * @param {HTMLCanvasElement} target Target canvas.
  * @param {!LoadImageRequest} request The request, containing resizing options.
  */
@@ -98,6 +101,8 @@ ImageLoaderUtil.resizeAndCrop = function(source, target, request) {
   const targetContext =
       /** @type {CanvasRenderingContext2D} */ (target.getContext('2d'));
   targetContext.save();
+  // @ts-ignore: error TS2339: Property 'cancelImageOrientation' does not exist
+  // on type 'ImageTransformParam | ImageOrientation'.
   request.orientation.cancelImageOrientation(
       targetContext, copyParameters.target.width, copyParameters.target.height);
   targetContext.drawImage(
@@ -125,7 +130,7 @@ ImageLoaderUtil.CopyParameters;
 /**
  * Calculates copy parameters.
  *
- * @param {HTMLCanvasElement|Image} source Source image or canvas.
+ * @param {HTMLCanvasElement|HTMLImageElement} source Source image or canvas.
  * @param {!LoadImageRequest} request The request, containing resizing options.
  * @return {!ImageLoaderUtil.CopyParameters} Calculated copy parameters.
  */
@@ -150,11 +155,19 @@ ImageLoaderUtil.calculateCopyParameters = function(source, request) {
       target: {
         x: 0,
         y: 0,
+        // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+        // to type 'number'.
         width: request.width,
+        // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+        // to type 'number'.
         height: request.height,
       },
       canvas: {
+        // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+        // to type 'number'.
         width: request.width,
+        // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+        // to type 'number'.
         height: request.height,
       },
     };
@@ -164,6 +177,8 @@ ImageLoaderUtil.calculateCopyParameters = function(source, request) {
   const targetCanvasDimensions =
       ImageLoaderUtil.resizeDimensions(source.width, source.height, request);
 
+  // @ts-ignore: error TS2339: Property 'getSizeAfterCancelling' does not exist
+  // on type 'ImageTransformParam | ImageOrientation'.
   const targetDimensions = request.orientation.getSizeAfterCancelling(
       targetCanvasDimensions.width, targetCanvasDimensions.height);
 

@@ -1,7 +1,6 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
@@ -43,16 +42,20 @@ export class LoadImageResponse {
     assert(opt_result);
 
     /** @type {number|undefined} */
+    // @ts-ignore: error TS18048: 'opt_result' is possibly 'undefined'.
     this.width = opt_result.width;
     /** @type {number|undefined} */
+    // @ts-ignore: error TS18048: 'opt_result' is possibly 'undefined'.
     this.height = opt_result.height;
     /** @type {?string} */
+    // @ts-ignore: error TS18048: 'opt_result' is possibly 'undefined'.
     this.ifd = opt_result.ifd;
 
     /**
      * The (compressed) image data as a data URL.
      * @type {string|undefined}
      */
+    // @ts-ignore: error TS18048: 'opt_result' is possibly 'undefined'.
     this.data = opt_result.data;
   }
 
@@ -84,9 +87,15 @@ export class LoadImageResponse {
 
     return {
       timestamp: timestamp || null,
+      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+      // to type 'number'.
       width: response.width,
+      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
+      // to type 'number'.
       height: response.height,
       ifd: response.ifd,
+      // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable
+      // to type 'string'.
       data: response.data,
     };
   }
@@ -145,6 +154,7 @@ export class LoadImageRequest {
    * @return {?string} Cache key. It may be null if the cache does not support
    *     the request. e.g. Data URI.
    */
+  // @ts-ignore: error TS7006: Parameter 'request' implicitly has an 'any' type.
   static cacheKey(request) {
     if (/^data:/i.test(request.url)) {
       return null;

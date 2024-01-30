@@ -12,6 +12,7 @@
       "filesystem",
       "filewriter"
     ],
+    "noFallthroughCasesInSwitch": false,
     "skipLibCheck": true
   }
 }
