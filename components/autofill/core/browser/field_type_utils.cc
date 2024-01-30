@@ -48,10 +48,7 @@ const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
       ADDRESS_HOME_ADMIN_LEVEL2,
       ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
       EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-      BIRTHDATE_DAY,
-      BIRTHDATE_MONTH,
-      BIRTHDATE_4_DIGIT_YEAR};
+      PHONE_HOME_WHOLE_NUMBER};
   return stored_types;
 }
 
