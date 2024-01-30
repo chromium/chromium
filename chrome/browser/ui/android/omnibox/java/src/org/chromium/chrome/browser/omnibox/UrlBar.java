@@ -77,7 +77,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // The text must be at least this long to be truncated. Safety measure to prevent accidentally
     // over truncating text for large tablets and external displays. Also, tests can continue to
     // check for text equality, instead of worrying about partial equality with truncated text.
-    static final int MIN_LENGTH_FOR_TRUNCATION = 500;
     static final int MIN_LENGTH_FOR_TRUNCATION_V2 = 100;
 
     /**
@@ -556,13 +555,9 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setTextWithTruncation(
             CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
-        int min_length =
-                OmniboxFeatures.shouldTruncateVisibleUrlV2()
-                        ? MIN_LENGTH_FOR_TRUNCATION_V2
-                        : MIN_LENGTH_FOR_TRUNCATION;
         if (mFocused
                 || TextUtils.isEmpty(text)
-                || text.length() < min_length
+                || text.length() < MIN_LENGTH_FOR_TRUNCATION_V2
                 || getLayoutParams().width == LayoutParams.WRAP_CONTENT
                 || containsRtl(text)) {
             mIsTextTruncated = false;
@@ -967,7 +962,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             mVisibleTextPrefixHint = null;
         }
 
-        if (OmniboxFeatures.shouldTruncateVisibleUrl()) {
+        if (OmniboxFeatures.shouldTruncateVisibleUrlV2()) {
             // Make sure we didn't truncate too much.
             int measuredWidth = getVisibleMeasuredViewportWidth();
             int textLength = text.length();

@@ -154,10 +154,6 @@ public class OmniboxFeatures {
     }
 
     /** Returns whether the visible url in the url bar should be truncated. */
-    public static boolean shouldTruncateVisibleUrl() {
-        return ChromeFeatureList.sVisibleUrlTruncation.isEnabled();
-    }
-
     public static boolean shouldTruncateVisibleUrlV2() {
         return ChromeFeatureList.sVisibleUrlTruncationV2.isEnabled();
     }

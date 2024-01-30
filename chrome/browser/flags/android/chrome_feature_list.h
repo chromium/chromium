@@ -26,7 +26,6 @@ BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidHatsRefactor);
 BASE_DECLARE_FEATURE(kAndroidHub);
 BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);
-BASE_DECLARE_FEATURE(kAndroidVisibleUrlTruncation);
 BASE_DECLARE_FEATURE(kAndroidVisibleUrlTruncationV2);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAppSpecificHistory);
