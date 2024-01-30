@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -83,6 +84,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.UiRestriction;
@@ -244,6 +246,16 @@ public class SelectableTabListEditorTest {
         }
     }
 
+    private void createNewTab(@TabLaunchType int launchType, boolean isIncognito) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule
+                            .getActivity()
+                            .getTabCreator(isIncognito)
+                            .createNewTab(new LoadUrlParams("about:blank"), launchType, null);
+                });
+    }
+
     private void prepareBlankTabWithThumbnail(int num, boolean isIncognito) {
         if (isIncognito) {
             TabUiTestHelper.prepareTabsWithThumbnail(sActivityTestRule, 0, num, "about:blank");
@@ -366,6 +378,25 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot.verifyTabListEditorIsHidden();
 
         verify(mSetRecyclerViewPosition, times(1)).onResult(isNotNull());
+    }
+
+    @Test
+    @MediumTest
+    public void testHideOnNewTab() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        showSelectionEditor(tabs);
+        mRobot.resultRobot.verifyTabListEditorIsVisible();
+
+        createNewTab(TabLaunchType.FROM_STARTUP, false);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        tabs = getTabsInCurrentTabModel();
+        showSelectionEditor(tabs);
+        mRobot.resultRobot.verifyTabListEditorIsVisible();
+
+        createNewTab(TabLaunchType.FROM_RESTORE, false);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     @Test

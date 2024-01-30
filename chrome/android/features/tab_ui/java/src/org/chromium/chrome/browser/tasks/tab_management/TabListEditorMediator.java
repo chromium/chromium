@@ -120,10 +120,14 @@ class TabListEditorMediator
                             boolean markedForSelection) {
                         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
                         if (filter == null || !filter.isTabModelRestored()) return;
-                        // When tab is added due to multi-window close or moving between multiple
-                        // windows, force hiding the selection editor.
+                        // When tab is added due to
+                        // 1) multi-window close
+                        // 2) moving between multiple windows
+                        // 3) NTP at startup
+                        // force hiding the selection editor.
                         if (type == TabLaunchType.FROM_RESTORE
-                                || type == TabLaunchType.FROM_REPARENTING) {
+                                || type == TabLaunchType.FROM_REPARENTING
+                                || type == TabLaunchType.FROM_STARTUP) {
                             hide();
                         }
                     }
