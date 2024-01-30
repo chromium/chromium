@@ -28,7 +28,7 @@ bool FilterFile::ContainsSubstringOf(llvm::StringRef string_to_match) const {
     std::vector<std::string> regex_escaped_exclusion_file_lines;
     regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
     for (const llvm::StringRef& file_line : file_lines_.keys()) {
-      if (file_line.startswith("!")) {
+      if (file_line.starts_with("!")) {
         regex_escaped_exclusion_file_lines.push_back(
             llvm::Regex::escape(file_line.substr(1)));
       } else {
