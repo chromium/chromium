@@ -35,6 +35,7 @@ TAG_SPECIALIZATIONS = {
             'android-r',
             'android-s',
             'android-t',
+            'android-u',
         ],
         'chromeos': [],
         'fuchsia': [],
