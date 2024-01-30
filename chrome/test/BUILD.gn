@@ -5862,22 +5862,20 @@ template("performance_test_suite_template_base") {
 
     if (!is_chromeos_lacros) {
       data_deps += [
-        "//base:base_perftests",
         "//components:components_perftests",
-        "//components/tracing:tracing_perftests",
-        "//gpu:command_buffer_perftests",
-        "//gpu:gpu_perftests",
-        "//media:media_perftests",
         "//testing:run_perf_test",
+      ]
+    }
+
+    if (!is_chromeos_lacros && !is_android) {
+      data_deps += [
+        "//base:base_perftests",
+        "//components/tracing:tracing_perftests",
       ]
     }
 
     if (build_dawn_tests && !is_chromeos_lacros) {
       data_deps += [ "//third_party/dawn/src/dawn/tests:dawn_perf_tests" ]
-    }
-
-    if (!is_chromeos_lacros) {
-      data_deps += [ "//third_party/angle/src/tests:angle_perftests" ]
     }
 
     if (!is_android && !is_chromeos_lacros) {
@@ -5894,10 +5892,6 @@ template("performance_test_suite_template_base") {
       } else {
         data_deps += [ "//chrome/test:performance_browser_tests" ]
       }
-    }
-
-    if (!is_ios && !is_android && !is_chromeos_lacros) {
-      data_deps += [ "//net:net_perftests" ]
     }
   }
 }
