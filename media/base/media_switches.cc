@@ -1778,10 +1778,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 
 bool IsMultiPlaneFormatForHardwareVideoEnabled() {
   return
-#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) && BUILDFLAG(IS_CHROMEOS)
-      gl::UsePassthroughCommandDecoder(
-          base::CommandLine::ForCurrentProcess()) &&
-#endif
       base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 
