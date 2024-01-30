@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[13]?.innerText === '{}' &&
           table.children[1].children[13]?.innerText === '{\n "a": "0x1"\n}' &&
           table.children[0].children[14]?.innerText === 'modulus' &&
-          table.children[0].children[15]?.innerText === '14' &&
+          table.children[0].children[15]?.innerText === '14.000' &&
           table.children[0].children[16]?.innerText === '0 / 65536' &&
           table.children[1].children[16]?.innerText === '1300 / 65536' &&
           table.children[0].children[17]?.innerText === '19' &&

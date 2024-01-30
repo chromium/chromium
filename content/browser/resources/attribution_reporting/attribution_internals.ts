@@ -21,7 +21,9 @@ import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
 // If kAttributionAggregatableBudgetPerSource changes, update this value
 const BUDGET_PER_SOURCE = 65536;
 
-function compareDefault<T>(a: T, b: T): number {
+type Comparable = bigint|number|string|boolean|Date;
+
+function compareDefault<T extends Comparable>(a: T, b: T): number {
   if (a < b) {
     return -1;
   }
@@ -31,44 +33,96 @@ function compareDefault<T>(a: T, b: T): number {
   return 0;
 }
 
+type CompareFunc<V> = (a: V, b: V) => number;
+
+function undefinedFirst<V extends Comparable>(f: CompareFunc<V>):
+    CompareFunc<V|undefined> {
+  return (a: V|undefined, b: V|undefined): number => {
+    if (a === undefined && b === undefined) {
+      return 0;
+    }
+    if (a === undefined) {
+      return -1;
+    }
+    if (b === undefined) {
+      return 1;
+    }
+    return f(a, b);
+  };
+}
+
 function bigintReplacer(_key: string, value: any): any {
   return typeof value === 'bigint' ? value.toString() : value;
 }
 
-class ValueColumn<T, V> implements Column<T> {
-  readonly compare?: (a: T, b: T) => number;
+type RenderFunc<V> = (e: HTMLElement, v: V) => void;
 
+function setInnerText(e: HTMLElement, v: any): void {
+  e.innerText = v;
+}
+
+abstract class ValueColumn<T, V> implements Column<T> {
   constructor(
       private readonly header: string,
-      protected readonly getValue: (param: T) => V,
-      comparable: boolean = true) {
-    if (comparable) {
-      this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
-    }
-  }
+      protected readonly getValue: (row: T) => V,
+  ) {}
 
-  render(td: HTMLElement, row: T): void {
-    td.innerText = `${this.getValue(row)}`;
-  }
+  abstract render(td: HTMLElement, row: T): void;
 
   renderHeader(th: HTMLElement): void {
     th.innerText = this.header;
   }
 }
 
-class DateColumn<T> extends ValueColumn<T, Date> {
-  constructor(header: string, getValue: (p: T) => Date) {
+class ComparableColumn<T, V> extends ValueColumn<T, V> {
+  constructor(
+      header: string,
+      getValue: (row: T) => V,
+      private readonly compareValues: CompareFunc<V>,
+      private readonly renderValue: RenderFunc<V>,
+  ) {
     super(header, getValue);
   }
 
-  override render(td: HTMLElement, row: T): void {
-    td.innerText = this.getValue(row).toLocaleString();
+  render(td: HTMLElement, row: T): void {
+    this.renderValue(td, this.getValue(row));
+  }
+
+  compare(a: T, b: T): number {
+    return this.compareValues(this.getValue(a), this.getValue(b));
   }
 }
 
+function dateColumn<T>(header: string, getValue: (row: T) => Date): Column<T> {
+  return new ComparableColumn(
+      header, getValue, compareDefault,
+      (td, v) => td.innerText = v.toLocaleString());
+}
+
+const numberClass: string = 'number';
+
+function numberColumn<T, V extends bigint|number|undefined>(
+    header: string,
+    getValue: (row: T) => V,
+    formatValue: (v: NonNullable<V>) => string = (v) => `${v}`,
+    ): Column<T> {
+  return new ComparableColumn(
+      header, getValue, undefinedFirst(compareDefault), (td, v) => {
+        if (v !== undefined) {
+          td.classList.add(numberClass);
+          td.innerText = formatValue(v);
+        }
+      });
+}
+
+function stringOrBoolColumn<T, V extends string|boolean>(
+    header: string, getValue: (row: T) => V): Column<T> {
+  return new ComparableColumn(header, getValue, compareDefault, setInnerText);
+}
+
 class CodeColumn<T> extends ValueColumn<T, string> {
-  constructor(header: string, getValue: (p: T) => string) {
-    super(header, getValue, /*comparable=*/ false);
+  constructor(header: string, getValue: (row: T) => string) {
+    super(header, getValue);
   }
 
   override render(td: HTMLElement, row: T): void {
@@ -84,10 +138,12 @@ class CodeColumn<T> extends ValueColumn<T, string> {
 
 class ListColumn<T, V> extends ValueColumn<T, V[]> {
   constructor(
-      header: string, getValue: (p: T) => V[],
-      private readonly flatten: boolean = false,
-      private readonly renderItem: (p: V) => string = (p) => `${p}`) {
-    super(header, getValue, /*comparable=*/ false);
+      header: string,
+      getValue: (row: T) => V[],
+      private readonly renderItem: RenderFunc<V> = setInnerText,
+      private readonly tdClass?: string,
+  ) {
+    super(header, getValue);
   }
 
   override render(td: HTMLElement, row: T): void {
@@ -96,16 +152,15 @@ class ListColumn<T, V> extends ValueColumn<T, V[]> {
       return;
     }
 
-    if (this.flatten && values.length === 1) {
-      td.innerText = this.renderItem(values[0]!);
-      return;
+    if (this.tdClass !== undefined) {
+      td.classList.add(this.tdClass);
     }
 
     const ul = td.ownerDocument.createElement('ul');
 
     values.forEach(value => {
       const li = td.ownerDocument.createElement('li');
-      li.innerText = this.renderItem(value);
+      this.renderItem(li, value);
       ul.append(li);
     });
 
@@ -130,28 +185,41 @@ function renderDL<T>(
   td.append(dl);
 }
 
+function renderUrl(
+    td: HTMLElement, url: string,
+    renderAnchor: RenderFunc<string> = setInnerText): void {
+  const a = td.ownerDocument.createElement('a');
+  a.target = '_blank';
+  a.href = url;
+  renderAnchor(a, url);
+  td.append(a);
+}
+
+function urlColumn<T>(
+    header: string, getValue: (row: T) => string,
+    renderAnchor: RenderFunc<string> = setInnerText): Column<T> {
+  return new ComparableColumn(
+      header, getValue, compareDefault,
+      (td, url) => renderUrl(td, url, renderAnchor));
+}
+
 const debugPathPattern: RegExp =
     /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
 
-class ReportUrlColumn<T extends Report> extends ValueColumn<T, string> {
-  constructor() {
-    super('Report URL', (e) => e.reportUrl);
-  }
-
-  override render(td: HTMLElement, row: T): void {
-    if (!row.isDebug) {
-      td.innerText = row.reportUrl;
+function reportUrlColumn<T extends Report>(): Column<T> {
+  return urlColumn('Report URL', (row) => row.reportUrl, (a, url) => {
+    const [pre, post] = url.split(debugPathPattern, 2);
+    if (pre === undefined || post === undefined) {
+      a.innerText = url;
       return;
     }
 
-    const [pre, post] = row.reportUrl.split(debugPathPattern, 2);
-
-    const span = td.ownerDocument.createElement('span');
+    const span = a.ownerDocument.createElement('span');
     span.classList.add('debug-url');
     span.innerText = 'debug';
 
-    td.append(pre!, span, post!);
-  }
+    a.append(pre, span, post);
+  });
 }
 
 class Selectable {
@@ -241,7 +309,7 @@ class Source {
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
-  debugKey: string;
+  debugKey?: bigint;
   dedupKeys: bigint[];
   priority: bigint;
   status: string;
@@ -255,7 +323,8 @@ class Source {
     this.sourceEventId = mojo.sourceEventId;
     this.sourceOrigin = originToText(mojo.sourceOrigin);
     this.destinations =
-        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin));
+        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin))
+            .sort(compareDefault);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
@@ -268,10 +337,13 @@ class Source {
     this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    this.debugKey = mojo.debugKey ? `${mojo.debugKey}` : '';
-    this.dedupKeys = mojo.dedupKeys;
+    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
+    this.debugKey =
+        typeof mojo.debugKey === 'bigint' ? mojo.debugKey : undefined;
+    this.dedupKeys = mojo.dedupKeys.sort(compareDefault);
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
-    this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
+    this.aggregatableDedupKeys =
+        mojo.aggregatableDedupKeys.sort(compareDefault);
     this.triggerDataMatching =
         triggerDataMatchingText[mojo.triggerDataMatching];
     this.eventLevelEpsilon = mojo.eventLevelEpsilon;
@@ -284,41 +356,39 @@ class SourceTableModel extends ArrayTableModel<Source> {
   constructor() {
     super(
         [
-          new ValueColumn<Source, bigint>(
-              'Source Event ID', (e) => e.sourceEventId),
-          new ValueColumn<Source, string>('Status', (e) => e.status),
-          new ValueColumn<Source, string>(
-              'Source Origin', (e) => e.sourceOrigin),
-          new ListColumn<Source, string>(
-              'Destinations', (e) => e.destinations, /*flatten=*/ true),
-          new ValueColumn<Source, string>(
-              'Reporting Origin', (e) => e.reportingOrigin),
-          new DateColumn<Source>(
-              'Source Registration Time', (e) => e.sourceTime),
-          new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+          numberColumn('Source Event ID', (e) => e.sourceEventId),
+          stringOrBoolColumn('Status', (e) => e.status),
+          urlColumn('Source Origin', (e) => e.sourceOrigin),
+          new ListColumn('Destinations', (e) => e.destinations, renderUrl),
+          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
+          dateColumn('Source Registration Time', (e) => e.sourceTime),
+          dateColumn('Expiry Time', (e) => e.expiryTime),
           new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
-          new DateColumn<Source>(
+          dateColumn(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
-          new ValueColumn<Source, number>(
+          numberColumn(
               'Max Event Level Reports', (e) => e.maxEventLevelReports),
-          new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
-          new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
+          stringOrBoolColumn('Source Type', (e) => e.sourceType),
+          numberColumn('Priority', (e) => e.priority),
           new CodeColumn<Source>('Filter Data', (e) => e.filterData),
           new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
-          new ValueColumn<Source, string>(
+          stringOrBoolColumn(
               'Trigger Data Matching', (e) => e.triggerDataMatching),
-          new ValueColumn<Source, number>(
-              'Event-Level Epsilon', (e) => e.eventLevelEpsilon),
-          new ValueColumn<Source, string>(
+          numberColumn(
+              'Event-Level Epsilon', (e) => e.eventLevelEpsilon,
+              (v) => v.toFixed(3)),
+          numberColumn(
               'Aggregatable Budget Consumed',
-              (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
-          new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
-          new ValueColumn<Source, boolean>(
-              'Debug Cookie Set', (e) => e.debugCookieSet),
-          new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
-          new ListColumn<Source, bigint>(
-              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
+              (e) => e.aggregatableBudgetConsumed,
+              (v) => `${v} / ${BUDGET_PER_SOURCE}`),
+          numberColumn('Debug Key', (e) => e.debugKey),
+          stringOrBoolColumn('Debug Cookie Set', (e) => e.debugCookieSet),
+          new ListColumn(
+              'Dedup Keys', (e) => e.dedupKeys, setInnerText, numberClass),
+          new ListColumn(
+              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys,
+              setInnerText, numberClass),
         ],
         5,  // Sort by source registration time by default.
         'No sources.',
@@ -331,15 +401,17 @@ class Registration {
   readonly contextOrigin: string;
   readonly reportingOrigin: string;
   readonly registrationJson: string;
-  readonly clearedDebugKey: string;
+  readonly clearedDebugKey?: bigint;
 
   constructor(mojo: WebUIRegistration) {
     this.time = new Date(mojo.time);
     this.contextOrigin = originToText(mojo.contextOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
-    this.clearedDebugKey =
-        mojo.clearedDebugKey ? `${mojo.clearedDebugKey}` : '';
+    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
+    this.clearedDebugKey = typeof mojo.clearedDebugKey === 'bigint' ?
+        mojo.clearedDebugKey :
+        undefined;
   }
 }
 
@@ -348,14 +420,11 @@ class RegistrationTableModel<T extends Registration> extends
   constructor(contextOriginTitle: string, cols: Array<Column<T>>) {
     super(
         [
-          new DateColumn<T>('Time', (e) => e.time),
-          new ValueColumn<T, string>(
-              contextOriginTitle, (e) => e.contextOrigin),
-          new ValueColumn<T, string>(
-              'Reporting Origin', (e) => e.reportingOrigin),
+          dateColumn('Time', (e) => e.time),
+          urlColumn(contextOriginTitle, (e) => e.contextOrigin),
+          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
           new CodeColumn<T>('Registration JSON', (e) => e.registrationJson),
-          new ValueColumn<T, string>(
-              'Cleared Debug Key', (e) => e.clearedDebugKey),
+          numberColumn('Cleared Debug Key', (e) => e.clearedDebugKey),
           ...cols,
         ],
         0,  // Sort by time by default.
@@ -378,9 +447,8 @@ class Trigger extends Registration {
 }
 
 const VERIFICATION_COLS: ReadonlyArray<Column<TriggerVerification>> = [
-  new ValueColumn<TriggerVerification, string>('Token', e => e.token),
-  new ValueColumn<TriggerVerification, string>(
-      'Report ID', e => e.aggregatableReportId),
+  stringOrBoolColumn('Token', e => e.token),
+  stringOrBoolColumn('Report ID', e => e.aggregatableReportId),
 ];
 
 class ReportVerificationColumn implements Column<Trigger> {
@@ -398,10 +466,8 @@ class ReportVerificationColumn implements Column<Trigger> {
 class TriggerTableModel extends RegistrationTableModel<Trigger> {
   constructor() {
     super('Destination', [
-      new ValueColumn<Trigger, string>(
-          'Event-Level Result', (e) => e.eventLevelResult),
-      new ValueColumn<Trigger, string>(
-          'Aggregatable Result', (e) => e.aggregatableResult),
+      stringOrBoolColumn('Event-Level Result', (e) => e.eventLevelResult),
+      stringOrBoolColumn('Aggregatable Result', (e) => e.aggregatableResult),
       new ReportVerificationColumn(),
     ]);
   }
@@ -422,8 +488,8 @@ class SourceRegistrationTableModel extends
     RegistrationTableModel<SourceRegistration> {
   constructor() {
     super('Source Origin', [
-      new ValueColumn<SourceRegistration, string>('Type', (e) => e.type),
-      new ValueColumn<SourceRegistration, string>('Status', (e) => e.status),
+      stringOrBoolColumn('Type', (e) => e.type),
+      stringOrBoolColumn('Status', (e) => e.status),
     ]);
   }
 }
@@ -434,7 +500,6 @@ class Report extends Selectable {
   reportUrl: string;
   triggerTime: Date;
   reportTime: Date;
-  isDebug: boolean;
   status: string;
   sendFailed: boolean;
 
@@ -451,9 +516,6 @@ class Report extends Selectable {
     if (mojo.status.pending === undefined) {
       this.input.disabled = true;
     }
-
-    this.isDebug = this.reportUrl.indexOf(
-                       '/.well-known/attribution-reporting/debug/') >= 0;
 
     this.sendFailed = false;
 
@@ -475,6 +537,10 @@ class Report extends Selectable {
     } else {
       throw new Error('invalid ReportStatus union');
     }
+  }
+
+  isDebug(): boolean {
+    return debugPathPattern.test(this.reportUrl);
   }
 }
 
@@ -526,10 +592,10 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
       private readonly handler: HandlerInterface) {
     super(
         [
-          new ValueColumn<T, string>('Status', (e) => e.status),
-          new ReportUrlColumn<T>(),
-          new DateColumn<T>('Trigger Time', (e) => e.triggerTime),
-          new DateColumn<T>('Report Time', (e) => e.reportTime),
+          stringOrBoolColumn('Status', (e) => e.status),
+          reportUrlColumn(),
+          dateColumn('Trigger Time', (e) => e.triggerTime),
+          dateColumn('Report Time', (e) => e.reportTime),
           ...cols,
           new CodeColumn<T>('Report Body', (e) => e.reportBody),
         ],
@@ -592,7 +658,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
       this.debugReports = [];
     }
 
-    if (report.isDebug) {
+    if (report.isDebug()) {
       this.debugReports.push(report);
     } else {
       this.sentOrDroppedReports.push(report);
@@ -651,9 +717,8 @@ class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
       sendReportsButton: HTMLButtonElement, remote: HandlerInterface) {
     super(
         [
-          new ValueColumn<EventLevelReport, bigint>(
-              'Report Priority', (e) => e.reportPriority),
-          new ValueColumn<EventLevelReport, boolean>(
+          numberColumn('Report Priority', (e) => e.reportPriority),
+          stringOrBoolColumn(
               'Randomized Report', (e) => !e.attributedTruthfully),
         ],
         showDebugReportsContainer,
@@ -672,12 +737,9 @@ class AggregatableAttributionReportTableModel extends
         [
           new CodeColumn<AggregatableAttributionReport>(
               'Histograms', (e) => e.contributions),
-          new ValueColumn<AggregatableAttributionReport, string>(
-              'Verification Token', (e) => e.verificationToken),
-          new ValueColumn<AggregatableAttributionReport, string>(
-              'Aggregation Coordinator', (e) => e.aggregationCoordinator),
-          new ValueColumn<AggregatableAttributionReport, boolean>(
-              'Null Report', (e) => e.isNullReport),
+          stringOrBoolColumn('Verification Token', (e) => e.verificationToken),
+          urlColumn('Aggregation Coordinator', (e) => e.aggregationCoordinator),
+          stringOrBoolColumn('Null Report', (e) => e.isNullReport),
         ],
         showDebugReportsContainer,
         sendReportsButton,
@@ -728,18 +790,13 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
   constructor() {
     super(
         [
-          new DateColumn<OsRegistration>('Timestamp', (e) => e.timestamp),
-          new ValueColumn<OsRegistration, string>(
-              'Registration Type', (e) => e.registrationType),
-          new ValueColumn<OsRegistration, string>(
-              'Registration URL', (e) => e.registrationUrl),
-          new ValueColumn<OsRegistration, string>(
-              'Top-Level Origin', (e) => e.topLevelOrigin),
-          new ValueColumn<OsRegistration, boolean>(
-              'Debug Key Allowed', (e) => e.debugKeyAllowed),
-          new ValueColumn<OsRegistration, boolean>(
-              'Debug Reporting', (e) => e.debugReporting),
-          new ValueColumn<OsRegistration, string>('Result', (e) => e.result),
+          dateColumn('Timestamp', (e) => e.timestamp),
+          stringOrBoolColumn('Registration Type', (e) => e.registrationType),
+          urlColumn('Registration URL', (e) => e.registrationUrl),
+          urlColumn('Top-Level Origin', (e) => e.topLevelOrigin),
+          stringOrBoolColumn('Debug Key Allowed', (e) => e.debugKeyAllowed),
+          stringOrBoolColumn('Debug Reporting', (e) => e.debugReporting),
+          stringOrBoolColumn('Result', (e) => e.result),
         ],
         0,
         'No OS Registrations',
@@ -772,9 +829,9 @@ class DebugReportTableModel extends ArrayTableModel<DebugReport> {
   constructor() {
     super(
         [
-          new DateColumn<DebugReport>('Time', (e) => e.time),
-          new ValueColumn<DebugReport, string>('URL', (e) => e.url),
-          new ValueColumn<DebugReport, string>('Status', (e) => e.status),
+          dateColumn('Time', (e) => e.time),
+          urlColumn('URL', (e) => e.url),
+          stringOrBoolColumn('Status', (e) => e.status),
           new CodeColumn<DebugReport>('Body', (e) => e.body),
         ],
         0,  // Sort by report time by default.

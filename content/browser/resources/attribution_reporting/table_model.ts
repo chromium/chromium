@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 export interface Column<T> {
-  readonly compare?: (a: T, b: T) => number;
+  compare?(a: T, b: T): number;
 
   render(td: HTMLElement, row: T): void;
 
