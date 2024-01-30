@@ -31,7 +31,7 @@ build_webui_tests("build") {
     "fake_metrics_private.ts",
     "fake_personalization_search_handler.ts",
     "fake_quick_unlock_private.ts",
-    "fake_receive_manager.js",
+    "fake_receive_manager.ts",
     "fake_settings_private.js",
     "fake_settings_search_handler.ts",
     "fake_system_display.ts",
