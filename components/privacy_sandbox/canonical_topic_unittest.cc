@@ -110,9 +110,9 @@ TEST_F(CanonicalTopicTest, LocalizedDescription) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_TOPICS_PAGE_FIRST_LEVEL_TOPIC_DESCRIPTOR,
                 l10n_util::GetStringUTF16(
-                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_209),
+                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_482),
                 l10n_util::GetStringUTF16(
-                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_210)),
+                    IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_519)),
             topic_with_more_children.GetLocalizedDescription());
 }
 

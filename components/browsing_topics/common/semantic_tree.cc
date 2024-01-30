@@ -840,18 +840,18 @@ const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
 }
 
 RepresentativenessMap GetInternalRepresentativenessMap() {
-  return {{1, std::make_pair(363, 23)},    {57, std::make_pair(83, 70)},
-          {86, std::make_pair(96, 88)},    {100, std::make_pair(396, 400)},
-          {103, std::make_pair(104, 404)}, {126, std::make_pair(140, 129)},
-          {149, std::make_pair(164, 444)}, {172, std::make_pair(173, 462)},
-          {180, std::make_pair(183, 194)}, {196, std::make_pair(471, 201)},
-          {207, std::make_pair(209, 210)}, {215, std::make_pair(533, 528)},
-          {226, std::make_pair(227, 236)}, {239, std::make_pair(242, 560)},
-          {243, std::make_pair(245, 561)}, {250, 253},
-          {254, std::make_pair(258, 562)}, {263, std::make_pair(265, 264)},
-          {272, std::make_pair(565, 570)}, {275, std::make_pair(276, 277)},
-          {279, std::make_pair(280, 281)}, {289, std::make_pair(603, 572)},
-          {299, std::make_pair(325, 309)}, {332, std::make_pair(626, 334)}};
+  return {{1, std::make_pair(12, 23)},     {57, std::make_pair(369, 373)},
+          {86, std::make_pair(392, 99)},   {100, std::make_pair(396, 399)},
+          {103, std::make_pair(104, 419)}, {126, std::make_pair(129, 140)},
+          {149, std::make_pair(158, 164)}, {172, std::make_pair(173, 462)},
+          {180, std::make_pair(465, 183)}, {196, std::make_pair(469, 201)},
+          {207, std::make_pair(482, 519)}, {215, std::make_pair(528, 534)},
+          {226, std::make_pair(537, 237)}, {239, std::make_pair(560, 242)},
+          {243, std::make_pair(561, 245)}, {250, 253},
+          {254, std::make_pair(562, 258)}, {263, std::make_pair(264, 267)},
+          {272, std::make_pair(565, 571)}, {275, std::make_pair(276, 278)},
+          {279, std::make_pair(281, 288)}, {289, std::make_pair(572, 293)},
+          {299, std::make_pair(325, 611)}, {332, std::make_pair(340, 626)}};
 }
 
 const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
