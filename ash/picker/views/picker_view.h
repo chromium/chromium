@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_category.h"
-#include "ash/picker/picker_session_metrics.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"

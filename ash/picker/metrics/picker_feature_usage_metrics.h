@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_PICKER_FEATURE_USAGE_METRICS_H_
-#define ASH_PICKER_PICKER_FEATURE_USAGE_METRICS_H_
+#ifndef ASH_PICKER_METRICS_PICKER_FEATURE_USAGE_METRICS_H_
+#define ASH_PICKER_METRICS_PICKER_FEATURE_USAGE_METRICS_H_
 
 #include "ash/ash_export.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -35,4 +35,4 @@ class ASH_EXPORT PickerFeatureUsageMetrics
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_FEATURE_USAGE_METRICS_H_
+#endif  // ASH_PICKER_METRICS_PICKER_FEATURE_USAGE_METRICS_H_

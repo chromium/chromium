@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/picker_feature_usage_metrics.h"
+#include "ash/picker/metrics/picker_feature_usage_metrics.h"
 
 #include <string_view>
 

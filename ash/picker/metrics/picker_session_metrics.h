@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_PICKER_SESSION_METRICS_H_
-#define ASH_PICKER_PICKER_SESSION_METRICS_H_
+#ifndef ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_
+#define ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_
 
 #include <optional>
 
@@ -73,4 +73,4 @@ class ASH_EXPORT PickerSessionMetrics {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_

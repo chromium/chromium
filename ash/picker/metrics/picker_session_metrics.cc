@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/picker_session_metrics.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/presentation_time_recorder.h"
