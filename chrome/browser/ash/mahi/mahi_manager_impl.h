@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_ASH_H_
-#define CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_ASH_H_
+#ifndef CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_IMPL_H_
+#define CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_IMPL_H_
 
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -11,21 +11,21 @@
 namespace ash {
 
 // Implementation of `MahiManager`.
-class MahiManagerAsh : public chromeos::MahiManager {
+class MahiManagerImpl : public chromeos::MahiManager {
  public:
-  MahiManagerAsh();
+  MahiManagerImpl();
 
-  MahiManagerAsh(const MahiManagerAsh&) = delete;
-  MahiManagerAsh& operator=(const MahiManagerAsh&) = delete;
+  MahiManagerImpl(const MahiManagerImpl&) = delete;
+  MahiManagerImpl& operator=(const MahiManagerImpl&) = delete;
 
-  ~MahiManagerAsh() override;
+  ~MahiManagerImpl() override;
 
   // chromeos::MahiManager:
   void OpenMahiPanel(int64_t display_id) override;
   void GetSummary(MahiSummaryCallback callback) override;
 
  private:
-  friend class MahiManagerAshTest;
+  friend class MahiManagerImplTest;
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;
@@ -33,4 +33,4 @@ class MahiManagerAsh : public chromeos::MahiManager {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_ASH_H_
+#endif  // CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_IMPL_H_

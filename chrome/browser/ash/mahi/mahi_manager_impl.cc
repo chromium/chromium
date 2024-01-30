@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/mahi/mahi_manager_ash.h"
+#include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 
 #include <stdint.h>
 
@@ -14,18 +14,18 @@
 
 namespace ash {
 
-MahiManagerAsh::MahiManagerAsh() = default;
+MahiManagerImpl::MahiManagerImpl() = default;
 
-MahiManagerAsh::~MahiManagerAsh() {
+MahiManagerImpl::~MahiManagerImpl() {
   mahi_panel_widget_.reset();
 }
 
-void MahiManagerAsh::OpenMahiPanel(int64_t display_id) {
+void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
   mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(display_id);
   mahi_panel_widget_->Show();
 }
 
-void MahiManagerAsh::GetSummary(MahiSummaryCallback callback) {
+void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   std::move(callback).Run(u"summary text");
 }
 

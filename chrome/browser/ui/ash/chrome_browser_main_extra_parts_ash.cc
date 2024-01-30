@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
+#include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -85,6 +86,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -200,6 +202,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       video_conference_tray_controller_ =
           std::make_unique<ash::FakeVideoConferenceTrayController>();
     }
+  }
+
+  if (chromeos::features::IsMahiEnabled()) {
+    mahi_manager_impl_ = std::make_unique<ash::MahiManagerImpl>();
   }
 
   ash_shell_init_ = std::make_unique<AshShellInit>();
@@ -437,6 +443,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // needs to be released before destroying the profile.
   app_list_client_.reset();
   ash_shell_init_.reset();
+
+  mahi_manager_impl_.reset();
 
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();

@@ -5693,7 +5693,7 @@ source_set("unit_tests") {
     "login/version_updater/update_time_estimator_unittest.cc",
     "login/version_updater/version_updater_unittest.cc",
     "login/wizard_controller_unittest.cc",
-    "mahi/mahi_manager_ash_unittest.cc",
+    "mahi/mahi_manager_impl_unittest.cc",
     "mobile/mobile_activator_unittest.cc",
     "nearby/bluetooth_adapter_manager_unittest.cc",
     "nearby/nearby_process_manager_impl_unittest.cc",

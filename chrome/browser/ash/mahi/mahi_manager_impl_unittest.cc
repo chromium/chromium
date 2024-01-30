@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/mahi/mahi_manager_ash.h"
+#include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 
 #include <memory>
 
@@ -16,29 +16,29 @@
 
 namespace ash {
 
-class MahiManagerAshTest : public testing::Test {
+class MahiManagerImplTest : public testing::Test {
  public:
-  MahiManagerAshTest() = default;
+  MahiManagerImplTest() = default;
 
-  MahiManagerAshTest(const MahiManagerAshTest&) = delete;
-  MahiManagerAshTest& operator=(const MahiManagerAshTest&) = delete;
+  MahiManagerImplTest(const MahiManagerImplTest&) = delete;
+  MahiManagerImplTest& operator=(const MahiManagerImplTest&) = delete;
 
-  ~MahiManagerAshTest() override = default;
+  ~MahiManagerImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     ash_test_helper_.SetUp();
 
-    mahi_manager_ash_ = std::make_unique<MahiManagerAsh>();
+    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
   }
 
   void TearDown() override { ash_test_helper_.TearDown(); }
 
   views::Widget* GetMahiPanelWidget() {
-    if (!mahi_manager_ash_->mahi_panel_widget_) {
+    if (!mahi_manager_impl_->mahi_panel_widget_) {
       return nullptr;
     }
-    return mahi_manager_ash_->mahi_panel_widget_->AsWidget();
+    return mahi_manager_impl_->mahi_panel_widget_->AsWidget();
   }
 
  protected:
@@ -48,16 +48,16 @@ class MahiManagerAshTest : public testing::Test {
 
   // Need this to set up `Shell` and display.
   AshTestHelper ash_test_helper_;
-  std::unique_ptr<MahiManagerAsh> mahi_manager_ash_;
+  std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
 };
 
-TEST_F(MahiManagerAshTest, OpenPanel) {
+TEST_F(MahiManagerImplTest, OpenPanel) {
   EXPECT_FALSE(GetMahiPanelWidget());
 
   auto* screen = display::Screen::GetScreen();
   auto display_id = screen->GetPrimaryDisplay().id();
 
-  mahi_manager_ash_->OpenMahiPanel(display_id);
+  mahi_manager_impl_->OpenMahiPanel(display_id);
 
   // Widget should be created.
   auto* widget = GetMahiPanelWidget();
