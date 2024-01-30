@@ -10,6 +10,7 @@ config("sentencepiece_config") {
     "src",
     "shims",
     "$root_gen_dir/third_party/sentencepiece/src",
+    "$root_gen_dir/third_party/sentencepiece/src/src",
   ]
 
   defines = [
@@ -35,7 +36,6 @@ proto_library("sentencepiece_proto") {
 }
 
 static_library("sentencepiece") {
-  include_dirs = [ "$target_gen_dir/src/src" ]
   sources = [
     "src/src/bpe_model.cc",
     "src/src/bpe_model.h",
@@ -79,11 +79,7 @@ static_library("sentencepiece") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [
-    ":sentencepiece_config",
-  ]
+  public_configs = [ ":sentencepiece_config" ]
 
-  configs += [
-    ":sentencepiece_flags",
-  ]
+  configs += [ ":sentencepiece_flags" ]
 }
