@@ -56,7 +56,6 @@ class V4L2VideoDecoderBackend {
     virtual void RestartStream() = 0;
     // Stop the stream to reallocate the CAPTURE buffers. Can only be done
     // between calls to |InitiateFlush| and |CompleteFlush|.
-    // |bit_depth| is the
     virtual void ChangeResolution(gfx::Size pic_size,
                                   gfx::Rect visible_rect,
                                   size_t num_codec_reference_frames,
