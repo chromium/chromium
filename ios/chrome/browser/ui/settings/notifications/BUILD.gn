@@ -31,6 +31,7 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/push_notification:presenters",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price",
     "//ios/chrome/common/ui/colors",
@@ -45,6 +46,7 @@ source_set("notifications_ui") {
     "notifications_view_controller.h",
     "notifications_view_controller.mm",
     "notifications_view_controller_delegate.h",
+    "tips_notifications_alert_presenter.h",
   ]
   deps = [
     ":constants",
@@ -109,6 +111,8 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/push_notification:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

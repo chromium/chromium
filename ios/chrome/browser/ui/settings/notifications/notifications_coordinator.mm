@@ -8,24 +8,27 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller.h"
+#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NotificationsCoordinator () <
     NotificationsNavigationCommands,
     NotificationsViewControllerPresentationDelegate,
-    TrackingPriceCoordinatorDelegate>
+    TrackingPriceCoordinatorDelegate,
+    NotificationsOptInAlertCoordinatorDelegate>
 
 // View controller presented by coordinator.
 @property(nonatomic, strong) NotificationsViewController* viewController;
@@ -38,7 +41,8 @@
 @property(nonatomic, strong)
     NotificationsSettingsObserver* notificationsObserver;
 // Alert Coordinator used to display the notifications system prompt.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+@property(nonatomic, strong)
+    NotificationsOptInAlertCoordinator* optInAlertCoordinator;
 
 @end
 
@@ -85,54 +89,29 @@
 - (void)stop {
   _notificationsObserver.delegate = nil;
   _notificationsObserver = nil;
+  [_optInAlertCoordinator stop];
 }
 
 #pragma mark - NotificationsAlertPresenter
 
 - (void)presentPushNotificationPermissionAlert {
-  NSString* settingURL = UIApplicationOpenSettingsURLString;
-  if (@available(iOS 15.4, *)) {
-    settingURL = UIApplicationOpenNotificationSettingsURLString;
-  }
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT);
-
-  __weak NotificationsCoordinator* weakSelf = self;
-  [_alertCoordinator stop];
-  _alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser
-                                                     title:alertTitle
-                                                   message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:^{
-                                 [weakSelf dimissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator
-      addItemWithTitle:settingsTitle
-                action:^{
-                  [[UIApplication sharedApplication]
-                                openURL:[NSURL URLWithString:settingURL]
-                                options:{}
-                      completionHandler:nil];
-                  [weakSelf dimissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-  [_alertCoordinator start];
+  [_optInAlertCoordinator start];
 }
 
-#pragma mark - Private
-
-- (void)dimissAlertCoordinator {
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
+- (void)presentTipsNotificationPermissionAlert {
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
+      IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
+  [_optInAlertCoordinator start];
 }
 
 #pragma mark - NotificationsNavigationCommands
@@ -163,6 +142,13 @@
   [self.trackingPriceCoordinator stop];
   self.trackingPriceCoordinator.delegate = nil;
   self.trackingPriceCoordinator = nil;
+}
+
+#pragma mark - NotificationsOptInAlertCoordinatorDelegate
+
+- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = nil;
 }
 
 @end

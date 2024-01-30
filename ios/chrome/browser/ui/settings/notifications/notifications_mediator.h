@@ -15,6 +15,7 @@ class PrefService;
 @protocol NotificationsAlertPresenter;
 @protocol NotificationsConsumer;
 @protocol NotificationsNavigationCommands;
+@protocol TipsNotificationsAlertPresenter;
 
 // Mediator for Notifications UI.
 @interface NotificationsMediator
@@ -36,7 +37,9 @@ class PrefService;
 @property(nonatomic, weak) id<NotificationsNavigationCommands> handler;
 
 // Handler for displaying notification related alerts.
-@property(nonatomic, weak) id<NotificationsAlertPresenter> presenter;
+@property(nonatomic, weak)
+    id<NotificationsAlertPresenter, TipsNotificationsAlertPresenter>
+        presenter;
 
 @end
 

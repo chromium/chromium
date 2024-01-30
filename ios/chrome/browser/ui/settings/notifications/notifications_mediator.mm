@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -26,7 +27,9 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_consumer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
+#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -35,6 +38,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTrackingPrice = kItemTypeEnumZero,
   ItemTypeContentNotifications,
   ItemTypeContentNotificationsFooter,
+  ItemTypeTipsNotifications,
+  ItemTypeTipsNotificationsFooter,
 };
 
 @interface NotificationsMediator ()
@@ -47,6 +52,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Item for the Content Notifications footer.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* contentNotificationsFooterItem;
+// Items for the Tips Notifications settings.
+@property(nonatomic, strong, readonly)
+    TableViewSwitchItem* tipsNotificationsItem;
+// Item for the Tips Notifications footer.
+@property(nonatomic, strong)
+    TableViewLinkHeaderFooterItem* tipsNotificationsFooterItem;
 // Pref Service object.
 @property(nonatomic, assign) PrefService* prefService;
 
@@ -59,6 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @synthesize priceTrackingItem = _priceTrackingItem;
 @synthesize contentNotificationsItem = _contentNotificationsItem;
+@synthesize tipsNotificationsItem = _tipsNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID {
@@ -98,8 +110,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            text:
                                l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
-                         symbol:kNewspaperSFSymbol
+                         symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
+                     symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+              symbolBorderWidth:0
         accessibilityIdentifier:kSettingsNotificationsContentCellId];
     _contentNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
@@ -119,6 +133,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _contentNotificationsFooterItem;
 }
 
+- (TableViewSwitchItem*)tipsNotificationsItem {
+  if (!_tipsNotificationsItem) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    UIImage* image = MakeSymbolMulticolor(
+        CustomSettingsRootSymbol(kMulticolorChromeballSymbol));
+#else
+    UIImage* image = CustomSettingsRootSymbol(kChromeProductSymbol);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    _tipsNotificationsItem =
+        [self switchItemWithType:ItemTypeTipsNotifications
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_SET_UP_LIST_TIPS_TITLE)
+                             symbol:image
+                         symbolTint:nil
+              symbolBackgroundColor:nil
+                  symbolBorderWidth:1
+            accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _tipsNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kTips, _gaiaID);
+  }
+  return _tipsNotificationsItem;
+}
+
+- (TableViewLinkHeaderFooterItem*)tipsNotificationsFooterItem {
+  if (!_tipsNotificationsFooterItem) {
+    _tipsNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
+        initWithType:ItemTypeTipsNotificationsFooter];
+    _tipsNotificationsFooterItem.text =
+        l10n_util::GetNSString(IDS_IOS_TIPS_NOTIFICATION_SETTINGS_FOOTER);
+  }
+
+  return _tipsNotificationsFooterItem;
+}
+
 - (void)setConsumer:(id<NotificationsConsumer>)consumer {
   if (_consumer == consumer) {
     return;
@@ -128,6 +177,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_consumer setContentNotificationsItem:self.contentNotificationsItem];
   [_consumer
       setContentNotificationsFooterItem:self.contentNotificationsFooterItem];
+  if (IsIOSTipsNotificationsEnabled()) {
+    [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
+    [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
+  }
 }
 
 #pragma mark - Private methods
@@ -157,17 +210,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)text
-                                    symbol:(NSString*)symbol
+                                    symbol:(UIImage*)symbol
+                                symbolTint:(UIColor*)tint
                      symbolBackgroundColor:(UIColor*)backgroundColor
+                         symbolBorderWidth:(CGFloat)borderWidth
                    accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = text;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
-  switchItem.iconImage = DefaultSettingsRootSymbol(symbol);
-  switchItem.iconTintColor = UIColor.whiteColor;
+  switchItem.iconImage = symbol;
+  switchItem.iconTintColor = tint;
   switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   switchItem.iconBackgroundColor = backgroundColor;
+  switchItem.iconBorderWidth = borderWidth;
 
   return switchItem;
 }
@@ -210,20 +266,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (!value) {
         break;
       }
-
-      __weak NotificationsMediator* weakSelf = self;
-      [PushNotificationUtil
-          requestPushNotificationPermission:^(BOOL granted, BOOL promptShown,
-                                              NSError* error) {
-            if (!error && !promptShown && !granted) {
-              // This callback can be executed on a background thread, make sure
-              // the UI is displayed on the main thread.
-              dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.presenter presentPushNotificationPermissionAlert];
-              });
-            }
-          }];
-
+      [self.presenter presentTipsNotificationPermissionAlert];
+      break;
+    }
+    case ItemTypeTipsNotifications: {
+      [self setPreferenceFor:PushNotificationClientId::kTips to:value];
+      self.tipsNotificationsItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kTips, _gaiaID);
+      if (!value) {
+        break;
+      }
+      [self.presenter presentTipsNotificationPermissionAlert];
       break;
     }
     default:
@@ -240,6 +294,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.handler showTrackingPrice];
       break;
     case ItemTypeContentNotifications:
+    case ItemTypeTipsNotifications:
       break;
     default:
       NOTREACHED();
