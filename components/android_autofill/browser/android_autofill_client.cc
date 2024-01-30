@@ -408,10 +408,6 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
 void AndroidAutofillClient::InitAgent(
     base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
     const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>& agent) {
-  agent->SetUserGestureRequired(false);
-  agent->SetSecureContextRequired(true);
-  agent->SetFocusRequiresScroll(false);
-  agent->SetQueryPasswordSuggestion(true);
 }
 
 }  // namespace android_autofill

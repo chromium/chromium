@@ -284,14 +284,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   void PreviewPasswordGenerationSuggestion(
       const std::u16string& password) override {}
 
-  void SetUserGestureRequired(bool required) override {}
-
-  void SetSecureContextRequired(bool required) override {}
-
-  void SetFocusRequiresScroll(bool require) override {}
-
-  void SetQueryPasswordSuggestion(bool query) override {}
-
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 
   base::OnceClosure quit_closure_;

@@ -100,8 +100,8 @@ class AutofillAgentTest : public test::AutofillRendererTest {
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
     test_api(autofill_agent())
-        .set_form_tracker(
-            std::make_unique<MockFormTracker>(GetMainRenderFrame()));
+        .set_form_tracker(std::make_unique<MockFormTracker>(
+            GetMainRenderFrame(), FormTracker::UserGestureRequired(true)));
   }
 
   MockFormTracker& form_tracker() {

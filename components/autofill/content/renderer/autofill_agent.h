@@ -39,7 +39,6 @@
 
 namespace blink {
 class WebNode;
-class WebView;
 class WebFormControlElement;
 class WebFormElement;
 }  // namespace blink
@@ -84,22 +83,48 @@ class AutofillAgent : public content::RenderFrameObserver,
  public:
   static constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
 
-  using UsesKeyboardAccessoryForSuggestions =
-      base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
   using ExtractAllDatalists =
       base::StrongAlias<class ExtractAllDatalistsTag, bool>;
+  using FocusRequiresScroll =
+      base::StrongAlias<class FocusRequiresScrollTag, bool>;
+  using QueryPasswordSuggestions =
+      base::StrongAlias<class QueryPasswordSuggestionsTag, bool>;
+  using SecureContextRequired =
+      base::StrongAlias<class SecureContextRequiredTag, bool>;
+  using UserGestureRequired = FormTracker::UserGestureRequired;
+  using UsesKeyboardAccessoryForSuggestions =
+      base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
 
   struct Config {
-    // Is true iff the platform doesn't show any popups but renders the same
-    // information in or near the keyboard instead.
-    UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
-        BUILDFLAG(IS_ANDROID)};
-
     // Controls whether or not all datalists shall be extracted into
     // FormFieldData. This feature is enabled when all datalists (instead of
     // only the focused one) shall be extracted and sent to the Android Autofill
     // service when the autofill session is created.
     ExtractAllDatalists extract_all_datalists{false};
+
+    // Controls whether to delay focus handling until scrolling occurs.
+    FocusRequiresScroll focus_requires_scroll{true};
+
+    // Controls whether password suggestions are queried programmatically. This
+    // is required if the `PasswordAutofillAgent` does not handle password
+    // forms and `AutofillDriver` should be informed instead.
+    QueryPasswordSuggestions query_password_suggestions{false};
+
+    // Controls whether a secure context is required to query Autofill
+    // suggestions.
+    SecureContextRequired secure_context_required{false};
+
+    // Controls whether `FormTracker` requires a user gesture in order to pass
+    // on information about text field change events to `AutofillAgent`.
+    // Bypassing the user gesture check may be required when delegating to
+    // Android Autofill, which needs to be notified of every change to the
+    // field.
+    UserGestureRequired user_gesture_required{true};
+
+    // Is true iff the platform doesn't show any popups but renders the same
+    // information in or near the keyboard instead.
+    UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
+        BUILDFLAG(IS_ANDROID)};
   };
 
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
@@ -160,10 +185,6 @@ class AutofillAgent : public content::RenderFrameObserver,
                                  const std::u16string& password) override;
   void PreviewPasswordGenerationSuggestion(
       const std::u16string& password) override;
-  void SetUserGestureRequired(bool required) override;
-  void SetSecureContextRequired(bool required) override;
-  void SetFocusRequiresScroll(bool require) override;
-  void SetQueryPasswordSuggestion(bool required) override;
   void EnableHeavyFormDataScraping() override;
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
@@ -442,23 +463,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   // messages to close the Autofill popup when it can't possibly be showing.
   bool is_popup_possibly_visible_;
 
-  // Whether or not the secure context is required to query autofill suggestion.
-  // Default to false.
-  bool is_secure_context_required_;
-
-  // This flag denotes whether or not password suggestions need to be
-  // programmatically queried. This is needed on Android WebView because it
-  // doesn't use PasswordAutofillAgent to handle password form.
-  bool query_password_suggestion_ = false;
-
   bool last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
 
   // This is never null, it is created at construction time and is not changed
   // until destruction time.
   std::unique_ptr<FormTracker> form_tracker_;
-
-  // Whether or not we delay focus handling until scrolling occurs.
-  bool focus_requires_scroll_ = true;
 
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 

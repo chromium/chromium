@@ -101,9 +101,11 @@ FieldRendererId FieldRef::GetId() const {
                            : form_util::GetFieldRendererId(field_);
 }
 
-FormTracker::FormTracker(content::RenderFrame* render_frame)
+FormTracker::FormTracker(content::RenderFrame* render_frame,
+                         UserGestureRequired user_gesture_required)
     : content::RenderFrameObserver(render_frame),
-      blink::WebLocalFrameObserver(render_frame->GetWebFrame()) {
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
+      user_gesture_required_(user_gesture_required) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
 }
 

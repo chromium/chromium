@@ -309,8 +309,9 @@ AutofillAgent::AutofillAgent(
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)),
       is_popup_possibly_visible_(false),
-      is_secure_context_required_(false),
-      form_tracker_(std::make_unique<FormTracker>(render_frame)),
+      form_tracker_(
+          std::make_unique<FormTracker>(render_frame,
+                                        config.user_gesture_required)),
       focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
@@ -355,7 +356,7 @@ void AutofillAgent::DidChangeScrollOffset() {
     return;
   }
 
-  if (!focus_requires_scroll_) {
+  if (!config_.focus_requires_scroll) {
     // Post a task here since scroll offset may change during layout.
     // TODO(crbug.com/804886): Do not cancel other tasks and do not invalidate
     // PasswordAutofillAgent::autofill_agent_.
@@ -375,7 +376,7 @@ void AutofillAgent::DidChangeScrollOffset() {
 void AutofillAgent::DidChangeScrollOffsetImpl(
     const WebFormControlElement& element) {
   if (element != last_queried_element_.GetField() || element.IsNull() ||
-      focus_requires_scroll_ || !is_popup_possibly_visible_ ||
+      config_.focus_requires_scroll || !is_popup_possibly_visible_ ||
       !element.Focused()) {
     return;
   }
@@ -430,7 +431,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   // triggers FormControlElementClicked().
   // Refer to http://crbug.com/1105254
   if ((config_.uses_keyboard_accessory_for_suggestions ||
-       !focus_requires_scroll_) &&
+       !config_.focus_requires_scroll) &&
       !element.IsNull() &&
       element.GetDocument().GetFrame()->HasTransientUserActivation()) {
     // If the focus change was caused by a user gesture,
@@ -440,7 +441,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
     bool focused_node_was_last_clicked =
         !base::FeatureList::IsEnabled(
             features::kAutofillAndroidDisableSuggestionsOnJSFocus) ||
-        !focus_requires_scroll_;
+        !config_.focus_requires_scroll;
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/focused_node_was_last_clicked);
   }
@@ -513,10 +514,6 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   if (password_generation_agent_) {
     password_generation_agent_->DidEndTextFieldEditing(element);
   }
-}
-
-void AutofillAgent::SetUserGestureRequired(bool required) {
-  form_tracker_->set_user_gesture_required(required);
 }
 
 void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
@@ -1009,23 +1006,11 @@ void AutofillAgent::ShowSuggestions(
   // password field.
   if (!input_element.IsNull() &&
       input_element.IsPasswordField /*disable presubmit*/ () &&
-      !query_password_suggestion_) {
+      !config_.query_password_suggestions) {
     return;
   }
 
   QueryAutofillSuggestions(element, trigger_source);
-}
-
-void AutofillAgent::SetQueryPasswordSuggestion(bool query) {
-  query_password_suggestion_ = query;
-}
-
-void AutofillAgent::SetSecureContextRequired(bool required) {
-  is_secure_context_required_ = required;
-}
-
-void AutofillAgent::SetFocusRequiresScroll(bool require) {
-  focus_requires_scroll_ = require;
 }
 
 void AutofillAgent::EnableHeavyFormDataScraping() {
@@ -1065,8 +1050,8 @@ void AutofillAgent::QueryAutofillSuggestions(
         &field);
   }
 
-  if (is_secure_context_required_ &&
-      !(element.GetDocument().IsSecureContext())) {
+  if (config_.secure_context_required &&
+      !element.GetDocument().IsSecureContext()) {
     LOG(WARNING) << "Autofill suggestions are disabled because the document "
                     "isn't a secure context.";
     return;
@@ -1260,7 +1245,7 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
   }
 
   if (!config_.uses_keyboard_accessory_for_suggestions &&
-      focus_requires_scroll_) {
+      config_.focus_requires_scroll) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
         last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);

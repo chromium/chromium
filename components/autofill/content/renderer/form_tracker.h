@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -103,7 +103,10 @@ class FormTracker : public content::RenderFrameObserver,
     virtual ~Observer() = default;
   };
 
-  explicit FormTracker(content::RenderFrame* render_frame);
+  using UserGestureRequired =
+      base::StrongAlias<class UserGestureRequiredTag, bool>;
+  explicit FormTracker(content::RenderFrame* render_frame,
+                       UserGestureRequired user_gesture_required);
 
   FormTracker(const FormTracker&) = delete;
   FormTracker& operator=(const FormTracker&) = delete;
@@ -127,10 +130,6 @@ class FormTracker : public content::RenderFrameObserver,
 
   void set_ignore_control_changes(bool ignore_control_changes) {
     ignore_control_changes_ = ignore_control_changes;
-  }
-
-  void set_user_gesture_required(bool required) {
-    user_gesture_required_ = required;
   }
 
  private:
@@ -191,9 +190,11 @@ class FormTracker : public content::RenderFrameObserver,
   // TODO(crbug.com/1483242): Remove.
   void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
 
+  // Whether a user gesture is required to pass on text field change events.
+  const UserGestureRequired user_gesture_required_;
+
   base::ObserverList<Observer>::Unchecked observers_;
   bool ignore_control_changes_ = false;
-  bool user_gesture_required_ = true;
   FormRef last_interacted_form_;
   FieldRef last_interacted_formless_element_;
 
