@@ -351,6 +351,52 @@ TEST_F(PickerViewTest, BoundsDefaultAlignedWithCaret) {
             kDefaultCaretBounds.CenterPoint().y());
 }
 
+TEST_F(PickerViewTest, BoundsAlignedWithCaretNearTopLeftOfScreen) {
+  FakePickerViewDelegate delegate;
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect caret_bounds(screen_work_area.origin(), {0, 10});
+  caret_bounds.Offset(80, 80);
+
+  auto widget = PickerView::CreateWidget(caret_bounds, &delegate);
+  widget->Show();
+
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  // Should be entirely on screen.
+  EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
+  // Should be to the right of the caret.
+  EXPECT_GE(view->GetBoundsInScreen().x(), caret_bounds.right());
+  // Center of the search field should be vertically aligned with the caret.
+  EXPECT_EQ(view->search_field_view_for_testing()
+                .GetBoundsInScreen()
+                .CenterPoint()
+                .y(),
+            caret_bounds.CenterPoint().y());
+}
+
+TEST_F(PickerViewTest, BoundsAlignedWithCaretNearBottomLeftOfScreen) {
+  FakePickerViewDelegate delegate;
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect caret_bounds(screen_work_area.bottom_left(), {0, 10});
+  caret_bounds.Offset(80, -80);
+
+  auto widget = PickerView::CreateWidget(caret_bounds, &delegate);
+  widget->Show();
+
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  // Should be entirely on screen.
+  EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
+  // Should be to the right of the caret.
+  EXPECT_GE(view->GetBoundsInScreen().x(), caret_bounds.right());
+  // Center of the search field should be vertically aligned with the caret.
+  EXPECT_EQ(view->search_field_view_for_testing()
+                .GetBoundsInScreen()
+                .CenterPoint()
+                .y(),
+            caret_bounds.CenterPoint().y());
+}
+
 TEST_F(PickerViewTest, BoundsBelowCaretForCaretNearTopRightOfScreen) {
   FakePickerViewDelegate delegate;
   const gfx::Rect screen_work_area =
@@ -394,6 +440,36 @@ TEST_F(PickerViewTest, BoundsOnScreenForEmptyCaretBounds) {
   EXPECT_TRUE(
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
           view->GetBoundsInScreen()));
+}
+
+TEST_F(PickerViewTest, ResultsBelowSearchFieldNearTopOfScreen) {
+  FakePickerViewDelegate delegate;
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect caret_bounds(screen_work_area.top_center(), {0, 10});
+  caret_bounds.Offset(0, 80);
+
+  auto widget = PickerView::CreateWidget(caret_bounds, &delegate);
+  widget->Show();
+
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  EXPECT_GE(view->zero_state_view_for_testing().GetBoundsInScreen().y(),
+            view->search_field_view_for_testing().GetBoundsInScreen().bottom());
+}
+
+TEST_F(PickerViewTest, ResultsAboveSearchFieldNearBottomOfScreen) {
+  FakePickerViewDelegate delegate;
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect caret_bounds(screen_work_area.bottom_center(), {0, 10});
+  caret_bounds.Offset(0, -80);
+
+  auto widget = PickerView::CreateWidget(caret_bounds, &delegate);
+  widget->Show();
+
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  EXPECT_LE(view->zero_state_view_for_testing().GetBoundsInScreen().bottom(),
+            view->search_field_view_for_testing().GetBoundsInScreen().y());
 }
 
 }  // namespace

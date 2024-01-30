@@ -41,9 +41,15 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(PickerView);
 
+  enum class PickerLayoutType {
+    kResultsBelowSearchField,
+    kResultsAboveSearchField,
+  };
+
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
-                      base::TimeTicks trigger_event_timestamp);
+                      base::TimeTicks trigger_event_timestamp,
+                      PickerLayoutType layout_type);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;
@@ -68,7 +74,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // horizontally align `search_field_view_` with `caret_bounds`.
-  gfx::Rect GetTargetBounds(const gfx::Rect& caret_bounds);
+  gfx::Rect GetTargetBounds(const gfx::Rect& caret_bounds,
+                            PickerLayoutType layout_type);
 
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
@@ -100,6 +107,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void PublishCategoryResults(const PickerSearchResults& results);
 
   void OnClickOutsideWidget();
+
+  void AddSearchFieldView();
+  void AddContentsView();
 
   std::optional<PickerCategory> selected_category_;
 
