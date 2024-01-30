@@ -64,7 +64,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
-      u"Gif Section", {{PickerSearchResult::Gif(GURL())}})}});
+      u"Gif Section", {{PickerSearchResult::Gif(GURL(), gfx::Size())}})}});
   view.SetSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
@@ -127,8 +127,8 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsGifResult) {
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           future.GetCallback(), &asset_fetcher));
   view->SetSearchResults(PickerSearchResults({{
-      PickerSearchResults::Section(u"section",
-                                   {{PickerSearchResult::Gif(GURL())}}),
+      PickerSearchResults::Section(
+          u"section", {{PickerSearchResult::Gif(GURL(), gfx::Size(1, 1))}}),
   }}));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
@@ -139,7 +139,7 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsGifResult) {
   ViewDrawnWaiter().Wait(gif_result_view);
   LeftClickOn(gif_result_view);
 
-  EXPECT_EQ(future.Get(), PickerSearchResult::Gif(GURL()));
+  EXPECT_EQ(future.Get(), PickerSearchResult::Gif(GURL(), gfx::Size(1, 1)));
 }
 
 }  // namespace

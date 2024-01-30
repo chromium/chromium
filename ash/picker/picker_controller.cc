@@ -168,8 +168,10 @@ void PickerController::StartSearch(const std::u16string& query,
       PickerSearchResults::Section(
           u"Matching expressions",
           {{PickerSearchResult::Text(u"👍"), PickerSearchResult::Text(u"😊"),
-            PickerSearchResult::Gif(GURL(
-                "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"))}}),
+            PickerSearchResult::Gif(
+                GURL(
+                    "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
+                gfx::Size(140, 140))}}),
       PickerSearchResults::Section(
           u"Matching links",
           {{

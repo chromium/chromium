@@ -85,14 +85,12 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
                                base::Unretained(this), result),
                 PickerItemView::ItemType::kLargeGridItem);
-            // TODO: b/316936418 - Get gif dimensions to determine size.
-            constexpr gfx::Size kPlaceholderGifSize(140, 140);
             // `base::Unretained` is safe here because `this` owns the item
             // views and `asset_fetcher_` outlives `this`.
             item_view->SetPrimaryImage(std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
-                kPlaceholderGifSize));
+                data.dimensions));
             return item_view;
           },
           [&, this](const PickerSearchResult::BrowsingHistoryData& data) {

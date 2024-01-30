@@ -26,8 +26,9 @@ PickerSearchResult PickerSearchResult::Text(std::u16string_view text) {
   return PickerSearchResult(TextData{.text = std::u16string(text)});
 }
 
-PickerSearchResult PickerSearchResult::Gif(const GURL& url) {
-  return PickerSearchResult(GifData{.url = url});
+PickerSearchResult PickerSearchResult::Gif(const GURL& url,
+                                           const gfx::Size& dimensions) {
+  return PickerSearchResult(GifData{.url = url, .dimensions = dimensions});
 }
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,

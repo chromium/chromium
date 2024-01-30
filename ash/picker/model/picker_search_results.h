@@ -29,6 +29,8 @@ class ASH_EXPORT PickerSearchResult {
 
   struct GifData {
     GURL url;
+    // Width and height of the GIF at `url`.
+    gfx::Size dimensions;
 
     bool operator==(const GifData&) const;
   };
@@ -49,7 +51,7 @@ class ASH_EXPORT PickerSearchResult {
   static PickerSearchResult BrowsingHistory(const GURL& url,
                                             ui::ImageModel icon);
   static PickerSearchResult Text(std::u16string_view text);
-  static PickerSearchResult Gif(const GURL& url);
+  static PickerSearchResult Gif(const GURL& url, const gfx::Size& dimensions);
 
   const Data& data() const;
 
