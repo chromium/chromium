@@ -49,6 +49,9 @@ GENERAL_MP4_ALGO = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
                                                edge_threshold=80,
                                                ignored_border_thickness=1)
 
+ROUNDING_ERROR_ALGO = algo.FuzzyMatchingAlgorithm(
+    max_different_pixels=100000000, pixel_per_channel_delta_threshold=1)
+
 BrowserArgType = List[str]
 
 
@@ -269,7 +272,8 @@ class PixelTestPages():
             test_rect=[20, 20, 370, 370],
             # Small Fuchsia screens result in an incomplete capture
             # without this.
-            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
+            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia,
+            matching_algorithm=ROUNDING_ERROR_ALGO),
         PixelTestPage('pixel_reflected_div.html',
                       base_name + '_ReflectedDiv',
                       test_rect=[0, 0, 100, 300]),
