@@ -128,6 +128,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         type: Boolean,
         value: false,
       },
+
+      shouldShowV2EmptyState_: {
+        type: Boolean,
+        computed: 'computeShouldShowV2EmptyState_(' +
+            'shouldShowV2, prefs.privacy_sandbox.m1.topics_enabled.value)',
+      },
     };
   }
 
@@ -143,6 +149,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private isTopicsListLoaded_: boolean;
   private shouldShowV2_: boolean;
+  private shouldShowV2EmptyState_: boolean;
   private blockedTopicsExpanded_: boolean;
 
   private isLearnMoreDialogOpen_: boolean;
@@ -162,6 +169,14 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.$.footerV2.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+  }
+
+  // Goal is to not show anything but the toggle and disclaimer when we
+  // should show V2 and the pref is false.
+  private computeShouldShowV2EmptyState_(): boolean {
+    return (
+        this.shouldShowV2_ &&
+        !this.getPref('privacy_sandbox.m1.topics_enabled').value);
   }
 
   override currentRouteChanged(newRoute: Route) {
@@ -204,7 +219,15 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   }
 
   private isTopicsListEmpty_(): boolean {
-    return this.topicsList_.length === 0;
+    return this.topicsList_.length === 0 && !this.shouldShowV2_;
+  }
+
+  private isTopicsListEmptyV2_(): boolean {
+    return this.topicsList_.length === 0 && this.shouldShowV2_;
+  }
+
+  private isBlockedTopicsListEmptyV2_(): boolean {
+    return this.blockedTopicsList_.length === 0 && this.shouldShowV2_;
   }
 
   private computeBlockedTopicsDescription_(): string {

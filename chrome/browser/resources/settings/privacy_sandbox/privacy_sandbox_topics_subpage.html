@@ -9,6 +9,17 @@
     align-items: center;
   }
 
+  .topics-empty-text-v2 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
   #currentTopicsSectionWrapper {
     width: 100%;
   }
@@ -90,28 +101,29 @@
 <div id="disclaimer" hidden="[[!shouldShowV2_]]">
   $i18n{topicsPageDisclaimer}
 </div>
-<template is="dom-if" if="[[!isTopicsPrefManaged_(
-    prefs.privacy_sandbox.m1.topics_enabled.enforcement)]]" restamp>
-  <div id="currentTopicsSection">
-    <div id="currentTopicsSectionWrapper" class="hr">
-      <h2 id="currentTopicsHeading">
-        [[computeTopicsPageCurrentTopicsHeading_(shouldShowV2_)]]
-      </h2>
-      <div id="currentTopicsDescription" class="cr-secondary-text">
-        [[computeTopicsPageCurrentTopicsDescription_(shouldShowV2_)]]
-        <!-- TODO(b/262502300): Add "Learn more" into current topics description
-             string. -->
-        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-            "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}"
-            hidden="[[shouldShowV2_]]">
-          $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
-        </button>
-      </div>
-      <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
-          prefs.privacy_sandbox.m1.topics_enabled.value, isTopicsListLoaded_)]]"
-          restamp>
-          <div role="region"
-              aria-label="$i18n{topicsPageCurrentTopicsRegionA11yDescription}">
+<template is="dom-if" if="[[!shouldShowV2EmptyState_]]" restamp>
+  <template is="dom-if" if="[[!isTopicsPrefManaged_(
+      prefs.privacy_sandbox.m1.topics_enabled.enforcement)]]" restamp>
+    <div id="currentTopicsSection">
+      <div id="currentTopicsSectionWrapper" class="hr">
+        <h2 id="currentTopicsHeading">
+          [[computeTopicsPageCurrentTopicsHeading_(shouldShowV2_)]]
+        </h2>
+        <div id="currentTopicsDescription" class="cr-secondary-text">
+          [[computeTopicsPageCurrentTopicsDescription_(shouldShowV2_)]]
+          <!-- TODO(b/262502300): Add "Learn more" into current topics
+              description string. -->
+          <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
+              "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}"
+              hidden="[[shouldShowV2_]]">
+            $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
+          </button>
+        </div>
+        <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
+            prefs.privacy_sandbox.m1.topics_enabled.value,
+            isTopicsListLoaded_)]]" restamp>
+          <div role="region" aria-label=
+              "$i18n{topicsPageCurrentTopicsRegionA11yDescription}">
             <template is="dom-repeat" items="[[topicsList_]]">
               <privacy-sandbox-interest-item interest="[[item]]"
                   on-interest-changed="onInterestChanged_">
@@ -120,49 +132,76 @@
           </div>
           <div id="currentTopicsDescriptionEmpty"
               class="no-topics cr-secondary-text"
-              hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
-            [[computeTopicsPageCurrentTopicsDescriptionEmpty_(shouldShowV2_)]]
+              hidden="[[!isTopicsListEmpty_(topicsList_.length,
+              shouldShowV2_)]]">
+            $i18n{topicsPageCurrentTopicsDescriptionEmpty}
           </div>
-      </template>
-      <div id="currentTopicsDescriptionDisabled"
-          class="no-topics cr-secondary-text"
-          hidden="[[prefs.privacy_sandbox.m1.topics_enabled.value]]">
-        $i18n{topicsPageCurrentTopicsDescriptionDisabled}
+          <div id="currentTopicsEmptyTextV2"
+              class="topics-empty-text-v2"
+              hidden="[[!isTopicsListEmptyV2_(topicsList_.length,
+              shouldShowV2_)]]">
+            <span id="currentTopicsDescriptionEmptyTopText">
+              $i18n{topicsPageCurrentTopicsDescriptionEmptyTopText}
+            </span>
+            <span id="currentTopicsDescriptionEmptyBottomText"
+                class="cr-secondary-text">
+              $i18n{topicsPageCurrentTopicsDescriptionEmptyPtb}
+            </span>
+          </div>
+        </template>
+        <div id="currentTopicsDescriptionDisabled"
+            class="no-topics cr-secondary-text"
+            hidden="[[prefs.privacy_sandbox.m1.topics_enabled.value]]">
+          $i18n{topicsPageCurrentTopicsDescriptionDisabled}
+        </div>
       </div>
     </div>
-  </div>
-</template>
-<cr-expand-button id="blockedTopicsRow" class="cr-row"
-    expanded="{{blockedTopicsExpanded_}}">
-  [[computeTopicsPageBlockedTopicsHeading_(shouldShowV2_)]]
-  <div id="blockedTopicsDescriptionV2" hidden="[[!shouldShowV2_]]">
-    $i18n{topicsPageBlockedTopicsDescriptionV2}
-  </div>
-</cr-expand-button>
-<iron-collapse opened="[[blockedTopicsExpanded_]]">
-  <div id="blockedTopicsDescription"
-      class$="[[getBlockedTopicsDescriptionClass_(blockedTopicsList_.length)]]"
-      hidden="[[shouldShowV2_]]">
-    [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
-  </div>
-  <div id="blockedTopicsList" role="region"
-      aria-label="$i18n{topicsPageBlockedTopicsRegionA11yDescription}">
-    <template is="dom-repeat" items="[[blockedTopicsList_]]">
-      <privacy-sandbox-interest-item interest="[[item]]"
-          on-interest-changed="onInterestChanged_">
-      </privacy-sandbox-interest-item>
-    </template>
-  </div>
-</iron-collapse>
-<div id="manageTopicsSection" class="hr">
-  <template is="dom-if" if="[[shouldShowV2_]]">
-    <cr-link-row id="privacySandboxManageTopicsLinkRow"
-        label="$i18n{manageTopicsHeading}"
-        sub-label="$i18n{manageTopicsDescription}"
-        on-click="onPrivacySandboxManageTopicsClick_">
-    </cr-link-row>
   </template>
-</div>
+  <cr-expand-button id="blockedTopicsRow" class="cr-row"
+      expanded="{{blockedTopicsExpanded_}}">
+    [[computeTopicsPageBlockedTopicsHeading_(shouldShowV2_)]]
+    <div id="blockedTopicsDescriptionV2" hidden="[[!shouldShowV2_]]">
+      $i18n{topicsPageBlockedTopicsDescriptionV2}
+    </div>
+  </cr-expand-button>
+  <iron-collapse opened="[[blockedTopicsExpanded_]]">
+    <div id="blockedTopicsDescription"
+        class$="[[getBlockedTopicsDescriptionClass_(
+        blockedTopicsList_.length)]]"
+        hidden="[[shouldShowV2_]]">
+      [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
+    </div>
+    <div id="blockedTopicsEmptyText"
+        class="topics-empty-text-v2"
+        hidden="[[!isBlockedTopicsListEmptyV2_(blockedTopicsList_.length,
+        shouldShowV2_)]]">
+      <span id="blockedTopicsDescriptionEmptyTopText">
+          $i18n{topicsPageBlockedTopicsDescriptionEmptyTopText}
+      </span>
+      <span id="blockedTopicsDescriptionEmptyBottomText"
+          class="cr-secondary-text">
+        $i18n{topicsPageBlockedTopicsDescriptionEmptyPtb}
+      </span>
+    </div>
+    <div id="blockedTopicsList" role="region"
+        aria-label="$i18n{topicsPageBlockedTopicsRegionA11yDescription}">
+      <template is="dom-repeat" items="[[blockedTopicsList_]]">
+        <privacy-sandbox-interest-item interest="[[item]]"
+            on-interest-changed="onInterestChanged_">
+        </privacy-sandbox-interest-item>
+      </template>
+    </div>
+  </iron-collapse>
+  <template is="dom-if" if="[[shouldShowV2_]]">
+    <div id="manageTopicsSection" class="hr">
+        <cr-link-row id="privacySandboxManageTopicsLinkRow"
+            label="$i18n{manageTopicsHeading}"
+            sub-label="$i18n{manageTopicsDescription}"
+            on-click="onPrivacySandboxManageTopicsClick_">
+        </cr-link-row>
+    </div>
+  </template>
+</template>
 <div id="footer" class="cr-secondary-text hr footer"
     hidden="[[shouldShowV2_]]">
   $i18nRaw{topicsPageFooter}
