@@ -191,24 +191,23 @@ export class ChannelProxy {
           throw message.exceptionDetails;
         }
 
-        eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.Script.EventNames.Message,
-            params: {
-              channel: this.#properties.channel,
-              data: realm.cdpToBidiValue(
-                message,
-                this.#properties.ownership ?? Script.ResultOwnership.None
-              ),
-              source: {
-                realm: realm.realmId,
-                context: realm.browsingContextId,
+        for (const browsingContext of realm.associatedBrowsingContexts) {
+          eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.Script.EventNames.Message,
+              params: {
+                channel: this.#properties.channel,
+                data: realm.cdpToBidiValue(
+                  message,
+                  this.#properties.ownership ?? Script.ResultOwnership.None
+                ),
+                source: realm.source,
               },
             },
-          },
-          realm.browsingContextId
-        );
+            browsingContext.id
+          );
+        }
       } catch (error) {
         // If an error is thrown, then the channel is permanently broken, so we
         // exit the loop.

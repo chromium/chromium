@@ -163,7 +163,7 @@ export class InputProcessor {
         return paths[index] !== path;
       })
     ) {
-      const {objectId} = await realm.deserializeToCdpArg(params.element);
+      const {objectId} = await realm.deserializeForCdp(params.element);
       // This cannot throw since this was just used in `callFunction` above.
       assert(objectId !== undefined);
       await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {

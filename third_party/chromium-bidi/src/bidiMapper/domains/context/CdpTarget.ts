@@ -19,6 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Deferred} from '../../../utils/Deferred.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
 import {LogManager} from '../log/LogManager.js';
 import {NetworkManager} from '../network/NetworkManager.js';
@@ -50,7 +51,8 @@ export class CdpTarget {
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
-    acceptInsecureCerts: boolean
+    acceptInsecureCerts: boolean,
+    logger?: LoggerFn
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -63,7 +65,7 @@ export class CdpTarget {
       acceptInsecureCerts
     );
 
-    LogManager.create(cdpTarget, realmStorage, eventManager);
+    LogManager.create(cdpTarget, realmStorage, eventManager, logger);
     NetworkManager.create(cdpTarget, eventManager, networkStorage);
 
     cdpTarget.#setEventListeners();

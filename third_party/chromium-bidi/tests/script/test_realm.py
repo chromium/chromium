@@ -179,7 +179,7 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
         'params': {
             'realm': ANY_STR,
             'origin': worker_url,
-            'owners': [],
+            'owners': [ANY_STR],
             'type': 'dedicated-worker'
         }
     }
