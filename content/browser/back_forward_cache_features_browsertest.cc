@@ -2497,10 +2497,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
-class BackForwardCacheBrowserTestWithFlagForIndexedDB
-    : public BackForwardCacheBrowserTest {};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CacheIfOpenIndexedDBConnection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2522,7 +2519,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EvictCacheIfOnVersionChangeEventReceived) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2582,7 +2579,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
 // close the IndexedDB connection, so when the navigation happens, the
 // non-sticky feature will prevent the document from entering BFCache.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithFlagForIndexedDB,
+    BackForwardCacheBrowserTest,
     DoesNotCacheIfVersionChangeEventIsSentButIndexedDBConnectionIsNotClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2656,7 +2653,7 @@ IN_PROC_BROWSER_TEST_F(
 // connection before navigating away, so the document is eligible for BFCache as
 // the non-sticky feature is removed.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithFlagForIndexedDB,
+    BackForwardCacheBrowserTest,
     CacheIfVersionChangeEventIsSentAndIndexedDBConnectionIsClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2749,7 +2746,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CacheIfIndexedDBTransactionNotCommitted) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2772,7 +2769,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CacheIfIndexedDBConnectionTransactionCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2798,7 +2795,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoNotCacheIfIndexedDBTransactionIsAcquiringTheLock) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2844,7 +2841,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithFlagForIndexedDB,
+    BackForwardCacheBrowserTest,
     DoNotCacheIfIndexedDBTransactionHoldingLocksAndBlockingOthers) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2865,7 +2862,7 @@ IN_PROC_BROWSER_TEST_F(
                      "runInfiniteIndexedDBTransactionLoop()");
 
   // 2) Navigate the tab waiting for locks to A as well and make it request for
-  // the same lock on pagehide. Since the other tab is holding the lock, this
+  // the same lock. Since the other tab is holding the lock, this
   // tab will be blocked and waiting for the lock to be released.
   ASSERT_TRUE(NavigateToURL(
       tab_waiting_for_locks,
@@ -2889,8 +2886,8 @@ IN_PROC_BROWSER_TEST_F(
       FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
-                       EvictCacheIfPageBlocksNewTransaction) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       EvictCacheIfPageBlocksNewIndexedDBTransaction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Shell* tab_holding_locks = shell();
@@ -2907,7 +2904,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
 
   content::DOMMessageQueue queue_holding_locks(
       tab_holding_locks->web_contents());
-  std::string message_holding_locks;
   ASSERT_TRUE(ExecJs(tab_holding_locks, "setupIndexedDBConnection()"));
   ASSERT_TRUE(
       ExecJs(tab_holding_locks, "registerPagehideToStartTransaction()"));
@@ -2919,6 +2915,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
   // 3) After confirming the transaction has been created from the tab holding
   // locks, navigate the tab acquiring locks to A that tries to acquire the same
   // lock.
+  std::string message_holding_locks;
   ASSERT_TRUE(queue_holding_locks.WaitForMessage(&message_holding_locks));
   ASSERT_EQ("\"transaction_created\"", message_holding_locks);
   ASSERT_TRUE(NavigateToURL(
@@ -2928,13 +2925,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
 
   content::DOMMessageQueue queue_acquiring_locks(
       tab_acquiring_locks->web_contents());
-  std::string message_acquiring_locks;
   ASSERT_TRUE(ExecJs(tab_acquiring_locks, "setupIndexedDBConnection()"));
   ASSERT_TRUE(ExecJs(tab_acquiring_locks, "startIndexedDBTransaction()"));
 
   // 4) After confirming that the transaction from the tab acquiring locks is
   // completed (which should evict the other tab if it's in BFCache), navigate
   // the tab holding locks back to the page with IndexedDB.
+  std::string message_acquiring_locks;
   ASSERT_TRUE(queue_acquiring_locks.WaitForMessage(&message_acquiring_locks));
   ASSERT_EQ("\"transaction_completed\"", message_acquiring_locks);
   // The page should be evicted by disallowing activation.
