@@ -194,7 +194,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImag
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-crbug.com/1505662 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] ContextLost_* [ RetryOnFailure ]
