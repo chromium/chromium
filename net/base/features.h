@@ -30,6 +30,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAvoidH2Reprioritization);
 // origin requests are restricted to contain at most the source origin.
 NET_EXPORT BASE_DECLARE_FEATURE(kCapReferrerToOriginOnCrossOrigin);
 
+// Enables the built-in DNS resolver.
+NET_EXPORT BASE_DECLARE_FEATURE(kAsyncDns);
+
 // Support for altering the parameters used for DNS transaction timeout. See
 // ResolveContext::SecureTransactionTimeout().
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsTransactionDynamicTimeouts);

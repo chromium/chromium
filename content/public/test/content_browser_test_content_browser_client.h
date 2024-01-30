@@ -20,6 +20,8 @@ class ContentBrowserTestContentBrowserClient
   ~ContentBrowserTestContentBrowserClient() override;
 
   bool CreateThreadPool(base::StringPiece name) override;
+  void OnNetworkServiceCreated(
+      network::mojom::NetworkService* network_service) override;
 };
 
 }  // namespace content
