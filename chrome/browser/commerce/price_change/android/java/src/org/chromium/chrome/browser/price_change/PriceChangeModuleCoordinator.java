@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.price_change;
 
 import android.content.Context;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,7 +43,8 @@ public class PriceChangeModuleCoordinator implements ModuleProvider {
                                 ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                                 profile.getProfileKey(),
                                 GlobalDiscardableReferencePool.getReferencePool()),
-                        moduleDelegate);
+                        moduleDelegate,
+                        ContextUtils.getAppSharedPreferences());
     }
 
     /** Show price change module. */
@@ -57,7 +59,9 @@ public class PriceChangeModuleCoordinator implements ModuleProvider {
     }
 
     @Override
-    public void hideModule() {}
+    public void hideModule() {
+        mMediator.destroy();
+    }
 
     @Override
     public String getModuleTitle(Context context) {

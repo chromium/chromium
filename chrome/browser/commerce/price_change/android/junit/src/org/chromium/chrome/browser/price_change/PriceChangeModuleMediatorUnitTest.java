@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +51,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -129,9 +133,11 @@ public class PriceChangeModuleMediatorUnitTest {
                         mTabModelSelector,
                         mFaviconHelper,
                         mImageFetcher,
-                        mModuleDelegate);
+                        mModuleDelegate,
+                        ContextUtils.getAppSharedPreferences());
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
         mFaviconSize = mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
 
         Map<String, Boolean> featureOverride = new HashMap<>();
         featureOverride.put(ChromeFeatureList.PRICE_CHANGE_MODULE, true);
@@ -142,6 +148,9 @@ public class PriceChangeModuleMediatorUnitTest {
     public void tearDown() {
         mSharedPreferenceManager.writeStringSet(
                 PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP, new HashSet<>());
+        mSharedPreferenceManager.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
+        mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
     }
 
     @Test
@@ -267,6 +276,31 @@ public class PriceChangeModuleMediatorUnitTest {
     @SmallTest
     public void testGetModuleType() {
         assertEquals(ModuleType.PRICE_CHANGE, mMediator.getModuleType());
+    }
+
+    @Test
+    @SmallTest
+    public void testPriceAnnotationSettingChange() {
+        // Enabling the price annotation won't trigger any change.
+        mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
+        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+
+        // Irrelevant SharedPreferences change won't trigger any change.
+        mSharedPreferenceManager.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
+        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+
+        mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
+        verify(mModuleDelegate).removeModule(mMediator.getModuleType());
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroy() {
+        mMediator.destroy();
+
+        mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
+        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
     }
 
     public void showModuleWithInitializedService() {

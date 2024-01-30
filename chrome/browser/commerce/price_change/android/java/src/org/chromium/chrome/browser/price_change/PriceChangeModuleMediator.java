@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_change;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -46,6 +49,8 @@ public class PriceChangeModuleMediator {
     private final ImageFetcher mImageFetcher;
     private final ModuleDelegate mModuleDelegate;
     private final @ModuleType int mModuleType;
+    private final SharedPreferences mSharedPreferences;
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
 
     PriceChangeModuleMediator(
             Context context,
@@ -54,7 +59,8 @@ public class PriceChangeModuleMediator {
             TabModelSelector tabModelSelector,
             FaviconHelper faviconHelper,
             ImageFetcher imageFetcher,
-            ModuleDelegate moduleDelegate) {
+            ModuleDelegate moduleDelegate,
+            SharedPreferences sharedPreferences) {
         mContext = context;
         mModel = model;
         mProfile = profile;
@@ -65,6 +71,17 @@ public class PriceChangeModuleMediator {
         mImageFetcher = imageFetcher;
         mModuleDelegate = moduleDelegate;
         mModuleType = ModuleType.PRICE_CHANGE;
+        mSharedPreferences = sharedPreferences;
+        mPriceAnnotationsPrefListener =
+                (sharedPrefs, key) -> {
+                    if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)) return;
+                    if (!sharedPrefs.getBoolean(
+                            PriceTrackingUtilities.TRACK_PRICES_ON_TABS,
+                            PriceTrackingFeatures.isPriceTrackingEnabled(profile))) {
+                        mModuleDelegate.removeModule(getModuleType());
+                    }
+                };
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
     }
 
     /** Show the price change module. */
@@ -164,6 +181,11 @@ public class PriceChangeModuleMediator {
                                         image);
                             });
                 });
+    }
+
+    void destroy() {
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
+                mPriceAnnotationsPrefListener);
     }
 
     int getModuleType() {
