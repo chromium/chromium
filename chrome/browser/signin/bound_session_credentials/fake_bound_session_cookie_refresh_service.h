@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/bound_session_request_throttled_handler.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 
 class FakeBoundSessionCookieRefreshService
     : public BoundSessionCookieRefreshService {
@@ -18,7 +19,8 @@ class FakeBoundSessionCookieRefreshService
 
   ~FakeBoundSessionCookieRefreshService() override;
 
-  void SimulateUnblockRequest();
+  void SimulateUnblockRequest(
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
   bool IsRequestBlocked();
   void SimulateOnBoundSessionTerminated(
       const GURL& site,
@@ -46,7 +48,7 @@ class FakeBoundSessionCookieRefreshService
   void RemoveObserver(Observer* observer) override;
 
  private:
-  base::OnceClosure resume_blocked_request_;
+  HandleRequestBlockedOnCookieCallback resume_blocked_request_;
   base::ObserverList<BoundSessionCookieRefreshService::Observer> observers_;
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};

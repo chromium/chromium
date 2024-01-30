@@ -6,6 +6,7 @@
 
 #include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/google_url_loader_throttle.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "net/base/net_errors.h"
@@ -62,7 +63,8 @@ void ThrottledGaiaAuthFetcher::OnGaiaFetcherResumedOrCancelled(
     const GURL& gaia_gurl,
     network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    BoundSessionRequestThrottledHandler::UnblockAction unblock_action) {
+    BoundSessionRequestThrottledHandler::UnblockAction unblock_action,
+    chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
   switch (unblock_action) {
     case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
       GaiaAuthFetcher::CreateAndStartGaiaFetcher(

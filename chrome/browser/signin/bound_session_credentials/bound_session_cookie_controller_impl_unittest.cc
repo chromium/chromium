@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
@@ -34,6 +35,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using chrome::mojom::ResumeBlockedRequestsTrigger;
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
 
@@ -69,7 +71,6 @@ class BoundSessionCookieControllerImplTest
   BoundSessionCookieControllerImplTest()
       : unexportable_key_service_(unexportable_key_task_manager_),
         key_id_(GenerateNewKey()) {
-
     std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
     bound_session_credentials::BoundSessionParams bound_session_params;
     bound_session_params.set_site("https://google.com");
@@ -393,9 +394,10 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
   // No fetch should be triggered since the cookie is fresh.
   // The callback should return immediately.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
   EXPECT_FALSE(cookie_fetcher());
 }
 
@@ -414,7 +416,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(cookie_fetcher());
 
   // Request blocked on the cookie.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -424,6 +426,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
       GetTimeInTenMinutes());
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
   EXPECT_TRUE(AreAllCookiesFresh());
   // Note: In reality the histogram may record `kCookieRefreshFetchSuccess` or
   // `kObservedFreshCookies` depending on which happens first the notification
@@ -431,10 +435,9 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kCookieRefreshFetchSuccess,
-          /*count=*/1)));
+      testing::ElementsAre(
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -447,7 +450,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->FastForwardBy(base::Minutes(12));
   EXPECT_FALSE(AreAllCookiesFresh());
   // Request blocked on the cookies.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -459,13 +462,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // All cookies fresh.
   SetExpirationTimeAndNotify(k3PSIDTSCookieName, GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kObservedFreshCookies);
   EXPECT_TRUE(AreAllCookiesFresh());
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
       testing::ElementsAre(
-          base::Bucket(BoundSessionCookieControllerImpl::
-                           ResumeBlockedRequestsTrigger::kObservedFreshCookies,
+          base::Bucket(ResumeBlockedRequestsTrigger::kObservedFreshCookies,
                        /*count=*/1)));
 
   CompletePendingRefreshRequestIfAny();
@@ -493,7 +496,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
       BoundSessionRefreshCookieFetcher::Result::kConnectionError, std::nullopt);
   EXPECT_FALSE(cookie_fetcher());
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -504,14 +507,15 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(on_persistent_error_encountered_called());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
   EXPECT_EQ(controller->min_cookie_expiration_time(), min_cookie_expiration);
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kCookieRefreshFetchFailure,
-          /*count=*/1)));
+      testing::ElementsAre(
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
@@ -525,16 +529,18 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
 
   for (auto& result : result_types) {
     SCOPED_TRACE(result);
-    base::test::TestFuture<void> future;
+    base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
     bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
         future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     SimulateCompleteRefreshRequest(result, std::nullopt);
     EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(),
+              ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
   }
 
   // Subsequent requests are not impacted.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
@@ -543,20 +549,18 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
       BoundSessionRefreshCookieFetcher::Result::kSuccess,
       GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
   EXPECT_FALSE(on_persistent_error_encountered_called());
 
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
       testing::ElementsAre(
-          base::Bucket(
-              BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-                  kCookieRefreshFetchSuccess,
-              /*count=*/1),
-          base::Bucket(
-              BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-                  kCookieRefreshFetchFailure,
-              /*count=*/2)));
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess,
+                       /*count=*/1),
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure,
+                       /*count=*/2)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -568,7 +572,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->FastForwardBy(base::Minutes(12));
 
   BoundSessionCookieController* controller = bound_session_cookie_controller();
-  std::array<base::test::TestFuture<void>, 5> futures;
+  std::array<base::test::TestFuture<ResumeBlockedRequestsTrigger>, 5> futures;
   for (auto& future : futures) {
     controller->HandleRequestBlockedOnCookie(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
@@ -580,16 +584,17 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->RunUntilIdle();
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(),
+              ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
   }
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
   EXPECT_TRUE(AreAllCookiesFresh());
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kCookieRefreshFetchSuccess,
-          /*count=*/1)));
+      testing::ElementsAre(
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -599,7 +604,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Stale cookie.
   task_environment()->FastForwardBy(base::Minutes(12));
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   // Refresh request pending.
@@ -611,6 +616,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(future.IsReady());
   SimulateCookieChange(k3PSIDTSCookieName, GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kObservedFreshCookies);
 
   // Complete the pending fetch.
   EXPECT_TRUE(cookie_fetcher());
@@ -622,8 +628,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
       testing::ElementsAre(
-          base::Bucket(BoundSessionCookieControllerImpl::
-                           ResumeBlockedRequestsTrigger::kObservedFreshCookies,
+          base::Bucket(ResumeBlockedRequestsTrigger::kObservedFreshCookies,
                        /*count=*/1)));
 }
 
@@ -631,7 +636,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
        ControllerDestroyedRequestBlockedOnCookieIsPending) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   BoundSessionCookieController* controller = bound_session_cookie_controller();
-  std::array<base::test::TestFuture<void>, 5> futures;
+  std::array<base::test::TestFuture<ResumeBlockedRequestsTrigger>, 5> futures;
   for (auto& future : futures) {
     controller->HandleRequestBlockedOnCookie(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
@@ -640,19 +645,20 @@ TEST_F(BoundSessionCookieControllerImplTest,
   ResetBoundSessionCookieController();
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(),
+              ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
   }
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
       testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kShutdownOrSessionTermination,
+          ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination,
           /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
@@ -662,6 +668,7 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   EXPECT_FALSE(AreAllCookiesFresh());
   // Request resumed.
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kTimeout);
   // Fetcher reset.
   EXPECT_FALSE(cookie_fetcher());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
@@ -669,10 +676,8 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(
-          base::Bucket(BoundSessionCookieControllerImpl::
-                           ResumeBlockedRequestsTrigger::kTimeout,
-                       /*count=*/1)));
+      testing::ElementsAre(base::Bucket(ResumeBlockedRequestsTrigger::kTimeout,
+                                        /*count=*/1)));
 
   ResetBoundSessionCookieController();
   histogram_tester()->ExpectUniqueSample(
@@ -684,12 +689,13 @@ TEST_F(BoundSessionCookieControllerImplTest, SuccessiveRequestTimeout) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   size_t successive_timeout = 5;
   for (size_t i = 0; i < successive_timeout; i++) {
-    base::test::TestFuture<void> future;
+    base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
     bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
         future.GetCallback());
     ASSERT_FALSE(future.IsReady());
     task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
     ASSERT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kTimeout);
   }
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       base::DoNothing());
@@ -701,12 +707,13 @@ TEST_F(BoundSessionCookieControllerImplTest, SuccessiveRequestTimeout) {
 
 TEST_F(BoundSessionCookieControllerImplTest, SuccessiveRequestTimeoutReset) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   ASSERT_FALSE(future.IsReady());
   task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
   ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kTimeout);
 
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       base::DoNothing());
@@ -732,7 +739,9 @@ TEST_F(BoundSessionCookieControllerImplTest,
   constexpr int kBlockedRequestCount = 2;
   constexpr base::TimeDelta kDeltaBetweenRequests = base::Seconds(1);
   BoundSessionCookieController* controller = bound_session_cookie_controller();
-  std::array<base::test::TestFuture<void>, kBlockedRequestCount> futures;
+  std::array<base::test::TestFuture<ResumeBlockedRequestsTrigger>,
+             kBlockedRequestCount>
+      futures;
 
   for (auto& future : futures) {
     controller->HandleRequestBlockedOnCookie(future.GetCallback());
@@ -750,13 +759,14 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(cookie_fetcher());
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(), ResumeBlockedRequestsTrigger::kTimeout);
   }
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
@@ -765,6 +775,8 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
       BoundSessionRefreshCookieFetcher::Result::kSuccess,
       GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
 }
 
@@ -772,12 +784,14 @@ TEST_F(BoundSessionCookieControllerImplTest,
        ResumeNewBlockedRequestsWhenOffline) {
   SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
   ASSERT_TRUE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(AreAllCookiesFresh());
   EXPECT_TRUE(cookie_fetcher());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
 }
 
@@ -786,7 +800,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SetUpNetworkConnection(false,
                          network::mojom::ConnectionType::CONNECTION_WIFI);
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
@@ -795,19 +809,20 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(future.IsReady());
   CompletePendingRefreshRequestIfAny();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kCookieRefreshFetchSuccess,
-          /*count=*/1)));
+      testing::ElementsAre(
+          base::Bucket(ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
        ResumePendingBlockedRequestsOnNetworkConnectionChangedToOffline) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
   bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
@@ -819,14 +834,15 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(AreAllCookiesFresh());
   EXPECT_TRUE(cookie_fetcher());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
-      testing::ElementsAre(base::Bucket(
-          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
-              kNetworkConnectionOffline,
-          /*count=*/1)));
+      testing::ElementsAre(
+          base::Bucket(ResumeBlockedRequestsTrigger::kNetworkConnectionOffline,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,

@@ -127,7 +127,9 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
     HandleRequestBlockedOnCookieCallback resume_blocked_request) {
   if (!cookie_controller_) {
     // Session has been terminated.
-    std::move(resume_blocked_request).Run();
+    std::move(resume_blocked_request)
+        .Run(chrome::mojom::ResumeBlockedRequestsTrigger::
+                 kShutdownOrSessionTermination);
     return;
   }
   cookie_controller_->HandleRequestBlockedOnCookie(

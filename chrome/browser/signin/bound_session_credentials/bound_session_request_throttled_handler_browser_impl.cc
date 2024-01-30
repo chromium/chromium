@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 
 BoundSessionRequestThrottledHandlerBrowserImpl::
     BoundSessionRequestThrottledHandlerBrowserImpl(
@@ -27,6 +28,8 @@ void BoundSessionRequestThrottledHandlerBrowserImpl::
     // request missing the required cookie. Otherwise, the server might kill the
     // session upon receiving an unauthenticated request and the user might be
     // signed out on next startup.
-    std::move(callback).Run(UnblockAction::kCancel);
+    std::move(callback).Run(UnblockAction::kCancel,
+                            chrome::mojom::ResumeBlockedRequestsTrigger::
+                                kShutdownOrSessionTermination);
   }
 }

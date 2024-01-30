@@ -57,7 +57,8 @@ class BoundSessionCookieController {
   // terminated. Note: The callback might be called synchronously if the
   // previous conditions apply.
   virtual void HandleRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) = 0;
+      chrome::mojom::BoundSessionRequestThrottledHandler::
+          HandleRequestBlockedOnCookieCallback resume_blocked_request) = 0;
 
   const GURL& url() const { return url_; }
   const std::string& session_id() const { return session_id_; }

@@ -15,6 +15,7 @@
 #include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -28,16 +29,21 @@ TEST(BoundSessionRequestThrottledHandlerBrowserImplTest, RefreshServiceAlive) {
   FakeBoundSessionCookieRefreshService service;
   BoundSessionRequestThrottledHandlerBrowserImpl handler(service);
 
-  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction>
+  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction,
+                         chrome::mojom::ResumeBlockedRequestsTrigger>
       future;
   handler.HandleRequestBlockedOnCookie(future.GetCallback());
 
   EXPECT_TRUE(service.IsRequestBlocked());
   EXPECT_FALSE(future.IsReady());
 
-  service.SimulateUnblockRequest();
-  EXPECT_EQ(future.Get(),
-            BoundSessionRequestThrottledHandler::UnblockAction::kResume);
+  const auto kResumeTrigger =
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieAlreadyFresh;
+  service.SimulateUnblockRequest(kResumeTrigger);
+  EXPECT_THAT(future.Get(),
+              testing::FieldsAre(
+                  BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+                  kResumeTrigger));
 }
 
 TEST(BoundSessionRequestThrottledHandlerBrowserImplTest,
@@ -49,12 +55,16 @@ TEST(BoundSessionRequestThrottledHandlerBrowserImplTest,
 
   // Destory service.
   service.reset();
-  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction>
+  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction,
+                         chrome::mojom::ResumeBlockedRequestsTrigger>
       future_cancel;
   handler.HandleRequestBlockedOnCookie(future_cancel.GetCallback());
   EXPECT_TRUE(future_cancel.IsReady());
-  EXPECT_EQ(future_cancel.Get(),
-            BoundSessionRequestThrottledHandler::UnblockAction::kCancel);
+  EXPECT_THAT(future_cancel.Get(),
+              testing::FieldsAre(
+                  BoundSessionRequestThrottledHandler::UnblockAction::kCancel,
+                  chrome::mojom::ResumeBlockedRequestsTrigger::
+                      kShutdownOrSessionTermination));
 }
 
 }  // namespace

@@ -50,7 +50,8 @@ class ThrottledGaiaAuthFetcher : public GaiaAuthFetcher {
       const GURL& gaia_gurl,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      BoundSessionRequestThrottledHandler::UnblockAction unblock_action);
+      BoundSessionRequestThrottledHandler::UnblockAction unblock_action,
+      chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger);
 
   const chrome::mojom::BoundSessionThrottlerParamsPtr
       bound_session_throttler_params_;

@@ -14,10 +14,14 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using testing::FieldsAre;
 using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
+using ResumeBlockedRequestsTrigger =
+    chrome::mojom::ResumeBlockedRequestsTrigger;
 
 class FakeBoundSessionRequestThrottledHandler
     : public chrome::mojom::BoundSessionRequestThrottledHandler {
@@ -37,7 +41,7 @@ class FakeBoundSessionRequestThrottledHandler
 
   void SimulateHandleRequestBlockedOnCookieCompleted() {
     EXPECT_TRUE(callback_);
-    std::move(callback_).Run();
+    std::move(callback_).Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
   }
 
   bool IsRequestBlocked() { return !callback_.is_null(); }
@@ -79,19 +83,24 @@ class BoundSessionRequestThrottledInRendererManagerTest
 };
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest, SingleRequest) {
-  base::test::TestFuture<UnblockAction> future;
+  base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
   manager()->HandleRequestBlockedOnCookie(future.GetCallback());
 
   RunUntilIdle();
   EXPECT_TRUE(handler()->IsRequestBlocked());
 
   handler()->SimulateHandleRequestBlockedOnCookieCompleted();
-  EXPECT_EQ(future.Get(), UnblockAction::kResume);
+  EXPECT_THAT(future.Get(),
+              FieldsAre(UnblockAction::kResume,
+                        ResumeBlockedRequestsTrigger::kCookieAlreadyFresh));
 }
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
   constexpr size_t kBlockedRequests = 5;
-  std::array<base::test::TestFuture<UnblockAction>, kBlockedRequests> futures;
+  std::array<
+      base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger>,
+      kBlockedRequests>
+      futures;
   for (auto& future : futures) {
     manager()->HandleRequestBlockedOnCookie(future.GetCallback());
   }
@@ -105,14 +114,19 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
 
   handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   for (auto& future : futures) {
-    EXPECT_EQ(future.Get(), UnblockAction::kResume);
+    EXPECT_THAT(future.Get(),
+                FieldsAre(UnblockAction::kResume,
+                          ResumeBlockedRequestsTrigger::kCookieAlreadyFresh));
   }
 }
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
        RemoteDisconnectedPendingBlockedRequestsAreCancelled) {
   constexpr size_t kBlockedRequests = 5;
-  std::array<base::test::TestFuture<UnblockAction>, kBlockedRequests> futures;
+  std::array<
+      base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger>,
+      kBlockedRequests>
+      futures;
   for (auto& future : futures) {
     manager()->HandleRequestBlockedOnCookie(future.GetCallback());
   }
@@ -123,7 +137,9 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
 
   ResetHandler();
   for (auto& future : futures) {
-    EXPECT_EQ(future.Get(), UnblockAction::kCancel);
+    EXPECT_THAT(future.Get(),
+                FieldsAre(UnblockAction::kCancel,
+                          ResumeBlockedRequestsTrigger::kRendererDisconnected));
   }
 }
 
@@ -131,8 +147,10 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
        RemoteDisconnectedNewBlockedRequestsAreCancelled) {
   ResetHandler();
 
-  base::test::TestFuture<UnblockAction> future;
+  base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
   manager()->HandleRequestBlockedOnCookie(future.GetCallback());
 
-  EXPECT_EQ(future.Get(), UnblockAction::kCancel);
+  EXPECT_THAT(future.Get(),
+              FieldsAre(UnblockAction::kCancel,
+                        ResumeBlockedRequestsTrigger::kRendererDisconnected));
 }

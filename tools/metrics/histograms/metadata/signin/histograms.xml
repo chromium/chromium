@@ -545,6 +545,24 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.DeferredRequestUnblockTrigger.{Result}"
+    enum="ResumeBlockedRequestsTrigger" expires_after="2024-07-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    In a bound session, requests are throttled when required bound cookies are
+    stale and cookie refresh hasn't completed. This histogram records what
+    triggered resuming a throttled request. Recorded for every throttled request
+    that eventually completed {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="with an error"/>
+    <variant name="Success" summary="successfully"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.Deferred{Type}RequestDelay"
     units="ms" expires_after="2024-07-14">
   <owner>alexilin@chromium.org</owner>

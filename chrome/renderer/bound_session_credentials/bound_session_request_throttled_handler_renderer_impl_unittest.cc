@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_io_thread.h"
+#include "chrome/common/renderer_configuration.mojom-shared.h"
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +54,9 @@ class MockBoundSessionRequestThrottledInRendererManager
   void HandleRequestBlockedOnCookieCalled(
       ResumeOrCancelThrottledRequestCallback callback) {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
-    std::move(callback).Run(UnblockAction::kResume);
+    std::move(callback).Run(
+        UnblockAction::kResume,
+        chrome::mojom::ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
   }
 
   // Used to verify `HandleRequestBlockedOnCookie()` is called on the right
@@ -97,7 +100,8 @@ TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
   base::RunLoop run_loop;
   listener.HandleRequestBlockedOnCookie(base::BindOnce(
       [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
-         UnblockAction action) {
+         UnblockAction action,
+         chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
         EXPECT_TRUE(checker.CalledOnValidSequence());
         std::move(callback).Run();
       },

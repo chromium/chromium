@@ -35,19 +35,6 @@ class BoundSessionCookieControllerImpl
     : public BoundSessionCookieController,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // Event triggering a call to ResumeBlockedRequests().
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ResumeBlockedRequestsTrigger {
-    kObservedFreshCookies = 0,
-    kCookieRefreshFetchSuccess = 1,
-    kCookieRefreshFetchFailure = 2,
-    kNetworkConnectionOffline = 3,
-    kTimeout = 4,
-    kShutdownOrSessionTermination = 5,
-
-    kMaxValue = kShutdownOrSessionTermination
-  };
 
   BoundSessionCookieControllerImpl(
       unexportable_keys::UnexportableKeyService& key_service,
@@ -67,7 +54,8 @@ class BoundSessionCookieControllerImpl
   void Initialize() override;
 
   void HandleRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) override;
+      chrome::mojom::BoundSessionRequestThrottledHandler::
+          HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -95,7 +83,8 @@ class BoundSessionCookieControllerImpl
                                         base::Time expiration_time);
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
   void MaybeScheduleCookieRotation();
-  void ResumeBlockedRequests(ResumeBlockedRequestsTrigger trigger);
+  void ResumeBlockedRequests(
+      chrome::mojom::ResumeBlockedRequestsTrigger trigger);
   void OnResumeBlockedRequestsTimeout();
 
   // Added for manual testing, should be inlined after
@@ -125,7 +114,9 @@ class BoundSessionCookieControllerImpl
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
 
-  std::vector<base::OnceClosure> resume_blocked_requests_;
+  std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
+                  HandleRequestBlockedOnCookieCallback>
+      resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer preemptive_cookie_refresh_timer_;
   // Used to release blocked requests after a timeout.
