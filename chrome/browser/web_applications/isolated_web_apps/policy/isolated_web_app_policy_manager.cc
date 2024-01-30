@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -47,13 +48,17 @@ void LogIsolatedWebAppInstallResult(
   }
 }
 
-base::File::Error CreateNonExistingDirectory(const base::FilePath& path) {
-  if (base::PathExists(path)) {
-    return base::File::FILE_ERROR_EXISTS;
-  }
+base::File::Error CreateDirectoryWithStatus(base::FilePath path) {
   base::File::Error err = base::File::FILE_OK;
   base::CreateDirectoryAndGetError(path, &err);
   return err;
+}
+
+base::File::Error CreateNonExistingDirectory(base::FilePath path) {
+  if (base::PathExists(path)) {
+    return base::File::FILE_ERROR_EXISTS;
+  }
+  return CreateDirectoryWithStatus(std::move(path));
 }
 
 std::vector<web_app::IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
@@ -76,6 +81,26 @@ std::vector<web_app::IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
   }
 
   return iwa_install_options;
+}
+
+std::vector<web_package::SignedWebBundleId> GetInstalledIwas(
+    web_app::WebAppRegistrar& registrar) {
+  std::vector<web_package::SignedWebBundleId> installed_ids;
+  for (web_app::WebApp web_app : registrar.GetApps()) {
+    if (!web_app.isolation_data().has_value()) {
+      continue;
+    }
+    auto url_info = web_app::IsolatedWebAppUrlInfo::Create(web_app.start_url());
+    if (!url_info.has_value()) {
+      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
+                 << web_app.start_url();
+      continue;
+    }
+
+    installed_ids.push_back(url_info->web_bundle_id());
+  }
+
+  return installed_ids;
 }
 
 }  // namespace
@@ -138,7 +163,7 @@ void BulkIwaInstaller::InstallEphemeralApps() {
 void BulkIwaInstaller::CreateIwaEphemeralRootDirectory() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&CreateNonExistingDirectory, installation_dir_),
+      base::BindOnce(CreateDirectoryWithStatus, installation_dir_),
       base::BindOnce(&BulkIwaInstaller::OnIwaEphemeralRootDirectoryCreated,
                      weak_factory_.GetWeakPtr()));
 }
@@ -364,20 +389,19 @@ void BulkIwaInstaller::OnCurrentIwaDirectoryWiped(bool wipe_result) {
 }  // namespace internal
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
-    : profile_(profile), pref_service_(profile_->GetPrefs()) {}
+    : profile_(profile) {}
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   CHECK(on_started_callback_.is_null());
   on_started_callback_ = std::move(on_started_callback);
 
-  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kIsolatedWebAppInstallForceList,
-      base::BindRepeating(
-          &IsolatedWebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps,
-          weak_ptr_factory_.GetWeakPtr()));
-  RefreshPolicyInstalledIsolatedWebApps();
+      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
+  ProcessPolicy();
   if (!on_started_callback_.is_null()) {
     std::move(on_started_callback_).Run();
   }
@@ -388,22 +412,57 @@ void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
   provider_ = &provider;
 }
 
-void IsolatedWebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps() {
+void IsolatedWebAppPolicyManager::ProcessPolicy() {
   CHECK(provider_);
+  // Ensure that only one policy resolution can happen at one time.
+  if (policy_is_being_processed_) {
+    reprocess_policy_needed_ = true;
+    return;
+  }
+
+  policy_is_being_processed_ = true;
+
+  provider_->scheduler().ScheduleCallback<AllAppsLock>(
+      "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
+      base::BindOnce(&IsolatedWebAppPolicyManager::DoProcessPolicy,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
+}
+
+void IsolatedWebAppPolicyManager::DoProcessPolicy(
+    AllAppsLock& lock,
+    base::Value::Dict& debug_info) {
+  CHECK(provider_);
+
   const base::Value::List& iwa_policy_values =
-      pref_service_->GetList(prefs::kIsolatedWebAppInstallForceList);
-  if (iwa_policy_values.empty()) {
-    return;
-  }
+      profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
 
-  if (bulk_installer_) {
-    // Isolated web apps have already been processed.
-    LOG(WARNING) << "Updating of the IWA is not yet supported.";
-    return;
-  }
-
-  std::vector<IsolatedWebAppExternalInstallOptions> all_iwa_install_options =
+  std::vector<IsolatedWebAppExternalInstallOptions> apps_in_policy =
       ParseIwaPolicyValues(iwa_policy_values);
+  debug_info.Set("apps_in_policy", base::ToString(apps_in_policy));
+
+  base::flat_set<web_package::SignedWebBundleId> installed_apps(
+      GetInstalledIwas(lock.registrar()));
+  debug_info.Set("installed_apps", base::ToString(installed_apps));
+
+  // This currently only installs apps that aren't already installed.
+  // TODO (peletskyi@): Implement removal in the app in not in the policy.
+  // TODO (peletskyi@): As soon as we support version pinning
+  // implement force update.
+  std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed;
+  for (const IsolatedWebAppExternalInstallOptions& app : apps_in_policy) {
+    if (!base::Contains(installed_apps, app.web_bundle_id())) {
+      to_be_installed.push_back(app);
+    }
+  }
+  debug_info.Set("to_be_installed", base::ToString(to_be_installed));
+
+  if (to_be_installed.empty()) {
+    OnPolicyProcessed(
+        std::vector<
+            web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>());
+    return;
+  }
 
   std::unique_ptr<internal::BulkIwaInstaller::IwaInstallCommandWrapper>
       installer = std::make_unique<
@@ -412,16 +471,31 @@ void IsolatedWebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps() {
   auto url_loader_factory = profile_->GetURLLoaderFactory();
 
   auto install_complete_callback =
-      base::BindOnce(&LogIsolatedWebAppInstallResult);
-  if (!on_started_callback_.is_null()) {
-    install_complete_callback = std::move(install_complete_callback)
-                                    .Then(std::move(on_started_callback_));
-  }
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnPolicyProcessed,
+                     weak_ptr_factory_.GetWeakPtr());
 
   bulk_installer_ = std::make_unique<internal::BulkIwaInstaller>(
-      profile_->GetPath(), all_iwa_install_options, url_loader_factory,
+      profile_->GetPath(), to_be_installed, url_loader_factory,
       std::move(installer), std::move(install_complete_callback));
   bulk_installer_->InstallEphemeralApps();
+}
+
+void IsolatedWebAppPolicyManager::OnPolicyProcessed(
+    std::vector<web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>
+        result) {
+  policy_is_being_processed_ = false;
+  bulk_installer_.reset();
+  LogIsolatedWebAppInstallResult(std::move(result));
+  if (!on_started_callback_.is_null()) {
+    std::move(on_started_callback_).Run();
+  }
+
+  if (reprocess_policy_needed_) {
+    reprocess_policy_needed_ = false;
+    ProcessPolicy();
+  }
+  // TODO (peletskyi): Check policy compliance here as in theory
+  // more race conditions are possible.
 }
 
 }  // namespace web_app
