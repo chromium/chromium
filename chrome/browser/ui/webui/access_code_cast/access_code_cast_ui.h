@@ -11,6 +11,11 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace media_router {
 // The WebUI controller for chrome://access-code-cast.
@@ -25,6 +30,12 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
 
   void BindInterface(
       mojo::PendingReceiver<access_code_cast::mojom::PageHandlerFactory>
+          receiver);
+
+  // Instantiates implementor of the mojom::PageHandler mojo interface passing
+  // the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
   // Set the set of modes that should be attempted when casting.
@@ -49,6 +60,8 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
   media_router::CastModeSet cast_mode_set_;
   std::unique_ptr<media_router::MediaRouteStarter> media_route_starter_;
   std::optional<base::Time> dialog_creation_timestamp_;
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

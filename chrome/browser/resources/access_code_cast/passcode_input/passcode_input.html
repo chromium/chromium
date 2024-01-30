@@ -6,6 +6,7 @@
     --passcode-input-color: var(--cr-primary-text-color);
     --passcode-input-color-disabled: var(--google-grey-600);
     --passcode-input-focus-color: var(--google-blue-600);
+    --passcode-input-border-radius: 4px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -15,6 +16,16 @@
       --passcode-input-background-color-focused: rgba(0, 0, 0, 0.3);
       --passcode-input-focus-color: var(--google-blue-300);
     }
+  }
+
+  :host-context(html[chrome-refresh-2023]):host {
+    --passcode-input-active-color: var(--color-sys-primary-container);
+    --passcode-input-background-color: var(--color-textfield-filled-background);
+    --passcode-input-background-color-focused: var(--color-sys-state-hover);
+    --passcode-input-color: var(--cr-primary-text-color);
+    --passcode-input-color-disabled: var(--color-sys-state-disabled);
+    --passcode-input-focus-color: var(--color-sys-primary);
+    --passcode-input-border-radius: 12px;
   }
 
   @keyframes blink {
@@ -42,7 +53,7 @@
 
   .char-box {
     background-color: var(--passcode-input-background-color);
-    border-radius: 4px;
+    border-radius: var(--passcode-input-border-radius);
     font-family: inherit;
     font-size: 20px;
     height: 40px;
@@ -59,6 +70,16 @@
     display: flex;
     margin-inline-start: 14px;
     position: absolute;
+  }
+
+  .char-box-focus {
+    background-color: transparent;
+    border-radius: var(--passcode-input-border-radius);
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: background-color 120ms ease-in;
   }
 
   .cursor-filled::after {
@@ -98,7 +119,7 @@
     color: var(--passcode-input-color-disabled);
   }
 
-  .focused {
+  .char-box.focused:not(.active) > .char-box-focus {
     background-color: var(--passcode-input-background-color-focused);
     transition: background-color 120ms ease-in;
   }
@@ -130,7 +151,9 @@
   <div class="char-box-container" aria-hidden="true">
     <template is="dom-repeat" items="[[charDisplayBoxes]]" as="charBox">
       <div class="char-box" id="char-box-[[index]]">
-        <p class="char" id="char-[[index]]"></p>
+        <div class="char-box-focus">
+          <p class="char" id="char-[[index]]"></p>
+        </div>
       </div>
     </template>
   </div>
