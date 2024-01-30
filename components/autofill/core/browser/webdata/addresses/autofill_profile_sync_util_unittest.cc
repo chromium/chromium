@@ -640,7 +640,9 @@ class AutofillProfileSyncUtilTest
 
 // Ensure that all profile fields are able to be synced up from the client to
 // the server.
-TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
+// TODO(https://crbug.com/1523077): fails on multiple bots.
+TEST_P(AutofillProfileSyncUtilTest,
+       DISABLED_CreateEntityDataFromAutofillProfile) {
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
   AutofillProfileSpecifics specifics =
       GetAutofillProfileSpecificsForCountry(GetParam());

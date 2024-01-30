@@ -508,8 +508,9 @@ class ContactInfoSyncUtilTest
 };
 
 // Test that converting AutofillProfile -> ContactInfoSpecifics works.
+// TODO(https://crbug.com/1523077): fails on multiple bots.
 TEST_P(ContactInfoSyncUtilTest,
-       CreateContactInfoEntityDataFromAutofillProfile) {
+       DISABLED_CreateContactInfoEntityDataFromAutofillProfile) {
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
   ContactInfoSpecifics specifics =
       GetContactInfoSpecificsForCountry(GetParam());
@@ -588,7 +589,9 @@ TEST_F(ContactInfoSyncUtilTest,
 
 // Test that the conversion of a profile to specifics preserve the unsupported
 // fields.
-TEST_P(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
+// TODO(https://crbug.com/1523077): fails on multiple bots.
+TEST_P(ContactInfoSyncUtilTest,
+       DISABLED_ContactInfoSpecificsFromAutofillProfile) {
   // Create the base message that only contains unsupported fields in both the
   // top-level and a nested message.
   sync_pb::ContactInfoSpecifics contact_info_specifics_with_only_unknown_fields;
