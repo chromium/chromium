@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/object_backed_native_handler.h"

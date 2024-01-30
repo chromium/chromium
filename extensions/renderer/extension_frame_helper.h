@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -26,14 +25,9 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8-forward.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-struct ExtensionMsg_OnConnectData;
-#endif
-
 namespace extensions {
 
 class Dispatcher;
-struct Message;
 struct PortId;
 class ScriptContext;
 
@@ -186,26 +180,9 @@ class ExtensionFrameHelper
                               int32_t world_id) override;
   void WillReleaseScriptContext(v8::Local<v8::Context>,
                                 int32_t world_id) override;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bool OnMessageReceived(const IPC::Message& message) override;
-#endif
   void OnDestruct() override;
   void DraggableRegionsChanged() override;
   void DidClearWindowObject() override;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  // IPC handlers.
-  void OnExtensionValidateMessagePort(int worker_thread_id, const PortId& id);
-  void OnExtensionDispatchOnConnect(
-      int worker_thread_id,
-      const ExtensionMsg_OnConnectData& connect_data);
-  void OnExtensionDeliverMessage(int worker_thread_id,
-                                 const PortId& target_port_id,
-                                 const Message& message);
-  void OnExtensionDispatchOnDisconnect(int worker_thread_id,
-                                       const PortId& id,
-                                       const std::string& error_message);
-#endif
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;

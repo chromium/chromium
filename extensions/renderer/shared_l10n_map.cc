@@ -5,7 +5,7 @@
 #include "extensions/renderer/shared_l10n_map.h"
 
 #include "base/no_destructor.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "ipc/ipc_sender.h"
 
@@ -76,14 +76,9 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   // A sync call to load message catalogs for current extension.
   // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
   // potentially blocking work reading files from disk? That's Bad.
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  ipc_target->Send(
-      new ExtensionHostMsg_GetMessageBundle(extension_id, &l10n_messages));
-#else
   base::flat_map<std::string, std::string> table;
   ipc_target->GetMessageBundle(extension_id, &table);
   l10n_messages = L10nMessagesMap(table.begin(), table.end());
-#endif
 
   return &l10n_messages;
 }

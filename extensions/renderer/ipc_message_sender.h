@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/common/mojom/message_port.mojom-forward.h"
@@ -34,9 +33,6 @@ enum class ChannelType;
 
 class ScriptContext;
 class WorkerThreadDispatcher;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-struct Message;
-#endif
 struct MessageTarget;
 struct PortId;
 
@@ -102,22 +98,6 @@ class IPCMessageSender {
       const std::string& channel_name,
       mojo::PendingAssociatedRemote<mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host) = 0;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  // Sends a message to open/close a message port or send a message to an
-  // existing port.
-  virtual void SendOpenMessagePort(int routing_id, const PortId& port_id) = 0;
-  virtual void SendCloseMessagePort(int routing_id,
-                                    const PortId& port_id,
-                                    bool close_channel) = 0;
-  virtual void SendPostMessageToPort(const PortId& port_id,
-                                     const Message& message) = 0;
-
-  // Sends a message indicating that a receiver of a message indicated that it
-  // plans to send a response later.
-  virtual void SendMessageResponsePending(int routing_id,
-                                          const PortId& port_id) = 0;
-#endif
 
   // Sends activityLog IPC to the browser process.
   virtual void SendActivityLogIPC(ScriptContext* context,

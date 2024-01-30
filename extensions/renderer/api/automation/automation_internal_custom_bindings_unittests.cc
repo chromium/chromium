@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"

@@ -41,7 +41,6 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/url_loader_factory_manager.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/event_router.mojom.h"
@@ -214,10 +213,6 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  associated_registry->AddInterface<mojom::EventRouter>(base::BindRepeating(
-      &EventRouter::BindForRenderer, render_process_host->GetID()));
-#endif
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }

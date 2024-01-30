@@ -34,12 +34,10 @@ constexpr char kContextInvalidatedError[] = "Extension context invalidated.";
 
 GinPort::GinPort(v8::Local<v8::Context> context,
                  const PortId& port_id,
-                 int routing_id,
                  const std::string& name,
                  APIEventHandler* event_handler,
                  Delegate* delegate)
     : port_id_(port_id),
-      routing_id_(routing_id),
       name_(name),
       event_handler_(event_handler),
       delegate_(delegate),
@@ -138,7 +136,7 @@ void GinPort::DisconnectHandler(gin::Arguments* arguments) {
 
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
   InvalidateEvents(context);
-  delegate_->ClosePort(context, port_id_, routing_id_);
+  delegate_->ClosePort(context, port_id_);
   state_ = kDisconnected;
 }
 
@@ -168,8 +166,7 @@ void GinPort::PostMessageHandler(gin::Arguments* arguments,
     return;
   }
 
-  delegate_->PostMessageToPort(context, port_id_, routing_id_,
-                               std::move(message));
+  delegate_->PostMessageToPort(context, port_id_, std::move(message));
 }
 
 std::string GinPort::GetName() {

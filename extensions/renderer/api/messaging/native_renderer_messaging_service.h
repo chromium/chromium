@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/api/messaging/gin_port.h"
@@ -18,9 +17,6 @@
 #include "gin/handle.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "v8/include/v8-forward.h"
-
-struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_TabConnectionInfo;
 
 namespace content {
 class RenderFrame;
@@ -87,22 +83,9 @@ class NativeRendererMessagingService : public GinPort::Delegate {
 
   ~NativeRendererMessagingService() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  // Checks whether the port exists in the given frame. If it does not, a reply
-  // is sent back to the browser.
-  void ValidateMessagePort(ScriptContextSetIterable* context_set,
-                           const PortId& port_id,
-                           content::RenderFrame* render_frame);
-#endif
-
   using ConnectCallback = base::OnceCallback<void(bool success)>;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  using TabConnectionInfo = ExtensionMsg_TabConnectionInfo;
-  using ExternalConnectionInfo = ExtensionMsg_ExternalConnectionInfo;
-#else
   using TabConnectionInfo = mojom::TabConnectionInfo;
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
-#endif
   // Dispatches the onConnect content script messaging event to some contexts
   // in |context_set|. If |restrict_to_render_frame| is specified, only contexts
   // in that render frame will receive the message.
@@ -153,11 +136,9 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // GinPort::Delegate:
   void PostMessageToPort(v8::Local<v8::Context> context,
                          const PortId& port_id,
-                         int routing_id,
                          std::unique_ptr<Message> message) override;
   void ClosePort(v8::Local<v8::Context> context,
-                 const PortId& port_id,
-                 int routing_id) override;
+                 const PortId& port_id) override;
 
   gin::Handle<GinPort> CreatePortForTesting(
       ScriptContext* script_context,
@@ -170,16 +151,13 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                          const PortId& port_id);
   bool HasPortForTesting(ScriptContext* script_context, const PortId& port_id);
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void BindPortForTesting(
       ScriptContext* script_context,
       const PortId& port_id,
       mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
           message_port_host_receiver);
-#endif
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void CloseMessagePort(ScriptContext* script_context,
                         const PortId& port_id,
                         bool close_channel);
@@ -192,7 +170,6 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   mojom::MessagePortHost* GetMessagePortHostIfExists(
       ScriptContext* script_context,
       const PortId& port_id);
-#endif
 
  private:
   class MessagePortScope;
@@ -201,11 +178,6 @@ class NativeRendererMessagingService : public GinPort::Delegate {
 
   // Helpers for the public methods to perform the action in a single
   // ScriptContext.
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  void ValidateMessagePortInContext(const PortId& port_id,
-                                    bool* has_port,
-                                    ScriptContext* script_context);
-#endif
   void DispatchOnConnectToScriptContext(const PortId& target_port_id,
                                         mojom::ChannelType channel_type,
                                         const std::string& channel_name,
@@ -265,19 +237,15 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   gin::Handle<GinPort> GetPort(ScriptContext* script_context,
                                const PortId& port_id);
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   MessagePortScope* GetMessagePortScope(content::RenderFrame* render_frame);
   base::SafeRef<NativeRendererMessagingService> AsSafeRef();
-#endif
 
   // The associated bindings system; guaranteed to outlive this object.
   const raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>
       bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   std::unique_ptr<MessagePortScope> default_scope_;
-#endif
   base::WeakPtrFactory<NativeRendererMessagingService> weak_ptr_factory_{this};
 };
 

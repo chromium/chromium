@@ -20,7 +20,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"

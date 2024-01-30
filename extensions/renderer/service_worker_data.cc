@@ -5,7 +5,6 @@
 #include "extensions/renderer/service_worker_data.h"
 
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_interaction_provider.h"

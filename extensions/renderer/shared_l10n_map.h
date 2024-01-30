@@ -9,22 +9,13 @@
 #include <string>
 
 #include "base/synchronization/lock.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-namespace IPC {
-class Sender;
-}
-#endif
 
 namespace extensions {
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 namespace mojom {
 class RendererHost;
 }
-#endif
 
 // A helper class to retrieve l10n data for extensions. Since renderers are
 // always tied to a specific profile, this class is safe as a singleton (we
@@ -44,11 +35,7 @@ class SharedL10nMap {
   // A map of message name to message.
   using L10nMessagesMap = std::map<std::string, std::string>;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  using IPCTarget = IPC::Sender;
-#else
   using IPCTarget = mojom::RendererHost;
-#endif
 
   SharedL10nMap();
   SharedL10nMap(const SharedL10nMap&) = delete;

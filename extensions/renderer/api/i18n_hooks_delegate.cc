@@ -289,20 +289,12 @@ RequestResult I18nHooksDelegate::HandleGetMessage(
   DCHECK(arguments[0]->IsString());
 
   SharedL10nMap::IPCTarget* ipc_target = nullptr;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  if (script_context->IsForServiceWorker()) {
-    ipc_target = WorkerThreadDispatcher::Get();
-  } else {
-    ipc_target = script_context->GetRenderFrame();
-  }
-#else
   if (script_context->IsForServiceWorker()) {
     ipc_target =
         WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
   } else if (auto* frame = script_context->GetRenderFrame()) {
     ipc_target = ExtensionFrameHelper::Get(frame)->GetRendererHost();
   }
-#endif
 
   v8::Local<v8::Value> message =
       GetI18nMessage(gin::V8ToString(script_context->isolate(), arguments[0]),
