@@ -1123,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DimEvent{PowerSource}" enum="PowerDimEvent"
-    expires_after="2024-03-01">
+    expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -1545,7 +1545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.LockEvent{PowerSource}" enum="PowerLockEvent"
-    expires_after="2024-03-01">
+    expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -1826,7 +1826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.{HpsEvent}.DurationSeconds" units="seconds"
-    expires_after="2024-03-01">
+    expires_after="2025-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
