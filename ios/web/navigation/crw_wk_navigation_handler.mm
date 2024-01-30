@@ -978,6 +978,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
   }
 
+  [self updateStateForNavigation:navigation toFinishedWithContext:context];
+}
+
+- (void)updateStateForNavigation:(WKNavigation*)navigation
+           toFinishedWithContext:(web::NavigationContextImpl*)context {
   [self.navigationStates setState:web::WKNavigationState::FINISHED
                     forNavigation:navigation];
 
@@ -1020,6 +1025,17 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                       forNavigation:navigation];
     self.webStateImpl->RemoveAllWebFrames();
     _certVerificationErrors->Clear();
+    return;
+  }
+
+  if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
+      error.code == web::kWebKitErrorPlugInLoadFailed) {
+    // In cases where a Plug-in handles the load, mark the navigation as
+    // successful even though it is reported as a failed navigation.
+    web::NavigationContextImpl* navigationContext =
+        [self.navigationStates contextForNavigation:navigation];
+    [self updateStateForNavigation:navigation
+             toFinishedWithContext:navigationContext];
     return;
   }
 
@@ -1815,12 +1831,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   if ([error.domain
           isEqualToString:base::SysUTF8ToNSString(web::kWebKitErrorDomain)]) {
-    if (error.code == web::kWebKitErrorPlugInLoadFailed) {
-      // In cases where a Plug-in handles the load do not take any further
-      // action.
-      return;
-    }
-
     if (error.code == web::kWebKitErrorUrlBlockedByContentFilter) {
       DCHECK(provisionalLoad);
       // If URL is blocked due to Restriction, do not take any further
@@ -1896,8 +1906,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   originalContext->SetLoadingErrorPage(true);
   [self.navigationStates setContext:std::move(originalContext)
                       forNavigation:errorNavigation];
-  // Return as the context was moved.
-  return;
 }
 
 // Displays an error page with details from `error` in `webView`. The error page
