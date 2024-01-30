@@ -147,6 +147,11 @@ void SavedDeskGridView::AddOrUpdateEntries(
 
   SortEntries(order_first_uuid);
 
+  // The preferred size of `SavedDeskGridView` is related to the number of
+  // items. Here our quantities may have changed which means the preferred size
+  // has period.
+  PreferredSizeChanged();
+
   if (animate)
     AnimateGridItems(new_grid_items);
 }

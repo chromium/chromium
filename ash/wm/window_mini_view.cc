@@ -213,7 +213,23 @@ void WindowMiniView::SetShowPreview(bool show) {
       AddChildView(std::make_unique<WindowPreviewView>(source_window_));
   preview_view_->SetPaintToLayer();
   preview_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  // TODO(crbug.com/1522471): Consider redesigning `WindowCycleItemView` to
+  // cancel Layer rounded corners.
+  //
+  // The derived class `WindowCycleItemView` of `WindowMiniView` will create
+  // `backdrop_view_` in the Layout method so that we can enter
+  // `WindowMiniView::RefreshPreviewRoundedCorners` in the first layout to
+  // cancel the rounded corners for the Layer of the view. This is a very subtle
+  // logic. If the Layout is not here. We will lose the opportunity to adjust
+  // the Layer fillet. Maybe we should refactor here.
   Layout();
+
+  // The preferred size of `WindowMiniView` is tied to the presence or absence
+  // of `preview_view_`. Although we have called Layout here, but for
+  // `LayoutManagerBase`, this will not invalidate the cache. We need to
+  // actively call cache invalidation.
+  PreferredSizeChanged();
 }
 
 int WindowMiniView::TryRemovingChildItem(aura::Window* destroying_window) {
