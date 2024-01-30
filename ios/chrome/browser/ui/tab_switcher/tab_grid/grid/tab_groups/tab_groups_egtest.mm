@@ -60,10 +60,10 @@ NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
                                    IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP))]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                   1))] performAction:grey_tap()];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kCreateTabGroupIdentifier)]

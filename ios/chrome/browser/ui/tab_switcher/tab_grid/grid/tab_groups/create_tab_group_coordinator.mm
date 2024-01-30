@@ -22,7 +22,9 @@
 #pragma mark - ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                              selectedTabs:(const std::set<web::WebStateID>&)
+                                               identifiers {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups experiment.";
   return [super initWithBaseViewController:viewController browser:browser];

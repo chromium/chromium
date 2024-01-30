@@ -128,7 +128,8 @@
     (ProceduralBlock)block;
 
 // Creates a UIAction instance for adding a tab in a new tab group.
-- (UIAction*)actionToAddTabToNewGroupWithBlock:(ProceduralBlock)block;
+- (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
+                                               block:(ProceduralBlock)block;
 
 // Creates a UIMenu instance for adding a tab to an existing group or to a new
 // group using a block that takes a group id as an argument, which is nil

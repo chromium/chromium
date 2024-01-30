@@ -339,15 +339,17 @@
   };
 }
 
-- (UIAction*)actionToAddTabToNewGroupWithBlock:(ProceduralBlock)block {
+- (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
+                                               block:(ProceduralBlock)block {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group context menu action "
          "outside the Tab Groups experiment.";
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
   UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP)
+      [self actionWithTitle:l10n_util::GetPluralNSStringF(
+                                IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                tabsNumber)
                       image:image
                        type:MenuActionType::AddTabToNewGroup
                       block:block];
@@ -394,8 +396,11 @@
       block(nil);
     }
   };
-  NSArray<UIMenuElement*>* addToGroupMenuElements =
-      @[ [self actionToAddTabToNewGroupWithBlock:addTabToNewGroupBlock], menu ];
+  NSArray<UIMenuElement*>* addToGroupMenuElements = @[
+    [self actionToAddTabsToNewGroupWithTabsNumber:1
+                                            block:addTabToNewGroupBlock],
+    menu
+  ];
 
   return [UIMenu menuWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP)

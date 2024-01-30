@@ -89,7 +89,8 @@
   _tabGroupCoordinator = nil;
 }
 
-- (void)showTabGroupCreationForTabs:(std::set<web::WebStateID>&)identifiers {
+- (void)showTabGroupCreationForTabs:
+    (const std::set<web::WebStateID>&)identifiers {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -100,7 +101,8 @@
   // controller.
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                    selectedTabs:identifiers];
   [_tabGroupCreator start];
 }
 

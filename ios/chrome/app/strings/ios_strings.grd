@@ -913,8 +913,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTACTS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's contacts while the app is in use [Length: unlimited] [iOS only].">
         This will be used to show you possible invitees to your event.
       </message>
-      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP" desc="The iOS context menu item for adding a tab to a new tab group. Title case. [iOS only]">
-        Add Tab to New Group
+      <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP" desc="The iOS context menu item for adding one or multiple tabs to a new tab group. Title case. [iOS only]">
+        {count, plural,
+        =1 {Add Tab to New Group}
+        other {Add Tabs to New Group}}
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP" desc="The iOS context menu item for adding a tab to an existing tab group. Title case. [iOS only]">
         Add Tab to Group

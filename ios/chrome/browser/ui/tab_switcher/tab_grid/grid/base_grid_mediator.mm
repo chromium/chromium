@@ -686,6 +686,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     return nil;
   }
 
+  NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
+
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramTabGridAddTo];
 
@@ -705,12 +707,25 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     bookmarkAction.attributes = UIMenuElementAttributesDisabled;
   }
 
-  return @[
-    [actionFactory actionToAddToReadingListWithBlock:^{
-      [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
-    }],
-    bookmarkAction
-  ];
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    ProceduralBlock createTabGroupActionBlock = ^{
+      BOOL incognito = [weakSelf isIncognitoBrowser];
+      [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy
+                                                       incognito:incognito];
+    };
+    UIAction* addToNewTabGroupAction = [actionFactory
+        actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
+                                          block:createTabGroupActionBlock];
+    [actions addObject:addToNewTabGroupAction];
+  }
+
+  [actions addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+             [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
+           }]];
+
+  [actions addObject:bookmarkAction];
+
+  return actions;
 }
 
 - (void)searchItemsWithText:(NSString*)searchText {
@@ -1101,6 +1116,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
                              .pinned_state = PinnedState::kNonPinned,
                          });
   return CreateTabDragItem(webState);
+}
+
+- (BOOL)isIncognitoBrowser {
+  return static_cast<BOOL>(self.browserState->IsOffTheRecord());
 }
 
 #pragma mark - TabGridPageMutator
