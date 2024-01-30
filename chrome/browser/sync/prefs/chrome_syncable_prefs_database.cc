@@ -514,7 +514,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {ash::full_restore::kRestoreAppsAndPagesPrefName,
+    {ash::prefs::kRestoreAppsAndPagesPrefName,
      {syncable_prefs_ids::kRestoreAppsAndPagesPrefName, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

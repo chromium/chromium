@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -839,7 +840,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Restore apps and pages on startup
-  (*s_allowlist)[ash::full_restore::kRestoreAppsAndPagesPrefName] =
+  (*s_allowlist)[ash::prefs::kRestoreAppsAndPagesPrefName] =
       settings_api::PrefType::kNumber;
 
   // Timezone settings.

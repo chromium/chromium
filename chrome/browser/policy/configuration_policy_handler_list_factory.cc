@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1575,7 +1576,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kGlanceablesEnabled,
     base::Value::Type::BOOLEAN },
   { key::kFullRestoreMode,
-    ash::full_restore::kRestoreAppsAndPagesPrefName,
+    ash::prefs::kRestoreAppsAndPagesPrefName,
     base::Value::Type::INTEGER },
   { key::kDeviceSwitchFunctionKeysBehaviorEnabled,
     ash::prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,

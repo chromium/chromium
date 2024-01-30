@@ -2869,14 +2869,14 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
       SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "unsupported_app_type",
                               window->GetProperty(aura::client::kAppType));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "unsupported_app_id",
-                                full_restore::GetAppId(window));
+                                ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();
     } else if (num_incognito_windows_ < 0) {
       num_incognito_windows_ = 0;
       SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "incognito_app_type",
                               window->GetProperty(aura::client::kAppType));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "incognito_app_id",
-                                full_restore::GetAppId(window));
+                                ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();
     }
   }

@@ -306,7 +306,7 @@ class DesksController::RemovedDeskData {
                                  .enabled()),
         source_(source),
         desk_close_type_(type) {
-    full_restore::SaveRemovingDeskGuid(desk_->uuid());
+    ::full_restore::SaveRemovingDeskGuid(desk_->uuid());
     desk_->set_is_desk_being_removed(true);
   }
 
@@ -321,7 +321,7 @@ class DesksController::RemovedDeskData {
       toast_manager->Cancel(toast_id_);
       DesksController::Get()->FinalizeDeskRemoval(this);
     }
-    full_restore::ResetRemovingDeskGuid();
+    ::full_restore::ResetRemovingDeskGuid();
   }
 
   const std::string& toast_id() const { return toast_id_; }
@@ -2348,7 +2348,7 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
           visible_on_all_desks_window->GetProperty(aura::client::kAppType));
       SCOPED_CRASH_KEY_STRING32(
           "Restack", "adw_app_id",
-          full_restore::GetAppId(visible_on_all_desks_window));
+          ::full_restore::GetAppId(visible_on_all_desks_window));
       base::debug::DumpWithoutCrashing();
       continue;
     }

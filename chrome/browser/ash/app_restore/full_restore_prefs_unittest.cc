@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
@@ -36,7 +38,7 @@ class FullRestorePrefsTest : public testing::Test {
 
   RestoreOption GetRestoreOption() const {
     return static_cast<RestoreOption>(
-        pref_service_->GetInteger(kRestoreAppsAndPagesPrefName));
+        pref_service_->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   }
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -59,7 +61,7 @@ TEST_F(FullRestorePrefsTest, NewUser) {
 TEST_F(FullRestorePrefsTest, UpgradingFromRestore) {
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
   RegisterProfilePrefs(registry());
@@ -73,7 +75,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromRestore) {
 TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
 
   RegisterProfilePrefs(registry());
@@ -94,7 +96,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
 
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
   UpdateRestorePrefIfNecessary(pref_service_.get());
@@ -114,7 +116,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
 
   SessionStartupPref::RegisterProfilePrefs(registry());
   pref_service_->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
 
   UpdateRestorePrefIfNecessary(pref_service_.get());

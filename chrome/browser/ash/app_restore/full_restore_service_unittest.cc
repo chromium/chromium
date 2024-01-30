@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
@@ -77,7 +78,7 @@ syncer::SyncData CreateRestoreOnStartupPrefSyncData(
 
 syncer::SyncData CreateRestoreAppsAndPagesPrefSyncData(RestoreOption value) {
   sync_pb::EntitySpecifics specifics;
-  SetPrefValue(kRestoreAppsAndPagesPrefName,
+  SetPrefValue(prefs::kRestoreAppsAndPagesPrefName,
                base::Value(static_cast<int>(value)),
                specifics.mutable_os_preference()->mutable_preference());
   return syncer::SyncData::CreateRemoteData(
@@ -110,7 +111,7 @@ class FullRestoreServiceTest : public testing::Test {
     profile_builder.SetProfileName("user.test@gmail.com");
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
     profile_ = profile_builder.Build();
-    profile_->GetPrefs()->ClearPref(kRestoreAppsAndPagesPrefName);
+    profile_->GetPrefs()->ClearPref(prefs::kRestoreAppsAndPagesPrefName);
 
     account_id_ =
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
@@ -258,7 +259,7 @@ class FullRestoreServiceTest : public testing::Test {
 
   RestoreOption GetRestoreOption() const {
     return static_cast<RestoreOption>(
-        profile()->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
+        profile()->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   }
 
   TestingProfile* profile() const { return profile_.get(); }
@@ -296,7 +297,7 @@ TEST_F(FullRestoreServiceTest, Crash) {
 // file, after reboot, don't show the notification, and don't restore
 TEST_F(FullRestoreServiceTest, AskEveryTime) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
 
@@ -412,7 +413,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
   // Set the restore pref setting to simulate sync for the first time.
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
 
   first_run::ResetCachedSentinelDataForTesting();
@@ -572,7 +573,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 // notification, and verify the restore flag when click the restore button.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
 
@@ -598,7 +599,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
 // notification, and verify the restore flag when click the Settings button.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
 
@@ -632,7 +633,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
        AskEveryTimeAndCloseNotification) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
 
@@ -657,7 +658,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
        AskEveryTimeWithPostRebootNotification) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   profile()->GetPrefs()->SetBoolean(prefs::kShowPostRebootNotification, true);
   CreateFullRestoreServiceForTesting();
@@ -675,7 +676,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
 // created.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
 
   FullRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -703,7 +704,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
 // If the OS restore setting is 'Always', after reboot, don't show any
 // notfications, and verify the restore flag.
 TEST_F(FullRestoreServiceTest, Always) {
-  profile()->GetPrefs()->SetInteger(kRestoreAppsAndPagesPrefName,
+  profile()->GetPrefs()->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                                     static_cast<int>(RestoreOption::kAlways));
   CreateFullRestoreServiceForTesting();
 
@@ -719,7 +720,7 @@ TEST_F(FullRestoreServiceTest, Always) {
 // notfications, and verify the restore flag.
 TEST_F(FullRestoreServiceTest, NotRestore) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kDoNotRestore));
   CreateFullRestoreServiceForTesting();
 
@@ -750,7 +751,7 @@ class FullRestoreServiceMultipleUsersTest
     profile_builder.SetProfileName("user2@gmail.com");
     profile_builder.SetPath(temp_dir2_.GetPath().AppendASCII("TestProfile2"));
     profile2_ = profile_builder.Build();
-    profile2_->GetPrefs()->ClearPref(kRestoreAppsAndPagesPrefName);
+    profile2_->GetPrefs()->ClearPref(prefs::kRestoreAppsAndPagesPrefName);
 
     account_id2_ = AccountId::FromUserEmailGaiaId(
         profile2_->GetProfileUserName(), "111111");
@@ -784,8 +785,8 @@ class FullRestoreServiceMultipleUsersTest
   }
 
   RestoreOption GetRestoreOptionForProfile2() const {
-    return static_cast<RestoreOption>(
-        profile2()->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
+    return static_cast<RestoreOption>(profile2()->GetPrefs()->GetInteger(
+        prefs::kRestoreAppsAndPagesPrefName));
   }
 
   bool HasNotificationForProfile2(const std::string& notification_id) {
@@ -836,10 +837,10 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
   GetFakeUserManager()->set_last_session_active_account_id(account_id());
 
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   profile2()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
   CreateFullRestoreService2ForTesting();
@@ -890,7 +891,7 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
 // Verify the full restore init process when 2 users login one by one.
 TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
@@ -911,7 +912,7 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
 
   // Simulate switch to the second user.
   profile2()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreService2ForTesting();
 
@@ -948,10 +949,10 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
   GetFakeUserManager()->set_last_session_active_account_id(account_id2());
 
   profile()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   profile2()->GetPrefs()->SetInteger(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   CreateFullRestoreServiceForTesting();
   CreateFullRestoreService2ForTesting();

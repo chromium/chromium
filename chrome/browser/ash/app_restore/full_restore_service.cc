@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
@@ -14,6 +15,7 @@
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -150,7 +152,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       base::BindRepeating(&FullRestoreService::OnPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -236,7 +238,7 @@ void FullRestoreService::Init(bool& show_notification) {
   }
 
   RestoreOption restore_pref = static_cast<RestoreOption>(
-      prefs->GetInteger(kRestoreAppsAndPagesPrefName));
+      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
   switch (restore_pref) {
     case RestoreOption::kAlways:
@@ -543,10 +545,10 @@ void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
 }
 
 void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
-  DCHECK_EQ(pref_name, kRestoreAppsAndPagesPrefName);
+  DCHECK_EQ(pref_name, prefs::kRestoreAppsAndPagesPrefName);
 
   RestoreOption restore_option = static_cast<RestoreOption>(
-      profile_->GetPrefs()->GetInteger(kRestoreAppsAndPagesPrefName));
+      profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreSettingHistogramName, restore_option);
 
   const user_manager::User* user =

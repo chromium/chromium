@@ -2002,6 +2002,11 @@ inline constexpr char kDeleteKeyModifier[] = "ash.settings.delete_key_modifier";
 // controlled through policy InsertKeyModifier.
 inline constexpr char kInsertKeyModifier[] = "ash.settings.insert_key_modifier";
 
+// An integer pref to define whether restore apps and web pages on startup.
+// Refer to `ash::full_restore::RestoreOption`.
+inline constexpr char kRestoreAppsAndPagesPrefName[] =
+    "settings.restore_apps_and_pages";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

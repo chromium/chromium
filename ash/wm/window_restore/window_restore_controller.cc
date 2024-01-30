@@ -550,7 +550,7 @@ void WindowRestoreController::SaveWindowImpl(
   }
   std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
       window, activation_index, /*for_saved_desks=*/false, mru_windows);
-  full_restore::SaveWindowInfo(*window_info);
+  ::full_restore::SaveWindowInfo(*window_info);
 
   if (g_save_window_callback_for_testing)
     g_save_window_callback_for_testing.Run(*window_info);
