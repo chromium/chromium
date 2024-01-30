@@ -121,6 +121,8 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
+constexpr const char kChallengeBytesFetchDurationHistogramName[] =
+    "QuickStart.ChallengeBytes.FetchDuration";
 constexpr const char kChallengeBytesFailureReasonHistogramName[] =
     "QuickStart.ChallengeBytes.FailureReason";
 constexpr const char kChallengeBytesFetchResultHistogramName[] =
@@ -524,6 +526,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       kChallengeBytesFailureReasonHistogramName,
       /*sample=*/GoogleServiceAuthError::State::SERVICE_ERROR, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kChallengeBytesFetchDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -567,6 +572,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
         kChallengeBytesFailureReasonHistogramName,
         /*sample=*/GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE,
         1);
+    histogram_tester.ExpectUniqueTimeSample(
+        kChallengeBytesFetchDurationHistogramName,
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   }
 }
 
@@ -586,6 +594,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesLogsMetricsForSuccess) {
   histogram_tester.ExpectBucketCount(
       kChallengeBytesFailureReasonHistogramName,
       /*sample=*/GoogleServiceAuthError::State::NONE, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kChallengeBytesFetchDurationHistogramName,
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(

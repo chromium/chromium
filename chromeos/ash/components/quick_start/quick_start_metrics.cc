@@ -15,6 +15,8 @@ namespace ash::quick_start {
 
 namespace {
 
+constexpr const char kChallengeBytesFetchDurationHistogramName[] =
+    "QuickStart.ChallengeBytes.FetchDuration";
 constexpr const char kChallengeBytesFailureReasonHistogramName[] =
     "QuickStart.ChallengeBytes.FailureReason";
 constexpr const char kChallengeBytesFetchResultHistogramName[] =
@@ -162,17 +164,26 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
 }
 
 void QuickStartMetrics::RecordChallengeBytesRequested() {
-  // TODO(b/322293969): Add timer metrics.
+  CHECK(!challenge_bytes_fetch_timer_)
+      << "Only 1 challenge bytes request can be active at a time";
+  challenge_bytes_fetch_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void QuickStartMetrics::RecordChallengeBytesRequestEnded(
     const GoogleServiceAuthError& status) {
+  CHECK(challenge_bytes_fetch_timer_)
+      << "Challenge bytes request timer was not active. Unexpected "
+         "response.";
+
   const bool is_success = status.state() == GoogleServiceAuthError::State::NONE;
   base::UmaHistogramBoolean(kChallengeBytesFetchResultHistogramName,
                             /*sample=*/is_success);
   base::UmaHistogramEnumeration(kChallengeBytesFailureReasonHistogramName,
                                 /*sample=*/status.state(),
                                 GoogleServiceAuthError::NUM_STATES);
+  base::UmaHistogramTimes(kChallengeBytesFetchDurationHistogramName,
+                          challenge_bytes_fetch_timer_->Elapsed());
+  challenge_bytes_fetch_timer_.reset();
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
