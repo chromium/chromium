@@ -2519,7 +2519,7 @@ BASE_FEATURE(kShelfLauncherNudge,
 // there is not enough space for the app bar.
 BASE_FEATURE(kShelfStackedHotseat,
              "ShelfStackedHotseat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
 // the swipe gesture to show the extended hotseat. Limited to certain apps.
