@@ -1235,7 +1235,11 @@ void SkiaRenderer::SwapBuffersComplete(
 
   // Current pending locks should have been committed by the next time
   // SwapBuffers() is completed.
-  committed_overlay_locks_.clear();
+  {
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
+    committed_overlay_locks_.clear();
+  }
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
   pending_overlay_locks_.pop_front();
 }
