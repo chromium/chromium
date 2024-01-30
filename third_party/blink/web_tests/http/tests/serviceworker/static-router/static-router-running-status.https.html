@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Static Router: routers are evaluated with the running status condition.
+</title>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.js"></script>
+<script src="resources/static-router-helpers.sub.js"></script>
+<body>
+<script>
+const ROUTER_KEY_STATUS_NOTRUNNING = 'condition-runningstatus-notrunning-network';
+const ROUTER_KEY_STATUS_RUNNING = 'condition-runningstatus-running-network';
+
+const REGISTERED_ROUTE = 'resources/direct.txt'
+
+promise_test(async t => {
+  // Register and stop the service worker.
+  const worker = await registerAndActivate(t, ROUTER_KEY_STATUS_NOTRUNNING);
+  await internals.terminateServiceWorker(worker);
+
+  // Dispatch a main resource request.
+  let iframe = await createIframe(t, REGISTERED_ROUTE);
+  assert_equals(iframe.contentWindow.document.body.innerText, "Network\n");
+  let info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 0);
+
+  // Wait for the service worker activation.
+  wait_for_state(t, worker, 'activated');
+
+  // Create iframe again. This time the service worker is alraedy running.
+  iframe = await createIframe(t, REGISTERED_ROUTE);
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 1);
+  assert_equals(info.requests[0].mode, 'navigate');
+}, 'Main reosurce load matched with the running status: not-running condition');
+
+promise_test(async t => {
+  // Register the service worker.
+  const worker = await registerAndActivate(t, ROUTER_KEY_STATUS_RUNNING);
+
+  // Dispatch a main resource request.
+  let iframe = await createIframe(t, REGISTERED_ROUTE);
+  assert_equals(iframe.contentWindow.document.body.innerText, "Network\n");
+  let info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 0);
+
+  // Stop the service worker.
+  await internals.terminateServiceWorker(worker);
+
+  // Create iframe again. This time the service worker is alraedy running.
+  iframe = await createIframe(t, REGISTERED_ROUTE);
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 1);
+  assert_equals(info.requests[0].mode, 'navigate');
+}, 'Main reosurce load matched with the running status: running condition');
+
+promise_test(async t => {
+  // Create iframe, register and stop the service worker.
+  let iframe = await createIframe(t, REGISTERED_ROUTE);
+  const worker = await registerAndActivate(t, ROUTER_KEY_STATUS_NOTRUNNING);
+  await internals.terminateServiceWorker(worker);
+
+  // Dispatch a subresource request. This matches the rule.
+  let response = await iframe.contentWindow.fetch(`?nonce=${randomString()}`);
+  assert_equals(await response.text(), "Network\n");
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 0);
+
+  // Wait for the service worker activation.
+  wait_for_state(t, worker, 'activated');
+
+  // Dispatch a subresource request again. This doesn't match the rule.
+  const rnd = randomString();
+  response = await iframe.contentWindow.fetch(`?nonce=${rnd}`);
+  assert_equals(await response.text(), rnd);
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 1);
+}, 'Subreosurce load matched with the running status: not-running condition');
+
+promise_test(async t => {
+  // Create iframe, register and stop the service worker.
+  let iframe = await createIframe(t, REGISTERED_ROUTE);
+  const worker = await registerAndActivate(t, ROUTER_KEY_STATUS_RUNNING);
+
+  // Dispatch a subresource request. This matches the rule.
+  let response = await iframe.contentWindow.fetch(`?nonce=${randomString()}`);
+  assert_equals(await response.text(), "Network\n");
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 0);
+
+  // Stop the service worker.
+  await internals.terminateServiceWorker(worker);
+
+  // Dispatch a subresource request again. This doesn't match the rule.
+  const rnd = randomString();
+  response = await iframe.contentWindow.fetch(`?nonce=${rnd}`);
+  assert_equals(await response.text(), rnd);
+  info = await get_info_from_worker(worker);
+  assert_equals(info.requests.length, 1);
+}, 'Subreosurce load matched with the running status: running condition');
+</script>
+</body>

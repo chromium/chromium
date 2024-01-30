@@ -6362,6 +6362,8 @@ crbug.com/1371756 [ Release ] external/wpt/service-workers/service-worker/tentat
 crbug.com/1371756 virtual/static-routing-api/external/wpt/service-workers/service-worker/tentative/static-router/* [ Pass ]
 crbug.com/1371756 http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Failure ]
 crbug.com/1371756 virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Pass ]
+crbug.com/1371756 http/tests/serviceworker/static-router/* [ Failure ]
+crbug.com/1371756 virtual/static-routing-api/http/tests/serviceworker/static-router/* [ Pass ]
 
 # Gardener 2023-07-11
 crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-about-blank.https.window.html [ Crash Failure Pass Timeout ]

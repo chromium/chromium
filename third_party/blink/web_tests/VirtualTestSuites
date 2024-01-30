@@ -2308,7 +2308,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/service-workers/service-worker/tentative/static-router",
-      "http/tests/inspector-protocol/service-worker/tentative/static-router"
+      "http/tests/inspector-protocol/service-worker/tentative/static-router",
+      "http/tests/serviceworker/static-router/"
     ],
     "args": ["--enable-features=ServiceWorkerStaticRouter",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
