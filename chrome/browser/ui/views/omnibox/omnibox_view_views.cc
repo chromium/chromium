@@ -477,20 +477,7 @@ bool OmniboxViewViews::IsImeComposing() const {
 }
 
 gfx::Size OmniboxViewViews::GetMinimumSize() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1338087): The minimum size of Lacros toolbar is set too wide
-  // to use split view in tablet mode. Temporally making the minimum size of
-  // omnibox smaller for Lacros to align the behavior with Ash. Responsive
-  // Toolbar is supposed to fix this. Remove the temporal solution when
-  // Responsive Toolbar is launched.
-  const int kMinCharacters =
-      display::Screen::GetScreen()->InTabletMode() &&
-              !base::FeatureList::IsEnabled(features::kResponsiveToolbar)
-          ? 8
-          : 20;
-#else
   const int kMinCharacters = 20;
-#endif
   return gfx::Size(
       GetFontList().GetExpectedTextWidth(kMinCharacters) + GetInsets().width(),
       GetPreferredSize().height());
