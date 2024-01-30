@@ -11,7 +11,17 @@ option java_package = "org.chromium.chrome.browser.page_insights.proto";
 option optimize_for = LITE_RUNTIME;
 
 message PageInsightsConfig {
+  // True if Page Insights should auto-trigger.
   optional bool should_auto_trigger = 1;
+  // True if XSurface logging should be done.
   optional bool should_xsurface_log = 2;
-  optional bool should_attach_gaia_to_request = 3;
+  // DEPRECATED. Was: true if Gaia should be attached to the Page Insights
+  // request.
+  optional bool should_attach_gaia_to_request = 3 [deprecated = true];
+  // True if logging of URL by server, and personalisation of response, is
+  // forbidden.
+  optional bool server_should_not_log_or_personalize = 4;
+  // True if the Page Insights feature is showing on top of an initial page. See
+  // go/pih-cct-conditions.
+  optional bool is_initial_page = 5;
 }
