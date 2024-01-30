@@ -46,11 +46,6 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
   return std::min(next_run_time, lazy_now->Now() + Days(1));
 }
 
-// Feature to run tasks by batches before pumping out messages.
-BASE_FEATURE(kRunTasksByBatches,
-             "RunTasksByBatches",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
              "AvoidScheduleWorkDuringNativeEventProcessing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -78,7 +73,7 @@ base::TimeDelta GetLeewayForWakeUp(absl::optional<WakeUp> wake_up) {
 
 // static
 void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
-  g_run_tasks_by_batches.store(FeatureList::IsEnabled(kRunTasksByBatches),
+  g_run_tasks_by_batches.store(FeatureList::IsEnabled(base::kRunTasksByBatches),
                                std::memory_order_relaxed);
   g_avoid_schedule_calls_during_native_event_processing.store(
       FeatureList::IsEnabled(kAvoidScheduleWorkDuringNativeEventProcessing),
@@ -92,7 +87,7 @@ void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
 // static
 void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
   g_run_tasks_by_batches.store(
-      kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
+      base::kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
       std::memory_order_relaxed);
 }
 
