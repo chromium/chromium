@@ -1145,8 +1145,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ResultCatcher catcher;
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
-  const Extension* extension = registry->GetExtensionById(
-      last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(last_loaded_extension_id());
   GURL url = extension->GetResourceURL("newTab/a.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

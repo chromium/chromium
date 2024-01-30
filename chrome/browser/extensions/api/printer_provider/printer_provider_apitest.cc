@@ -225,8 +225,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile());
 
     scoped_refptr<const Extension> extension =
-        extension_registry->GetExtensionById(extension_id,
-                                             ExtensionRegistry::ENABLED);
+        extension_registry->enabled_extensions().GetByID(extension_id);
     if (!extension)
       return false;
 

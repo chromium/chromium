@@ -1573,8 +1573,8 @@ const Extension* PrefsUtil::GetExtensionControllingPref(
   if (extension_id.empty())
     return nullptr;
 
-  return ExtensionRegistry::Get(profile_)->GetExtensionById(
-      extension_id, ExtensionRegistry::ENABLED);
+  return ExtensionRegistry::Get(profile_)->enabled_extensions().GetByID(
+      extension_id);
 }
 
 }  // namespace extensions

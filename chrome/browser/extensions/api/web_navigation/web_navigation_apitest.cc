@@ -510,8 +510,8 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
   ResultCatcher catcher;
 
   const extensions::Extension* extension =
-      extension_registry()->GetExtensionById(last_loaded_extension_id(),
-                                             ExtensionRegistry::ENABLED);
+      extension_registry()->enabled_extensions().GetByID(
+          last_loaded_extension_id());
   GURL url = extension->GetResourceURL(
       "a.html?" + base::NumberToString(embedded_test_server()->port()));
 
@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
   ResultCatcher catcher;
 
   const extensions::Extension* extension =
-      extension_registry()->GetExtensionById(last_loaded_extension_id(),
-                                             ExtensionRegistry::ENABLED);
+      extension_registry()->enabled_extensions().GetByID(
+          last_loaded_extension_id());
   GURL url = extension->GetResourceURL("a.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -113,8 +113,7 @@ testing::AssertionResult SharedModuleServiceUnitTest::InstallExtension(
       extension, syncer::StringOrdinal(), kInstallFlagInstallImmediately);
 
   // Verify that the extension is now installed.
-  if (!registry()->GetExtensionById(extension->id(),
-                                    ExtensionRegistry::ENABLED)) {
+  if (!registry()->enabled_extensions().Contains(extension->id())) {
     return testing::AssertionFailure() << "Could not install extension.";
   }
 

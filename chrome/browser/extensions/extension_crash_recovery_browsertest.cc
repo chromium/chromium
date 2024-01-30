@@ -71,8 +71,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   }
 
   void CrashExtension(const std::string& extension_id) {
-    const Extension* extension = GetExtensionRegistry()->GetExtensionById(
-        extension_id, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        GetExtensionRegistry()->enabled_extensions().GetByID(extension_id);
     ASSERT_TRUE(extension);
     extensions::ExtensionHost* extension_host = GetProcessManager()->
         GetBackgroundHostForExtension(extension_id);
@@ -90,8 +90,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   }
 
   void CheckExtensionConsistency(const std::string& extension_id) {
-    const Extension* extension = GetExtensionRegistry()->GetExtensionById(
-        extension_id, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        GetExtensionRegistry()->enabled_extensions().GetByID(extension_id);
     ASSERT_TRUE(extension);
     extensions::ExtensionHost* extension_host = GetProcessManager()->
         GetBackgroundHostForExtension(extension_id);

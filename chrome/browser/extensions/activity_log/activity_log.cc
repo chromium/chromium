@@ -674,8 +674,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
     return;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   for (const auto& extension_id : extension_ids) {
-    const Extension* extension = registry->GetExtensionById(
-        extension_id.first, ExtensionRegistry::ENABLED);
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(extension_id.first);
     if (!extension || IsExtensionAllowlisted(extension->id()))
       continue;
 
