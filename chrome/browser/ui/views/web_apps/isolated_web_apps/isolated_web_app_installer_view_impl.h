@@ -58,12 +58,11 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   void ShowInstallSuccessScreen(
       const SignedWebBundleMetadata& bundle_metadata) override;
 
-  void ShowDialog(const IsolatedWebAppInstallerModel::Dialog& dialog) override;
+  views::Widget* ShowDialog(
+      const IsolatedWebAppInstallerModel::Dialog& dialog) override;
 
   // `views::View`:
   gfx::Size GetMaximumSize() const override;
-
-  views::Widget* GetChildWidgetForTesting() override;
 
  private:
   template <class T, class... Args>
@@ -73,10 +72,10 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
 
   void Dim(bool dim);
 
-  void ShowChildDialog(int title,
-                       const ui::DialogModelLabel& subtitle,
-                       const ui::ImageModel& icon,
-                       std::optional<int> ok_label);
+  views::Widget* ShowChildDialog(int title,
+                                 const ui::DialogModelLabel& subtitle,
+                                 const ui::ImageModel& icon,
+                                 std::optional<int> ok_label);
 
   void ShowChildView(views::View* view);
 
@@ -91,8 +90,6 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<InstallSuccessView> install_success_view_;
 
   bool dialog_visible_;
-
-  raw_ptr<views::Widget> child_widget_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallerViewImpl> weak_ptr_factory_{this};
 };

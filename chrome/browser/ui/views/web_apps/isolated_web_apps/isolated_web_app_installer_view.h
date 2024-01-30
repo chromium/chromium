@@ -47,6 +47,7 @@ class IsolatedWebAppInstallerView : public views::View {
     virtual void OnSettingsLinkClicked() = 0;
     virtual void OnChildDialogCanceled() = 0;
     virtual void OnChildDialogAccepted() = 0;
+    virtual void OnChildDialogDestroying() = 0;
   };
 
   // Configures the buttons of the given DialogDelegate.
@@ -72,10 +73,8 @@ class IsolatedWebAppInstallerView : public views::View {
   virtual void ShowInstallSuccessScreen(
       const SignedWebBundleMetadata& bundle_metadata) = 0;
 
-  virtual void ShowDialog(
+  virtual views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog) = 0;
-
-  virtual views::Widget* GetChildWidgetForTesting() = 0;
 };
 
 }  // namespace web_app
