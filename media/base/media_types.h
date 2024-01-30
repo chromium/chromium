@@ -36,6 +36,7 @@ struct MEDIA_EXPORT VideoType {
   VideoColorSpace color_space;
   gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
   absl::optional<VideoChromaSampling> subsampling;
+  absl::optional<uint8_t> bit_depth;
 };
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);

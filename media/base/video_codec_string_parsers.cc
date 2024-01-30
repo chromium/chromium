@@ -107,9 +107,10 @@ absl::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
       return absl::nullopt;
   }
 
-  const int bit_depth = values[2];
-  if (bit_depth != 8 && bit_depth != 10 && bit_depth != 12) {
-    DVLOG(3) << __func__ << " Invalid bit-depth (" << bit_depth << ")";
+  result.bit_depth = values[2];
+  if (result.bit_depth != 8 && result.bit_depth != 10 &&
+      result.bit_depth != 12) {
+    DVLOG(3) << __func__ << " Invalid bit-depth (" << *result.bit_depth << ")";
     return absl::nullopt;
   }
 
@@ -309,9 +310,10 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
 
   // The bitDepth parameter value SHALL equal the value of BitDepth variable as
   // defined in [AV1] derived from the Sequence Header. Leading zeros required.
-  const int bit_depth = values[3];
+  result.bit_depth = values[3];
   if (fields[3].size() != 2 ||
-      (bit_depth != 8 && bit_depth != 10 && bit_depth != 12)) {
+      (result.bit_depth != 8 && result.bit_depth != 10 &&
+       result.bit_depth != 12)) {
     DVLOG(3) << __func__ << " Invalid bit-depth (" << fields[3] << ")";
     return absl::nullopt;
   }

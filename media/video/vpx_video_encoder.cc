@@ -368,6 +368,21 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     }
   }
 
+  if ((profile == VP9PROFILE_PROFILE0 || profile == VP9PROFILE_PROFILE1) &&
+      options.bit_depth.value_or(8) != 8) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "Only 8-bit depth is supported with VP9 profiles 0 and 1."));
+    return;
+  }
+  if ((profile == VP9PROFILE_PROFILE2 || profile == VP9PROFILE_PROFILE3) &&
+      options.bit_depth.value_or(10) != 10) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "Only 10-bit depth is supported with VP9 profiles 2 and 3."));
+    return;
+  }
+
   switch (profile) {
     case VP8PROFILE_ANY:
     case VP9PROFILE_PROFILE0:

@@ -30,6 +30,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
     EXPECT_EQ(10u, result->level);
     EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
     EXPECT_EQ(VideoChromaSampling::k420, result->subsampling);
+    EXPECT_EQ(8u, result->bit_depth);
   }
 
   // Verify profile's 1, 2, and 3 parse correctly.
@@ -37,18 +38,21 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
     auto result = ParseNewStyleVp9CodecID("vp09.01.10.08");
     ASSERT_TRUE(result);
     EXPECT_EQ(VP9PROFILE_PROFILE1, result->profile);
+    EXPECT_EQ(8u, result->bit_depth);
   }
 
   {
-    auto result = ParseNewStyleVp9CodecID("vp09.02.10.08");
+    auto result = ParseNewStyleVp9CodecID("vp09.02.10.10");
     ASSERT_TRUE(result);
     EXPECT_EQ(VP9PROFILE_PROFILE2, result->profile);
+    EXPECT_EQ(10u, result->bit_depth);
   }
 
   {
-    auto result = ParseNewStyleVp9CodecID("vp09.03.10.08");
+    auto result = ParseNewStyleVp9CodecID("vp09.03.10.12");
     ASSERT_TRUE(result);
     EXPECT_EQ(VP9PROFILE_PROFILE3, result->profile);
+    EXPECT_EQ(12u, result->bit_depth);
   }
 
   // Profile 4 is not a thing.
@@ -214,19 +218,22 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
     EXPECT_EQ(4u, result->level);
     EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
     EXPECT_EQ(VideoChromaSampling::k420, result->subsampling);
+    EXPECT_EQ(8u, result->bit_depth);
   }
 
   // Verify high and pro profiles parse correctly.
   {
-    auto result = ParseAv1CodecId("av01.1.04M.08");
+    auto result = ParseAv1CodecId("av01.1.04M.10");
     ASSERT_TRUE(result);
     EXPECT_EQ(AV1PROFILE_PROFILE_HIGH, result->profile);
+    EXPECT_EQ(10u, result->bit_depth);
   }
 
   {
-    auto result = ParseAv1CodecId("av01.2.04M.08");
+    auto result = ParseAv1CodecId("av01.2.04M.12");
     ASSERT_TRUE(result);
     EXPECT_EQ(AV1PROFILE_PROFILE_PRO, result->profile);
+    EXPECT_EQ(12u, result->bit_depth);
   }
   // Leading zeros or negative values are forbidden.
   EXPECT_FALSE(ParseAv1CodecId("av01.00.04M.08"));

@@ -101,6 +101,11 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
                          "Frame is too large.");
   }
 
+  if (opts.bit_depth.value_or(8) != 8) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Only 8-bit depth is supported for AV1 encoding.");
+  }
+
   // Set up general config
   switch (profile) {
     case AV1PROFILE_PROFILE_MAIN:

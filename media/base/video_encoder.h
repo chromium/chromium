@@ -86,6 +86,9 @@ class MEDIA_EXPORT VideoEncoder {
     // Controls encoded pixel format.
     absl::optional<VideoChromaSampling> subsampling;
 
+    // Controls encoded bit depth.
+    absl::optional<uint8_t> bit_depth;
+
     // Only used for H264 encoding.
     AvcOptions avc;
 

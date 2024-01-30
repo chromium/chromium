@@ -164,9 +164,11 @@ bool IsAcceleratedConfigurationSupported(
     return false;
   }
 
-  // Hardware encoders don't currently support subsampling other than 4:2:0.
+  // Hardware encoders don't currently support high bit depths or subsamplings
+  // other than 4:2:0.
   if (options.subsampling.value_or(media::VideoChromaSampling::k420) !=
-      media::VideoChromaSampling::k420) {
+          media::VideoChromaSampling::k420 ||
+      options.bit_depth.value_or(8) != 8) {
     return false;
   }
 
@@ -365,6 +367,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->profile = parse_result->profile;
   result->level = parse_result->level;
   result->options.subsampling = parse_result->subsampling;
+  result->options.bit_depth = parse_result->bit_depth;
 
   // Ideally which profile supports a given subsampling would be checked by
   // ParseVideoCodecString() above. Unfortunately, ParseVideoCodecString() is
@@ -913,6 +916,9 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
   // TODO(crbug.com/1195433): Once support for alpha channel encoding is
   // implemented, |force_opaque| must be set based on the
   // VideoEncoderConfig.
+  //
+  // TODO(crbug.com/1116564): If we ever support high bit depth read back, this
+  // path should do something different based on options.bit_depth.
   const bool can_use_gmb =
       active_config_->options.subsampling != media::VideoChromaSampling::k444 &&
       !disable_accelerated_frame_pool_ &&
