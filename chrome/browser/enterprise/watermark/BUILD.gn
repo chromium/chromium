@@ -20,5 +20,9 @@ executable("watermark_app") {
     "//ui/views/examples:views_examples_proc",
   ]
 
+  if (is_win) {
+    deps += [ "//ui/native_theme:native_theme_browser" ]
+  }
+
   defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
 }

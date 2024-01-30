@@ -192,6 +192,7 @@ source_set("views_examples_proc") {
     ]
     deps += [
       "//ui/base:pixel_diff_test_support",
+      "//ui/native_theme:native_theme",
       "//ui/snapshot",
     ]
   }
@@ -229,6 +230,10 @@ executable("views_examples") {
     "//ui/color:mixers",
     "//ui/resources:ui_test_pak",
   ]
+
+  if (is_win) {
+    deps += [ "//ui/native_theme:native_theme_browser" ]
+  }
 }
 
 component("views_examples_with_content_lib") {
