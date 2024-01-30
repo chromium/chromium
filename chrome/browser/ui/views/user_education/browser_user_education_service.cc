@@ -936,8 +936,8 @@ void MaybeRegisterChromeTutorials(
                 .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP)
                 .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
 
-            // Wait for save group sync to be toggled.
-            HiddenStep::WaitForActivated(kTabGroupEditorBubbleSaveToggleId),
+            // Wait for save group sync to be enabled.
+            EventStep(kTabGroupSavedCustomEventId).AbortIfVisibilityLost(true),
 
             // Point at editor bubble "Hide group" to save it for later in the
             // bookmarks bar.

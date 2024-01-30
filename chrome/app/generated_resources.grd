@@ -9658,7 +9658,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR" desc="The description of the 'open editor' step">
-        Right-click on the group name
+        Right-click on the group
       </message>
 
       <if expr="use_titlecase">
@@ -9684,7 +9684,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP" desc="The description of the 'name, save and exit' step">
-        To reopen the group, click on the group name
+        To reopen the group, click on the group
       </message>
 
       <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step">
