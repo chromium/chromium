@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.7](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.6...chromium-bidi-v0.5.7) (2024-01-30)
+
+
+### Features
+
+* separate realm types ([#1709](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1709)) ([9307f05](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9307f0515d28903e147ca07639a449e9ee18aa24))
+* support user context in cookies API ([#1781](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1781)) ([d838757](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d838757a16536dfe68c5f141ba0090cbfc363385))
+
 ## [0.5.6](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.5...chromium-bidi-v0.5.6) (2024-01-29)
 
 
