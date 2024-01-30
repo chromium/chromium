@@ -6130,6 +6130,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/repository:test_support",
     "//ash/shortcut_viewer",
+    "//ash/shortcut_viewer/strings:strings_grit",
     "//ash/strings",
     "//ash/webui/eche_app_ui",
     "//ash/webui/eche_app_ui:test_support",
