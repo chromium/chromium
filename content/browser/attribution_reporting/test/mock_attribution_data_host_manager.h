@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -31,7 +32,7 @@ class HttpResponseHeaders;
 
 namespace content {
 
-class MockAttributionDataHostManager : public AttributionDataHostManager {
+class MockAttributionDataHostManager final : public AttributionDataHostManager {
  public:
   MockAttributionDataHostManager();
   ~MockAttributionDataHostManager() override;
@@ -129,6 +130,11 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                const net::HttpResponseHeaders* headers,
                bool is_final_response),
               (override));
+
+  base::WeakPtr<AttributionDataHostManager> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MockAttributionDataHostManager> weak_factory_{this};
 };
 
 }  // namespace content

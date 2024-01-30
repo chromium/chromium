@@ -1593,6 +1593,11 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
               header->registrar);
 }
 
+base::WeakPtr<AttributionDataHostManager>
+AttributionDataHostManagerImpl::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void AttributionDataHostManagerImpl::BackgroundRegistrationsTied(
     const blink::AttributionSrcToken& token,
     size_t count,

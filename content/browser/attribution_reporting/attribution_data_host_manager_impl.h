@@ -62,7 +62,7 @@ struct GlobalRenderFrameHostId;
 // requests may continue until after we have detached a frame, all browser
 // process data needed to validate sources/triggers is stored alongside each
 // receiver.
-class CONTENT_EXPORT AttributionDataHostManagerImpl
+class CONTENT_EXPORT AttributionDataHostManagerImpl final
     : public AttributionDataHostManager,
       public blink::mojom::AttributionDataHost {
  public:
@@ -139,6 +139,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) override;
+  base::WeakPtr<AttributionDataHostManager> AsWeakPtr() override;
 
  private:
   class RegistrationContext;
