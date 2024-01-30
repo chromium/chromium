@@ -296,7 +296,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         } else if (id == R.id.open_history_menu_id) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)) {
                 HistoryManagerUtils.showHistoryManagerForResult(
-                        this, getTabModelSelector().isIncognitoSelected());
+                        this,
+                        getTabModelSelector().isIncognitoSelected(),
+                        getIntentDataProvider().getClientPackageName());
             }
             return true;
         }

@@ -541,7 +541,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.isIncognito(),
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled,
-                mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier());
+                mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),
+                mIntentDataProvider.getClientPackageName() != null);
     }
 
     @Override

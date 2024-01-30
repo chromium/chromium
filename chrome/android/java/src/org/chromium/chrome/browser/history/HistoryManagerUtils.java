@@ -47,13 +47,17 @@ public class HistoryManagerUtils {
      *
      * @param activity The {@link Activity} that owns the {@link HistoryManager}.
      * @param isIncognitoSelected Whether the incognito {@TabModelSelector} is selected.
+     * @param clientPackageName Package name of the client from which the history activity is
+     *     launched.
      */
     // TODO(katzz): Convert to ActivityResult API
-    public static void showHistoryManagerForResult(Activity activity, boolean isIncognitoSelected) {
+    public static void showHistoryManagerForResult(
+            Activity activity, boolean isIncognitoSelected, String clientPackageName) {
         Intent intent = new Intent();
         intent.setClass(activity, HistoryActivity.class);
         intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isIncognitoSelected);
         intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+        intent.putExtra(Intent.EXTRA_PACKAGE_NAME, clientPackageName);
         activity.startActivityForResult(intent, HISTORY_REQUEST_CODE);
     }
 }

@@ -68,6 +68,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
 
+    private boolean mHasClientPackage;
+
     /** Creates an {@link CustomTabAppMenuPropertiesDelegate} instance. */
     public CustomTabAppMenuPropertiesDelegate(
             Context context,
@@ -87,7 +89,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean isIncognito,
             boolean isStartIconMenu,
             BooleanSupplier isPageInsightsHubEnabled,
-            Supplier<ReadAloudController> readAloudControllerSupplier) {
+            Supplier<ReadAloudController> readAloudControllerSupplier,
+            boolean hasClientPackage) {
         super(
                 context,
                 activityTabProvider,
@@ -110,6 +113,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mIsIncognito = isIncognito;
         mIsStartIconMenu = isStartIconMenu;
         mIsPageInsightsHubEnabled = isPageInsightsHubEnabled;
+        mHasClientPackage = hasClientPackage;
     }
 
     @Override
@@ -155,8 +159,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
             boolean historyItemVisible = true;
-
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)) {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+                    || !mHasClientPackage) {
                 historyItemVisible = false;
             }
 
@@ -353,5 +357,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     @Override
     public boolean isMenuIconAtStart() {
         return mIsStartIconMenu;
+    }
+
+    @VisibleForTesting
+    void setHasClientPackageForTesting(boolean hasClientPackage) {
+        mHasClientPackage = hasClientPackage;
     }
 }

@@ -96,8 +96,11 @@ import java.util.Date;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
-@DisableFeatures({ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.RENAME_JOURNEYS})
+@DisableFeatures({
+    ChromeFeatureList.HISTORY_JOURNEYS,
+    ChromeFeatureList.RENAME_JOURNEYS,
+    ChromeFeatureList.APP_SPECIFIC_HISTORY
+})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -177,7 +180,9 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         false,
                         null,
-                        mHistoryProvider);
+                        mHistoryProvider,
+                        null,
+                        true);
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
@@ -833,7 +838,9 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         false,
                         null,
-                        mHistoryProvider);
+                        mHistoryProvider,
+                        null,
+                        false);
 
         Assert.assertNull(mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout));
         Assert.assertNull(
