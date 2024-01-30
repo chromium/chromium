@@ -31,9 +31,11 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -214,6 +216,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Test
     @Feature("TabPersistentStore")
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
     public void testCleanupInstanceState() throws Throwable {
         Assert.assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
 

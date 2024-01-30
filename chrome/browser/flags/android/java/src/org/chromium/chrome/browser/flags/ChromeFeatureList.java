@@ -459,6 +459,8 @@ public abstract class ChromeFeatureList {
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
     public static final String TAB_STATE_FLATBUFFER = "TabStateFlatBuffer";
+    public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
+            "TabWindowManagerReportIndicesMismatch";
     public static final String TANGIBLE_SYNC = "TangibleSync";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
@@ -621,6 +623,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabletToolbarReordering =
             newCachedFlag(TABLET_TOOLBAR_REORDERING, false);
     public static final CachedFlag sTabToGTSAnimation = newCachedFlag(TAB_TO_GTS_ANIMATION, true);
+    public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
+            newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
@@ -704,6 +708,7 @@ public abstract class ChromeFeatureList {
                     sTabStripStartupRefactoring,
                     sTabletToolbarReordering,
                     sTabToGTSAnimation,
+                    sTabWindowManagerReportIndicesMismatch,
                     sToolbarUseHardwareBitmapDraw,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,

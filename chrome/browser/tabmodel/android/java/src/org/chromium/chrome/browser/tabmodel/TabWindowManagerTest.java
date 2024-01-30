@@ -12,7 +12,6 @@ import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +28,9 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -91,11 +91,6 @@ public class TabWindowManagerTest {
                                     mAsyncTabParamsManager,
                                     maxInstances);
                 });
-    }
-
-    @After
-    public void tearDown() {
-        BuildConfig.IS_FOR_TEST = false;
     }
 
     private ActivityController<Activity> createActivity() {
@@ -570,16 +565,13 @@ public class TabWindowManagerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
+    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
     public void testAssertIndicesMismatch() {
-        // assertIndicesMatch request !BuildConfig.IS_FOR_TEST.
-        BuildConfig.IS_FOR_TEST = false;
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
         mSubject.requestSelector(
                 activity0, mProfileProviderSupplier, mTabCreatorManager, mNextTabPolicySupplier, 0);
 
-        // Assume an error case.
-        Throwable throwable = null;
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
         try (var ignored =
@@ -591,13 +583,10 @@ public class TabWindowManagerTest {
                     mTabCreatorManager,
                     mNextTabPolicySupplier,
                     0);
-        } catch (AssertionError e) {
-            throwable = e;
         } finally {
             destroyActivity(activityController1);
         }
 
-        Assert.assertNotNull("Request pre-assigned index should trigger assertion.", throwable);
         String umaPreExistingActivityDestroyed =
                 "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed";
         try (var ignored =
