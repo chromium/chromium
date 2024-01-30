@@ -9,6 +9,7 @@
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -21,9 +22,9 @@ const float kConnectivityDiagnosticsDialogScale = .8;
 namespace ash {
 
 // static
-void ConnectivityDiagnosticsDialog::ShowDialog() {
+void ConnectivityDiagnosticsDialog::ShowDialog(gfx::NativeWindow parent) {
   ConnectivityDiagnosticsDialog* dialog = new ConnectivityDiagnosticsDialog();
-  dialog->ShowSystemDialog();
+  dialog->ShowSystemDialog(parent);
 }
 
 ConnectivityDiagnosticsDialog::ConnectivityDiagnosticsDialog()
