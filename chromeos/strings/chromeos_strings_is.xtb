@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Innri villa</translation>
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">margfaldaðu</translation>
 <translation id="1145018782460575098">Glugginn fyrir uppfærslu fastbúnaðar fyrir ytri tæki er opinn. <ph name="NUM_UPDATES" /> uppfærslur í boði.</translation>
 <translation id="1145516343487477149">Finndu hjálpargreinar og svör við algengum spurningum um Chromebook</translation>
 <translation id="1154390310959620237">Þú getur aðeins sérsniðið 5 flýtilykla. Eyddu flýtilykli til að bæta nýjum við.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
 <translation id="1367951781824006909">Velja skrá</translation>
+<translation id="1371650399987522809">Ábending um veggfóður sem er knúið af gervigreind Google</translation>
 <translation id="1387854245479784695">Þetta er samansafn allra kjarna</translation>
 <translation id="1394661041439318933">Rafhleðsla hulsturs er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Snertiflötur</translation>
 <translation id="1561927818299383735">baklýstur litur</translation>
 <translation id="1565038567006703504">Ekki er hægt að uppfæra <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">deildu</translation>
 <translation id="1567064801249837505">Albúm</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1578784163189013834">Velja bakgrunn skjávara</translation>
 <translation id="160633243685262989">Forskoða mynd</translation>
 <translation id="1611649489706141841">áfram</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Býr til myndir...</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1626590945318984973">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án þess að nota virkni- og <ph name="META_KEY" />-lykla.</translation>
 <translation id="1639239467298939599">Hleður</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="2880569433548999039">Skjávari skýjaflæðis</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
+<translation id="2938573842839598578"><ph name="OPERATOR_TEXT" /> gildinu <ph name="CATEGORY_TEXT" /> með <ph name="CONVERSION_RATE" /> til að fá áætlaða niðurstöðu</translation>
 <translation id="2940811910881150316">Ekki hægt að prófa tæki. Opnaðu lokið aftur til að prófa.</translation>
 <translation id="2941112035454246133">Lítill</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
+<translation id="3547264467365135390">Formúla</translation>
 <translation id="3557205324756024651">Staðbundið auðkenni (valkvætt)</translation>
 <translation id="3565064564551103223">Leyfðar IP-tölur</translation>
 <translation id="3569407787324516067">Skjávari</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7184043045742675738">Smelltu á hvaða lykil sem er til að sérsníða hnappinn. Breyttu staðsetningu lykilsins með mús eða örvalyklum.</translation>
+<translation id="7206979415662233817">Þjónustuskilmálar</translation>
 <translation id="7212547870105584639">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastbúnaðaruppfærslur fyrir ytri tæki</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">litur lyklaborðs</translation>
 <translation id="7317831949569936035">Skólaskráning</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Þú þarft að hafa náð 18 ára aldri og samþykkja að notkun þín á gervigreindarveggfóðrum sé háð <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />þjónustuskilmálum Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />viðbótarnotkunarskilmálum skapandi gervigreindar<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Þú getur aðeins búið til veggfóður með gervigreind til einkanota. Þegar þú færð aðstoð við að búa til veggfóður er texti sendur til gervigreindarþjóna Google til að koma með tillögur að veggfóðri í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Google-leit.</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7353413232959255829">Leitarniðurstaða <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Ýttu á Enter til að fara í flýtileið.</translation>
@@ -1037,7 +1048,7 @@
 <translation id="8660881923941176839">pund</translation>
 <translation id="8670574982334489519">hægri</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
-<translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google myndum<ph name="LINK_END" />.</translation>
+<translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google-myndum<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
@@ -1047,7 +1058,7 @@
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
 <translation id="8764414543112028321">WireGuard</translation>
-<translation id="87646919272181953">Albúm í Google myndum</translation>
+<translation id="87646919272181953">Albúm í Google-myndum</translation>
 <translation id="8775713578693478175">Aðgangsstaður mótalds</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Flýtilykillinn er notaður fyrir „<ph name="CONFLICT_ACCEL_NAME" />“. Ýttu á nýjan flýtilykil. Ýttu aftur á þennan flýtilykil til að skipta upprunalega flýtilyklinum út.</translation>

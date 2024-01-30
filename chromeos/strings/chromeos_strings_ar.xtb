@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ضرب</translation>
 <translation id="1145018782460575098">نافذة تحديث البرامج الثابتة للأجهزة الخارجية مفتوحة. عدد التحديثات المتاحة: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">‏البحث عن مقالات مساعدة وإجابات عن الأسئلة الشائعة حول أجهزة Chromebook</translation>
 <translation id="1154390310959620237">يمكنك تخصيص 5 اختصارات فقط. يجب حذف أحد الاختصارات لإضافة اختصار جديد.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">الملاءمة مع منطقة المسح الضوئي</translation>
 <translation id="1367951781824006909">اختيار ملف</translation>
+<translation id="1371650399987522809">‏ملاحظات حول الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="1387854245479784695">هذه بيانات مجمّعة عن كل النوى.</translation>
 <translation id="1394661041439318933">مستوى شحن بطارية الحافظة هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">يمكن فحص اتصال البوابة</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1561927818299383735">لون الإضاءة الخلفية</translation>
 <translation id="1565038567006703504">يتعذَّر تحديث <ph name="DEVICE_NAME" />.</translation>
+<translation id="1566493343215789965">قسمة</translation>
 <translation id="1567064801249837505">الألبومات</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
 <translation id="1578784163189013834">اختيار خلفية شاشة التوقف</translation>
 <translation id="160633243685262989">معاينة الصورة</translation>
 <translation id="1611649489706141841">للأمام</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">جارٍ إنشاء الصور...</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1626590945318984973">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون استخدام مفتاحَي الوظائف و<ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="2880569433548999039">شاشة استراحة تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
+<translation id="2938573842839598578">للحصول على نتيجة تقريبية، يجب <ph name="OPERATOR_TEXT" /> قيمة<ph name="CATEGORY_TEXT" /> في <ph name="CONVERSION_RATE" />.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="2941112035454246133">منخفضة</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
+<translation id="3547264467365135390">المعادَلة</translation>
 <translation id="3557205324756024651">هوية الجهاز (اختياري)</translation>
 <translation id="3565064564551103223">‏عناوين IP المسموح بها</translation>
 <translation id="3569407787324516067">شاشة الاستراحة</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7184043045742675738">انقر على أي مفتاح لتخصيص الزر. غيِّر موضع المفتاح باستخدام الماوس أو مفاتيح الأسهم.</translation>
+<translation id="7206979415662233817">بنود الخدمة</translation>
 <translation id="7212547870105584639">يمكنك إدارة إعدادات اسم نقطة الوصول للشبكة. وتُنشئ أسماء نقاط الوصول اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">تحديثات البرامج الثابتة للأجهزة الخارجية</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">لون لوحة المفاتيح</translation>
 <translation id="7317831949569936035">تسجيل الجهاز ضمن المؤسسة التعليمية</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">‏يجب ألا يقلّ عمرك عن 18 عامًا وأن توافق على أنّ استخدامك للخلفيات القائمة على الذكاء الاصطناعي يخضع <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />لبنود خدمة Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> و<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />بنود الخدمة الإضافية الخاصة بالذكاء الاصطناعي التوليدي<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          يمكنك فقط إنشاء خلفيات باستخدام الذكاء الاصطناعي (AI) للاستخدام الشخصي وغير التجاري. وعند الحصول على مساعدة بشأن الخلفيات، يتم إرسال النص إلى خوادم تكنولوجيات الذكاء الاصطناعي من Google لإنشاء خلفيات مقترحة، وذلك بموجب <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />سياسة خصوصية Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. اضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>

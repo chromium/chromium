@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">көбейтіңіз</translation>
 <translation id="1145018782460575098">Сыртқы құрылғылардың микробағдарламасын жаңарту терезесі ашық. <ph name="NUM_UPDATES" /> жаңа нұсқа бар.</translation>
 <translation id="1145516343487477149">Chromebook бойынша жиі қойылатын сұрақтарға жауаптар мен анықтамалық мақалаларды табыңыз.</translation>
 <translation id="1154390310959620237">Тек 5 пернелер тіркесімін бейімдей аласыз. Жаңа пернелер тіркесімін қосу үшін ағымдағы тіркесімді жойыңыз.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1367951781824006909">Файлды таңдау</translation>
+<translation id="1371650399987522809">Google AI технологиясына негізделген тұсқағазға қатысты пікір</translation>
 <translation id="1387854245479784695">Бұл – барлық ядролар жинағы.</translation>
 <translation id="1394661041439318933">Қаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Сенсорлық тақта</translation>
 <translation id="1561927818299383735">жарық түсі</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> жаңарту мүмкін емес.</translation>
+<translation id="1566493343215789965">бөліңіз</translation>
 <translation id="1567064801249837505">Aльбомдар</translation>
 <translation id="1572585716423026576">Тұсқағаз етіп орнату</translation>
 <translation id="1578784163189013834">Скринсейвер фонын таңдау</translation>
 <translation id="160633243685262989">Кескінді алдын ала көру</translation>
 <translation id="1611649489706141841">алға</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бергі дерек трафигі</translation>
+<translation id="1615576200479539465">Суреттер жасалып жатыр...</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
 <translation id="1626590945318984973">Пернелер тіркесімі қолжетімді емес. Функциялық және <ph name="META_KEY" /> пернелерін пайдаланбай, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="2880569433548999039">Бұлттар қозғалысы бейнеленген скринсейвер</translation>
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
+<translation id="2938573842839598578">Нәтижені шамамен есептеу үшін <ph name="CATEGORY_TEXT" /> санын <ph name="CONVERSION_RATE" /> мәніне <ph name="OPERATOR_TEXT" />.</translation>
 <translation id="2940811910881150316">Құрылғыны сынау мүмкін емес. Сынау үшін қақпақты қайта ашыңыз.</translation>
 <translation id="2941112035454246133">Төмен</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Жергілікті идентификация (қосымша)</translation>
 <translation id="3565064564551103223">Рұқсат етілген IP мекенжайлары</translation>
 <translation id="3569407787324516067">Скринсейвер</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7180865173735832675">Реттеу</translation>
 <translation id="7184043045742675738">Түймені бейімдеу үшін кез келген пернені басыңыз. Тінтуір немесе бағыт пернелері көмегімен перне орнын өзгертіңіз.</translation>
+<translation id="7206979415662233817">Қызмет көрсету шарттары</translation>
 <translation id="7212547870105584639">Желінің APN параметрлерін басқаруға арналған. APN аттары ұялы желі мен интернет арасында байланыс орнатады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">пернетақта түсі</translation>
 <translation id="7317831949569936035">Мектепке тіркелу</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">18 жастан асқан болуыңыз керек. Сондай-ақ AI тұсқағаздарын пайдаланған кезіңізде, <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Қызмет көрсету шарттары<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> және <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Жасампаз жасанды интеллектіге қатысты қосымша қызмет көрсету шарттары<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> қолданылатынына келісім беруіңіз қажет.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Тұсқағаздарды AI технологиясымен тек коммерциялық емес жеке мақсатта жасай аласыз. Тұсқағазға қатысты көмек алған кезіңізде, тұсқағаз ұсыныстарын жасау үшін мәтін Google AI серверлеріне <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес жіберіледі. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Google Search-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> іздеу нәтижесі: <ph name="SEARCH_RESULT_TEXT" />. Таңбашаға өту үшін Enter пернесін басыңыз.</translation>

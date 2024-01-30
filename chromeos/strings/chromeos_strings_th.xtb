@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">คูณ</translation>
 <translation id="1145018782460575098">หน้าต่างการอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอกเปิดอยู่ <ph name="NUM_UPDATES" /> การอัปเดตที่พร้อมใช้งาน</translation>
 <translation id="1145516343487477149">ดูบทความช่วยเหลือและคําตอบสำหรับคําถามที่พบบ่อยเกี่ยวกับ Chromebook</translation>
 <translation id="1154390310959620237">คุณปรับแต่งแป้นพิมพ์ลัดได้เพียง 5 รายการเท่านั้น โปรดลบแป้นพิมพ์ลัดเพื่อเพิ่มแป้นพิมพ์ลัดใหม่</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1367951781824006909">เลือกไฟล์</translation>
+<translation id="1371650399987522809">ความคิดเห็นเกี่ยวกับวอลเปเปอร์ที่ทำงานด้วย AI ของ Google</translation>
 <translation id="1387854245479784695">นี่เป็นการรวม Core ทั้งหมด</translation>
 <translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1561927818299383735">สีเรืองแสง</translation>
 <translation id="1565038567006703504">อัปเดต <ph name="DEVICE_NAME" /> ไม่ได้</translation>
+<translation id="1566493343215789965">หาร</translation>
 <translation id="1567064801249837505">อัลบั้ม</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1578784163189013834">เลือกพื้นหลังของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">กำลังสร้างรูปภาพ...</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1626590945318984973">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยไม่ใช้ฟังก์ชันและแป้น<ph name="META_KEY" /></translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="2880569433548999039">ภาพพักหน้าจอการเคลื่อนตัวของเมฆ</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
+<translation id="2938573842839598578">สำหรับผลลัพธ์โดยประมาณ ให้นำค่า <ph name="CATEGORY_TEXT" /> มา<ph name="OPERATOR_TEXT" />ด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">ทดสอบอุปกรณ์ไม่ได้ เปิดฝาหน้าจออีกครั้งเพื่อทดสอบ</translation>
 <translation id="2941112035454246133">ต่ำ</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
+<translation id="3547264467365135390">สูตร</translation>
 <translation id="3557205324756024651">ข้อมูลประจำตัวในเครื่อง (ไม่บังคับ)</translation>
 <translation id="3565064564551103223">IP ที่อนุญาต</translation>
 <translation id="3569407787324516067">โปรแกรมรักษาหน้าจอ</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7184043045742675738">คลิกแป้นใดก็ได้เพื่อปรับแต่งปุ่ม เปลี่ยนตำแหน่งแป้นด้วยเมาส์หรือแป้นลูกศร</translation>
+<translation id="7206979415662233817">ข้อกำหนดในการให้บริการ</translation>
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">สีแป้นพิมพ์</translation>
 <translation id="7317831949569936035">การลงทะเบียนโรงเรียน</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">คุณต้องมีอายุไม่ต่ำกว่า 18 ปีและยอมรับว่าการใช้วอลเปเปอร์ AI ของคุณอยู่ภายใต้<ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> และ<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          คุณสามารถสร้างวอลเปเปอร์ด้วย AI สำหรับการใช้งานส่วนบุคคลและไม่ใช่เชิงพาณิชย์เท่านั้น เมื่อคุณรับความช่วยเหลือเกี่ยวกับวอลเปเปอร์ ระบบจะส่งข้อความไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างคำแนะนำเกี่ยวกับวอลเปเปอร์ โดยอยู่ภายใต้<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
 <translation id="7353413232959255829">ผลการค้นหา <ph name="LIST_POSITION" /> จาก <ph name="LIST_SIZE" /> รายการ: <ph name="SEARCH_RESULT_TEXT" /> กด Enter เพื่อไปยังทางลัด</translation>

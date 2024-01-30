@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Қолданба нұсқасы</translation>
 <translation id="1428770807407000502">Синхрондау өшірілсін бе?</translation>
 <translation id="1430915738399379752">Басып шығару</translation>
+<translation id="1435593198351412143">PDF файлдарын автоматты түрде ашу</translation>
 <translation id="1436784010935106834">Жойылды</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> қолданбасында орындалуда</translation>
 <translation id="1448440926884431741">Бақыланатын өнімдерді "Бетбелгілер" бөлімінен реттеңіз.</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">Браузерді немесе құрылғыны айтарлықтай баяулатпайды.</translation>
 <translation id="2900528713135656174">Оқиға жасау</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сайтына арналған ұсыныстар көрсетілуде.</translation>
+<translation id="2904300462646366554">Жүктеп алынған PDF файлдары құрылғыңыздағы PDF көру құралдарының бірімен автоматты түрде ашылады.</translation>
 <translation id="2904414404539560095">Қойынды жіберілетін құрылғылар тізімі толық экранға ашылған.</translation>
 <translation id="2908243544703713905">Оқылмаған сюжеттер бар.</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -894,9 +896,11 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Барлық құқықтары қорғалған.</translation>
 <translation id="5814749351757353073">Өзіңізге ұнайтын сайттарды бақылап жүріңіз</translation>
 <translation id="5822875253699806474">Сіз кірген сайттарға жылдам оралу үшін қойындылар мен тарихты синхрондаңыз</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> қалтасына сақталды</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5833984609253377421">Сілтемені бөлісу</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">PDF файлын <ph name="APP_NAME" /> қолданбасымен ашу қажет пе?</translation>
 <translation id="5853623416121554550">кідіртілді</translation>
 <translation id="5855546874025048181">Нақтылау: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Бірдеңе дұрыс болмады. Бақыланатын баға жаңартылмады.</translation>
@@ -1379,6 +1383,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8127542551745560481">Негізгі бетті өзгерту</translation>
 <translation id="8130309322784422030">Сақталған кіру ақпараты ескі болуы мүмкін</translation>
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
+<translation id="8135406045838672858">Жүктеп алынған PDF файлдары <ph name="APP_NAME" /> қолданбасымен автоматты түрде ашылады.</translation>
 <translation id="8137562778192957619">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол Google Password Manager қызметіне сақталады.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл қалды</translation>
 <translation id="8190358571722158785">1 күн қалды</translation>

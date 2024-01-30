@@ -165,6 +165,7 @@
 <translation id="1847795903283049083">يمكنك أيضًا الاطّلاع على هذه العناصر وإدارتها في الإشارات المرجعية أو "قائمة القراءة" أو "مدير كلمات المرور"</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
+<translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1876851015978093044">يؤدي هذا الإجراء إلى عرض هذا العنصر.</translation>
 <translation id="1882901927376062252">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email}).}few{‏تم حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="1883255238294161206">تصغير القائمة</translation>
@@ -183,6 +184,7 @@
 <translation id="1956138802718275401">الوصول إلى كلمات المرور من الشاشة الرئيسية</translation>
 <translation id="1959441496380398824">انقر مع الاستمرار على تاريخ.</translation>
 <translation id="1959679933317802873">جارٍ انتظار عرض المحتوى</translation>
+<translation id="1962348300797608157">تمت مشاركة كلمة مرور معك من قِبل <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏هل تريد استئناف التصفح من علامة التبويب التي توقّفت عندها في Android؟}zero{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}two{‏هل تريد استئناف التصفح من علامتَي التبويب اللتين توقّفت عندهما في Android؟}few{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}many{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}other{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}}</translation>
 <translation id="1972325230031091483">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب.</translation>
 <translation id="1973912524893600642">الاحتفاظ بالبيانات</translation>
@@ -217,6 +219,7 @@
 <translation id="2139502497535990641">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="214201757571129614">تسجيل الدخول…</translation>
+<translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
@@ -229,6 +232,7 @@
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2252674110805316998">بحث الويب</translation>
+<translation id="2252749852083403809">‏يجري حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Google Drive.</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
 <translation id="2258326562203545455">{count,plural, =1{‏يمكنك حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏يمكنك حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -390,6 +394,7 @@
 <translation id="2982481275546140226">محو البيانات</translation>
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
+<translation id="300455800299409273">إخفاء قائمة "المتابعة باستخدام علامة التبويب هذه"</translation>
 <translation id="3010025794097054078">يمكنك تجنُّب عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="3010171936431626919">الاطّلاع على الإرشادات</translation>
 <translation id="3020183492814296499">الاختصارات</translation>
@@ -537,6 +542,7 @@
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3832419617903252251">تم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
 <translation id="3835964409414434850">الانتقال إلى علامة التبويب التالية</translation>
+<translation id="383781833195845844">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="3838691874161539578">يُرجى التحقّق من كلمات المرور المحفوظة لتعزيز مستوى الحماية وتصفُّح الإنترنت بأمان.</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
@@ -755,6 +761,7 @@
 <translation id="4958444002117714549">توسيع القائمة</translation>
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
+<translation id="4989065233040279145">اختَر مكانًا لحفظ "<ph name="FILENAME" />".</translation>
 <translation id="4996567535980789550">تفعيل المزامنة لإدارة المحتوى الذي تراه</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
@@ -880,6 +887,7 @@
 <translation id="567881659373499783">الإصدار <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">‏عليك إثبات هويتك لاستخدام كلمات المرور وحفظها في حسابك على Google.</translation>
 <translation id="5684761169742812828">‏تم الكشف عن كلمة المرور هذه في عملية اختراق للبيانات على الإنترنت. إذا لم يكن لديك الوقت لتغييرها الآن، تنصحك Google بإبقاء هذا التحذير لتذكيرك لاحقًا.</translation>
+<translation id="5694848685995373177">‏تم حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Google Drive.</translation>
 <translation id="5701270923492462699">الوصول إلى الكاميرا مسموح به.</translation>
 <translation id="5702108177581350218">‏عند مشاركة نسخة من اسم المستخدم وكلمة المرور، يمكن لأحد أفراد عائلتك ملؤها باستخدام "مدير كلمات المرور في Google".</translation>
 <translation id="5704908597376970822">تعذّر تسجيل الدخول.</translation>
@@ -1218,6 +1226,7 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقالة غير مقروءة</translation>
 <translation id="7412027924265291969">متابعة</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
+<translation id="7418640008860669073">جارٍ الحفظ في...</translation>
 <translation id="7425346204213733349">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من الإعدادات مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google.</translation>
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
@@ -1236,6 +1245,7 @@
 <translation id="750149195207506638">الإشارات المرجعية مخفية.</translation>
 <translation id="750228856503700085">ميزة تلقّي آخر الأخبار غير متاحة.</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
+<translation id="7506817096924591340">‎<ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7524055474074101597">يمكنك الوصول إلى كلمات المرور وغيرها على مختلف التطبيقات.</translation>
@@ -1249,6 +1259,7 @@
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
+<translation id="7564917801238348224">جارٍ حفظ...</translation>
 <translation id="7582857256643797524">هذه الإعدادات مفعَّلة على جهازك</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
@@ -1415,6 +1426,7 @@
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>
+<translation id="8430694217306051839">اختَر مكانًا لحفظ "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />).</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8449347986464073209">الحذف وتسجيل الخروج</translation>
 <translation id="8459333855531264009">غير آمن</translation>

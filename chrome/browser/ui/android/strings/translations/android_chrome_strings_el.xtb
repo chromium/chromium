@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Έκδοση εφαρμογής</translation>
 <translation id="1428770807407000502">Απενεργοποίηση συγχρονισμού;</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
+<translation id="1435593198351412143">Αυτόματο άνοιγμα PDF</translation>
 <translation id="1436784010935106834">Καταργήθηκαν</translation>
 <translation id="1437543266176261764">Εκτελείται στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Οργανώστε τα προϊόντα παρακολούθησης σε Σελιδοδείκτες</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">Δεν επιβραδύνει αισθητά το πρόγραμμα περιήγησης ή τη συσκευή σας.</translation>
 <translation id="2900528713135656174">Δημιουργία συμβάντος</translation>
 <translation id="2901411048554510387">Εμφάνιση προτάσεων για τον ιστότοπο <ph name="WEBSITE_TITLE" /></translation>
+<translation id="2904300462646366554">Τα PDF που κατεβάζετε ανοίγουν αυτόματα με ένα από τα προγράμματα προβολής PDF στη συσκευή σας</translation>
 <translation id="2904414404539560095">Άνοιγμα σε πλήρες ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="2908243544703713905">Οι μη αναγνωσμένες ειδήσεις είναι έτοιμες</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -894,9 +896,11 @@
 <translation id="5810288467834065221">Πνευματικά δικαιώματα <ph name="YEAR" /> Google LLC. Με την επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="5814749351757353073">Ενημερωθείτε σχετικά με τους αγαπημένους σας ιστοτόπους</translation>
 <translation id="5822875253699806474">Για γρήγορη επιστροφή σε ιστοτόπους που έχετε επισκεφτεί, συγχρονίστε τις καρτέλες και το ιστορικό</translation>
+<translation id="5829586821381540080">Αποθηκεύτηκε στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5833984609253377421">Κοινοποίηση συνδέσμου</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">Άνοιγμα PDF με την εφαρμογή <ph name="APP_NAME" />;</translation>
 <translation id="5853623416121554550">σε παύση</translation>
 <translation id="5855546874025048181">Συγκεκριμενοποίηση: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Κάτι δεν πήγε καλά. Δεν ήταν δυνατή η ενημέρωση της Παρακολούθησης τιμής.</translation>
@@ -1379,6 +1383,7 @@
 <translation id="8127542551745560481">Επεξεργασία αρχικής σελίδας</translation>
 <translation id="8130309322784422030">Οι αποθηκευμένες πληροφορίες σύνδεσης ενδέχεται να μην είναι ενημερωμένες</translation>
 <translation id="813082847718468539">Προβολή πληροφοριών τοποθεσίας</translation>
+<translation id="8135406045838672858">Τα PDF που κατεβάζετε ανοίγουν αυτόματα με την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Δεν θα χρειάζεται να θυμάστε αυτόν τον κωδικό πρόσβασης. Θα αποθηκευτεί στον Διαχειριστή κωδικών πρόσβασης Google.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> αρχεία απομένουν</translation>
 <translation id="8190358571722158785">Απομένει 1 ημέρα</translation>

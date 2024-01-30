@@ -3121,15 +3121,6 @@ HTTPS 用の RSA 証明書に両方を含める必要があります。</transla
 <translation id="3625900437628963632">このポリシーの項目で設定された Kerberos パスワードの値を保存するかどうかを指定します。未設定か true に設定した場合、パスワードは保存されます。false に設定した場合、パスワードは保存されません。このアカウントのパスワード フィールドが指定されていない場合は無視されます。このフィールドは、ChromeOS バージョン 116 以降でサポートされます。</translation>
 <translation id="3627678165642179114">スペルチェック ウェブ サービスを有効または無効にする</translation>
 <translation id="3628480121685794414">片面印刷を有効にする</translation>
-<translation id="3634117682099473917">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定します。複数の DNS-over-HTTPS リゾルバを指定するには、対応する URI テンプレートをスペースで区切ります。このポリシーを設定した場合は、よく似ている <ph name="DOH_TEMPLATES_POLICY_NAME" /> より優先されます。このポリシーでは ID 情報を指定できる点が異なります。
-
-<ph name="DOH_MODE_POLICY_NAME" /> が <ph name="SECURE_DNS_MODE_SECURE" /> に設定されている場合、このポリシーか <ph name="DOH_TEMPLATES_POLICY_NAME" /> の設定は必須で、空にはできません。
-
-<ph name="DOH_MODE_POLICY_NAME" /> が <ph name="SECURE_DNS_MODE_AUTOMATIC" /> に設定されているときにこのポリシーを設定した場合は、指定の URI テンプレートが使用されます。同じ DnsOverHttpsMode の設定でこのポリシーを設定しない場合は、ハードコードされたマッピングが使用され、ユーザーの現在の DNS リゾルバを同じプロバイダの DoH リゾルバにアップグレードしようとする処理が行われます。
-
-URI テンプレートに <ph name="HTTP_VARIABLE_DNS" /> 変数が含まれている場合、リゾルバのリクエストでは <ph name="HTTP_METHOD_GET" /> が使用されます。それ以外の場合、リクエストでは <ph name="HTTP_METHOD_POST" /> が使用されます。
-
-バージョン 114 以降では、このポリシーを設定した場合、<ph name="DOH_SALT_POLICY_NAME" /> は省略可能です。</translation>
 <translation id="3634125384445314047">スマートフォンで最近撮影した写真や動画にスマートフォン ハブ経由でアクセスすることを許可します。</translation>
 <translation id="3637063789824963261">このポリシーを有効に設定した場合、登録済みのデバイスはデバイスのランタイム カウンタを報告します（Intel vPro Gen 14 以降のみ）。
 

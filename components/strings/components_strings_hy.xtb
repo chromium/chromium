@@ -262,6 +262,7 @@
 <translation id="1442987760062738829">Անցք</translation>
 <translation id="1446396933673057385">Ճշգրտության ստուգում</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">«<ph name="DATA_CONTROLS_FIRST_KEY_SET" />» բանալիները հնարավոր չէ ավելացնել նույն բառարանում, ինչ «<ph name="DATA_CONTROLS_SECOND_KEY_SET" />» բանալիները</translation>
 <translation id="1452803302401719440">Ձեր ծնողի ընտրած կարգավորումների շնորհիվ դուք այժմ ավելի ապահով եք համացանցում</translation>
 <translation id="1455413310270022028">Ռետին</translation>
 <translation id="1458140305240870199">Ներքնազգեստ</translation>
@@ -773,6 +774,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Երբ դուք մուտք գործեցիք համակարգ, այս սարքին կցվեցին արտաքին սարքեր։</translation>
 <translation id="2450021089947420533">Այցելություններ</translation>
+<translation id="2452837234288608067">Չհաջողվեց կատարել այս հարցումը։ Նորից փորձեք։</translation>
 <translation id="2456755709261364512">Ձեր մարտկոցի լիցքը պետք է <ph name="REQUIRED_BATTERY_PRECENT" />%-ից բարձր լինի</translation>
 <translation id="2462599289530201834">Որոնեք <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Լրացնել</translation>
@@ -914,6 +916,7 @@
 <translation id="2725927759457695883">Լրացնել լրիվ անունը</translation>
 <translation id="2726001110728089263">Կողային դարակ</translation>
 <translation id="2728127805433021124">Սերվերի վկայագիրը ստորագրված է ստորագրության թույլ ալգորիթմով:</translation>
+<translation id="272937284275742856">Վճարման տվյալների անվտանգ ստուգում…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Գործարկել կապակցման ախտորոշումը<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Դասական երաժշտություն</translation>
 <translation id="2731382536835015353">44 x 68 դյույմ</translation>
@@ -1015,6 +1018,7 @@
 <translation id="2958544468932521864">Կրիկետ</translation>
 <translation id="2959113999220720579">Դեմքի և մարմնի խնամք</translation>
 <translation id="2962073860865348475">12 x 18 դյույմ</translation>
+<translation id="2967098518029543669">պահեք այն ձեր Google հաշվում</translation>
 <translation id="2968103128155246731">Ֆուրգոններ և մինիվեններ</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ներկայումս ընտրված է: <ph name="ROW_CONTENT" /></translation>
@@ -1389,6 +1393,7 @@
 <translation id="3678914302246317895">Մուտքագրեք <ph name="OTP_LENGTH" /> թվանշանից բաղկացած հաստատման կոդը</translation>
 <translation id="3681007416295224113">Վկայագրի տեղեկություններ</translation>
 <translation id="3681421644246505351">Chrome-ը որոշում է ձեզ հետաքրքրող թեմաները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
+<translation id="3682094733650754138">Ընտրվել է հասցեի լրացման տարբերակը</translation>
 <translation id="3689867156802445220">Տան համարը</translation>
 <translation id="3693327506115126094">Ընտրեք, թե ինչպես եք հաստատելու ձեր ինքնությունը</translation>
 <translation id="3698629142018988477">«Ստեղծել կայք» կոճակ․ ակտիվացրեք՝ Google Կայքերում հեշտությամբ կայք ստեղծելու համար</translation>
@@ -2801,6 +2806,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր MIDI սարքերը</translation>
 <translation id="6493924760403974580">Հավելվածն աջակցում է միայն այս չափը։</translation>
 <translation id="6494750904506170417">ելնող պատուհաններ և վերաուղղորդում</translation>
+<translation id="6495664197699704593">Այս գաղտնաբառը պահվում է միայն այս սարքում։ Գաղտնաբառն այլ սարքերում օգտագործելու համար <ph name="GOOGLE_PASSWORD_MANAGER" />։</translation>
 <translation id="6497295192259406877">Առևտրային գործունեություն</translation>
 <translation id="6499038740797743453">Վերակայե՞լ գաղտնաբառը</translation>
 <translation id="6502510275417601303">Վճարումների նոր կարգավորման մասին ծանուցումը փակված է</translation>
@@ -2915,6 +2921,7 @@
 <translation id="6732087373923685049">տեսախցիկ</translation>
 <translation id="6737708609449480586">Թխվածքներ</translation>
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>
+<translation id="6740851646645036700">Տեքստերի գեներացման սահմանաչափն այս պահին գերազանցվել է։ Փորձեք ավելի ուշ։</translation>
 <translation id="674375294223700098">Սերվերի վկայագրի անհայտ սխալ:</translation>
 <translation id="6744009308914054259">Քանի դեռ կապը չի վերականգնվել, դուք կարող եք անցնել «Ներբեռնումներ» բաժին և կարդալ առցանց հոդվածները:</translation>
 <translation id="6745592621698551453">Թարմացնել հիմա</translation>
@@ -2971,6 +2978,7 @@
 <translation id="6860888819347870819">Կարող է թույլտվություն խնդրել՝ «Նկար նկարի մեջ» պատուհանները բացելու համար</translation>
 <translation id="6864189428899665393">267 x 389 մմ</translation>
 <translation id="686485648936420384">Սպառողական ռեսուրսներ</translation>
+<translation id="6865166112578825782">Լրացրեք հասցեն</translation>
 <translation id="6865412394715372076">Չհաջողվեց հաստատել այս քարտը</translation>
 <translation id="6868573634057275953">Վերսկսել թարմացումը</translation>
 <translation id="6869334554832814367">Անհատական վարկեր</translation>
@@ -3440,6 +3448,7 @@
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7701544340847569275">Թարմացումն ավարտվել է սխալներով</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Անցնել <ph name="SITE" /> (ապահով չէ)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Օգնիր ինձ գրել</translation>
 <translation id="7705992072972338699">Օպտիկական սկավառակ (գերփայլուն)</translation>
 <translation id="770607638235926858">Դահուկավազք և սնոուբորդինգ</translation>
 <translation id="7706689436519265630">Ֆայլերը, որոնք պատճենում կամ տեղափոխում եք, ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել խիստ անձնական տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն։</translation>
@@ -3659,6 +3668,7 @@
 <translation id="8161095570253161196">Շարունակել դիտարկումը</translation>
 <translation id="8163866351304776260">Չորս անցք ձախ կողմում</translation>
 <translation id="8164078261547504572">Ուզո՞ւմ եք գնիջեցումների մասին նամակներ ստանալ</translation>
+<translation id="8169175551046720804">«<ph name="DATA_CONTROLS_KEYS" />» բանալիները հնարավոր չէ ավելացնել նույն բառարանում</translation>
 <translation id="8175796834047840627">Chrome-ն առաջարկում է պահել քարտերը ձեր Google հաշվում, քանի որ դուք մտել եք հաշիվ: Սա կարող եք փոխել կարգավորումներում։</translation>
 <translation id="8176440868214972690">Սարքի ադմինիստրատորը հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
 <translation id="817820454357658398">Կանանց հիգիենայի ապրանքներ</translation>
@@ -4054,6 +4064,7 @@
 <translation id="8949410982325929394">Տոն</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Օրենք և կառավարություն</translation>
+<translation id="8952569554322479410">Կայքը հայցել է ձեր <ph name="REQUEST_TYPE" />ն օգտագործելու թույլտվություն։ Օգնեք մեզ բարելավել կայքերի կողմից թույլտվություն հայցելու գործընթացը՝ մասնակցելով 1 րոպեանոց հարցմանը։</translation>
 <translation id="8954252855949068147">Հագուստ և կոշիկ</translation>
 <translation id="8956124158020778855">Այս կարգավորումը միացնելուց հետո վերադարձեք ընթացիկ ներդիր, որպեսզի սկսեք գրել։</translation>
 <translation id="8957210676456822347">Գրավող կայքէջի նույնականացում</translation>

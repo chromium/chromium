@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multiplicerar</translation>
 <translation id="1145018782460575098">Fönstret Uppdatera firmware för externa enheter är öppet. <ph name="NUM_UPDATES" /> uppdateringar är tillgängliga.</translation>
 <translation id="1145516343487477149">Hitta hjälpartiklar och svar på vanliga frågor om Chromebook</translation>
 <translation id="1154390310959620237">Du kan bara anpassa fem kortkommandon. Du måste radera ett kortkommando innan du kan lägga till ett nytt.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Anpassa till området som ska skannas</translation>
 <translation id="1367951781824006909">Välj fil</translation>
+<translation id="1371650399987522809">Feedback om bakgrund som drivs av Googles AI</translation>
 <translation id="1387854245479784695">Detta är en sammanställning av alla kärnor</translation>
 <translation id="1394661041439318933">Batterinivån för enhetens fodral är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway går att pinga</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Styrplatta</translation>
 <translation id="1561927818299383735">bakgrundsbelysningsfärg</translation>
 <translation id="1565038567006703504">Det gick inte att uppdatera <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">dividerar</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1578784163189013834">Välj bakgrund för skärmsläckare</translation>
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Genererar bilder …</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
 <translation id="1626590945318984973">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando utan att använda funktions- och <ph name="META_KEY" />tangenterna.</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skärmsläckare med moln</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
+<translation id="2938573842839598578">För att få ett ungefärlig resultat <ph name="OPERATOR_TEXT" /> du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
 <translation id="2941112035454246133">Låg</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-uppdatering</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
+<translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokal identitet (valfritt)</translation>
 <translation id="3565064564551103223">Tillåtna IP-adresser</translation>
 <translation id="3569407787324516067">Skärmsläckare</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7184043045742675738">Klicka på valfri tangent för att anpassa knappen. Flytta tangenten med musen eller piltangenterna.</translation>
+<translation id="7206979415662233817">Användarvillkor</translation>
 <translation id="7212547870105584639">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware-uppdateringar för externa enheter</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">tangentbordsfärg</translation>
 <translation id="7317831949569936035">Registrering i skolan</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Du måste ha fyllt 18 år och godkänna att användningen av AI-bakgrunder omfattas av <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles användarvillkor<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> och de <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ytterligare användarvillkoren för generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kan bara skapa bakgrunder med AI för personligt och icke-kommersiellt bruk. När du ber om hjälp med bakgrunder skickas text till Googles AI-servrar för att generera bakgrundsförslag i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />: <ph name="RESULT_TEXT" />. Om du trycker på Sök och blanksteg visas resultatet på Google Sök.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
 <translation id="7353413232959255829">Sökresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryck på Retur för att navigera till kortkommandot.</translation>

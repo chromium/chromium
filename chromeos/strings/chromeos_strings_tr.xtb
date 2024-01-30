@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">çarpın</translation>
 <translation id="1145018782460575098">Harici cihazlar için donanım yazılımını güncelleme penceresi açık. <ph name="NUM_UPDATES" /> güncelleme var.</translation>
 <translation id="1145516343487477149">Sık sorulan Chromebook sorularıyla ilgili yardım makaleleri ve yanıtlar bulun</translation>
 <translation id="1154390310959620237">Yalnızca 5 kısayol özelleştirebilirsiniz. Yeni kısayol eklemek için mevcut bir kısayolu silin.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1367951781824006909">Dosya seç</translation>
+<translation id="1371650399987522809">Google Yapay Zeka destekli duvar kağıdı ile ilgili geri bildirim</translation>
 <translation id="1387854245479784695">Bu değer tüm çekirdeklerin toplamıdır</translation>
 <translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="1397738625398125236">Ağ geçidi için Ping Testi çalıştırılabilir</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
 <translation id="1561927818299383735">arkadan aydınlatmalı renk</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> güncellenemiyor</translation>
+<translation id="1566493343215789965">bölün</translation>
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
+<translation id="1615576200479539465">Resimler oluşturuluyor...</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1626590945318984973">Kısayol kullanılamıyor. İşlev ve <ph name="META_KEY" /> tuşlarını kullanmadan yeni bir kısayola basın.</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
 <translation id="2880569433548999039">Bulut akışı ekran koruyucu</translation>
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
+<translation id="2938573842839598578">Yaklaşık sonuç için <ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> ile <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">Cihaz test edilemiyor. Test etmek için kapağı tekrar açın.</translation>
 <translation id="2941112035454246133">Düşük</translation>
 <translation id="3008341117444806826">YENİLE</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
+<translation id="3547264467365135390">Formül</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
 <translation id="3569407787324516067">Ekran koruyucu</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7180865173735832675">Özelleştir</translation>
 <translation id="7184043045742675738">Düğmenizi özelleştirmek için herhangi bir tuşu tıklayın. Fare veya ok tuşlarını kullanarak tuşun yerini değiştirin.</translation>
+<translation id="7206979415662233817">Hizmet şartları</translation>
 <translation id="7212547870105584639">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">klavye rengi</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">En az 18 yaşında olmanız ve yapay zeka duvar kağıtlarını kullanımınızın <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Hizmet Şartları<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ile <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Üretken Yapay Zeka Ek Hizmet Şartları<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />'na tabi olduğunu kabul etmeniz gerekir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yalnızca ticari olmayan ve kişisel kullanım için yapay zeka ile duvar kağıdı oluşturabilirsiniz. Duvar kağıdı konusunda yardım aldığınızda, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olarak duvar kağıdı önerileri üretmek için Google Yapay Zeka sunucularına metin gönderilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Google Arama'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> arama sonucu: <ph name="SEARCH_RESULT_TEXT" />. Kısayola gitmek için Enter tuşuna basın.</translation>

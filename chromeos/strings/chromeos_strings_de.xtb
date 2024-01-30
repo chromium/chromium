@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multipliziere</translation>
 <translation id="1145018782460575098">Das Fenster für Firmwareupdates für externe Geräte ist geöffnet. Es sind <ph name="NUM_UPDATES" /> Updates verfügbar.</translation>
 <translation id="1145516343487477149">Hier findest du Hilfeartikel und Antworten auf häufig gestellte Fragen zu Chromebooks</translation>
 <translation id="1154390310959620237">Du kannst maximal fünf Tastenkombinationen anpassen. Wenn du eine neue Tastenkombination hinzufügen möchtest, musst du vorher eine bestehende löschen.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
+<translation id="1371650399987522809">Feedback zu einem Hintergrund, der auf Google AI basiert</translation>
 <translation id="1387854245479784695">Alle Kerne zusammengerechnet</translation>
 <translation id="1394661041439318933">Der Akkustand des Case liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">Farbe der Hintergrundbeleuchtung</translation>
 <translation id="1565038567006703504">„<ph name="DEVICE_NAME" />“ kann nicht aktualisiert werden</translation>
+<translation id="1566493343215789965">teile</translation>
 <translation id="1567064801249837505">Alben</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
 <translation id="1578784163189013834">Hintergrund für den Bildschirmschoner auswählen</translation>
 <translation id="160633243685262989">Bild in der Vorschau anzeigen</translation>
 <translation id="1611649489706141841">Weiter</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Bilder werden generiert…</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
 <translation id="1626590945318984973">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination ohne die Verwendung von Funktionstasten oder <ph name="META_KEY" />-Tasten.</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="2880569433548999039">Cloud Flow-Bildschirmschoner</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
+<translation id="2938573842839598578">Um ein ungefähres Ergebnis zu erhalten, <ph name="OPERATOR_TEXT" /> den Wert „<ph name="CATEGORY_TEXT" />“ mit/durch <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
 <translation id="2941112035454246133">Niedrig</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS-Update</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
+<translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
 <translation id="3569407787324516067">Bildschirmschoner</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7184043045742675738">Klicke auf eine beliebige Taste, um deine Schaltfläche zu personalisieren. Du kannst die Taste mit der Maus oder den Pfeiltasten neu positionieren.</translation>
+<translation id="7206979415662233817">Nutzungsbedingungen</translation>
 <translation id="7212547870105584639">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmwareupdates für externe Geräte</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">Tastaturfarbe</translation>
 <translation id="7317831949569936035">Registrierung bei einer Bildungseinrichtung</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Du musst mindestens 18 Jahre alt sein und zustimmen, dass du die KI-Hintergründe gemäß den <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-Nutzungsbedingungen<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> und den <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Zusatzbedingungen für generative KI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> verwendest.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kannst Hintergründe mit KI nur für den privaten und nicht kommerziellen Gebrauch erstellen. Wenn du Hilfe für Hintergründe verwendest, wird Text an die Google AI-Server gesendet, um Vorschläge für Hintergründe gemäß der <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu generieren. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7353413232959255829">Suchergebnis <ph name="LIST_POSITION" /> von <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Drücke die Eingabetaste, um die Tastenkombination aufzurufen.</translation>

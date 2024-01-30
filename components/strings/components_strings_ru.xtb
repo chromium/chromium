@@ -258,6 +258,7 @@
 <translation id="1442987760062738829">Отверстие</translation>
 <translation id="1446396933673057385">Проверка точности</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">Ключи <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> невозможно добавить в тот же словарь, что и ключи <ph name="DATA_CONTROLS_SECOND_KEY_SET" />.</translation>
 <translation id="1452803302401719440">Эти настройки установлены родителем. С ними работать в интернете безопаснее.</translation>
 <translation id="1455413310270022028">Ластик</translation>
 <translation id="1458140305240870199">Нижнее белье</translation>
@@ -769,6 +770,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Когда вы вошли в систему, к этому устройству были подключены следующие периферийные устройства.</translation>
 <translation id="2450021089947420533">Поиск по теме</translation>
+<translation id="2452837234288608067">Не удалось выполнить этот запрос. Повторите попытку.</translation>
 <translation id="2456755709261364512">Уровень заряда батареи должен быть выше <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2462599289530201834">Искать: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Заполнить</translation>
@@ -910,6 +912,7 @@
 <translation id="2725927759457695883">Заполнить поля для имени и фамилии</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
 <translation id="2728127805433021124">Сертификат сервера подписан с использованием ненадежного алгоритма.</translation>
+<translation id="272937284275742856">Безопасная проверка ваших сведений о способе оплаты…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Выполните диагностику подключения<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Классическая музыка</translation>
 <translation id="2731382536835015353">44 x 68 дюймов</translation>
@@ -1009,6 +1012,7 @@
 <translation id="2958544468932521864">Крикет</translation>
 <translation id="2959113999220720579">Уход за лицом и телом</translation>
 <translation id="2962073860865348475">12 x 18 дюймов</translation>
+<translation id="2967098518029543669">сохраните его в аккаунте Google</translation>
 <translation id="2968103128155246731">Фургоны и минивэны</translation>
 <translation id="2972581237482394796">&amp;Повторить</translation>
 <translation id="2977665033722899841">Сейчас выбрано – <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" />.</translation>
@@ -1382,6 +1386,7 @@
 <translation id="3678914302246317895">Введите <ph name="OTP_LENGTH" />-значный код подтверждения</translation>
 <translation id="3681007416295224113">Данные сертификата</translation>
 <translation id="3681421644246505351">Chrome определяет интересующие вас темы на основе недавней истории браузера.</translation>
+<translation id="3682094733650754138">Выбран вариант "Подставить адрес"</translation>
 <translation id="3689867156802445220">Номер дома</translation>
 <translation id="3693327506115126094">Выберите способ подтверждения личности</translation>
 <translation id="3698629142018988477">Кнопка "Создать сайт". Нажмите ее, чтобы быстро создать сайт на платформе Google.</translation>
@@ -2789,6 +2794,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> запрашивает доступ к вашим MIDI-устройствам.</translation>
 <translation id="6493924760403974580">Приложение доступно только в этом размере</translation>
 <translation id="6494750904506170417">всплывающие окна и переадресация</translation>
+<translation id="6495664197699704593">Пароль сохранен только на этом устройстве. Чтобы он был доступен на других ваших устройствах, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Коммерческая деятельность</translation>
 <translation id="6499038740797743453">Сбросить пароль?</translation>
 <translation id="6502510275417601303">Оповещение о новых платежных настройках закрыто</translation>
@@ -2903,6 +2909,7 @@
 <translation id="6732087373923685049">камера</translation>
 <translation id="6737708609449480586">Выпечка</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
+<translation id="6740851646645036700">Вы достигли лимита на генерацию текстов. Повторите попытку позже.</translation>
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6744009308914054259">В ожидании подключения вы можете открыть скачанные файлы и почитать статьи офлайн.</translation>
 <translation id="6745592621698551453">Обновить сейчас</translation>
@@ -2959,6 +2966,7 @@
 <translation id="6860888819347870819">Запрашивать разрешение на открытие окон "Картинка в картинке"</translation>
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Ресурсы для потребителей</translation>
+<translation id="6865166112578825782">Подставить адрес</translation>
 <translation id="6865412394715372076">Невозможно подтвердить карту.</translation>
 <translation id="6868573634057275953">Возобновить обновление</translation>
 <translation id="6869334554832814367">Потребительские кредиты</translation>
@@ -3428,6 +3436,7 @@
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7701544340847569275">Обновление завершено с ошибками</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /> (небезопасно)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Генератор текстов</translation>
 <translation id="7705992072972338699">Оптический диск (с высоким лоском)</translation>
 <translation id="770607638235926858">Катание на лыжах и сноуборде</translation>
 <translation id="7706689436519265630">Файлы, которые вы копируете или перемещаете, передаются на проверку в Google Cloud или сторонние сервисы. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО, а также могут храниться на основании правил компании.</translation>
@@ -3647,6 +3656,7 @@
 <translation id="8161095570253161196">Продолжить просмотр</translation>
 <translation id="8163866351304776260">Четыре отверстия слева</translation>
 <translation id="8164078261547504572">Хотите получать электронные письма о снижении цен?</translation>
+<translation id="8169175551046720804">Ключи <ph name="DATA_CONTROLS_KEYS" /> невозможно добавить в тот же словарь.</translation>
 <translation id="8175796834047840627">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек.</translation>
 <translation id="8176440868214972690">Администратор устройства отправил на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="817820454357658398">Предметы женской гигиены</translation>
@@ -4042,6 +4052,7 @@
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон и право</translation>
+<translation id="8952569554322479410">Сайт запросил у вас доступ (<ph name="REQUEST_TYPE" />). Помогите улучшить этот процесс, приняв участие в коротком опросе.</translation>
 <translation id="8954252855949068147">Одежда и аксессуары</translation>
 <translation id="8956124158020778855">Включите параметр и вернитесь на эту вкладку, чтобы начать писать.</translation>
 <translation id="8957210676456822347">Авторизация через адаптивный портал</translation>
