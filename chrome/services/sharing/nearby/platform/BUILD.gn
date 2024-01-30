@@ -26,6 +26,8 @@ source_set("platform") {
     "ble_v2_medium.h",
     "ble_v2_remote_peripheral.cc",
     "ble_v2_remote_peripheral.h",
+    "ble_v2_server_socket.cc",
+    "ble_v2_server_socket.h",
     "bluetooth_adapter.cc",
     "bluetooth_adapter.h",
     "bluetooth_classic_medium.cc",
