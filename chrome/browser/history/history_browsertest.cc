@@ -520,29 +520,6 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
 
 namespace {
 
-// Grabs the RenderFrameHost for the frame navigating to the given URL.
-class RenderFrameHostGrabber : public content::WebContentsObserver {
- public:
-  RenderFrameHostGrabber(content::WebContents* web_contents, const GURL& url)
-      : WebContentsObserver(web_contents), url_(url) {}
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL() == url_) {
-      render_frame_host_ = navigation_handle->GetRenderFrameHost();
-      run_loop_.Quit();
-    }
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
-
- private:
-  GURL url_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
-  base::RunLoop run_loop_;
-};
-
 // Simulates user clicking on a link inside the frame.
 // TODO(jam): merge with content/test/content_browser_test_utils_internal.h
 void NavigateFrameToURL(content::RenderFrameHost* rfh, const GURL& url) {
