@@ -236,3 +236,34 @@
         --cr-icon-color: currentColor;
         --cr-icon-button-fill-color: currentColor;
       }
+
+      :host-context([chrome-refresh-2023]):host(.stroked) {
+        --cr-input-background-color: transparent;
+        --cr-input-border: 1px solid var(--color-side-panel-textfield-border,
+            var(--cr-fallback-color-neutral-outline));
+        --cr-input-border-bottom: none;
+        --cr-input-border-radius: 8px;
+        --cr-input-padding-bottom: 9px;
+        --cr-input-padding-end: 9px;
+        --cr-input-padding-start: 9px;
+        --cr-input-padding-top: 9px;
+        --cr-input-underline-display: none;
+        --cr-input-min-height: 36px;
+        line-height: 16px;
+      }
+
+      :host-context([chrome-refresh-2023]):host(.stroked[focused_]) {
+        --cr-input-border: 2px solid var(--cr-focus-outline-color);
+        --cr-input-padding-bottom: 8px;
+        --cr-input-padding-end: 8px;
+        --cr-input-padding-start: 8px;
+        --cr-input-padding-top: 8px;
+      }
+
+      :host-context([chrome-refresh-2023]):host(.stroked[invalid]) {
+        --cr-input-border: 1px solid var(--cr-input-error-color);
+      }
+
+      :host-context([chrome-refresh-2023]):host(.stroked[focused_][invalid]) {
+        --cr-input-border: 2px solid var(--cr-input-error-color);
+      }

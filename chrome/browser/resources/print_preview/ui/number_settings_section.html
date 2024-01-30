@@ -34,7 +34,7 @@
   <span slot="title" id="sectionTitle">[[inputLabel]]</span>
   <div slot="controls" id="controls">
     <span class="input-wrapper">
-      <cr-input id="userValue" type="number"
+      <cr-input id="userValue" type="number" class="stroked"
           max="[[maxValue]]" min="[[minValue]]" data-timeout-delay="250"
           disabled$="[[getDisabled_(disabled)]]" on-keydown="onKeydown_"
           on-blur="onBlur_" aria-label="[[inputAriaLabel]]"
