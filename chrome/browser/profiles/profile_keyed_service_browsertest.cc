@@ -468,9 +468,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OptimizationGuideKeyedService",
     "PageContentAnnotationsService",
     "PasswordsPrivateEventRouter",
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    "PdfOcrController",
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
