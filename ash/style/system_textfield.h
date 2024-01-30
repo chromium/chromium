@@ -55,6 +55,8 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   // Enables/disables background color.
   // With disabled state the background will be transparent.
   void SetBackgroundColorEnabled(bool enabled);
+  // Creates themed or transparent background according to the textfield states.
+  void UpdateBackground();
 
   // views::Textfield:
   gfx::Size CalculatePreferredSize() const override;
@@ -77,8 +79,6 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
                      bool is_background_color);
   // Updates text and selection text colors.
   void UpdateTextColor();
-  // Creates themed or transparent background according to the textfield states.
-  void UpdateBackground();
 
   Type type_;
   std::unique_ptr<EventHandler> event_handler_;

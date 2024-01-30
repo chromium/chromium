@@ -717,4 +717,30 @@ TEST_F(FocusModeDetailedViewTest, UpdateOnTimezoneChange) {
             GetToggleRowSubLabel()->GetText());
 }
 
+// Tests that starting a new focus session while the timer textfield is still
+// active and the text in the textfield is different from the previous saved
+// session duration.
+TEST_F(FocusModeDetailedViewTest, StartSessionWithActiveTimerTextfield) {
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Click the timer textfield and type a digit `1` into it.
+  SystemTextfield* timer_textfield = GetTimerSettingTextfield();
+  LeftClickOn(timer_textfield);
+  EXPECT_TRUE(timer_textfield->IsActive());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DELETE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  EXPECT_EQ(u"1", timer_textfield->GetText());
+
+  // Verify after starting a new focus session, the session duration is the one
+  // we just typed and we have saved it.
+  LeftClickOn(GetToggleRowButton());
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(base::Minutes(1), controller->session_duration());
+  EXPECT_EQ(
+      base::Minutes(1),
+      Shell::Get()->session_controller()->GetActivePrefService()->GetTimeDelta(
+          prefs::kFocusModeSessionDuration));
+}
+
 }  // namespace ash

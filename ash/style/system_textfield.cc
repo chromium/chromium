@@ -249,6 +249,20 @@ void SystemTextfield::SetBackgroundColorEnabled(bool enabled) {
   UpdateBackground();
 }
 
+void SystemTextfield::UpdateBackground() {
+  const bool has_background =
+      is_background_color_enabled_ &&
+      (IsMouseHovered() || HasFocus() || show_background_);
+  if (!has_background) {
+    SetBackground(nullptr);
+    return;
+  }
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
+      kCornerRadius));
+}
+
 gfx::Size SystemTextfield::CalculatePreferredSize() const {
   // The width of container equals to the content width with horizontal padding.
   // The height of the container dependents on the type.
@@ -337,24 +351,6 @@ void SystemTextfield::UpdateTextColor() {
   render_text->set_selection_background_focused_color(
       color_provider->GetColor(selection_background_color_id_.value_or(
           cros_tokens::kCrosSysHighlightText)));
-}
-
-void SystemTextfield::UpdateBackground() {
-  const bool has_background =
-      is_background_color_enabled_ &&
-      (IsMouseHovered() || HasFocus() || show_background_);
-  if (!has_background) {
-    SetBackground(nullptr);
-    return;
-  }
-
-  const ui::ColorId default_hover_state_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysHoverOnSubtle
-          : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id_.value_or(default_hover_state_color_id),
-      kCornerRadius));
 }
 
 BEGIN_METADATA(SystemTextfield, views::Textfield)

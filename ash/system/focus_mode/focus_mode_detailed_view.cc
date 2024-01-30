@@ -600,6 +600,9 @@ void FocusModeDetailedView::CreateTimerView() {
       std::make_unique<TimerTextfieldController>(timer_textfield_, this);
   timer_textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD));
+  timer_textfield_->SetActiveStateChangedCallback(base::BindRepeating(
+      &FocusModeDetailedView::HandleTextfieldActivationChange,
+      weak_factory_.GetWeakPtr()));
 
   views::Label* minutes_label = textfield_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -666,6 +669,26 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
             base::Time::Now()));
   } else {
     UpdateTimerSettingViewUI();
+  }
+}
+
+void FocusModeDetailedView::HandleTextfieldActivationChange() {
+  if (!timer_textfield_->IsActive() && timer_textfield_->HasFocus()) {
+    auto* focus_manager = timer_textfield_->GetWidget()->GetFocusManager();
+    focus_manager->ClearFocus();
+    focus_manager->SetStoredFocusView(nullptr);
+
+    // TODO(b/322863087): Remove the call of `UpdateBackground` for
+    // timer_textfield_ after the bug resolved. The reason for calling it can be
+    // found from the description of the bug.
+    timer_textfield_->UpdateBackground();
+
+    // Once we clear the focus for the `timer_textfield_`, we need to call the
+    // function below manually to update the UI according to the latest session
+    // duration, since the `OnViewBlurred` for the textfield controller doesn't
+    // automatically call it to avoid the bug b/315358227.
+    SetInactiveSessionDuration(base::Minutes(
+        focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
   }
 }
 
