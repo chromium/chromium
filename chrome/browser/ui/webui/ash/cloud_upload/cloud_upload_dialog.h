@@ -42,6 +42,8 @@ FORWARD_DECLARE_TEST(OneDriveTest,
 FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromODFSOtherAccessError);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS);
 FORWARD_DECLARE_TEST(OneDriveTest,
+                     OpenFileFromAndroidOneDriveViaODFSDiffCaseEmail);
+FORWARD_DECLARE_TEST(OneDriveTest,
                      FailToOpenFileFromAndroidOneDriveViaODFSDiffEmail);
 FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromAndroidOneDriveNotOnODFS);
 FORWARD_DECLARE_TEST(
@@ -140,6 +142,8 @@ class CloudOpenTask : public BrowserListObserver,
                            FailToOpenFileFromODFSOtherAccessError);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            OpenFileFromAndroidOneDriveViaODFS);
+  FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
+                           OpenFileFromAndroidOneDriveViaODFSDiffCaseEmail);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            FailToOpenFileFromAndroidOneDriveViaODFSDiffEmail);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,

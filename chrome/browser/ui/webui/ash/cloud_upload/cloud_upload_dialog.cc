@@ -758,7 +758,8 @@ void CloudOpenTask::CheckEmailAndOpenURLs(
   }
   // Query whether the account logged into Android OneDrive is the
   // same as ODFS.
-  if (android_onedrive_email == metadata_or_error->user_email) {
+  if (base::ToLowerASCII(android_onedrive_email) ==
+      base::ToLowerASCII(metadata_or_error->user_email)) {
     OpenAndroidOneDriveUrls(profile_, file_urls_, std::move(callback));
   } else {
     LOG(ERROR) << "Email accounts associated with ODFS and "
