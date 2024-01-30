@@ -114,7 +114,7 @@ TEST_F(WaylandDisplayObserverTest, SendLogicalPositionAndSize) {
   EXPECT_CALL(*handler_, XdgOutputSendLogicalPosition(kExpectedOrigin))
       .Times(1);
   EXPECT_CALL(*handler_, XdgOutputSendLogicalSize(kExpectedSize)).Times(1);
-  handler_->OnDisplayMetricsChanged(display, kAllChanges);
+  handler_->SendDisplayMetricsChanges(display, kAllChanges);
 }
 
 }  // namespace

@@ -100,6 +100,7 @@ class Server : public display::DisplayManagerObserver {
   void OnDidProcessDisplayChanges(
       const DisplayConfigurationChange& configuration_change) override;
 
+  // Returns the wl_resource for the wl_output bound to the `client`.
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
 
   Display* GetDisplay() { return display_; }
@@ -119,6 +120,10 @@ class Server : public display::DisplayManagerObserver {
 
  private:
   friend class ScopedEventDispatchDisabler;
+
+  // Returns the WaylandDisplayOutput for the wl_output global associated with
+  // the `display_id`.
+  WaylandDisplayOutput* GetWaylandDisplayOutput(int64_t display_id);
 
   // This adds a Unix socket to the Wayland display server which can be used
   // by clients to connect to the display server.

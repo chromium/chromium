@@ -18,6 +18,8 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
+using DisplayMetric = display::DisplayObserver::DisplayMetric;
+
 namespace exo {
 namespace wayland {
 
@@ -61,8 +63,8 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   }
 
   // Send the first round of changes to the observer.
-  constexpr uint32_t all_changes = 0xFFFFFFFF;
-  OnDisplayMetricsChanged(display, all_changes);
+  constexpr uint32_t kAllChanges = 0xFFFFFFFF;
+  SendDisplayMetricsChanges(display, kAllChanges);
 }
 
 void WaylandDisplayHandler::RemoveObserver(WaylandDisplayObserver* observer) {
@@ -74,14 +76,11 @@ int64_t WaylandDisplayHandler::id() const {
   return output_->id();
 }
 
-void WaylandDisplayHandler::OnDisplayMetricsChanged(
+void WaylandDisplayHandler::SendDisplayMetricsChanges(
     const display::Display& display,
     uint32_t changed_metrics) {
-  DCHECK(output_resource_);
-
-  if (id() != display.id()) {
-    return;
-  }
+  CHECK(output_resource_);
+  CHECK_EQ(id(), display.id());
 
   bool needs_done = false;
 
@@ -180,8 +179,9 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   const OutputMetrics output_metrics(display);
   bool result = false;
 
-  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                         DISPLAY_METRIC_REFRESH_RATE)) {
+  if (changed_metrics & (DisplayMetric::DISPLAY_METRIC_BOUNDS |
+                         DisplayMetric::DISPLAY_METRIC_ROTATION |
+                         DisplayMetric::DISPLAY_METRIC_REFRESH_RATE)) {
     wl_output_send_geometry(
         output_resource_, output_metrics.origin.x(), output_metrics.origin.y(),
         output_metrics.physical_size_mm.width(),
@@ -195,7 +195,7 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
     result = true;
   }
 
-  if (changed_metrics & DISPLAY_METRIC_DEVICE_SCALE_FACTOR) {
+  if (changed_metrics & DisplayMetric::DISPLAY_METRIC_DEVICE_SCALE_FACTOR) {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {
       wl_output_send_scale(output_resource_, output_metrics.scale);
@@ -220,8 +220,9 @@ bool WaylandDisplayHandler::SendXdgOutputMetrics(
   const OutputMetrics output_metrics(display);
   bool result = false;
 
-  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                         DISPLAY_METRIC_DEVICE_SCALE_FACTOR)) {
+  if (changed_metrics & (DisplayMetric::DISPLAY_METRIC_BOUNDS |
+                         DisplayMetric::DISPLAY_METRIC_ROTATION |
+                         DisplayMetric::DISPLAY_METRIC_DEVICE_SCALE_FACTOR)) {
     XdgOutputSendLogicalPosition(output_metrics.logical_origin);
     XdgOutputSendLogicalSize(output_metrics.logical_size);
     XdgOutputSendDescription(output_metrics.description);

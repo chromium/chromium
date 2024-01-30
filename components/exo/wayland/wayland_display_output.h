@@ -15,6 +15,10 @@ struct wl_client;
 struct wl_global;
 struct wl_resource;
 
+namespace display {
+class Display;
+}  // namespace display
+
 namespace exo {
 namespace wayland {
 
@@ -45,6 +49,14 @@ class WaylandDisplayOutput {
   // notify surface when enter/leave the output.
   void UnregisterOutput(wl_resource* output_resource);
   void RegisterOutput(wl_resource* output_resource);
+
+  // Dispatches updated metrics to all clients currently bound to the wrapped
+  // wl_output global.
+  // TODO(tluk): `display` is only used by WaylandDisplayObservers to construct
+  // wayland output metrics to send to the client. Wrap any remaining metrics
+  // into OutputMetrics and propagate this instead.
+  void SendDisplayMetricsChanges(const display::Display& display,
+                                 uint32_t changed_metrics);
 
   wl_resource* GetOutputResourceForClient(wl_client* client);
 

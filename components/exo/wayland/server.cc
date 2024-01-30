@@ -535,6 +535,14 @@ void Server::OnDidProcessDisplayChanges(
     output.release()->OnDisplayRemoved();
   }
 
+  for (const auto& change : configuration_change.display_metrics_changes) {
+    if (auto* wayland_display_output =
+            GetWaylandDisplayOutput(change.display->id())) {
+      wayland_display_output->SendDisplayMetricsChanges(change.display.get(),
+                                                        change.changed_metrics);
+    }
+  }
+
   // Flush updated outputs to clients immediately.
   // TODO(crbug.com/1502682): Exo should be updated to automatically flush
   // buffers at the end of task processing if necessary.
@@ -542,12 +550,12 @@ void Server::OnDidProcessDisplayChanges(
 }
 
 wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
-  DCHECK_NE(display_id, display::kInvalidDisplayId);
-  auto iter = outputs_.find(display_id);
-  if (iter == outputs_.end()) {
-    return nullptr;
-  }
-  return iter->second.get()->GetOutputResourceForClient(client);
+  CHECK_NE(display_id, display::kInvalidDisplayId);
+  WaylandDisplayOutput* wayland_display_output =
+      GetWaylandDisplayOutput(display_id);
+  return wayland_display_output
+             ? wayland_display_output->GetOutputResourceForClient(client)
+             : nullptr;
 }
 
 bool Server::IsClientDestroyed(wl_client* client) const {
@@ -557,6 +565,12 @@ bool Server::IsClientDestroyed(wl_client* client) const {
 void Server::AddWaylandOutput(int64_t id,
                               std::unique_ptr<WaylandDisplayOutput> output) {
   outputs_.insert(std::make_pair(id, std::move(output)));
+}
+
+WaylandDisplayOutput* Server::GetWaylandDisplayOutput(int64_t display_id) {
+  CHECK_NE(display_id, display::kInvalidDisplayId);
+  auto iter = outputs_.find(display_id);
+  return iter == outputs_.end() ? nullptr : iter->second.get();
 }
 
 }  // namespace wayland
