@@ -62,6 +62,13 @@ void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
                            bool is_gc_opt_out,
                            bool is_game);
 
+// Returns control name with localized strings:
+// - "Button <key_string>" if `action_type` is ActionType::TAP.
+// - "Joystick <key_string>" if `action_type` is ActionType::MOVE.
+// - "Unassigned joystick" or "Unassigned button" if `key_string` is empty.
+std::u16string GetControlName(ActionType action_type,
+                              std::u16string key_string);
+
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_TEST_UTILS_H_

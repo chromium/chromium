@@ -4799,6 +4799,21 @@
         <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL" desc="The button label of the joystick button for choosing that button type in the 'Create Button' menu." translateable="false">
           Joystick
         </message>
+        <message name="IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE" desc="The Control name is formed by Control type and assigned keys. e.g. 'Joystick wasd' or 'Button a'." translateable="false">
+          <ph name="CONTROL_TYPE">$1<ex>Button</ex></ph> <ph name="KEY_LIST">$2<ex>w</ex></ph>
+        </message>
+         <message name="IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE" desc="The Control name is formed by Control type and assigned keys. For example, Unassigned button or Unassigned Joystick." translateable="false">
+          Unassigned <ph name="CONTROL_TYPE">$1<ex>Button</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_REASSIGN_A11Y_LABEL" desc="Edit label button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Tap on another keyboard key to replace
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_A11Y_LABEL_TEMPLATE" desc="Edit label a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. <ph name="REASSIGN_INSTRUCTION">$2<ex>reassign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_UNASSIGNED_A11Y_LABEL" desc="A11y name for symbol '?' or empty string and spoken by screen readers when symbol ? or nothing renders in key label and gets focus but the name not visually rendered." translateable="false">
+          Key is missing. Tap on a keyboard key to assign
+        </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu." translateable="false">
           Done
         </message>

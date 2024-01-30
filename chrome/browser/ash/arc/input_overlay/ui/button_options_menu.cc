@@ -71,7 +71,6 @@ class ButtonOptionsActionEdit : public ActionEditView {
     name_tag_->SetTitle(l10n_util::GetStringUTF16(
         action_->is_new() ? IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY
                           : IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY));
-    labels_view_->set_should_update_title(false);
   }
   ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
   ButtonOptionsActionEdit& operator=(const ButtonOptionsActionEdit&) = delete;

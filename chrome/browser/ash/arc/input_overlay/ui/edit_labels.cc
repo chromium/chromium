@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/table_layout.h"
@@ -25,9 +26,9 @@ std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
     DisplayOverlayController* controller,
     Action* action,
     NameTag* name_tag,
-    bool should_update_title) {
+    bool for_editing_list) {
   auto labels = std::make_unique<EditLabels>(controller, action, name_tag,
-                                             should_update_title);
+                                             for_editing_list);
   labels->Init();
   return labels;
 }
@@ -35,11 +36,11 @@ std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
 EditLabels::EditLabels(DisplayOverlayController* controller,
                        Action* action,
                        NameTag* name_tag,
-                       bool should_update_title)
+                       bool for_editing_list)
     : controller_(controller),
       action_(action),
       name_tag_(name_tag),
-      should_update_title_(should_update_title) {}
+      for_editing_list_(for_editing_list) {}
 
 EditLabels::~EditLabels() = default;
 
@@ -107,30 +108,28 @@ std::u16string EditLabels::CalculateActionName() {
       all_unassigned = false;
     }
   }
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  if (all_unassigned) {
-    switch (action_->GetType()) {
-      case ActionType::TAP:
-        return u"Unassigned button";
-      case ActionType::MOVE:
-        return u"Unassigned joystick";
-      default:
-        NOTREACHED();
-    }
-  }
 
-  auto* prefix_string = u"";
+  int control_type_id = 0;
   switch (action_->GetType()) {
     case ActionType::TAP:
-      prefix_string = u"Game button ";
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL;
       break;
     case ActionType::MOVE:
-      prefix_string = u"Joystick ";
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
       NOTREACHED();
   }
-  return prefix_string + key_string;
+
+  if (all_unassigned) {
+    return l10n_util::GetStringFUTF16(
+        IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE,
+        l10n_util::GetStringUTF16(control_type_id));
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE,
+      l10n_util::GetStringUTF16(control_type_id), key_string);
 }
 
 void EditLabels::PerformPulseAnimationOnFirstLabel() {
@@ -140,8 +139,8 @@ void EditLabels::PerformPulseAnimationOnFirstLabel() {
 
 void EditLabels::InitForActionTapKeyboard() {
   SetUseDefaultFillLayout(true);
-  labels_.emplace_back(
-      AddChildView(std::make_unique<EditLabel>(controller_, action_)));
+  labels_.emplace_back(AddChildView(
+      std::make_unique<EditLabel>(controller_, action_, for_editing_list_)));
 }
 
 void EditLabels::InitForActionMoveKeyboard() {
@@ -175,8 +174,8 @@ void EditLabels::InitForActionMoveKeyboard() {
     if (i == 0 || i == 2) {
       AddChildView(std::make_unique<views::View>());
     } else {
-      labels_.emplace_back(AddChildView(
-          std::make_unique<EditLabel>(controller_, action_, labels_.size())));
+      labels_.emplace_back(AddChildView(std::make_unique<EditLabel>(
+          controller_, action_, for_editing_list_, labels_.size())));
     }
   }
 }
@@ -200,7 +199,7 @@ void EditLabels::UpdateNameTag() {
           ? l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)
           : u"");
 
-  if (should_update_title_) {
+  if (for_editing_list_) {
     name_tag_->SetTitle(CalculateActionName());
   }
 }

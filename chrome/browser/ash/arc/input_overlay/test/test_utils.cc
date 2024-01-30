@@ -11,9 +11,11 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -91,6 +93,30 @@ void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
                                : arc::mojom::AppCategory::kProductivity;
   arc_app_test.app_instance()->SendPackageAppListRefreshed(package_name, apps);
   task_environment->RunUntilIdle();
+}
+
+std::u16string GetControlName(ActionType action_type,
+                              std::u16string key_string) {
+  int control_type_id = 0;
+  switch (action_type) {
+    case ActionType::TAP:
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL;
+      break;
+    case ActionType::MOVE:
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (key_string.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE,
+        l10n_util::GetStringUTF16(control_type_id));
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE,
+      l10n_util::GetStringUTF16(control_type_id), key_string);
 }
 
 }  // namespace arc::input_overlay
