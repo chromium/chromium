@@ -94,7 +94,12 @@ def __use_large_b289968566(ctx, step_config):
         r.update(rule)
         r["name"] += "/b289968566/exit-137"
         r["action_outs"] = exit137_list
-        r["platform_ref"] = "large"
+        # use `_large` variant of platform if it doesn't use default platform,
+        # i.e. mac/win case.
+        if "platform_ref" in r:
+            r["platform_ref"] = r["platform_ref"] + "_large"
+        else:
+            r["platform_ref"] = "large"
         if r.get("handler") == "rewrite_rewrapper":
             r["handler"] = "rewrite_rewrapper_large"
         new_rules.append(r)

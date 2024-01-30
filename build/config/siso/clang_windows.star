@@ -56,8 +56,15 @@ def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg"
     if ctx.fs.exists(cfg):
         reproxy_config = rewrapper_cfg.parse(ctx, cfg)
+        largePlatform = {}
+        for k, v in reproxy_config["platform"].items():
+            if k.startswith("label:action"):
+                continue
+            largePlatform[k] = v
+        largePlatform["label:action_large"] = "1"
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
+            "clang-cl_large": largePlatform,
         })
         step_config["input_deps"].update(clang_all.input_deps)
 
