@@ -533,10 +533,22 @@ void FrameCaptionButtonContainerView::Layout() {
 }
 
 void FrameCaptionButtonContainerView::ChildPreferredSizeChanged(View* child) {
+  // In the `View::PreferredSizeChanged` method, `ChildPreferredSizeChanged`
+  // occurs before the `InvalidateLayout` method. If we call the `Layout` method
+  // in `ChildPreferredSizeChanged`, due to the order of calls, there is a
+  // layout cache in `LayoutManagerBase`. `Layout` cannot be laid out correctly
+  // at this time. So we need to actively call `InvalidateLayout` to clean up
+  // the layout cache of `LayoutManagerBase`.
+  //
+  // Here, we call `Layout` in
+  // `BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged`.
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 
 void FrameCaptionButtonContainerView::ChildVisibilityChanged(View* child) {
+  // Same as ChildPreferredSizeChanged.
+  InvalidateLayout();
   PreferredSizeChanged();
 }
 
