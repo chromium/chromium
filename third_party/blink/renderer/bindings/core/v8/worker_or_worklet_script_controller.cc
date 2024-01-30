@@ -61,13 +61,11 @@ WorkerOrWorkletScriptController::WorkerOrWorkletScriptController(
     bool is_default_world_of_isolate)
     : global_scope_(global_scope),
       isolate_(isolate),
-      rejected_promises_(RejectedPromises::Create()) {
-  DCHECK(isolate);
-  // TODO(chromium:1520621): Pass along `is_default_world_of_isolate` and enable
-  // inline storage for additional worlds.
-  world_ = DOMWrapperWorld::Create(
-      isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
-}
+      world_(
+          DOMWrapperWorld::Create(isolate,
+                                  DOMWrapperWorld::WorldType::kWorkerOrWorklet,
+                                  is_default_world_of_isolate)),
+      rejected_promises_(RejectedPromises::Create()) {}
 
 WorkerOrWorkletScriptController::~WorkerOrWorkletScriptController() {
   DCHECK(!rejected_promises_);

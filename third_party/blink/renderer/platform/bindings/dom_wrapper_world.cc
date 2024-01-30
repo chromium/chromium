@@ -73,6 +73,7 @@ scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::Create(
     v8::Isolate* isolate,
     WorldType world_type,
     bool is_default_world_of_isolate) {
+  DCHECK(isolate);
   DCHECK_NE(WorldType::kIsolated, world_type);
   int32_t world_id = GenerateWorldIdForType(world_type);
   if (world_id == kInvalidWorldId)
