@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable name='Hello World'
+android.webkit.WebView focusable focused name='Hello World'
 ++android.widget.TextView role_description='heading 1' heading name='Heading'
 ++android.widget.TextView name='Paragraph'
 ++android.view.View

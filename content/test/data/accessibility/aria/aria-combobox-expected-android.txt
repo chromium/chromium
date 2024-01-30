@@ -1,4 +1,4 @@
-android.webkit.WebView focusable scrollable
+android.webkit.WebView focusable
 ++android.widget.TextView name='State'
 ++android.widget.EditText clickable disabled editable_text expanded focusable focused hint='State' input_type=1
 ++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1

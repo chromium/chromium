@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='Readonly-false input' input_type=1 text_change_added_count=20
 ++android.view.View

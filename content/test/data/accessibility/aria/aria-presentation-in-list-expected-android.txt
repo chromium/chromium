@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.ListView collection item_count=2 row_count=2 column_count=1
 ++++android.view.View collection_item row_span=1 column_span=1
 ++++++android.view.View name='%E2%80%A2 '

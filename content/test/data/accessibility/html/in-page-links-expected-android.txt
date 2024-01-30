@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='link' clickable focusable link name='Empty anchor'
 ++++android.widget.TextView name='Empty anchor'
 ++android.widget.TextView name=' '

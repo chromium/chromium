@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.Button role_description='button' clickable focusable name='InnerText0'
 ++android.widget.Button role_description='button' clickable focusable name='InnerText1' hint='Title1'
 ++android.widget.Button role_description='button' clickable focusable name='AriaLabel2' hint='Title2'

@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Placeholder option'
 ++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 2'

@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.TextView name='The '
 ++++android.view.View name='World Health Organization'

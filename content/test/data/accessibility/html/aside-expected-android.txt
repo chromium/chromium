@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TextView name='The aside tag defines some content aside from the content it is placed in.'
 ++android.view.View role_description='complementary'
 ++++android.widget.TextView role_description='heading 4' heading name='Body aside'

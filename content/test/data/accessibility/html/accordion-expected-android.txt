@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='heading 3' heading name='Accordion Section #1'
 ++++android.widget.Button role_description='button' clickable expanded focusable heading name='Accordion Section #1' action_collapse
 ++android.view.View role_description='region' name='Accordion Section #1'
