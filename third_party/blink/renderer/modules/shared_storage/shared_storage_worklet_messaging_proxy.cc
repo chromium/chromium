@@ -33,12 +33,9 @@ SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
       worklet_terminated_callback_(std::move(worklet_terminated_callback)) {
   DCHECK(IsMainThread());
 
-  auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
-  thread_startup_data.atomics_wait_mode =
-      WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow;
-
   Initialize(/*worker_clients=*/nullptr, /*module_responses_map=*/nullptr,
-             thread_startup_data, std::move(global_scope_creation_params));
+             SharedStorageWorkletThread::CreateThreadStartupData(),
+             std::move(global_scope_creation_params));
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
@@ -100,7 +97,7 @@ std::unique_ptr<WorkerThread>
 SharedStorageWorkletMessagingProxy::CreateWorkerThread() {
   DCHECK(IsMainThread());
 
-  return std::make_unique<SharedStorageWorkletThread>(WorkletObjectProxy());
+  return SharedStorageWorkletThread::Create(WorkletObjectProxy());
 }
 
 }  // namespace blink

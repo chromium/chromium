@@ -1271,6 +1271,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerSitePerPageLoad;
 
+// If enabled, the shared storage worklet threads (on the same renderer process)
+// will share the same backing thread; otherwise, each will own a dedicated
+// backing thread.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSharedStorageWorkletSharedBackingThreadImplementation);
+
 // Additional Shared Storage API features shipped in M118.
 // TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
 // shipped.
