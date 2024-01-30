@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -363,8 +364,12 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
   }
 
   RenderThreadImpl* thread = RenderThreadImpl::current();
-  if (thread)  // NULL in unittests.
-    thread->GetRendererHost()->SuddenTerminationChanged(enabled);
+  if (!thread) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  thread->GetRendererHost()->SuddenTerminationChanged(enabled);
 }
 
 //------------------------------------------------------------------------------
@@ -386,8 +391,12 @@ void RendererBlinkPlatformImpl::SetIsLockedToSite() {
 bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   RenderThreadImpl* thread = RenderThreadImpl::current();
-  // |thread| can be NULL in tests.
-  return !thread || thread->IsGpuCompositingDisabled();
+  if (!thread) {
+    CHECK_IS_TEST();
+    return true;
+  }
+
+  return thread->IsGpuCompositingDisabled();
 }
 
 #if BUILDFLAG(IS_ANDROID)
