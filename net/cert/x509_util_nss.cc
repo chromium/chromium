@@ -179,8 +179,7 @@ ScopedCERTCertificate CreateCERTCertificateFromBytes(
 ScopedCERTCertificate CreateCERTCertificateFromX509Certificate(
     const X509Certificate* cert) {
   return CreateCERTCertificateFromBytes(
-      base::make_span(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                      CRYPTO_BUFFER_len(cert->cert_buffer())));
+      CryptoBufferAsSpan(cert->cert_buffer()));
 }
 
 ScopedCERTCertificateList CreateCERTCertificateListFromX509Certificate(
@@ -200,9 +199,8 @@ ScopedCERTCertificateList CreateCERTCertificateListFromX509Certificate(
     return {};
   nss_chain.push_back(std::move(nss_cert));
   for (const auto& intermediate : cert->intermediate_buffers()) {
-    ScopedCERTCertificate nss_intermediate = CreateCERTCertificateFromBytes(
-        base::make_span(CRYPTO_BUFFER_data(intermediate.get()),
-                        CRYPTO_BUFFER_len(intermediate.get())));
+    ScopedCERTCertificate nss_intermediate =
+        CreateCERTCertificateFromBytes(CryptoBufferAsSpan(intermediate.get()));
     if (!nss_intermediate) {
       if (invalid_intermediate_behavior == InvalidIntermediateBehavior::kFail)
         return {};

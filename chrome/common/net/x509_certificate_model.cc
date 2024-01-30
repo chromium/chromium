@@ -361,7 +361,7 @@ OptionalStringOrError FindLastNameOfType(bssl::der::Input oid,
 // "OID.", or an empty string on error.
 std::string OidToNumericString(bssl::der::Input oid) {
   CBS cbs;
-  CBS_init(&cbs, oid.UnsafeData(), oid.Length());
+  CBS_init(&cbs, oid.data(), oid.size());
   bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
   if (!text)
     return std::string();
@@ -1249,8 +1249,8 @@ X509CertificateModel::X509CertificateModel(
   options.allow_invalid_serial_numbers = true;
   bssl::CertErrors unused_errors;
   if (!bssl::ParseCertificate(
-          bssl::der::Input(CRYPTO_BUFFER_data(cert_data_.get()),
-                           CRYPTO_BUFFER_len(cert_data_.get())),
+          bssl::der::Input(
+              net::x509_util::CryptoBufferAsSpan(cert_data_.get())),
           &tbs_certificate_tlv_, &signature_algorithm_tlv_, &signature_value_,
           &unused_errors) ||
       !ParseTbsCertificate(tbs_certificate_tlv_, options, &tbs_,

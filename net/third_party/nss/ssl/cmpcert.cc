@@ -90,8 +90,8 @@ bool MatchClientCertificateIssuers(
 
     // Look the parent up in the database and keep searching.
     SECItem issuer_item;
-    issuer_item.len = issuer.Length();
-    issuer_item.data = const_cast<unsigned char*>(issuer.UnsafeData());
+    issuer_item.len = issuer.size();
+    issuer_item.data = const_cast<unsigned char*>(issuer.data());
     ScopedCERTCertificate nextcert(
         CERT_FindCertByName(CERT_GetDefaultCertDB(), &issuer_item));
     if (!nextcert)

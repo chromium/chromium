@@ -96,7 +96,7 @@ void PrintResultPath(const bssl::CertPathBuilderResultPath* result_path,
     std::cout << "Certificate policies:\n";
     for (const auto& policy : result_path->user_constrained_policy_set) {
       CBS cbs;
-      CBS_init(&cbs, policy.UnsafeData(), policy.Length());
+      CBS_init(&cbs, policy.data(), policy.size());
       bssl::UniquePtr<char> policy_text(CBS_asn1_oid_to_text(&cbs));
       if (policy_text) {
         std::cout << " " << policy_text.get() << "\n";

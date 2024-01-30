@@ -285,8 +285,7 @@ void DetermineDeviceCertificatePolicy(
 
   // Get the public key for the certificate.
   CBS spki;
-  CBS_init(&spki, cert->tbs().spki_tlv.UnsafeData(),
-           cert->tbs().spki_tlv.Length());
+  CBS_init(&spki, cert->tbs().spki_tlv.data(), cert->tbs().spki_tlv.size());
   bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&spki));
   if (!key || CBS_len(&spki) != 0)
     return false;

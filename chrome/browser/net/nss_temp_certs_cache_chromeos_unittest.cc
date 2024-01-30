@@ -49,8 +49,8 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
         pem_cert_file, &cert_contents_buffer, &subject));
 
     SECItem subject_item;
-    subject_item.len = subject.Length();
-    subject_item.data = const_cast<unsigned char*>(subject.UnsafeData());
+    subject_item.len = subject.size();
+    subject_item.data = const_cast<unsigned char*>(subject.data());
 
     net::ScopedCERTCertificate found_cert(
         CERT_FindCertByName(CERT_GetDefaultCertDB(), &subject_item));
