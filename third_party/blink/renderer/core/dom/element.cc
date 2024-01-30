@@ -5269,10 +5269,24 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
     if (auto* existing_shadow = GetShadowRoot()) {
       CHECK(existing_shadow->IsDeclarativeShadowRoot());
-      if (existing_shadow->GetType() != type ||
+      bool parameters_mismatch = false;
+      parameters_mismatch |= existing_shadow->GetType() != type;
+      parameters_mismatch |=
           existing_shadow->delegatesFocus() !=
-              (focus_delegation == FocusDelegation::kDelegateFocus) ||
-          existing_shadow->GetSlotAssignmentMode() != slot_assignment) {
+          (focus_delegation == FocusDelegation::kDelegateFocus);
+      parameters_mismatch |=
+          existing_shadow->GetSlotAssignmentMode() != slot_assignment;
+      // TODO(crbug.com/1521128): Not sure how to check `registry` match here.
+      parameters_mismatch |=
+          RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
+          existing_shadow->serializable() != serializable;
+      // TODO(crbug.com/1521128): We'd like to check for mismatch of clonable
+      // here, but this would break the core use case of *not* breaking
+      // non-DSD-aware web components. Since declarative shadow roots have
+      // clonable:true by default, and old code doesn't know to add
+      // clonable:true to attachShadow() parameters, all old web components
+      // would break. See https://github.com/whatwg/html/issues/10107
+      if (parameters_mismatch) {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           "Parameters used for attachShadow() "
                                           "don't match existing declarative "
