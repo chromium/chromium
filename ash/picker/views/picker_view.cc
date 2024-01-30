@@ -22,15 +22,20 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -50,6 +55,57 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
   border->SetCornerRadius(kBorderRadius);
   border->set_md_shadow_elevation(kShadowElevation);
   return border;
+}
+
+// Gets the preferred Picker widget bounds given the preferred client bounds
+// (i.e. Picker view bounds), in screen coordinates.
+gfx::Rect GetPickerWidgetBoundsForClientBounds(const gfx::Rect& client_bounds) {
+  gfx::Rect non_client_frame_view_bounds = client_bounds;
+  non_client_frame_view_bounds.Inset(-CreateBorder()->GetInsets());
+  return non_client_frame_view_bounds;
+}
+
+// Gets the preferred Picker view bounds in screen coordinates. We try to place
+// the Picker view close to `caret_bounds`, while taking into account
+// `picker_view_size` and available space on the screen.
+// `picker_view_search_field_vertical_offset` is the vertical offset from the
+// top of the Picker view to the center of the search field, which we use to try
+// to align the search field with the center of the caret bounds.
+gfx::Rect GetPickerViewBounds(const gfx::Rect& caret_bounds,
+                              const gfx::Size& picker_view_size,
+                              int picker_view_search_field_vertical_offset) {
+  const gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                         ->GetDisplayMatching(caret_bounds)
+                                         .work_area();
+  const gfx::Insets& available_space =
+      screen_work_area.InsetsFrom(caret_bounds);
+
+  // Place the Picker in available screen space near the caret bounds.
+  gfx::Rect picker_view_bounds(picker_view_size);
+  if (available_space.right() >= picker_view_size.width()) {
+    // Try to place the Picker to the right of the caret, vertically aligning
+    // the center of the Picker search field with the center of the caret.
+    picker_view_bounds.set_origin(caret_bounds.right_center());
+    picker_view_bounds.Offset(0, -picker_view_search_field_vertical_offset);
+  } else if (available_space.bottom() >= picker_view_size.height()) {
+    // Otherwise, try to place the Picker at the right edge of the screen, below
+    // the caret.
+    picker_view_bounds.set_origin(
+        {screen_work_area.right() - picker_view_size.width(),
+         caret_bounds.bottom()});
+  } else if (available_space.top() >= picker_view_size.height()) {
+    // Otherwise, try to place the Picker at the right edge of the screen, above
+    // the caret.
+    picker_view_bounds.set_origin(
+        {screen_work_area.right() - picker_view_size.width(),
+         caret_bounds.y() - picker_view_size.height()});
+  }
+
+  // Adjust if necessary to keep the whole Picker view onscreen. Note that the
+  // non client area of the Picker, e.g. the shadows, are allowed to be
+  // offscreen.
+  picker_view_bounds.AdjustToFit(screen_work_area);
+  return picker_view_bounds;
 }
 
 }  // namespace
@@ -108,17 +164,27 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 PickerView::~PickerView() = default;
 
 views::UniqueWidgetPtr PickerView::CreateWidget(
+    const gfx::Rect& caret_bounds,
     PickerViewDelegate* delegate,
     const base::TimeTicks trigger_event_timestamp) {
+  // Create the Picker view and set its size. This will trigger a layout, so
+  // that the position of the Picker view's search field can be used when
+  // setting the Picker widget bounds below.
+  auto picker_view =
+      std::make_unique<PickerView>(delegate, trigger_event_timestamp);
+  picker_view->SetSize(kPickerSize);
+
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.delegate = new PickerView(delegate, trigger_event_timestamp);
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.type = views::Widget::InitParams::TYPE_BUBBLE;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.bounds = GetPickerWidgetBoundsForClientBounds(
+      picker_view->GetTargetBounds(caret_bounds));
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
+  params.delegate = picker_view.release();
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetVisibilityAnimationTransition(
@@ -161,6 +227,11 @@ void PickerView::AddedToWidget() {
 void PickerView::RemovedFromWidget() {
   session_metrics_.StopRecording();
   bubble_event_filter_.reset();
+}
+
+gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& caret_bounds) {
+  return GetPickerViewBounds(caret_bounds, size(),
+                             search_field_view_->bounds().CenterPoint().y());
 }
 
 void PickerView::StartSearch(const std::u16string& query) {

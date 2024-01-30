@@ -54,6 +54,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // timestamp is the time this function is called.
   // `delegate` must remain valid for the lifetime of the created Widget.
   static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& caret_bounds,
       PickerViewDelegate* delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
@@ -64,6 +65,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+
+  // Returns the target bounds for this Picker view. The target bounds try to
+  // horizontally align `search_field_view_` with `caret_bounds`.
+  gfx::Rect GetTargetBounds(const gfx::Rect& caret_bounds);
 
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
