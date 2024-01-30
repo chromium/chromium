@@ -46,6 +46,13 @@ gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
   return *cached_preferred_size_;
 }
 
+gfx::Size LayoutManagerBase::GetPreferredSize(
+    const View* host,
+    const SizeBounds& available_size) const {
+  DCHECK_EQ(host_view_, host);
+  return CalculateProposedLayout(available_size).host_size;
+}
+
 gfx::Size LayoutManagerBase::GetMinimumSize(const View* host) const {
   DCHECK_EQ(host_view_, host);
   if (!cached_minimum_size_)
