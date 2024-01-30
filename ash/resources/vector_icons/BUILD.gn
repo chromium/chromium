@@ -72,6 +72,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "capture_mode_window.icon",
     "caret_left.icon",
     "caret_right.icon",
+    "carrier_locked.icon",
     "channel_beta.icon",
     "channel_canary.icon",
     "channel_dev.icon",

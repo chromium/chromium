@@ -177,7 +177,7 @@
 
 <template is="dom-if"
     if="[[showShared_(managedProperties_, globalPolicy,
-        managedNetworkAvailable)]]">
+        managedNetworkAvailable, deviceState_)]]">
   <!-- Shared network. -->
   <div class$="settings-box settings-box-text
               [[messagesDividerClass_('shared', managedProperties_,

@@ -1892,7 +1892,8 @@ export class SettingsInternetDetailPageElement extends
     } else if (isSecondaryUser) {
       first = 'secondary';
     } else if (this.showShared_(
-                   managedProperties, globalPolicy, managedNetworkAvailable)) {
+                   managedProperties, globalPolicy, managedNetworkAvailable,
+                   deviceState)) {
       first = 'shared';
     } else if (this.showSynced_(
                    managedProperties, globalPolicy, managedNetworkAvailable,
@@ -1916,7 +1917,12 @@ export class SettingsInternetDetailPageElement extends
 
   private showShared_(
       managedProperties: ManagedProperties, _globalPolicy: GlobalPolicy,
-      _managedNetworkAvailable: boolean): boolean {
+      _managedNetworkAvailable: boolean,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
+    if (this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return false;
+    }
+
     return !this.propertiesMissingOrBlockedByPolicy_() &&
         (managedProperties.source === OncSource.kDevice ||
          managedProperties.source === OncSource.kDevicePolicy);
