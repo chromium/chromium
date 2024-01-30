@@ -801,6 +801,21 @@
             ]
         }
     ],
+    "ArcVmBlkMultipleWorkers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcEnableVirtioBlkMultipleWorkers"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmBroadcastPreAnrHandling": [
         {
             "platforms": [
