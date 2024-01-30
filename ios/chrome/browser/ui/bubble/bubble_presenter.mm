@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -191,9 +193,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
+  // DCHECK if the type is not `CustomHighlightableButton`.
+  __weak CustomHighlightableButton* shareButton =
+      base::apple::ObjCCastStrict<CustomHighlightableButton>(shareButtonView);
+
   // Do not present if button is disabled.
-  CHECK([shareButtonView isKindOfClass:[UIButton class]]);
-  UIButton* shareButton = (UIButton*)shareButtonView;
   if (![shareButton isEnabled]) {
     return;
   }
@@ -211,12 +215,22 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CGPoint shareButtonAnchor = [self anchorPointToGuide:kShareButtonGuide
                                              direction:arrowDirection];
 
+  auto presentAction = ^() {
+    [shareButton setCustomHighlighted:YES];
+  };
+  auto dismissAction = ^() {
+    [shareButton setCustomHighlighted:NO];
+  };
+
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHiOSShareToolbarItemFeature
                     direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
                          text:text
         voiceOverAnnouncement:nil
-                  anchorPoint:shareButtonAnchor];
+                  anchorPoint:shareButtonAnchor
+                presentAction:presentAction
+                dismissAction:dismissAction];
   if (!presenter) {
     return;
   }
@@ -468,6 +482,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   __weak id<TabStripCommands> weakTabStripCommandsHandler =
       _tabStripCommandsHandler;
 
+  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
   ProceduralBlock presentAction = ^{
     [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:YES];
     [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:YES];
@@ -537,6 +552,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   __weak id<ToolbarCommands> weakToolbarCommandsHandler =
       _toolbarCommandsHandler;
+  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
   auto presentAction = ^() {
     [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:YES];
   };

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
+
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
 
@@ -59,7 +61,7 @@
 // TODO(crbug.com/991241): Pass into init as parameter.
 @property(nonatomic, strong) UIView* badgeView;
 // The button displayed in the trailing corner of the view, i.e. share button.
-@property(nonatomic, strong) UIButton* trailingButton;
+@property(nonatomic, strong) CustomHighlightableButton* trailingButton;
 // The string that describes the current security level. Used for a11y.
 @property(nonatomic, copy) NSString* securityLevelAccessibilityString;
 // Current in-use color scheme.
