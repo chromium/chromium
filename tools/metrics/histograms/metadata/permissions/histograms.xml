@@ -262,24 +262,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.Chip.TimeToDecision.{RequestAction}" units="ms"
-    expires_after="2024-07-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records how long it takes for the user to make a decision about permission
-    request when chip request UI is shown, from when permission prompt is shown
-    until when the user clicks on one of the buttons in the prompt (accept,
-    block or close).
-  </summary>
-  <token key="RequestAction">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-  </token>
-</histogram>
-
 <histogram name="Permissions.Chip.TimeToInteraction" units="ms"
     expires_after="2024-07-31">
   <owner>elklm@chromium.org</owner>
@@ -862,25 +844,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks how many times permission prompts are shown to users.
   </summary>
-</histogram>
-
-<histogram name="Permissions.Prompt.TimeToDecision.{RequestAction}" units="ms"
-    expires_after="2024-07-31">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records how long it takes for the user to make a decision about permission
-    request when prompt request UI is shown, from when permission prompt is
-    shown until when the user clicks on one of the buttons in the prompt
-    (accept, block or close). Warning: this histogram was expired from
-    2023-05-30 to 2023-07-04; data may be missing.
-  </summary>
-  <token key="RequestAction">
-    <variant name="Accepted"/>
-    <variant name="AcceptedOnce"/>
-    <variant name="Denied"/>
-    <variant name="Dismissed"/>
-  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"
