@@ -150,6 +150,7 @@ void Checkbox::SetChecked(bool checked) {
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
+  NotifyViewControllerCallback();
 }
 
 bool Checkbox::GetChecked() const {
@@ -219,6 +220,10 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
   border->set_insets(
       LayoutProvider::Get()->GetInsetsMetric(INSETS_CHECKBOX_RADIO_BUTTON));
   return border;
+}
+
+std::unique_ptr<ActionViewInterface> Checkbox::GetActionViewInterface() {
+  return std::make_unique<CheckboxActionViewInterface>(this);
 }
 
 void Checkbox::OnThemeChanged() {
@@ -311,6 +316,23 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
   absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
+}
+
+CheckboxActionViewInterface::CheckboxActionViewInterface(Checkbox* action_view)
+    : LabelButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void CheckboxActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetChecked(action_item->GetChecked());
+}
+
+void CheckboxActionViewInterface::OnViewChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::OnViewChangedImpl(action_item);
+  // The checked property is tied together for all checkboxes that are linked to
+  // the same ActionItem.
+  action_item->SetChecked(action_view_->GetChecked());
 }
 
 BEGIN_METADATA(Checkbox)
