@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -125,7 +126,7 @@ TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   EXPECT_EQ(input_field.text(), u"");
 }
 
-TEST_F(PickerControllerTest, InsertResultInsertsIntoInputFieldAfterFocus) {
+TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
@@ -142,6 +143,42 @@ TEST_F(PickerControllerTest, InsertResultInsertsIntoInputFieldAfterFocus) {
   };
 
   EXPECT_EQ(input_field.text(), u"abc");
+}
+
+TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(
+      PickerSearchResult::Gif(GURL("http://foo.com/fake.gif")));
+  controller.widget_for_testing()->CloseNow();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.last_inserted_image_url(),
+            GURL("http://foo.com/fake.gif"));
+}
+
+TEST_F(PickerControllerTest,
+       InsertBrowsingHistoryResultInsertsIntoInputFieldAfterFocus) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(PickerSearchResult::BrowsingHistory(
+      GURL("http://foo.com"), ui::ImageModel{}));
+  controller.widget_for_testing()->CloseNow();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"http://foo.com/");
 }
 
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {

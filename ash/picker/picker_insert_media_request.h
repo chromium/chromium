@@ -6,12 +6,14 @@
 #define ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
 
 #include <string>
+#include <variant>
 
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/input_method_observer.h"
+#include "url/gurl.h"
 
 namespace ui {
 class InputMethod;
@@ -23,12 +25,37 @@ namespace ash {
 // Inserts rich media such as text and images into an input field.
 class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
  public:
-  // Creates a request to insert `text_to_insert_` in the next focused input
-  // field. If there's no focus change within `insert_timeout`, then this
+  class MediaData {
+   public:
+    static MediaData Text(std::u16string_view text);
+    static MediaData Text(std::string_view text);
+    static MediaData Image(const GURL& url);
+    static MediaData Link(const GURL& url);
+
+    MediaData(const MediaData&);
+    MediaData& operator=(const MediaData&);
+    ~MediaData();
+
+    // Inserts this media data into `client`.
+    void Insert(ui::TextInputClient* client);
+
+   private:
+    enum class Type { kText, kImage, kLink };
+
+    using Data = std::variant<std::u16string, GURL>;
+
+    explicit MediaData(Type type, Data data);
+
+    Type type_;
+    Data data_;
+  };
+
+  // Creates a request to insert `data` in the next focused input field.
+  // If there's no focus change within `insert_timeout`, then this
   // request is cancelled. If this request is destroyed before insertion could
   // happen, the request is cancelled.
   explicit PickerInsertMediaRequest(ui::InputMethod* input_method,
-                                    std::u16string_view text_to_insert,
+                                    const MediaData& data_to_insert,
                                     base::TimeDelta insert_timeout);
   ~PickerInsertMediaRequest() override;
 
@@ -44,7 +71,7 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   // Does nothing if the insertion has already happened.
   void CancelPendingInsert();
 
-  std::optional<std::u16string> text_to_insert_;
+  std::optional<MediaData> data_to_insert;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer insert_timeout_timer_;

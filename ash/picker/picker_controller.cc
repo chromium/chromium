@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
@@ -20,6 +21,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -77,6 +79,23 @@ gfx::Rect GetCaretBounds() {
   }
 
   return input_method->GetTextInputClient()->GetCaretBounds();
+}
+
+PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
+    const PickerSearchResult& result) {
+  return std::visit(
+      base::Overloaded{
+          [](const PickerSearchResult::TextData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.text);
+          },
+          [](const PickerSearchResult::GifData& data) {
+            return PickerInsertMediaRequest::MediaData::Image(data.url);
+          },
+          [](const PickerSearchResult::BrowsingHistoryData& data) {
+            return PickerInsertMediaRequest::MediaData::Link(data.url);
+          },
+      },
+      result.data());
 }
 
 }  // namespace
@@ -179,12 +198,8 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // This cancels the previous request if there was one.
-  // TODO: b/316936577 - Support inserting images.
-  if (const auto* data =
-          std::get_if<PickerSearchResult::TextData>(&result.data())) {
-    insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-        input_method, data->text, kInsertMediaTimeout);
-  }
+  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+      input_method, ResultToInsertMediaData(result), kInsertMediaTimeout);
 }
 
 bool PickerController::ShouldPaint() {

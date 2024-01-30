@@ -45,6 +45,9 @@ class FakeTextInputClient : public TextInputClient {
   const std::vector<ui::ImeTextSpan>& ime_text_spans() const {
     return ime_text_spans_;
   }
+  std::optional<GURL> last_inserted_image_url() const {
+    return last_inserted_image_url_;
+  }
 
   // Sets this instance as the focused text input client.
   void Focus();
@@ -60,6 +63,7 @@ class FakeTextInputClient : public TextInputClient {
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const KeyEvent& event) override;
+  void InsertImage(const GURL& src) override;
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
   base::i18n::TextDirection GetTextDirection() const override;
@@ -126,6 +130,7 @@ class FakeTextInputClient : public TextInputClient {
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
   int flags_ = TEXT_INPUT_FLAG_NONE;
   GURL url_;
+  std::optional<GURL> last_inserted_image_url_;
 };
 
 }  // namespace ui
