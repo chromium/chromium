@@ -259,5 +259,21 @@ StyleRule* MakeSignalingRule(StyleRule* style_rule,
   return StyleRule::Create(selectors, std::move(*style_rule));
 }
 
+StyleRule* MakeInvisibleRule(StyleRule* style_rule) {
+  CHECK(style_rule);
+  HeapVector<CSSSelector> selectors;
+  const CSSSelector* selector = style_rule->FirstSelector();
+  CHECK(selector);
+  while (true) {
+    selectors.push_back(*selector);
+    selectors.back().SetInvisible();
+    if (selector->IsLastInSelectorList()) {
+      break;
+    }
+    ++selector;
+  }
+  return StyleRule::Create(selectors, std::move(*style_rule));
+}
+
 }  // namespace css_test_helpers
 }  // namespace blink

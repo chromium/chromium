@@ -265,10 +265,11 @@ void StyleSheetContents::ClearRules() {
   child_rules_.clear();
 }
 
-static wtf_size_t ReplaceRuleIfExistsInternal(
-    const StyleRuleBase* old_rule,
-    StyleRuleBase* new_rule,
-    HeapVector<Member<StyleRuleBase>>& child_rules) {
+// HeapVector<Member<StyleRuleBase>> or ChildRuleVector
+template <typename T>
+static wtf_size_t ReplaceRuleIfExistsInternal(const StyleRuleBase* old_rule,
+                                              StyleRuleBase* new_rule,
+                                              T& child_rules) {
   for (wtf_size_t i = 0; i < child_rules.size(); ++i) {
     StyleRuleBase* rule = child_rules[i].Get();
     if (rule == old_rule) {
@@ -621,8 +622,9 @@ Document* StyleSheetContents::AnyOwnerDocument() const {
   return RootStyleSheet()->ClientAnyOwnerDocument();
 }
 
-static bool ChildRulesHaveFailedOrCanceledSubresources(
-    const HeapVector<Member<StyleRuleBase>>& rules) {
+// HeapVector<Member<StyleRuleBase>> or ChildRuleVector
+template <typename T>
+static bool ChildRulesHaveFailedOrCanceledSubresources(const T& rules) {
   for (unsigned i = 0; i < rules.size(); ++i) {
     const StyleRuleBase* rule = rules[i].Get();
     switch (rule->GetType()) {

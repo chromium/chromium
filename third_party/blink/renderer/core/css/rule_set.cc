@@ -702,15 +702,14 @@ void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule) {
   view_transition_rules_.push_back(rule);
 }
 
-void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
+template <typename T>
+void RuleSet::AddChildRules(const T& rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
                             const ContainerQuery* container_query,
                             CascadeLayer* cascade_layer,
                             const StyleScope* style_scope) {
-  for (unsigned i = 0; i < rules.size(); ++i) {
-    StyleRuleBase* rule = rules[i].Get();
-
+  for (StyleRuleBase* rule : rules) {
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
       AddStyleRule(style_rule, medium, add_rule_flags, container_query,
                    cascade_layer, style_scope);

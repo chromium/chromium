@@ -103,8 +103,13 @@ CSSSelectorList* ParseSelectorList(const String&,
                                    const StyleRule* parent_rule_for_nesting,
                                    bool is_within_scope);
 
-// Make a copy of a style rule which carries the specified signal.
+// Make the incoming StyleRule carry the specified signal.
+// Note that this calls std::move on the incoming StyleRule.
 StyleRule* MakeSignalingRule(StyleRule*, CSSSelector::Signal);
+
+// Make the incoming StyleRule invisible. (See CSSSelector::IsInvisible).
+// Note that this calls std::move on the incoming StyleRule.
+StyleRule* MakeInvisibleRule(StyleRule*);
 
 }  // namespace css_test_helpers
 }  // namespace blink

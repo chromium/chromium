@@ -172,8 +172,7 @@ TEST_P(ScopeProximityTest, All) {
   while (IsA<StyleRuleScope>(rule)) {
     auto& scope_rule = To<StyleRuleScope>(*rule);
     scope = scope_rule.GetStyleScope().CopyWithParent(scope);
-    const HeapVector<Member<StyleRuleBase>>& child_rules =
-        scope_rule.ChildRules();
+    const StyleRuleBase::ChildRuleVector& child_rules = scope_rule.ChildRules();
     ASSERT_EQ(1u, child_rules.size());
     rule = child_rules[0].Get();
   }
