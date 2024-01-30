@@ -45,6 +45,22 @@ The current status of existing standards and Abseil features is:
       * Overload: Initially added to third_party Sep 27, 2023
       * NoDestructor: Initially added to third_party Nov 15, 2023
 
+## Banned features and third-party code
+
+Third-party libraries may generally use banned features internally, although features
+with poor compiler support or poor security properties may make the library
+unsuitable to use with Chromium.
+
+Chromium code that calls functions exported from a third-party library may use
+banned library types that are required by the interface, as long as:
+
+ * The disallowed type is used only at the interface, and converted to and from
+   an equivalent allowed type as soon as practical on the Chromium side.
+ * The feature is not banned due to security issues or lack of compiler support.
+   If it is, discuss with
+   [cxx@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/cxx)
+   to find a workaround.
+
 [TOC]
 
 ## C++11 Banned Language Features {#core-blocklist-11}
@@ -2557,6 +2573,7 @@ at runtime instead of compile time.
 Direct construction is banned due to the risk of UB with uninitialized
 trivially-default-constructible types. Instead use `base/types/fixed_array.h`,
 which is a light-weight wrapper that deletes the problematic constructor.
+***
 
 ### FunctionRef <sup>[banned]</sup>
 
