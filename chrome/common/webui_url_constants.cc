@@ -357,6 +357,9 @@ const char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
 const char kChromeUIEmojiPickerHost[] = "emoji-picker";
 const char kChromeUIEnterpriseReportingHost[] = "enterprise-reporting";
 const char kChromeUIEnterpriseReportingURL[] = "chrome://enterprise-reporting";
+const char kChromeUIExtendedUpdatesDialogHost[] = "extended-updates-dialog";
+const char kChromeUIExtendedUpdatesDialogURL[] =
+    "chrome://extended-updates-dialog";
 const char kChromeUIFirmwareUpdaterAppURL[] = "chrome://accessory-update";
 const char kChromeUIHealthdInternalsHost[] = "healthd-internals";
 const char kChromeUIHealthdInternalsURL[] = "chrome://healthd-internals";
@@ -450,6 +453,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
       kChromeUICryptohomeHost,
       kChromeUIDeviceEmulatorHost,
       kChromeUIEmojiPickerHost,
+      kChromeUIExtendedUpdatesDialogHost,
       kChromeUIInternetConfigDialogHost,
       kChromeUIInternetDetailDialogHost,
       kChromeUILockScreenNetworkHost,

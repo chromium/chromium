@@ -3104,6 +3104,8 @@ static_library("ui") {
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.h",
       "webui/ash/enterprise_reporting/history_converter.cc",
       "webui/ash/enterprise_reporting/history_converter.h",
+      "webui/ash/extended_updates/extended_updates_dialog.cc",
+      "webui/ash/extended_updates/extended_updates_dialog.h",
       "webui/ash/healthd_internals/healthd_internals_ui.cc",
       "webui/ash/healthd_internals/healthd_internals_ui.h",
       "webui/ash/human_presence_internals_ui.cc",
