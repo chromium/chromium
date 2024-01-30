@@ -78,7 +78,6 @@ static_library("service") {
 
   public_deps = [
     "//base",
-    "//components/invalidation/public",
     "//components/sync/base",
     "//components/sync/engine",
     "//components/sync/model",

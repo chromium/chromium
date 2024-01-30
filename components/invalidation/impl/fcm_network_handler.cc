@@ -125,13 +125,9 @@ void RecordFCMMessageStatus(InvalidationParsingStatus status,
   // Also split the histogram by a few well-known senders. The actual constants
   // aren't accessible here (they're defined in higher layers), so we simply
   // duplicate them here, strictly only for the purpose of metrics.
-  // TODO(crbug.com/1404927): clean up sync-related metrics.
-  constexpr char kInvalidationGCMSenderId[] = "8181035976";
   constexpr char kDriveFcmSenderId[] = "947318989803";
   constexpr char kPolicyFCMInvalidationSenderID[] = "1013309121859";
-  if (sender_id == kInvalidationGCMSenderId) {
-    UMA_HISTOGRAM_ENUMERATION("FCMInvalidations.FCMMessageStatus.Sync", status);
-  } else if (sender_id == kDriveFcmSenderId) {
+  if (sender_id == kDriveFcmSenderId) {
     UMA_HISTOGRAM_ENUMERATION("FCMInvalidations.FCMMessageStatus.Drive",
                               status);
   } else if (sender_id == kPolicyFCMInvalidationSenderID) {
