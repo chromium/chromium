@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_PREFS_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_PREFS_H_
 
-#include <stdint.h>
-
-#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -38,7 +35,7 @@ class SyncPrefObserver {
   virtual void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) = 0;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  virtual void OnPreferredDataTypesPrefChange(
+  virtual void OnSelectedTypesPrefChange(
       bool payments_integration_enabled_changed) = 0;
 
  protected:
@@ -108,7 +105,7 @@ class SyncPrefs {
   // On Desktop, kPasswords isn't considered "selected" by default in transport
   // mode. This method returns how many accounts selected (enabled) the type.
   int GetNumberOfAccountsWithPasswordsSelected() const;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Sets the selection state for all |registered_types| and "keep everything
   // synced" flag.
@@ -172,12 +169,12 @@ class SyncPrefs {
   // correspond to the "managed" (aka policy-controlled) pref store.
   static void SetOsTypeDisabledByPolicy(PrefValueMap* policy_prefs,
                                         UserSelectableOsType type);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsAppsSyncEnabledByOs() const;
   void SetAppsSyncEnabledByOs(bool apps_sync_enabled);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Whether Sync is disabled on the client for all profiles and accounts.
   bool IsSyncClientDisabledByPolicy() const;
@@ -234,7 +231,7 @@ class SyncPrefs {
   void MaybeMigratePasswordsToPerAccountPref(
       SyncAccountState account_state,
       const signin::GaiaIdHash& gaia_id_hash);
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
   // Migrates any user settings for pre-existing signed-in users, for the
   // feature `kReplaceSyncPromosWithSignInPromos`. For signed-out users or
@@ -277,7 +274,7 @@ class SyncPrefs {
   static const char* GetPrefNameForType(UserSelectableType type);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static bool IsTypeSupportedInTransportMode(UserSelectableType type);
 
@@ -293,14 +290,16 @@ class SyncPrefs {
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 
   // The preference that controls whether sync is under control by
-  // configuration management.
+  // configuration management (aka policy).
   BooleanPrefMember pref_sync_managed_;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   BooleanPrefMember pref_initial_sync_feature_setup_complete_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  bool local_sync_enabled_;
+  // Caches the value of the kEnableLocalSyncBackend pref to avoid it flipping
+  // during the lifetime of the service.
+  const bool local_sync_enabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

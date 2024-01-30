@@ -1417,7 +1417,7 @@ base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
   return engine_->GetLastSyncedTimeForDebugging();
 }
 
-void SyncServiceImpl::OnPreferredDataTypesPrefChange(
+void SyncServiceImpl::OnSelectedTypesPrefChange(
     bool payments_integration_enabled_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -217,7 +217,7 @@ class SyncServiceImpl : public SyncService,
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnPreferredDataTypesPrefChange(
+  void OnSelectedTypesPrefChange(
       bool payments_integration_enabled_changed) override;
 
   // KeyedService implementation.  This must be called exactly

@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/path_service.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,7 +68,10 @@ constexpr int kMigratedPart2AndFullyDone = 2;
 
 SyncPrefObserver::~SyncPrefObserver() = default;
 
-SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
+SyncPrefs::SyncPrefs(PrefService* pref_service)
+    : pref_service_(pref_service),
+      local_sync_enabled_(
+          pref_service_->GetBoolean(prefs::kEnableLocalSyncBackend)) {
   DCHECK(pref_service);
   // Watch the preference that indicates sync is managed so we can take
   // appropriate action.
@@ -84,11 +86,6 @@ SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
       base::BindRepeating(&SyncPrefs::OnFirstSetupCompletePrefChange,
                           base::Unretained(this)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Cache the value of the kEnableLocalSyncBackend pref to avoid it flipping
-  // during the lifetime of the service.
-  local_sync_enabled_ =
-      pref_service_->GetBoolean(prefs::kEnableLocalSyncBackend);
 }
 
 SyncPrefs::~SyncPrefs() {
@@ -342,7 +339,7 @@ void SyncPrefs::SetSelectedTypesForSyncingUser(
 
   // Payments integration might have changed, so report as true.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
+    observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/true);
   }
 }
@@ -362,7 +359,7 @@ void SyncPrefs::SetSelectedTypeForAccount(
   }
 
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
+    observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/
         type == UserSelectableType::kPayments);
   }
@@ -397,7 +394,7 @@ void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, value);
 
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
+    observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/false);
   }
 }
@@ -470,7 +467,7 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
     pref_service_->SetBoolean(pref_name, selected_types.Has(type));
   }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
+    observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/false);
   }
 }
@@ -515,7 +512,7 @@ void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
   pref_service_->SetBoolean(prefs::internal::kSyncAppsEnabledByOs,
                             apps_sync_enabled);
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
+    observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/false);
   }
 }

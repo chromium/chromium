@@ -103,7 +103,7 @@ class MockSyncPrefObserver : public SyncPrefObserver {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (bool), (override));
+  MOCK_METHOD(void, OnSelectedTypesPrefChange, (bool), (override));
 };
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {
@@ -159,7 +159,7 @@ TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
@@ -628,14 +628,14 @@ TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
   EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
 
   testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
   EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
+              OnSelectedTypesPrefChange(
                   /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
   EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
