@@ -384,6 +384,7 @@ struct Reduce  {
 struct Pool2d {
   enum Kind {
     kAveragePool2d,
+    kL2Pool2d,
     kMaxPool2d,
   };
 

@@ -3569,6 +3569,7 @@ struct Pool2dTester {
 
   void Test() {
     Test(mojom::Pool2d::Kind::kAveragePool2d);
+    Test(mojom::Pool2d::Kind::kL2Pool2d);
     Test(mojom::Pool2d::Kind::kMaxPool2d);
   }
 

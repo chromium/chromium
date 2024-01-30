@@ -1135,6 +1135,21 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
           DML_OPERATOR_AVERAGE_POOLING, &average_pooling_desc, inputs);
       break;
     }
+    case mojom::Pool2d::Kind::kL2Pool2d: {
+      DML_LP_POOLING_OPERATOR_DESC l2_pooling_desc = {
+          .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+          .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+          .DimensionCount =
+              base::checked_cast<uint32_t>(window_dimensions.size()),
+          .Strides = strides.data(),
+          .WindowSize = window_dimensions.data(),
+          .StartPadding = start_padding.data(),
+          .EndPadding = end_padding.data(),
+          .P = 2};
+      pool2d_node = graph_builder.CreateOperatorNode(DML_OPERATOR_LP_POOLING,
+                                                     &l2_pooling_desc, inputs);
+      break;
+    }
     case mojom::Pool2d::Kind::kMaxPool2d: {
       DML_MAX_POOLING2_OPERATOR_DESC max_pooling_desc = {
           .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),

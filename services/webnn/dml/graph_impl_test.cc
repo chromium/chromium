@@ -2610,7 +2610,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .Test();
   }
   {
-    // Test average pool2d with nhwc layout,, float 32 data type.
+    // Test average pool2d with nhwc layout, float 32 data type.
     Pool2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 3, 3, 2},
@@ -2628,7 +2628,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .Test();
   }
   {
-    // Test average pool2d with nhwc layout,, float 16 data type.
+    // Test average pool2d with nhwc layout, float 16 data type.
     Pool2dTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 3, 3, 2},
@@ -2644,6 +2644,80 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 2, 2},
                    .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator l2Pool2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorL2Pool2d) {
+  {
+    // Test l2Pool2d with nchw layout, float 32 data type.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 4, 2, 2},
+                  .values = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 1, 1},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nchw layout, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 4, 2, 2},
+                  .values = Float16FromFloat32(
+                      {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 4, 1, 1},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nhwc layout, float 32 data type.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsLast},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 4},
+                   .values = {2, 4, 6, 8}}}
+        .Test();
+  }
+  {
+    // Test l2Pool2d with nhwc layout, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = Float16FromFloat32(
+                      {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {2, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsLast},
+        .kind = mojom::Pool2d::Kind::kL2Pool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 1, 4},
+                   .values = {2, 4, 6, 8}}}
         .Test();
   }
 }
