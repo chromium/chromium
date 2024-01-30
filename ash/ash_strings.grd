@@ -3254,6 +3254,26 @@ Some features are limited to increase battery life.
         Reject
       </message>
 
+       <!-- Ash Bluetooth disconnect warning dialog strings -->
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_TITLE" desc="The title for disconnect Bluetooth warning dialog.">
+        Turn off Bluetooth?
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_TURN_OFF" desc="The label for turn off Bluetooth button for disconnect Bluetooth warning dialog.">
+        Turn off
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_KEEP_ON" desc="The label for keep Bluetooth on button for disconnect Bluetooth warning dialog.">
+        Keep on
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_ONE_DEVICE" desc="Bluetooth pairing message shown to indicate a Bluetooth device will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME">$1<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_TWO_DEVICES" desc="Bluetooth pairing message shown to indicate that two Bluetooth devices will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>" and "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+      </message>
+      <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_MULTIPLE_DEVICES" desc="Bluetooth pairing message shown to indicate that multiple Bluetooth devices will disconnect when Bluetooth is turned off.">
+        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>", "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" and <ph name="DEVICE_COUNT">$3<ex>3</ex></ph> other devices will disconnect from your Chromebook.
+      </message>
+
       <!-- Ash multi-user warning dialog -->
       <message name="IDS_DESKTOP_CASTING_ACTIVE_TITLE" desc="The title for the dialog which tells the user that desktop casting is in progress, asking if the casting should be stopped before switching - or - the switch should be aborted.">
         Stop screen sharing?

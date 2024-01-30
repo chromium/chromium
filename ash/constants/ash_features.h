@@ -935,6 +935,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundListeningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAvailable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothDisconnectWarningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
