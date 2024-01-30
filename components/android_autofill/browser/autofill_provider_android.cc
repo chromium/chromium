@@ -763,8 +763,9 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
     }
   }
   // A login form must always have a username field and a password field.
-  CHECK(result.username_field_id);
-  CHECK(result.password_field_id);
+  if (!result.username_field_id || !result.password_field_id) {
+    return std::nullopt;
+  }
   return result;
 }
 
