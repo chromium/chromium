@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
@@ -125,7 +126,9 @@ import java.util.HashSet;
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
-    private static final int RENDER_TEST_REVISION = 10;
+    private static final int RENDER_TEST_REVISION = 11;
+    private static final String RENDER_TEST_DESCRIPTION =
+            "Alert icon on identity error for signed in users";
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
@@ -146,6 +149,7 @@ public class MainSettingsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
+                    .setDescription(RENDER_TEST_DESCRIPTION)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -318,6 +322,104 @@ public class MainSettingsFragmentTest {
                         any(Activity.class),
                         eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW),
                         eq(accountInfo.getEmail()));
+    }
+
+    // Tests that no alert icon is visible if there are no identity errors.
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testSigninRowShowsNoAlertWhenNoIdentityErrors() {
+        // Sign-in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        launchSettingsActivity();
+
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(not(isDisplayed())));
+    }
+
+    // Tests that no alert icon is shown on the account row for syncing users, even if there exists
+    // an identity error.
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testSigninRowShowsNoAlertForIdentityErrorsForSyncingUsers() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign-in and enable sync. Open settings.
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        launchSettingsActivity();
+
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(not(isDisplayed())));
+    }
+
+    // Tests that an alert icon is shown on the account row in case of an identity error for a
+    // signed-in non-syncing user.
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testSigninRowShowsAlertForIdentityErrors() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        launchSettingsActivity();
+
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        // Check for the alert icon.
+        onView(thatMatchesFirst(withId(R.id.alert_icon))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in and wait for sync machinery to be active.
+        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        launchSettingsActivity();
+
+        // Population of profile data is flaky. Thus, wait till it's populated.
+        // TODO(crbug.com/1503649): Check if there exists an alternate way out.
+        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return signInPreference
+                            .getProfileDataCache()
+                            .hasProfileDataForTesting(accountInfo.getEmail());
+                });
+
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
+        mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
     }
 
     @Test

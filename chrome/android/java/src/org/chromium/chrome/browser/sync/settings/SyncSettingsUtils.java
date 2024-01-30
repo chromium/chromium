@@ -533,4 +533,43 @@ public class SyncSettingsUtils {
         // The preference cannot be fulfilled, use the other displayable string.
         return canShowFullName ? fullName : accountEmail;
     }
+
+    // Return true if a UI indication should be shown on identity errors for signed in non-syncing
+    // users.
+    // TODO(crbug.com/1503649): Return UI error type so callers can take appropriate action.
+    public static boolean hasIdentityError(SyncService syncService) {
+        // TODO(crbug.com/1503649): Convert this to an assertion instead.
+        if (syncService == null) {
+            return false;
+        }
+
+        // Do not show identity error if sync is enabled.
+        if (syncService.isSyncFeatureEnabled()) {
+            return false;
+        }
+
+        if (syncService.isEngineInitialized()
+                && (syncService.isPassphraseRequiredForPreferredDataTypes()
+                        || syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
+                        || syncService.isTrustedVaultRecoverabilityDegraded())) {
+            return true;
+        }
+
+        // TODO(crbug.com/1503649): Use GetUserActionableError() instead.
+        if (syncService.requiresClientUpgrade()) {
+            return true;
+        }
+
+        // TODO(crbug.com/1503649): Not every auth error might need UI indication.
+        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
+            return true;
+        }
+
+        // TODO(crbug.com/1503649): Not every unrecoverable error might need UI indication.
+        if (syncService.hasUnrecoverableError()) {
+            return true;
+        }
+
+        return false;
+    }
 }

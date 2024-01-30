@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.sync.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
@@ -13,6 +15,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -43,6 +46,7 @@ public class SignInPreference extends Preference
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
     private boolean mIsShowingSigninPromo;
+    private boolean mShowAlertIcon;
 
     private PrefService mPrefService;
     private ProfileDataCache mProfileDataCache;
@@ -148,7 +152,7 @@ public class SignInPreference extends Preference
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
-        setViewEnabled(false);
+        setViewEnabledAndShowAlertIcon(/* enabled= */ false, /* alertIconVisible= */ false);
         setOnPreferenceClickListener(
                 pref -> {
                     ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
@@ -167,7 +171,7 @@ public class SignInPreference extends Preference
 
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        setViewEnabled(true);
+        setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ false);
         setOnPreferenceClickListener(
                 pref ->
                         SyncConsentActivityLauncherImpl.get()
@@ -190,19 +194,27 @@ public class SignInPreference extends Preference
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         setFragment(AccountManagementFragment.class.getName());
         setIcon(profileData.getImage());
-        setViewEnabled(true);
+        setViewEnabledAndShowAlertIcon(
+                /* enabled= */ true,
+                /* alertIconVisible= */ ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+                        && SyncSettingsUtils.hasIdentityError(mSyncService));
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
     }
 
     // This just changes visual representation. Actual enabled flag in preference stays
-    // always true to receive clicks (necessary to show "Managed by administrator" toast).
-    private void setViewEnabled(boolean enabled) {
-        if (mViewEnabled == enabled) {
+    // always true to receive clicks (necessary to show "Managed by administrator" toast). This also
+    // sets the visibility of the alert icon.
+    private void setViewEnabledAndShowAlertIcon(boolean enabled, boolean alertIconVisible) {
+        assert enabled || !alertIconVisible
+                : "Alert icon should not be made visible if the view is disabled.";
+        if (mViewEnabled == enabled && mShowAlertIcon == alertIconVisible) {
             return;
         }
         mViewEnabled = enabled;
+        mShowAlertIcon = alertIconVisible;
         notifyChanged();
     }
 
@@ -210,6 +222,9 @@ public class SignInPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         ViewUtils.setEnabledRecursive(holder.itemView, mViewEnabled);
+
+        ImageView alertIcon = (ImageView) holder.findViewById(R.id.alert_icon);
+        alertIcon.setVisibility(mShowAlertIcon ? View.VISIBLE : View.GONE);
     }
 
     // SyncService.SyncStateChangedListener implementation.
