@@ -514,25 +514,39 @@ const GURL& WebViewInternalExecuteCodeFunction::GetWebViewSrc() const {
   return guest_src_;
 }
 
-bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
+bool WebViewInternalExecuteCodeFunction::LoadFileForEmbedder(
     const std::string& file_src,
-    WebUIURLFetcher::WebUILoadFileCallback callback) {
+    LoadFileCallback callback) {
   WebViewGuest* guest =
       WebViewGuest::FromInstanceID(source_process_id(), guest_instance_id_);
-  if (!guest || host_id().type != mojom::HostID::HostType::kWebUi)
+  if (!guest || host_id().type == mojom::HostID::HostType::kExtensions) {
     return false;
+  }
 
   GURL owner_base_url(guest->GetOwnerSiteURL().GetWithEmptyPath());
   GURL file_url(owner_base_url.Resolve(file_src));
 
-  url_fetcher_ = std::make_unique<WebUIURLFetcher>(
-      source_process_id(), render_frame_host()->GetRoutingID(), file_url,
-      std::move(callback));
+  switch (host_id().type) {
+    case mojom::HostID::HostType::kExtensions:
+      NOTREACHED();
+      return false;
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+      url_fetcher_ = std::make_unique<ControlledFrameEmbedderURLFetcher>(
+          source_process_id(), render_frame_host()->GetRoutingID(), file_url,
+          std::move(callback));
+      break;
+    case mojom::HostID::HostType::kWebUi:
+      url_fetcher_ = std::make_unique<WebUIURLFetcher>(
+          source_process_id(), render_frame_host()->GetRoutingID(), file_url,
+          std::move(callback));
+      break;
+  }
   url_fetcher_->Start();
+
   return true;
 }
 
-void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
+void WebViewInternalExecuteCodeFunction::DidLoadFileForEmbedder(
     const std::string& file,
     bool success,
     std::unique_ptr<std::string> data) {
@@ -551,12 +565,13 @@ void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
 bool WebViewInternalExecuteCodeFunction::LoadFile(const std::string& file,
                                                   std::string* error) {
   if (!extension()) {
-    if (LoadFileForWebUI(
+    if (LoadFileForEmbedder(
             *details_->file,
             base::BindOnce(
-                &WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI, this,
-                file)))
+                &WebViewInternalExecuteCodeFunction::DidLoadFileForEmbedder,
+                this, file))) {
       return true;
+    }
 
     *error = ErrorUtils::FormatErrorMessage(kLoadFileError, file);
     return false;
