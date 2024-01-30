@@ -50,7 +50,7 @@ void LensRegionSearchController::Start(content::WebContents* web_contents,
   if (!web_contents || in_capture_mode_) {
     return;
   }
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser) {
     return;
   }
