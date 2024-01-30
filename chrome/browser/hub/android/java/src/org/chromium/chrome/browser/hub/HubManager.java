@@ -30,4 +30,7 @@ public interface HubManager {
     /** Returns a supplier that contains true when the Hub is visible and false otherwise. */
     @NonNull
     ObservableSupplier<Boolean> getHubVisibilitySupplier();
+
+    /** Sets the status indicator height. */
+    void setStatusIndicatorHeight(int height);
 }

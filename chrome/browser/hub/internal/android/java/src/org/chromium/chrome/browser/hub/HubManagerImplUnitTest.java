@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -229,5 +230,51 @@ public class HubManagerImplUnitTest {
         assertTrue(hubController.onHubLayoutBackPressed());
 
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusIndicatorHeight() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
+        HubManagerImpl hubManager =
+                new HubManagerImpl(
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
+        hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
+
+        HubController hubController = hubManager.getHubController();
+        hubController.setHubLayoutController(mHubLayoutController);
+        hubController.onHubLayoutShow();
+
+        int statusIndicatorHeight = 50;
+        hubManager.setStatusIndicatorHeight(statusIndicatorHeight);
+        FrameLayout containerView = hubController.getContainerView();
+        assertEquals(
+                statusIndicatorHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        mRootView.addView(containerView);
+        assertEquals(
+                statusIndicatorHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        statusIndicatorHeight = 0;
+        hubManager.setStatusIndicatorHeight(statusIndicatorHeight);
+        assertEquals(
+                statusIndicatorHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+
+        mRootView.removeView(containerView);
+        assertEquals(
+                statusIndicatorHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
     }
 }

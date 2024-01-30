@@ -263,10 +263,12 @@ public class HubLayout extends Layout implements HubLayoutController {
 
             mRootView.setVisibility(View.VISIBLE);
             containerView.setVisibility(View.INVISIBLE);
-            mRootView.addView(
-                    containerView,
-                    /* index= */ 0,
-                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            LayoutParams params = (LayoutParams) containerView.getLayoutParams();
+            // TODO(crbug/1523037): Change this to an assert and fix any broken tests.
+            if (params == null) {
+                params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            }
+            mRootView.addView(containerView, /* index= */ 0, params);
 
             // For start surface transitions the behavior prior to Hub is to instantly switch
             // between layouts. Ideally, there should be a coordinated fade between the layouts, but

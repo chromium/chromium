@@ -1081,10 +1081,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                         mStatusIndicatorHeight = indicatorHeight;
                         updateTopControlsHeight();
+                        HubManager hubManager = mHubManagerSupplier.get();
+                        if (hubManager != null) {
+                            hubManager.setStatusIndicatorHeight(indicatorHeight);
+                        }
                     }
                 };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
         mStatusIndicatorCoordinator.addObserver(mStatusBarColorController);
+        mHubManagerSupplier.onAvailable(
+                hubManager -> {
+                    hubManager.setStatusIndicatorHeight(mStatusIndicatorHeight);
+                });
 
         ObservableSupplierImpl<Boolean> isUrlBarFocusedSupplier = new ObservableSupplierImpl<>();
         isUrlBarFocusedSupplier.set(mToolbarManager.isUrlBarFocused());
