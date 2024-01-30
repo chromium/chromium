@@ -220,6 +220,7 @@ build_webui_tests("build") {
     "os_apps_page/app_management_page/supported_links_item_test.ts",
     "os_apps_page/app_management_page/test_plugin_vm_browser_proxy.ts",
 
+    "os_apps_page/app_notifications_page/app_notification_row_test.ts",
     "os_apps_page/app_notifications_page/app_notifications_manager_subpage_test.ts",
     "os_apps_page/app_notifications_page/app_notifications_subpage_test.ts",
     "os_apps_page/app_notifications_page/fake_app_notification_handler.ts",

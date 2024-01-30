@@ -1045,6 +1045,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
       "os_apps_page/app_management_page/supported_links_item_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppNotificationsPageAppNotificationRow) {
+  RunSettingsTest(
+      "os_apps_page/app_notifications_page/app_notification_row_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
                        OsAppsPageAppNotificationsSubpage) {
   RunSettingsTest(

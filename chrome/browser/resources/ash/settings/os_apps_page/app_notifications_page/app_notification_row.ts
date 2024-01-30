@@ -21,7 +21,7 @@ import {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notif
 import {getTemplate} from './app_notification_row.html.js';
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
-class AppNotificationRowElement extends PolymerElement {
+export class AppNotificationRowElement extends PolymerElement {
   static get is() {
     return 'app-notification-row';
   }
@@ -45,28 +45,34 @@ class AppNotificationRowElement extends PolymerElement {
 
   app: App;
   private checked_: boolean;
-  private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
+  private mojoInterfaceProvider_: AppNotificationsHandlerInterface =
+      getAppNotificationProvider();
 
   static get observers() {
-    return ['isNotificationPermissionEnabled_(app.notificationPermission.*)'];
+    return ['updateToggleState_(app.notificationPermission.*)'];
   }
 
-  constructor() {
-    super();
+  override ready(): void {
+    super.ready();
 
-    this.mojoInterfaceProvider_ = getAppNotificationProvider();
+    this.addEventListener('click', this.onToggleChangeByUser_.bind(this));
   }
 
-  private isNotificationPermissionEnabled_(): void {
+  private updateToggleState_(): void {
     this.checked_ = isPermissionEnabled(this.app.notificationPermission.value);
   }
 
-  private onNotificationRowClicked_(): void {
+  /**
+   * Called when a user toggles the notification on/off via click or keypress.
+   */
+  private onToggleChangeByUser_(): void {
     const permission = this.app.notificationPermission;
+    if (permission.isManaged) {
+      return;
+    }
 
     if (isBoolValue(permission.value)) {
-      permission.value =
-          createBoolPermissionValue(this.checked_ ? false : true);
+      permission.value = createBoolPermissionValue(!this.checked_);
     } else if (isTriStateValue(permission.value)) {
       permission.value = createTriStatePermissionValue(
           this.checked_ ? TriState.kBlock : TriState.kAllow);
