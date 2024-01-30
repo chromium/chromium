@@ -304,7 +304,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       htmlTag = 'div';
     }
 
-    if (!chrome.readingMode.linksEnabled && htmlTag === 'a') {
+    if (!this.shouldShowLinks() && htmlTag === 'a') {
       htmlTag = 'span';
     }
 
@@ -328,6 +328,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.appendChildSubtrees_(element, nodeId);
     return element;
+  }
+
+  // TODO(crbug.com/1442693): Potentially hide links during distillation.
+  private shouldShowLinks(): boolean {
+    // Links should only show when Read Aloud is paused.
+    return chrome.readingMode.linksEnabled && this.paused;
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
@@ -394,7 +400,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
       this.synth.cancel();
-      this.onSpeechFinished();
+      this.clearReadAloudState();
     }
   }
 
@@ -551,6 +557,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // word so that speech doesn't resume in the middle of the word?
     this.synth.pause();
     this.paused = true;
+
+    // Restore links if they're enabled when speech pauses.
+    if (chrome.readingMode.linksEnabled) {
+      this.updateContent();
+    }
   }
 
   playNextGranularity() {
@@ -573,6 +584,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.speechStarted && this.paused) {
       this.synth.resume();
       this.paused = false;
+      // Hide links when speech resumes.
+      if (chrome.readingMode.linksEnabled) {
+        this.updateContent();
+      }
       return;
     }
     const shadowRoot = this.shadowRoot;
@@ -581,6 +596,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     assert(container);
     if (container.textContent) {
       this.paused = false;
+      // Hide links when speech begins playing.
+      if (chrome.readingMode.linksEnabled) {
+        this.updateContent();
+      }
 
       // Gather all the messages that can be played. We need nodes, rather
       // than just text because we need to add a span to the current sentence
@@ -794,6 +813,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private onSpeechFinished() {
+    this.clearReadAloudState();
+
+    // Hide links when speech finishes playing.
+    if (chrome.readingMode.linksEnabled) {
+      this.updateContent();
+    }
+  }
+
+  private clearReadAloudState() {
     this.speechStarted = false;
     this.paused = true;
     this.previousHighlight_ = [];
