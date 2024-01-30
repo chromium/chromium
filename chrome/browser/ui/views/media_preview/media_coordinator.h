@@ -38,7 +38,6 @@ class MediaCoordinator {
 
   MediaCoordinator(ViewType view_type,
                    views::View& parent_view,
-                   std::optional<size_t> index,
                    bool is_subsection,
                    EligibleDevices eligible_devices,
                    PrefService& prefs);

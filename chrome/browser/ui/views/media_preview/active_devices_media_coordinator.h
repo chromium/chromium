@@ -47,7 +47,6 @@ class ActiveDevicesMediaCoordinator
 
   base::WeakPtr<content::WebContents> web_contents_;
   MediaCoordinator::ViewType view_type_;
-  raw_ptr<views::View> parent_view_;
   blink::mojom::MediaStreamType stream_type_;
   raw_ptr<views::View> container_;
   base::flat_map<std::string, std::unique_ptr<MediaCoordinator>>

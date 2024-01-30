@@ -105,11 +105,12 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 
-  MaybeAddMediaPreview(web_contents);
-
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
+
+  MaybeAddMediaPreview(web_contents);
+
   // TODO(crbug.com/1225563): Consider to use permission specific text.
   AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
@@ -211,15 +212,17 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
     return;
   }
 
-  AddChildView(PageInfoViewFactory::CreateSeparator(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-
   auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
                        ? MediaCoordinator::ViewType::kCameraOnly
                        : MediaCoordinator::ViewType::kMicOnly;
   active_devices_media_preview_coordinator_.emplace(web_contents, view_type,
                                                     /*parent_view=*/this);
+
+  AddChildView(PageInfoViewFactory::CreateSeparator(
+                   ChromeLayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)))
+      ->GetProperty(views::kMarginsKey)
+      ->set_top(0);
 #endif
 }
 

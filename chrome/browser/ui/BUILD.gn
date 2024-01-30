@@ -4783,6 +4783,8 @@ static_library("ui") {
       "views/media_preview/mic_preview/mic_mediator.h",
       "views/media_preview/mic_preview/mic_view_controller.cc",
       "views/media_preview/mic_preview/mic_view_controller.h",
+      "views/media_preview/scroll_media_preview.cc",
+      "views/media_preview/scroll_media_preview.h",
     ]
     deps += [
       "//components/capture_mode",

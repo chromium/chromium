@@ -56,6 +56,10 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
+#endif
+
 namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
@@ -255,7 +259,6 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
 }
 
 void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
-
     std::vector<std::string> requested_audio_capture_device_ids,
     std::vector<std::string> requested_video_capture_device_ids,
     size_t index) {
@@ -271,7 +274,8 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
   }
 
   media_preview_coordinator_.emplace(
-      view_type.value(), *this, index,
+      view_type.value(),
+      *scroll_media_preview::CreateScrollViewAndGetContents(*this, index),
       /*is_subsection=*/false,
       MediaCoordinator::EligibleDevices{
           /*cameras=*/requested_video_capture_device_ids,

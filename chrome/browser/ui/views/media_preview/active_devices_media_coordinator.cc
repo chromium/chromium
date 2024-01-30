@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,15 +43,15 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
     MediaCoordinator::ViewType view_type,
     views::View* parent_view)
     : view_type_(view_type),
-      parent_view_(parent_view),
       stream_type_(view_type_ == MediaCoordinator::ViewType::kCameraOnly
                        ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
                        : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
   CHECK(web_contents);
   web_contents_ = web_contents->GetWeakPtr();
 
-  CHECK(parent_view_);
-  container_ = parent_view_->AddChildView(std::make_unique<MediaView>());
+  CHECK(parent_view);
+  container_ =
+      scroll_media_preview::CreateScrollViewAndGetContents(*parent_view);
   CHECK(container_);
 
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
@@ -131,7 +132,6 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
   media_coordinators_.emplace(
       coordinator_key, std::make_unique<MediaCoordinator>(
                            view_type_, *container_,
-                           /*index=*/std::nullopt,
                            /*is_subsection=*/true, eligible_devices, *prefs));
 }
 

@@ -99,9 +99,5 @@ gfx::Size VideoStreamView::CalculatePreferredSize() const {
   return gfx::Size(width(), GetHeightForWidth(width()));
 }
 
-void VideoStreamView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  has_updated_preferred_size_ = false;
-}
-
 BEGIN_METADATA(VideoStreamView)
 END_METADATA
