@@ -69,13 +69,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
             TemplateURLPrepopulateData::yahoo_fr.keyword);
 }
 
-// TODO(crbug.com/1520740): Fails in Mac builds.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
-#else
-#define MAYBE_LoadKeywordData LoadKeywordData
-#endif
-IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, MAYBE_LoadKeywordData) {
+IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, LoadKeywordData) {
   const TemplateURL* loaded_dse =
       template_url_service()->GetDefaultSearchProvider();
   EXPECT_EQ(loaded_dse->prepopulate_id(),
