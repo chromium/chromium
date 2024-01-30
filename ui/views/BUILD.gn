@@ -1565,9 +1565,11 @@ test("views_unittests") {
   }
 }
 
-nocompile_source_set("views_nocompile_tests") {
-  sources = [ "view_nocompile.nc" ]
-  deps = [ ":views" ]
+if (enable_nocompile_tests) {
+  nocompile_source_set("views_nocompile_tests") {
+    sources = [ "view_nocompile.nc" ]
+    deps = [ ":views" ]
+  }
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must
