@@ -1158,8 +1158,8 @@ LayoutUnit FlexibleBoxAlgorithm::InitialContentPositionOffset(
   if (data.Distribution() == ContentDistributionType::kSpaceEvenly) {
     if (available_free_space > 0 && number_of_items)
       return available_free_space / (number_of_items + 1);
-    // Fallback to 'center'
-    return available_free_space / 2;
+    // Fallback to 'safe center'
+    return (available_free_space / 2).ClampNegativeToZero();
   }
   return LayoutUnit();
 }
