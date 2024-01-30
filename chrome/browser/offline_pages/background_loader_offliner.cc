@@ -21,6 +21,7 @@
 #include "chrome/browser/offline_pages/offliner_helper.h"
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -461,6 +462,11 @@ void BackgroundLoaderOffliner::ResetLoader() {
   loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
       browser_context_);
   loader_->SetDelegate(this);
+
+  // Initialize web contents settings.
+  renderer_preferences_util::UpdateFromSystemSettings(
+      loader_->web_contents()->GetMutableRendererPrefs(),
+      Profile::FromBrowserContext(browser_context_));
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       loader_->web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
