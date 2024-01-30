@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/action_view_interface.h"
 
 class Browser;
 class PinnedToolbarActionsContainer;

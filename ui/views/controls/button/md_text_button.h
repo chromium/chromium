@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/focus_ring.h"

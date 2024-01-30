@@ -11,7 +11,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/actions/actions.h"
-#include "ui/views/action_view_controller.h"
+#include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/examples/example_base.h"

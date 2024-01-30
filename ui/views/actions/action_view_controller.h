@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ACTION_VIEW_CONTROLLER_H_
-#define UI_VIEWS_ACTION_VIEW_CONTROLLER_H_
+#ifndef UI_VIEWS_ACTIONS_ACTION_VIEW_CONTROLLER_H_
+#define UI_VIEWS_ACTIONS_ACTION_VIEW_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -16,6 +16,12 @@
 #include "ui/views/views_export.h"
 
 /////////////////////////////////////////////////////////////////////////////
+// ActionViewController is the main view controller to be instantiated or
+// subclassed. It should outlive all the views it manages. Call
+// CreateActionViewRelationship(..) to link a view to an action item. Under
+// the hood the ActionViewController creates the appropriate templated
+// ActionViewControllerTemplate for all classes of views.
+//
 // To allow ActionViewController to support a new view class, implement an
 // ActionViewInterface class for the view class. See action_view_interface.h.
 // ui/views/controls/button/button.* has a concrete example.
@@ -131,10 +137,6 @@ class VIEWS_EXPORT ActionViewControllerTemplate
   base::CallbackListSubscription view_changed_subscription_;
 };
 
-// ActionViewController is the main view controller to be instantiated or
-// subclassed. It should outlive all the views it manages. Under the hood it
-// creates the appropriate templated ActionViewControllerTemplate for all
-// classes of views.
 class VIEWS_EXPORT ActionViewController {
  public:
   ActionViewController();
@@ -158,4 +160,4 @@ class VIEWS_EXPORT ActionViewController {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_ACTION_VIEW_CONTROLLER_H_
+#endif  // UI_VIEWS_ACTIONS_ACTION_VIEW_CONTROLLER_H_

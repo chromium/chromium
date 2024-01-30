@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/action_view_interface.h"
+#include "ui/views/actions/action_view_interface.h"
 
 #include "ui/actions/actions.h"
 
