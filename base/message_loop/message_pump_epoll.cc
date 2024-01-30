@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -88,7 +89,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
 void MessagePumpEpoll::Run(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RunState run_state(delegate);
-  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
+  AutoReset<raw_ptr<RunState>> auto_reset_run_state(&run_state_, &run_state);
   for (;;) {
     // Do some work and see if the next task is ready right away.
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();

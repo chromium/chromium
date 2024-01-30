@@ -248,10 +248,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   std::unique_ptr<MessagePumpEpoll> epoll_pump_;
 #endif
 
-  // State for the current invocation of Run(). null if not running.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   // This flag is set if libevent has processed I/O events.
   bool processed_io_events_ = false;

@@ -339,8 +339,9 @@ class TRIVIAL_ABI scoped_refptr {
   }
 
  protected:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union, #addr-of, #global-scope
+  // RAW_PTR_EXCLUSION: scoped_refptr<> has its own UaF prevention mechanism.
+  // Given how widespread it is, we it'll likely a perf regression for no
+  // additional security benefit.
   RAW_PTR_EXCLUSION T* ptr_ = nullptr;
 
  private:

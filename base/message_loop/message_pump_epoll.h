@@ -135,9 +135,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
 
   // Null if Run() is not currently executing. Otherwise it's a pointer into the
   // stack of the innermost nested Run() invocation.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   // This flag is set if epoll has processed I/O events.
   bool processed_io_events_ = false;

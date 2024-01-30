@@ -55,8 +55,7 @@ class ScopedCoMem {
   T* get() const { return mem_ptr_; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of, #union
+  // RAW_PTR_EXCLUSION: #addr-of, #union
   RAW_PTR_EXCLUSION T* mem_ptr_;
 };
 
