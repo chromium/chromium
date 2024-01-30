@@ -1005,24 +1005,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.IsPopupOpen" enum="Boolean" expires_after="2024-02-01">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    Whether the omnibox popup (a.k.a. dropdown) is open at the time the user
-    used the omnibox to go somewhere. It can be closed if, for instance, the
-    user clicked in the omnibox and hit return to reload the same page. Also,
-    because paste-and-search/paste-and-go actions ignore the current content of
-    the omnibox dropdown (if it is open) when they happen, we pretend the
-    dropdown is closed when logging these.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.JustDeletedText" enum="Boolean"
     expires_after="2024-07-21">
   <owner>jdonnelly@chromium.org</owner>
