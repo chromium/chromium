@@ -91,7 +91,7 @@ void MojoAudioInputStream::OnStreamCreated(
   mojo::PlatformHandle socket_handle(foreign_socket->Take());
 
   std::move(stream_created_callback_)
-      .Run({absl::in_place, std::move(shared_memory_region),
+      .Run({std::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted);
 }

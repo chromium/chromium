@@ -77,7 +77,7 @@ bool CodecSupportsFormat(const AudioDecoderConfig& config,
   return false;
 }
 
-absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
+std::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
     const AudioDecoderConfig& config) {
   switch (config.codec()) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -107,7 +107,7 @@ absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
       return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_Dolby_AC4};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

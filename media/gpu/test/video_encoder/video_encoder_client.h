@@ -69,9 +69,9 @@ struct VideoEncoderClientConfig {
   // The desired framerate in frames/second.
   uint32_t framerate = 30.0;
   // The interval of calling VideoEncodeAccelerator::Encode(). If this is
-  // absl::nullopt, Encode() is called once VideoEncodeAccelerator consumes
+  // std::nullopt, Encode() is called once VideoEncodeAccelerator consumes
   // the previous VideoFrames.
-  absl::optional<base::TimeDelta> encode_interval = absl::nullopt;
+  std::optional<base::TimeDelta> encode_interval = std::nullopt;
   // The number of frames to be encoded. This can be more than the number of
   // frames in the video, and in which case the VideoEncoderClient loops the
   // video during encoding.

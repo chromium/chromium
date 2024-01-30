@@ -297,7 +297,7 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
     int frames_per_second,
     GetPerfInfoCallback got_info_cb,
     bool database_success,
-    absl::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats_collection) {
+    std::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats_collection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(got_info_cb);
   DCHECK_EQ(db_init_status_, COMPLETE);
@@ -309,16 +309,16 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
     // Create a vector filled with smoothness
     // predictions for all entries in the collection. `specific_key_index`
     // will point to the entry corresponding to the requested `video_key`. If
-    // there is no entry corresponding to `video_key` an absl::nullopt will be
+    // there is no entry corresponding to `video_key` an std::nullopt will be
     // inserted as a placeholder.
-    std::vector<absl::optional<bool>> smooth_per_pixel;
-    absl::optional<size_t> specific_key_index;
+    std::vector<std::optional<bool>> smooth_per_pixel;
+    std::optional<size_t> specific_key_index;
     for (auto const& [key_index, video_stats_entry] : *stats_collection) {
       if (key_index >= video_key.pixels && !specific_key_index) {
         specific_key_index = smooth_per_pixel.size();
         if (key_index > video_key.pixels) {
           // No exact match found, insert a nullopt.
-          smooth_per_pixel.push_back(absl::nullopt);
+          smooth_per_pixel.push_back(std::nullopt);
         }
       }
       smooth_per_pixel.push_back(PredictSmooth(
@@ -328,7 +328,7 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
       // Pixels for the specific key is higher than any pixels number that
       // exists in the database.
       specific_key_index = smooth_per_pixel.size();
-      smooth_per_pixel.push_back(absl::nullopt);
+      smooth_per_pixel.push_back(std::nullopt);
     }
 
     if (smooth_per_pixel[*specific_key_index].has_value()) {
@@ -339,7 +339,7 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
 
     // Traverse from highest pixels value to lowest and propagate smooth=true,
     // override smooth=false.
-    absl::optional<bool> previous_entry;
+    std::optional<bool> previous_entry;
     for (auto it = smooth_per_pixel.rbegin(); it != smooth_per_pixel.rend();
          ++it) {
       if (previous_entry.has_value() && previous_entry.value()) {
@@ -476,7 +476,7 @@ void WebrtcVideoPerfHistory::OnGotStatsForSave(
     const WebrtcVideoStatsDB::VideoStats& new_stats,
     base::OnceClosure save_done_cb,
     bool success,
-    absl::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats) {
+    std::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_init_status_, COMPLETE);
 

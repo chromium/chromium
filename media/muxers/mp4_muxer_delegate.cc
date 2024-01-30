@@ -339,7 +339,7 @@ Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
 void Mp4MuxerDelegate::AddVideoFrame(
     const Muxer::VideoParameters& params,
     std::string encoded_data,
-    absl::optional<VideoEncoder::CodecDescription> codec_description,
+    std::optional<VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   if (!video_track_index_.has_value()) {
@@ -467,7 +467,7 @@ void Mp4MuxerDelegate::BuildVideoFragment(std::string encoded_data,
 void Mp4MuxerDelegate::AddAudioFrame(
     const AudioParameters& params,
     std::string encoded_data,
-    absl::optional<AudioEncoder::CodecDescription> codec_description,
+    std::optional<AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   if (!audio_track_index_.has_value()) {
     DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();

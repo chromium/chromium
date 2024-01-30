@@ -13,6 +13,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "media/base/media_export.h"
@@ -21,7 +22,6 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
 #include "media/video/h264_bit_reader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -216,10 +216,10 @@ struct MEDIA_EXPORT H264SPS {
                                              bool* constraint_set3_flag);
 
   // Helpers to compute frequently-used values. These methods return
-  // absl::nullopt if they encounter integer overflow. They do not verify that
+  // std::nullopt if they encounter integer overflow. They do not verify that
   // the results are in-spec for the given profile or level.
-  absl::optional<gfx::Size> GetCodedSize() const;
-  absl::optional<gfx::Rect> GetVisibleRect() const;
+  std::optional<gfx::Size> GetCodedSize() const;
+  std::optional<gfx::Rect> GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
   VideoChromaSampling GetChromaSampling() const;
 

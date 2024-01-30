@@ -14,7 +14,7 @@
 namespace media::cast {
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(
-    absl::optional<base::TimeTicks> ticks) {
+    std::optional<base::TimeTicks> ticks) {
   if (!ticks) {
     return openscreen::Clock::time_point::min();
   }

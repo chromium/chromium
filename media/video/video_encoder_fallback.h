@@ -52,7 +52,7 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
                                   EncoderStatusCB done_cb);
   void CallInfo(const VideoEncoderInfo& info);
   void CallOutput(VideoEncoderOutput output,
-                  absl::optional<CodecDescription> desc);
+                  std::optional<CodecDescription> desc);
 
   std::unique_ptr<VideoEncoder> encoder_;
 

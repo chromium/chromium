@@ -233,7 +233,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
       override;
   base::TimeDelta GetStartTime() const override;
   int64_t GetMemoryUsage() const override;
-  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
+  std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
 
   // Calls |encrypted_media_init_data_cb_| with the initialization data

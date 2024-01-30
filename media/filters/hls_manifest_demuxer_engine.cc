@@ -4,6 +4,7 @@
 
 #include "media/filters/hls_manifest_demuxer_engine.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -26,7 +27,6 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -598,7 +598,7 @@ void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
                                   this);
 
   renditions_[role]->UpdatePlaylist(std::move(maybe_playlist).value(),
-                                    absl::nullopt);
+                                    std::nullopt);
   std::move(cb).Run();
 }
 

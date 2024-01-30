@@ -153,7 +153,7 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
 }
 
 void CourierRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {}
+    std::optional<base::TimeDelta> latency_hint) {}
 
 void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
@@ -169,10 +169,10 @@ void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   }
 
   state_ = STATE_FLUSHING;
-  absl::optional<uint32_t> flush_audio_count;
+  std::optional<uint32_t> flush_audio_count;
   if (audio_demuxer_stream_adapter_)
     flush_audio_count = audio_demuxer_stream_adapter_->SignalFlush(true);
-  absl::optional<uint32_t> flush_video_count;
+  std::optional<uint32_t> flush_video_count;
   if (video_demuxer_stream_adapter_)
     flush_video_count = video_demuxer_stream_adapter_->SignalFlush(true);
   // Makes sure flush count is valid if stream is available or both audio and
@@ -543,7 +543,7 @@ void CourierRenderer::OnBufferingStateChange(
     OnFatalError(RPC_INVALID);
     return;
   }
-  absl::optional<BufferingState> state = media::cast::ToMediaBufferingState(
+  std::optional<BufferingState> state = media::cast::ToMediaBufferingState(
       message->rendererclient_onbufferingstatechange_rpc().state());
   BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN;
   if (!state.has_value())

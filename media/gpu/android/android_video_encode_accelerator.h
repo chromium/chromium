@@ -53,7 +53,7 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
  private:
@@ -133,7 +133,7 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   bool error_occurred_ = false;
 
   // Required for encoders which are missing stride information.
-  absl::optional<gfx::Size> aligned_size_;
+  std::optional<gfx::Size> aligned_size_;
 };
 
 }  // namespace media

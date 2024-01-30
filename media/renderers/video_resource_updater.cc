@@ -89,7 +89,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
     DCHECK_EQ(num_textures, 1u);
-    absl::optional<gfx::BufferFormat> buffer_format =
+    std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
     if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
@@ -749,7 +749,7 @@ void VideoResourceUpdater::AppendQuads(
     gfx::Rect quad_rect,
     gfx::Rect visible_quad_rect,
     const gfx::MaskFilterInfo& mask_filter_info,
-    absl::optional<gfx::Rect> clip_rect,
+    std::optional<gfx::Rect> clip_rect,
     bool contents_opaque,
     float draw_opacity,
     int sorting_context_id) {

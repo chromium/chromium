@@ -375,7 +375,7 @@ scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
   return frame;
 }
 
-absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
+std::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     gfx::BufferUsage buffer_usage) {
@@ -384,8 +384,8 @@ absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
   auto frame =
       CreatePlatformVideoFrame(pixel_format, coded_size, gfx::Rect(coded_size),
                                coded_size, base::TimeDelta(), buffer_usage);
-  return frame ? absl::make_optional<VideoFrameLayout>(frame->layout())
-               : absl::nullopt;
+  return frame ? std::make_optional<VideoFrameLayout>(frame->layout())
+               : std::nullopt;
 }
 
 gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(

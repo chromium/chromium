@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -169,7 +169,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // specified layout including offsets and plane sizes. Except that VideoFrame
   // knows how to compute plane sizes, this method should be in
   // `VideoFrameLayout`, probably just folded into `CreateWithStrides()`.
-  static absl::optional<VideoFrameLayout> CreateFullySpecifiedLayoutWithStrides(
+  static std::optional<VideoFrameLayout> CreateFullySpecifiedLayoutWithStrides(
       VideoPixelFormat format,
       const gfx::Size& coded_size);
 
@@ -502,11 +502,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     color_space_ = color_space;
   }
 
-  const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }
 
-  void set_hdr_metadata(const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -577,7 +577,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return const_cast<uint8_t*>(data_[plane]);
   }
 
-  const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
+  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
     return wrapped_frame_ ? wrapped_frame_->ycbcr_info() : ycbcr_info_;
   }
 
@@ -686,7 +686,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   size_t BitDepth() const;
 
   // Provide the sampler conversion information for the frame.
-  void set_ycbcr_info(const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+  void set_ycbcr_info(const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
     ycbcr_info_ = ycbcr_info;
   }
 
@@ -849,7 +849,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const ID unique_id_;
 
   gfx::ColorSpace color_space_;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // The format type used to create shared images. When set to Legacy creates
   // shared images with current path; when set to SharedImageFormat with/without
@@ -859,7 +859,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       SharedImageFormatType::kLegacy;
 
   // Sampler conversion information which is used in vulkan context for android.
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> private_data_;

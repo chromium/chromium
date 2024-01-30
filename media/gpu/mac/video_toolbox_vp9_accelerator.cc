@@ -15,7 +15,7 @@ namespace media {
 
 VideoToolboxVP9Accelerator::VideoToolboxVP9Accelerator(
     std::unique_ptr<MediaLog> media_log,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
+    std::optional<gfx::HDRMetadata> hdr_metadata,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
@@ -153,7 +153,7 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
       break;
   }
 
-  absl::optional<gfx::HDRMetadata> hdr_metadata = pic->hdr_metadata();
+  std::optional<gfx::HDRMetadata> hdr_metadata = pic->hdr_metadata();
   if (!hdr_metadata) {
     hdr_metadata = hdr_metadata_;
   }
@@ -170,7 +170,7 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
         CreateFormatExtensions(kCMVideoCodecType_VP9, profile,
                                pic->frame_hdr->bit_depth, color_space,
-                               hdr_metadata, absl::nullopt);
+                               hdr_metadata, std::nullopt);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
           << "Failed to create format extensions";

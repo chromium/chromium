@@ -13,7 +13,7 @@ namespace media {
 
 VideoToolboxAV1Accelerator::VideoToolboxAV1Accelerator(
     std::unique_ptr<MediaLog> media_log,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
+    std::optional<gfx::HDRMetadata> hdr_metadata,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
@@ -180,7 +180,7 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
       break;
   }
 
-  absl::optional<gfx::HDRMetadata> hdr_metadata = pic.hdr_metadata();
+  std::optional<gfx::HDRMetadata> hdr_metadata = pic.hdr_metadata();
   if (!hdr_metadata) {
     hdr_metadata = hdr_metadata_;
   }

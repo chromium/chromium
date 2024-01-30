@@ -6,6 +6,7 @@
 #define MEDIA_WEBRTC_AUDIO_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/files/file.h"
@@ -19,7 +20,6 @@
 #include "media/base/audio_push_fifo.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "media/webrtc/webrtc_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing_statistics.h"
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   using DeliverProcessedAudioCallback =
       base::RepeatingCallback<void(const media::AudioBus& audio_bus,
                                    base::TimeTicks audio_capture_time,
-                                   absl::optional<double> new_volume)>;
+                                   std::optional<double> new_volume)>;
 
   using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
 
@@ -138,12 +138,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // May be called on any thread.
   webrtc::AudioProcessingStats GetStats();
 
-  absl::optional<webrtc::AudioProcessing::Config>
+  std::optional<webrtc::AudioProcessing::Config>
   GetAudioProcessingModuleConfigForTesting() const {
     if (webrtc_audio_processing_) {
       return webrtc_audio_processing_->GetConfig();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The format of audio input to and output from the processor; constant
@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Returns an input format compatible with the specified audio processing
   // settings and device parameters. Returns nullopt if no compatible format can
   // be produced.
-  static absl::optional<AudioParameters> ComputeInputFormat(
+  static std::optional<AudioParameters> ComputeInputFormat(
       const AudioParameters& device_format,
       const AudioProcessingSettings& settings);
 
@@ -181,13 +181,13 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // to the highest observed value of num_preferred_channels as long as it does
   // not exceed the number of channels of the output format.
   // Called on the capture thread.
-  absl::optional<double> ProcessData(const float* const* process_ptrs,
-                                     int process_frames,
-                                     base::TimeDelta capture_delay,
-                                     double volume,
-                                     bool key_pressed,
-                                     int num_preferred_channels,
-                                     float* const* output_ptrs);
+  std::optional<double> ProcessData(const float* const* process_ptrs,
+                                    int process_frames,
+                                    base::TimeDelta capture_delay,
+                                    double volume,
+                                    bool key_pressed,
+                                    int num_preferred_channels,
+                                    float* const* output_ptrs);
 
   // Used as callback from |playout_fifo_| in OnPlayoutData().
   // Called on the playout thread.
@@ -265,7 +265,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   base::TimeDelta unbuffered_playout_delay_ = base::TimeDelta();
 
   // The sample rate of incoming playout audio.
-  absl::optional<int> playout_sample_rate_hz_ = absl::nullopt;
+  std::optional<int> playout_sample_rate_hz_ = std::nullopt;
 
   // Counters to avoid excessively logging errors on a real-time thread.
   size_t apm_playout_error_code_log_count_ = 0;

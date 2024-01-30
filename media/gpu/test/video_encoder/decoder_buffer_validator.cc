@@ -94,7 +94,7 @@ bool DecoderBufferValidator::WaitUntilDone() {
 H264Validator::H264Validator(VideoCodecProfile profile,
                              const gfx::Rect& visible_rect,
                              size_t num_temporal_layers,
-                             absl::optional<uint8_t> level)
+                             std::optional<uint8_t> level)
     : DecoderBufferValidator(visible_rect, num_temporal_layers),
       cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),

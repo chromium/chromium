@@ -15,34 +15,34 @@ namespace media::cast {
 namespace {
 
 template <typename T>
-absl::optional<media::AudioDecoderConfig> ExtractAudioConfig(
+std::optional<media::AudioDecoderConfig> ExtractAudioConfig(
     const T& config_container) {
   if (!config_container.has_audio_decoder_config()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& audio_message = config_container.audio_decoder_config();
   media::AudioDecoderConfig config;
   ConvertProtoToAudioDecoderConfig(audio_message, &config);
   if (!config.IsValidConfig()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return config;
 }
 
 template <typename T>
-absl::optional<media::VideoDecoderConfig> ExtractVideoConfig(
+std::optional<media::VideoDecoderConfig> ExtractVideoConfig(
     const T& config_container) {
   if (!config_container.has_video_decoder_config()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& video_message = config_container.video_decoder_config();
   media::VideoDecoderConfig config;
   ConvertProtoToVideoDecoderConfig(video_message, &config);
   if (!config.IsValidConfig()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return config;

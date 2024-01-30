@@ -16,6 +16,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -330,7 +330,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
       size_t num_surfaces,
-      const absl::optional<gfx::Size>& visible_size);
+      const std::optional<gfx::Size>& visible_size);
 
   // Attempts to create a protected session that will be attached to the
   // decoding context to enable encrypted video decoding. If it cannot be
@@ -395,8 +395,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
       size_t num_surfaces,
-      const absl::optional<gfx::Size>& visible_size,
-      const absl::optional<uint32_t>& va_fourcc);
+      const std::optional<gfx::Size>& visible_size,
+      const std::optional<uint32_t>& va_fourcc);
 
   // Creates a self-releasing VASurface from |pixmap|. The created VASurface
   // shares the ownership of the underlying buffer represented by |pixmap|. The
@@ -520,7 +520,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // linear size of the resulted encoded frame is larger than |target_size|.
   [[nodiscard]] virtual bool DownloadFromVABuffer(
       VABufferID buffer_id,
-      absl::optional<VASurfaceID> sync_surface_id,
+      std::optional<VASurfaceID> sync_surface_id,
       uint8_t* target_ptr,
       size_t target_size,
       size_t* coded_data_size);
@@ -558,8 +558,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   [[nodiscard]] virtual bool BlitSurface(
       const VASurface& va_surface_src,
       const VASurface& va_surface_dest,
-      absl::optional<gfx::Rect> src_rect = absl::nullopt,
-      absl::optional<gfx::Rect> dest_rect = absl::nullopt
+      std::optional<gfx::Rect> src_rect = std::nullopt,
+      std::optional<gfx::Rect> dest_rect = std::nullopt
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ,
       VAProtectedSessionID va_protected_session_id = VA_INVALID_ID

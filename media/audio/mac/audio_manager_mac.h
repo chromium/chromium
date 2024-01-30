@@ -207,12 +207,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
 
   // Returns a string with a unique device ID for the given |device_id|, or no
   // value if there is an error.
-  virtual absl::optional<std::string> GetDeviceUniqueID(
-      AudioObjectID device_id);
+  virtual std::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
 
   // Returns the transport type of the given |device_id|, or no value if
   // |device_id| has no source or if there is an error.
-  virtual absl::optional<uint32_t> GetDeviceTransportType(
+  virtual std::optional<uint32_t> GetDeviceTransportType(
       AudioObjectID device_id);
   void ShutdownOnAudioThread() override;
 

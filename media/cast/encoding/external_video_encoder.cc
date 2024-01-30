@@ -181,7 +181,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       // uint32_t bitrates
       video_encode_accelerator_->RequestEncodingParametersChange(
           Bitrate::ConstantBitrate(base::saturated_cast<uint32_t>(bit_rate)),
-          static_cast<uint32_t>(max_frame_rate_ + 0.5), absl::nullopt);
+          static_cast<uint32_t>(max_frame_rate_ + 0.5), std::nullopt);
     }
   }
 

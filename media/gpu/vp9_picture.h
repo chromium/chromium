@@ -6,11 +6,11 @@
 #define MEDIA_GPU_VP9_PICTURE_H_
 
 #include <memory>
+#include <optional>
 
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/codec_picture.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -33,7 +33,7 @@ class MEDIA_GPU_EXPORT VP9Picture : public CodecPicture {
 
   std::unique_ptr<Vp9FrameHeader> frame_hdr;
 
-  absl::optional<Vp9Metadata> metadata_for_encoding;
+  std::optional<Vp9Metadata> metadata_for_encoding;
 
  protected:
   ~VP9Picture() override;

@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -42,14 +42,14 @@ class MEDIA_EXPORT Mp4MuxerContext {
   void SetVideoTrack(Track track);
   void SetAudioTrack(Track track);
 
-  absl::optional<Track> GetVideoTrack() const;
-  absl::optional<Track> GetAudioTrack() const;
+  std::optional<Track> GetVideoTrack() const;
+  std::optional<Track> GetAudioTrack() const;
 
   OutputPositionTracker& GetOutputPositionTracker() const;
 
  private:
-  absl::optional<Track> video_track_;
-  absl::optional<Track> audio_track_;
+  std::optional<Track> video_track_;
+  std::optional<Track> audio_track_;
 
   std::unique_ptr<OutputPositionTracker> output_position_tracker_;
 

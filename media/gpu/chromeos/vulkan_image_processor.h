@@ -6,7 +6,9 @@
 #define MEDIA_GPU_CHROMEOS_VULKAN_IMAGE_PROCESSOR_H_
 
 #include <vulkan/vulkan_core.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "gpu/vulkan/vulkan_command_buffer.h"
@@ -16,7 +18,6 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"

@@ -5,22 +5,21 @@
 #ifndef MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 #define MEDIA_AUDIO_AUDIO_THREAD_HANG_MONITOR_H_
 
-#include "base/memory/raw_ptr.h"
-#include "media/audio/audio_manager.h"
-
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "media/audio/audio_manager.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -68,7 +67,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // zero, a default value is used.
   static Ptr Create(
       HangAction hang_action,
-      absl::optional<base::TimeDelta> hang_deadline,
+      std::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
@@ -98,7 +97,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
 
   AudioThreadHangMonitor(
       HangAction hang_action,
-      absl::optional<base::TimeDelta> hang_deadline,
+      std::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner);
 

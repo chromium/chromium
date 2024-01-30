@@ -32,7 +32,7 @@ HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
       media_playlist_uri_(std::move(media_playlist_uri)),
       last_download_time_(base::TimeTicks::Now()) {}
 
-absl::optional<base::TimeDelta> HlsRenditionImpl::GetDuration() {
+std::optional<base::TimeDelta> HlsRenditionImpl::GetDuration() {
   return duration_;
 }
 
@@ -76,7 +76,7 @@ void HlsRenditionImpl::CheckState(
     auto remaining_manifest_time =
         segments_->QueueSize() * segments_->GetMaxDuration();
     auto pause_duration = base::TimeTicks::Now() - *livestream_pause_time_;
-    livestream_pause_time_ = absl::nullopt;
+    livestream_pause_time_ = std::nullopt;
 
     if (pause_duration < remaining_manifest_time) {
       // our pause was so short that we are still within the segments currently

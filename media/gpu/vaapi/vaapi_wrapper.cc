@@ -2072,7 +2072,7 @@ VaapiWrapper::CreateContextAndScopedVASurfaces(
     const gfx::Size& size,
     const std::vector<SurfaceUsageHint>& usage_hints,
     size_t num_surfaces,
-    const absl::optional<gfx::Size>& visible_size) {
+    const std::optional<gfx::Size>& visible_size) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   if (va_context_id_ != VA_INVALID_ID) {
@@ -2083,7 +2083,7 @@ VaapiWrapper::CreateContextAndScopedVASurfaces(
 
   std::vector<std::unique_ptr<ScopedVASurface>> scoped_va_surfaces =
       CreateScopedVASurfaces(va_format, size, usage_hints, num_surfaces,
-                             visible_size, /*va_fourcc=*/absl::nullopt);
+                             visible_size, /*va_fourcc=*/std::nullopt);
   if (scoped_va_surfaces.empty())
     return {};
 
@@ -2873,7 +2873,7 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
 
 bool VaapiWrapper::DownloadFromVABuffer(
     VABufferID buffer_id,
-    absl::optional<VASurfaceID> sync_surface_id,
+    std::optional<VASurfaceID> sync_surface_id,
     uint8_t* target_ptr,
     size_t target_size,
     size_t* coded_data_size) NO_THREAD_SAFETY_ANALYSIS {
@@ -2988,8 +2988,8 @@ bool VaapiWrapper::GetMinAV1SegmentSize(VideoCodecProfile profile,
 
 bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
-                               absl::optional<gfx::Rect> src_rect,
-                               absl::optional<gfx::Rect> dest_rect
+                               std::optional<gfx::Rect> src_rect,
+                               std::optional<gfx::Rect> dest_rect
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                ,
                                VAProtectedSessionID va_protected_session_id
@@ -3315,8 +3315,8 @@ VaapiWrapper::CreateScopedVASurfaces(
     const gfx::Size& size,
     const std::vector<SurfaceUsageHint>& usage_hints,
     size_t num_surfaces,
-    const absl::optional<gfx::Size>& visible_size,
-    const absl::optional<uint32_t>& va_fourcc) {
+    const std::optional<gfx::Size>& visible_size,
+    const std::optional<uint32_t>& va_fourcc) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   if (kInvalidVaRtFormat == va_rt_format) {

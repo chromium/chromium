@@ -246,7 +246,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   int outputs_count = 0;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
@@ -283,7 +283,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         if (output.timestamp == base::Milliseconds(1))
           EXPECT_EQ(output.temporal_id, 1);
         else if (output.timestamp == base::Milliseconds(2))
@@ -360,7 +360,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
@@ -392,7 +392,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -425,7 +425,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, EncodingError) {
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -467,7 +467,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
       ExpectedColorSpace(pixel_format, expected_input_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
@@ -499,7 +499,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
@@ -558,7 +558,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         VideoPixelFormat source_frame_format = get_source_format(outputs_count);
         const gfx::ColorSpace expected_color_space =
             ExpectedColorSpace(source_frame_format, expected_input_format);
@@ -605,7 +605,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         output_timestamps.push_back(output.timestamp);
       });
@@ -648,13 +648,13 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB first_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         output_count_before_change++;
       });
   VideoEncoder::OutputCB second_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.color_space, expected_color_space);
         output_count_after_change++;
       });
@@ -702,13 +702,13 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptions_ChangeFrameSize) {
 
   VideoEncoder::OutputCB first_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.encoded_size, first_frame_size);
         output_count_before_change++;
       });
   VideoEncoder::OutputCB second_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.encoded_size, second_frame_size);
         output_count_after_change++;
       });
@@ -750,13 +750,13 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
 
   VideoEncoder::OutputCB first_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.encoded_size, first_frame_size);
         output_count_before_change++;
       });
   VideoEncoder::OutputCB second_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          absl::optional<VideoEncoder::CodecDescription>) {
+          std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_EQ(output.encoded_size, second_frame_size);
         output_count_after_change++;
       });

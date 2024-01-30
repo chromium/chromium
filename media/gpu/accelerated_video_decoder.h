@@ -88,7 +88,7 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   virtual VideoColorSpace GetVideoColorSpace() const = 0;
   // Returns in-band HDR metadata if it exists. Clients must prefer in-band
   // metadata over container metadata to support dynamic HDR metadata.
-  virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const = 0;
+  virtual std::optional<gfx::HDRMetadata> GetHDRMetadata() const = 0;
   virtual size_t GetRequiredNumOfPictures() const = 0;
   virtual size_t GetNumReferenceFrames() const = 0;
 

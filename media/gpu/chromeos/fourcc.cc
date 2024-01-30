@@ -17,7 +17,7 @@
 namespace media {
 
 // static
-absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
+std::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
   switch (fourcc) {
     case YU12:
     case YV12:
@@ -40,11 +40,11 @@ absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
       return Fourcc(static_cast<Value>(fourcc));
   }
   DVLOGF(4) << "Unmapped fourcc: " << FourccToString(fourcc);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
+std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
     VideoPixelFormat pixel_format,
     bool single_planar) {
   if (single_planar) {
@@ -149,7 +149,7 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
   }
   DVLOGF(3) << "Unmapped " << VideoPixelFormatToString(pixel_format) << " for "
             << (single_planar ? "single-planar" : "multi-planar");
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
@@ -209,7 +209,7 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 // static
-absl::optional<Fourcc> Fourcc::FromV4L2PixFmt(uint32_t v4l2_pix_fmt) {
+std::optional<Fourcc> Fourcc::FromV4L2PixFmt(uint32_t v4l2_pix_fmt) {
   // We can do that because we adopt the same internal definition of Fourcc as
   // V4L2.
   return FromUint32(v4l2_pix_fmt);
@@ -222,7 +222,7 @@ uint32_t Fourcc::ToV4L2PixFmt() const {
 }
 #elif BUILDFLAG(USE_VAAPI)
 // static
-absl::optional<Fourcc> Fourcc::FromVAFourCC(uint32_t va_fourcc) {
+std::optional<Fourcc> Fourcc::FromVAFourCC(uint32_t va_fourcc) {
   switch (va_fourcc) {
     case VA_FOURCC_I420:
       return Fourcc(YU12);
@@ -240,10 +240,10 @@ absl::optional<Fourcc> Fourcc::FromVAFourCC(uint32_t va_fourcc) {
       return Fourcc(AR24);
   }
   DVLOGF(3) << "Unmapped VAFourCC: " << FourccToString(va_fourcc);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
+std::optional<uint32_t> Fourcc::ToVAFourCC() const {
   switch (value_) {
     case YU12:
       return VA_FOURCC_I420;
@@ -274,15 +274,15 @@ absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
       // VAAPI does not know about these formats, so signal this by returning
       // nullopt.
       DVLOGF(3) << "Fourcc not convertible to VaFourCC: " << ToString();
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED() << "Unmapped Fourcc: " << ToString();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #endif  // BUILDFLAG(USE_VAAPI)
 
-absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
+std::optional<Fourcc> Fourcc::ToSinglePlanar() const {
   switch (value_) {
     case YU12:
     case YV12:
@@ -309,7 +309,7 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case Q08C:
     case Q10C:
     case UNDEFINED:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

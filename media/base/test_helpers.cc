@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -34,7 +34,7 @@ namespace {
 
 std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> FourColors(
     bool opaque,
-    absl::optional<uint32_t> xor_mask) {
+    std::optional<uint32_t> xor_mask) {
   DCHECK_EQ(xor_mask.value_or(0) >> 24, 0u)
       << "Alpha byte must be zero when using `xor_mask`";
   const uint32_t mask = xor_mask.value_or(0);
@@ -109,7 +109,7 @@ void I4xxxRect(VideoFrame* dest_frame,
 }
 
 void FillFourColorsFrameYUV(VideoFrame& dest_frame,
-                            absl::optional<uint32_t> xor_mask) {
+                            std::optional<uint32_t> xor_mask) {
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
          dest_frame.format() == PIXEL_FORMAT_NV12A ||
          dest_frame.format() == PIXEL_FORMAT_I420 ||
@@ -189,7 +189,7 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
 }
 
 void FillFourColorsFrameARGB(VideoFrame& dest_frame,
-                             absl::optional<uint32_t> xor_mask) {
+                             std::optional<uint32_t> xor_mask) {
   DCHECK(dest_frame.format() == PIXEL_FORMAT_ARGB ||
          dest_frame.format() == PIXEL_FORMAT_XRGB ||
          dest_frame.format() == PIXEL_FORMAT_ABGR ||
@@ -451,7 +451,7 @@ VideoDecoderConfig TestVideoConfig::NormalHdr(VideoCodec codec) {
   config.set_color_space_info(
       VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
   config.set_hdr_metadata(
-      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(absl::nullopt));
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
   return config;
 }
 
@@ -460,7 +460,7 @@ VideoDecoderConfig TestVideoConfig::NormalHdrEncrypted(VideoCodec codec) {
   config.set_color_space_info(
       VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
   config.set_hdr_metadata(
-      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(absl::nullopt));
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
   return config;
 }
 
@@ -787,7 +787,7 @@ std::unique_ptr<StrictMock<MockDemuxerStream>> CreateMockDemuxerStream(
   return stream;
 }
 
-void FillFourColors(VideoFrame& dest_frame, absl::optional<uint32_t> xor_mask) {
+void FillFourColors(VideoFrame& dest_frame, std::optional<uint32_t> xor_mask) {
   if (IsRGB(dest_frame.format())) {
     FillFourColorsFrameARGB(dest_frame, xor_mask);
   } else {

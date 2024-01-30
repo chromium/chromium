@@ -4,6 +4,7 @@
 
 #include "media/filters/manifest_demuxer.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -22,7 +23,6 @@
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -256,11 +256,11 @@ int64_t ManifestDemuxer::GetMemoryUsage() const {
   return demuxer_usage + impl_usage;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 ManifestDemuxer::GetContainerForMetrics() const {
   // TODO(crbug/1266991): Consider how this is used. HLS can involve multiple
   // stream types (mp2t, mp4, etc). Refactor to report something useful.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ManifestDemuxer::OnEnabledAudioTracksChanged(

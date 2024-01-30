@@ -407,17 +407,17 @@ base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
 }
 
 // static
-absl::optional<media::DecoderBufferSideData>
+std::optional<media::DecoderBufferSideData>
 StructTraits<media::stable::mojom::DecoderBufferDataView,
              scoped_refptr<media::DecoderBuffer>>::
     side_data(const scoped_refptr<media::DecoderBuffer>& input) {
   static_assert(
       std::is_same<decltype(input->side_data()),
-                   const absl::optional<media::DecoderBufferSideData>&>::value,
+                   const std::optional<media::DecoderBufferSideData>&>::value,
       "Unexpected type for input->side_data(). If you need to change this "
       "assertion, please contact chromeos-gfx-video@google.com.");
   if (input->end_of_stream()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return input->side_data();
 }
@@ -478,7 +478,7 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
                                                        back_discard);
   decoder_buffer->set_discard_padding(discard_padding);
 
-  absl::optional<media::DecoderBufferSideData> side_data;
+  std::optional<media::DecoderBufferSideData> side_data;
   if (!input.ReadSideData(&side_data)) {
     return false;
   }
@@ -622,7 +622,7 @@ StructTraits<media::stable::mojom::DecryptConfigDataView,
 }
 
 // static
-const absl::optional<media::EncryptionPattern>&
+const std::optional<media::EncryptionPattern>&
 StructTraits<media::stable::mojom::DecryptConfigDataView,
              std::unique_ptr<media::DecryptConfig>>::
     encryption_pattern(const std::unique_ptr<media::DecryptConfig>& input) {
@@ -671,7 +671,7 @@ bool StructTraits<media::stable::mojom::DecryptConfigDataView,
   if (!input.ReadSubsamples(&subsamples))
     return false;
 
-  absl::optional<media::EncryptionPattern> encryption_pattern;
+  std::optional<media::EncryptionPattern> encryption_pattern;
   if (!input.ReadEncryptionPattern(&encryption_pattern))
     return false;
   if (encryption_scheme != media::EncryptionScheme::kCbcs &&
@@ -950,7 +950,7 @@ const base::Value::List& StructTraits<media::stable::mojom::StatusDataDataView,
 }
 
 // static
-absl::optional<media::internal::StatusData> StructTraits<
+std::optional<media::internal::StatusData> StructTraits<
     media::stable::mojom::StatusDataDataView,
     media::internal::StatusData>::cause(const media::internal::StatusData&
                                             input) {
@@ -1037,7 +1037,7 @@ absl::optional<media::internal::StatusData> StructTraits<
     output_cause.group = std::string(media::DecoderStatusTraits::Group());
     return output_cause;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -1117,7 +1117,7 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
     if (!file) {
       return false;
     }
-    const absl::optional<int> line =
+    const std::optional<int> line =
         dict.FindInt(media::StatusConstants::kLineKey);
     if (!line) {
       return false;
@@ -1127,7 +1127,7 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
   if (!data.ReadData(&output->data))
     return false;
 
-  absl::optional<media::internal::StatusData> cause;
+  std::optional<media::internal::StatusData> cause;
   if (!data.ReadCause(&cause))
     return false;
 
@@ -1167,7 +1167,7 @@ mojo::OptionalAsPointer<const media::internal::StatusData> StructTraits<
 bool StructTraits<media::stable::mojom::StatusDataView, media::DecoderStatus>::
     Read(media::stable::mojom::StatusDataView data,
          media::DecoderStatus* output) {
-  absl::optional<media::internal::StatusData> internal;
+  std::optional<media::internal::StatusData> internal;
   if (!data.ReadInternal(&internal))
     return false;
   if (internal) {
@@ -1505,7 +1505,7 @@ StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
 }
 
 // static
-const absl::optional<gfx::HDRMetadata>& StructTraits<
+const std::optional<gfx::HDRMetadata>& StructTraits<
     media::stable::mojom::VideoDecoderConfigDataView,
     media::VideoDecoderConfig>::hdr_metadata(const media::VideoDecoderConfig&
                                                  input) {
@@ -1573,7 +1573,7 @@ bool StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
   if (!input.ReadColorSpaceInfo(&color_space))
     return false;
 
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  std::optional<gfx::HDRMetadata> hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
 

@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -25,8 +26,8 @@ class MEDIA_EXPORT H264POC {
   ~H264POC();
 
   // Returns the picture order count for a slice.
-  absl::optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
-                                             const H264SliceHeader& slice_hdr);
+  std::optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
+                                            const H264SliceHeader& slice_hdr);
 
   // As specified, the POC of a frame with MMCO5 changes (to zero) after
   // decoding. We instead return 0 immediately, and flag that this has occurred

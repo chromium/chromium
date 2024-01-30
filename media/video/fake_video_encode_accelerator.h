@@ -49,11 +49,11 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   bool IsGpuFrameResizeSupported() override;
   void Destroy() override;
 

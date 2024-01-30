@@ -301,7 +301,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < mailbox_holder.size(); i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    absl::optional<gfx::BufferFormat> buffer_format =
+    std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     if (!buffer_format)
       return false;
@@ -336,7 +336,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < media::VideoFrame::kMaxPlanes; i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
     if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
       return false;
 
@@ -364,7 +364,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
   frame->set_color_space(color_space);
 
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  std::optional<gfx::HDRMetadata> hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
   frame->set_hdr_metadata(std::move(hdr_metadata));

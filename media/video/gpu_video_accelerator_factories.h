@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +25,6 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -145,7 +145,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   //
   // TODO(sandersd): Remove Optional if/when all clients check
   // IsEncoderSupportKnown().
-  virtual absl::optional<VideoEncodeAccelerator::SupportedProfiles>
+  virtual std::optional<VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() = 0;
 
   // Returns true if GetVideoEncodeAcceleratorSupportedProfiles() is populated.

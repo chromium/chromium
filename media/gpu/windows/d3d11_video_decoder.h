@@ -303,7 +303,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // If set, this is the minimum number of picture buffers that we've seen
   // since the last time it was logged to UMA that are unused by both the
   // client and the decoder.  If unset, then no measurement has been made.
-  absl::optional<int> min_unused_buffers_;
+  std::optional<int> min_unused_buffers_;
 
   // Picture buffer usage is measured periodically after some number of decodes.
   // This tracks how many until the next measurement.  It's used strictly to

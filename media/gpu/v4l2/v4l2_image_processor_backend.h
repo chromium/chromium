@@ -5,13 +5,13 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_IMAGE_PROCESSOR_BACKEND_H_
 #define MEDIA_GPU_V4L2_V4L2_IMAGE_PROCESSOR_BACKEND_H_
 
+#include <linux/videodev2.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
-
-#include <linux/videodev2.h>
 
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,7 +22,6 @@
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -110,7 +109,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
     size_t output_buffer_id;
 
     // This is filled only if chrome tracing in "media" category is enabled.
-    absl::optional<base::TimeTicks> start_time;
+    std::optional<base::TimeTicks> start_time;
   };
 
   V4L2ImageProcessorBackend(scoped_refptr<V4L2Device> device,
@@ -141,7 +140,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // task to |device_task_runner_|.
   static void V4L2VFRecycleThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      absl::optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
+      std::optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
       V4L2ReadableBufferRef buf);
   void V4L2VFRecycleTask(V4L2ReadableBufferRef buf);
 

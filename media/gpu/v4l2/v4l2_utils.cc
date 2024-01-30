@@ -203,19 +203,19 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 }
 
 size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+  std::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
   if (fourcc && fourcc->IsMultiPlanar()) {
     return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
   }
   return 1u;
 }
 
-absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
+std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
     const struct v4l2_format& format) {
   if (!V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
     VLOGF(1) << "v4l2_buf_type is not multiplanar: " << std::hex << "0x"
              << format.type;
-    return absl::nullopt;
+    return std::nullopt;
   }
   const v4l2_pix_format_mplane& pix_mp = format.fmt.pix_mp;
   const uint32_t& pix_fmt = pix_mp.pixelformat;
@@ -223,7 +223,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (!video_fourcc) {
     VLOGF(1) << "Failed to convert pixel format to VideoPixelFormat: "
              << FourccToString(pix_fmt);
-    return absl::nullopt;
+    return std::nullopt;
   }
   const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
   const size_t num_buffers = pix_mp.num_planes;
@@ -231,14 +231,14 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (num_color_planes == 0) {
     VLOGF(1) << "Unsupported video format for NumPlanes(): "
              << VideoPixelFormatToString(video_format);
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (num_buffers > num_color_planes) {
     VLOGF(1) << "pix_mp.num_planes: " << num_buffers
              << " should not be larger than NumPlanes("
              << VideoPixelFormatToString(video_format)
              << "): " << num_color_planes;
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Reserve capacity in advance to prevent unnecessary vector reallocation.
   std::vector<ColorPlaneLayout> planes;
@@ -272,7 +272,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
         if (y_stride % 2 != 0 || pix_mp.height % 2 != 0) {
           VLOGF(1) << "Plane-Y stride and height should be even; stride: "
                    << y_stride << ", height: " << pix_mp.height;
-          return absl::nullopt;
+          return std::nullopt;
         }
         const int32_t half_stride = y_stride / 2;
         const size_t plane_0_area = y_stride_abs * pix_mp.height;
@@ -286,7 +286,7 @@ absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
       default:
         VLOGF(1) << "Cannot derive stride for each plane for pixel format "
                  << FourccToString(pix_fmt);
-        return absl::nullopt;
+        return std::nullopt;
     }
   }
 

@@ -9,13 +9,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -84,8 +84,8 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
   // Virtual for testing.
   virtual std::vector<AudioObjectID> GetAllAudioDeviceIDs();
   virtual bool IsOutputDevice(AudioObjectID id);
-  virtual absl::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
-                                                   bool is_input);
+  virtual std::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
+                                                  bool is_input);
   virtual OSStatus AddPropertyListener(
       AudioObjectID inObjectID,
       const AudioObjectPropertyAddress* inAddress,

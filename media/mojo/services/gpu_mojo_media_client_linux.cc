@@ -177,7 +177,7 @@ void NotifyPlatformDecoderSupport(
   }
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
@@ -195,7 +195,7 @@ GetPlatformSupportedVideoDecoderConfigs(
       return VideoDecoderPipeline::GetSupportedConfigs(decoder_implementation,
                                                        gpu_workarounds);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

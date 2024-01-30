@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_RENDERER_CLIENT_H_
 #define MEDIA_BASE_RENDERER_CLIENT_H_
 
+#include <optional>
+
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"
@@ -12,7 +14,6 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -64,7 +65,7 @@ class MEDIA_EXPORT RendererClient {
   // Called when the bucketed frames per second has changed.  |fps| will be
   // unset if the frame rate is unstable.  The duration used for the frame rate
   // is based on the wall clock time, not the media time.
-  virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
+  virtual void OnVideoFrameRateChange(std::optional<int> fps) = 0;
 };
 
 }  // namespace media

@@ -104,20 +104,20 @@ V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
 }
 
 // static
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 V4L2StatelessVideoDecoder::GetSupportedConfigs() {
   const scoped_refptr<StatelessDevice> device =
       base::MakeRefCounted<StatelessDevice>();
   if (device->Open()) {
     const auto configs = GetSupportedDecodeProfiles(device.get());
     if (configs.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return ConvertFromSupportedProfiles(configs, false);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -221,7 +221,7 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
   if (current_decode_request_) {
     std::move(current_decode_request_->decode_cb)
         .Run(DecoderStatus::Codes::kAborted);
-    current_decode_request_ = absl::nullopt;
+    current_decode_request_ = std::nullopt;
   }
 
   // Then clear out all of the ones that are queued up.
@@ -543,9 +543,9 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
   CroStatus::Or<ImageProcessor::PixelLayoutCandidate> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
-          /*output_size=*/absl::nullopt, num_codec_reference_frames,
+          /*output_size=*/std::nullopt, num_codec_reference_frames,
           /*use_protected=*/false, /*need_aux_frame_pool=*/false,
-          /*allocator=*/absl::nullopt);
+          /*allocator=*/std::nullopt);
   if (!status_or_output_format.has_value()) {
     return false;
   }
@@ -681,7 +681,7 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
           // until they are dequeued.
           if (last_frame_id_generated_ != last_frame_id_dequeued_) {
             flush_cb_ = std::move(current_decode_request_->decode_cb);
-            current_decode_request_ = absl::nullopt;
+            current_decode_request_ = std::nullopt;
             done = true;
           }
         } else {
@@ -716,7 +716,7 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(current_decode_request_->decode_cb),
                                   decode_status));
-    current_decode_request_ = absl::nullopt;
+    current_decode_request_ = std::nullopt;
   }
 }
 

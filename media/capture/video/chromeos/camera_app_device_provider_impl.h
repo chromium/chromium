@@ -18,7 +18,7 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
     : public cros::mojom::CameraAppDeviceProvider {
  public:
   using WithRealIdCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&)>;
+      base::OnceCallback<void(const std::optional<std::string>&)>;
   using DeviceIdMappingCallback =
       base::RepeatingCallback<void(const std::string&, WithRealIdCallback)>;
 
@@ -48,14 +48,14 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
  private:
   void GetCameraAppDeviceWithDeviceId(
       GetCameraAppDeviceCallback callback,
-      const absl::optional<std::string>& device_id);
+      const std::optional<std::string>& device_id);
 
   void SetVirtualDeviceEnabledWithDeviceId(
       bool enable,
       SetVirtualDeviceEnabledCallback callback,
-      const absl::optional<std::string>& device_id);
+      const std::optional<std::string>& device_id);
   void IsDeviceInUseWithDeviceId(IsDeviceInUseCallback callback,
-                                 const absl::optional<std::string>& device_id);
+                                 const std::optional<std::string>& device_id);
 
   mojo::Remote<cros::mojom::CameraAppDeviceBridge> bridge_;
 

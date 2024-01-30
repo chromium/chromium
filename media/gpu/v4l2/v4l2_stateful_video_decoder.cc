@@ -226,11 +226,11 @@ class H264FrameReassembler {
     // Size in bytes of the NALU under analysis.
     off_t nalu_size;
   };
-  // Parses |data| and returns either absl::nullopt, if parsing |data| fails, or
+  // Parses |data| and returns either std::nullopt, if parsing |data| fails, or
   // a FrameBoundaryInfo describing the first |nalu_size| bytes of |data|.
   //
   // It is assumed that |data| contains an integer number of NALUs.
-  absl::optional<struct FrameBoundaryInfo> FindH264FrameBoundary(
+  std::optional<struct FrameBoundaryInfo> FindH264FrameBoundary(
       const uint8_t* const data,
       size_t size);
 
@@ -256,7 +256,7 @@ std::unique_ptr<VideoDecoderMixin> V4L2StatefulVideoDecoder::Create(
 }
 
 // static
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 V4L2StatefulVideoDecoder::GetSupportedConfigs() {
   SupportedVideoDecoderConfigs supported_media_configs;
 
@@ -264,7 +264,7 @@ V4L2StatefulVideoDecoder::GetSupportedConfigs() {
   base::ScopedFD device_fd(HANDLE_EINTR(
       open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
   if (!device_fd.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
@@ -715,7 +715,7 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   // size of the video, e.g. a 1080p sequence could have 1920x1080 "natural" or
   // |visible_rect|, but |coded_size| of 1920x1088 because of codec block
   // alignment of 16 samples.
-  absl::optional<gfx::Rect> visible_rect = CAPTURE_queue_->GetVisibleRect();
+  std::optional<gfx::Rect> visible_rect = CAPTURE_queue_->GetVisibleRect();
   if (!visible_rect) {
     return false;
   }
@@ -730,9 +730,9 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
       client_->PickDecoderOutputFormat(
           candidates, *visible_rect,
           aspect_ratio_.GetNaturalSize(*visible_rect),
-          /*output_size=*/absl::nullopt, num_codec_reference_frames,
+          /*output_size=*/std::nullopt, num_codec_reference_frames,
           /*use_protected=*/false, /*need_aux_frame_pool=*/false,
-          /*allocator=*/absl::nullopt);
+          /*allocator=*/std::nullopt);
   if (!status_or_output_format.has_value()) {
     return false;
   }
@@ -758,7 +758,7 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
                                       : VIDEO_MAX_FRAME;
 
   if (!use_v4l2_allocated_buffers) {
-    absl::optional<GpuBufferLayout> layout =
+    std::optional<GpuBufferLayout> layout =
         client_->GetVideoFramePool()->GetGpuBufferLayout();
     if (!layout.has_value()) {
       return false;
@@ -1094,7 +1094,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
     return false;
   }
 
-  for (absl::optional<V4L2WritableBufferRef> v4l2_buffer =
+  for (std::optional<V4L2WritableBufferRef> v4l2_buffer =
            OUTPUT_queue_->GetFreeBuffer();
        v4l2_buffer && !decoder_buffer_and_callbacks_.empty();
        v4l2_buffer = OUTPUT_queue_->GetFreeBuffer()) {
@@ -1225,7 +1225,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   return whole_frames;
 }
 
-absl::optional<struct H264FrameReassembler::FrameBoundaryInfo>
+std::optional<struct H264FrameReassembler::FrameBoundaryInfo>
 H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
                                             size_t data_size) {
   h264_parser_.SetStream(data, data_size);
@@ -1235,7 +1235,7 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
     if (result == H264Parser::kInvalidStream ||
         result == H264Parser::kUnsupportedStream) {
       LOG(ERROR) << "Could not parse bitstream.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (result == H264Parser::kEOStream) {
       NOTREACHED_NORETURN()
@@ -1267,7 +1267,7 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
         result = h264_parser_.ParseSPS(&sps_id_);
         if (result != H264Parser::kOk) {
           LOG(ERROR) << "Could not parse SPS header.";
-          return absl::nullopt;
+          return std::nullopt;
         }
         previous_slice_header_.reset();
         return FrameBoundaryInfo{.is_whole_frame = true,
@@ -1277,7 +1277,7 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
         result = h264_parser_.ParsePPS(&pps_id_);
         if (result != H264Parser::kOk) {
           LOG(ERROR) << "Could not parse PPS header.";
-          return absl::nullopt;
+          return std::nullopt;
         }
         previous_slice_header_.reset();
         return FrameBoundaryInfo{.is_whole_frame = true,

@@ -62,7 +62,7 @@ void FrameRateEstimator::AddSample(base::TimeDelta frame_duration) {
   most_recent_bucket_ = bucketed_fps_min;
 }
 
-absl::optional<int> FrameRateEstimator::ComputeFPS() {
+std::optional<int> FrameRateEstimator::ComputeFPS() {
   return most_recent_bucket_;
 }
 

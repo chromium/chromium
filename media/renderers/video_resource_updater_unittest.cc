@@ -962,7 +962,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
       /*transform=*/gfx::Transform(),
       /*quad_rect=*/gfx::Rect(video_frame->coded_size()),
       /*visible_quad_rect=*/gfx::Rect(video_frame->coded_size()),
-      gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
+      gfx::MaskFilterInfo(), /*clip_rect=*/std::nullopt,
       /*context_opaque=*/true, /*draw_opacity=*/1.0,
       /*sorting_context_id=*/0);
 

@@ -40,7 +40,7 @@ namespace {
 // This helper thunk wraps a WeakPtr into an 'Optional' value, so the WeakPtr is
 // only dereferenced after rescheduling the task on the specified task runner.
 template <typename F, typename... Args>
-void CallbackThunk(absl::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
+void CallbackThunk(std::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    F f,
                    Args... args) {

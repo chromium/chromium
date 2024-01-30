@@ -5,11 +5,12 @@
 #ifndef MEDIA_GPU_TEST_VIDEO_FRAME_HELPERS_H_
 #define MEDIA_GPU_TEST_VIDEO_FRAME_HELPERS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -67,7 +68,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
-    absl::optional<gfx::BufferUsage> dst_buffer_usage = absl::nullopt);
+    std::optional<gfx::BufferUsage> dst_buffer_usage = std::nullopt);
 
 // Create Dmabuf-backed VideoFrame from |src_frame|. The created VideoFrame
 // doesn't depend on |src_frame|'s lifetime. |src_frame| should be a
@@ -93,7 +94,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image);
 // and |alignment|. |plane_rows| is optional. If it is not nullptr, this fills
 // the number of rows of each plane into it. The created VideoFrameLayout
 // represents all the planes stored in a single physical buffer.
-absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
+std::optional<VideoFrameLayout> CreateVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& dimension,
     const uint32_t alignment = VideoFrame::kFrameAddressAlignment,

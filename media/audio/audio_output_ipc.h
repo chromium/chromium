@@ -5,6 +5,7 @@
 #ifndef MEDIA_AUDIO_AUDIO_OUTPUT_IPC_H_
 #define MEDIA_AUDIO_AUDIO_OUTPUT_IPC_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -13,7 +14,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 #include "media/base/output_device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

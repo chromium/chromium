@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <optional>
 #include <variant>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "media/video/h264_bit_reader.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h266_nalu_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -928,8 +928,8 @@ struct MEDIA_EXPORT H266SliceHeader {
   // 8.1.1 Below two are not parsed from bitstream. They
   // are knobs provided to decoder to explicitly control
   // whether we handle CRA and GDR as CLVS start, and
-  absl::optional<bool> handle_cra_as_clvs_start_flag;
-  absl::optional<bool> handle_gdr_as_clvs_start_flag;
+  std::optional<bool> handle_cra_as_clvs_start_flag;
+  std::optional<bool> handle_gdr_as_clvs_start_flag;
   // Actual used flags by parser.
   bool cra_as_clvs_start_flag;
   bool gdr_as_clvs_start_flag;

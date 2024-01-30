@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 #define MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -14,7 +16,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -90,8 +91,8 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   virtual void ReleaseAllFrames() = 0;
 
   // Detailed information of the allocated GpuBufferLayout. Only valid after a
-  // successful Initialize() call, otherwise returns absl::nullopt.
-  virtual absl::optional<GpuBufferLayout> GetGpuBufferLayout() = 0;
+  // successful Initialize() call, otherwise returns std::nullopt.
+  virtual std::optional<GpuBufferLayout> GetGpuBufferLayout() = 0;
 
   // Returns true if and only if the pool is a mock pool used for testing.
   virtual bool IsFakeVideoFramePool();

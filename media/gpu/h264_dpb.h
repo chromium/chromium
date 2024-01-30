@@ -94,7 +94,7 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
   // Position in DPB (i.e. index in DPB).
   int dpb_position;
 
-  absl::optional<H264Metadata> metadata_for_encoding;
+  std::optional<H264Metadata> metadata_for_encoding;
 
  protected:
   ~H264Picture() override;

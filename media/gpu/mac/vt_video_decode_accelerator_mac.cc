@@ -271,11 +271,11 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
     int bit_depth,
     media::VideoColorSpace color_space,
     media::VideoCodecProfile profile,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
+    std::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
       CreateFormatExtensions(kCMVideoCodecType_VP9, profile, bit_depth,
-                             color_space, hdr_metadata, absl::nullopt);
+                             color_space, hdr_metadata, std::nullopt);
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   if (!format_config) {
@@ -295,7 +295,7 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatAV1(
     int bit_depth,
     base::span<const uint8_t> av1c,
     media::VideoColorSpace color_space,
-    absl::optional<gfx::HDRMetadata> hdr_metadata,
+    std::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
   // Profile is unused since we provide the av1c box directly.
   base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
@@ -1211,7 +1211,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
 
           // Compute and store frame properties. |image_size| gets filled in
           // later, since it comes from the decoder configuration.
-          absl::optional<int32_t> pic_order_cnt =
+          std::optional<int32_t> pic_order_cnt =
               h264_poc_.ComputePicOrderCnt(sps, slice_hdr);
           if (!pic_order_cnt.has_value()) {
             WriteToMediaLog(MediaLogMessageLevel::kERROR,

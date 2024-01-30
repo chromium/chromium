@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/segment_stream.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/test_helpers.h"
@@ -12,7 +14,6 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 

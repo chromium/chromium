@@ -101,9 +101,9 @@ int64_t MediaUrlDemuxer::GetMemoryUsage() const {
   return 0;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 MediaUrlDemuxer::GetContainerForMetrics() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MediaUrlDemuxer::OnEnabledAudioTracksChanged(

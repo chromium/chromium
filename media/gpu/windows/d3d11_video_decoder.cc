@@ -779,7 +779,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
                           ? accelerated_video_decoder_->GetHDRMetadata()
                           : config_.hdr_metadata();
 
-  absl::optional<DXGI_HDR_METADATA_HDR10> display_metadata;
+  std::optional<DXGI_HDR_METADATA_HDR10> display_metadata;
   if (decoder_configurator_->TextureFormat() == DXGI_FORMAT_P010) {
     // For HDR formats, try to get the display metadata.  This may fail, which
     // is okay.  We'll just skip sending the metadata.

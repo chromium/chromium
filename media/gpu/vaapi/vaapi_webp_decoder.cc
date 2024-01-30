@@ -108,7 +108,7 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
     auto scoped_va_surfaces = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
         kWebPVARtFormat, new_visible_size,
         {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
-        /*visible_size=*/absl::nullopt);
+        /*visible_size=*/std::nullopt);
     if (scoped_va_surfaces.empty()) {
       VLOGF(1) << "CreateContextAndScopedVASurface() failed";
       return VaapiImageDecodeStatus::kSurfaceCreationFailed;

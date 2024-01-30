@@ -154,13 +154,13 @@ bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
   return true;
 }
 
-absl::optional<VaapiVideoEncoderDelegate::EncodeResult>
+std::optional<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::GetEncodeResult(
     std::unique_ptr<EncodeJob> encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::GetEncodeResult");
   if (encode_job->IsFrameDropped()) {
-    return absl::make_optional<EncodeResult>(nullptr,
-                                             GetMetadata(*encode_job, 0u));
+    return std::make_optional<EncodeResult>(nullptr,
+                                            GetMetadata(*encode_job, 0u));
   }
 
   const VASurfaceID va_surface_id = encode_job->input_surface_id();
@@ -168,12 +168,12 @@ VaapiVideoEncoderDelegate::GetEncodeResult(
       encode_job->coded_buffer_id(), va_surface_id);
   if (encoded_chunk_size == 0) {
     VLOGF(1) << "Invalid encoded chunk size";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto metadata = GetMetadata(*encode_job, encoded_chunk_size);
   BitrateControlUpdate(metadata);
-  return absl::make_optional<EncodeResult>(
+  return std::make_optional<EncodeResult>(
       std::move(*encode_job).CreateEncodeResult(metadata));
 }
 

@@ -239,7 +239,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
       override;
   base::TimeDelta GetStartTime() const override;
   int64_t GetMemoryUsage() const override;
-  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
+  std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
   void AbortPendingReads() override;
 

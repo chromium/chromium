@@ -6,6 +6,8 @@
 #define MEDIA_BASE_AUDIO_PARAMETERS_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +20,6 @@
 #include "media/base/channel_layout.h"
 #include "media/base/media_shmem_export.h"
 #include "media/base/sample_format.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -334,12 +335,12 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   }
   int frames_per_buffer() const { return frames_per_buffer_; }
 
-  absl::optional<HardwareCapabilities> hardware_capabilities() const {
+  std::optional<HardwareCapabilities> hardware_capabilities() const {
     return hardware_capabilities_;
   }
 
   void set_hardware_capabilities(
-      const absl::optional<HardwareCapabilities>& hwc) {
+      const std::optional<HardwareCapabilities>& hwc) {
     hardware_capabilities_ = hwc;
   }
 
@@ -389,7 +390,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Audio hardware specific parameters, these are treated as read-only and
   // changing them has no effect.
-  absl::optional<HardwareCapabilities> hardware_capabilities_;
+  std::optional<HardwareCapabilities> hardware_capabilities_;
 };
 
 // Comparison is useful when AudioParameters is used with std structures.

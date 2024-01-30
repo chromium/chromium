@@ -24,6 +24,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -34,7 +35,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log.h"
 #include "media/base/multi_channel_resampler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -89,7 +89,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // Sets a target queue latency. This target will be clamped and stored in
   // |playback_threshold_|. It may also cause an increase in |capacity_|. A
   // value of nullopt indicates the algorithm should restore the default value.
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint);
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint);
 
   // Sets a flag indicating whether apply pitch adjustments when playing back
   // at rates other than 1.0. Concretely, we use WSOLA when this is true, and
@@ -223,7 +223,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
 
   // Hint to adjust |playback_threshold_| as a means of controlling playback
   // start latency. See SetLatencyHint();
-  absl::optional<base::TimeDelta> latency_hint_;
+  std::optional<base::TimeDelta> latency_hint_;
 
   // Whether to apply pitch adjusments or not when playing back at rates other
   // than 1.0. In other words, we use WSOLA to preserve pitch when this is on,

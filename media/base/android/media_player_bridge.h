@@ -293,7 +293,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   std::unique_ptr<MediaPlayerListener> listener_;
 
   // Pending playback rate while player is preparing.
-  absl::optional<double> pending_playback_rate_;
+  std::optional<double> pending_playback_rate_;
 
   // Weak pointer passed to `listener_` for callbacks.
   // NOTE: Weak pointers must be invalidated before all other member variables.

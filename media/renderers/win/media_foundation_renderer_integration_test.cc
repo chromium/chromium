@@ -75,7 +75,7 @@ class MediaFoundationRendererIntegrationTest
 
  private:
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
-      absl::optional<RendererType> /*renderer_type*/) {
+      std::optional<RendererType> /*renderer_type*/) {
     LUID empty_luid{0, 0};
     auto renderer = std::make_unique<MediaFoundationRenderer>(
         task_environment_.GetMainThreadTaskRunner(),

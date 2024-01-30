@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "media/gpu/android/codec_output_buffer_renderer.h"
+
 #include <string.h>
+
+#include <optional>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
 
@@ -107,7 +109,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer() {
                                size(), &coded_size, &visible_rect)) {
       std::move(frame_info_callback_).Run(coded_size, visible_rect);
     } else {
-      std::move(frame_info_callback_).Run(absl::nullopt, absl::nullopt);
+      std::move(frame_info_callback_).Run(std::nullopt, std::nullopt);
     }
   }
 
@@ -140,7 +142,7 @@ bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
 void CodecOutputBufferRenderer::Invalidate() {
   phase_ = Phase::kInvalidated;
   if (frame_info_callback_) {
-    std::move(frame_info_callback_).Run(absl::nullopt, absl::nullopt);
+    std::move(frame_info_callback_).Run(std::nullopt, std::nullopt);
   }
 }
 

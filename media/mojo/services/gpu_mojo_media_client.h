@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_SERVICES_GPU_MOJO_MEDIA_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,7 +23,6 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class GpuMemoryBufferFactory;
@@ -111,7 +111,7 @@ void NotifyPlatformDecoderSupport(
 // supported profiles. Some platforms fall back to use the VDAVideoDecoder
 // so that implementation is shared, and its supported configs can be
 // queries using the |get_vda_configs| callback.
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
@@ -187,7 +187,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* interface_provider) final;
 
-  static absl::optional<SupportedVideoDecoderConfigs>
+  static std::optional<SupportedVideoDecoderConfigs>
   GetSupportedVideoDecoderConfigsStatic(
       base::WeakPtr<MediaGpuChannelManager> manager,
       const gpu::GpuPreferences& gpu_preferences,
@@ -196,7 +196,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
 
  private:
   // Cross-platform cache supported config cache.
-  absl::optional<SupportedVideoDecoderConfigs> supported_config_cache_;
+  std::optional<SupportedVideoDecoderConfigs> supported_config_cache_;
 
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;

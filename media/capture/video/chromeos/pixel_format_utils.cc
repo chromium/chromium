@@ -62,7 +62,7 @@ uint32_t PixFormatVideoToDrm(VideoPixelFormat from) {
   }
 }
 
-absl::optional<gfx::BufferFormat> PixFormatVideoToGfx(
+std::optional<gfx::BufferFormat> PixFormatVideoToGfx(
     VideoPixelFormat pixel_format) {
   switch (pixel_format) {
     case PIXEL_FORMAT_MJPEG:
@@ -70,7 +70,7 @@ absl::optional<gfx::BufferFormat> PixFormatVideoToGfx(
     case PIXEL_FORMAT_NV12:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

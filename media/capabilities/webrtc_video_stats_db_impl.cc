@@ -291,7 +291,7 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStats(
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
 
   // Convert from WebrtcVideoStatsEntryProto to VideoStatsEntry.
-  absl::optional<VideoStatsEntry> entry;
+  std::optional<VideoStatsEntry> entry;
   if (stats_proto && AreStatsValid(stats_proto.get())) {
     DCHECK(success);
     const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
@@ -326,7 +326,7 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
   pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
   // Convert from map of WebrtcVideoStatsEntryProto to VideoStatsCollection.
-  absl::optional<VideoStatsCollection> collection;
+  std::optional<VideoStatsCollection> collection;
   if (stats_proto_collection) {
     DCHECK(success);
     collection.emplace();
@@ -346,7 +346,7 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
         }
 
         if (!entry.empty()) {
-          absl::optional<int> pixels =
+          std::optional<int> pixels =
               VideoDescKey::ParsePixelsFromKey(pixel_key);
           if (pixels) {
             collection->insert({*pixels, std::move(entry)});

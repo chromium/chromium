@@ -239,7 +239,7 @@ void CameraHalDispatcherImpl::TryConnectToCameraService() {
 
   mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service;
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-      chromeos::mojo_services::kCrosCameraService, absl::nullopt,
+      chromeos::mojo_services::kCrosCameraService, std::nullopt,
       camera_service.InitWithNewPipeAndPassReceiver().PassPipe());
   proxy_task_runner_->PostTask(
       FROM_HERE,

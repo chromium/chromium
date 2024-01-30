@@ -60,7 +60,7 @@ class CAPTURE_EXPORT SampleBufferTransformer {
                    OSType destination_pixel_format,
                    const gfx::Size& destination_size,
                    int rotation_angle,
-                   absl::optional<size_t> buffer_pool_size = absl::nullopt);
+                   std::optional<size_t> buffer_pool_size = std::nullopt);
 
   // Converts the input buffer to an IOSurface-backed pixel buffer according to
   // current configurations. If no transformation is needed (input format is the

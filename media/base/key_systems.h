@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -108,7 +108,7 @@ MEDIA_EXPORT bool IsSupportedKeySystemWithInitDataType(
 // supported key systems.
 MEDIA_EXPORT std::string GetKeySystemNameForUMA(
     const std::string& key_system,
-    absl::optional<bool> use_hw_secure_codecs = absl::nullopt);
+    std::optional<bool> use_hw_secure_codecs = std::nullopt);
 
 // Returns an int mapping to `key_system` suitable for UKM reporting. CdmConfig
 // is not needed here because we can report CdmConfig fields in UKM directly.

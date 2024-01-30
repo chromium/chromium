@@ -494,7 +494,7 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
   static base::TimeDelta back_discard(
       const scoped_refptr<media::DecoderBuffer>& input);
 
-  static absl::optional<media::DecoderBufferSideData> side_data(
+  static std::optional<media::DecoderBufferSideData> side_data(
       const scoped_refptr<media::DecoderBuffer>& input);
 
   static bool Read(media::stable::mojom::DecoderBufferDataView input,
@@ -536,7 +536,7 @@ struct StructTraits<media::stable::mojom::DecryptConfigDataView,
   static const std::vector<media::SubsampleEntry>& subsamples(
       const std::unique_ptr<media::DecryptConfig>& input);
 
-  static const absl::optional<media::EncryptionPattern>& encryption_pattern(
+  static const std::optional<media::EncryptionPattern>& encryption_pattern(
       const std::unique_ptr<media::DecryptConfig>& input);
 
   static bool Read(media::stable::mojom::DecryptConfigDataView input,
@@ -724,7 +724,7 @@ struct StructTraits<media::stable::mojom::StatusDataDataView,
   static const base::Value::List& frames(
       const media::internal::StatusData& input);
 
-  static absl::optional<media::internal::StatusData> cause(
+  static std::optional<media::internal::StatusData> cause(
       const media::internal::StatusData& input);
 
   static const base::Value& data(const media::internal::StatusData& input);
@@ -1185,7 +1185,7 @@ struct StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
   static const gfx::ColorSpace color_space_info(
       const media::VideoDecoderConfig& input);
 
-  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+  static const std::optional<gfx::HDRMetadata>& hdr_metadata(
       const media::VideoDecoderConfig& input);
 
   static uint32_t level(const media::VideoDecoderConfig& input);

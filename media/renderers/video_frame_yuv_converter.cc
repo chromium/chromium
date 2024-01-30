@@ -110,7 +110,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    absl::optional<GrParams> gr_params) {
+    std::optional<GrParams> gr_params) {
   VideoFrameYUVConverter converter;
   return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
                                         dest_mailbox_holder, gr_params);
@@ -120,7 +120,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    absl::optional<GrParams> gr_params) {
+    std::optional<GrParams> gr_params) {
   DCHECK(video_frame);
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();

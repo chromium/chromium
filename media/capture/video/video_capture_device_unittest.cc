@@ -381,7 +381,7 @@ class VideoCaptureDeviceTest
     run_loop_->Run();
   }
 
-  absl::optional<VideoCaptureDeviceInfo> FindUsableDevice() {
+  std::optional<VideoCaptureDeviceInfo> FindUsableDevice() {
     base::RunLoop run_loop;
     video_capture_device_factory_->GetDevicesInfo(base::BindLambdaForTesting(
         [this, &run_loop](std::vector<VideoCaptureDeviceInfo> devices_info) {
@@ -392,7 +392,7 @@ class VideoCaptureDeviceTest
 
     if (devices_info_.empty()) {
       DLOG(WARNING) << "No camera found";
-      return absl::nullopt;
+      return std::nullopt;
     }
 #if BUILDFLAG(IS_ANDROID)
     for (const auto& device : devices_info_) {
@@ -407,7 +407,7 @@ class VideoCaptureDeviceTest
       }
     }
     DLOG(WARNING) << "No usable camera found";
-    return absl::nullopt;
+    return std::nullopt;
 #else
     auto device = devices_info_.front();
     DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
@@ -417,10 +417,10 @@ class VideoCaptureDeviceTest
 
   const VideoCaptureFormat& last_format() const { return last_format_; }
 
-  absl::optional<VideoCaptureDeviceInfo> GetFirstDeviceSupportingPixelFormat(
+  std::optional<VideoCaptureDeviceInfo> GetFirstDeviceSupportingPixelFormat(
       const VideoPixelFormat& pixel_format) {
     if (!FindUsableDevice())
-      return absl::nullopt;
+      return std::nullopt;
 
     for (const auto& device : devices_info_) {
       for (const auto& format : device.supported_formats) {
@@ -431,7 +431,7 @@ class VideoCaptureDeviceTest
     }
     DVLOG_IF(1, pixel_format != PIXEL_FORMAT_MAX)
         << VideoPixelFormatToString(pixel_format);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool IsCaptureSizeSupported(const VideoCaptureDeviceInfo& device_info,

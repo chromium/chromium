@@ -78,7 +78,7 @@ TEST(DecryptConfigTest, CbcsConstruction) {
 
   // Now without pattern.
   config = DecryptConfig::CreateCbcsConfig(kAlternateKeyId, kDefaultIV,
-                                           {{1, 2}}, absl::nullopt);
+                                           {{1, 2}}, std::nullopt);
   EXPECT_EQ(config->key_id(), kAlternateKeyId);
   EXPECT_EQ(config->iv(), kDefaultIV);
   EXPECT_EQ(config->subsamples().size(), 1u);
@@ -173,7 +173,7 @@ TEST(DecryptConfigTest, CbcsMatches) {
 
   // Without pattern.
   auto config6 = DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                                 absl::nullopt);
+                                                 std::nullopt);
   EXPECT_FALSE(config1->Matches(*config6));
   EXPECT_FALSE(config5->Matches(*config6));
   EXPECT_FALSE(config6->Matches(*config1));
@@ -192,7 +192,7 @@ TEST(DecryptConfigTest, Output) {
 
   // Simple 'cbcs' config.
   stream << *DecryptConfig::CreateCbcsConfig(kDefaultKeyId, kDefaultIV, {},
-                                             absl::nullopt);
+                                             std::nullopt);
 
   // 'cbcs' config with subsamples and pattern.
   stream << *DecryptConfig::CreateCbcsConfig(kAlternateKeyId, kAlternateIV,

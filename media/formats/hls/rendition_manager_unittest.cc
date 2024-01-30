@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/rendition_manager.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/media_util.h"
@@ -13,7 +15,6 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 
@@ -606,7 +607,7 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   // Unselect a preferred rendition, which switches back to english.
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/en/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(absl::nullopt);
+  rm.SetPreferredAudioRendition(std::nullopt);
 }
 
 }  // namespace media::hls

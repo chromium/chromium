@@ -1177,7 +1177,7 @@ int64_t FFmpegDemuxer::GetMemoryUsage() const {
   return allocation_size;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 FFmpegDemuxer::GetContainerForMetrics() const {
   return container();
 }

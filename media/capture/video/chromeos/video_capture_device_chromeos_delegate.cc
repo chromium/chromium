@@ -59,7 +59,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   friend class base::RefCountedThreadSafe<PowerManagerClientProxy>;
 
   using PendingTask = std::pair<base::OnceCallback<void()>,
-                                absl::optional<base::UnguessableToken>>;
+                                std::optional<base::UnguessableToken>>;
 
   ~PowerManagerClientProxy() override = default;
 
@@ -81,7 +81,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) final {
-    absl::optional<base::UnguessableToken> token =
+    std::optional<base::UnguessableToken> token =
         base::UnguessableToken::Create();
     chromeos::PowerManagerClient::Get()->BlockSuspend(
         *token, "VideoCaptureDeviceChromeOSDelegate");
@@ -105,7 +105,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
       task_queue_.push(
           {base::BindOnce(&VideoCaptureDeviceChromeOSDelegate::OpenDevice,
                           device_),
-           absl::nullopt});
+           std::nullopt});
     }
     device_task_runner_->PostTask(
         FROM_HERE,

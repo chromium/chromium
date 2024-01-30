@@ -36,9 +36,9 @@ void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
 
 // If conversion is needed for given profile and frame, returns the destination
 // pixel format. If no conversion is needed returns nullopt.
-absl::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
-                                                     VideoPixelFormat format,
-                                                     bool needs_resize) {
+std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
+                                                    VideoPixelFormat format,
+                                                    bool needs_resize) {
   switch (profile) {
     case AV1PROFILE_PROFILE_MAIN:
       if ((format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420) ||
@@ -56,7 +56,7 @@ absl::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       NOTREACHED();  // Checked during Initialize().
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 aom_img_fmt GetAomImgFormat(VideoPixelFormat format) {

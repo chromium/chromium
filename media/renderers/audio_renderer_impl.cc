@@ -686,7 +686,7 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
   auto params =
       (media_client ? media_client->GetAudioRendererAlgorithmParameters(
                           audio_parameters_)
-                    : absl::nullopt);
+                    : std::nullopt);
   if (params && !client_->IsVideoStreamAvailable()) {
     algorithm_ =
         std::make_unique<AudioRendererAlgorithm>(media_log_, params.value());
@@ -834,7 +834,7 @@ void AudioRendererImpl::SetVolume(float volume) {
 }
 
 void AudioRendererImpl::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   base::AutoLock auto_lock(lock_);
 
   latency_hint_ = latency_hint;

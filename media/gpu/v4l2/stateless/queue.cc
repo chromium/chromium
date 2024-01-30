@@ -97,13 +97,13 @@ bool BaseQueue::StopStreaming() {
   return device_->StreamOff(buffer_type_);
 }
 
-absl::optional<uint32_t> BaseQueue::GetFreeBufferIndex() {
+std::optional<uint32_t> BaseQueue::GetFreeBufferIndex() {
   // TODO(frkoenig): This is an expected error, there will be times that all of
   // the buffers will be in the queue. For now give it a high severity for
   // visibility.
   if (free_buffer_indices_.empty()) {
     DVLOGF(1) << "No buffers available for " << Description();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto it = free_buffer_indices_.begin();

@@ -122,7 +122,7 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
                                  bool require_low_delay,
                                  const gfx::Size& frame_size,
                                  const Bitrate& bitrate,
-                                 absl::optional<gfx::ColorSpace> cs,
+                                 std::optional<gfx::ColorSpace> cs,
                                  PixelFormat format) {
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
@@ -166,9 +166,9 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   return result;
 }
 
-absl::optional<std::string> FindMediaCodecFor(
+std::optional<std::string> FindMediaCodecFor(
     const VideoEncodeAccelerator::Config& config) {
-  absl::optional<std::string> encoder_name;
+  std::optional<std::string> encoder_name;
   for (const auto& info : GetEncoderInfoCache()) {
     const auto& profile = info.profile;
     if (profile.profile != config.output_profile) {
@@ -335,7 +335,7 @@ void NdkVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (size.has_value()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,

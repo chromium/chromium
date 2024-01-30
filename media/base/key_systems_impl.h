@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "media/base/key_system_info.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

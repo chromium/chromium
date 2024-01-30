@@ -24,8 +24,8 @@ class AudioManagerMacUnderTest final : public AudioManagerMac {
       : AudioManagerMac(std::move(audio_thread), audio_log_factory) {}
 
   MOCK_METHOD0(GetAllAudioDeviceIDs, std::vector<AudioObjectID>());
-  MOCK_METHOD1(GetDeviceTransportType, absl::optional<uint32_t>(AudioObjectID));
-  MOCK_METHOD1(GetDeviceUniqueID, absl::optional<std::string>(AudioObjectID));
+  MOCK_METHOD1(GetDeviceTransportType, std::optional<uint32_t>(AudioObjectID));
+  MOCK_METHOD1(GetDeviceUniqueID, std::optional<std::string>(AudioObjectID));
   MOCK_METHOD1(GetRelatedNonBluetoothDeviceIDs,
                std::vector<AudioObjectID>(AudioObjectID));
 };
@@ -133,7 +133,7 @@ TEST_F(AudioManagerMacTest, DifferentGroupIdForDifferentInputAndOutputDevices) {
       .WillRepeatedly(Return(std::vector<AudioObjectID>{2}));
   // DeviceID: 3
   EXPECT_CALL(audio_manager_mock, GetDeviceTransportType(/*device_id=*/3))
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(audio_manager_mock, GetDeviceUniqueID(/*device_id=*/3))
       .WillRepeatedly(Return("inbuilt_output_device"));
   EXPECT_CALL(audio_manager_mock,

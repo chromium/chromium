@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -117,7 +117,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   std::unique_ptr<mojo::Receiver<mojom::Decryptor>> decryptor_receiver_;
 
   // Set to a valid CDM ID if the |cdm_| is successfully created.
-  absl::optional<base::UnguessableToken> cdm_id_;
+  std::optional<base::UnguessableToken> cdm_id_;
 
   mojo::AssociatedRemote<mojom::ContentDecryptionModuleClient> client_;
 

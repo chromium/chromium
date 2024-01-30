@@ -22,7 +22,7 @@ struct StructTraits<media::mojom::MediaFoundationCdmDataDataView,
     return input->origin_id;
   }
 
-  static const absl::optional<std::vector<uint8_t>>& client_token(
+  static const std::optional<std::vector<uint8_t>>& client_token(
       const std::unique_ptr<media::MediaFoundationCdmData>& input) {
     return input->client_token;
   }

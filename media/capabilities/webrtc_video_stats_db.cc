@@ -93,7 +93,7 @@ std::string WebrtcVideoStatsDB::VideoDescKey::ToLogStringForDebug() const {
 }
 
 // static
-absl::optional<int> WebrtcVideoStatsDB::VideoDescKey::ParsePixelsFromKey(
+std::optional<int> WebrtcVideoStatsDB::VideoDescKey::ParsePixelsFromKey(
     std::string key) {
   constexpr size_t kMinimumIndexOfLastSeparator = 5;
   size_t last_separator_index = key.rfind("|");
@@ -105,7 +105,7 @@ absl::optional<int> WebrtcVideoStatsDB::VideoDescKey::ParsePixelsFromKey(
                           &parsed_pixels))
       return parsed_pixels;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 WebrtcVideoStatsDB::VideoStats::VideoStats(double timestamp,

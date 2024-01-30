@@ -7,13 +7,14 @@
 #include <drm_fourcc.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,7 +27,7 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp) {
-  const absl::optional<VideoPixelFormat> format =
+  const std::optional<VideoPixelFormat> format =
       GfxBufferFormatToVideoPixelFormat(gpu_memory_buffer->GetFormat());
   if (!format ||
       (*format != PIXEL_FORMAT_NV12 && *format != PIXEL_FORMAT_P016LE)) {

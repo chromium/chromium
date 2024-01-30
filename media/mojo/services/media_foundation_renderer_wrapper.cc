@@ -96,7 +96,7 @@ void MediaFoundationRendererWrapper::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererWrapper::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   renderer_->SetLatencyHint(latency_hint);
 }
 
@@ -169,7 +169,7 @@ void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
     base::win::ScopedHandle handle,
     const std::string& error) {
   if (!handle.IsValid()) {
-    std::move(callback).Run(absl::nullopt, "invalid handle: " + error);
+    std::move(callback).Run(std::nullopt, "invalid handle: " + error);
     return;
   }
 
@@ -185,12 +185,12 @@ void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
   dcomp_surface_registry_->RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle(std::move(handle)),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(register_cb),
-                                                  absl::nullopt));
+                                                  std::nullopt));
 }
 
 void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
     GetDCOMPSurfaceCallback callback,
-    const absl::optional<base::UnguessableToken>& token) {
+    const std::optional<base::UnguessableToken>& token) {
   std::string error;
   if (token) {
     DCHECK(dcomp_surface_token_.is_empty());

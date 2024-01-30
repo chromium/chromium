@@ -61,7 +61,7 @@ uint32_t ComputeCheckedPeakBitrate(uint32_t target_bitrate) {
 }
 
 Bitrate CreateBitrate(
-    const absl::optional<Bitrate>& requested_bitrate,
+    const std::optional<Bitrate>& requested_bitrate,
     const gfx::Size& frame_size,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes) {
   uint32_t default_bitrate = ComputeCheckedDefaultBitrate(frame_size);
@@ -89,7 +89,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoFrame::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
     VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
-  absl::optional<uint32_t> initial_framerate;
+  std::optional<uint32_t> initial_framerate;
   if (opts.framerate.has_value())
     initial_framerate = static_cast<uint32_t>(opts.framerate.value());
 
@@ -620,7 +620,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
-  absl::optional<gfx::Size> new_frame_size;
+  std::optional<gfx::Size> new_frame_size;
   if (options.frame_size != options_.frame_size) {
     if (supports_frame_size_change_) {
       input_pool_.reset();
@@ -771,7 +771,7 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
 void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     int32_t buffer_id,
     const BitstreamBufferMetadata& metadata) {
-  absl::optional<CodecDescription> desc;
+  std::optional<CodecDescription> desc;
   VideoEncoderOutput result;
   result.key_frame = metadata.key_frame;
   result.timestamp = metadata.timestamp;

@@ -5,6 +5,7 @@
 #include "media/mojo/services/mojo_video_decoder_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -83,7 +83,7 @@ class VideoFrameHandleReleaserImpl final
   // mojom::MojoVideoFrameHandleReleaser implementation
   void ReleaseVideoFrame(
       const base::UnguessableToken& release_token,
-      const absl::optional<gpu::SyncToken>& release_sync_token) final {
+      const std::optional<gpu::SyncToken>& release_sync_token) final {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
     TRACE_EVENT2("media", "VideoFrameHandleReleaserImpl::ReleaseVideoFrame",
                  "release_token", release_token.ToString(),
@@ -212,7 +212,7 @@ void MojoVideoDecoderService::Construct(
 void MojoVideoDecoderService::Initialize(
     const VideoDecoderConfig& config,
     bool low_delay,
-    const absl::optional<base::UnguessableToken>& cdm_id,
+    const std::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " config = " << config.AsHumanReadableString()
            << ", cdm_id = "
@@ -427,7 +427,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   // you can remove this DCHECK.
   DCHECK(frame->metadata().power_efficient);
 
-  absl::optional<base::UnguessableToken> release_token;
+  std::optional<base::UnguessableToken> release_token;
   if ((decoder_->FramesHoldExternalResources() ||
        frame->HasReleaseMailboxCB()) &&
       video_frame_handle_releaser_) {

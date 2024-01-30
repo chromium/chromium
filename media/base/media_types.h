@@ -5,13 +5,14 @@
 #ifndef MEDIA_BASE_MEDIA_TYPES_H_
 #define MEDIA_BASE_MEDIA_TYPES_H_
 
+#include <optional>
+
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -35,8 +36,8 @@ struct MEDIA_EXPORT VideoType {
   VideoCodecLevel level = kNoVideoCodecLevel;
   VideoColorSpace color_space;
   gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
-  absl::optional<VideoChromaSampling> subsampling;
-  absl::optional<uint8_t> bit_depth;
+  std::optional<VideoChromaSampling> subsampling;
+  std::optional<uint8_t> bit_depth;
 };
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);

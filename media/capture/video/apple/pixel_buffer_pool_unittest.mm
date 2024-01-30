@@ -83,7 +83,7 @@ TEST(PixelBufferPoolTest, CannotExceedMaxBuffersWhenIOSurfaceIsInUse) {
 
 TEST(PixelBufferPoolTest, CanCreateBuffersIfMaxIsNull) {
   std::unique_ptr<PixelBufferPool> pool = PixelBufferPool::Create(
-      kPixelFormatNv12, kVgaWidth, kVgaHeight, absl::nullopt);
+      kPixelFormatNv12, kVgaWidth, kVgaHeight, std::nullopt);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> first_buffer =
       pool->CreateBuffer();
   EXPECT_TRUE(first_buffer);
@@ -201,7 +201,7 @@ TEST(PixelBufferPoolTest, BuffersCanOutliveThePool) {
 
 TEST(PixelBufferPoolTest, CanFlushWhileBufferIsInUse) {
   std::unique_ptr<PixelBufferPool> pool = PixelBufferPool::Create(
-      kPixelFormatNv12, kVgaWidth, kVgaHeight, absl::nullopt);
+      kPixelFormatNv12, kVgaWidth, kVgaHeight, std::nullopt);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> retained_buffer =
       pool->CreateBuffer();
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> released_buffer =

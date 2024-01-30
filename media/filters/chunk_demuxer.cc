@@ -599,9 +599,9 @@ int64_t ChunkDemuxer::GetMemoryUsage() const {
   return mem;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 ChunkDemuxer::GetContainerForMetrics() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChunkDemuxer::AbortPendingReads() {

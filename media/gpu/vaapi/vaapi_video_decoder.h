@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/lru_cache.h"
@@ -32,7 +33,6 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -58,7 +58,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   VaapiVideoDecoder(const VaapiVideoDecoder&) = delete;
   VaapiVideoDecoder& operator=(const VaapiVideoDecoder&) = delete;
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
@@ -222,7 +222,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Bitstream information, written during Initialize().
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_;
@@ -236,7 +236,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Queue containing all requested decode tasks.
   base::queue<DecodeTask> decode_task_queue_;
   // The decode task we're currently trying to execute.
-  absl::optional<DecodeTask> current_decode_task_;
+  std::optional<DecodeTask> current_decode_task_;
   // The next input buffer id.
   int32_t next_buffer_id_ = 0;
 

@@ -42,7 +42,7 @@ void MojoRendererWrapper::SetCdm(CdmContext* cdm_context,
 }
 
 void MojoRendererWrapper::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   mojo_renderer_->SetLatencyHint(latency_hint);
 }
 

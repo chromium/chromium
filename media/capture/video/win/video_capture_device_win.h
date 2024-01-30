@@ -16,6 +16,7 @@
 #include <wrl/client.h>
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/queue.h"
@@ -27,7 +28,6 @@
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/sink_input_pin_win.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -171,7 +171,7 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   bool enable_get_photo_state_;
 
-  absl::optional<int> camera_rotation_;
+  std::optional<int> camera_rotation_;
 };
 
 }  // namespace media

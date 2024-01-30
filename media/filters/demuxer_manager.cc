@@ -300,12 +300,12 @@ PipelineStatus DemuxerManager::SelectHlsFallbackMechanism(
 
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
 
-absl::optional<double> DemuxerManager::GetDemuxerDuration() {
+std::optional<double> DemuxerManager::GetDemuxerDuration() {
   if (!demuxer_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (demuxer_->GetDemuxerType() != DemuxerType::kChunkDemuxer) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Use duration from ChunkDemuxer when present. MSE allows users to specify
@@ -317,17 +317,17 @@ absl::optional<double> DemuxerManager::GetDemuxerDuration() {
   return static_cast<ChunkDemuxer*>(demuxer_.get())->GetDuration();
 }
 
-absl::optional<DemuxerType> DemuxerManager::GetDemuxerType() const {
+std::optional<DemuxerType> DemuxerManager::GetDemuxerType() const {
   if (!demuxer_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return demuxer_->GetDemuxerType();
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 DemuxerManager::GetContainerForMetrics() {
   if (!demuxer_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return demuxer_->GetContainerForMetrics();
 }
@@ -516,11 +516,11 @@ bool DemuxerManager::HasDemuxerOverride() const {
   return !!demuxer_override_;
 }
 
-absl::optional<GURL> DemuxerManager::GetDataSourceUrlAfterRedirects() const {
+std::optional<GURL> DemuxerManager::GetDataSourceUrlAfterRedirects() const {
   if (data_source_) {
     return data_source_->GetUrlAfterRedirects();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool DemuxerManager::DataSourceFullyBuffered() const {

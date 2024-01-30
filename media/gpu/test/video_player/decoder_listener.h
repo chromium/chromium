@@ -6,7 +6,9 @@
 #define MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_LISTENER_H_
 
 #include <limits.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -18,7 +20,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -130,7 +131,7 @@ class DecoderListener {
       Event::kNumEvents)] GUARDED_BY(event_lock_){};
 
   // Set by PlayUntil() to automatically pause decoding once this event occurs.
-  absl::optional<Event> play_until_;
+  std::optional<Event> play_until_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

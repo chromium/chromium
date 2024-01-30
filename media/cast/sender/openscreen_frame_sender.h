@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -19,7 +21,6 @@
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/sender/frame_sender.h"
 #include "media/cast/sender/video_bitrate_suggester.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
@@ -135,7 +136,7 @@ class OpenscreenFrameSender : public FrameSender,
 
   // The ID of the frame that was the first one to have a different identifier
   // used inside of Open Screen. This only occurs if a frame is dropped.
-  absl::optional<FrameId> diverged_frame_id_;
+  std::optional<FrameId> diverged_frame_id_;
 
   // Since the encoder emits frames that depend on each other, and the Open
   // Screen sender demands that we use its FrameIDs for enqueued frames, we

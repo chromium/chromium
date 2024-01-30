@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -26,7 +27,6 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -78,7 +78,7 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // initialized and that pool can be obtained by calling GetVideoFramePool().
     // This pool will provide buffers consistent with the selected candidate out
     // of |candidates|. If false, the caller must allocate its own buffers.
-    // if |allocator| is not absl::nullopt, the frame pool will be set
+    // if |allocator| is not std::nullopt, the frame pool will be set
     // to use the allocator provided for allocating video frames.
     //
     // The client also provides the |num_codec_reference_frames|, which is
@@ -92,11 +92,11 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
         const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
         const gfx::Rect& decoder_visible_rect,
         const gfx::Size& decoder_natural_size,
-        absl::optional<gfx::Size> output_size,
+        std::optional<gfx::Size> output_size,
         size_t num_codec_reference_frames,
         bool use_protected,
         bool need_aux_frame_pool,
-        absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) = 0;
+        std::optional<DmabufVideoFramePool::CreateFrameCB> allocator) = 0;
   };
 
   VideoDecoderMixin(
@@ -197,7 +197,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       base::OnceCallback<
           void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs(
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs(
       VideoDecoderType decoder_type,
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
@@ -227,11 +227,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
       const gfx::Rect& decoder_visible_rect,
       const gfx::Size& decoder_natural_size,
-      absl::optional<gfx::Size> output_size,
+      std::optional<gfx::Size> output_size,
       size_t num_codec_reference_frames,
       bool use_protected,
       bool need_aux_frame_pool,
-      absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) override;
+      std::optional<DmabufVideoFramePool::CreateFrameCB> allocator) override;
 
  private:
   friend class VideoDecoderPipelineTest;
@@ -298,7 +298,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // flush callback but we should pass a DecoderStatus of kAborted instead of
   // kOk. In this scenario, the original DecoderStatus is kOk and
   // *|override_status| is kAborted.
-  void CallFlushCbIfNeeded(absl::optional<DecoderStatus> override_status);
+  void CallFlushCbIfNeeded(std::optional<DecoderStatus> override_status);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callback for when transcryption of a buffer completes.
@@ -393,7 +393,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
     DecodeCB flush_cb;
     const DecoderStatus decoder_decode_status;
   };
-  absl::optional<ClientFlushCBState> client_flush_cb_state_
+  std::optional<ClientFlushCBState> client_flush_cb_state_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 

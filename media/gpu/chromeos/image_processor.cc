@@ -146,7 +146,7 @@ bool ImageProcessor::Process(scoped_refptr<VideoFrame> input_frame,
 // static
 void ImageProcessor::OnProcessDoneThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<base::WeakPtr<ImageProcessor>> weak_this,
+    std::optional<base::WeakPtr<ImageProcessor>> weak_this,
     int cb_index,
     scoped_refptr<VideoFrame> frame) {
   DVLOGF(4);
@@ -193,7 +193,7 @@ bool ImageProcessor::Process(scoped_refptr<VideoFrame> frame,
 // static
 void ImageProcessor::OnProcessLegacyDoneThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<base::WeakPtr<ImageProcessor>> weak_this,
+    std::optional<base::WeakPtr<ImageProcessor>> weak_this,
     int cb_index,
     size_t buffer_id,
     scoped_refptr<VideoFrame> frame) {

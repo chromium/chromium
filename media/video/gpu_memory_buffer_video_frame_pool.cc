@@ -212,7 +212,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
       const gfx::ColorSpace& color_space,
       base::TimeDelta timestamp,
       bool video_frame_allow_overlay,
-      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
+      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
 
   // Return true if |resources| can be used to represent a frame for
   // specific |format| and |size|.
@@ -1240,7 +1240,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         const gfx::ColorSpace& color_space,
         base::TimeDelta timestamp,
         bool video_frame_allow_overlay,
-        const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+        const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = gpu_factories_->SharedImageInterface();
   if (!sii) {

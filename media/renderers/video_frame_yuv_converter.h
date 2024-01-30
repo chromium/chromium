@@ -55,11 +55,11 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
       const gpu::MailboxHolder& dest_mailbox_holder,
-      absl::optional<GrParams> gr_params = absl::nullopt);
+      std::optional<GrParams> gr_params = std::nullopt);
   bool ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
-                            absl::optional<GrParams> gr_params = absl::nullopt);
+                            std::optional<GrParams> gr_params = std::nullopt);
   void ReleaseCachedData();
 
  private:

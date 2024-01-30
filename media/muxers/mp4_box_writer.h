@@ -6,6 +6,7 @@
 #define MEDIA_MUXERS_MP4_BOX_WRITER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

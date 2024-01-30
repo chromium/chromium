@@ -88,7 +88,7 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   scoped_refptr<V4L2Queue> OUTPUT_queue =
       device->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   ASSERT_NE(OUTPUT_queue.get(), nullptr);
-  const absl::optional<struct v4l2_format> input_v4l2_format =
+  const std::optional<struct v4l2_format> input_v4l2_format =
       OUTPUT_queue->SetFormat(codec_fourcc, gfx::Size(), /*buffer_size=*/1E6);
   ASSERT_TRUE(input_v4l2_format.has_value());
 
@@ -105,7 +105,7 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   scoped_refptr<V4L2Queue> CAPTURE_queue =
       device->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   ASSERT_NE(CAPTURE_queue.get(), nullptr);
-  absl::optional<struct v4l2_format> output_v4l2_format =
+  std::optional<struct v4l2_format> output_v4l2_format =
       CAPTURE_queue->SetFormat(chosen_v4l2_pixel_format, resolution,
                                /*buffer_size=*/0);
   ASSERT_TRUE(output_v4l2_format.has_value());

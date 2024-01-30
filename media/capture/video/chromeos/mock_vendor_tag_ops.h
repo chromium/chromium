@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_MOCK_VENDOR_TAG_OPS_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_MOCK_VENDOR_TAG_OPS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace unittest_internal {
@@ -32,10 +32,10 @@ class MockVendorTagOps : public cros::mojom::VendorTagOps {
   MOCK_METHOD0(DoGetAllTags, std::vector<uint32_t>());
   void GetAllTags(GetAllTagsCallback callback) override;
 
-  MOCK_METHOD1(DoGetSectionName, absl::optional<std::string>(uint32_t tag));
+  MOCK_METHOD1(DoGetSectionName, std::optional<std::string>(uint32_t tag));
   void GetSectionName(uint32_t tag, GetSectionNameCallback callback) override;
 
-  MOCK_METHOD1(DoGetTagName, absl::optional<std::string>(uint32_t tag));
+  MOCK_METHOD1(DoGetTagName, std::optional<std::string>(uint32_t tag));
   void GetTagName(uint32_t tag, GetTagNameCallback callback) override;
 
   MOCK_METHOD1(DoGetTagType, int32_t(uint32_t tag));

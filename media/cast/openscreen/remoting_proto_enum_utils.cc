@@ -14,7 +14,7 @@ namespace media::cast {
   case OriginType::x:                     \
     return OtherType::y
 
-absl::optional<media::AudioCodec> ToMediaAudioCodec(
+std::optional<media::AudioCodec> ToMediaAudioCodec(
     openscreen::cast::AudioDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = media::AudioCodec;
@@ -38,11 +38,11 @@ absl::optional<media::AudioCodec> ToMediaAudioCodec(
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecAC3, kAC3);
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecMpegHAudio, kMpegHAudio);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::AudioDecoderConfig::Codec>
+std::optional<openscreen::cast::AudioDecoderConfig::Codec>
 ToProtoAudioDecoderConfigCodec(media::AudioCodec value) {
   using OriginType = media::AudioCodec;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -66,11 +66,11 @@ ToProtoAudioDecoderConfigCodec(media::AudioCodec value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kAC3, kCodecAC3);
     CASE_RETURN_ORIGIN_TO_OTHER(kMpegHAudio, kCodecMpegHAudio);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::SampleFormat> ToMediaSampleFormat(
+std::optional<media::SampleFormat> ToMediaSampleFormat(
     openscreen::cast::AudioDecoderConfig::SampleFormat value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = media::SampleFormat;
@@ -89,11 +89,11 @@ absl::optional<media::SampleFormat> ToMediaSampleFormat(
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
+std::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
 ToProtoAudioDecoderConfigSampleFormat(media::SampleFormat value) {
   using OriginType = media::SampleFormat;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -112,11 +112,11 @@ ToProtoAudioDecoderConfigSampleFormat(media::SampleFormat value) {
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::ChannelLayout> ToMediaChannelLayout(
+std::optional<media::ChannelLayout> ToMediaChannelLayout(
     openscreen::cast::AudioDecoderConfig::ChannelLayout value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = media::ChannelLayout;
@@ -155,11 +155,11 @@ absl::optional<media::ChannelLayout> ToMediaChannelLayout(
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
+std::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
 ToProtoAudioDecoderConfigChannelLayout(media::ChannelLayout value) {
   using OriginType = media::ChannelLayout;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -198,11 +198,11 @@ ToProtoAudioDecoderConfigChannelLayout(media::ChannelLayout value) {
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::VideoCodec> ToMediaVideoCodec(
+std::optional<media::VideoCodec> ToMediaVideoCodec(
     openscreen::cast::VideoDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = media::VideoCodec;
@@ -219,11 +219,11 @@ absl::optional<media::VideoCodec> ToMediaVideoCodec(
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecDolbyVision, kDolbyVision);
     CASE_RETURN_ORIGIN_TO_OTHER(kCodecAV1, kAV1);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::VideoDecoderConfig::Codec>
+std::optional<openscreen::cast::VideoDecoderConfig::Codec>
 ToProtoVideoDecoderConfigCodec(media::VideoCodec value) {
   using OriginType = media::VideoCodec;
   using OtherType = openscreen::cast::VideoDecoderConfig;
@@ -240,11 +240,11 @@ ToProtoVideoDecoderConfigCodec(media::VideoCodec value) {
     CASE_RETURN_ORIGIN_TO_OTHER(kDolbyVision, kCodecDolbyVision);
     CASE_RETURN_ORIGIN_TO_OTHER(kAV1, kCodecAV1);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::VideoCodecProfile> ToMediaVideoCodecProfile(
+std::optional<media::VideoCodecProfile> ToMediaVideoCodecProfile(
     openscreen::cast::VideoDecoderConfig::Profile value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = media::VideoCodecProfile;
@@ -287,11 +287,11 @@ absl::optional<media::VideoCodecProfile> ToMediaVideoCodecProfile(
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::VideoDecoderConfig::Profile>
+std::optional<openscreen::cast::VideoDecoderConfig::Profile>
 ToProtoVideoDecoderConfigProfile(media::VideoCodecProfile value) {
   using OriginType = media::VideoCodecProfile;
   using OtherType = openscreen::cast::VideoDecoderConfig;
@@ -334,11 +334,11 @@ ToProtoVideoDecoderConfigProfile(media::VideoCodecProfile value) {
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::VideoPixelFormat> ToMediaVideoPixelFormat(
+std::optional<media::VideoPixelFormat> ToMediaVideoPixelFormat(
     openscreen::cast::VideoDecoderConfig::Format value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = media::VideoPixelFormat;
@@ -373,13 +373,13 @@ absl::optional<media::VideoPixelFormat> ToMediaVideoPixelFormat(
     CASE_RETURN_OTHER(PIXEL_FORMAT_XB30);
     // PIXEL_FORMAT_UYVY, PIXEL_FORMAT_RGB32 and PIXEL_FORMAT_Y8 are deprecated.
     case openscreen::cast::VideoDecoderConfig_Format_PIXEL_FORMAT_RGB32:
-      return absl::nullopt;
+      return std::nullopt;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::BufferingState> ToMediaBufferingState(
+std::optional<media::BufferingState> ToMediaBufferingState(
     openscreen::cast::RendererClientOnBufferingStateChange::State value) {
   using OriginType = openscreen::cast::RendererClientOnBufferingStateChange;
   using OtherType = media::BufferingState;
@@ -387,11 +387,11 @@ absl::optional<media::BufferingState> ToMediaBufferingState(
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
+std::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
 ToProtoMediaBufferingState(media::BufferingState value) {
   using OriginType = media::BufferingState;
   using OtherType = openscreen::cast::RendererClientOnBufferingStateChange;
@@ -399,11 +399,11 @@ ToProtoMediaBufferingState(media::BufferingState value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<media::DemuxerStream::Status> ToDemuxerStreamStatus(
+std::optional<media::DemuxerStream::Status> ToDemuxerStreamStatus(
     openscreen::cast::DemuxerStreamReadUntilCallback::Status value) {
   using OriginType = openscreen::cast::DemuxerStreamReadUntilCallback;
   using OtherType = media::DemuxerStream;
@@ -413,11 +413,11 @@ absl::optional<media::DemuxerStream::Status> ToDemuxerStreamStatus(
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
+std::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(media::DemuxerStream::Status value) {
   using OriginType = media::DemuxerStream;
   using OtherType = openscreen::cast::DemuxerStreamReadUntilCallback;
@@ -427,7 +427,7 @@ ToProtoDemuxerStreamStatus(media::DemuxerStream::Status value) {
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

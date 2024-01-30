@@ -197,7 +197,7 @@ void AlphaVideoEncoderWrapper::Flush(EncoderStatusCB done_cb) {
 
 void AlphaVideoEncoderWrapper::YuvOutputCallback(
     VideoEncoderOutput output,
-    absl::optional<CodecDescription> desc) {
+    std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
     NOTREACHED()
@@ -208,7 +208,7 @@ void AlphaVideoEncoderWrapper::YuvOutputCallback(
 }
 void AlphaVideoEncoderWrapper::AlphaOutputCallback(
     VideoEncoderOutput output,
-    absl::optional<CodecDescription> desc) {
+    std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
     NOTREACHED()

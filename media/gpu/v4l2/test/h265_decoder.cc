@@ -477,7 +477,7 @@ std::unique_ptr<H265Decoder> H265Decoder::Create(
   const H265SPS* sps = parser->GetSPS(sps_id);
   CHECK(sps);
 
-  absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
+  std::optional<gfx::Size> coded_size = sps->GetCodedSize();
   CHECK(coded_size);
   LOG(INFO) << "H.265 coded size : " << coded_size->ToString();
 

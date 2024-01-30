@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/containers/flat_map.h"
@@ -22,7 +23,6 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
@@ -71,21 +71,21 @@ struct ResultMetadata {
   ResultMetadata();
   ~ResultMetadata();
 
-  absl::optional<uint8_t> ae_mode;
-  absl::optional<int32_t> ae_compensation;
-  absl::optional<uint8_t> af_mode;
-  absl::optional<uint8_t> awb_mode;
-  absl::optional<int32_t> brightness;
-  absl::optional<int32_t> contrast;
-  absl::optional<int64_t> exposure_time;
-  absl::optional<float> focus_distance;
-  absl::optional<int32_t> pan;
-  absl::optional<int32_t> saturation;
-  absl::optional<int32_t> sensitivity;
-  absl::optional<int32_t> sharpness;
-  absl::optional<int32_t> tilt;
-  absl::optional<int32_t> zoom;
-  absl::optional<gfx::Rect> scaler_crop_region;
+  std::optional<uint8_t> ae_mode;
+  std::optional<int32_t> ae_compensation;
+  std::optional<uint8_t> af_mode;
+  std::optional<uint8_t> awb_mode;
+  std::optional<int32_t> brightness;
+  std::optional<int32_t> contrast;
+  std::optional<int64_t> exposure_time;
+  std::optional<float> focus_distance;
+  std::optional<int32_t> pan;
+  std::optional<int32_t> saturation;
+  std::optional<int32_t> sensitivity;
+  std::optional<int32_t> sharpness;
+  std::optional<int32_t> tilt;
+  std::optional<int32_t> zoom;
+  std::optional<gfx::Rect> scaler_crop_region;
 };
 
 StreamType StreamIdToStreamType(uint64_t stream_id);
@@ -180,7 +180,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   // Reconfigure streams for picture taking and recording.
   void OnFlushed(bool require_photo,
-                 absl::optional<gfx::Size> new_blob_resolution,
+                 std::optional<gfx::Size> new_blob_resolution,
                  int32_t result);
 
   // Callback method for the Close Mojo IPC call.  This method resets the Mojo
@@ -206,7 +206,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // |client_| the capture has started by calling OnStarted, and proceeds to
   // ConstructDefaultRequestSettings.
   void ConfigureStreams(bool require_photo,
-                        absl::optional<gfx::Size> new_blob_resolution);
+                        std::optional<gfx::Size> new_blob_resolution);
   void OnConfiguredStreams(
       gfx::Size blob_resolution,
       int32_t result,
@@ -228,7 +228,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   void OnConstructedDefaultPortraitModeRequestSettings(
       cros::mojom::CameraMetadataPtr settings);
 
-  gfx::Size GetBlobResolution(absl::optional<gfx::Size> new_blob_resolution);
+  gfx::Size GetBlobResolution(std::optional<gfx::Size> new_blob_resolution);
 
   // StreamCaptureInterface implementations.  These methods are called by
   // |stream_buffer_manager_| on |ipc_task_runner_|.
@@ -243,7 +243,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // metadata by |range_name| and current value of |current|.
   mojom::RangePtr GetControlRangeByVendorTagName(
       const std::string& range_name,
-      const absl::optional<int32_t>& current);
+      const std::optional<int32_t>& current);
 
   bool ShouldUseBlobVideoSnapshot();
 
@@ -286,7 +286,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   std::queue<VideoCaptureDevice::TakePhotoCallback> take_photo_callbacks_;
 
-  absl::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_;
+  std::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_;
 
   std::unique_ptr<RequestManager> request_manager_;
 

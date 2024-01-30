@@ -380,7 +380,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, StatusDataWithAbortedCause) {
       stable::mojom::StatusData::New();
   mojom_status_data->group = std::string(DecoderStatusTraits::Group());
   mojom_status_data->code = stable::mojom::StatusCode::kError;
-  mojom_status_data->cause = absl::make_optional<internal::StatusData>(
+  mojom_status_data->cause = std::make_optional<internal::StatusData>(
       DecoderStatusTraits::Group(),
       static_cast<StatusCodeType>(DecoderStatus::Codes::kAborted),
       /*message=*/"",
@@ -415,7 +415,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidCENCDecryptConfig) {
   mojom_decrypt_config->subsamples = {
       SubsampleEntry(/*clear_bytes=*/4u, /*cypher_bytes=*/10u),
       SubsampleEntry(/*clear_bytes=*/90u, /*cypher_bytes=*/2u)};
-  mojom_decrypt_config->encryption_pattern = absl::nullopt;
+  mojom_decrypt_config->encryption_pattern = std::nullopt;
 
   std::vector<uint8_t> serialized_decrypt_config =
       stable::mojom::DecryptConfig::Serialize(&mojom_decrypt_config);

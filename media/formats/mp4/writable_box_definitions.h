@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 #define MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fourccs.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media::mp4::writable_boxes {
@@ -132,8 +132,8 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
   uint32_t entry_count = 0;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  absl::optional<VisualSampleEntry> visual_sample_entry;
-  absl::optional<AudioSampleEntry> audio_sample_entry;
+  std::optional<VisualSampleEntry> visual_sample_entry;
+  std::optional<AudioSampleEntry> audio_sample_entry;
 #endif
 };
 
@@ -193,8 +193,8 @@ struct MEDIA_EXPORT VideoMediaHeader : FullBox {
 
 // Media information (`minf`) box.
 struct MEDIA_EXPORT MediaInformation : Box {
-  absl::optional<VideoMediaHeader> video_header;
-  absl::optional<SoundMediaHeader> sound_header;
+  std::optional<VideoMediaHeader> video_header;
+  std::optional<SoundMediaHeader> sound_header;
   DataInformation data_information;
   SampleTable sample_table;
 };

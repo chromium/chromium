@@ -365,7 +365,7 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
 
     bool adts_conversion_ok = true;
     auto format = options_.aac.value_or(AacOptions()).format;
-    absl::optional<CodecDescription> desc;
+    std::optional<CodecDescription> desc;
     if (timestamp_helper_->frame_count() == 0) {
       if (format == AudioEncoder::AacOutputFormat::AAC) {
         desc = codec_desc_;

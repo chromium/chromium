@@ -5,6 +5,7 @@
 #ifndef MEDIA_MUXERS_MUXER_H_
 #define MEDIA_MUXERS_MUXER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -13,7 +14,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -37,7 +37,7 @@ class MEDIA_EXPORT Muxer {
     VideoParameters(gfx::Size visible_rect_size,
                     double frame_rate,
                     VideoCodec codec,
-                    absl::optional<gfx::ColorSpace> color_space);
+                    std::optional<gfx::ColorSpace> color_space);
     VideoParameters(const VideoParameters&);
     ~VideoParameters();
     // Returns a human-readable string describing `*this`.
@@ -47,7 +47,7 @@ class MEDIA_EXPORT Muxer {
     gfx::Size visible_rect_size;
     double frame_rate;
     VideoCodec codec;
-    absl::optional<gfx::ColorSpace> color_space;
+    std::optional<gfx::ColorSpace> color_space;
   };
 
   // Structure for passing encoded Audio and Video frames.
@@ -55,7 +55,7 @@ class MEDIA_EXPORT Muxer {
     EncodedFrame();
     EncodedFrame(
         absl::variant<AudioParameters, VideoParameters> params,
-        absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+        std::optional<media::AudioEncoder::CodecDescription> codec_description,
         std::string data,
         std::string alpha_data,
         bool is_keyframe);
@@ -67,7 +67,7 @@ class MEDIA_EXPORT Muxer {
     // below.
     absl::variant<AudioParameters, VideoParameters> params;
     // Codec description for data.
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description;
+    std::optional<media::AudioEncoder::CodecDescription> codec_description;
     // Audio or Video frame data.
     std::string data;
     // Alpha frame data if Video and present, empty otherwise

@@ -39,7 +39,7 @@ void CameraAppDeviceProviderImpl::GetCameraAppDevice(
 
 void CameraAppDeviceProviderImpl::GetCameraAppDeviceWithDeviceId(
     GetCameraAppDeviceCallback callback,
-    const absl::optional<std::string>& device_id) {
+    const std::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(
         cros::mojom::GetCameraAppDeviceStatus::kErrorInvalidId,
@@ -68,7 +68,7 @@ void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabled(
 void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId(
     bool enabled,
     SetVirtualDeviceEnabledCallback callback,
-    const absl::optional<std::string>& device_id) {
+    const std::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(false);
     return;
@@ -88,7 +88,7 @@ void CameraAppDeviceProviderImpl::IsDeviceInUse(
 
 void CameraAppDeviceProviderImpl::IsDeviceInUseWithDeviceId(
     IsDeviceInUseCallback callback,
-    const absl::optional<std::string>& device_id) {
+    const std::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(false);
     return;

@@ -32,8 +32,8 @@ void MojoDemuxerStreamImpl::Initialize(InitializeCallback callback) {
   DVLOG(2) << __func__;
 
   // Prepare the initial config.
-  absl::optional<AudioDecoderConfig> audio_config;
-  absl::optional<VideoDecoderConfig> video_config;
+  std::optional<AudioDecoderConfig> audio_config;
+  std::optional<VideoDecoderConfig> video_config;
   if (stream_->type() == Type::AUDIO) {
     audio_config = stream_->audio_decoder_config();
   } else if (stream_->type() == Type::VIDEO) {
@@ -67,8 +67,8 @@ void MojoDemuxerStreamImpl::OnBufferReady(
     ReadCallback callback,
     Status status,
     media::DemuxerStream::DecoderBufferVector buffers) {
-  absl::optional<AudioDecoderConfig> audio_config;
-  absl::optional<VideoDecoderConfig> video_config;
+  std::optional<AudioDecoderConfig> audio_config;
+  std::optional<VideoDecoderConfig> video_config;
   DVLOG(3) << __func__
            << ": status=" << ::media::DemuxerStream::GetStatusName(status)
            << ", buffers.size=" << buffers.size();

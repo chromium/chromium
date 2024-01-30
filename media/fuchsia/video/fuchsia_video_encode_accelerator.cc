@@ -515,7 +515,7 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 void FuchsiaVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   // TODO(crbug.com/1373298): Implement RequestEncodingParameterChange.
   NOTIMPLEMENTED();
 }
@@ -547,7 +547,7 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateInputBuffers(
 
   fuchsia::sysmem::BufferCollectionConstraints constraints =
       VmoBuffer::GetRecommendedConstraints(kInputBufferCount,
-                                           /*min_buffer_size=*/absl::nullopt,
+                                           /*min_buffer_size=*/std::nullopt,
                                            /*writable=*/true);
   input_buffer_collection_->Initialize(constraints, "VideoEncoderInput");
   input_buffer_collection_->AcquireBuffers(

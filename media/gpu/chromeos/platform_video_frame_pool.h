@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -21,7 +22,6 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -58,7 +58,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
-  absl::optional<GpuBufferLayout> GetGpuBufferLayout() override;
+  std::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
   // Returns the original frame of a wrapped frame. We need this method to
   // determine whether the frame returned by GetFrame() is the same one after
@@ -79,10 +79,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // Thunk to post OnFrameReleased() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to
-  // dereference WeakPtr. Therefore we wrap the WeakPtr by absl::optional to
+  // dereference WeakPtr. Therefore we wrap the WeakPtr by std::optional to
   // avoid the task runner defererencing the WeakPtr.
   static void OnFrameReleasedThunk(
-      absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
+      std::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<VideoFrame> origin_frame);
   // Called when a wrapped frame gets destroyed.
@@ -111,7 +111,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // The arguments of current frame. We allocate new frames only if a pixel
   // format or size in |frame_layout_| is changed. When GetFrame() is
   // called, we update |visible_rect_| and |natural_size_| of wrapped frames.
-  absl::optional<GpuBufferLayout> frame_layout_ GUARDED_BY(lock_);
+  std::optional<GpuBufferLayout> frame_layout_ GUARDED_BY(lock_);
   gfx::Rect visible_rect_ GUARDED_BY(lock_);
   gfx::Size natural_size_ GUARDED_BY(lock_);
 
@@ -131,7 +131,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // True if we need to allocate GPU buffers in a way that is accessible from
   // the CPU with a linear layout. Can only be set once per instance.
-  absl::optional<bool> use_linear_buffers_ GUARDED_BY(lock_);
+  std::optional<bool> use_linear_buffers_ GUARDED_BY(lock_);
 
   // Callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_ GUARDED_BY(lock_);

@@ -46,7 +46,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
   // MojoMediaClient implementation.
   std::vector<SupportedVideoDecoderConfig> GetSupportedVideoDecoderConfigs()
       final {
-    absl::optional<std::vector<SupportedVideoDecoderConfig>> configs;
+    std::optional<std::vector<SupportedVideoDecoderConfig>> configs;
     switch (GetDecoderImplementationType()) {
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:

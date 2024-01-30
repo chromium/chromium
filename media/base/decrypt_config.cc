@@ -21,7 +21,7 @@ std::unique_ptr<DecryptConfig> DecryptConfig::CreateCencConfig(
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples) {
   return std::make_unique<DecryptConfig>(EncryptionScheme::kCenc, key_id, iv,
-                                         subsamples, absl::nullopt);
+                                         subsamples, std::nullopt);
 }
 
 // static
@@ -29,7 +29,7 @@ std::unique_ptr<DecryptConfig> DecryptConfig::CreateCbcsConfig(
     const std::string& key_id,
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
-    absl::optional<EncryptionPattern> encryption_pattern) {
+    std::optional<EncryptionPattern> encryption_pattern) {
   return std::make_unique<DecryptConfig>(EncryptionScheme::kCbcs, key_id, iv,
                                          subsamples,
                                          std::move(encryption_pattern));
@@ -40,7 +40,7 @@ DecryptConfig::DecryptConfig(
     const std::string& key_id,
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
-    absl::optional<EncryptionPattern> encryption_pattern)
+    std::optional<EncryptionPattern> encryption_pattern)
     : encryption_scheme_(encryption_scheme),
       key_id_(key_id),
       iv_(iv),

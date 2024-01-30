@@ -32,11 +32,11 @@ void Mp4MuxerContext::SetAudioTrack(Track track) {
   audio_track_ = track;
 }
 
-absl::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetVideoTrack() const {
+std::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetVideoTrack() const {
   return video_track_;
 }
 
-absl::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetAudioTrack() const {
+std::optional<Mp4MuxerContext::Track> Mp4MuxerContext::GetAudioTrack() const {
   return audio_track_;
 }
 

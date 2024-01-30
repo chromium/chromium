@@ -23,7 +23,7 @@ namespace {
 
 const uint32_t kBufferId = 0;
 
-absl::optional<fuchsia::media::AudioRenderUsage> GetStreamUsage(
+std::optional<fuchsia::media::AudioRenderUsage> GetStreamUsage(
     const AudioParameters& parameters) {
   int usage_flags = parameters.effects() &
                     (AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND |
@@ -51,7 +51,7 @@ absl::optional<fuchsia::media::AudioRenderUsage> GetStreamUsage(
       return fuchsia::media::AudioRenderUsage::MEDIA;
     default:
       DLOG(FATAL) << "More than one FUCHSIA_RENDER_USAGE flag is set";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

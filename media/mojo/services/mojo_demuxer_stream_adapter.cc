@@ -71,8 +71,8 @@ bool MojoDemuxerStreamAdapter::SupportsConfigChanges() {
 void MojoDemuxerStreamAdapter::OnStreamReady(
     Type type,
     mojo::ScopedDataPipeConsumerHandle consumer_handle,
-    const absl::optional<AudioDecoderConfig>& audio_config,
-    const absl::optional<VideoDecoderConfig>& video_config) {
+    const std::optional<AudioDecoderConfig>& audio_config,
+    const std::optional<VideoDecoderConfig>& video_config) {
   DVLOG(1) << __func__;
   DCHECK_EQ(UNKNOWN, type_);
   DCHECK(consumer_handle.is_valid());
@@ -90,8 +90,8 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
 void MojoDemuxerStreamAdapter::OnBufferReady(
     Status status,
     std::vector<mojom::DecoderBufferPtr> batch_buffers,
-    const absl::optional<AudioDecoderConfig>& audio_config,
-    const absl::optional<VideoDecoderConfig>& video_config) {
+    const std::optional<AudioDecoderConfig>& audio_config,
+    const std::optional<VideoDecoderConfig>& video_config) {
   DVLOG(3) << __func__
            << ": status=" << ::media::DemuxerStream::GetStatusName(status)
            << ", batch_buffers.size=" << batch_buffers.size();
@@ -155,8 +155,8 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
 }
 
 void MojoDemuxerStreamAdapter::UpdateConfig(
-    const absl::optional<AudioDecoderConfig>& audio_config,
-    const absl::optional<VideoDecoderConfig>& video_config) {
+    const std::optional<AudioDecoderConfig>& audio_config,
+    const std::optional<VideoDecoderConfig>& video_config) {
   DCHECK_NE(type_, Type::UNKNOWN);
   std::string old_decoder_config_str;
 

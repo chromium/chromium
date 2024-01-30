@@ -571,7 +571,7 @@ VideoChromaSampling H265Decoder::GetChromaSampling() const {
 VideoColorSpace H265Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
-absl::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 

@@ -190,7 +190,7 @@ class PackedData {
                       bool extension_flag,
                       bool has_size);
   void EncodeLeb128(uint32_t value,
-                    absl::optional<int> fixed_size = absl::nullopt);
+                    std::optional<int> fixed_size = std::nullopt);
   std::vector<uint8_t> Flush();
   size_t OutstandingBits() { return total_outstanding_bits_; }
 
@@ -264,7 +264,7 @@ void PackedData::WriteOBUHeader(libgav1::ObuType type,
 // This function also has a fixed size mode where we pass in a fixed size for
 // the data and the function zero pads up to that size.
 // See section 4.10.5 of the AV1 specification.
-void PackedData::EncodeLeb128(uint32_t value, absl::optional<int> fixed_size) {
+void PackedData::EncodeLeb128(uint32_t value, std::optional<int> fixed_size) {
   for (int i = 0; i < fixed_size.value_or(5); i++) {
     uint8_t curr_byte = value & 0x7F;
     value >>= 7;

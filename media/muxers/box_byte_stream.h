@@ -5,6 +5,7 @@
 #ifndef MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 #define MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -12,7 +13,6 @@
 #include "base/containers/stack.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -89,7 +89,7 @@ class MEDIA_EXPORT BoxByteStream {
 
   size_t position_ = 0;
   std::vector<uint8_t> buffer_;
-  absl::optional<base::BigEndianWriter> writer_;
+  std::optional<base::BigEndianWriter> writer_;
 };
 
 }  // namespace media

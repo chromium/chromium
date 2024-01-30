@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -18,7 +19,6 @@
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -73,11 +73,11 @@ class MEDIA_EXPORT MediaCodecUtil {
   // (64, 1) would mean visible width should be rounded up to the nearest
   // multiple of 64 and height should be left untouched.
   //
-  // Returns absl::nullopt if the decoder isn't recognized. `host_sdk_int` may
+  // Returns std::nullopt if the decoder isn't recognized. `host_sdk_int` may
   // be set for testing purposes.
-  static absl::optional<gfx::Size> LookupCodedSizeAlignment(
+  static std::optional<gfx::Size> LookupCodedSizeAlignment(
       std::string_view name,
-      absl::optional<int> host_sdk_int = absl::nullopt);
+      std::optional<int> host_sdk_int = std::nullopt);
 
   //
   // ***************************************************************

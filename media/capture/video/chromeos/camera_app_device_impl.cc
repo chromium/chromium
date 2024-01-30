@@ -74,7 +74,7 @@ void CameraAppDeviceImpl::ResetOnDeviceIpcThread(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-absl::optional<gfx::Range> CameraAppDeviceImpl::GetFpsRange() {
+std::optional<gfx::Range> CameraAppDeviceImpl::GetFpsRange() {
   base::AutoLock lock(fps_ranges_lock_);
 
   return specified_fps_range_;
@@ -474,10 +474,10 @@ void CameraAppDeviceImpl::NotifyCameraInfoUpdatedOnMojoThread() {
   }
 }
 
-absl::optional<PortraitModeCallbacks>
+std::optional<PortraitModeCallbacks>
 CameraAppDeviceImpl::ConsumePortraitModeCallbacks() {
   base::AutoLock lock(portrait_mode_callbacks_lock_);
-  absl::optional<PortraitModeCallbacks> callbacks;
+  std::optional<PortraitModeCallbacks> callbacks;
   if (take_portrait_photo_callbacks_.has_value()) {
     callbacks = std::move(take_portrait_photo_callbacks_);
     take_portrait_photo_callbacks_.reset();

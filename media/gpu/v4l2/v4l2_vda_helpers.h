@@ -6,6 +6,7 @@
 #define MEDIA_GPU_V4L2_V4L2_VDA_HELPERS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,7 +14,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -31,9 +31,9 @@ class H265Parser;
 namespace v4l2_vda_helpers {
 
 // Returns a usable input format of image processor, or nullopt if not found.
-absl::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device);
+std::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device);
 // Return a usable output format of image processor, or nullopt if not found.
-absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device);
+std::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device);
 
 // Create and return an image processor for the given parameters, or nullptr
 // if it cannot be created.

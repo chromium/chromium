@@ -145,7 +145,7 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
     buffer_size += subsample.clear_bytes() + subsample.cypher_bytes();
     subsamples.emplace_back(subsample.clear_bytes(), subsample.cypher_bytes());
   }
-  absl::optional<EncryptionPattern> pattern = absl::nullopt;
+  std::optional<EncryptionPattern> pattern = std::nullopt;
   if (buffer_proto.has_pattern()) {
     pattern.emplace(buffer_proto.pattern().cypher_bytes(),
                     buffer_proto.pattern().clear_bytes());
@@ -356,7 +356,7 @@ void VdVideoDecodeAccelerator::OnFrameReady(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
   DCHECK(client_);
 
-  absl::optional<Picture> picture = GetPicture(*frame);
+  std::optional<Picture> picture = GetPicture(*frame);
   if (!picture) {
     VLOGF(1) << "Failed to get picture.";
     OnError(FROM_HERE, PLATFORM_FAILURE);
@@ -537,7 +537,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      layout_ = absl::nullopt;
+      layout_ = std::nullopt;
       import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
           .Run(CroStatus::Codes::kFailedToChangeResolution);
@@ -604,7 +604,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 
-absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
+std::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
     const VideoFrame& frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -612,18 +612,18 @@ absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
   auto it = frame_id_to_picture_id_.find(frame.GetGpuMemoryBuffer()->GetId());
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int32_t picture_buffer_id = it->second;
   int32_t bitstream_id = FakeTimestampToBitstreamId(frame.timestamp());
-  return absl::make_optional(Picture(picture_buffer_id, bitstream_id,
-                                     frame.visible_rect(), frame.ColorSpace(),
-                                     frame.metadata().allow_overlay));
+  return std::make_optional(Picture(picture_buffer_id, bitstream_id,
+                                    frame.visible_rect(), frame.ColorSpace(),
+                                    frame.metadata().allow_overlay));
 }
 
 // static
 void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
-    absl::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
+    std::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   DVLOGF(4);

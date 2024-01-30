@@ -192,7 +192,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
                          base_time_ticks, true);
   for (int i = 0; i < 3; ++i) {
     delta += base::Milliseconds(kSampleDurations[i]);
-    delegate.AddVideoFrame(params, video_stream_2, absl::nullopt,
+    delegate.AddVideoFrame(params, video_stream_2, std::nullopt,
                            base_time_ticks + delta, false);
   }
 
@@ -201,7 +201,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
                          base_time_ticks + delta, true);
   for (int i = 0; i < 2; ++i) {
     delta += base::Milliseconds(kSampleDurations[i]);
-    delegate.AddVideoFrame(params, video_stream_2, absl::nullopt,
+    delegate.AddVideoFrame(params, video_stream_2, std::nullopt,
                            base_time_ticks + delta, false);
   }
 
@@ -505,7 +505,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   constexpr int kAudioAdditionalSampleCount = 29;
   for (int i = 0; i < kAudioAdditionalSampleCount; ++i) {
     delta += base::Milliseconds(incremental_delta);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
     ++incremental_delta;
   }
@@ -740,7 +740,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
@@ -875,7 +875,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
@@ -890,14 +890,14 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
                          base_time_ticks, true);
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
   // video stream, fourth fragment.
   delegate.AddVideoFrame(video_params, video_stream, video_code_description,
                          base_time_ticks + base::Milliseconds(50), true);
-  delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+  delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + delta + base::Milliseconds(30));
 
   // Write box data to the callback.
@@ -1089,7 +1089,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
@@ -1104,14 +1104,14 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
                          base_time_ticks, true);
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
   // video stream, fourth fragment.
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks + base::Milliseconds(50), true);
-  delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+  delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + delta + base::Milliseconds(30));
 
   // Write box data to the callback.
@@ -1270,7 +1270,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   for (int i = 0; i < kMaxAudioSampleFragment; ++i) {
     delta += base::Milliseconds(30);
-    delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+    delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                            base_time_ticks + delta);
   }
 
@@ -1419,15 +1419,15 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
                          base_time_ticks);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks, true);
-  delegate.AddVideoFrame(video_params, video_stream, absl::nullopt,
+  delegate.AddVideoFrame(video_params, video_stream, std::nullopt,
                          base_time_ticks + kDelta, false);
 
   // The second fragment; video (1 sample) -> audio (2 samples) track.
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks + kDelta * 2, true);
-  delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+  delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + kDelta);
-  delegate.AddAudioFrame(params, audio_stream, absl::nullopt,
+  delegate.AddAudioFrame(params, audio_stream, std::nullopt,
                          base_time_ticks + kDelta * 2);
   // Write box data to the callback.
   delegate.Flush();

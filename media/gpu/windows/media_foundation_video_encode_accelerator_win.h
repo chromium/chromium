@@ -75,11 +75,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -118,7 +118,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   struct OutOfBandMetadata {
     gfx::ColorSpace color_space;
     bool discard_output = false;
-    absl::optional<int> qp;
+    std::optional<int> qp;
     uint32_t frame_id;
   };
 
@@ -331,7 +331,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Enumerating supported profiles takes time, so cache the result here for
   // future requests.
-  absl::optional<SupportedProfiles> supported_profiles_;
+  std::optional<SupportedProfiles> supported_profiles_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

@@ -22,6 +22,8 @@
 #endif
 #include <linux/videodev2.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
 #include "base/files/scoped_file.h"
@@ -39,7 +41,6 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -208,7 +209,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   void SchedulePoll();
 
   // Attempt to dequeue a V4L2 event and return it.
-  absl::optional<struct v4l2_event> DequeueEvent();
+  std::optional<struct v4l2_event> DequeueEvent();
 
   // Returns requests queue to get free requests. A null pointer is returned if
   // the queue creation failed or if requests are not supported.
@@ -223,9 +224,9 @@ class MEDIA_GPU_EXPORT V4L2Device
                    std::vector<V4L2ExtCtrl> ctrls,
                    V4L2RequestRef* request_ref = nullptr);
 
-  // Get the value of a single control, or absl::nullopt of the control is not
+  // Get the value of a single control, or std::nullopt of the control is not
   // exposed by the device.
-  absl::optional<struct v4l2_ext_control> GetCtrl(uint32_t ctrl_id);
+  std::optional<struct v4l2_ext_control> GetCtrl(uint32_t ctrl_id);
 
   // Set periodic keyframe placement (group of pictures length)
   bool SetGOPLength(uint32_t gop_length);

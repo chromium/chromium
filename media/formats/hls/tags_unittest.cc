@@ -5,6 +5,7 @@
 #include "media/formats/hls/tags.h"
 
 #include <array>
+#include <optional>
 #include <utility>
 
 #include "base/location.h"
@@ -18,7 +19,6 @@
 #include "media/formats/hls/test_util.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -32,7 +32,7 @@ types::DecimalInteger MaxSeconds() {
 }
 
 template <typename T>
-void ErrorTest(absl::optional<base::StringPiece> content,
+void ErrorTest(std::optional<base::StringPiece> content,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
   auto tag = content ? TagItem::Create(ToTagName(T::kName),
@@ -45,7 +45,7 @@ void ErrorTest(absl::optional<base::StringPiece> content,
 }
 
 template <typename T>
-void ErrorTest(absl::optional<base::StringPiece> content,
+void ErrorTest(std::optional<base::StringPiece> content,
                const VariableDictionary& variable_dict,
                VariableDictionary::SubstitutionBuffer& sub_buffer,
                ParseStatusCode expected_status,
@@ -69,7 +69,7 @@ struct OkTestResult {
 };
 
 template <typename T>
-OkTestResult<T> OkTest(absl::optional<std::string> content,
+OkTestResult<T> OkTest(std::optional<std::string> content,
                        const base::Location& from = base::Location::Current()) {
   std::unique_ptr<std::string> source =
       content ? std::make_unique<std::string>(std::move(*content)) : nullptr;
@@ -83,7 +83,7 @@ OkTestResult<T> OkTest(absl::optional<std::string> content,
 }
 
 template <typename T>
-OkTestResult<T> OkTest(absl::optional<std::string> content,
+OkTestResult<T> OkTest(std::optional<std::string> content,
                        const VariableDictionary& variable_dict,
                        VariableDictionary::SubstitutionBuffer& sub_buffer,
                        const base::Location& from = base::Location::Current()) {
@@ -109,7 +109,7 @@ OkTestResult<T> OkTest(absl::optional<std::string> content,
 void RunTagIdenficationTest(
     TagName name,
     base::StringPiece line,
-    absl::optional<base::StringPiece> expected_content,
+    std::optional<base::StringPiece> expected_content,
     const base::Location& from = base::Location::Current()) {
   auto iter = SourceLineIterator(line);
   auto item_result = GetNextLineItem(&iter);
@@ -129,7 +129,7 @@ void RunTagIdenficationTest(
 template <typename T>
 void RunTagIdenficationTest(
     base::StringPiece line,
-    absl::optional<base::StringPiece> expected_content,
+    std::optional<base::StringPiece> expected_content,
     const base::Location& from = base::Location::Current()) {
   RunTagIdenficationTest(ToTagName(T::kName), line, expected_content, from);
 }
@@ -138,7 +138,7 @@ void RunTagIdenficationTest(
 template <typename T>
 void RunEmptyTagTest() {
   // Empty content is the only allowed content
-  OkTest<T>(absl::nullopt);
+  OkTest<T>(std::nullopt);
 
   // Test with non-empty content
   ErrorTest<T>("", ParseStatusCode::kMalformedTag);
@@ -154,7 +154,7 @@ void RunEmptyTagTest() {
 template <typename T>
 void RunDecimalIntegerTagTest(types::DecimalInteger T::*field) {
   // Content is required
-  ErrorTest<T>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<T>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<T>("", ParseStatusCode::kMalformedTag);
 
   // Content must be a valid decimal-integer
@@ -207,7 +207,7 @@ TEST(HlsTagsTest, TagNameIdentity) {
 }
 
 TEST(HlsTagsTest, ParseM3uTag) {
-  RunTagIdenficationTest<M3uTag>("#EXTM3U\n", absl::nullopt);
+  RunTagIdenficationTest<M3uTag>("#EXTM3U\n", std::nullopt);
   RunEmptyTagTest<M3uTag>();
 }
 
@@ -243,7 +243,7 @@ TEST(HlsTagsTest, ParseXDefineTag) {
   EXPECT_EQ(result.tag.value.value(), "");
 
   // Empty content is not allowed
-  ErrorTest<XDefineTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XDefineTag>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XDefineTag>("", ParseStatusCode::kMalformedTag);
 
   // NAME and IMPORT are NOT allowed
@@ -273,7 +273,7 @@ TEST(HlsTagsTest, ParseXDefineTag) {
 
 TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
   RunTagIdenficationTest<XIndependentSegmentsTag>(
-      "#EXT-X-INDEPENDENT-SEGMENTS\n", absl::nullopt);
+      "#EXT-X-INDEPENDENT-SEGMENTS\n", std::nullopt);
   RunEmptyTagTest<XIndependentSegmentsTag>();
 }
 
@@ -316,7 +316,7 @@ TEST(HlsTagsTest, ParseXVersionTag) {
   EXPECT_EQ(result.tag.version, 99999u);
 
   // Test invalid versions
-  ErrorTest<XVersionTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XVersionTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<XVersionTag>("0", ParseStatusCode::kInvalidPlaylistVersion);
   ErrorTest<XVersionTag>("-1", ParseStatusCode::kMalformedTag);
@@ -355,7 +355,7 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_TRUE(variable_dict.Insert(CreateVarName("YEAH"), "{$YES}"));
   EXPECT_TRUE(variable_dict.Insert(CreateVarName("SRVC"), "SERVICE"));
 
-  ErrorTest<XMediaTag>(absl::nullopt, variable_dict, sub_buffer,
+  ErrorTest<XMediaTag>(std::nullopt, variable_dict, sub_buffer,
                        ParseStatusCode::kMalformedTag);
   ErrorTest<XMediaTag>("", variable_dict, sub_buffer,
                        ParseStatusCode::kMalformedTag);
@@ -377,34 +377,34 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   auto result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\"",
                                   variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   result = OkTest<XMediaTag>("TYPE=VIDEO,GROUP-ID=\"group\",NAME=\"name\"",
                              variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kVideo);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The URI attribute is REQUIRED if TYPE=SUBTITLES
   ErrorTest<XMediaTag>("TYPE=SUBTITLES,GROUP-ID=\"group\",NAME=\"name\"",
@@ -416,16 +416,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_EQ(result.tag.type, MediaType::kSubtitles);
   EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The URI attribute MUST NOT be present if TYPE=CLOSED-CAPTIONS
   ErrorTest<XMediaTag>(
@@ -449,16 +449,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
   EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The URI attribute is subject to variable substitution
   result = OkTest<XMediaTag>(
@@ -467,16 +467,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
   EXPECT_EQ(result.tag.uri->Str(), "bar.m3u8");
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The GROUP-ID attribute is REQUIRED, and must be a valid quoted-string
   ErrorTest<XMediaTag>("TYPE=AUDIO,NAME=\"name\"", variable_dict, sub_buffer,
@@ -493,18 +493,18 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"foo{$FOO}\",NAME=\"name\"",
                              variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "foobar");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The LANGUAGE attribute must be a valid quoted-string
   ErrorTest<XMediaTag>(
@@ -521,38 +521,38 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"en\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
   ASSERT_TRUE(result.tag.language.has_value());
   EXPECT_EQ(result.tag.language->Str(), "en");
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The LANGUAGE attribute is subject to variable substitution
   result = OkTest<XMediaTag>(
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",LANGUAGE=\"{$FOO}\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
   ASSERT_TRUE(result.tag.language.has_value());
   EXPECT_EQ(result.tag.language->Str(), "bar");
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The ASSOC-LANGUAGE attribute must be a valid quoted-string
   ErrorTest<XMediaTag>(
@@ -569,38 +569,38 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"en\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
   ASSERT_TRUE(result.tag.associated_language.has_value());
   EXPECT_EQ(result.tag.associated_language->Str(), "en");
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The ASSOC-LANGUAGE attribute is subject to variable substitution
   result = OkTest<XMediaTag>(
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",ASSOC-LANGUAGE=\"{$FOO}\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
   ASSERT_TRUE(result.tag.associated_language.has_value());
   EXPECT_EQ(result.tag.associated_language->Str(), "bar");
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // LANGUAGE and ASSOC-LANGUAGE are not mutually exclusive
   result = OkTest<XMediaTag>(
@@ -608,20 +608,20 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "LANGUAGE=\"bar\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
   ASSERT_TRUE(result.tag.language.has_value());
   EXPECT_EQ(result.tag.language->Str(), "foo");
   ASSERT_TRUE(result.tag.associated_language.has_value());
   EXPECT_EQ(result.tag.associated_language->Str(), "bar");
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The NAME attribute is REQUIRED, and must be a valid quoted-string
   ErrorTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\"", variable_dict,
@@ -638,18 +638,18 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   result = OkTest<XMediaTag>("TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"foo{$FOO}\"",
                              variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "foobar");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The STABLE-RENDITION-ID attribute must be a valid quoted-string containing
   // a valid StableId
@@ -672,19 +672,19 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "\"abcABC123+/=.-_\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
   ASSERT_TRUE(result.tag.stable_rendition_id.has_value());
   EXPECT_EQ(result.tag.stable_rendition_id->Str(), "abcABC123+/=.-_");
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // STABLE-RENDITION-ID is subject to variable substitution
   result = OkTest<XMediaTag>(
@@ -692,19 +692,19 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "FOO}\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
   ASSERT_TRUE(result.tag.stable_rendition_id.has_value());
   EXPECT_EQ(result.tag.stable_rendition_id->Str(), "foobar");
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The DEFAULT attribute must equal 'YES' to evaluate as true. Other values
   // are ignored, and it is not subject to variable substitution.
@@ -713,36 +713,36 @@ TEST(HlsTagsTest, ParseXMediaTag) {
         "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=" + x,
         variable_dict, sub_buffer);
     EXPECT_EQ(result.tag.type, MediaType::kAudio);
-    EXPECT_EQ(result.tag.uri, absl::nullopt);
+    EXPECT_EQ(result.tag.uri, std::nullopt);
     EXPECT_EQ(result.tag.group_id.Str(), "group");
-    EXPECT_EQ(result.tag.language, absl::nullopt);
-    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.language, std::nullopt);
+    EXPECT_EQ(result.tag.associated_language, std::nullopt);
     EXPECT_EQ(result.tag.name.Str(), "name");
-    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
     EXPECT_EQ(result.tag.is_default, false);
     EXPECT_EQ(result.tag.autoselect, false);
     EXPECT_EQ(result.tag.forced, false);
-    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.instream_id, std::nullopt);
     EXPECT_EQ(result.tag.characteristics.size(), 0u);
-    EXPECT_EQ(result.tag.channels, absl::nullopt);
+    EXPECT_EQ(result.tag.channels, std::nullopt);
   }
 
   result = OkTest<XMediaTag>(
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=YES", variable_dict,
       sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, true);
   EXPECT_EQ(result.tag.autoselect, true);  // DEFAULT=YES implies AUTOSELECT=YES
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The AUTOSELECT attribute must equal 'YES' to evaluate as true. Other values
   // are ignored, and it is not subject to variable substitution.
@@ -751,36 +751,36 @@ TEST(HlsTagsTest, ParseXMediaTag) {
         "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",AUTOSELECT=" + x,
         variable_dict, sub_buffer);
     EXPECT_EQ(result.tag.type, MediaType::kAudio);
-    EXPECT_EQ(result.tag.uri, absl::nullopt);
+    EXPECT_EQ(result.tag.uri, std::nullopt);
     EXPECT_EQ(result.tag.group_id.Str(), "group");
-    EXPECT_EQ(result.tag.language, absl::nullopt);
-    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.language, std::nullopt);
+    EXPECT_EQ(result.tag.associated_language, std::nullopt);
     EXPECT_EQ(result.tag.name.Str(), "name");
-    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
     EXPECT_EQ(result.tag.is_default, false);
     EXPECT_EQ(result.tag.autoselect, false);
     EXPECT_EQ(result.tag.forced, false);
-    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.instream_id, std::nullopt);
     EXPECT_EQ(result.tag.characteristics.size(), 0u);
-    EXPECT_EQ(result.tag.channels, absl::nullopt);
+    EXPECT_EQ(result.tag.channels, std::nullopt);
   }
 
   result = OkTest<XMediaTag>(
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",AUTOSELECT=YES",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, true);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // If DEFAULT=YES, then AUTOSELECT must be YES if present
   ErrorTest<XMediaTag>(
@@ -790,18 +790,18 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",DEFAULT=YES,AUTOSELECT=YES",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, true);
   EXPECT_EQ(result.tag.autoselect, true);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The FORCED attribute may only appear when TYPE=SUBTITLES
   ErrorTest<XMediaTag>(
@@ -823,16 +823,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
     ASSERT_TRUE(result.tag.uri.has_value());
     EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
     EXPECT_EQ(result.tag.group_id.Str(), "group");
-    EXPECT_EQ(result.tag.language, absl::nullopt);
-    EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+    EXPECT_EQ(result.tag.language, std::nullopt);
+    EXPECT_EQ(result.tag.associated_language, std::nullopt);
     EXPECT_EQ(result.tag.name.Str(), "name");
-    EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+    EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
     EXPECT_EQ(result.tag.is_default, false);
     EXPECT_EQ(result.tag.autoselect, false);
     EXPECT_EQ(result.tag.forced, false);
-    EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+    EXPECT_EQ(result.tag.instream_id, std::nullopt);
     EXPECT_EQ(result.tag.characteristics.size(), 0u);
-    EXPECT_EQ(result.tag.channels, absl::nullopt);
+    EXPECT_EQ(result.tag.channels, std::nullopt);
   }
 
   result = OkTest<XMediaTag>(
@@ -843,16 +843,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   ASSERT_TRUE(result.tag.uri.has_value());
   EXPECT_EQ(result.tag.uri->Str(), "foo.m3u8");
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, true);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // INSTREAM-ID is REQUIRED when TYPE=CLOSED-CAPTIONS, and MUST NOT appear for
   // any other type
@@ -872,12 +872,12 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "\"CC1\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kClosedCaptions);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
@@ -885,7 +885,7 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_EQ(result.tag.instream_id->GetType(), types::InstreamId::Type::kCc);
   EXPECT_EQ(result.tag.instream_id->GetNumber(), 1);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // INSTREAM-ID must be a valid quoted-string containing an InstreamId, and is
   // subject to variable substitution.
@@ -905,12 +905,12 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "SRVC}32\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kClosedCaptions);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
@@ -919,7 +919,7 @@ TEST(HlsTagsTest, ParseXMediaTag) {
             types::InstreamId::Type::kService);
   EXPECT_EQ(result.tag.instream_id->GetNumber(), 32);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The CHARACTERISTICS attribute must be a quoted-string containing a sequence
   // of media characteristics tags It may not be empty, and is subject to
@@ -936,41 +936,41 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "baz\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 3u);
   EXPECT_EQ(result.tag.characteristics[0], "foo");
   EXPECT_EQ(result.tag.characteristics[1], "bar");
   EXPECT_EQ(result.tag.characteristics[2], "baz");
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   result = OkTest<XMediaTag>(
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHARACTERISTICS=\"{$FOO},{$"
       "BAR}\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 2u);
   EXPECT_EQ(result.tag.characteristics[0], "bar");
   EXPECT_EQ(result.tag.characteristics[1], "baz");
-  EXPECT_EQ(result.tag.channels, absl::nullopt);
+  EXPECT_EQ(result.tag.channels, std::nullopt);
 
   // The CHANNELS tag must be a non-empty quoted-string, and is subject to
   // variable substitution. The only parameters that are recognized are for
@@ -998,16 +998,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
   ASSERT_TRUE(result.tag.channels.has_value());
   EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
@@ -1017,16 +1017,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "TYPE=AUDIO,GROUP-ID=\"group\",NAME=\"name\",CHANNELS=\"1/FOO,BAR,-\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
   ASSERT_TRUE(result.tag.channels.has_value());
   EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
@@ -1040,16 +1040,16 @@ TEST(HlsTagsTest, ParseXMediaTag) {
       "FOO,{$SRVC},-\"",
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.type, MediaType::kAudio);
-  EXPECT_EQ(result.tag.uri, absl::nullopt);
+  EXPECT_EQ(result.tag.uri, std::nullopt);
   EXPECT_EQ(result.tag.group_id.Str(), "group");
-  EXPECT_EQ(result.tag.language, absl::nullopt);
-  EXPECT_EQ(result.tag.associated_language, absl::nullopt);
+  EXPECT_EQ(result.tag.language, std::nullopt);
+  EXPECT_EQ(result.tag.associated_language, std::nullopt);
   EXPECT_EQ(result.tag.name.Str(), "name");
-  EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
+  EXPECT_EQ(result.tag.stable_rendition_id, std::nullopt);
   EXPECT_EQ(result.tag.is_default, false);
   EXPECT_EQ(result.tag.autoselect, false);
   EXPECT_EQ(result.tag.forced, false);
-  EXPECT_EQ(result.tag.instream_id, absl::nullopt);
+  EXPECT_EQ(result.tag.instream_id, std::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
   EXPECT_TRUE(result.tag.channels.has_value());
   EXPECT_EQ(result.tag.channels->GetMaxChannels(), 1u);
@@ -1092,16 +1092,16 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   ASSERT_TRUE(result.tag.codecs.has_value());
   EXPECT_TRUE(
       base::ranges::equal(result.tag.codecs.value(), std::array{"foo", "bar"}));
-  EXPECT_EQ(result.tag.resolution, absl::nullopt);
-  EXPECT_EQ(result.tag.frame_rate, absl::nullopt);
+  EXPECT_EQ(result.tag.resolution, std::nullopt);
+  EXPECT_EQ(result.tag.frame_rate, std::nullopt);
 
   result = OkTest<XStreamInfTag>(
       R"(BANDWIDTH=1010,RESOLUTION=1920x1080,FRAME-RATE=29.97)", variable_dict,
       sub_buffer);
   EXPECT_EQ(result.tag.bandwidth, 1010u);
-  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(result.tag.score, absl::nullopt);
-  EXPECT_EQ(result.tag.codecs, absl::nullopt);
+  EXPECT_EQ(result.tag.average_bandwidth, std::nullopt);
+  EXPECT_EQ(result.tag.score, std::nullopt);
+  EXPECT_EQ(result.tag.codecs, std::nullopt);
   ASSERT_TRUE(result.tag.resolution.has_value());
   EXPECT_EQ(result.tag.resolution->width, 1920u);
   EXPECT_EQ(result.tag.resolution->height, 1080u);
@@ -1111,13 +1111,13 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   result =
       OkTest<XStreamInfTag>(R"(BANDWIDTH=5050)", variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.bandwidth, 5050u);
-  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(result.tag.score, absl::nullopt);
-  EXPECT_EQ(result.tag.codecs, absl::nullopt);
-  EXPECT_EQ(result.tag.resolution, absl::nullopt);
-  EXPECT_EQ(result.tag.frame_rate, absl::nullopt);
+  EXPECT_EQ(result.tag.average_bandwidth, std::nullopt);
+  EXPECT_EQ(result.tag.score, std::nullopt);
+  EXPECT_EQ(result.tag.codecs, std::nullopt);
+  EXPECT_EQ(result.tag.resolution, std::nullopt);
+  EXPECT_EQ(result.tag.frame_rate, std::nullopt);
 
-  ErrorTest<XStreamInfTag>(absl::nullopt, variable_dict, sub_buffer,
+  ErrorTest<XStreamInfTag>(std::nullopt, variable_dict, sub_buffer,
                            ParseStatusCode::kMalformedTag);
   ErrorTest<XStreamInfTag>("", variable_dict, sub_buffer,
                            ParseStatusCode::kMalformedTag);
@@ -1165,12 +1165,12 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS="{$FOO},{$BAR}")",
                                  variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.bandwidth, 1010u);
-  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.average_bandwidth, std::nullopt);
+  EXPECT_EQ(result.tag.score, std::nullopt);
   ASSERT_TRUE(result.tag.codecs.has_value());
   EXPECT_TRUE(
       base::ranges::equal(result.tag.codecs.value(), std::array{"bar", "baz"}));
-  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  EXPECT_EQ(result.tag.resolution, std::nullopt);
 
   // "RESOLUTION" must be a valid decimal-resolution
   ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,RESOLUTION=1920x)", variable_dict,
@@ -1198,10 +1198,10 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,AUDIO="{$FOO}{$BAR}")",
                                  variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.bandwidth, 1010u);
-  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(result.tag.score, absl::nullopt);
-  EXPECT_EQ(result.tag.codecs, absl::nullopt);
-  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  EXPECT_EQ(result.tag.average_bandwidth, std::nullopt);
+  EXPECT_EQ(result.tag.score, std::nullopt);
+  EXPECT_EQ(result.tag.codecs, std::nullopt);
+  EXPECT_EQ(result.tag.resolution, std::nullopt);
   ASSERT_TRUE(result.tag.audio.has_value());
   ASSERT_FALSE(result.tag.video.has_value());
   EXPECT_EQ(result.tag.audio->Str(), "barbaz");
@@ -1218,10 +1218,10 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,VIDEO="{$BAZ}{$FOO}")",
                                  variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.bandwidth, 1010u);
-  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(result.tag.score, absl::nullopt);
-  EXPECT_EQ(result.tag.codecs, absl::nullopt);
-  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  EXPECT_EQ(result.tag.average_bandwidth, std::nullopt);
+  EXPECT_EQ(result.tag.score, std::nullopt);
+  EXPECT_EQ(result.tag.codecs, std::nullopt);
+  EXPECT_EQ(result.tag.resolution, std::nullopt);
   ASSERT_TRUE(result.tag.video.has_value());
   ASSERT_FALSE(result.tag.audio.has_value());
   EXPECT_EQ(result.tag.video->Str(), "foobar");
@@ -1261,7 +1261,7 @@ TEST(HlsTagsTest, ParseInfTag) {
   EXPECT_EQ(result.tag.title.Str(), "");
 
   // Test some invalid tags
-  ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>(",", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
@@ -1284,7 +1284,7 @@ TEST(HlsTagsTest, ParseXByteRangeTag) {
 
   auto result = OkTest<XByteRangeTag>("12");
   EXPECT_EQ(result.tag.range.length, 12u);
-  EXPECT_EQ(result.tag.range.offset, absl::nullopt);
+  EXPECT_EQ(result.tag.range.offset, std::nullopt);
   result = OkTest<XByteRangeTag>("12@34");
   EXPECT_EQ(result.tag.range.length, 12u);
   EXPECT_EQ(result.tag.range.offset, 34u);
@@ -1296,7 +1296,7 @@ TEST(HlsTagsTest, ParseXByteRangeTag) {
   ErrorTest<XByteRangeTag>(" 12@34", ParseStatusCode::kMalformedTag);
   ErrorTest<XByteRangeTag>("12@34 ", ParseStatusCode::kMalformedTag);
   ErrorTest<XByteRangeTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<XByteRangeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>(std::nullopt, ParseStatusCode::kMalformedTag);
 }
 
 TEST(HlsTagsTest, ParseXDateRangeTag) {
@@ -1309,7 +1309,7 @@ TEST(HlsTagsTest, ParseXDateRangeTag) {
 
 TEST(HlsTagsTest, ParseXDiscontinuityTag) {
   RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
-                                            absl::nullopt);
+                                            std::nullopt);
   RunEmptyTagTest<XDiscontinuityTag>();
 }
 
@@ -1320,18 +1320,18 @@ TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
 }
 
 TEST(HlsTagsTest, ParseXEndListTag) {
-  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", absl::nullopt);
+  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", std::nullopt);
   RunEmptyTagTest<XEndListTag>();
 }
 
 TEST(HlsTagsTest, ParseXGapTag) {
-  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", absl::nullopt);
+  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", std::nullopt);
   RunEmptyTagTest<XGapTag>();
 }
 
 TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
   RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
-                                          absl::nullopt);
+                                          std::nullopt);
   RunEmptyTagTest<XIFramesOnlyTag>();
 }
 
@@ -1352,7 +1352,7 @@ TEST(HlsTagsTest, ParseXMapTag) {
   VariableDictionary::SubstitutionBuffer sub_buffer;
 
   // The URI attribute is required
-  ErrorTest<XMapTag>(absl::nullopt, variable_dict, sub_buffer,
+  ErrorTest<XMapTag>(std::nullopt, variable_dict, sub_buffer,
                      ParseStatusCode::kMalformedTag);
   ErrorTest<XMapTag>("", variable_dict, sub_buffer,
                      ParseStatusCode::kMalformedTag);
@@ -1363,7 +1363,7 @@ TEST(HlsTagsTest, ParseXMapTag) {
   auto result =
       OkTest<XMapTag>("URI=\"foo.ts\",FUTURE=PROOF", variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
 
   // The URI attribute is subject to variable substitution
   ErrorTest<XMapTag>("URI=\"{$UNDEFINED}.ts\"", variable_dict, sub_buffer,
@@ -1371,7 +1371,7 @@ TEST(HlsTagsTest, ParseXMapTag) {
   result =
       OkTest<XMapTag>("URI=\"{$FOO}_{$BAR}.ts\"", variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "bar_baz.ts");
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
 
   // Test the BYTERANGE attribute
   ErrorTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"{$UNDEFINED}\"", variable_dict,
@@ -1382,7 +1382,7 @@ TEST(HlsTagsTest, ParseXMapTag) {
                            sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_EQ(result.tag.byte_range->length, 10u);
-  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range->offset, std::nullopt);
 
   // The BYTERANGE attribute is subject to variable substitution
   result = OkTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"{$ONE}{$TWO}@{$THREE}\"",
@@ -1406,7 +1406,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
   VariableDictionary::SubstitutionBuffer sub_buffer;
 
   // The URI and DURATION attributes are required
-  ErrorTest<XPartTag>(absl::nullopt, variable_dict, sub_buffer,
+  ErrorTest<XPartTag>(std::nullopt, variable_dict, sub_buffer,
                       ParseStatusCode::kMalformedTag);
   ErrorTest<XPartTag>("", variable_dict, sub_buffer,
                       ParseStatusCode::kMalformedTag);
@@ -1420,7 +1420,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
       OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1", variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
   EXPECT_EQ(result.tag.independent, false);
   EXPECT_EQ(result.tag.gap, false);
 
@@ -1431,7 +1431,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
                             sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "baz.ts");
   EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
   EXPECT_EQ(result.tag.independent, false);
   EXPECT_EQ(result.tag.gap, false);
 
@@ -1441,7 +1441,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
       variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
   EXPECT_EQ(result.tag.independent, false);
   EXPECT_EQ(result.tag.gap, false);
   ErrorTest<XPartTag>(
@@ -1459,7 +1459,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_EQ(result.tag.duration, base::Seconds(1));
   EXPECT_EQ(result.tag.byte_range->length, 12u);
-  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range->offset, std::nullopt);
   EXPECT_EQ(result.tag.independent, false);
   EXPECT_EQ(result.tag.gap, false);
 
@@ -1478,7 +1478,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
                             variable_dict, sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
   EXPECT_EQ(result.tag.independent, true);
   EXPECT_EQ(result.tag.gap, false);
 
@@ -1487,7 +1487,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
                               variable_dict, sub_buffer);
     EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
     EXPECT_EQ(result.tag.duration, base::Seconds(1));
-    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.byte_range, std::nullopt);
     EXPECT_EQ(result.tag.independent, false);
     EXPECT_EQ(result.tag.gap, false);
   }
@@ -1497,7 +1497,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
                             sub_buffer);
   EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
   EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.byte_range, std::nullopt);
   EXPECT_EQ(result.tag.independent, false);
   EXPECT_EQ(result.tag.gap, true);
 
@@ -1506,7 +1506,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
                               variable_dict, sub_buffer);
     EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
     EXPECT_EQ(result.tag.duration, base::Seconds(1));
-    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.byte_range, std::nullopt);
     EXPECT_EQ(result.tag.independent, false);
     EXPECT_EQ(result.tag.gap, false);
   }
@@ -1517,7 +1517,7 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
                                       "PART-TARGET=1.0");
 
   // PART-TARGET is required, and must be a valid DecimalFloatingPoint
-  ErrorTest<XPartInfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XPartInfTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<XPartInfTag>("1", ParseStatusCode::kMalformedTag);
   ErrorTest<XPartInfTag>("PART-TARGET=-1", ParseStatusCode::kMalformedTag);
@@ -1563,7 +1563,7 @@ TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
   ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<XPlaylistTypeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XPlaylistTypeTag>(std::nullopt, ParseStatusCode::kMalformedTag);
 }
 
 TEST(HlsTagsTest, ParseXPreloadHintTag) {
@@ -1594,14 +1594,14 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
       "#EXT-X-SERVER-CONTROL:SKIP-UNTIL=10\n", "SKIP-UNTIL=10");
 
   // Tag requires content
-  ErrorTest<XServerControlTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>(std::nullopt, ParseStatusCode::kMalformedTag);
 
   // Content is allowed to be empty
   auto result = OkTest<XServerControlTag>("");
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   result = OkTest<XServerControlTag>(
@@ -1623,8 +1623,8 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   result = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=5");
   EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(5)));
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
@@ -1633,8 +1633,8 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   EXPECT_TRUE(
       RoughlyEqual(result.tag.skip_boundary, base::Seconds(MaxSeconds())));
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   ErrorTest<XServerControlTag>(
@@ -1648,8 +1648,8 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
       OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES,CAN-SKIP-UNTIL=50");
   EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(50)));
   EXPECT_EQ(result.tag.can_skip_dateranges, true);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   // The only value that results in `true` is "YES"
@@ -1658,8 +1658,8 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
                                        ",CAN-SKIP-UNTIL=50");
     EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(50)));
     EXPECT_EQ(result.tag.can_skip_dateranges, false);
-    EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-    EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.hold_back, std::nullopt);
+    EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
     EXPECT_EQ(result.tag.can_block_reload, false);
   }
 
@@ -1671,19 +1671,19 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
                                ParseStatusCode::kMalformedTag);
 
   result = OkTest<XServerControlTag>("HOLD-BACK=50");
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
   EXPECT_TRUE(RoughlyEqual(result.tag.hold_back, base::Seconds(50)));
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
   result = OkTest<XServerControlTag>("HOLD-BACK=" +
                                      base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
   EXPECT_TRUE(RoughlyEqual(result.tag.hold_back, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, false);
   ErrorTest<XServerControlTag>(
       "HOLD-BACK=" + base::NumberToString(MaxSeconds() + 1),
@@ -1698,18 +1698,18 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
                                ParseStatusCode::kMalformedTag);
 
   result = OkTest<XServerControlTag>("PART-HOLD-BACK=50");
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
   EXPECT_EQ(result.tag.part_hold_back, base::Seconds(50));
   EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
   result = OkTest<XServerControlTag>("PART-HOLD-BACK=" +
                                      base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
   EXPECT_TRUE(
       RoughlyEqual(result.tag.part_hold_back, base::Seconds(MaxSeconds())));
   EXPECT_EQ(result.tag.can_block_reload, false);
@@ -1720,18 +1720,18 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   // The only value that results in `true` is "YES"
   for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
     result = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=" + x);
-    EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+    EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
     EXPECT_EQ(result.tag.can_skip_dateranges, false);
-    EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-    EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.hold_back, std::nullopt);
+    EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
     EXPECT_EQ(result.tag.can_block_reload, false);
   }
 
   result = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=YES");
-  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.skip_boundary, std::nullopt);
   EXPECT_EQ(result.tag.can_skip_dateranges, false);
-  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
-  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.hold_back, std::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, std::nullopt);
   EXPECT_EQ(result.tag.can_block_reload, true);
 }
 
@@ -1742,7 +1742,7 @@ TEST(HlsTagsTest, ParseXSkipTag) {
   VariableDictionary variable_dict = CreateBasicDictionary();
   VariableDictionary::SubstitutionBuffer sub_buffer;
 
-  ErrorTest<XSkipTag>(absl::nullopt, variable_dict, sub_buffer,
+  ErrorTest<XSkipTag>(std::nullopt, variable_dict, sub_buffer,
                       ParseStatusCode::kMalformedTag);
   ErrorTest<XSkipTag>("-1", variable_dict, sub_buffer,
                       ParseStatusCode::kMalformedTag);
@@ -1784,7 +1784,7 @@ TEST(HlsTagsTest, ParseXTargetDurationTag) {
                                              "10");
 
   // Content must be a valid decimal-integer
-  ErrorTest<XTargetDurationTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>(std::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<XTargetDurationTag>("", ParseStatusCode::kMalformedTag);
   ErrorTest<XTargetDurationTag>("-1", ParseStatusCode::kMalformedTag);
   ErrorTest<XTargetDurationTag>("1.5", ParseStatusCode::kMalformedTag);

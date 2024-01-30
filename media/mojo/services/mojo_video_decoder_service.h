@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -63,7 +63,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  const absl::optional<base::UnguessableToken>& cdm_id,
+                  const std::optional<base::UnguessableToken>& cdm_id,
                   InitializeCallback callback) final;
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
@@ -122,7 +122,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
 
   // The CDM ID and the corresponding CdmContextRef, which must be held to keep
   // the CdmContext alive for the lifetime of the |decoder_|.
-  absl::optional<base::UnguessableToken> cdm_id_;
+  std::optional<base::UnguessableToken> cdm_id_;
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;

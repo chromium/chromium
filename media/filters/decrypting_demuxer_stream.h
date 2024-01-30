@@ -5,6 +5,8 @@
 #ifndef MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,7 +20,6 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -175,7 +176,7 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   raw_ptr<Decryptor> decryptor_ = nullptr;
 
-  absl::optional<bool> has_clear_lead_;
+  std::optional<bool> has_clear_lead_;
 
   bool switched_clear_to_encrypted_ = false;
 

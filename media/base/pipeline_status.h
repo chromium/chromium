@@ -6,7 +6,9 @@
 #define MEDIA_BASE_PIPELINE_STATUS_H_
 
 #include <stdint.h>
+
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +17,6 @@
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

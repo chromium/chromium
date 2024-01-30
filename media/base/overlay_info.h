@@ -5,17 +5,18 @@
 #ifndef MEDIA_BASE_OVERLAY_INFO_H_
 #define MEDIA_BASE_OVERLAY_INFO_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 struct MEDIA_EXPORT OverlayInfo {
   // An unset routing token indicates "do not use any routing token".  A null
   // routing token isn't serializable, else we'd probably use that instead.
-  using RoutingToken = absl::optional<base::UnguessableToken>;
+  using RoutingToken = std::optional<base::UnguessableToken>;
 
   OverlayInfo();
   OverlayInfo(const OverlayInfo&);

@@ -28,7 +28,7 @@ MojoLearningTaskControllerService::~MojoLearningTaskControllerService() =
 void MojoLearningTaskControllerService::BeginObservation(
     const base::UnguessableToken& id,
     const FeatureVector& features,
-    const absl::optional<TargetValue>& default_target) {
+    const std::optional<TargetValue>& default_target) {
   // Drop the observation if it doesn't match the feature description size.
   if (features.size() != task_.feature_descriptions.size())
     return;
@@ -66,7 +66,7 @@ void MojoLearningTaskControllerService::CancelObservation(
 
 void MojoLearningTaskControllerService::UpdateDefaultTarget(
     const base::UnguessableToken& id,
-    const absl::optional<TargetValue>& default_target) {
+    const std::optional<TargetValue>& default_target) {
   auto iter = in_flight_observations_.find(id);
   if (iter == in_flight_observations_.end())
     return;

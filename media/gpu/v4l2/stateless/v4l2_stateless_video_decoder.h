@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_V4L2_STATELESS_VIDEO_DECODER_H_
 #define MEDIA_GPU_V4L2_STATELESS_V4L2_STATELESS_VIDEO_DECODER_H_
 
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "media/gpu/v4l2/stateless/queue.h"
 #include "media/gpu/v4l2/stateless/stateless_decode_surface_handler.h"
 #include "media/gpu/v4l2/stateless/stateless_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -41,7 +41,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
@@ -193,7 +193,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   std::queue<DecodeRequest> decode_request_queue_;
 
   // The decode request decode loop needs to keep this alive.
-  absl::optional<DecodeRequest> current_decode_request_;
+  std::optional<DecodeRequest> current_decode_request_;
 
   base::CancelableTaskTracker cancelable_output_queue_tracker_;
   base::CancelableTaskTracker cancelable_input_queue_tracker_;

@@ -95,7 +95,7 @@ class TestBufferCollection {
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
 
-  absl::optional<fuchsia::sysmem::BufferCollectionInfo_2>
+  std::optional<fuchsia::sysmem::BufferCollectionInfo_2>
       buffer_collection_info_;
 };
 

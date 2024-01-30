@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "media/base/video_codecs.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class GpuMemoryBufferFactory;
@@ -54,7 +54,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const std::string& svc_mode,
       VideoEncodeAccelerator::Config::ContentType content_type,
       bool save_output_bitstream,
-      absl::optional<uint32_t> output_bitrate,
+      std::optional<uint32_t> output_bitrate,
       Bitrate::Mode bitrate_mode,
       bool reverse,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
@@ -90,7 +90,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // True if the video should play backwards at reaching the end of video.
   // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
   bool Reverse() const;
-  absl::optional<base::FilePath> OutputBitstreamFilePath() const;
+  std::optional<base::FilePath> OutputBitstreamFilePath() const;
   // Gets the frame output configuration.
   const FrameOutputConfig& ImageOutputConfig() const;
 

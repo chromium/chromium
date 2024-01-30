@@ -5,13 +5,14 @@
 #ifndef MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 #define MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -37,8 +38,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // Video capture begin/end timestamps.  Consumers can use these values for
   // dynamic optimizations, logging stats, etc.
-  absl::optional<base::TimeTicks> capture_begin_time;
-  absl::optional<base::TimeTicks> capture_end_time;
+  std::optional<base::TimeTicks> capture_begin_time;
+  std::optional<base::TimeTicks> capture_end_time;
 
   // A counter that is increased by the producer of video frames each time
   // it pushes out a new frame. By looking for gaps in this counter, clients
@@ -46,7 +47,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // the producer between two consecutively received frames. Note that the
   // counter may start at arbitrary values, so the absolute value of it has no
   // meaning.
-  absl::optional<int> capture_counter;
+  std::optional<int> capture_counter;
 
   // The rectangular region of the frame that has changed since the frame
   // with the directly preceding CAPTURE_COUNTER. If that frame was not
@@ -55,13 +56,13 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // The rectangle is relative to the full frame data, i.e. [0, 0,
   // coded_size().width(), coded_size().height()]. It does not have to be
   // fully contained within visible_rect().
-  absl::optional<gfx::Rect> capture_update_rect;
+  std::optional<gfx::Rect> capture_update_rect;
 
   // For encoded frames, this is the original source size which may be different
   // from the encoded size. It's used for the HiDPI tab capture heuristic.
   // The size corresponds to the active region if region capture is active,
   // or otherwise the full size of the captured source.
-  absl::optional<gfx::Size> source_size;
+  std::optional<gfx::Size> source_size;
 
   // If cropping was applied due to Region Capture to produce this frame,
   // then this reflects where the frame's contents originate from in the
@@ -70,7 +71,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // NOTE: May also be nullopt if region capture is enabled but the capture rect
   // is in a different coordinate space. For more info, see
   // https://crbug.com/1327560.
-  absl::optional<gfx::Rect> region_capture_rect;
+  std::optional<gfx::Rect> region_capture_rect;
 
   // Whenever cropTo() or restrictTo() are called, Blink increments the
   // sub_capture_target_version and records a Promise as associated with that
@@ -96,12 +97,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // vary unpredictably for every frame.  Consumers can use this to optimize
   // playback scheduling, make encoding quality decisions, and/or compute
   // frame-level resource utilization stats.
-  absl::optional<base::TimeDelta> frame_duration;
+  std::optional<base::TimeDelta> frame_duration;
 
   // Represents either the fixed frame rate, or the maximum frame rate to
   // expect from a variable-rate source.  This value generally remains the
   // same for all frames in the same session.
-  absl::optional<double> frame_rate;
+  std::optional<double> frame_rate;
 
   // This is a boolean that signals that the video capture engine detects
   // interactive content. One possible optimization that this signal can help
@@ -115,7 +116,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // a high-resolution timestamp, and so it should not be used as a
   // presentation time; but, instead, it should be used for buffering playback
   // and for A/V synchronization purposes.
-  absl::optional<base::TimeTicks> reference_time;
+  std::optional<base::TimeTicks> reference_time;
 
   // Sources of VideoFrames use this marker to indicate that an instance of
   // VideoFrameExternalResources produced from the associated video frame
@@ -123,7 +124,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   bool read_lock_fences_enabled = false;
 
   // Indicates that the frame has a rotation and/or flip.
-  absl::optional<VideoTransformation> transformation;
+  std::optional<VideoTransformation> transformation;
 
   // Android only: if set, then this frame is not suitable for overlay, even
   // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
@@ -162,12 +163,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   //
   // Notes on IPC: this field should not be copied to the Mojo version of
   // VideoFrameMetadata because it should not cross process boundaries.
-  absl::optional<unsigned int> hw_va_protected_session_id;
+  std::optional<unsigned int> hw_va_protected_session_id;
 #endif
 
   // An UnguessableToken that identifies VideoOverlayFactory that created
   // this VideoFrame. It's used by Cast to help with video hole punch.
-  absl::optional<base::UnguessableToken> overlay_plane_id;
+  std::optional<base::UnguessableToken> overlay_plane_id;
 
   // Whether this frame was decoded in a power efficient way.
   bool power_efficient = false;
@@ -180,52 +181,52 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // remote debugging.
   // TODO(crbug.com/832220): Use a customized dictionary value instead of
   // using these keys directly.
-  absl::optional<double> device_scale_factor;
-  absl::optional<double> page_scale_factor;
-  absl::optional<double> root_scroll_offset_x;
-  absl::optional<double> root_scroll_offset_y;
-  absl::optional<double> top_controls_visible_height;
+  std::optional<double> device_scale_factor;
+  std::optional<double> page_scale_factor;
+  std::optional<double> root_scroll_offset_x;
+  std::optional<double> root_scroll_offset_y;
+  std::optional<double> top_controls_visible_height;
 
   // If present, this field represents the local time at which the VideoFrame
   // was decoded from whichever format it was encoded in. Sometimes only
   // DECODE_END_TIME will be present.
-  absl::optional<base::TimeTicks> decode_begin_time;
-  absl::optional<base::TimeTicks> decode_end_time;
+  std::optional<base::TimeTicks> decode_begin_time;
+  std::optional<base::TimeTicks> decode_end_time;
 
   // If present, this field represents the elapsed time from the submission of
   // the encoded packet with the same PTS as this frame to the decoder until
   // the decoded frame was ready for presentation.
-  absl::optional<base::TimeDelta> processing_time;
+  std::optional<base::TimeDelta> processing_time;
 
   // The RTP timestamp associated with this video frame. Stored as a double
   // since base::Value::Dict doesn't have a uint32_t type.
   //
   // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
-  absl::optional<double> rtp_timestamp;
+  std::optional<double> rtp_timestamp;
 
   // For video frames coming from a remote source, this is the time the
   // encoded frame was received by the platform, i.e., the time at
   // which the last packet belonging to this frame was received over the
   // network.
-  absl::optional<base::TimeTicks> receive_time;
+  std::optional<base::TimeTicks> receive_time;
 
   // If present, this field represents the duration this frame is ideally
   // expected to spend on the screen during playback. Unlike FRAME_DURATION
   // this field takes into account current playback rate.
-  absl::optional<base::TimeDelta> wallclock_frame_duration;
+  std::optional<base::TimeDelta> wallclock_frame_duration;
 
   // WebRTC streams only: if present, this field represents the maximum
   // composition delay that is allowed for this frame. This is respected
   // in a best effort manner.
   // This is an experimental feature, see crbug.com/1138888 for more
   // information.
-  absl::optional<int> maximum_composition_delay_in_frames;
+  std::optional<int> maximum_composition_delay_in_frames;
 
   // Identifies a BeginFrameArgs (along with the source_id).
   // See comments in components/viz/common/frame_sinks/begin_frame_args.h.
   //
   // Only set for video frames produced by the frame sink video capturer.
-  absl::optional<uint64_t> frame_sequence;
+  std::optional<uint64_t> frame_sequence;
 };
 
 }  // namespace media

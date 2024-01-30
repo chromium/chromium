@@ -4,6 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_frame_converter.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -20,7 +22,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,7 +41,7 @@ constexpr uint32_t kSharedImageUsage =
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
-absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
+std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
     OSType pixel_format) {
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
@@ -50,7 +51,7 @@ absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return viz::MultiPlaneFormat::kNV12A;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -172,7 +173,7 @@ void VideoToolboxFrameConverter::Convert(
                           base::scoped_policy::RETAIN);
 
   OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
-  absl::optional<viz::SharedImageFormat> format =
+  std::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
     MEDIA_LOG(ERROR, media_log_.get())

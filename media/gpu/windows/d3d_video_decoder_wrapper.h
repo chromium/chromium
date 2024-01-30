@@ -6,15 +6,16 @@
 #define MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_WRAPPER_H_
 
 #include <Windows.h>
+
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -86,7 +87,7 @@ class D3DVideoDecoderWrapper {
 
   // Information that's accumulated during slices and submitted at the end
   std::vector<uint8_t> slice_info_bytes_;
-  absl::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
+  std::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
 
  private:
   raw_ptr<MediaLog> media_log_ = nullptr;

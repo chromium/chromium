@@ -165,8 +165,8 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  absl::optional<base::UnguessableToken> cdm_id =
-      cdm_context ? cdm_context->GetCdmId() : absl::nullopt;
+  std::optional<base::UnguessableToken> cdm_id =
+      cdm_context ? cdm_context->GetCdmId() : std::nullopt;
 
   // Fail immediately if the stream is encrypted but |cdm_id| is invalid.
   // This check is needed to avoid unnecessary IPC to the remote process.
@@ -198,7 +198,7 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void MojoVideoDecoder::InitializeRemoteDecoder(
     const VideoDecoderConfig& config,
     bool low_delay,
-    absl::optional<base::UnguessableToken> cdm_id) {
+    std::optional<base::UnguessableToken> cdm_id) {
   if (has_connection_error_) {
     DCHECK(init_cb_);
     FailInit(std::move(init_cb_), DecoderStatus::Codes::kDisconnected);
@@ -264,7 +264,7 @@ void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void MojoVideoDecoder::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
-    const absl::optional<base::UnguessableToken>& release_token) {
+    const std::optional<base::UnguessableToken>& release_token) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT2("media", "MojoVideoDecoder::OnVideoFrameDecoded", "frame",

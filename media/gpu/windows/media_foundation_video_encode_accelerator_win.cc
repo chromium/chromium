@@ -1093,7 +1093,7 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate
            << ": size=" << (size.has_value() ? size->ToString() : "nullopt");
@@ -1118,7 +1118,7 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate_allocation.GetSumBps()
            << ": framerate=" << framerate
            << ": size=" << (size.has_value() ? size->ToString() : "nullopt");
@@ -1672,7 +1672,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                "timestamp", input.frame->timestamp(), "discard_output",
                input.discard_output);
 
-  absl::optional<int> metadata_qp;
+  std::optional<int> metadata_qp;
   if (has_prepared_input_sample_) {
     if (DCHECK_IS_ON()) {
       // Let's validate that prepared sample actually matches the frame
@@ -1695,7 +1695,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     HRESULT hr = PopulateInputSampleBuffer(input);
     RETURN_ON_HR_FAILURE(hr, "Couldn't populate input sample buffer", hr);
 
-    absl::optional<uint8_t> quantizer;
+    std::optional<uint8_t> quantizer;
     int temporal_id = 0;
     if (input.options.quantizer.has_value()) {
       DCHECK_EQ(codec_, VideoCodec::kH264);
@@ -2026,7 +2026,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // operation could block other users of the texture. Not holding the mutex
     // could theoretically cause issues such as the texture not being bound but
     // in practise we've been unable to reproduce issues with this path.
-    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    std::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {
@@ -2132,7 +2132,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   // If not set, the QP may be parsed by WebRTC from the bitstream but only if
   // the QP is trusted (`encoder_info_.reports_average_qp` is true, which it is
   // by default).
-  absl::optional<int32_t> frame_qp;
+  std::optional<int32_t> frame_qp;
   bool should_notify_encoder_info_change = false;
   // If there exists a valid qp in sample metadata, do not query HMFT for
   // MFSampleExtension_VideoEncodeQP.
@@ -2482,7 +2482,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
                                                     &output_d3d11_color_space);
 
   {
-    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    std::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
     ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {
@@ -2593,7 +2593,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
 
   {
     // We need to hold a keyed mutex during the copy operation.
-    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    std::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
     ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {

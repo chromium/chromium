@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
 
 #include <deque>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "media/base/limits.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 

@@ -37,9 +37,9 @@ MEDIA_EXPORT void StripCodecs(std::vector<std::string>* codecs);
 // |codec_id|. If |allow_ambiguous_matches| is true, matches against
 // non-standard codec strings (e.g., vp9 vs vp9.0) will be allowed.
 //
-// Returns absl::nullopt if parsing fails (invalid string, or unrecognized video
+// Returns std::nullopt if parsing fails (invalid string, or unrecognized video
 // codec).
-MEDIA_EXPORT absl::optional<VideoType> ParseVideoCodecString(
+MEDIA_EXPORT std::optional<VideoType> ParseVideoCodecString(
     std::string_view mime_type,
     std::string_view codec_id,
     bool allow_ambiguous_matches = false);

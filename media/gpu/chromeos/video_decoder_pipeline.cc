@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -28,7 +29,6 @@
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_VAAPI)
 #include <drm_fourcc.h>
@@ -50,11 +50,11 @@ using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 // If |preferred_fourcc| is provided, contained in |candidates|, and considered
 // renderable, it returns that. Otherwise, it goes through
 // |renderable_fourccs| until it finds one that's in |candidates|. If
-// it can't find a renderable format in |candidates|, it returns absl::nullopt.
-absl::optional<Fourcc> PickRenderableFourcc(
+// it can't find a renderable format in |candidates|, it returns std::nullopt.
+std::optional<Fourcc> PickRenderableFourcc(
     const std::vector<Fourcc>& renderable_fourccs,
     const std::vector<Fourcc>& candidates,
-    absl::optional<Fourcc> preferred_fourcc) {
+    std::optional<Fourcc> preferred_fourcc) {
   if (preferred_fourcc && base::Contains(candidates, *preferred_fourcc) &&
       base::Contains(renderable_fourccs, *preferred_fourcc)) {
     return preferred_fourcc;
@@ -63,7 +63,7 @@ absl::optional<Fourcc> PickRenderableFourcc(
     if (base::Contains(candidates, value))
       return value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Estimates the number of buffers needed in the output frame pool to fill the
@@ -247,11 +247,11 @@ void VideoDecoderPipeline::NotifySupportKnown(
 }
 
 // static
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 VideoDecoderPipeline::GetSupportedConfigs(
     VideoDecoderType decoder_type,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  absl::optional<SupportedVideoDecoderConfigs> configs;
+  std::optional<SupportedVideoDecoderConfigs> configs;
   switch (decoder_type) {
     case VideoDecoderType::kOutOfProcess:
       configs = OOPVideoDecoder::GetSupportedConfigs();
@@ -272,11 +272,11 @@ VideoDecoderPipeline::GetSupportedConfigs(
       break;
 #endif
     default:
-      configs = absl::nullopt;
+      configs = std::nullopt;
   }
 
   if (!configs)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (workarounds.disable_accelerated_vp8_decode) {
     base::EraseIf(configs.value(), [](const auto& config) {
@@ -774,7 +774,7 @@ void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
   if (is_flush) {
     client_flush_cb_state_.emplace(
         /*flush_cb=*/std::move(decode_cb), /*decoder_decode_status=*/status);
-    CallFlushCbIfNeeded(/*override_status=*/absl::nullopt);
+    CallFlushCbIfNeeded(/*override_status=*/std::nullopt);
     return;
   }
 
@@ -847,7 +847,7 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
       FROM_HERE, base::BindOnce(client_output_cb_, std::move(frame)));
 
   // After outputting a frame, flush might be completed.
-  CallFlushCbIfNeeded(/*override_status=*/absl::nullopt);
+  CallFlushCbIfNeeded(/*override_status=*/std::nullopt);
   CallApplyResolutionChangeIfNeeded();
 }
 
@@ -896,7 +896,7 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
 }
 
 void VideoDecoderPipeline::CallFlushCbIfNeeded(
-    absl::optional<DecoderStatus> override_status) {
+    std::optional<DecoderStatus> override_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   if (!client_flush_cb_state_) {
@@ -959,11 +959,11 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<PixelLayoutCandidate>& candidates,
     const gfx::Rect& decoder_visible_rect,
     const gfx::Size& decoder_natural_size,
-    absl::optional<gfx::Size> output_size,
+    std::optional<gfx::Size> output_size,
     size_t num_codec_reference_frames,
     bool use_protected,
     bool need_aux_frame_pool,
-    absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) {
+    std::optional<DmabufVideoFramePool::CreateFrameCB> allocator) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
@@ -981,7 +981,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // directly renderable. If so, and (VA-API-only) the modifier of buffers
   // provided by the frame pool matches the one supported by the |decoder_|, we
   // don't need an image processor.
-  absl::optional<PixelLayoutCandidate> viable_candidate;
+  std::optional<PixelLayoutCandidate> viable_candidate;
   if (!output_size || *output_size == decoder_visible_rect.size()) {
     for (const auto& fourcc : renderable_fourccs_) {
       for (const auto& candidate : candidates) {

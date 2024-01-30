@@ -10,6 +10,7 @@
 #include <media/NdkMediaFormat.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -28,7 +29,6 @@
 #include "media/base/sample_format.h"
 #include "media/base/timestamp_constants.h"
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
     NDK_MEDIA_CODEC_MIN_API)
@@ -586,7 +586,7 @@ void NdkAudioEncoder::DrainOutput() {
       output_timestamp_tracker_->GetTimestamp() + base::TimeTicks();
   output_timestamp_tracker_->AddFrames(kAacFramesPerBuffer);
 
-  absl::optional<CodecDescription> desc;
+  std::optional<CodecDescription> desc;
   if (!codec_desc_.empty()) {
     desc = codec_desc_;
     codec_desc_.clear();
@@ -642,7 +642,7 @@ void NdkAudioEncoder::ReportPendingError(EncoderStatusCB done_cb) {
   }
 
   std::move(done_cb).Run(*pending_error_status_);
-  pending_error_status_ = absl::nullopt;
+  pending_error_status_ = std::nullopt;
 }
 
 void NdkAudioEncoder::ReportOk(EncoderStatusCB done_cb) {

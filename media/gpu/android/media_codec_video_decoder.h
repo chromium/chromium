@@ -6,6 +6,7 @@
 #define MEDIA_GPU_ANDROID_MEDIA_CODEC_VIDEO_DECODER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -30,7 +31,6 @@
 #include "media/gpu/android/surface_chooser_helper.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -249,7 +249,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   bool waiting_for_key_ = false;
 
   // The reason for the current drain operation if any.
-  absl::optional<DrainType> drain_type_;
+  std::optional<DrainType> drain_type_;
 
   // The current reset cb if a Reset() is in progress.
   base::OnceClosure reset_cb_;

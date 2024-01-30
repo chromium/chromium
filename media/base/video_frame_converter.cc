@@ -14,7 +14,7 @@ namespace {
 
 constexpr auto kDefaultFiltering = libyuv::kFilterBox;
 
-absl::optional<VideoPixelFormat> GetSourceFormatOverrideForABGRToARGB(
+std::optional<VideoPixelFormat> GetSourceFormatOverrideForABGRToARGB(
     VideoPixelFormat src_format,
     VideoPixelFormat dest_format) {
   if ((src_format == PIXEL_FORMAT_XBGR || src_format == PIXEL_FORMAT_ABGR) &&
@@ -22,7 +22,7 @@ absl::optional<VideoPixelFormat> GetSourceFormatOverrideForABGRToARGB(
     return src_format == PIXEL_FORMAT_XBGR ? PIXEL_FORMAT_XRGB
                                            : PIXEL_FORMAT_ARGB;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Wraps `tmp_frame` in a new VideoFrame with pixel format `override_format`. No

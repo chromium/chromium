@@ -44,11 +44,11 @@ bool BitstreamBufferMetadata::dropped_frame() const {
 
 BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
-absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
+std::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VideoEncodeAccelerator::Config::Config()
@@ -213,7 +213,7 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   RequestEncodingParametersChange(
       Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate,
       size);

@@ -5,6 +5,8 @@
 #ifndef MEDIA_FILTERS_PIPELINE_CONTROLLER_H_
 #define MEDIA_FILTERS_PIPELINE_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -136,7 +137,7 @@ class MEDIA_EXPORT PipelineController {
   void SetPlaybackRate(double playback_rate);
   float GetVolume() const;
   void SetVolume(float volume);
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint);
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint);
   void SetPreservesPitch(bool preserves_pitch);
   void SetWasPlayedWithUserActivation(bool was_played_with_user_activation);
   base::TimeDelta GetMediaTime() const;
@@ -148,7 +149,7 @@ class MEDIA_EXPORT PipelineController {
   void OnEnabledAudioTracksChanged(
       const std::vector<MediaTrack::Id>& enabled_track_ids);
   void OnSelectedVideoTrackChanged(
-      absl::optional<MediaTrack::Id> selected_track_id);
+      std::optional<MediaTrack::Id> selected_track_id);
   void OnExternalVideoFrameRequest();
 
   // Used to fire the OnTrackChangeComplete function which is captured in a
@@ -236,7 +237,7 @@ class MEDIA_EXPORT PipelineController {
   //   |pending_video_track_change_|.
   base::TimeDelta pending_seek_time_;
   std::vector<MediaTrack::Id> pending_audio_track_change_ids_;
-  absl::optional<MediaTrack::Id> pending_video_track_change_id_;
+  std::optional<MediaTrack::Id> pending_video_track_change_id_;
 
   // Set to true during Start(). Indicates that |seeked_cb_| must be fired once
   // we've completed startup.

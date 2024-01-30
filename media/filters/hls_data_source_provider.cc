@@ -49,7 +49,7 @@ GURL HlsDataSourceStream::GetNextSegmentURI() {
     max_read_position_ = first.range->GetEnd();
   } else {
     read_position_ = 0;
-    max_read_position_ = absl::nullopt;
+    max_read_position_ = std::nullopt;
   }
   GURL new_url = std::move(first.uri);
   segments_.pop();

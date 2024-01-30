@@ -63,8 +63,8 @@ static void MaybeUpdatePanTiltControlRange(UvcControl& uvc,
 
 // Set pan and tilt values for a USB camera device.
 static void SetPanTiltCurrent(UvcControl& uvc,
-                              absl::optional<int> pan,
-                              absl::optional<int> tilt) {
+                              std::optional<int> pan,
+                              std::optional<int> tilt) {
   DCHECK(pan.has_value() || tilt.has_value());
 
   PanTilt pan_tilt_current;
@@ -547,11 +547,11 @@ void UvcControl::SetPhotoState(
   }
   if (UvcControl uvc(device_model, uvc::kVcInputTerminal); uvc.Good()) {
     if (settings->has_pan || settings->has_tilt) {
-      SetPanTiltCurrent(uvc,
-                        settings->has_pan ? absl::make_optional(settings->pan)
-                                          : absl::nullopt,
-                        settings->has_tilt ? absl::make_optional(settings->tilt)
-                                           : absl::nullopt);
+      SetPanTiltCurrent(
+          uvc,
+          settings->has_pan ? std::make_optional(settings->pan) : std::nullopt,
+          settings->has_tilt ? std::make_optional(settings->tilt)
+                             : std::nullopt);
     }
     if (settings->has_zoom) {
       uvc.SetControlCurrent<uint16_t>(uvc::kCtZoomAbsoluteControl,

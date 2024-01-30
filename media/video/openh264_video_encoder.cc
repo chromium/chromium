@@ -298,7 +298,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
   if (!h264_converter_) {
     result.size = total_chunk_size;
 
-    output_cb_.Run(std::move(result), absl::optional<CodecDescription>());
+    output_cb_.Run(std::move(result), std::optional<CodecDescription>());
     return EncoderStatus::Codes::kOk;
   }
 
@@ -315,7 +315,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   result.size = converted_output_size;
 
-  absl::optional<CodecDescription> desc;
+  std::optional<CodecDescription> desc;
   if (config_changed) {
     const auto& config = h264_converter_->GetCurrentConfig();
     desc = CodecDescription();

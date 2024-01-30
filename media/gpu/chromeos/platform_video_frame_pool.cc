@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -283,7 +283,7 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
-absl::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
+std::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
   return frame_layout_;
@@ -291,7 +291,7 @@ absl::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
 
 // static
 void PlatformVideoFramePool::OnFrameReleasedThunk(
-    absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
+    std::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleasedThunk",

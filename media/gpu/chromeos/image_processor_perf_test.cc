@@ -243,8 +243,8 @@ class ImageProcessorPerfTest : public ::testing::Test {
         client_task_runner_, quit_closure_, &image_processor_error_);
 
     pick_format_cb_ = base::BindRepeating(
-        [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
-          return absl::make_optional<Fourcc>(Fourcc::NV12);
+        [](const std::vector<Fourcc>&, std::optional<Fourcc>) {
+          return std::make_optional<Fourcc>(Fourcc::NV12);
         });
   }
 
@@ -551,8 +551,8 @@ TEST_F(ImageProcessorPerfTest, NV12ScalingComparisonTest) {
       },
       client_task_runner, quit_closure, &image_processor_error);
   ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
-      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
-        return absl::make_optional<Fourcc>(Fourcc::NV12);
+      [](const std::vector<Fourcc>&, std::optional<Fourcc>) {
+        return std::make_optional<Fourcc>(Fourcc::NV12);
       });
 
   std::unique_ptr<ImageProcessor> gl_upscaling_image_processor =

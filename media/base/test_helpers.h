@@ -260,7 +260,7 @@ CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 // provided the standard four colors will be XOR'd with the provided 00RRGGBB
 // value (alpha value must be zero).
 void FillFourColors(VideoFrame& dest_frame,
-                    absl::optional<uint32_t> xor_mask = absl::nullopt);
+                    std::optional<uint32_t> xor_mask = std::nullopt);
 
 // Compares two media::Status by StatusCode only.  Also allows the ok helper to
 // match kOk.  It's a special case because we don't know the TypedStatus traits

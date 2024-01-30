@@ -6,6 +6,7 @@
 #define MEDIA_BASE_ANDROID_MEDIA_CODEC_LOOP_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/waiting.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // MediaCodecLoop is based on Android's MediaCodec API.
 // The MediaCodec API is required to play encrypted (as in EME) content on
@@ -125,7 +125,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
     bool is_eos = false;
     EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
-    absl::optional<EncryptionPattern> encryption_pattern;
+    std::optional<EncryptionPattern> encryption_pattern;
   };
 
   // Handy enum for "no buffer".

@@ -120,7 +120,7 @@ class MEDIA_EXPORT VideoResourceUpdater
                    gfx::Rect quad_rect,
                    gfx::Rect visible_quad_rect,
                    const gfx::MaskFilterInfo& mask_filter_info,
-                   absl::optional<gfx::Rect> clip_rect,
+                   std::optional<gfx::Rect> clip_rect,
                    bool context_opaque,
                    float draw_opacity,
                    int sorting_context_id);

@@ -6,6 +6,7 @@
 #define MEDIA_MUXERS_MP4_MUXER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/muxer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -32,14 +32,14 @@ class Mp4MuxerDelegateInterface {
   virtual void AddVideoFrame(
       const Muxer::VideoParameters& params,
       std::string encoded_data,
-      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) = 0;
 
   virtual void AddAudioFrame(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) = 0;
 
   virtual bool Flush() = 0;
@@ -61,14 +61,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
       std::string encoded_data,
-      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      std::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
   bool Flush() override;
@@ -120,8 +120,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
-  absl::optional<size_t> video_track_index_;
-  absl::optional<size_t> audio_track_index_;
+  std::optional<size_t> video_track_index_;
+  std::optional<size_t> audio_track_index_;
   int next_track_index_ = 0;
 
   // Duration time delta for the video track.

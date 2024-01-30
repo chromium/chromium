@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -57,7 +57,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
                   media::RendererClient* client,
                   PipelineStatusCallback init_cb) override;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
@@ -162,7 +162,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   mutable base::Lock lock_;
   media::TimeDeltaInterpolator media_time_interpolator_;
 
-  absl::optional<PipelineStatistics> pending_stats_;
+  std::optional<PipelineStatistics> pending_stats_;
 };
 
 }  // namespace media

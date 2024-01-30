@@ -20,7 +20,7 @@
 
 // For libgav1::RefCountedBufferPtr.
 #include "third_party/libgav1/src/src/buffer_pool.h"
-// For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
+// For libgav1::ObuSequenceHeader. std::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
 #include "third_party/libgav1/src/src/obu_parser.h"
@@ -138,7 +138,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -169,8 +169,8 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   const std::unique_ptr<AV1Accelerator> accelerator_;
   AV1ReferenceFrameVector ref_frames_;
 
-  absl::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
-  absl::optional<libgav1::ObuFrameHeader> current_frame_header_;
+  std::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
+  std::optional<libgav1::ObuFrameHeader> current_frame_header_;
   libgav1::RefCountedBufferPtr current_frame_;
 
   gfx::Rect visible_rect_;
@@ -180,7 +180,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoColorSpace picture_color_space_;
   uint8_t bit_depth_ = 0;
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;
