@@ -1416,7 +1416,7 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                    "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableLabelPrecedenceForTurkishAddresses"
                     ]
