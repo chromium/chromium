@@ -250,6 +250,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private eventTracker_: EventTracker;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
   private preloadingTimer_: undefined|ReturnType<typeof setTimeout>;
+  private preconnectTimer_: undefined|ReturnType<typeof setTimeout>;
 
   private get tileElements_() {
     return Array.from(
@@ -853,6 +854,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.preloadingTimer_ = setTimeout(() => {
         this.pageHandler_.prerenderMostVisitedTile(e.model.item, true);
       }, loadTimeData.getInteger('prerenderStartTimeThreshold'));
+    }
+
+    if (loadTimeData.getBoolean('prerenderEnabled') &&
+        loadTimeData.getInteger('preconnectStartTimeThreshold') >= 0) {
+      this.preconnectTimer_ = setTimeout(() => {
+        this.pageHandler_.preconnectMostVisitedTile(e.model.item);
+      }, loadTimeData.getInteger('preconnectStartTimeThreshold'));
     }
   }
 

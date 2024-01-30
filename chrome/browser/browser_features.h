@@ -110,6 +110,10 @@ const base::FeatureParam<int>
     kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "prerender_start_delay_on_mouse_hover_ms", 300};
+const base::FeatureParam<int>
+    kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
+        &features::kNewTabPageTriggerForPrerender2,
+        "preconnect_start_delay_on_mouse_hover_ms", 100};
 
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.

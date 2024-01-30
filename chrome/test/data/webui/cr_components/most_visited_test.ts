@@ -1221,6 +1221,7 @@ suite('Prerendering', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       prerenderEnabled: true,
+      preconnectStartTimeThreshold: 0,
       prerenderStartTimeThreshold: 0,
     });
   });
@@ -1229,11 +1230,28 @@ suite('Prerendering', () => {
     setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
   });
 
+  test('preconnect', async () => {
+    // Arrange.
+    await addTiles(1);
+
+    // Act.
+    const tileLink = queryTiles()[0]!.querySelector('a')!;
+    // Prevent triggering a navigation, which would break the test.
+    tileLink.href = '#';
+    // Simulate a mousedown event.
+    const mouseEvent = document.createEvent('MouseEvents');
+    mouseEvent.initEvent('mouseenter', true, true);
+    tileLink.dispatchEvent(mouseEvent);
+
+    // Make sure preconnect has been triggered.
+    await handler.whenCalled('preconnectMostVisitedTile');
+  });
+
   test('onMouseHover Trigger', async () => {
     // Arrange.
     await addTiles(1);
 
-    // // Act.
+    // Act.
     const tileLink = queryTiles()[0]!.querySelector('a')!;
     // Prevent triggering a navigation, which would break the test.
     tileLink.href = '#';
@@ -1242,7 +1260,7 @@ suite('Prerendering', () => {
     mouseEvent.initEvent('mouseenter', true, true);
     tileLink.dispatchEvent(mouseEvent);
 
-    // Make sure Prerendering has been triggered
+    // Make sure Prerendering has been triggered.
     await handler.whenCalled('prerenderMostVisitedTile');
   });
 
@@ -1250,7 +1268,7 @@ suite('Prerendering', () => {
     // Arrange.
     await addTiles(1);
 
-    // // Act.
+    // Act.
     const tileLink = queryTiles()[0]!.querySelector('a')!;
     // Prevent triggering a navigation, which would break the test.
     tileLink.href = '#';
@@ -1259,7 +1277,7 @@ suite('Prerendering', () => {
     mouseEvent.initEvent('mousedown', true, true);
     tileLink.dispatchEvent(mouseEvent);
 
-    // Make sure Prerendering has been triggered
+    // Make sure Prerendering has been triggered.
     await handler.whenCalled('prerenderMostVisitedTile');
   });
 
@@ -1267,7 +1285,7 @@ suite('Prerendering', () => {
     // Arrange.
     await addTiles(1);
 
-    // // Act.
+    // Act.
     const tileLink = queryTiles()[0]!.querySelector('a')!;
     // Prevent triggering a navigation, which would break the test.
     tileLink.href = '#';
