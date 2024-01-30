@@ -25,6 +25,8 @@
 #include "url/gurl.h"
 
 using testing::_;
+using testing::IsEmpty;
+using testing::SizeIs;
 
 namespace webapk {
 
@@ -151,10 +153,10 @@ class WebApkSyncBridgeTest : public ::testing::Test {
                            // destroyed
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(WebApkSyncBridgeTest, AppWasUsedRecently) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   InitSyncBridge();
 
   std::unique_ptr<sync_pb::WebApkSpecifics> app1 =
@@ -188,7 +190,6 @@ TEST_F(WebApkSyncBridgeTest, AppWasUsedRecently) {
 }
 
 TEST_F(WebApkSyncBridgeTest, PrepareSyncUpdateFromInstalledApps) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   InitSyncBridge();
 
   const std::string manifest_id_1 = "https://example.com/app1";
@@ -322,8 +323,6 @@ TEST_F(WebApkSyncBridgeTest, PrepareSyncUpdateFromInstalledApps) {
 }
 
 TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromInstalledAndSyncApps) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   const std::string manifest_id_1 = "https://example.com/app1";
   const std::string manifest_id_2 = "https://example.com/app2";
   const std::string manifest_id_3 = "https://example.com/app3";
@@ -469,8 +468,6 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   //     * App2 new (sync)
   //     * App4 (sync)
   //     * App6 (registry)
-
-  base::test::SingleThreadTaskEnvironment task_environment;
 
   const std::string manifest_id_1 = "https://example.com/app1";
   const std::string manifest_id_2 = "https://example.com/app2";
@@ -719,8 +716,6 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
 }
 
 TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
   EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
@@ -739,8 +734,6 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
 }
 
 TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   const std::string manifest_id_1 = "https://example.com/app1";
   const std::string manifest_id_2 = "https://example.com/app2";
   const std::string manifest_id_3 = "https://example.com/app3";
@@ -859,8 +852,6 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
 }
 
 TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
   EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
@@ -880,8 +871,6 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   const std::string manifest_id = "https://example.com/app1";
 
   Registry registry;
@@ -978,8 +967,6 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
 
@@ -1049,8 +1036,6 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   const std::string manifest_id = "https://example.com/app1";
 
   Registry registry;
@@ -1089,8 +1074,6 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppDoesNotExist) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
   EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
@@ -1107,8 +1090,6 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppDoesNotExist) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppNewEnough) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   const std::string manifest_id = "https://example.com/app1";
 
   Registry registry;
@@ -1169,8 +1150,6 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppNewEnough) {
 // Tests that the WebApkSyncBridge correctly reports data from the
 // WebApkDatabase.
 TEST_F(WebApkSyncBridgeTest, GetData) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   Registry registry;
 
   std::unique_ptr<WebApkProto> synced_app1 =
@@ -1223,7 +1202,6 @@ TEST_F(WebApkSyncBridgeTest, Identities) {
   // Should be kept up to date with
   // chrome/browser/web_applications/web_app_sync_bridge_unittest.cc's
   // WebAppSyncBridgeTest.Identities test.
-  base::test::SingleThreadTaskEnvironment task_environment;
   InitSyncBridge();
 
   std::unique_ptr<WebApkProto> app =
@@ -1234,6 +1212,30 @@ TEST_F(WebApkSyncBridgeTest, Identities) {
             sync_bridge().GetClientTag(*entity_data));
   EXPECT_EQ("ocjeedicdelkkoefdcgeopgiagdjbcng",
             sync_bridge().GetStorageKey(*entity_data));
+}
+
+TEST_F(WebApkSyncBridgeTest, ApplyDisableSyncChanges) {
+  Registry registry;
+
+  InsertAppIntoRegistry(
+      &registry, CreateWebApkProto("https://example.com/app1", "registry_app"));
+
+  database_factory().WriteRegistry(registry);
+
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
+
+  InitSyncBridge();
+
+  ASSERT_THAT(sync_bridge().GetRegistryForTesting(), SizeIs(1));
+  ASSERT_THAT(database_factory().ReadRegistry(), SizeIs(1));
+
+  sync_bridge().ApplyDisableSyncChanges(
+      sync_bridge().CreateMetadataChangeList());
+
+  EXPECT_THAT(sync_bridge().GetRegistryForTesting(), IsEmpty());
+  EXPECT_THAT(database_factory().ReadRegistry(), IsEmpty());
 }
 
 }  // namespace webapk

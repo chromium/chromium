@@ -75,6 +75,12 @@ void WebApkDatabase::Write(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WebApkDatabase::DeleteAllDataAndMetadata(
+    syncer::ModelTypeStore::CallbackWithResult callback) {
+  CHECK(store_);
+  store_->DeleteAllDataAndMetadata(std::move(callback));
+}
+
 void WebApkDatabase::OnDatabaseOpened(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
