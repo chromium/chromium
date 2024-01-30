@@ -38,7 +38,6 @@ source_set("user_signin") {
     "//ios/chrome/browser/ui/authentication/unified_consent",
     "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/common",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
     "//ios/chrome/common/ui/elements",
