@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 
 namespace signin {
 
@@ -210,9 +209,7 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   // A supervised user regardless of consent should not be signed out in certain
   // cases such as clearing browsing data. In this instance the account
   // reconciler should not remove the primary account.
-  if (IsAccountSupervised(identity_manager_) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+  if (IsAccountSupervised(identity_manager_)) {
     return ConsentLevel::kSignin;
   }
 #endif
@@ -366,9 +363,7 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
   }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (IsAccountSupervised(identity_manager_) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+  if (IsAccountSupervised(identity_manager_)) {
     return;
   }
 #endif

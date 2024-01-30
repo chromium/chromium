@@ -26,10 +26,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/features.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -74,9 +70,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn,
-#endif
               media_device_salt::kMediaDeviceIdPartitioning
         },
         /*disabled_features=*/{});

@@ -7831,13 +7831,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableManagedByParentUiDescription,
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(supervised_user::kEnableManagedByParentUi)},
-
-    {"enable-supervised-users-remain-signed-in",
-     flag_descriptions::kClearingCookiesKeepsSupervisedUsersSignedInName,
-     flag_descriptions::kClearingCookiesKeepsSupervisedUsersSignedInDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)},
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,

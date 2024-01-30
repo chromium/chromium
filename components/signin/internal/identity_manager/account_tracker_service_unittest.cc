@@ -515,15 +515,13 @@ void AccountTrackerServiceTest::
     scoped_feature_list.InitWithFeatures(
         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
          supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-         supervised_user::kEnableManagedByParentUi,
-         supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+         supervised_user::kEnableManagedByParentUi},
         {});
   } else {
     scoped_feature_list.InitWithFeatures(
         {}, {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-             supervised_user::kEnableManagedByParentUi,
-             supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn});
+             supervised_user::kEnableManagedByParentUi});
   }
 
   SimulateTokenAvailable(kAccountKeyChild);

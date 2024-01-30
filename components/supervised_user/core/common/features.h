@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
-BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);

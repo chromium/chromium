@@ -260,11 +260,6 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
 
-  html_source->AddBoolean(
-      "clearingCookiesKeepsSupervisedUsersSignedIn",
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn));
-
 #if BUILDFLAG(IS_LINUX)
   bool allow_qt_theme = base::FeatureList::IsEnabled(ui::kAllowQt);
 #else

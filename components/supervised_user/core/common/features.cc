@@ -107,16 +107,6 @@ bool CanDisplayFirstTimeInterstitialBanner() {
       kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 }
 
-// When enabled non-syncing signed in supervised users will not be signed out of
-// their google account when cookies are cleared
-BASE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn,
-             "ClearingCookiesKeepsSupervisedUsersSignedIn",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
              "ForceGoogleSafeSearchForSupervisedUsers",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -160,9 +150,7 @@ bool IsChildAccountSupervisionEnabled() {
          base::FeatureList::IsEnabled(
              supervised_user::kSupervisedPrefsControlledBySupervisedStore) ||
          base::FeatureList::IsEnabled(
-             supervised_user::kEnableManagedByParentUi) ||
-         base::FeatureList::IsEnabled(
-             supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+             supervised_user::kEnableManagedByParentUi);
 #endif
 }
 

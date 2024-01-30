@@ -42,7 +42,6 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -1427,36 +1426,20 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class AccountReconcilorDiceTestForSupervisedUsers
-    : public AccountReconcilorDiceTest,
-      public ::testing::WithParamInterface<bool> {
+    : public AccountReconcilorDiceTest {
  public:
   AccountReconcilorDiceTestForSupervisedUsers() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        switches::kUnoDesktop};
-    if (is_signout_disallowed_on_cookies_cleared()) {
-      enabled_features.push_back(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-    } else {
-      disabled_features.push_back(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, /*disabled_features=*/{switches::kUnoDesktop});
   }
 
   ~AccountReconcilorDiceTestForSupervisedUsers() override = default;
-
-  bool is_signout_disallowed_on_cookies_cleared() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AccountReconcilorDiceTestForSupervisedUsers,
-                         AccountReconcilorDiceTestForSupervisedUsers,
-                         ::testing::Bool());
-
-TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForNonSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
@@ -1477,15 +1460,14 @@ TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
   AccountReconcilor* reconcilor = GetMockReconcilor();
   reconcilor->OnAccountsCookieDeletedByUserAction();
 
-  EXPECT_EQ(
-      is_signout_disallowed_on_cookies_cleared(),
+  EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
 }
 
-TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
@@ -1509,9 +1491,9 @@ TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
 
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_NE(is_signout_disallowed_on_cookies_cleared(),
-            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-                account_info.account_id));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 

@@ -351,9 +351,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {supervised_user::
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-         // Used to prevent user sign-out which crashes the test.
-         supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop},
         /*disabled_features=*/{});
 #endif
   }

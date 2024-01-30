@@ -35,7 +35,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1658,19 +1657,7 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
       cookie_settings, GURL("http://example4.com"));
 }
 
-TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-  auto callback =
-      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
-  EXPECT_FALSE(callback);
-}
-
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterIncognitoProfile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
   auto* incognito_profile = profile_->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(), true);
   ASSERT_TRUE(incognito_profile->IsOffTheRecord());
@@ -1679,32 +1666,7 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterIncognitoProfile) {
   EXPECT_FALSE(callback);
 }
 
-TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
-  profile_->SetIsSupervisedProfile();
-  auto callback =
-      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
-
-  EXPECT_TRUE(callback);
-  EXPECT_FALSE(callback.Run(GURL("https://google.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://example.com")));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  EXPECT_FALSE(callback.Run(GURL("http://youtube.com")));
-  EXPECT_FALSE(callback.Run(GURL("https://youtube.com")));
-#else
-  EXPECT_TRUE(callback.Run(GURL("http://youtube.com")));
-  EXPECT_TRUE(callback.Run(GURL("https://youtube.com")));
-#endif
-}
-
-TEST_F(
-    CookiesTreeModelTest,
-    CookieDeletionFilterNormalUserWithClearingCookiesEnabledForSupervisedUsers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
 
@@ -1712,12 +1674,7 @@ TEST_F(
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(
-    CookiesTreeModelTest,
-    CookieDeletionFilterChildUserWithClearingCookiesEnabledForSupervisedUsers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
   profile_->SetIsSupervisedProfile();
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());

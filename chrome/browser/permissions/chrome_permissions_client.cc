@@ -57,7 +57,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -225,13 +224,6 @@ void ChromePermissionsClient::AreSitesImportant(
 bool ChromePermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
-    return false;
-  }
-#endif
-
   if (!Profile::FromBrowserContext(browser_context)->IsChild())
     return false;
 

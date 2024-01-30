@@ -352,14 +352,6 @@ const char kEnableManagedByParentUiDescription[] =
     "Enables UI indicating if a Profile is managed by Family Link parental "
     "controls."
     "The enable-family-link-supervision flag must also be enabled.";
-
-const char kClearingCookiesKeepsSupervisedUsersSignedInName[] =
-    "Clearing cookies keep supervised users signed in";
-const char kClearingCookiesKeepsSupervisedUsersSignedInDescription[] =
-    "Supervised users will remain signed in when cookies are cleared. Display "
-    "UI is updated accordingly"
-    "The enable-family-link-supervision flag must also be enabled.";
-
 #endif  // ENABLE_SUPERVISED_USERS
 
 const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";

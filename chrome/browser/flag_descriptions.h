@@ -234,9 +234,6 @@ extern const char kSupervisedPrefsControlledBySupervisedStoreDescription[];
 
 extern const char kEnableManagedByParentUiName[];
 extern const char kEnableManagedByParentUiDescription[];
-
-extern const char kClearingCookiesKeepsSupervisedUsersSignedInName[];
-extern const char kClearingCookiesKeepsSupervisedUsersSignedInDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
 extern const char kUseAndroidStagingSmdsName[];

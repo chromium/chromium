@@ -3558,14 +3558,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-supervised-users-remain-signed-in",
-    "owners": [
-      "ljjlee@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-surface-control",
     "owners": [ "vikassoni@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 130
