@@ -105,13 +105,11 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
 }
 
 void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
-                                    bool success,
-                                    const String& error) {
-  if (success) {
-    resolver->Resolve();
+                                    DOMException* exception) {
+  if (exception) {
+    resolver->Reject(exception);
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, error));
+    resolver->Resolve();
   }
 }
 

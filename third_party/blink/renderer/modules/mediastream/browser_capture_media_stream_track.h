@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_BROWSER_CAPTURE_MEDIA_STREAM_TRACK_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
@@ -15,6 +14,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
+
+class DOMException;
 
 class MODULES_EXPORT BrowserCaptureMediaStreamTrack
     : public MediaStreamTrackImpl {
@@ -36,17 +37,15 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   void Trace(Visitor*) const override;
 
   // MediaStreamTrack impl
-  void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SendWheel(double relative_x,
+                 double relative_y,
+                 int wheel_delta_x,
+                 int wheel_delta_y,
+                 base::OnceCallback<void(DOMException*)> callback) override;
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
-  void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SetZoomLevel(int zoom_level,
+                    base::OnceCallback<void(DOMException*)> callback) override;
 
   // Allows tests to invoke OnSubCaptureTargetVersionObserved() directly, since
   // triggering it via mocks would be prohibitively difficult.

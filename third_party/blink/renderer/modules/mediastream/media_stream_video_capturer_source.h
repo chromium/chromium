@@ -26,6 +26,7 @@
 
 namespace blink {
 
+class DOMException;
 class LocalFrame;
 class VideoCapturerSource;
 
@@ -93,17 +94,15 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SendWheel(double relative_x,
+                 double relative_y,
+                 int wheel_delta_x,
+                 int wheel_delta_y,
+                 base::OnceCallback<void(DOMException*)> callback) override;
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
-  void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SetZoomLevel(int zoom_level,
+                    base::OnceCallback<void(DOMException*)> callback) override;
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,

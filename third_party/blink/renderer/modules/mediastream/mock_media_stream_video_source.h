@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class DOMException;
+
 class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
  public:
   MockMediaStreamVideoSource();
@@ -88,7 +90,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD(
       void,
       SendWheel,
-      (double, double, int, int, base::OnceCallback<void(bool, const String&)>),
+      (double, double, int, int, base::OnceCallback<void(DOMException*)>),
       (override));
 
   MOCK_METHOD(void,
@@ -98,7 +100,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
   MOCK_METHOD(void,
               SetZoomLevel,
-              (int, base::OnceCallback<void(bool, const String&)>),
+              (int, base::OnceCallback<void(DOMException*)>),
               (override));
 #endif  // !BUILDFLAG(IS_ANDROID)
 

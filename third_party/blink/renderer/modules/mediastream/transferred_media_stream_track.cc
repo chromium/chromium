@@ -321,7 +321,7 @@ void TransferredMediaStreamTrack::SendWheel(
     double relative_y,
     int wheel_delta_x,
     int wheel_delta_y,
-    base::OnceCallback<void(bool, const String&)> callback) {
+    base::OnceCallback<void(DOMException*)> callback) {
   NOTREACHED_NORETURN();
 }
 
@@ -332,8 +332,8 @@ void TransferredMediaStreamTrack::GetZoomLevel(
 
 void TransferredMediaStreamTrack::SetZoomLevel(
     int zoom_level,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  NOTREACHED_NORETURN();
 }
 #endif
 

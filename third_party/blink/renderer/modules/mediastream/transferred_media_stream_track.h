@@ -26,6 +26,7 @@
 
 namespace blink {
 
+class DOMException;
 class MediaStreamTrackVideoStats;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
@@ -85,17 +86,15 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void UnregisterMediaStream(MediaStream*) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SendWheel(double relative_x,
+                 double relative_y,
+                 int wheel_delta_x,
+                 int wheel_delta_y,
+                 base::OnceCallback<void(DOMException*)> callback) override;
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
-  void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool, const String&)> callback) override;
+  void SetZoomLevel(int zoom_level,
+                    base::OnceCallback<void(DOMException*)> callback) override;
 #endif
 
   // EventTarget

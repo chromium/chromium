@@ -38,6 +38,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+class DOMException;
 class MediaStreamVideoTrack;
 class VideoTrackAdapter;
 class VideoTrackAdapterSettings;
@@ -180,15 +181,14 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   //
   // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
   //
-  // `callback` is used to report the result.
-  // `callback.success` reports back success/failure.
-  // `callback.error` has the error message upon failure. (Empty otherwise.)
-  virtual void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool success, const String& error)> callback);
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
+  virtual void SendWheel(double relative_x,
+                         double relative_y,
+                         int wheel_delta_x,
+                         int wheel_delta_y,
+                         base::OnceCallback<void(DOMException*)> callback);
 
   // Retrieves the zoom level from the captured tab.
   //
@@ -204,12 +204,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // `zoom_level` is the requested zoom level and must be among the values
   // returned by `CaptureController::getSupportedZoomLevels()`.
   //
-  // `callback` is used to report the result.
-  // `callback.success` reports back success/failure.
-  // `callback.error` has the error message upon failure. (Empty otherwise.)
-  virtual void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool success, const String& error)> callback);
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
+  virtual void SetZoomLevel(int zoom_level,
+                            base::OnceCallback<void(DOMException*)> callback);
 
   // Start/stop cropping or restricting the video track.
   //

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -422,8 +423,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelSuccessIfSupportedValue) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(
-          RunOnceCallbackRepeatedly<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallbackRepeatedly<1>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const Vector<int> supported_levels =
@@ -445,7 +445,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooLow) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallback<1>(nullptr));
 
   controller->SetVideoTrack(track, "descriptor");
 
@@ -471,7 +471,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooHigh) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallback<1>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise =
@@ -500,7 +500,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfUnsupportedValue) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallback<1>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   // Find an unsupported value.
@@ -532,7 +532,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfCapturingWindow) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::WINDOW);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallback<1>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise =
@@ -559,7 +559,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfCapturingMonitor) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::MONITOR);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/true, /*error=*/""));
+      .WillByDefault(RunOnceCallback<1>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise =
@@ -587,7 +587,8 @@ TEST_F(CaptureControllerSetZoomLevelTest, SimulatedFailureFromDispatcherHost) {
   const String error = "Simulated error from dispatcher-host.";
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SetZoomLevel(_, _))
-      .WillByDefault(RunOnceCallback<1>(/*success=*/false, error));
+      .WillByDefault(RunOnceCallback<1>(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, error)));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise =
@@ -692,8 +693,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelSuccess) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
   SimulateFrameArrival(track);
 
@@ -714,8 +714,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingWindow) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::WINDOW);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise = controller->sendWheel(
@@ -742,8 +741,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingMonitor) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::MONITOR);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
 
   const ScriptPromise promise = controller->sendWheel(
@@ -771,7 +769,8 @@ TEST_F(CaptureControllerScrollTest, SimulatedFailureFromDispatcherHost) {
   const String error = "Simulated error from dispatcher-host.";
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/false, error));
+      .WillByDefault(RunOnceCallback<4>(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, error)));
   controller->SetVideoTrack(track, "descriptor");
   SimulateFrameArrival(track);
 
@@ -798,8 +797,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsBeforeReceivingFrames) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
   // Intentionally avoid calling SimulateFrameArrival().
 
@@ -829,8 +827,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelScalesCorrectly) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
   SimulateFrameArrival(track, gfx::Size(200, 4000));
 
@@ -948,8 +945,7 @@ TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   ON_CALL(*GetMockMediaStreamVideoSource(track), SendWheel(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(/*success=*/true,
-                                        /*error=*/""));
+      .WillByDefault(RunOnceCallback<4>(nullptr));
   controller->SetVideoTrack(track, "descriptor");
   SimulateFrameArrival(track, gfx::Size(kWidth, kHeight));
 

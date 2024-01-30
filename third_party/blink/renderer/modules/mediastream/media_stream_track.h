@@ -32,6 +32,7 @@ static const char kContentHintStringVideoDetail[] = "detail";
 static const char kContentHintStringVideoText[] = "text";
 
 class AudioSourceProvider;
+class DOMException;
 class ImageCapture;
 class MediaConstraints;
 class MediaTrackCapabilities;
@@ -151,12 +152,15 @@ class MODULES_EXPORT MediaStreamTrack
   // `relative_y` is defined analogously to `relative_x`.
   //
   // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
-  virtual void SendWheel(
-      double relative_x,
-      double relative_y,
-      int wheel_delta_x,
-      int wheel_delta_y,
-      base::OnceCallback<void(bool, const String&)> callback) = 0;
+  //
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
+  virtual void SendWheel(double relative_x,
+                         double relative_y,
+                         int wheel_delta_x,
+                         int wheel_delta_y,
+                         base::OnceCallback<void(DOMException*)> callback) = 0;
 
   // When called on a "live" video track associated with tab-capture,
   // returns the zoom level of the capture tab's viewport.
@@ -173,11 +177,12 @@ class MODULES_EXPORT MediaStreamTrack
   // set the zoom level on the captured tab's viewport.  This is subject to a
   // permission policy on the capturing origin.
   //
-  // If successful, |callback| is invoked with `true` and an empty string.
-  // If unsuccessful, it is invoked with `false` and an error message.
+  // `callback` is used to report the result. If set to `nullptr`, success
+  // is reported. Otherwise, the indicated exception described the issue
+  // encountered.
   virtual void SetZoomLevel(
       int zoom_level,
-      base::OnceCallback<void(bool, const String&)> callback) = 0;
+      base::OnceCallback<void(DOMException*)> callback) = 0;
 #endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(

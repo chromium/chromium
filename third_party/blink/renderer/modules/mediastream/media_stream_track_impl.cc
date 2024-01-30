@@ -928,8 +928,9 @@ void MediaStreamTrackImpl::SendWheel(
     double relative_y,
     int wheel_delta_x,
     int wheel_delta_y,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
 void MediaStreamTrackImpl::GetZoomLevel(
@@ -939,8 +940,9 @@ void MediaStreamTrackImpl::GetZoomLevel(
 
 void MediaStreamTrackImpl::SetZoomLevel(
     int zoom_level,
-    base::OnceCallback<void(bool, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
+    base::OnceCallback<void(DOMException*)> callback) {
+  std::move(callback).Run(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 #endif
 
