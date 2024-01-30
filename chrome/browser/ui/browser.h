@@ -223,7 +223,7 @@ class Browser : public TabStripModelObserver,
   enum ForceShowBookmarkBarFlag {
     kNone = 0,
     kTabGroupsTutorialActive = 1 << 0,
-    kNewTabGroupAdded = 1 << 1,
+    kTabGroupSaved = 1 << 1,
   };
 
   // Represents whether a value was known to be explicitly specified.

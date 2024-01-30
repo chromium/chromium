@@ -239,6 +239,9 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void BookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) = 0;
 
+  // Temporarily force shows the bookmark bar for the provided |duration|.
+  virtual void TemporarilyShowBookmarkBar(base::TimeDelta duration) = 0;
+
   // Inform the frame that the dev tools window for the selected tab has
   // changed.
   virtual void UpdateDevTools() = 0;

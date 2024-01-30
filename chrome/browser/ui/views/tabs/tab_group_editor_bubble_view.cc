@@ -83,6 +83,8 @@
 
 namespace {
 
+constexpr base::TimeDelta kTemporaryBookmarkBarDuration = base::Seconds(15);
+
 std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
     const std::u16string& name,
@@ -469,6 +471,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     saved_tab_group_service->SaveGroup(group_);
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
+    browser_->window()->TemporarilyShowBookmarkBar(
+        kTemporaryBookmarkBarDuration);
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
