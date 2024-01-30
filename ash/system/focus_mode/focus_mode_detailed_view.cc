@@ -593,6 +593,8 @@ void FocusModeDetailedView::CreateTimerView() {
   // b/302038651.
   timer_textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge));
+  timer_textfield_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
   timer_textfield_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kCrosDisplay6Regular));
@@ -603,6 +605,15 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_textfield_->SetActiveStateChangedCallback(base::BindRepeating(
       &FocusModeDetailedView::HandleTextfieldActivationChange,
       weak_factory_.GetWeakPtr()));
+  auto* focus_ring = views::FocusRing::Get(timer_textfield_);
+  DCHECK(focus_ring);
+  // Override the default focus ring gap of `SystemTextfield` to let it not
+  // intersect with `end_time_label_`.
+  focus_ring->SetHaloInset(0);
+  // Override the rounded highlight path set in `SystemTextfield` to keep it the
+  // same as the corner radius for the task textfield.
+  views::InstallRoundRectHighlightPathGenerator(timer_textfield_, gfx::Insets(),
+                                                8);
 
   views::Label* minutes_label = textfield_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
