@@ -61,9 +61,6 @@ tast_disabled_tests_from_chrome_all = [
   # http://crbug.com/1335213
   "arc.WindowState.clamshell",
 
-  # http://crbug.com/1309278
-  "policy.ChromeOsLockOnIdleSuspend",
-
   # http://crbug.com/1363667
   "apps.CalculatorSmoke",
 
