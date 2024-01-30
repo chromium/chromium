@@ -18,8 +18,7 @@ DesktopMediaPaneView::DesktopMediaPaneView(
   SetBackground(views::CreateThemedRoundedRectBackground(
       features::IsChromeRefresh2023() ? ui::kColorSysSurface4
                                       : ui::kColorSubtleEmphasisBackground,
-      /*top_radius=*/0, bottom_radius,
-      /*for_border_thickness=*/0));
+      /*top_radius=*/0, bottom_radius));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));

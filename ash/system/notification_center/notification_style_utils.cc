@@ -122,18 +122,16 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
       is_popup_notification ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
                             : cros_tokens::kCrosSysSystemOnBase;
 
+  const gfx::RoundedCornersF background_radii(top_radius, top_radius,
+                                              bottom_radius, bottom_radius);
   if (is_grouped_child_notification) {
     // Grouped children are always transparent. Handle them separately.
-    return views::CreateRoundedRectBackground(
-        SK_ColorTRANSPARENT,
-        gfx::RoundedCornersF(top_radius, top_radius, bottom_radius,
-                             bottom_radius),
-        /*for_border_thickness=*/0);
+    return views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
+                                              background_radii);
   }
 
   return views::CreateThemedRoundedRectBackground(background_color_id,
-                                                  top_radius, bottom_radius,
-                                                  /*for_border_thickness=*/0);
+                                                  background_radii);
 }
 
 void StyleNotificationPopup(views::View* notification_view) {

@@ -176,7 +176,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
     SetBackground(views::CreateThemedRoundedRectBackground(
         is_available ? cros_tokens::kCrosSysSystemOnBase
                      : cros_tokens::kCrosSysDisabledContainer,
-        kGCDetailRowCorners, /*for_border_thickness=*/0));
+        kGCDetailRowCorners));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(16, 16)));
 
     views::HighlightPathGenerator::Install(

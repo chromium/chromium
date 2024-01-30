@@ -604,8 +604,7 @@ void Combobox::ShowDropDownMenu() {
   menu_view_->ScrollToSelectedView();
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kComboboxActiveColorId, kComboboxRoundedCorners,
-      /*for_border_thickness=*/0));
+      kComboboxActiveColorId, kComboboxRoundedCorners));
   title_->SetEnabledColorId(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));

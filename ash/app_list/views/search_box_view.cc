@@ -1704,8 +1704,7 @@ void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
     auto radii = base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
                                      : kAssistantButtonBackgroundRadiiLTR;
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshControlBackgroundColorInactive, radii,
-        /*for_border_thickness=*/0));
+        kColorAshControlBackgroundColorInactive, radii));
 
     auto highlight_path_generator =
         std::make_unique<RoundRectPathGenerator>(radii);

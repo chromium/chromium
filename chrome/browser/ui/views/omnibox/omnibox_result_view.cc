@@ -342,7 +342,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
                                   static_cast<float>(view->height()), 0};
     return views::CreateThemedRoundedRectBackground(
-        GetOmniboxBackgroundColorId(part_state), radii, 0);
+        GetOmniboxBackgroundColorId(part_state), radii);
   }
 
   return views::CreateThemedSolidBackground(

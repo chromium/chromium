@@ -61,8 +61,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   container->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase,
       /*top_radius=*/for_editing_list ? kCornerRadius : 0.0f,
-      /*bottom_radius=*/kCornerRadius,
-      /*for_border_thickness=*/0));
+      /*bottom_radius=*/kCornerRadius));
   const int padding_width = for_editing_list
                                 ? kNameTagAndLabelsPaddingForEditingList
                                 : kNameTagAndLabelsPaddingForButtonOptionsMenu;

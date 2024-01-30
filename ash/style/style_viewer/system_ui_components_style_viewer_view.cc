@@ -74,8 +74,7 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
 
     const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
     contents_view()->SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorDialogBackground, radii,
-        /*for_border_thickness=*/0));
+        ui::kColorDialogBackground, radii));
   }
 };
 
