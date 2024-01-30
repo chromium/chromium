@@ -4022,6 +4022,14 @@ inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
+// Integer value controlling whether to show Work/School label next to the
+// avatar. This is used on the local state so that the management label is
+// always shown for managed profiles on unmanaged devices.
+// - 0: Always show the label
+// - 1: Show the label for 30s
+inline constexpr char kToolbarAvatarLabelSettings[] =
+    "toolbar_avatar.label.settings";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

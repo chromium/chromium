@@ -1,0 +1,43 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "toolbar_avatar.label.settings": {
+              "default_value": 0,
+              "location": "local_state"
+            }
+          }
+        },
+        {
+          "policies": {
+            "ToolbarAvatarLabelSettings": 0
+          },
+          "prefs": {
+            "toolbar_avatar.label.settings": {
+              "value": 0,
+              "location": "local_state"
+            }
+          }
+        },
+        {
+          "policies": {
+            "ToolbarAvatarLabelSettings": 1
+          },
+          "prefs": {
+            "toolbar_avatar.label.settings": {
+              "value": 1,
+              "location": "local_state"
+            }
+          }
+        }
+      ]
+    }
+  ]
+  

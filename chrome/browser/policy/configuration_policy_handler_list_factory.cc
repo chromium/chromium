@@ -2485,6 +2485,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       static_cast<int>(enterprise_signin::ProfileReauthPrompt::kDoNotPrompt),
       static_cast<int>(enterprise_signin::ProfileReauthPrompt::kPromptInTab),
       false));
+  handlers->AddHandler(
+      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
+          policy::key::kToolbarAvatarLabelSettings,
+          prefs::kToolbarAvatarLabelSettings, chrome_schema,
+          policy::SchemaOnErrorStrategy::SCHEMA_STRICT,
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));

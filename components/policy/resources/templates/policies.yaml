@@ -1206,6 +1206,7 @@ policies:
   1205: HomeAndEndKeysModifier
   1206: PageUpAndPageDownKeysModifier
   1207: InsertKeyModifier
+  1208: ToolbarAvatarLabelSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

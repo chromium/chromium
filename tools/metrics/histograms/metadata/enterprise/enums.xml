@@ -2025,6 +2025,7 @@ chromium-metrics-reviews@google.com.
   <int value="1205" label="HomeAndEndKeysModifier"/>
   <int value="1206" label="PageUpAndPageDownKeysModifier"/>
   <int value="1207" label="InsertKeyModifier"/>
+  <int value="1208" label="ToolbarAvatarLabelSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
