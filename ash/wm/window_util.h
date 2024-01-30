@@ -226,10 +226,6 @@ bool IsInFasterSplitScreenSetupSession(aura::Window* window);
 // if `window` is `kPrimarySnapped`.
 chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
 
-// Starts `SplitViewOverviewSession` for `window`, if it wasn't already active.
-void MaybeStartSplitViewOverview(aura::Window* window,
-                                 WindowSnapActionSource snap_action_source);
-
 }  // namespace ash::window_util
 
 #endif  // ASH_WM_WINDOW_UTIL_H_

@@ -131,7 +131,7 @@ void SnapGroup::StopObservingWindows() {
   window2_ = nullptr;
 }
 
-void SnapGroup::RestoreWindowsBoundsOnSnapGroupRemoved() {
+void SnapGroup::RefreshWindowBoundsInSnapGroup(bool on_snap_group_added) {
   const display::Display& display1 =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window1_);
   const display::Display& display2 =
@@ -152,20 +152,19 @@ void SnapGroup::RestoreWindowsBoundsOnSnapGroupRemoved() {
   const int secondary_width = secondary_window_bounds.width();
   const int secondary_height = secondary_window_bounds.height();
 
-  const int expand_delta = kSplitviewDividerShortSideLength / 2;
+  const int delta = on_snap_group_added ? kSplitviewDividerShortSideLength / 2
+                                        : -kSplitviewDividerShortSideLength / 2;
 
   if (chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display1))) {
-    primary_window_bounds.SetRect(primary_x, primary_y,
-                                  primary_width + expand_delta, primary_height);
-    secondary_window_bounds.SetRect(secondary_x - expand_delta, secondary_y,
-                                    secondary_width + expand_delta,
-                                    secondary_height);
+    primary_window_bounds.SetRect(primary_x, primary_y, primary_width - delta,
+                                  primary_height);
+    secondary_window_bounds.SetRect(secondary_x + delta, secondary_y,
+                                    secondary_width - delta, secondary_height);
   } else {
     primary_window_bounds.SetRect(primary_x, primary_y, primary_width,
-                                  primary_height + expand_delta);
-    secondary_window_bounds.SetRect(secondary_x, secondary_y - expand_delta,
-                                    secondary_width,
-                                    secondary_height + expand_delta);
+                                  primary_height - delta);
+    secondary_window_bounds.SetRect(secondary_x, secondary_y + delta,
+                                    secondary_width, secondary_height - delta);
   }
 
   const SetBoundsWMEvent window1_event(primary_window_bounds, /*animate=*/true);
