@@ -2194,6 +2194,12 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
       break;
     }
     case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::SharedWorkerToken>(): {
+      execution_context_token = blink::WebGPUExecutionContextToken(
+          blink::SharedWorkerToken(unguessable_token.value()));
+      break;
+    }
+    case blink::WebGPUExecutionContextToken::IndexOf<
         blink::ServiceWorkerToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
           blink::ServiceWorkerToken(unguessable_token.value()));
