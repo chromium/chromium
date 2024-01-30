@@ -10586,12 +10586,7 @@ void WebContentsImpl::UpdateAttributionSupportRenderer() {
 
 BackForwardTransitionAnimationManager*
 WebContentsImpl::GetBackForwardTransitionAnimationManager() {
-  BackForwardTransitionAnimationManager* manager = nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  manager = static_cast<WebContentsViewAndroid*>(GetView())
-                ->back_forward_animation_manager();
-#endif
-  return manager;
+  return GetView()->GetBackForwardTransitionAnimationManager();
 }
 
 // static

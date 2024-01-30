@@ -290,9 +290,8 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
 
     // Notify `manager` that it should listen to new frame submission
     // notifications.
-    if (BackForwardTransitionAnimationManagerAndroid* manager =
-            back_forward_animation_manager()) {
-      manager->OnRenderWidgetHostViewSwapped(old_host->GetWidget(),
+    if (back_forward_animation_manager_) {
+      back_forward_animation_manager_->OnRenderWidgetHostViewSwapped(old_host->GetWidget(),
                                              new_host->GetWidget());
     }
   }
@@ -327,6 +326,11 @@ void WebContentsViewAndroid::FullscreenStateChanged(bool is_fullscreen) {
 
 void WebContentsViewAndroid::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect) {}
+
+BackForwardTransitionAnimationManager*
+WebContentsViewAndroid::GetBackForwardTransitionAnimationManager() {
+  return back_forward_animation_manager_.get();
+}
 
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
@@ -735,11 +739,6 @@ void WebContentsViewAndroid::AddScreenshotLayerForNavigationTransitions(
 
   view_.GetLayer()->InsertChild(std::move(screenshot_layer),
                                 static_cast<size_t>(index));
-}
-
-BackForwardTransitionAnimationManagerAndroid*
-WebContentsViewAndroid::back_forward_animation_manager() {
-  return back_forward_animation_manager_.get();
 }
 
 } // namespace content

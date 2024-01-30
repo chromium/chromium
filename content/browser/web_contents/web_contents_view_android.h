@@ -84,6 +84,8 @@ class WebContentsViewAndroid : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -164,10 +166,6 @@ class WebContentsViewAndroid : public WebContentsView,
   }
 
   WebContentsImpl* web_contents() { return web_contents_; }
-
-  // Guaranteed non-null if `features::kBackForwardTransitions` is enabled.
-  BackForwardTransitionAnimationManagerAndroid*
-  back_forward_animation_manager();
 
  private:
   void OnDragEntered(const std::vector<DropData::Metadata>& metadata,

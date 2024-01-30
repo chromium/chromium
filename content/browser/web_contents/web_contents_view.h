@@ -14,6 +14,7 @@
 
 namespace content {
 
+class BackForwardTransitionAnimationManager;
 class RenderViewHost;
 class RenderViewHostDelegateView;
 class RenderWidgetHost;
@@ -125,6 +126,12 @@ class WebContentsView {
   // this informs the view of which area at the top of the view is available for
   // web contents.
   virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
+
+  // Returns an animation manager that displays a preview of the history page
+  // during a session history navigation gesture. Only non-null if
+  // `features::kBackForwardTransitions` is enabled for the supported platform.
+  virtual BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() = 0;
 };
 
 // Factory function to create `WebContentsView`s. Implemented in the platform
