@@ -193,9 +193,13 @@ bool AddressComponent::IsValueForTypeValid(FieldType field_type,
   return validity_status;
 }
 
-void AddressComponent::RegisterChildNode(AddressComponent* child) {
-  child->SetParent(this);
+void AddressComponent::RegisterChildNode(AddressComponent* child,
+                                         bool set_as_parent_of_child) {
   subcomponents_.push_back(child);
+
+  if (set_as_parent_of_child) {
+    child->SetParent(this);
+  }
 }
 
 VerificationStatus AddressComponent::GetVerificationStatus() const {

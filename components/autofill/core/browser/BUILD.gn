@@ -155,6 +155,8 @@ static_library("browser") {
     "data_model/autofill_structured_address_regex_provider.h",
     "data_model/autofill_structured_address_utils.cc",
     "data_model/autofill_structured_address_utils.h",
+    "data_model/autofill_synthesized_address_component.cc",
+    "data_model/autofill_synthesized_address_component.h",
     "data_model/autofill_wallet_usage_data.cc",
     "data_model/autofill_wallet_usage_data.h",
     "data_model/bank_account.cc",

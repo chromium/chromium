@@ -475,7 +475,12 @@ class AddressComponent {
   // Function to be called by nodes to register new children in their
   // `subcomponents_` list. Note that children are owned by the corresponding
   // `AddressComponentsStore` and not by `this`.
-  void RegisterChildNode(AddressComponent* child);
+  // `set_as_parent_of_child` is used to prevent the child from setting its
+  // parent pointer to `this` when the child is already a child of another node.
+  // This is the case for the children of synthesized nodes that don't get a new
+  // parent assigned.
+  void RegisterChildNode(AddressComponent* child,
+                         bool set_as_parent_of_child = true);
 
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
