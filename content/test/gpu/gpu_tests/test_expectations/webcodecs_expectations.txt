@@ -131,6 +131,21 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
 
+# Skia graphite failures
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-software [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_vp8_prefer-software [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_2 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_2 [ RetryOnFailure ]
+crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_3 [ RetryOnFailure ]
+
 # finder:enable-unused
 
 crbug.com/1424154 [ win amd-0x7340 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
