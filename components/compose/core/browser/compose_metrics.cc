@@ -228,7 +228,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     base::UmaHistogramEnumeration(kComposeSessionEventCounts,
                                   ComposeSessionEventTypes::kShortenClicked);
   }
-  if (session_events.formal_count > 0) {
+  if (session_events.lengthen_count > 0) {
     base::UmaHistogramEnumeration(kComposeSessionEventCounts,
                                   ComposeSessionEventTypes::kElaborateClicked);
   }

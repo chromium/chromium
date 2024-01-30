@@ -2436,6 +2436,23 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kFormalClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCasualClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kElaborateClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kShortenClicked, 0);
+
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_SessionProgress::kEntryName,
@@ -2531,6 +2548,23 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
 
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kFormalClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCasualClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kElaborateClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kShortenClicked, 1);
 
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
