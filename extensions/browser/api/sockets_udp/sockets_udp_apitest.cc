@@ -50,16 +50,7 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpCreateGood) {
   ASSERT_GT(*socket_id, 0);
 }
 
-// Disable SocketsUdpExtension on Mac due to time out.
-// See https://crbug.com/844402.
-// Disable on Linux for flakiness. See https://crbug.com/875920.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_SocketsUdpExtension DISABLED_SocketsUdpExtension
-#else
-#define MAYBE_SocketsUdpExtension SocketsUdpExtension
-#endif
-
-IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, MAYBE_SocketsUdpExtension) {
+IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpExtension) {
   TestUdpEchoServer udp_echo_server;
   net::HostPortPair host_port_pair;
   ASSERT_TRUE(udp_echo_server.Start(

@@ -286,6 +286,8 @@ var testPauseAndThenResume = function () {
   }
 }
 
+// Not run as a UDP test due to timeout on multiple platforms.
+// https://crbug.com/844402, https://crbug.com/875920.
 var testBroadcast = function() {
   var listeningSocketId;
   var sendingSocketId;
@@ -391,7 +393,7 @@ var onMessageReply = function(message) {
   } else {
     console.log("Running udp tests");
     chrome.test.runTests([testSocketCreation, testSending, testSetPaused,
-      testPauseAndThenResume, testBroadcast]);
+      testPauseAndThenResume]);
   }
 };
 
