@@ -72,21 +72,6 @@ static constexpr char kSqliteOpenInMemoryPath[] = ":memory:";
 // TODO(shess): Better story on this.  http://crbug.com/56559
 const int kBusyTimeoutSeconds = 1;
 
-class ScopedBusyTimeout {
- public:
-  explicit ScopedBusyTimeout(sqlite3* db) : db_(db) {}
-  ~ScopedBusyTimeout() { sqlite3_busy_timeout(db_, 0); }
-
-  int SetTimeout(base::TimeDelta timeout) {
-    DCHECK_LT(timeout.InMilliseconds(), INT_MAX);
-    return sqlite3_busy_timeout(db_,
-                                static_cast<int>(timeout.InMilliseconds()));
-  }
-
- private:
-  raw_ptr<sqlite3> db_;
-};
-
 // Helper to "safely" enable writable_schema.  No error checking
 // because it is reasonable to just forge ahead in case of an error.
 // If turning it on fails, then most likely nothing will work, whereas
@@ -1407,22 +1392,14 @@ SqliteResultCode Database::ExecuteAndReturnResultCode(const char* sql) {
 }
 
 bool Database::Execute(const char* sql) {
-  TRACE_EVENT1("sql", "Database::Execute", "query", TRACE_STR_COPY(sql));
+  TRACE_EVENT0("sql", "Database::Execute");
 
-  if (!db_) {
-    DCHECK(poisoned_) << "Illegal use of Database without a db";
-    return false;
-  }
-
-  SqliteResultCode sqlite_result_code = ExecuteAndReturnResultCode(sql);
-  if (sqlite_result_code != SqliteResultCode::kOk)
-    OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr, sql);
-
-  return sqlite_result_code == SqliteResultCode::kOk;
+  return ExecuteWithTimeout(sql, base::TimeDelta());
 }
 
 bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
-  TRACE_EVENT0("sql", "Database::ExecuteWithTimeout");
+  TRACE_EVENT1("sql", "Database::ExecuteWithTimeout", "query",
+               TRACE_STR_COPY(sql));
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
@@ -1430,9 +1407,20 @@ bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
     return false;
   }
 
-  ScopedBusyTimeout busy_timeout(db_);
-  busy_timeout.SetTimeout(timeout);
-  return Execute(sql);
+  // Passing zero or a negative value to sqlite3_busy_timeout() would clear any
+  // busy handlers defined prior to this point.
+  if (timeout.is_positive()) {
+    DCHECK_LT(timeout.InMilliseconds(), INT_MAX);
+    sqlite3_busy_timeout(db_, static_cast<int>(timeout.InMilliseconds()));
+  }
+  SqliteResultCode sqlite_result_code = ExecuteAndReturnResultCode(sql);
+  sqlite3_busy_timeout(db_, 0);
+  if (sqlite_result_code != SqliteResultCode::kOk) {
+    OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr, sql);
+    // At this point, `this` may have been modified or even deleted as a result
+    // of the caller-provided error callback.
+  }
+  return sqlite_result_code == SqliteResultCode::kOk;
 }
 
 bool Database::ExecuteScriptForTesting(const char* sql_script) {
