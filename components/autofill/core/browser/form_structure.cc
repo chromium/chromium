@@ -1305,6 +1305,13 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   field->rank(), field->rank_in_signature_group(),
                   field->rank_in_host_form(),
                   field->rank_in_host_form_signature_group());
+    if (field->may_use_prefilled_placeholder().has_value()) {
+      buffer << Tr{} << "Pre-filled value:"
+             << base::StrCat(
+                    {"is classified as ",
+                     (*field->may_use_prefilled_placeholder() ? "a placeholder"
+                                                              : "meaningful")});
+    }
     buffer << CTag{"table"};
     buffer << CTag{"td"};
     buffer << CTag{"tr"};
