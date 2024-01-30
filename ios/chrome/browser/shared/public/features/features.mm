@@ -705,6 +705,8 @@ BASE_FEATURE(kIOSTipsNotifications,
              "IOSTipsNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kIOSTipsNotificationsTriggerTimeParam[] = "trigger_time";
+
 bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);
 }

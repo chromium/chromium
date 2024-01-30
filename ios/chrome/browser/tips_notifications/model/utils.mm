@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -78,7 +79,12 @@ UNNotificationContent* ContentForTipsNotificationType(
 }
 
 UNNotificationTrigger* TipsNotificationTrigger() {
+  NSTimeInterval trigger_interval =
+      GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
+          kTipsNotificationDefaultTriggerDelta)
+          .InSecondsF();
   return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:kTipsNotificationDefaultTriggerDelta.InSecondsF()
+      triggerWithTimeInterval:trigger_interval
                       repeats:NO];
 }

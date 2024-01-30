@@ -561,6 +561,10 @@ BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 // Feature flag to enable Tips Notifications.
 BASE_DECLARE_FEATURE(kIOSTipsNotifications);
 
+// Feature param to specify how much time after the app starts to trigger
+// Tips notifications.
+extern const char kIOSTipsNotificationsTriggerTimeParam[];
+
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 

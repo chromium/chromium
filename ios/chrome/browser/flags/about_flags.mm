@@ -349,6 +349,19 @@ const FeatureEntry::FeatureVariation
          kEnableDefaultModel, std::size(kEnableDefaultModel), nullptr},
     };
 
+const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
+    {kIOSTipsNotificationsTriggerTimeParam, "5s"},
+};
+const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
+    {kIOSTipsNotificationsTriggerTimeParam, "10s"},
+};
+const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
+    {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,
+     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
+    {"(10s trigger)", kIOSTipsNotifications10SecondTrigger,
+     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
+};
+
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -878,7 +891,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(shared_highlighting::kIOSSharedHighlightingV2)},
     {"ios-tips-notifications", flag_descriptions::kIOSTipsNotificationsName,
      flag_descriptions::kIOSTipsNotificationsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSTipsNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSTipsNotifications,
+                                    kIOSTipsNotificationsVariations,
+                                    "IOSTipsNotifications")},
     {"omnibox-new-textfield-implementation",
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,
