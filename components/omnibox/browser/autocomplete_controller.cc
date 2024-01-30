@@ -1915,8 +1915,8 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
     match.RecordAdditionalInfo("ml model output", *results[i]);
     prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
   }
-  base::ranges::sort(prediction_and_position_heap, std::greater<>(),
-                     [](const auto& pair) { return pair.first; });
+  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                            [](const auto& pair) { return pair.first; });
 
   if (internal_result_.matches_[0].IsUrlScoringEligible()) {
     const auto& new_default = base::ranges::find_if(
