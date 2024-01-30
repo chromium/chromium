@@ -380,6 +380,7 @@ public class DetachedResourceRequestTest {
         ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY,
         ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK
     })
+    @DisabledTest(message = "Flaky. See crbug.com/1523239")
     public void testSafeBrowsingMainResourceWithSplitCache() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
         Assert.assertTrue(
