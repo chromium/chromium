@@ -82,6 +82,7 @@ ts_library("build_ts") {
 
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cellular_setup:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",

@@ -508,6 +508,7 @@ build_webui("build") {
   ts_definitions = ts_definition_files  # Defined in os_settings.gni
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cellular_setup:build_ts",
     "//chrome/browser/resources/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/cros-components:cros_components_ts",
