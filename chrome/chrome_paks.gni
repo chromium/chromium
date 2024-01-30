@@ -351,8 +351,8 @@ template("chrome_extra_paks") {
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_untrusted_resources.pak",
         ]
         deps += [
-          "//ash/webui/resources:sample_system_web_app_resources",
-          "//ash/webui/resources:sample_system_web_app_untrusted_resources",
+          "//ash/webui/sample_system_web_app_ui/resources/trusted:resources",
+          "//ash/webui/sample_system_web_app_ui/resources/untrusted:resources",
         ]
       }
 

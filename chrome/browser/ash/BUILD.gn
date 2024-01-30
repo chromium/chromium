@@ -4424,8 +4424,8 @@ source_set("ash") {
       "system_web_apps/apps/sample_system_web_app_info.h",
     ]
     deps += [
-      "//ash/webui/resources:sample_system_web_app_resources",
       "//ash/webui/sample_system_web_app_ui",
+      "//ash/webui/sample_system_web_app_ui/resources/trusted:resources",
     ]
   }
 
