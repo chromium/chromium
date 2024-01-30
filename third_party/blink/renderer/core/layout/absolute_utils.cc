@@ -410,14 +410,15 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     }
   }
 
+  using AnchorScope = Length::AnchorScope;
+
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, self_writing_direction.GetWritingMode());
   std::optional<LayoutUnit> left;
   if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
-    anchor_evaluator->SetAxis(/* is_y_axis */ false,
-                              /* is_right_or_bottom */ false);
+    AnchorScope scope(AnchorScope::Mode::kLeft, anchor_evaluator);
     left = MinimumValueForLength(left_length, available_size.width,
                                  anchor_evaluator);
   } else if (force_x_insets_to_zero) {
@@ -425,8 +426,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   }
   std::optional<LayoutUnit> right;
   if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
-    anchor_evaluator->SetAxis(/* is_y_axis */ false,
-                              /* is_right_or_bottom */ true);
+    AnchorScope scope(AnchorScope::Mode::kRight, anchor_evaluator);
     right = MinimumValueForLength(right_length, available_size.width,
                                   anchor_evaluator);
   } else if (force_x_insets_to_zero) {
@@ -435,8 +435,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
 
   std::optional<LayoutUnit> top;
   if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
-    anchor_evaluator->SetAxis(/* is_y_axis */ true,
-                              /* is_right_or_bottom */ false);
+    AnchorScope scope(AnchorScope::Mode::kTop, anchor_evaluator);
     top = MinimumValueForLength(top_length, available_size.height,
                                 anchor_evaluator);
   } else if (force_y_insets_to_zero) {
@@ -445,8 +444,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   std::optional<LayoutUnit> bottom;
   if (const Length& bottom_length = style.UsedBottom();
       !bottom_length.IsAuto()) {
-    anchor_evaluator->SetAxis(/* is_y_axis */ true,
-                              /* is_right_or_bottom */ true);
+    AnchorScope scope(AnchorScope::Mode::kBottom, anchor_evaluator);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    anchor_evaluator);
   } else if (force_y_insets_to_zero) {

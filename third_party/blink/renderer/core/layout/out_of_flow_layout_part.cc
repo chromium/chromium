@@ -630,10 +630,7 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   float left = 0;
   float right = 0;
 
-  const bool y_axis = true;
-  const bool x_axis = false;
-  const bool right_or_bottom = true;
-  const bool left_or_top = false;
+  using AnchorScope = Length::AnchorScope;
 
   // The InsetArea::Used*() methods either return a 0px length or an anchor()
   // function, using top/left/right/bottom, to adjust the containing block to
@@ -642,22 +639,22 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // IsCalculated() means the value is an anchor() function, otherwise the inset
   // adjustment is already set to 0 above.
   if (inset_area.UsedTop().IsCalculated()) {
-    anchor_evaluator->SetAxis(y_axis, left_or_top);
+    AnchorScope anchor_scope(AnchorScope::Mode::kTop, anchor_evaluator);
     top = inset_area.UsedTop().NonNanCalculatedValue(available_height,
                                                      anchor_evaluator);
   }
   if (inset_area.UsedBottom().IsCalculated()) {
-    anchor_evaluator->SetAxis(y_axis, right_or_bottom);
+    AnchorScope anchor_scope(AnchorScope::Mode::kBottom, anchor_evaluator);
     bottom = inset_area.UsedBottom().NonNanCalculatedValue(available_height,
                                                            anchor_evaluator);
   }
   if (inset_area.UsedLeft().IsCalculated()) {
-    anchor_evaluator->SetAxis(x_axis, left_or_top);
+    AnchorScope anchor_scope(AnchorScope::Mode::kLeft, anchor_evaluator);
     left = inset_area.UsedLeft().NonNanCalculatedValue(available_width,
                                                        anchor_evaluator);
   }
   if (inset_area.UsedRight().IsCalculated()) {
-    anchor_evaluator->SetAxis(x_axis, right_or_bottom);
+    AnchorScope anchor_scope(AnchorScope::Mode::kRight, anchor_evaluator);
     right = inset_area.UsedRight().NonNanCalculatedValue(available_width,
                                                          anchor_evaluator);
   }
@@ -2124,6 +2121,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   const BoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
       ComputePadding(node_info.constraint_space, candidate_style);
+
+  Length::AnchorScope anchor_scope(Length::AnchorScope::Mode::kSize,
+                                   anchor_evaluator);
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {

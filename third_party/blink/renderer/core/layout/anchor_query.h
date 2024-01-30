@@ -314,12 +314,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
     return needs_scroll_adjustment_in_y_;
   }
 
-  // This must be set before evaluating `anchor()` function.
-  void SetAxis(bool is_y_axis, bool is_right_or_bottom) {
-    is_y_axis_ = is_y_axis;
-    is_right_or_bottom_ = is_right_or_bottom;
-  }
-
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
   absl::optional<LayoutUnit> Evaluate(
@@ -352,8 +346,13 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   const LayoutObject* DefaultAnchor() const;
   const PaintLayer* DefaultAnchorScrollContainerLayer() const;
 
+  bool AllowAnchor() const;
+  bool AllowAnchorSize() const;
+  bool IsYAxis() const;
+  bool IsRightOrBottom() const;
+
   LayoutUnit AvailableSizeAlongAxis() const {
-    return is_y_axis_ ? available_size_.height : available_size_.width;
+    return IsYAxis() ? available_size_.height : available_size_.width;
   }
 
   const LayoutObject* query_object_ = nullptr;
@@ -369,7 +368,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   PhysicalOffset offset_to_padding_box_;
 
-  // Either width or height will be used, depending on `is_y_axis_`.
+  // Either width or height will be used, depending on IsYAxis().
   PhysicalSize available_size_;
 
   // These fields will be populated during `anchor()` evaluation if needed.
@@ -377,8 +376,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   mutable absl::optional<const PaintLayer*>
       default_anchor_scroll_container_layer_;
 
-  bool is_y_axis_ = false;
-  bool is_right_or_bottom_ = false;
   mutable bool has_anchor_functions_ = false;
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;

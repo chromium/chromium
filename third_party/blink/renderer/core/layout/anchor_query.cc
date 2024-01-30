@@ -443,6 +443,40 @@ const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
   return *default_anchor_scroll_container_layer_;
 }
 
+bool AnchorEvaluatorImpl::AllowAnchor() const {
+  switch (GetMode()) {
+    case Mode::kLeft:
+    case Mode::kRight:
+    case Mode::kTop:
+    case Mode::kBottom:
+      return true;
+    case Mode::kNone:
+    case Mode::kSize:
+      return false;
+  }
+}
+
+bool AnchorEvaluatorImpl::AllowAnchorSize() const {
+  switch (GetMode()) {
+    case Mode::kSize:
+      return true;
+    case Mode::kNone:
+    case Mode::kLeft:
+    case Mode::kRight:
+    case Mode::kTop:
+    case Mode::kBottom:
+      return false;
+  }
+}
+
+bool AnchorEvaluatorImpl::IsYAxis() const {
+  return GetMode() == Mode::kTop || GetMode() == Mode::kBottom;
+}
+
+bool AnchorEvaluatorImpl::IsRightOrBottom() const {
+  return GetMode() == Mode::kRight || GetMode() == Mode::kBottom;
+}
+
 bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
     const LayoutObject* anchor) const {
   if (!DefaultAnchor()) {
@@ -461,19 +495,26 @@ absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     CSSAnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
+
+  if (!AllowAnchor()) {
+    return absl::nullopt;
+  }
+
   const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
     return absl::nullopt;
   }
 
+  const bool is_y_axis = IsYAxis();
+
   DCHECK(AnchorQuery());
   if (absl::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
           *anchor_reference, anchor_value, percentage, AvailableSizeAlongAxis(),
           container_converter_, self_writing_direction_, offset_to_padding_box_,
-          is_y_axis_, is_right_or_bottom_)) {
-    bool& needs_scroll_adjustment = is_y_axis_ ? needs_scroll_adjustment_in_y_
-                                               : needs_scroll_adjustment_in_x_;
+          is_y_axis, IsRightOrBottom())) {
+    bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
+                                              : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
         ShouldUseScrollAdjustmentFor(anchor_reference->layout_object)) {
       needs_scroll_adjustment = true;
@@ -487,6 +528,11 @@ absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
+
+  if (!AllowAnchorSize()) {
+    return absl::nullopt;
+  }
+
   const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
@@ -524,7 +570,9 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
 
 absl::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
     bool is_y_axis) {
-  SetAxis(is_y_axis, /* is_right_or_bottom */ false);
+  using AnchorScope = Length::AnchorScope;
+  AnchorScope anchor_scope(
+      is_y_axis ? AnchorScope::Mode::kTop : AnchorScope::Mode::kLeft, this);
   // Parameter `percentage` is unused for any non-percentage anchor value.
   const double dummy_percentage = 0;
   return EvaluateAnchor(*AnchorSpecifierValue::Default(),
