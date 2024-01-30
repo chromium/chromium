@@ -101,22 +101,24 @@ void JSBasedEventListener::Invoke(
   // |js_event|, a V8 wrapper object for |event|, must be created in the
   // relevant realm of the event target. The world must match the event
   // listener's world.
-  v8::Local<v8::Context> v8_context_of_event_target =
-      ToV8Context(execution_context_of_event_target, GetWorld());
-  if (v8_context_of_event_target.IsEmpty())
+  ScriptState* script_state_of_event_target =
+      ToScriptState(execution_context_of_event_target, GetWorld());
+  if (!script_state_of_event_target) {
     return;
+  }
+  DCHECK_EQ(script_state_of_event_target->World().GetWorldId(),
+            GetWorld().GetWorldId());
 
   // Step 6: Let |global| be listener callback’s associated Realm’s global
   // object.
-  LocalDOMWindow* window =
-      ToLocalDOMWindow(script_state_of_listener->GetContext());
+  LocalDOMWindow* window = ToLocalDOMWindow(script_state_of_listener);
 
   // Check if the current context, which is set to the listener's relevant
   // context by creating |listener_script_state_scope|, has access to the
   // event target's relevant context before creating |js_event|. SecurityError
   // is thrown if it doesn't have access.
   if (!BindingSecurity::ShouldAllowAccessToV8Context(
-          script_state_of_listener->GetContext(), v8_context_of_event_target)) {
+          script_state_of_listener, script_state_of_event_target)) {
     LocalDOMWindow* target_window =
         DynamicTo<LocalDOMWindow>(execution_context_of_event_target);
     if (window && target_window) {
@@ -126,8 +128,8 @@ void JSBasedEventListener::Invoke(
     return;
   }
 
-  v8::Local<v8::Value> js_event = ToV8Traits<Event>::ToV8(
-      ScriptState::From(v8_context_of_event_target), event);
+  v8::Local<v8::Value> js_event =
+      ToV8Traits<Event>::ToV8(script_state_of_event_target, event);
 
   // Step 7: Let |current_event| be undefined.
   Event* current_event = nullptr;
