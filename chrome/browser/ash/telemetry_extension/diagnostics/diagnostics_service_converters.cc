@@ -7,8 +7,7 @@
 #include <optional>
 
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
@@ -17,21 +16,11 @@ namespace ash::converters::diagnostics {
 
 namespace unchecked {
 
-namespace {
-
-std::string GetStringFromMojoHandle(mojo::ScopedHandle handle) {
-  base::ReadOnlySharedMemoryMapping shared_memory;
-  return std::string(MojoUtils::GetStringPieceFromMojoHandle(std::move(handle),
-                                                             &shared_memory));
-}
-
-}  // namespace
-
 crosapi::mojom::DiagnosticsRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input) {
   return crosapi::mojom::DiagnosticsRoutineUpdate::New(
       input->progress_percent,
-      GetStringFromMojoHandle(std::move(input->output)),
+      MojoUtils::GetStringFromMojoHandle(std::move(input->output)),
       ConvertDiagnosticsPtr(std::move(input->routine_update_union)));
 }
 
