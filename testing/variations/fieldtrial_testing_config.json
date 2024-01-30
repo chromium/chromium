@@ -6780,6 +6780,7 @@
     "EnableOverwritingPlaceholderUsernames": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
