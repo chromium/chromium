@@ -60,7 +60,6 @@ class CORE_EXPORT TextPainterBase {
                                     const TextPaintStyle&,
                                     GraphicsContextStateSaver&,
                                     ShadowMode);
-
   static sk_sp<SkDrawLooper> CreateDrawLooper(
       const ShadowList* shadow_list,
       DrawLooperBuilder::ShadowAlphaMode,
@@ -129,15 +128,20 @@ class CORE_EXPORT TextPainterBase {
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
 
+  void PaintUnderOrOverLineDecorationShadows(
+      const TextFragmentPaintInfo& fragment_paint_info,
+      const TextDecorationOffset& decoration_offset,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
+      const cc::PaintFlags* flags,
+      const TextPaintStyle& text_style);
+
   void PaintUnderOrOverLineDecorations(
       const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags);
-
-  void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
-                                       const cc::PaintFlags* = nullptr);
 };
 
 }  // namespace blink
