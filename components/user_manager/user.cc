@@ -61,22 +61,22 @@ bool User::TypeIsKiosk(UserType type) {
 User::User(const AccountId& account_id, UserType type)
     : account_id_(account_id), type_(type), user_image_(new UserImage()) {
   switch (type_) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       set_display_email(account_id.GetUserEmail());
       break;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
       // Public accounts nor guest account do not have a real email address,
       // so they do not set |display_email_|.
       break;
   }
 
-  if (type_ == user_manager::USER_TYPE_REGULAR ||
-      type_ == user_manager::USER_TYPE_CHILD) {
+  if (type_ == user_manager::UserType::kRegular ||
+      type_ == user_manager::UserType::kChild) {
     set_can_lock(true);
   }
 }
@@ -107,10 +107,10 @@ const AccountId& User::GetAccountId() const {
 
 void User::UpdateType(UserType new_type) {
   // Can only change between regular and child.
-  if ((type_ == user_manager::USER_TYPE_CHILD ||
-       type_ == user_manager::USER_TYPE_REGULAR) &&
-      (new_type == user_manager::USER_TYPE_CHILD ||
-       new_type == user_manager::USER_TYPE_REGULAR)) {
+  if ((type_ == user_manager::UserType::kChild ||
+       type_ == user_manager::UserType::kRegular) &&
+      (new_type == user_manager::UserType::kChild ||
+       new_type == user_manager::UserType::kRegular)) {
     // We want all the other type changes to crash, that is why this check is
     // not at the top level.
     if (type_ == new_type) {
@@ -120,7 +120,7 @@ void User::UpdateType(UserType new_type) {
     LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
     type_ = new_type;
 
-    UMAUserTypeChanged(new_type == user_manager::USER_TYPE_CHILD
+    UMAUserTypeChanged(new_type == user_manager::UserType::kChild
                            ? UserTypeChangeHistogram::REGULAR_TO_CHILD
                            : UserTypeChangeHistogram::CHILD_TO_REGULAR);
     return;
@@ -177,14 +177,14 @@ bool User::has_gaia_account() const {
   static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 9,
                 "kMaxValue should equal 9");
   switch (GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       return true;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return false;
   }
   return false;
@@ -241,14 +241,14 @@ void User::SetAffiliation(bool is_affiliated) {
 
 bool User::IsDeviceLocalAccount() const {
   switch (type_) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kGuest:
       return false;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return true;
   }
   return false;

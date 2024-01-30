@@ -143,7 +143,7 @@ class DisplayPrefsTest : public AshTestBase {
   void LoggedInAsGuest() { SimulateGuestLogin(); }
 
   void LoggedInAsPublicAccount() {
-    SimulateUserLogin("pa@test.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+    SimulateUserLogin("pa@test.com", user_manager::UserType::kPublicAccount);
   }
 
   void LoadDisplayPreferences() { display_prefs()->LoadDisplayPreferences(); }

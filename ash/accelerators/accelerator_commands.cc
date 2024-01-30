@@ -446,7 +446,7 @@ bool CanCreateNewIncognitoWindow() {
   // For non-guest mode, consume the key and defer the decision to the browser.
   std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
-  return user_type && *user_type != user_manager::USER_TYPE_GUEST;
+  return user_type && *user_type != user_manager::UserType::kGuest;
 }
 
 bool CanCycleInputMethod() {

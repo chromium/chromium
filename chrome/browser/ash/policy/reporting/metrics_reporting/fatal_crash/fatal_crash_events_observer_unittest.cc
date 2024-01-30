@@ -414,7 +414,7 @@ TEST_F(
 }
 
 TEST_P(FatalCrashEventsObserverTest, FieldUserEmailFilledIfAffiliated) {
-  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
+  SimulateUserLogin(kUserEmail, user_manager::UserType::kRegular,
                     /*is_user_affiliated=*/true);
   auto crash_event_info = NewCrashEventInfo(is_uploaded());
   const auto fatal_crash_telemetry =
@@ -426,7 +426,7 @@ TEST_P(FatalCrashEventsObserverTest, FieldUserEmailFilledIfAffiliated) {
 }
 
 TEST_P(FatalCrashEventsObserverTest, FieldUserEmailAbsentIfUnaffiliated) {
-  SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
+  SimulateUserLogin(kUserEmail, user_manager::UserType::kRegular,
                     /*is_user_affiliated=*/false);
   auto crash_event_info = NewCrashEventInfo(is_uploaded());
   const auto fatal_crash_telemetry =
@@ -641,9 +641,9 @@ TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
     FatalCrashTelemetry::SessionType session_type;
   };
   static constexpr TypePairs kSessionTypes[] = {
-      {.user_type = user_manager::USER_TYPE_CHILD,
+      {.user_type = user_manager::UserType::kChild,
        .session_type = FatalCrashTelemetry::SESSION_TYPE_CHILD},
-      {.user_type = user_manager::USER_TYPE_GUEST,
+      {.user_type = user_manager::UserType::kGuest,
        .session_type = FatalCrashTelemetry::SESSION_TYPE_GUEST}};
 
   for (size_t i = 0; i < std::size(kSessionTypes); ++i) {

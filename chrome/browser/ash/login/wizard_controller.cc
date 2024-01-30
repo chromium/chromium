@@ -1670,7 +1670,7 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
   switch (result) {
     case GuestTosScreen::Result::ACCEPT:
       ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-          UserContext(user_manager::USER_TYPE_GUEST,
+          UserContext(user_manager::UserType::kGuest,
                       user_manager::GuestAccountId()),
           SigninSpecifics());
       break;

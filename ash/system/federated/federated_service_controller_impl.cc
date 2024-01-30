@@ -77,8 +77,8 @@ chromeos::federated::mojom::ExamplePtr CreateBrellaAnalyticsExamplePtr() {
 bool IsValidPrimaryUserType(const user_manager::UserType user_type) {
   // Primary user session must have user_type = regular or child (v.s. guest,
   // public account, kiosk app).
-  return user_type == user_manager::USER_TYPE_REGULAR ||
-         user_type == user_manager::USER_TYPE_CHILD;
+  return user_type == user_manager::UserType::kRegular ||
+         user_type == user_manager::UserType::kChild;
 }
 
 }  // namespace

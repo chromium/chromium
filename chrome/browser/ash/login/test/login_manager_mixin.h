@@ -47,12 +47,12 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
     explicit TestUserInfo(const AccountId& account_id,
                           std::initializer_list<ash::AshAuthFactor> factors =
                               test::kDefaultAuthSetup)
-        : TestUserInfo(account_id, factors, user_manager::USER_TYPE_REGULAR) {}
+        : TestUserInfo(account_id, factors, user_manager::UserType::kRegular) {}
 
     TestUserInfo(const AccountId& account_id, test::UserAuthConfig auth_config)
         : TestUserInfo(account_id,
                        auth_config,
-                       user_manager::USER_TYPE_REGULAR) {}
+                       user_manager::UserType::kRegular) {}
 
     // Creates test user with `user_type` from the given `account_id`.
     TestUserInfo(const AccountId& account_id,

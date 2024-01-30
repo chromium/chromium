@@ -34,19 +34,19 @@ LoginState::LoggedInUserType GetLoggedInUserTypeFromUser(
   }
 
   switch (active_user.GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return LoginState::LOGGED_IN_USER_REGULAR;
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return LoginState::LOGGED_IN_USER_GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return LoginState::LOGGED_IN_USER_CHILD;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return LoginState::LOGGED_IN_USER_KIOSK;
       // Since there is no default, the compiler warns about unhandled types.
   }

@@ -126,7 +126,7 @@ class MetricsConsentHandlerTest : public testing::Test {
         &fake_session_manager_client_, owner_keys);
     std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, owner_keys);
     test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::USER_TYPE_REGULAR, owner.get());
+        account_id, false, user_manager::UserType::kRegular, owner.get());
     test_user_manager_->SetOwnerId(account_id);
 
     EXPECT_THAT(DeviceSettingsService::Get()->GetOwnershipStatus(),
@@ -325,7 +325,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      non_owner_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+      non_owner_id, false, user_manager::UserType::kRegular, non_owner.get());
 
   // User should use user consent pref.
   test_metrics_service_client_->SetShouldUseUserConsent(true);
@@ -366,7 +366,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      non_owner_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+      non_owner_id, false, user_manager::UserType::kRegular, non_owner.get());
 
   // User cannot use user consent. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(false);

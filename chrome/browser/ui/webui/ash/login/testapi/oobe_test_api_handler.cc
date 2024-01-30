@@ -202,7 +202,7 @@ void OobeTestAPIHandler::LoginAsGuest() {
   VLOG(1) << "LoginAsGuest";
   WizardController::default_controller()->SkipToLoginForTesting();  // IN-TEST
   CHECK(ExistingUserController::current_controller());
-  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
+  UserContext context(user_manager::UserType::kGuest, EmptyAccountId());
   ExistingUserController::current_controller()->Login(context,
                                                       SigninSpecifics());
 }

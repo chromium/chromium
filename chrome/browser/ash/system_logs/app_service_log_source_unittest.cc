@@ -36,7 +36,7 @@ class AppServiceLogSourceTest : public ::testing::Test {
                                                /*is_main_profile=*/true);
     profile_ = profile;
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::USER_TYPE_REGULAR, profile);
+        account_id, false, user_manager::UserType::kRegular, profile);
     fake_user_manager->LoginUser(account_id);
     fake_user_manager->SwitchActiveUser(account_id);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

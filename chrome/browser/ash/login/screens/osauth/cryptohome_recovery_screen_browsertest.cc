@@ -399,7 +399,7 @@ class CryptohomeRecoveryScreenChildTest
             test::UserAuthConfig::Create({ash::AshAuthFactor::kGaiaPassword,
                                           ash::AshAuthFactor::kRecovery})
                 .RequireReauth(),
-            user_manager::UserType::USER_TYPE_CHILD}) {}
+            user_manager::UserType::kChild}) {}
   ~CryptohomeRecoveryScreenChildTest() override = default;
 
   CryptohomeRecoveryScreenChildTest(
@@ -417,7 +417,7 @@ class CryptohomeRecoveryScreenChildNoRecoveryTest
                                            FakeGaiaMixin::kFakeUserGaiaId),
             test::UserAuthConfig::Create(test::kDefaultAuthSetup)
                 .RequireReauth(),
-            user_manager::UserType::USER_TYPE_CHILD}) {}
+            user_manager::UserType::kChild}) {}
   ~CryptohomeRecoveryScreenChildNoRecoveryTest() override = default;
 
   CryptohomeRecoveryScreenChildNoRecoveryTest(

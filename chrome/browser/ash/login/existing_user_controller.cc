@@ -251,7 +251,7 @@ std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     return EncryptionMigrationMode::RESUME_MIGRATION;
   }
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
+  if (user_context.GetUserType() == user_manager::UserType::kChild) {
     // Force-migrate child users.
     return EncryptionMigrationMode::START_MIGRATION;
   }
@@ -297,8 +297,8 @@ int CountRegularUsers(const user_manager::UserList& users) {
     }
     // Allow offline login from the error screen if user of one of these types
     // has already logged in.
-    if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
-        user->GetType() == user_manager::USER_TYPE_CHILD) {
+    if (user->GetType() == user_manager::UserType::kRegular ||
+        user->GetType() == user_manager::UserType::kChild) {
       regular_users_counter++;
     }
   }
@@ -524,7 +524,7 @@ void ExistingUserController::Login(const UserContext& user_context,
 
   is_login_in_progress_ = true;
 
-  if (user_context.GetUserType() != user_manager::USER_TYPE_REGULAR &&
+  if (user_context.GetUserType() != user_manager::UserType::kRegular &&
       user_manager::UserManager::Get()->IsUserLoggedIn()) {
     // Multi-login is only allowed for regular users. If we are attempting to
     // do multi-login as another type of user somehow, bail out. Do not
@@ -798,7 +798,7 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
   }
 
   if (user_context.CanLockManagedGuestSession()) {
-    CHECK(user_context.GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+    CHECK(user_context.GetUserType() == user_manager::UserType::kPublicAccount);
     user_manager::User* user =
         user_manager::UserManager::Get()->FindUserAndModify(
             user_context.GetAccountId());
@@ -903,7 +903,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   auto* profile_connector = profile->GetProfilePolicyConnector();
   bool is_enterprise_managed =
       profile_connector->IsManaged() &&
-      user_context.GetUserType() != user_manager::USER_TYPE_CHILD;
+      user_context.GetUserType() != user_manager::UserType::kChild;
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetIsEnterpriseManaged(user_context.GetAccountId(),
@@ -1118,7 +1118,7 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
     // Public session accounts are always shown on login screen.
     const bool meets_show_users_requirements =
         show_users_on_signin ||
-        user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+        user->GetType() == user_manager::UserType::kPublicAccount;
     if (meets_allowlist_requirements && meets_show_users_requirements) {
       filtered_users.push_back(user);
     }
@@ -1133,7 +1133,7 @@ void ExistingUserController::LoginAuthenticated(
 }
 
 void ExistingUserController::LoginAsGuest() {
-  PerformPreLoginActions(UserContext(user_manager::USER_TYPE_GUEST,
+  PerformPreLoginActions(UserContext(user_manager::UserType::kGuest,
                                      user_manager::GuestAccountId()));
 
   bool allow_guest = user_manager::UserManager::Get()->IsGuestSessionAllowed();
@@ -1163,7 +1163,7 @@ void ExistingUserController::LoginAsPublicSession(
   // possible.
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
     VLOG(2) << "Public session user not found";
     PerformLoginFinishedActions(true /* start auto login timer */);
     return;
@@ -1276,7 +1276,7 @@ void ExistingUserController::ConfigureAutoLogin() {
       user_manager::UserManager::Get()->FindUser(
           public_session_auto_login_account_id_);
   if (!public_session_user || public_session_user->GetType() !=
-                                  user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+                                  user_manager::UserType::kPublicAccount) {
     VLOG(2) << "PublicSession autologin user not found";
     public_session_auto_login_account_id_ = EmptyAccountId();
   }
@@ -1311,7 +1311,7 @@ void ExistingUserController::OnPublicSessionAutoLoginTimerFire() {
   VLOG(2) << "Public session autologin fired";
   SigninSpecifics signin_specifics;
   signin_specifics.is_auto_login = true;
-  Login(UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  Login(UserContext(user_manager::UserType::kPublicAccount,
                     public_session_auto_login_account_id_),
         signin_specifics);
 }
@@ -1580,7 +1580,7 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
   last_login_attempt_was_auto_login_ = specifics.is_auto_login;
   VLOG(2) << "DoLogin with a user type: " << user_context.GetUserType();
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_GUEST) {
+  if (user_context.GetUserType() == user_manager::UserType::kGuest) {
     if (!specifics.guest_mode_url.empty()) {
       guest_mode_url_ = GURL(specifics.guest_mode_url);
       if (specifics.guest_mode_url_append_locale) {
@@ -1592,24 +1592,24 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (user_context.GetUserType() == user_manager::UserType::kPublicAccount) {
     LoginAsPublicSession(user_context);
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_KIOSK_APP) {
+  if (user_context.GetUserType() == user_manager::UserType::kKioskApp) {
     LoginAsKioskApp(
         KioskAppId::ForChromeApp(user_context.GetAccountId().GetUserEmail(),
                                  user_context.GetAccountId()));
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_ARC_KIOSK_APP) {
+  if (user_context.GetUserType() == user_manager::UserType::kArcKioskApp) {
     LoginAsKioskApp(KioskAppId::ForArcApp(user_context.GetAccountId()));
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
+  if (user_context.GetUserType() == user_manager::UserType::kWebKioskApp) {
     LoginAsKioskApp(KioskAppId::ForWebApp(user_context.GetAccountId()));
     return;
   }

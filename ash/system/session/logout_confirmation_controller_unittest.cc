@@ -195,7 +195,7 @@ class LastWindowClosedTest : public NoSessionAshTestBase {
   void StartManagedGuestSession() {
     TestSessionControllerClient* session = GetSessionControllerClient();
     session->Reset();
-    session->AddUserSession(kUserEmail, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+    session->AddUserSession(kUserEmail, user_manager::UserType::kPublicAccount);
     session->SetSessionState(session_manager::SessionState::ACTIVE);
   }
 

@@ -317,7 +317,7 @@ bool IsSigninPrefService(PrefService* pref_service) {
 bool IsCurrentSessionGuest() {
   const std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
-  return user_type && *user_type == user_manager::USER_TYPE_GUEST;
+  return user_type && *user_type == user_manager::UserType::kGuest;
 }
 
 bool IsUserFirstLogin() {

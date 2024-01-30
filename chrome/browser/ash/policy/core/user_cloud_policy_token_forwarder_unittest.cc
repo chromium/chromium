@@ -224,7 +224,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
 
 TEST_F(UserCloudPolicyTokenForwarderTest,
        RegularUserWaitingForServiceInitialization) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateUserWithType(user_manager::UserType::kRegular);
 
   // Initialized CloudPolicyService is needed to start token fetch.
   // Simulate CloudPolicyService initialization after token forwarder was
@@ -249,7 +249,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest,
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, RegularUserServiceInitialized) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateUserWithType(user_manager::UserType::kRegular);
 
   // Initialized CloudPolicyService is needed to start token fetch.
   // Simulate CloudPolicyService initialization before token forwarder was
@@ -267,7 +267,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, RegularUserServiceInitialized) {
 
 TEST_F(UserCloudPolicyTokenForwarderTest,
        RegularUserShutdownBeforeTokenFetched) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateUserWithType(user_manager::UserType::kRegular);
 
   SimulateCloudPolicyServiceInitialized();
 
@@ -288,7 +288,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest,
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, RegularUserTokenFetchFailed) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateUserWithType(user_manager::UserType::kRegular);
 
   SimulateCloudPolicyServiceInitialized();
 
@@ -309,7 +309,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, RegularUserTokenFetchFailed) {
 
 TEST_F(UserCloudPolicyTokenForwarderTest,
        ChildUserWaitingForServiceInitialization) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
 
   // Initialized CloudPolicyService is needed to start token fetch.
   // Simulate CloudPolicyService initialization after token forwarder was
@@ -340,7 +340,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest,
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserServiceInitialized) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
 
   // Initialized CloudPolicyService is needed to start token fetch.
   // Simulate CloudPolicyService initialization before token forwarder was
@@ -357,7 +357,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserServiceInitialized) {
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserShutdownBeforeTokenFetched) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
 
   SimulateCloudPolicyServiceInitialized();
 
@@ -378,7 +378,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserShutdownBeforeTokenFetched) {
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserExpiredToken) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
 
   SimulateCloudPolicyServiceInitialized();
 
@@ -412,7 +412,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserExpiredToken) {
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserTokenFetchFailed) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
 
   SimulateCloudPolicyServiceInitialized();
 
@@ -447,7 +447,7 @@ TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserTokenFetchFailed) {
 }
 
 TEST_F(UserCloudPolicyTokenForwarderTest, ChildUserRecurringTokenFetch) {
-  CreateUserWithType(user_manager::UserType::USER_TYPE_CHILD);
+  CreateUserWithType(user_manager::UserType::kChild);
   SimulateCloudPolicyServiceInitialized();
   std::unique_ptr<UserCloudPolicyTokenForwarder> token_forwarder =
       CreateTokenForwarder();

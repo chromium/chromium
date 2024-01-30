@@ -1548,8 +1548,8 @@ void BrowserManager::PrepareLacrosPolicies() {
   policy::CloudPolicyCore* core = nullptr;
   policy::ComponentCloudPolicyService* component_policy_service = nullptr;
   switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD: {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild: {
       Profile* profile = Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
       DCHECK(profile);
@@ -1562,9 +1562,9 @@ void BrowserManager::PrepareLacrosPolicies() {
       }
       break;
     }
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP: {
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kWebKioskApp: {
       policy::DeviceLocalAccountPolicyService* policy_service =
           g_browser_process->platform_part()
               ->browser_policy_connector_ash()
@@ -1581,8 +1581,8 @@ void BrowserManager::PrepareLacrosPolicies() {
       }
       break;
     }
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kArcKioskApp:
       break;
   }
 

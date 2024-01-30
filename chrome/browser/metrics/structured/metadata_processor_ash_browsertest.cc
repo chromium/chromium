@@ -297,7 +297,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                   account_id_1_);
     controller->Login(user_context, ash::SigninSpecifics());
   }

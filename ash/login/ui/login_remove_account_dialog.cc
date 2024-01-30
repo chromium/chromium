@@ -207,7 +207,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     std::u16string part1 = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
     std::u16string part2 = l10n_util::GetStringFUTF16(
-        type == user_manager::UserType::USER_TYPE_CHILD
+        type == user_manager::UserType::kChild
             ? IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2_SUPERVISED_USER
             : IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2,
         email);

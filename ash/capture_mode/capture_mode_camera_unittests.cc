@@ -4687,7 +4687,7 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   {
     base::RunLoop loop;
     camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
-    SimulateUserLogin("example@gmail.com", user_manager::USER_TYPE_REGULAR);
+    SimulateUserLogin("example@gmail.com", user_manager::UserType::kRegular);
     loop.Run();
   }
 

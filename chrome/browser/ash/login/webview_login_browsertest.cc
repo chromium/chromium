@@ -1036,7 +1036,7 @@ class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth(),
-      user_manager::USER_TYPE_CHILD};
+      user_manager::UserType::kChild};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
 };
 
@@ -1454,7 +1454,7 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
   LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      test::kDefaultAuthSetup, user_manager::USER_TYPE_REGULAR};
+      test::kDefaultAuthSetup, user_manager::UserType::kRegular};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
 
  private:

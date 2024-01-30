@@ -464,7 +464,7 @@ class PolicyProvidedCertsPublicSessionTest
     // Login into the public session.
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
-    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
                                   device_local_account_id_);
     controller->Login(user_context, ash::SigninSpecifics());
   }

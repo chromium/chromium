@@ -466,7 +466,7 @@ class RightPaneView : public NonAccessibleView {
 
   void UpdateForUser(const LoginUserInfo& user) {
     DCHECK_EQ(user.basic_user_info.type,
-              user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+              user_manager::UserType::kPublicAccount);
     current_user_ = user;
     if (!language_changed_by_user_) {
       selected_language_item_value_ = user.public_account_info->default_locale;

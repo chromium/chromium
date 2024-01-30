@@ -188,7 +188,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
     profile_builder.SetProfileName(account_id.GetUserEmail());
     auto profile = profile_builder.Build();
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::UserType::USER_TYPE_REGULAR,
+        account_id, is_affiliated, user_manager::UserType::kRegular,
         profile.get());
     return profile;
   }

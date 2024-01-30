@@ -184,7 +184,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
+        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_.get());
     fake_user_manager_->LoginUser(account_id, true);
 

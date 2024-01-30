@@ -37,7 +37,7 @@ bool UserChooserDetailedViewController::IsUserChooserEnabled() {
 
   // Only allow for regular user session.
   if (session->GetPrimaryUserSession()->user_info.type !=
-      user_manager::USER_TYPE_REGULAR) {
+      user_manager::UserType::kRegular) {
     return false;
   }
 

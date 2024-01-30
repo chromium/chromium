@@ -428,19 +428,19 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
   ash_test_helper_->SimulateUserLogin(AccountId::FromUserEmail(user_email),
-                                      user_manager::UserType::USER_TYPE_REGULAR,
+                                      user_manager::UserType::kRegular,
                                       /*is_new_profile=*/true);
 }
 
 void AshTestBase::SimulateGuestLogin() {
   SimulateUserLogin(AccountId::FromUserEmail(user_manager::kGuestUserName),
-                    user_manager::USER_TYPE_GUEST);
+                    user_manager::UserType::kGuest);
 }
 
 void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
-  DCHECK(user_type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
-         user_type == user_manager::USER_TYPE_KIOSK_APP ||
-         user_type == user_manager::USER_TYPE_WEB_KIOSK_APP);
+  DCHECK(user_type == user_manager::UserType::kArcKioskApp ||
+         user_type == user_manager::UserType::kKioskApp ||
+         user_type == user_manager::UserType::kWebKioskApp);
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
   SimulateUserLogin(AccountId::FromUserEmail(kKioskUserEmail), user_type);

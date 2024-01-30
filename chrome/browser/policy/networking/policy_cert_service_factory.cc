@@ -89,7 +89,7 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
   // future changes.
   bool may_use_profile_wide_trust_anchors =
       user == user_manager->GetPrimaryUser() &&
-      user->GetType() != user_manager::USER_TYPE_GUEST;
+      user->GetType() != user_manager::UserType::kGuest;
 
   return std::make_unique<PolicyCertService>(
       profile, policy_certificate_provider, may_use_profile_wide_trust_anchors);

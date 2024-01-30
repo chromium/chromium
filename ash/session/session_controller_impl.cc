@@ -211,7 +211,7 @@ bool SessionControllerImpl::IsUserChild() const {
     return false;
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_CHILD;
+  return active_user_type == user_manager::UserType::kChild;
 }
 
 bool SessionControllerImpl::IsUserGuest() const {
@@ -220,7 +220,7 @@ bool SessionControllerImpl::IsUserGuest() const {
   }
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_GUEST;
+  return active_user_type == user_manager::UserType::kGuest;
 }
 
 bool SessionControllerImpl::IsUserPublicAccount() const {
@@ -228,7 +228,7 @@ bool SessionControllerImpl::IsUserPublicAccount() const {
     return false;
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  return active_user_type == user_manager::UserType::kPublicAccount;
 }
 
 std::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
@@ -641,19 +641,19 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
     return LoginStatus::USER;
 
   switch (user_sessions_[0]->user_info.type) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return LoginStatus::USER;
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return LoginStatus::GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return LoginStatus::PUBLIC;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return LoginStatus::KIOSK_APP;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return LoginStatus::CHILD;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return LoginStatus::KIOSK_APP;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return LoginStatus::KIOSK_APP;
   }
   NOTREACHED();

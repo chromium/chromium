@@ -54,19 +54,19 @@ FatalCrashTelemetry::SessionType GetSessionType(
     return FatalCrashTelemetry::SESSION_TYPE_UNSPECIFIED;
   }
   switch (user_session->user_info.type) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return FatalCrashTelemetry::SESSION_TYPE_REGULAR;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return FatalCrashTelemetry::SESSION_TYPE_CHILD;
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return FatalCrashTelemetry::SESSION_TYPE_GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return FatalCrashTelemetry::SESSION_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_APP;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_ARC_KIOSK_APP;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:
       NOTREACHED_NORETURN();

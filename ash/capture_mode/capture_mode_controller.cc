@@ -686,15 +686,15 @@ bool CaptureModeController::CanShowUserNudge() const {
   // never be empty.
   DCHECK(user_type);
   switch (*user_type) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       // We only allow regular and child accounts to see the nudge.
       break;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return false;
   }
 

@@ -54,9 +54,10 @@ void LoginAsh::LaunchManagedGuestSession(
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   for (const user_manager::User* user : user_manager->GetUsers()) {
-    if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
       continue;
-    ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+    }
+    ash::UserContext context(user_manager::UserType::kPublicAccount,
                              user->GetAccountId());
     if (password) {
       context.SetKey(ash::Key(*password));
@@ -107,7 +108,7 @@ void LoginAsh::LockManagedGuestSession(
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
   std::optional<std::string> error =
-      LockSession(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+      LockSession(user_manager::UserType::kPublicAccount);
   // Error is std::nullopt in case of no error.
   std::move(callback).Run(error);
 }
@@ -117,7 +118,7 @@ void LoginAsh::UnlockManagedGuestSession(const std::string& password,
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
   std::optional<std::string> error =
-      CanUnlockSession(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+      CanUnlockSession(user_manager::UserType::kPublicAccount);
   if (error) {
     std::move(callback).Run(error);
     return;
@@ -159,7 +160,7 @@ void LoginAsh::LaunchSamlUserSession(const std::string& email,
     return;
   }
 
-  ash::UserContext context(user_manager::USER_TYPE_REGULAR,
+  ash::UserContext context(user_manager::UserType::kRegular,
                            AccountId::FromUserEmailGaiaId(email, gaia_id));
   ash::Key key(password);
   key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
@@ -207,7 +208,7 @@ void LoginAsh::UnlockSharedSession(const std::string& password,
       user_manager::UserManager::Get();
   const user_manager::User* active_user = user_manager->GetActiveUser();
   if (!active_user ||
-      active_user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+      active_user->GetType() != user_manager::UserType::kPublicAccount ||
       !user_manager->CanCurrentUserLock()) {
     std::move(callback).Run(extensions::login_api_errors::kNoUnlockableSession);
     return;

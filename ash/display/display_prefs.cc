@@ -195,10 +195,10 @@ bool UserCanSaveDisplayPreference() {
     return false;
   }
 
-  return *user_type == user_manager::USER_TYPE_REGULAR ||
-         *user_type == user_manager::USER_TYPE_CHILD ||
-         *user_type == user_manager::USER_TYPE_KIOSK_APP ||
-         (*user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
+  return *user_type == user_manager::UserType::kRegular ||
+         *user_type == user_manager::UserType::kChild ||
+         *user_type == user_manager::UserType::kKioskApp ||
+         (*user_type == user_manager::UserType::kPublicAccount &&
           Shell::Get()->local_state()->GetBoolean(
               prefs::kAllowMGSToStoreDisplayProperties));
 }

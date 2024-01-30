@@ -147,19 +147,19 @@ std::string GetPrimaryAccountTypeString() {
     return "none";
 
   switch (primary_user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return "regular";
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return "guest";
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return "public_account";
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return "kiosk_app";
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return "child";
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return "arc_kiosk_app";
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return "web_kiosk_app";
   }
   return std::string();

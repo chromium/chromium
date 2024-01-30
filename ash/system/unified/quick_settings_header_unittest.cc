@@ -273,7 +273,7 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   TestSessionControllerClient* client = GetSessionControllerClient();
   client->Reset();
-  client->AddUserSession("child@test.com", user_manager::USER_TYPE_CHILD);
+  client->AddUserSession("child@test.com", user_manager::UserType::kChild);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";

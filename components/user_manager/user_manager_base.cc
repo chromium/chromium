@@ -1162,7 +1162,7 @@ bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
 
   // Managed Guest Sessions can be lockable if launched via the chrome.login
   // extension API.
-  if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT && prefs &&
+  if (user->GetType() == user_manager::UserType::kPublicAccount && prefs &&
       prefs->GetBoolean(
           ash::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
     user->set_can_lock(true);

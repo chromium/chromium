@@ -169,7 +169,7 @@ void LoginManagerMixin::SetUpLocalState() {
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.UpdateId(user.account_id);
 
-    if (user.user_type == user_manager::USER_TYPE_CHILD) {
+    if (user.user_type == user_manager::UserType::kChild) {
       known_user.SetProfileRequiresPolicy(
           user.account_id,
           user_manager::ProfileRequiresPolicy::kPolicyRequired);
@@ -274,7 +274,7 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   TestUserInfo test_child_user_(
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
-      test::kDefaultAuthSetup, user_manager::USER_TYPE_CHILD);
+      test::kDefaultAuthSetup, user_manager::UserType::kChild);
   UserContext user_context = CreateDefaultUserContext(test_child_user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   ASSERT_TRUE(fake_gaia_mixin_) << "Pass FakeGaiaMixin into constructor";

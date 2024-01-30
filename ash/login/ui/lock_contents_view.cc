@@ -150,7 +150,7 @@ keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
 }
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
-  return user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  return user.basic_user_info.type == user_manager::UserType::kPublicAccount;
 }
 
 //

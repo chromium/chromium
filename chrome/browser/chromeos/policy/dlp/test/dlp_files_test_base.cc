@@ -26,7 +26,7 @@ void DlpFilesTestBase::SetUp() {
   user_manager::User* user =
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id,
-          /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR, profile_);
+          /*is_affiliated=*/false, user_manager::UserType::kRegular, profile_);
   user_manager->UserLoggedIn(account_id, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);

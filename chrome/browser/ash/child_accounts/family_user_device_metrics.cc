@@ -95,9 +95,9 @@ void FamilyUserDeviceMetrics::OnUserSessionStarted(bool is_primary_user) {
       user_manager_->GetPrimaryUser()->GetType();
 
   NewUserAdded new_user_type = NewUserAdded::kOtherUserAdded;
-  if (type == user_manager::USER_TYPE_CHILD) {
+  if (type == user_manager::UserType::kChild) {
     new_user_type = NewUserAdded::kFamilyLinkUserAdded;
-  } else if (type == user_manager::USER_TYPE_REGULAR) {
+  } else if (type == user_manager::UserType::kRegular) {
     new_user_type = NewUserAdded::kRegularUserAdded;
   }
 

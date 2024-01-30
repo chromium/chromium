@@ -400,8 +400,7 @@ class OAuth2Test : public OobeBaseTest {
       return false;
     }
 
-    UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                             account_id);
+    UserContext user_context(user_manager::UserType::kRegular, account_id);
     user_context.SetKey(Key(password));
     controller->Login(user_context, SigninSpecifics());
     test::WaitForPrimaryUserSessionStart();

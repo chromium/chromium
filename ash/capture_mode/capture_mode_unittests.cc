@@ -6508,13 +6508,13 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
     user_manager::UserType user_type;
     bool can_see_nudge;
   } kUserTypeTestCases[] = {
-      {"regular user", user_manager::USER_TYPE_REGULAR, true},
-      {"child", user_manager::USER_TYPE_CHILD, true},
-      {"guest", user_manager::USER_TYPE_GUEST, false},
-      {"public account", user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-      {"kiosk app", user_manager::USER_TYPE_KIOSK_APP, false},
-      {"arc kiosk app", user_manager::USER_TYPE_ARC_KIOSK_APP, false},
-      {"web kiosk app", user_manager::USER_TYPE_WEB_KIOSK_APP, false},
+      {"regular user", user_manager::UserType::kRegular, true},
+      {"child", user_manager::UserType::kChild, true},
+      {"guest", user_manager::UserType::kGuest, false},
+      {"public account", user_manager::UserType::kPublicAccount, false},
+      {"kiosk app", user_manager::UserType::kKioskApp, false},
+      {"arc kiosk app", user_manager::UserType::kArcKioskApp, false},
+      {"web kiosk app", user_manager::UserType::kWebKioskApp, false},
   };
 
   for (const auto& test_case : kUserTypeTestCases) {

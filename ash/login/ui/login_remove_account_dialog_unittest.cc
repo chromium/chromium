@@ -94,7 +94,7 @@ TEST_F(LoginRemoveAccountDialogTest, LongUserNameAndEmailLaidOutCorrectly) {
       "NedHasAReallyLongName StarkHasAReallyLongName";
   login_user_info.basic_user_info.display_email =
       "reallyreallyextralonggaianame@gmail.com";
-  login_user_info.basic_user_info.type = user_manager::USER_TYPE_REGULAR;
+  login_user_info.basic_user_info.type = user_manager::UserType::kRegular;
   login_user_info.is_device_owner = false;
   login_user_info.can_remove = true;
   auto* bubble = new LoginRemoveAccountDialog(

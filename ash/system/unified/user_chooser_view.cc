@@ -148,7 +148,7 @@ views::View* CreateUserAvatarView(int user_index) {
       Shell::Get()->session_controller()->GetUserSession(user_index);
   DCHECK(user_session);
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
+  if (user_session->user_info.type == user_manager::UserType::kGuest) {
     // In guest mode, the user avatar is just a disabled button pod.
     auto* image_view = new IconButton(
         views::Button::PressedCallback(), IconButton::Type::kMedium,
@@ -170,10 +170,11 @@ std::u16string GetUserItemAccessibleString(int user_index) {
       Shell::Get()->session_controller()->GetUserSession(user_index);
   DCHECK(user_session);
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST)
+  if (user_session->user_info.type == user_manager::UserType::kGuest) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+  }
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (user_session->user_info.type == user_manager::UserType::kPublicAccount) {
     std::string domain_manager = Shell::Get()
                                      ->system_tray_model()
                                      ->enterprise_domain()

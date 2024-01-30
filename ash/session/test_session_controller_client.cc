@@ -157,8 +157,8 @@ void TestSessionControllerClient::AddUserSession(
     bool is_account_managed) {
   // Set is_ephemeral in user_info to true if the user type is guest or public
   // account.
-  bool is_ephemeral = user_type == user_manager::USER_TYPE_GUEST ||
-                      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
+                      user_type == user_manager::UserType::kPublicAccount;
 
   UserSession session;
   session.session_id = ++fake_session_id_;

@@ -107,17 +107,17 @@ class LoginLogoutTestHelper {
   std::unique_ptr<TestingProfile> CreateProfileByType(
       user_manager::UserType user_type) {
     switch (user_type) {
-      case user_manager::USER_TYPE_REGULAR:
+      case user_manager::UserType::kRegular:
         return CreateRegularUserProfile();
-      case user_manager::USER_TYPE_GUEST:
+      case user_manager::UserType::kGuest:
         return CreateGuestProfile();
-      case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      case user_manager::UserType::kPublicAccount:
         return CreatePublicAccountProfile();
-      case user_manager::USER_TYPE_KIOSK_APP:
+      case user_manager::UserType::kKioskApp:
         return CreateKioskAppProfile();
-      case user_manager::USER_TYPE_ARC_KIOSK_APP:
+      case user_manager::UserType::kArcKioskApp:
         return CreateArcKioskAppProfile();
-      case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
       default:
         NOTREACHED();
@@ -222,8 +222,8 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
 TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   const auto test_case = GetParam();
   const bool is_guest_session =
-      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      test_case.user_type == user_manager::USER_TYPE_GUEST;
+      test_case.user_type == user_manager::UserType::kPublicAccount ||
+      test_case.user_type == user_manager::UserType::kGuest;
 
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -282,8 +282,8 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
 TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   const auto test_case = GetParam();
   const bool is_guest_session =
-      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      test_case.user_type == user_manager::USER_TYPE_GUEST;
+      test_case.user_type == user_manager::UserType::kPublicAccount ||
+      test_case.user_type == user_manager::UserType::kGuest;
 
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -332,17 +332,17 @@ TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
 INSTANTIATE_TEST_SUITE_P(All,
                          LoginLogoutReporterTest,
                          ::testing::ValuesIn<LoginLogoutReporterTestCase>(
-                             {{user_manager::USER_TYPE_REGULAR,
+                             {{user_manager::UserType::kRegular,
                                LoginLogoutSessionType::REGULAR_USER_SESSION},
-                              {user_manager::USER_TYPE_GUEST,
+                              {user_manager::UserType::kGuest,
                                LoginLogoutSessionType::GUEST_SESSION},
-                              {user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                              {user_manager::UserType::kPublicAccount,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
-                              {user_manager::USER_TYPE_KIOSK_APP,
+                              {user_manager::UserType::kKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::USER_TYPE_ARC_KIOSK_APP,
+                              {user_manager::UserType::kArcKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::USER_TYPE_WEB_KIOSK_APP,
+                              {user_manager::UserType::kWebKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {

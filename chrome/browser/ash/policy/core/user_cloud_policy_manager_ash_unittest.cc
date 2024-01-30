@@ -326,7 +326,7 @@ class UserCloudPolicyManagerAshTest
     ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
               job_type);
     bool is_oauth_token_passed =
-        user_type_ == user_manager::UserType::USER_TYPE_CHILD &&
+        user_type_ == user_manager::UserType::kChild &&
         base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
     EXPECT_EQ(is_oauth_token_passed ? kOAuthToken : "",
               params[dm_protocol::kParamOAuthToken]);
@@ -386,7 +386,7 @@ class UserCloudPolicyManagerAshTest
   raw_ptr<TestingProfile> signin_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  user_manager::UserType user_type_ = user_manager::UserType::USER_TYPE_REGULAR;
+  user_manager::UserType user_type_ = user_manager::UserType::kRegular;
 
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -1165,7 +1165,7 @@ class UserCloudPolicyManagerAshChildTest
 
  protected:
   UserCloudPolicyManagerAshChildTest() {
-    user_type_ = user_manager::UserType::USER_TYPE_CHILD;
+    user_type_ = user_manager::UserType::kChild;
   }
   ~UserCloudPolicyManagerAshChildTest() override = default;
 

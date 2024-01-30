@@ -53,19 +53,19 @@ bool IsAssistantAllowedForUserType(const Profile* profile) {
 AssistantAllowedState GetErrorForUserType(const Profile* profile) {
   DCHECK(!IsAssistantAllowedForUserType(profile));
   switch (GetUser(profile)->GetType()) {
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION;
 
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
 
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       // This method should only be called for disallowed user types.
       NOTREACHED();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;

@@ -328,8 +328,9 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
     return SyncScreenBehavior::kSkipNonGaiaAccount;
 
   // Skip for public user.
-  if (user_->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (user_->GetType() == user_manager::UserType::kPublicAccount) {
     return SyncScreenBehavior::kSkipPublicAccount;
+  }
 
   // Skip for non-branded (e.g. developer) builds. Check this after the account
   // type checks so we don't try to enable sync in browser_tests for those
@@ -341,7 +342,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
       user_manager::UserManager::Get();
   // Skip for non-regular ephemeral users.
   if (user_manager->IsUserNonCryptohomeDataEphemeral(user_->GetAccountId()) &&
-      (user_->GetType() != user_manager::USER_TYPE_REGULAR)) {
+      (user_->GetType() != user_manager::UserType::kRegular)) {
     return SyncScreenBehavior::kSkipAndEnableEmphemeralUser;
   }
 

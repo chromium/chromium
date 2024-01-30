@@ -66,8 +66,8 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || user->IsKioskType() ||
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      user->GetType() == user_manager::USER_TYPE_GUEST) {
+      user->GetType() == user_manager::UserType::kPublicAccount ||
+      user->GetType() == user_manager::UserType::kGuest) {
     return;
   }
 
@@ -89,8 +89,8 @@ void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user || user->IsKioskType() ||
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      user->GetType() == user_manager::USER_TYPE_GUEST) {
+      user->GetType() == user_manager::UserType::kPublicAccount ||
+      user->GetType() == user_manager::UserType::kGuest) {
     return;
   }
 

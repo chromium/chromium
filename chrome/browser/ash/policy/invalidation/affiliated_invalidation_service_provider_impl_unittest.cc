@@ -264,7 +264,7 @@ Profile* AffiliatedInvalidationServiceProviderImplTest::LogInAndReturnProfile(
   TestingProfile* profile = profile_manager_.CreateTestingProfile(user_id);
   AccountId account_id = AccountId::FromUserEmail(user_id);
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, is_affiliated, user_manager::USER_TYPE_REGULAR, profile);
+      account_id, is_affiliated, user_manager::UserType::kRegular, profile);
   session_manager_.NotifyUserProfileLoaded(account_id);
   return profile;
 }

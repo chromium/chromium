@@ -120,7 +120,7 @@ struct UserMetadata {
   bool enable_tap_to_unlock = false;
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
-  user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
+  user_manager::UserType type = user_manager::UserType::kRegular;
   SmartLockState smart_lock_state = SmartLockState::kInactive;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
   DebugAuthEnabledState auth_enable_state = DebugAuthEnabledState::kAuthEnabled;
@@ -148,7 +148,7 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   LoginUserInfo result = user;
   result.basic_user_info.type = type;
 
-  bool is_public_account = type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+  bool is_public_account = type == user_manager::UserType::kPublicAccount;
   // Set debug user names and email. Useful for the stub user, which does not
   // have a name  and email set.
   result.basic_user_info.display_name =
@@ -393,7 +393,7 @@ class LockDebugView::DebugDataDispatcherTransformer
     const AccountId account_id = debug_user->account_id;
 
     std::unique_ptr<ash::UserContext> user_context =
-        std::make_unique<ash::UserContext>(user_manager::USER_TYPE_REGULAR,
+        std::make_unique<ash::UserContext>(user_manager::UserType::kRegular,
                                            account_id);
 
     Shell::Get()->local_authentication_request_controller()->ShowWidget(
@@ -526,9 +526,9 @@ class LockDebugView::DebugDataDispatcherTransformer
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata& user = debug_users_[user_index];
     // Swap the type between regular and public account.
-    user.type = user.type == user_manager::USER_TYPE_REGULAR
-                    ? user_manager::USER_TYPE_PUBLIC_ACCOUNT
-                    : user_manager::USER_TYPE_REGULAR;
+    user.type = user.type == user_manager::UserType::kRegular
+                    ? user_manager::UserType::kPublicAccount
+                    : user_manager::UserType::kRegular;
 
     std::vector<LoginUserInfo> users = BuildUserList(debug_users_.size());
     // Update display name and email in debug users.

@@ -352,7 +352,7 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -400,7 +400,7 @@ TEST_P(AuthSessionAuthenticatorTest, RestoreDeviceKeyOnLockScreen) {
 
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -433,7 +433,7 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -468,7 +468,7 @@ TEST_P(AuthSessionAuthenticatorTest,
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -502,7 +502,7 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(
       userdataauth(),
@@ -544,7 +544,7 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   {
     testing::InSequence seq;
@@ -599,7 +599,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -635,7 +635,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -676,7 +676,7 @@ TEST_P(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
 TEST_P(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
   // Arrange.
   CreateAuthenticator();
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
+  UserContext user_context(user_manager::UserType::kPublicAccount, kAccountId);
   EXPECT_CALL(
       userdataauth(),
       StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
@@ -832,7 +832,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
@@ -865,7 +865,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(
       userdataauth(),
@@ -899,7 +899,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
+      user_manager::UserType::kPublicAccount, kAccountId);
   EXPECT_CALL(
       userdataauth(),
       StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
@@ -932,7 +932,7 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_REGULAR, kAccountId);
+      user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,

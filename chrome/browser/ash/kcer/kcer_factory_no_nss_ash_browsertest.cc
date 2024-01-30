@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, DefaultKcerIsPrimaryProfileKcer) {
   const user_manager::User* user =
       user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::USER_TYPE_REGULAR, primary_profile.get());
+          user_manager::UserType::kRegular, primary_profile.get());
   user_manager_->LoginUser(user->GetAccountId());
 
   base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(primary_profile.get());
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, KcerWithBothTokensCreated) {
   const user_manager::User* user =
       user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::USER_TYPE_REGULAR, testing_profile.get());
+          user_manager::UserType::kRegular, testing_profile.get());
   user_manager_->LoginUser(user->GetAccountId());
 
   base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(testing_profile.get());
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, KcerWithOneTokensCreated) {
   const user_manager::User* user =
       user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/false,
-          user_manager::USER_TYPE_REGULAR, testing_profile.get());
+          user_manager::UserType::kRegular, testing_profile.get());
   user_manager_->LoginUser(user->GetAccountId());
 
   base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(testing_profile.get());
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, OffTheRecordProfileIsRedirected) {
   const user_manager::User* user =
       user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::USER_TYPE_REGULAR, testing_profile.get());
+          user_manager::UserType::kRegular, testing_profile.get());
   user_manager_->LoginUser(user->GetAccountId());
 
   base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(testing_profile.get());

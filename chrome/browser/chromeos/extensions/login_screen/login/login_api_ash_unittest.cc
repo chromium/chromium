@@ -128,13 +128,13 @@ class ScopedTestingProfile {
 };
 
 ash::UserContext GetPublicUserContext(const std::string& email) {
-  return ash::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  return ash::UserContext(user_manager::UserType::kPublicAccount,
                           AccountId::FromUserEmail(email));
 }
 
 ash::UserContext GetRegularUserContext(const std::string& email,
                                        const std::string& gaia_id) {
-  return ash::UserContext(user_manager::USER_TYPE_REGULAR,
+  return ash::UserContext(user_manager::UserType::kRegular,
                           AccountId::FromUserEmailGaiaId(email, gaia_id));
 }
 

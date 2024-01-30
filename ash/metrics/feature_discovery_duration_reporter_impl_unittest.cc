@@ -69,10 +69,10 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
     GetSessionController()->ClearUserSessionsForTest();
     TestSessionControllerClient* session_client = GetSessionControllerClient();
     session_client->AddUserSession(kPrimaryUserEmail,
-                                   user_manager::USER_TYPE_REGULAR,
+                                   user_manager::UserType::kRegular,
                                    /*provide_pref_service=*/false);
     session_client->AddUserSession(kSecondaryUserEmail,
-                                   user_manager::USER_TYPE_REGULAR,
+                                   user_manager::UserType::kRegular,
                                    /*provide_pref_service=*/false);
 
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();

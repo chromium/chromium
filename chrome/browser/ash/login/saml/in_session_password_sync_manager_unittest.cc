@@ -96,10 +96,10 @@ void InSessionPasswordSyncManagerTest::SetUp() {
 
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id1_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
+      user_manager::UserType::kRegular, primary_profile_);
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id2_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, secondary_profile_);
+      user_manager::UserType::kRegular, secondary_profile_);
   fake_user_manager_->AddUser(saml_login_account_id2_);
   fake_user_manager_->LoginUser(saml_login_account_id1_);
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
@@ -205,7 +205,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
       InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id2_);
   manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
@@ -236,7 +236,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
       InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
   manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
@@ -262,7 +262,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateTokenNotInitialized) {
   EXPECT_EQ(
       InSessionReauthReason(),
       InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
   manager_->OnAuthSuccess(user_context);
   manager_->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kGetNoList);

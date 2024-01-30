@@ -473,17 +473,17 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
                              /*for_test=*/true);
     session_controller->AddUserSession(kUserEmail1,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(account_id_1,
                                            std::move(user_1_prefs));
     session_controller->AddUserSession(kUserEmail2,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(account_id_2,
                                            std::move(user_2_prefs));
     session_controller->AddUserSession(kUserEmail3,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
 
     session_controller->SwitchActiveUser(account_id_1);

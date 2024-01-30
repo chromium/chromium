@@ -96,7 +96,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   // discussion.
   void AddUserSession(
       const std::string& display_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool provide_pref_service = true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
@@ -106,7 +106,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   void AddUserSession(
       const AccountId& account_id,
       const std::string& display_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool provide_pref_service = true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),

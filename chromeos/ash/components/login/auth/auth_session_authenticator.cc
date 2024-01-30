@@ -88,8 +88,8 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
     bool ephemeral,
     std::unique_ptr<UserContext> context) {
   DCHECK(context);
-  DCHECK(context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         context->GetUserType() == user_manager::USER_TYPE_CHILD);
+  DCHECK(context->GetUserType() == user_manager::UserType::kRegular ||
+         context->GetUserType() == user_manager::UserType::kChild);
   // For now we don't support empty passwords:
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     bool has_knowledge_factor = !context->GetKey()->GetSecret().empty();
@@ -378,9 +378,9 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
     bool ephemeral,
     std::unique_ptr<UserContext> context) {
   DCHECK(context);
-  DCHECK(context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK(context->GetUserType() == user_manager::UserType::kRegular ||
+         context->GetUserType() == user_manager::UserType::kChild ||
+         context->GetUserType() == user_manager::UserType::kPublicAccount);
   PrepareForNewAttempt("AuthenticateToLogin", "Returning regular user");
 
   bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
@@ -402,9 +402,9 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
     bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   DCHECK(user_context);
-  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
-         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         user_context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK(user_context->GetUserType() == user_manager::UserType::kRegular ||
+         user_context->GetUserType() == user_manager::UserType::kChild ||
+         user_context->GetUserType() == user_manager::UserType::kPublicAccount);
   PrepareForNewAttempt("AuthenticateToUnlock", "Returning regular user");
 
   bool challenge_response_auth =
@@ -558,7 +558,7 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
   PrepareForNewAttempt("LoginOffTheRecord", "Guest login");
 
   std::unique_ptr<UserContext> context = std::make_unique<UserContext>(
-      user_manager::USER_TYPE_GUEST, user_manager::GuestAccountId());
+      user_manager::UserType::kGuest, user_manager::GuestAccountId());
 
   // Guest can not be be an owner.
   if (safe_mode_delegate_->IsSafeMode()) {
@@ -587,7 +587,7 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
 // have a password set by extension (so that it is possible to lock session).
 void AuthSessionAuthenticator::LoginAsPublicSession(
     const UserContext& user_context) {
-  DCHECK_EQ(user_context.GetUserType(), user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK_EQ(user_context.GetUserType(), user_manager::UserType::kPublicAccount);
 
   PrepareForNewAttempt("LoginAsPublicSession", "Managed guest session");
 
@@ -644,21 +644,21 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 void AuthSessionAuthenticator::LoginAsKioskAccount(
     const AccountId& app_account_id,
     bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_KIOSK_APP,
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskApp,
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsArcKioskAccount(
     const AccountId& app_account_id,
     bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_ARC_KIOSK_APP,
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kArcKioskApp,
                    /*force_dircrypto=*/true, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsWebKioskAccount(
     const AccountId& app_account_id,
     bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_WEB_KIOSK_APP,
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kWebKioskApp,
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 

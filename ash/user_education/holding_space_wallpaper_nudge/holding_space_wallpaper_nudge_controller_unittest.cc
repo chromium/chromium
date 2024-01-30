@@ -921,13 +921,13 @@ INSTANTIATE_TEST_SUITE_P(
                           std::nullopt),
         /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
-        ::testing::Values(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_CHILD,
-                          user_manager::UserType::USER_TYPE_GUEST,
-                          user_manager::UserType::USER_TYPE_KIOSK_APP,
-                          user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-                          user_manager::UserType::USER_TYPE_REGULAR,
-                          user_manager::UserType::USER_TYPE_WEB_KIOSK_APP)));
+        ::testing::Values(user_manager::UserType::kArcKioskApp,
+                          user_manager::UserType::kChild,
+                          user_manager::UserType::kGuest,
+                          user_manager::UserType::kKioskApp,
+                          user_manager::UserType::kPublicAccount,
+                          user_manager::UserType::kRegular,
+                          user_manager::UserType::kWebKioskApp)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -936,7 +936,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest,
   const bool expect_first_session_marked =
       !IsManagedUser() && IsNewUserFirstLoginLocally() &&
       IsNewUserFirstLoginCrossDevice().value_or(false) &&
-      GetUserType() == user_manager::USER_TYPE_REGULAR;
+      GetUserType() == user_manager::UserType::kRegular;
 
   const auto before = base::Time::Now();
 
@@ -972,7 +972,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
       ForceUserEligibility() ||
       (!IsManagedUser() && IsNewUserFirstLoginLocally() &&
        IsNewUserFirstLoginCrossDevice().value_or(false) &&
-       GetUserType() == user_manager::USER_TYPE_REGULAR);
+       GetUserType() == user_manager::UserType::kRegular);
 
   // Log in a user type based on parameterization.
   auto* session = GetSessionControllerClient();

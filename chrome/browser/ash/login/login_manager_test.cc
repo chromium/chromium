@@ -84,8 +84,7 @@ constexpr char LoginManagerTest::kLocalPassword[] = "local-password";
 
 UserContext LoginManagerTest::CreateUserContext(const AccountId& account_id,
                                                 const std::string& password) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                           account_id);
+  UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(Key(password));
   user_context.SetGaiaPassword(GaiaPassword(password));
   user_context.SetPasswordKey(Key(password));
@@ -100,8 +99,7 @@ UserContext LoginManagerTest::CreateUserContext(const AccountId& account_id,
 UserContext LoginManagerTest::CreateUserContextWithLocalPassword(
     const AccountId& account_id,
     const std::string& password) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                           account_id);
+  UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(Key(password));
   user_context.SetLocalPasswordInput(LocalPasswordInput(password));
   user_context.SetPasswordKey(Key(password));

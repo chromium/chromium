@@ -995,7 +995,7 @@ bool UserSessionManager::RespectLocalePreference(
           << " Selected '" << pref_locale << "'";
 
   Profile::AppLocaleChangedVia app_locale_changed_via =
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT
+      user->GetType() == user_manager::UserType::kPublicAccount
           ? Profile::APP_LOCALE_CHANGED_VIA_PUBLIC_SESSION_LOGIN
           : Profile::APP_LOCALE_CHANGED_VIA_LOGIN;
 
@@ -1227,9 +1227,9 @@ void UserSessionManager::OnUsersSignInConstraintsChanged() {
   const user_manager::UserList& logged_in_users =
       user_manager->GetLoggedInUsers();
   for (user_manager::User* user : logged_in_users) {
-    if (user->GetType() != user_manager::USER_TYPE_REGULAR &&
-        user->GetType() != user_manager::USER_TYPE_GUEST &&
-        user->GetType() != user_manager::USER_TYPE_CHILD) {
+    if (user->GetType() != user_manager::UserType::kRegular &&
+        user->GetType() != user_manager::UserType::kGuest &&
+        user->GetType() != user_manager::UserType::kChild) {
       continue;
     }
     if (!user_manager->IsUserAllowed(*user)) {
@@ -1260,7 +1260,7 @@ void UserSessionManager::CreateUserSession(const UserContext& user_context,
   StoreUserContextDataBeforeProfileIsCreated();
   session_manager::SessionManager::Get()->CreateSession(
       user_context_.GetAccountId(), user_context_.GetUserIDHash(),
-      user_context.GetUserType() == user_manager::USER_TYPE_CHILD);
+      user_context.GetUserType() == user_manager::UserType::kChild);
 }
 
 void UserSessionManager::PreStartSession(StartSessionType start_session_type) {
@@ -1432,7 +1432,7 @@ void UserSessionManager::InitProfilePreferences(
   DVLOG(1) << "Initializing profile preferences";
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP &&
+  if (user->GetType() == user_manager::UserType::kKioskApp &&
       profile->IsNewProfile()) {
     ChromeUserManager::Get()->SetIsCurrentUserNew(true);
   }
@@ -1608,9 +1608,9 @@ void UserSessionManager::InitProfilePreferences(
     }
 
     user = user_manager->FindUser(user_context.GetAccountId());
-    bool is_child = user->GetType() == user_manager::USER_TYPE_CHILD;
+    bool is_child = user->GetType() == user_manager::UserType::kChild;
     DCHECK(is_child ==
-           (user_context.GetUserType() == user_manager::USER_TYPE_CHILD));
+           (user_context.GetUserType() == user_manager::UserType::kChild));
 
     signin::Tribool is_under_advanced_protection = signin::Tribool::kUnknown;
     if (IsOnlineSignin(user_context)) {
@@ -1873,7 +1873,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
     VLOG(1) << "Clearing all secrets";
     user_context_.ClearSecrets();
-    if (user->GetType() == user_manager::USER_TYPE_CHILD) {
+    if (user->GetType() == user_manager::UserType::kChild) {
       if (base::FeatureList::IsEnabled(
               ::features::kDMServerOAuthForChildUser)) {
         VLOG(1) << "Waiting for child policy refresh before showing session UI";
@@ -2287,8 +2287,7 @@ void UserSessionManager::RestorePendingUserSessions() {
         user_manager::UserManager::Get()->FindUser(account_id);
     UserContext user_context =
         user ? UserContext(*user)
-             : UserContext(user_manager::UserType::USER_TYPE_REGULAR,
-                           account_id);
+             : UserContext(user_manager::UserType::kRegular, account_id);
     user_context.SetUserIDHash(user_id_hash);
     user_context.SetIsUsingOAuth(false);
 

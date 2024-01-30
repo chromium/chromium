@@ -450,7 +450,7 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   }
 
   LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-      UserContext(user_manager::USER_TYPE_GUEST,
+      UserContext(user_manager::UserType::kGuest,
                   user_manager::GuestAccountId()),
       SigninSpecifics());
 }

@@ -490,7 +490,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
-  DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK_NE(user.basic_user_info.type, user_manager::UserType::kPublicAccount);
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
     // TODO(b/276246832): We should avoid re-layouting during Authentication.
     LOG(WARNING)

@@ -43,13 +43,13 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   if (chromeos::IsManagedGuestSession()) {
     return mojom::SessionType::kPublicSession;
   }
-  if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
+  if (user->GetType() == user_manager::UserType::kWebKioskApp) {
     return mojom::SessionType::kWebKioskSession;
   }
-  if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
+  if (user->GetType() == user_manager::UserType::kKioskApp) {
     return mojom::SessionType::kAppKioskSession;
   }
-  if (user->GetType() == user_manager::USER_TYPE_CHILD) {
+  if (user->GetType() == user_manager::UserType::kChild) {
     return mojom::SessionType::kChildSession;
   }
   return mojom::SessionType::kRegularSession;

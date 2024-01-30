@@ -20,7 +20,7 @@ UserContext::UserContext(const UserContext& other) = default;
 
 UserContext::UserContext(const user_manager::User& user)
     : account_id_(user.GetAccountId()), user_type_(user.GetType()) {
-  if (user_type_ == user_manager::USER_TYPE_REGULAR) {
+  if (user_type_ == user_manager::UserType::kRegular) {
     account_id_.SetUserEmail(
         user_manager::CanonicalizeUserID(account_id_.GetUserEmail()));
   }
@@ -29,9 +29,10 @@ UserContext::UserContext(const user_manager::User& user)
 UserContext::UserContext(user_manager::UserType user_type,
                          const AccountId& account_id)
     : account_id_(account_id), user_type_(user_type) {
-  if (user_type_ == user_manager::USER_TYPE_REGULAR)
+  if (user_type_ == user_manager::UserType::kRegular) {
     account_id_.SetUserEmail(
         user_manager::CanonicalizeUserID(account_id_.GetUserEmail()));
+  }
 }
 
 UserContext::~UserContext() = default;

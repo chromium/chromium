@@ -1496,7 +1496,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
     user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, /*is_affiliated=*/false,
-            user_manager::USER_TYPE_REGULAR, profile_.get());
+            user_manager::UserType::kRegular, profile_.get());
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);

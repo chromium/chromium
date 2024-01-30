@@ -83,7 +83,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
   // TODO(crbug.com/1329256): Convert this to a DCHECK when tests are fixed.
   LOG(WARNING) << "No matching user. This should only happen in tests.";
   // Unit tests may not have a UserManager.
-  return user_manager::USER_TYPE_REGULAR;
+  return user_manager::UserType::kRegular;
 }
 
 // This has once been copied from
@@ -155,8 +155,9 @@ bool HasNonDeviceLocalAccounts(const user_manager::UserList& users) {
 // none.
 user_manager::User* FindPublicSession(const user_manager::UserList& users) {
   for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i]->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if (users[i]->GetType() == user_manager::UserType::kPublicAccount) {
       return users[i];
+    }
   }
   return nullptr;
 }

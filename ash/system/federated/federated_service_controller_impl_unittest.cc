@@ -71,7 +71,7 @@ TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
 }
 
 TEST_F(FederatedServiceControllerImplTestBase, ChildUserLogin) {
-  SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_CHILD);
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kChild);
   EXPECT_TRUE(controller_->IsServiceAvailable());
 }
 
@@ -80,12 +80,12 @@ TEST_F(FederatedServiceControllerImplTestBase, InvalidLoginStatusAndUserType) {
   EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();
 
-  SimulateKioskMode(user_manager::USER_TYPE_ARC_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kArcKioskApp);
 
   EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();
 
-  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
 
   EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();

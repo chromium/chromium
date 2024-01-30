@@ -130,7 +130,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // `is_new_profile` indicates whether the logged-in account is new.
   void SimulateUserLogin(
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool is_new_profile = false);
 
   // Stabilizes the variable UI components (such as the battery view).

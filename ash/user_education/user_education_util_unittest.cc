@@ -247,14 +247,14 @@ TEST_F(UserEducationUtilAshTest, GetUserType) {
 
   auto* session_controller = GetSessionControllerClient();
   session_controller->AddUserSession(guest_account_id.GetUserEmail(),
-                                     user_manager::USER_TYPE_GUEST);
+                                     user_manager::UserType::kGuest);
   session_controller->AddUserSession(regular_account_id.GetUserEmail(),
-                                     user_manager::USER_TYPE_REGULAR);
+                                     user_manager::UserType::kRegular);
 
   // Case: multiple user sessions added.
   EXPECT_FALSE(GetUserType(AccountId()));
-  EXPECT_EQ(GetUserType(guest_account_id), user_manager::USER_TYPE_GUEST);
-  EXPECT_EQ(GetUserType(regular_account_id), user_manager::USER_TYPE_REGULAR);
+  EXPECT_EQ(GetUserType(guest_account_id), user_manager::UserType::kGuest);
+  EXPECT_EQ(GetUserType(regular_account_id), user_manager::UserType::kRegular);
 }
 
 // Verifies that `IsPrimaryAccountActive()` is working as intended.

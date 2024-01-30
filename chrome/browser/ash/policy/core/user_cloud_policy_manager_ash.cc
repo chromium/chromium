@@ -94,7 +94,7 @@ void RegistrationResultUMA(RegistrationResult registration_result) {
 bool IsChildUser(const AccountId& account_id) {
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  return user && user->GetType() == user_manager::USER_TYPE_CHILD;
+  return user && user->GetType() == user_manager::UserType::kChild;
 }
 
 // This class is used to subscribe for notifications that the current profile is

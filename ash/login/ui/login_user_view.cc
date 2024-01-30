@@ -210,7 +210,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
 
     bool is_managed =
         user.user_account_manager ||
-        user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+        user.basic_user_info.type == user_manager::UserType::kPublicAccount;
     enterprise_icon_container_->SetVisible(is_managed);
   }
 
@@ -632,7 +632,7 @@ void LoginUserView::UpdateCurrentUserState() {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_POD_MANAGED_ACCESSIBLE_NAME, email);
   } else if (current_user_.basic_user_info.type ==
-             user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+             user_manager::UserType::kPublicAccount) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_POD_MANAGED_ACCESSIBLE_NAME,
         base::UTF8ToUTF16(current_user_.basic_user_info.display_name));

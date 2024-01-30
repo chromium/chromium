@@ -151,7 +151,7 @@ class AppAccessNotifierTest : public testing::Test,
     auto* primary_profile = testing_profile_manager_.CreateTestingProfile(
         account_id_primary_user_.GetUserEmail());
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id_primary_user_, false, user_manager::USER_TYPE_REGULAR,
+        account_id_primary_user_, false, user_manager::UserType::kRegular,
         primary_profile);
 
     registry_cache_primary_user_.SetAccountId(account_id_primary_user_);
@@ -171,7 +171,7 @@ class AppAccessNotifierTest : public testing::Test,
     auto* secondary_profile = testing_profile_manager_.CreateTestingProfile(
         account_id_secondary_user_.GetUserEmail());
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id_secondary_user_, false, user_manager::USER_TYPE_REGULAR,
+        account_id_secondary_user_, false, user_manager::UserType::kRegular,
         secondary_profile);
 
     registry_cache_secondary_user_.SetAccountId(account_id_secondary_user_);

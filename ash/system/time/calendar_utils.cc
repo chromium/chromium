@@ -259,8 +259,8 @@ ASH_EXPORT bool ShouldFetchEvents() {
 ASH_EXPORT bool IsActiveUser() {
   std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
-  return (user_type && (*user_type == user_manager::USER_TYPE_REGULAR ||
-                        *user_type == user_manager::USER_TYPE_CHILD)) &&
+  return (user_type && (*user_type == user_manager::UserType::kRegular ||
+                        *user_type == user_manager::UserType::kChild)) &&
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 

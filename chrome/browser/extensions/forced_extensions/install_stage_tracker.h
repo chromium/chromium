@@ -288,7 +288,7 @@ class InstallStageTracker : public KeyedService {
              bool is_new_user,
              bool is_user_present);
 
-    user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR;
+    user_manager::UserType user_type = user_manager::UserType::kRegular;
     const bool is_new_user = false;
     const bool is_user_present = false;
   };

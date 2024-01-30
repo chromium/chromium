@@ -348,7 +348,7 @@ void LoginScreenClientImpl::LoginAsGuest() {
   DCHECK(!ash::ScreenLocker::default_screen_locker());
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-        ash::UserContext(user_manager::USER_TYPE_GUEST,
+        ash::UserContext(user_manager::UserType::kGuest,
                          user_manager::GuestAccountId()),
         ash::SigninSpecifics());
   }

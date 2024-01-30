@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {
   // for managed guest sessions.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->GetActiveUser()->GetType() ==
-              user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+              user_manager::UserType::kPublicAccount);
   EXPECT_FALSE(user_manager->CanCurrentUserLock());
 }
 

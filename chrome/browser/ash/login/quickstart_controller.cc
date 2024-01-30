@@ -570,7 +570,7 @@ void QuickStartController::FinishAccountCreation() {
   // The user type is known to be regular. The unicorn flow transitions to the
   // Gaia screen and uses its own mechanism for account creation.
   login::BuildUserContextForGaiaSignIn(
-      /*user_type=*/user_manager::USER_TYPE_REGULAR,
+      /*user_type=*/user_manager::UserType::kRegular,
       /*account_id=*/account_id,
       /*using_saml=*/false,
       /*using_saml_api=*/false,

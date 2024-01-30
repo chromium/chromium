@@ -331,13 +331,13 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
   constexpr struct {
     user_manager::UserType user_type;
     bool is_enabled;
-  } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
-                    {user_manager::USER_TYPE_GUEST, true},
-                    {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-                    {user_manager::USER_TYPE_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_CHILD, true},
-                    {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_WEB_KIOSK_APP, false}};
+  } kTestCases[] = {{user_manager::UserType::kRegular, true},
+                    {user_manager::UserType::kGuest, true},
+                    {user_manager::UserType::kPublicAccount, false},
+                    {user_manager::UserType::kKioskApp, false},
+                    {user_manager::UserType::kChild, true},
+                    {user_manager::UserType::kArcKioskApp, false},
+                    {user_manager::UserType::kWebKioskApp, false}};
 
   UserSession session;
   session.session_id = 1u;

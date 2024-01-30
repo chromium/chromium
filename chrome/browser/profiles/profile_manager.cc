@@ -392,7 +392,7 @@ std::optional<bool> IsUserChild(Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user ? std::make_optional(user->GetType() ==
-                                   user_manager::USER_TYPE_CHILD)
+                                   user_manager::UserType::kChild)
               : std::nullopt;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==

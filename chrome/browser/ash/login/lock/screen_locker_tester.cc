@@ -122,8 +122,7 @@ void ScreenLockerTester::WaitForUnlock() {
 
 void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
                                            const std::string& password) {
-  UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
-                           account_id);
+  UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(Key(password));
 
   auto* locker = ScreenLocker::default_screen_locker();

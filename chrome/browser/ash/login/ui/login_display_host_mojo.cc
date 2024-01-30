@@ -791,7 +791,7 @@ void LoginDisplayHostMojo::HandleLaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, account_id);
+  UserContext context(user_manager::UserType::kPublicAccount, account_id);
   context.SetPublicSessionLocale(locale);
   context.SetPublicSessionInputMethod(input_method);
   existing_user_controller_->Login(context, SigninSpecifics());

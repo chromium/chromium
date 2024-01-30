@@ -555,7 +555,7 @@ void EncryptionMigrationScreen::OnRemoveCryptohome(
 }
 
 bool EncryptionMigrationScreen::IsArcKiosk() const {
-  return user_context_->GetUserType() == user_manager::USER_TYPE_ARC_KIOSK_APP;
+  return user_context_->GetUserType() == user_manager::UserType::kArcKioskApp;
 }
 
 void EncryptionMigrationScreen::DircryptoMigrationProgress(

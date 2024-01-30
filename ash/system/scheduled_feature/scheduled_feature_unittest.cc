@@ -316,7 +316,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
                              /*for_test=*/true);
     auto* const session_controller_client = GetSessionControllerClient();
     session_controller_client->AddUserSession(user_email,
-                                              user_manager::USER_TYPE_REGULAR,
+                                              user_manager::UserType::kRegular,
                                               /*provide_pref_service=*/false);
     session_controller_client->SetUserPrefService(
         AccountId::FromUserEmail(user_email), std::move(prefs));

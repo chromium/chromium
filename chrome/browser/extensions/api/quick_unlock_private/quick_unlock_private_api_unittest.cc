@@ -615,7 +615,7 @@ class QuickUnlockPrivateUnitTest
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
     auto user_context = std::make_unique<ash::UserContext>(
-        user_manager::USER_TYPE_REGULAR, account_id);
+        user_manager::UserType::kRegular, account_id);
     user_context->SetIsUsingPin(true);
 
     base::test::TestFuture<std::unique_ptr<ash::UserContext>,

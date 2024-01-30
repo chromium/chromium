@@ -3193,12 +3193,12 @@ class MultiUserWindowCycleControllerTest
     RegisterUserProfilePrefs(user_2_prefs_->registry(), /*country=*/"",
                              /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser1AccountId(),
                                            std::move(user_1_prefs));
     session_controller->AddUserSession(kUser2Email,
-                                       user_manager::USER_TYPE_REGULAR,
+                                       user_manager::UserType::kRegular,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser2AccountId(),
                                            std::move(user_2_prefs));

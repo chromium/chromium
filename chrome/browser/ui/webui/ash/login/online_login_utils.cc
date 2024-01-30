@@ -135,8 +135,8 @@ user_manager::UserType GetUsertypeFromServicesString(
     }
   }
 
-  return is_child ? user_manager::USER_TYPE_CHILD
-                  : user_manager::USER_TYPE_REGULAR;
+  return is_child ? user_manager::UserType::kChild
+                  : user_manager::UserType::kRegular;
 }
 
 ChallengeResponseKeyOrError ExtractClientCertificates(

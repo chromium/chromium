@@ -58,11 +58,11 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
 bool IsUserAllowed(const user_manager::User& user,
                    bool is_guest_allowed,
                    bool is_user_allowlisted) {
-  DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
-         user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_CHILD);
+  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
+         user.GetType() == user_manager::UserType::kGuest ||
+         user.GetType() == user_manager::UserType::kChild);
 
-  if (user.GetType() == user_manager::USER_TYPE_GUEST && !is_guest_allowed) {
+  if (user.GetType() == user_manager::UserType::kGuest && !is_guest_allowed) {
     return false;
   }
   if (user.HasGaiaAccount() && !is_user_allowlisted) {

@@ -900,7 +900,7 @@ class ChromeContentSettingsPolicyTrustAnchor
     user_manager::User* user =
         fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,
-            user_manager::USER_TYPE_REGULAR, &profile_);
+            user_manager::UserType::kRegular, &profile_);
     fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     false /* browser_restart */,
                                     false /* is_child */);

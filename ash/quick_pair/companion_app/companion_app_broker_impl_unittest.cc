@@ -122,7 +122,7 @@ TEST_F(CompanionAppBrokerImplUnitTest,
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, false);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);
@@ -145,7 +145,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotification_Guest) {
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, true);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);
@@ -168,7 +168,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionApp_Installed) {
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, true);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);
@@ -191,7 +191,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionApp_NoPlayStoreLink) {
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, false);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);
@@ -214,7 +214,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotification_NoAppInfo) {
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, false);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);
@@ -237,7 +237,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowInstallCompanionApp_PlayStoreLink) {
 
   SetIdentityManager(identity_manager_);
   SetCompanionAppInstalled(kCompanionAppId, false);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   EXPECT_FALSE(install_companion_app_notification_shown_);
   EXPECT_FALSE(launch_companion_app_notification_shown_);

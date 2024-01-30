@@ -886,7 +886,7 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
 TEST_F(TabletModeMultitaskMenuTest, NotShownInKioskMode) {
   // Enter kiosk mode and try swiping down. The multitask menu and cue should
   // not show.
-  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
   auto window = CreateAppWindow(gfx::Rect(800, 600));
   EXPECT_FALSE(
       GetMultitaskMenuController()->multitask_cue_controller()->cue_layer());

@@ -58,8 +58,9 @@ void ChromeUserSelectionScreen::Init(const user_manager::UserList& users) {
   // Retrieve the current policy for all users.
   for (user_manager::UserList::const_iterator it = users.begin();
        it != users.end(); ++it) {
-    if ((*it)->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if ((*it)->GetType() == user_manager::UserType::kPublicAccount) {
       OnPolicyUpdated((*it)->GetAccountId().GetUserEmail());
+    }
   }
 }
 
@@ -157,8 +158,9 @@ void ChromeUserSelectionScreen::SetPublicSessionDisplayName(
     const AccountId& account_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
     return;
+  }
 
   view_->SetPublicSessionDisplayName(account_id,
                                      base::UTF16ToUTF8(user->GetDisplayName()));

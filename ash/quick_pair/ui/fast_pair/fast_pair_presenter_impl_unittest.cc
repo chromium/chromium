@@ -264,7 +264,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -290,7 +290,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -315,7 +315,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -341,7 +341,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -367,7 +367,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -392,7 +392,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -412,7 +412,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Child) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_CHILD);
+  Login(user_manager::UserType::kChild);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -432,7 +432,7 @@ TEST_F(FastPairPresenterImplTest, RemoveNotifications) {
       /*disabled_features=*/{features::kFastPairSavedDevices,
                              features::kFastPairSavedDevicesStrictOptIn});
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -456,7 +456,7 @@ TEST_F(FastPairPresenterImplTest, ExtendNotification) {
       /*enabled_features=*/{features::kFastPairSavedDevices},
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -485,7 +485,7 @@ TEST_F(FastPairPresenterImplTest,
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -512,7 +512,7 @@ TEST_F(FastPairPresenterImplTest,
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -538,7 +538,7 @@ TEST_F(FastPairPresenterImplTest,
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -570,7 +570,7 @@ TEST_F(FastPairPresenterImplTest,
   initially_paired_device_ = base::MakeRefCounted<Device>(
       kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -602,7 +602,7 @@ TEST_F(FastPairPresenterImplTest,
   initially_paired_device_ = base::MakeRefCounted<Device>(
       kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -634,7 +634,7 @@ TEST_F(FastPairPresenterImplTest,
   initially_paired_device_ = base::MakeRefCounted<Device>(
       kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -664,7 +664,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(nullptr);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -690,7 +690,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(nullptr);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -715,7 +715,7 @@ TEST_F(FastPairPresenterImplTest,
 
   SetIdentityManager(nullptr);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
@@ -731,7 +731,7 @@ TEST_F(FastPairPresenterImplTest,
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_ConnectClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -756,7 +756,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_ConnectClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -781,7 +781,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_LearnMoreClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByUser) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -808,7 +808,7 @@ TEST_F(FastPairPresenterImplTest,
        ShowInitialDiscovery_User_DismissedByTimeout) {
   SetIdentityManager(identity_manager_);
   test_message_center_.CloseNotificationsWhenRemoved();
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -832,7 +832,7 @@ TEST_F(FastPairPresenterImplTest,
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByOS) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -861,7 +861,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -880,7 +880,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_KioskApp) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  Login(user_manager::UserType::kKioskApp);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -901,7 +901,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_KioskApp) {
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_ConnectClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -921,7 +921,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_ConnectClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -941,7 +941,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_LearnMoreClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByUser) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -963,7 +963,7 @@ TEST_F(FastPairPresenterImplTest,
        ShowInitialDiscovery_Guest_DismissedByTimeout) {
   SetIdentityManager(identity_manager_);
   test_message_center_.CloseNotificationsWhenRemoved();
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -982,7 +982,7 @@ TEST_F(FastPairPresenterImplTest,
 
 TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByOS) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       initially_paired_device_,
@@ -1006,7 +1006,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairing(initially_paired_device_);
   base::RunLoop().RunUntilIdle();
@@ -1022,7 +1022,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing_NoDeviceMetadata) {
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairing(initially_paired_device_);
   base::RunLoop().RunUntilIdle();
@@ -1037,7 +1037,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
       initially_paired_device_,
@@ -1057,7 +1057,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_NoDeviceMetadata) {
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
       initially_paired_device_,
@@ -1072,7 +1072,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_NoDeviceMetadata) {
 
 TEST_F(FastPairPresenterImplTest, ShowPairingFailed_SettingsClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
       initially_paired_device_,
@@ -1092,7 +1092,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_SettingsClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowPairingFailed_DismissedByOS) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
       initially_paired_device_,
@@ -1121,7 +1121,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppDisabled) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   EXPECT_DEATH_IF_SUPPORTED(
       {
@@ -1143,7 +1143,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppEnabled) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop show_notification_loop;
@@ -1165,7 +1165,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_SetupClicked) {
       ash::features::kFastPairPwaCompanion};
 
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop show_notification_loop;
@@ -1197,7 +1197,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_NoDeviceMetadata) {
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop show_notification_loop;
@@ -1219,7 +1219,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByUser) {
       ash::features::kFastPairPwaCompanion};
 
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop show_notification_loop;
@@ -1246,7 +1246,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByOS) {
       ash::features::kFastPairPwaCompanion};
 
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop show_notification_loop;
@@ -1274,7 +1274,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1293,7 +1293,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_SaveClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1319,7 +1319,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoDeviceMetadata) {
   SetIdentityManager(identity_manager_);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1339,7 +1339,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoIdentityManager) {
   SetIdentityManager(nullptr);
   repository_->ClearFakeMetadata(kValidModelId);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1354,7 +1354,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoIdentityManager) {
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1374,7 +1374,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_LearnMoreClicked) {
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByUser) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1396,7 +1396,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByUser) {
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByTimeout) {
   SetIdentityManager(identity_manager_);
   test_message_center_.CloseNotificationsWhenRemoved();
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1416,7 +1416,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByTimeout) {
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByOS) {
   SetIdentityManager(identity_manager_);
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
       initially_paired_device_,
@@ -1440,7 +1440,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_Connect) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       subsequently_paired_device_,
@@ -1464,7 +1464,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_LearnMore) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       subsequently_paired_device_,
@@ -1488,7 +1488,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByUser) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       subsequently_paired_device_,
@@ -1513,7 +1513,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByOS) {
 
   SetIdentityManager(identity_manager_);
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       subsequently_paired_device_,

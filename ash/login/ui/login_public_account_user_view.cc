@@ -65,7 +65,7 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
     : NonAccessibleView(kLoginPublicAccountUserViewClassName),
       on_tap_(callbacks.on_tap),
       on_public_account_tap_(callbacks.on_public_account_tapped) {
-  DCHECK_EQ(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK_EQ(user.basic_user_info.type, user_manager::UserType::kPublicAccount);
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_public_account_tapped);
 

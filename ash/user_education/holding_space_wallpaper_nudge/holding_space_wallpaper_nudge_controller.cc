@@ -545,7 +545,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
       // The nudge is supported for regular users only.
       if (const auto user_type = session_controller->GetUserType();
-          user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+          user_type != user_manager::UserType::kRegular) {
         eligibility = false;
       }
 

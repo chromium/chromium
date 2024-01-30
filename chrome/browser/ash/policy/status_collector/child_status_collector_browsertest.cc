@@ -367,7 +367,7 @@ class ChildStatusCollectorTest : public testing::Test {
   }
 
   void AddChildUser(const AccountId& account_id) {
-    AddUserWithTypeAndAffiliation(account_id, user_manager::USER_TYPE_CHILD,
+    AddUserWithTypeAndAffiliation(account_id, user_manager::UserType::kChild,
                                   false);
     GetFakeUserManager()->set_current_user_child(true);
   }

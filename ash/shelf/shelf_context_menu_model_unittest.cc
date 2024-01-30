@@ -99,8 +99,8 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
 INSTANTIATE_TEST_SUITE_P(,
                          ShelfContextMenuModelTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kChild));
 
 // Tests the default items in a shelf context menu.
 TEST_P(ShelfContextMenuModelTest, Basic) {
@@ -318,8 +318,8 @@ class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
 
 INSTANTIATE_TEST_SUITE_P(,
                          DeskButtonContextMenuModelTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kChild));
 
 // Tests that the default items are in the shelf context menu when it is created
 // outside of the shelf, and that the desk button menu item also appears when
