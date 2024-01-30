@@ -21,6 +21,7 @@ export class FakeAppPermissionHandler implements
     AppPermissionsHandlerInterface {
   private resolverMap_: Map<string, PromiseResolver<any>>;
   private appPermissionsObserverRemote_: AppPermissionsObserverRemoteType;
+  private lastOpenedBrowserPermissionSettingsType_: PermissionType;
   private lastUpdatedAppPermission_: Permission;
   private nativeSettingsOpenedCount_: number;
 
@@ -31,6 +32,8 @@ export class FakeAppPermissionHandler implements
     this.resolverMap_.set('getSystemAppsThatUseCamera', new PromiseResolver());
     this.resolverMap_.set(
         'getSystemAppsThatUseMicrophone', new PromiseResolver());
+    this.resolverMap_.set(
+        'openBrowserPermissionSettings', new PromiseResolver());
     this.resolverMap_.set('openNativeSettings', new PromiseResolver());
     this.resolverMap_.set('setPermission', new PromiseResolver());
     this.appPermissionsObserverRemote_ = new AppPermissionsObserverRemote();
@@ -39,6 +42,7 @@ export class FakeAppPermissionHandler implements
       isManaged: false,
       value: {},
     };
+    this.lastOpenedBrowserPermissionSettingsType_ = PermissionType.kUnknown;
     this.nativeSettingsOpenedCount_ = 0;
   }
 
@@ -60,6 +64,10 @@ export class FakeAppPermissionHandler implements
 
   getObserverRemote(): AppPermissionsObserverRemoteType {
     return this.appPermissionsObserverRemote_;
+  }
+
+  getLastOpenedBrowserPermissionSettingsType(): PermissionType {
+    return this.lastOpenedBrowserPermissionSettingsType_;
   }
 
   getLastUpdatedPermission(): Permission {
@@ -110,6 +118,13 @@ export class FakeAppPermissionHandler implements
     assertTrue(!!id);
     this.nativeSettingsOpenedCount_++;
     this.methodCalled('openNativeSettings');
+    return Promise.resolve({success: true});
+  }
+
+  openBrowserPermissionSettings(permissionType: PermissionType):
+      Promise<{success: boolean}> {
+    this.lastOpenedBrowserPermissionSettingsType_ = permissionType;
+    this.methodCalled('openBrowserPermissionSettings');
     return Promise.resolve({success: true});
   }
 }

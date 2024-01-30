@@ -268,7 +268,8 @@ export class SettingsPrivacyHubCameraSubpage extends
         PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED,
         NUMBER_OF_POSSIBLE_USER_ACTIONS);
 
-    window.open('chrome://settings/content/camera');
+    this.mojoInterfaceProvider_.openBrowserPermissionSettings(
+        PermissionType.kCamera);
   }
 
   private onCameraToggleClick_(): void {

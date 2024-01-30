@@ -224,7 +224,8 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
         PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED,
         NUMBER_OF_POSSIBLE_USER_ACTIONS);
 
-    window.open('chrome://settings/content/microphone');
+    this.mojoInterfaceProvider_.openBrowserPermissionSettings(
+        PermissionType.kMicrophone);
   }
 
   /**

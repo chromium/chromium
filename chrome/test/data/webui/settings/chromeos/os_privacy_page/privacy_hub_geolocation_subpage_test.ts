@@ -5,12 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -23,7 +22,6 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   let fakeHandler: FakeAppPermissionHandler;
   let metrics: FakeMetricsPrivate;
   let privacyHubGeolocationSubpage: SettingsPrivacyHubGeolocationSubpage;
-  let openWindowProxy: TestOpenWindowProxy;
 
   async function initPage() {
     privacyHubGeolocationSubpage =
@@ -49,8 +47,6 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     fakeHandler = new FakeAppPermissionHandler();
     setAppPermissionProviderForTesting(fakeHandler);
     metrics = createFakeMetricsPrivate();
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
   });
@@ -58,7 +54,6 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   teardown(() => {
     privacyHubGeolocationSubpage.remove();
     Router.getInstance().resetRouteForTesting();
-    openWindowProxy.reset();
   });
 
   function histogram(): string {
@@ -342,20 +337,20 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
       });
 
   test(
-      'Clicking the link under the Websites section opens Chrome Location ' +
-          'Content Settings',
+      'Clicking Chrome row opens Chrome browser location permission settings',
       async () => {
         await initPage();
-        // Geolocation is set to Allowed by default.
-        assertEquals(
-            GeolocationAccessLevel.ALLOWED, getGeolocationAccessLevel());
 
-        // Click on the external link and check the location content setting is
-        // opened.
-        getManagePermissionsInChromeRow()!.click();
         assertEquals(
-            'chrome://settings/content/location',
-            await openWindowProxy.whenCalled('openUrl'));
+            PermissionType.kUnknown,
+            fakeHandler.getLastOpenedBrowserPermissionSettingsType());
+
+        getManagePermissionsInChromeRow()!.click();
+        await fakeHandler.whenCalled('openBrowserPermissionSettings');
+
+        assertEquals(
+            PermissionType.kLocation,
+            fakeHandler.getLastOpenedBrowserPermissionSettingsType());
       });
 
   test('Websites section is hidden when location is not allowed', async () => {

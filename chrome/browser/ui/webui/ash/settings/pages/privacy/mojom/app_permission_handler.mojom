@@ -32,6 +32,10 @@ interface AppPermissionsHandler {
   // The function returns a list of system apps that actually use microphone.
   GetSystemAppsThatUseMicrophone() => (array<App> apps);
 
+  // Opens "Chrome Settings" URL for the given permission type.
+  OpenBrowserPermissionSettings(
+    app_management.mojom.PermissionType permission_type);
+
   // Opens native settings page for the app with id `app_id`.
   OpenNativeSettings(string app_id);
 
