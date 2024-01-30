@@ -511,6 +511,16 @@ void ViewTransition::ProcessCurrentState() {
             DocumentUpdateReason::kViewTransition);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
+
+        // Note: this happens after updating the lifecycle since the snapshot
+        // root can depend on layout when using a mobile viewport (i.e.
+        // horizontally overflowing element expanding the size of the frame
+        // view). See also: https://crbug.com/1454207.
+        if (style_tracker_->SnapshotRootDidChangeSize()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState);
+          break;
+        }
+
         style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kAnimateRequestPending);
         DCHECK(process_next_state);
