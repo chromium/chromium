@@ -1,7 +1,6 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -11,12 +10,20 @@ import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './lo
 /** @suppress {const|checkTypes} */
 export function setUp() {
   chrome.metricsPrivate = {
-    MetricTypeType:
-        {HISTOGRAM_LOG: 'histogram-log', HISTOGRAM_LINEAR: 'histogram-linear'},
+    MetricTypeType: {
+      // @ts-ignore: error TS2322: Type '"histogram-linear"' is not assignable
+      // to type 'MetricTypeType.HISTOGRAM_LOG'.
+      HISTOGRAM_LOG: 'histogram-log',
+      // @ts-ignore: error TS2322: Type '"histogram-linear"' is not assignable
+      // to type 'MetricTypeType.HISTOGRAM_LINEAR'.
+      HISTOGRAM_LINEAR: 'histogram-linear',
+    },
     recordPercentage: function() {},
     recordValue: function() {},
   };
 
+  // @ts-ignore: error TS2339: Property 'i18n' does not exist on type 'typeof
+  // chrome'.
   chrome.i18n = {
     getMessage: function() {},
   };
@@ -35,6 +42,8 @@ function loadAndCheckCacheUsed(client, url, cache) {
   let cacheUsed = true;
 
   /** @suppress {accessControls} */
+  // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
+  // type.
   ImageLoaderClient.sendMessage_ = function(message, callback) {
     cacheUsed = false;
     if (callback) {
@@ -54,7 +63,7 @@ function loadAndCheckCacheUsed(client, url, cache) {
   });
 }
 
-export async function testCache(done) {
+export async function testCache() {
   const client = new ImageLoaderClient();
 
   const cacheUsed =
@@ -63,10 +72,9 @@ export async function testCache(done) {
   const cacheUsed2 =
       await loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', true);
   assertTrue(!!cacheUsed2);
-  done();
 }
 
-export async function testNoCache(done) {
+export async function testNoCache() {
   const client = new ImageLoaderClient();
   const cacheUsed = await loadAndCheckCacheUsed(
       client, 'http://example.com/image.jpg', false);
@@ -74,14 +82,12 @@ export async function testNoCache(done) {
   const cacheUsed2 = await loadAndCheckCacheUsed(
       client, 'http://example.com/image.jpg', false);
   assertFalse(!!cacheUsed2);
-  done();
 }
 
-export async function testDataURLCache(done) {
+export async function testDataURLCache() {
   const client = new ImageLoaderClient();
   const cacheUsed = await loadAndCheckCacheUsed(client, 'data:URI', true);
   assertFalse(!!cacheUsed);
   const cacheUsed2 = await loadAndCheckCacheUsed(client, 'data:URI', true);
   assertFalse(!!cacheUsed2);
-  done();
 }

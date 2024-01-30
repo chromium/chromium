@@ -1,7 +1,6 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// @ts-nocheck
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -13,7 +12,7 @@ import {LoadImageRequest} from './load_image_request.js';
 /**
  * Casts a map of options as an incoming load request to test CopyParameters.
  *
- * @param {Image} source
+ * @param {HTMLImageElement} source
  * @param {Object} options
  * @return {!ImageLoaderUtil.CopyParameters} Calculated copy parameters.
  */
