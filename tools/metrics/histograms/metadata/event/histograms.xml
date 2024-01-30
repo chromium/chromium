@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
-    expires_after="2024-05-26">
+    expires_after="2024-07-28">
   <owner>mekk@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>

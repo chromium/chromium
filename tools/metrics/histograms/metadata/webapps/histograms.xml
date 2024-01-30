@@ -1485,7 +1485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
-    enum="BooleanSuccess" expires_after="2024-05-19">
+    enum="BooleanSuccess" expires_after="2024-07-28">
   <owner>qjw@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <summary>
@@ -1496,7 +1496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
-    expires_after="2024-05-19">
+    expires_after="2024-07-28">
   <owner>qjw@chromium.org</owner>
   <owner>clamclamyan@google.com</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>

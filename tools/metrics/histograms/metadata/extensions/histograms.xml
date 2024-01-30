@@ -120,7 +120,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2024-05-26">
+    enum="ExtensionLocation" expires_after="2024-07-28">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
