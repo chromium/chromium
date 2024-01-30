@@ -9,7 +9,9 @@ import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -59,7 +61,7 @@ public class ToolbarButtonInProductHelpController
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private final ScreenshotMonitor mScreenshotMonitor;
+    @Nullable private ScreenshotMonitor mScreenshotMonitor;
     private final View mMenuButtonAnchorView;
     private final View mSecurityIconAnchorView;
     private final AppMenuHandler mAppMenuHandler;
@@ -98,7 +100,9 @@ public class ToolbarButtonInProductHelpController
         mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, new Handler());
-        mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
+        if (!BuildInfo.getInstance().isAutomotive) {
+            mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
+        }
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mProfileSupplier = profileSupplier;
@@ -216,12 +220,12 @@ public class ToolbarButtonInProductHelpController
         // check when the help UI is accessed than it is to start/stop monitoring per tab change
         // (e.g. tab switch or in overview mode).
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return;
-        mScreenshotMonitor.startMonitoring();
+        if (mScreenshotMonitor != null) mScreenshotMonitor.startMonitoring();
     }
 
     @Override
     public void onPauseWithNative() {
-        mScreenshotMonitor.stopMonitoring();
+        if (mScreenshotMonitor != null) mScreenshotMonitor.stopMonitoring();
     }
 
     @Override
