@@ -860,6 +860,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 return;
                             }
                             mConsentTextTracker.recordConsent(
+                                    Profile.getLastUsedRegularProfile(),
                                     accountInfo.getId(),
                                     ConsentAuditorFeature.CHROME_SYNC,
                                     (TextView) confirmationView,
