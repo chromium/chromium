@@ -3471,7 +3471,7 @@
   },
   {
     "name": "enable-show-autofill-signatures",
-    "owners": [ "kolos@chromium.org" ],
+    "owners": [ "kazinova@google.com" ],
     // Used for debugging and QA by the autofill team for the indefinite future.
     "expiry_milestone": -1
   },
@@ -4462,8 +4462,8 @@
   },
   {
     "name": "forgot-password-form-support",
-    "owners": [ "kazinova@google.com", "kolos@chromium.org" ],
-    "expiry_milestone": 122
+    "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
+    "expiry_milestone": 123
   },
   {
     "name": "fractional-scroll-offsets",
@@ -8198,11 +8198,6 @@
     "name": "user-notes-side-panel",
     "owners": [ "corising@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
     "expiry_milestone": 118
-  },
-  {
-    "name": "username-first-flow-fallback-crowdsourcing",
-    "owners": [ "kolos@chromium.org", "shaikhitdin@google.com" ],
-    "expiry_milestone": 116
   },
   {
     "name": "username-first-flow-store-several-values",
