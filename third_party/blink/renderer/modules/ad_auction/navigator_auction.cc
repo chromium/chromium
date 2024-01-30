@@ -2201,13 +2201,17 @@ bool CopyAuctionNonceFromIdlToMojo(const ExecutionContext& execution_context,
                                    ExceptionState& exception_state,
                                    const AuctionAdConfig& input,
                                    mojom::blink::AuctionAdConfig& output) {
-  // We don't validate that the UUID parsed successfully here. If it failed,
-  // the returned Uuid is an empty string. When we look try to claim it from
-  // the AuctionNonceManager, we won't find an empty string, and will fail
-  // the auction or component auction then.
   if (input.hasAuctionNonce()) {
     output.auction_ad_config_non_shared_params->auction_nonce =
         base::Uuid::ParseLowercase(input.auctionNonce().Ascii());
+    if (!output.auction_ad_config_non_shared_params->auction_nonce
+             ->is_valid()) {
+      exception_state.ThrowTypeError(String::Format(
+          "auctionNonce for AuctionAdConfig with seller '%s' must "
+          "be a valid UUIDv4, but got, '%s'.",
+          input.seller().Utf8().c_str(), input.auctionNonce().Ascii().c_str()));
+      return false;
+    }
   }
   return true;
 }
