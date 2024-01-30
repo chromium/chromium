@@ -135,6 +135,7 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
 
     // Ensure the OS Settings system web app (SWA) is installed.
     InstallSystemApps();
+    SetupContextWidget();
 
     audio_handler_ = ash::CrasAudioHandler::Get();
   }
@@ -241,7 +242,6 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
 // devices exist.
 IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
-  SetupContextWidget();
 
   RunTestSequence(
       Log("Setup active node changed state observers"),
@@ -283,7 +283,6 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeActiveDevice) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeHeadphoneActiveEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeUsbMicActiveEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
-  SetupContextWidget();
 
   StateChange fake_headphone_active;
   fake_headphone_active.type = StateChange::Type::kExistsAndConditionTrue;
@@ -327,7 +326,6 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleMuteStatus) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalMicMutedEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalSpeakerMutedEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
-  SetupContextWidget();
 
   // Ensure input and output are not muted in cras.
   EXPECT_FALSE(audio_handler()->IsInputMuted());
@@ -384,7 +382,6 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleMuteStatus) {
 IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputVolume) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalSpeakerExists);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
-  SetupContextWidget();
 
   int initial_volume = audio_handler()->GetOutputVolumePercent();
 
@@ -424,6 +421,51 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputVolume) {
 
   // Expect that output volume has increased.
   EXPECT_GE(audio_handler()->GetOutputVolumePercent(), initial_volume);
+}
+
+// Verify changing input volume in UI is reflected in cras.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeInputVolume) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalMicExists);
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+
+  int initial_volume = audio_handler()->GetInputGainPercent();
+
+  StateChange fake_internal_mic_exists;
+  fake_internal_mic_exists.type = StateChange::Type::kExists;
+  fake_internal_mic_exists.event = kFakeInternalMicExists;
+  fake_internal_mic_exists.where =
+      CreateAudioPageDeepQueryForSelector(kInputSliderSelector);
+
+  RunTestSequence(
+      // Set fake internal mic as active input device.
+      DoSetActiveDevice(fake_internal_mic),
+      Log("Expected internal mic input device configured"),
+
+      Log("Open audio settings page and ensure it exists"),
+      LoadAudioSettingsPage(),
+
+      Log("Move input volume slider towards left"),
+      FocusElement(CreateAudioPageDeepQueryForSelector(kInputSliderSelector)),
+      SendAccelerator(
+          kOsSettingsElementId,
+          ui::Accelerator{ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE}),
+
+      WaitForStateChange(kOsSettingsElementId, fake_internal_mic_exists));
+
+  // Expect that input volume has decreased.
+  EXPECT_LE(audio_handler()->GetInputGainPercent(), initial_volume);
+  initial_volume = audio_handler()->GetInputGainPercent();
+
+  RunTestSequence(
+      Log("Move input volume slider towards right"),
+      SendAccelerator(
+          kOsSettingsElementId,
+          ui::Accelerator{ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE}),
+
+      WaitForStateChange(kOsSettingsElementId, fake_internal_mic_exists));
+
+  // Expect that input volume has increased.
+  EXPECT_GE(audio_handler()->GetInputGainPercent(), initial_volume);
 }
 
 }  // namespace
