@@ -71,18 +71,6 @@ BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
              "WinSboxHighRendererJobMemoryLimits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Emergency "off switch" for closing the KsecDD handle in cryptbase.dll just
-// before sandbox lockdown in renderers.
-BASE_FEATURE(kWinSboxRendererCloseKsecDD,
-             "WinSboxRendererCloseKsecDD",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, only warm up `bcryptprimitives!ProcessPrng` - if disabled warms
-// up `advapi32!RtlGenRandom`.
-BASE_FEATURE(kWinSboxWarmupProcessPrng,
-             "WinSboxWarmupProcessPrng",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, launch the network service within an LPAC sandbox. If disabled,
 // the network service will run inside an App Container.
 BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,

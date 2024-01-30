@@ -4,19 +4,9 @@
 
 #include "sandbox/policy/win/sandbox_warmup.h"
 
-#include "base/feature_list.h"
-#include "sandbox/policy/features.h"
-
 #include <windows.h>
 
-// Note: do not copy this to add new uses of RtlGenRandom.
-// Prefer: crypto::RandBytes, base::RandBytes or bcryptprimitives!ProcessPrng.
-// #define needed to link in RtlGenRandom(), a.k.a. SystemFunction036.  See the
-// "Community Additions" comment on MSDN here:
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694.aspx
-#define SystemFunction036 NTAPI SystemFunction036
-#include <NTSecAPI.h>
-#undef SystemFunction036
+#include "base/check_op.h"
 
 // Prototype for ProcessPrng.
 // See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
@@ -44,22 +34,11 @@ decltype(&ProcessPrng) GetProcessPrng() {
 
 void WarmupRandomnessInfrastructure() {
   BYTE data[1];
-
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxWarmupProcessPrng)) {
-    // TODO(crbug.com/74242) Call a warmup function exposed by boringssl.
-    static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
-    BOOL success = process_prng_fn(data, sizeof(data));
-    // ProcessPrng is documented to always return TRUE.
-    CHECK(success);
-  } else {
-    // This loads advapi!SystemFunction036 which is forwarded to
-    // cryptbase!SystemFunction036. This allows boringsll and Chrome to call
-    // RtlGenRandom from within the sandbox. This has the unfortunate side
-    // effect of opening a handle to \\Device\KsecDD which we will later close
-    // in processes that do not need this.
-    RtlGenRandom(data, sizeof(data));
-  }
+  // TODO(crbug.com/74242) Call a warmup function exposed by boringssl.
+  static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
+  BOOL success = process_prng_fn(data, sizeof(data));
+  // ProcessPrng is documented to always return TRUE.
+  CHECK(success);
 }
 
 }  // namespace sandbox::policy

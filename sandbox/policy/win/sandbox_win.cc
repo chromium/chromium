@@ -596,10 +596,8 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     return result;
 
   if (process_type == switches::kRendererProcess) {
-    if (base::FeatureList::IsEnabled(features::kWinSboxRendererCloseKsecDD)) {
-      // TODO(crbug.com/74242) Remove if we can avoid loading cryptbase.dll.
-      config->AddKernelObjectToClose(HandleToClose::kKsecDD);
-    }
+    // TODO(crbug.com/74242) Remove if we can reliably not load cryptbase.dll.
+    config->AddKernelObjectToClose(HandleToClose::kKsecDD);
     result = SandboxWin::AddWin32kLockdownPolicy(config);
     if (result != SBOX_ALL_OK) {
       return result;
