@@ -157,8 +157,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
 
   BlockNode node(this);
   LayoutCacheStatus size_cache_status = LayoutCacheStatus::kHit;
-  if (use_layout_cache_slot ||
-      !RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
+  if (use_layout_cache_slot) {
     size_cache_status = CalculateSizeBasedLayoutCacheStatus(
         node, break_token, *cached_layout_result, new_space,
         initial_fragment_geometry);

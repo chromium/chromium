@@ -135,9 +135,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   DeprecatedLayoutRect frame_rect;
   PhysicalSize previous_size;
   MinMaxSizes intrinsic_logical_widths;
-  LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> min_max_sizes_cache;
-  Member<void*> result;
   Member<void*> cache;
   HeapVector<Member<const LayoutResult>, 1> layout_results;
   wtf_size_t first_fragment_item_index_;
@@ -463,16 +461,13 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_child_);
 }
 
-LayoutBox::LayoutBox(ContainerNode* node)
-    : LayoutBoxModelObject(node),
-      intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
+LayoutBox::LayoutBox(ContainerNode* node) : LayoutBoxModelObject(node) {
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(min_max_sizes_cache_);
-  visitor->Trace(measure_result_);
   visitor->Trace(measure_cache_);
   visitor->Trace(layout_results_);
   visitor->Trace(overflow_);
@@ -513,8 +508,6 @@ void LayoutBox::DisassociatePhysicalFragments() {
     FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
   }
-  if (measure_result_)
-    measure_result_->GetPhysicalFragment().LayoutObjectWillBeDestroyed();
   if (measure_cache_) {
     measure_cache_->LayoutObjectWillBeDestroyed();
   }
@@ -2572,8 +2565,6 @@ bool LayoutBox::PhysicalFragmentList::Contains(
 }
 
 void LayoutBox::AddMeasureLayoutResult(const LayoutResult* result) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled());
-
   // Ensure the given result is valid for the measure cache.
   if (result->Status() != LayoutResult::kSuccess) {
     return;
@@ -2606,17 +2597,10 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
     DCHECK_EQ(index, 0u);
     // We don't early return here, when setting the "measure" result we also
     // set the "layout" result.
-    if (measure_result_) {
-      InvalidateItems(*measure_result_);
-    }
     if (measure_cache_) {
       measure_cache_->InvalidateItems();
     }
-    if (RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
-      AddMeasureLayoutResult(result);
-    } else {
-      measure_result_ = result;
-    }
+    AddMeasureLayoutResult(result);
     if (IsTableCell()) {
       To<LayoutTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
     }
@@ -2624,10 +2608,6 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
     // We have a "layout" result, and we may need to clear the old "measure"
     // result if we needed non-simplified layout.
     if (NeedsLayout() && !NeedsSimplifiedLayoutOnly()) {
-      if (measure_result_) {
-        InvalidateItems(*measure_result_);
-        measure_result_ = nullptr;
-      }
       if (measure_cache_) {
         measure_cache_->Clear();
       }
@@ -2639,10 +2619,6 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
   // children. It can still be used to query information about this box's
   // fragment from the measure pass, but children might be out of sync with the
   // latest version of the tree.
-  if (measure_result_ && measure_result_ != result) {
-    measure_result_->GetMutableForLayoutBoxCachedResults()
-        .SetFragmentChildrenInvalid();
-  }
   if (measure_cache_) {
     measure_cache_->SetFragmentChildrenInvalid(result);
   }
@@ -2850,7 +2826,7 @@ const LayoutResult* LayoutBox::GetCachedMeasureResult(
     const ConstraintSpace& space,
     absl::optional<FragmentGeometry>* fragment_geometry) const {
   NOT_DESTROYED();
-  if (!measure_result_ && !measure_cache_) {
+  if (!measure_cache_) {
     return nullptr;
   }
 
@@ -2868,13 +2844,10 @@ const LayoutResult* LayoutBox::GetCachedMeasureResult(
     }
   }
 
-  if (measure_cache_) {
-    DCHECK(!measure_result_);
-    return measure_cache_->Find(BlockNode(const_cast<LayoutBox*>(this)), space,
-                                fragment_geometry);
-  }
-
-  return measure_result_.Get();
+  return measure_cache_
+             ? measure_cache_->Find(BlockNode(const_cast<LayoutBox*>(this)),
+                                    space, fragment_geometry)
+             : nullptr;
 }
 
 const LayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
@@ -2883,10 +2856,7 @@ const LayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
 }
 
 const LayoutResult* LayoutBox::GetSingleCachedMeasureResultForTesting() const {
-  if (measure_cache_) {
-    return measure_cache_->GetLastForTesting();
-  }
-  return measure_result_.Get();
+  return measure_cache_ ? measure_cache_->GetLastForTesting() : nullptr;
 }
 
 const LayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {

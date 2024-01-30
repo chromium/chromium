@@ -2206,15 +2206,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutNewMeasureCache",
-      depends_on: ["LayoutNewMinMaxCache"],
-      status: "stable",
-    },
-    {
-      name: "LayoutNewMinMaxCache",
-      status: "stable",
-    },
-    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",

@@ -410,12 +410,7 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes{ComputeTotalColumnSize(SizingConstraint::kMinContent),
                     ComputeTotalColumnSize(SizingConstraint::kMaxContent)};
   sizes += BorderScrollbarPadding().InlineSum();
-
-  // TODO(crbug.com/1272533): This should be |depends_on_block_constraints|
-  // (rather than false). However we need more cache slots to handle the
-  // performance degradation we currently experience. See bug for more details.
-  return {sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
-                     depends_on_block_constraints};
+  return {sizes, depends_on_block_constraints};
 }
 
 MinMaxSizes GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
@@ -1593,15 +1588,10 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     // TODO(kschmi) : Add a cache slot parameter to
     //  `CreateConstraintSpaceForLayout` to avoid variables above.
     const auto space =
-        RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()
-            ? CreateConstraintSpace(
-                  LayoutResultCacheSlot::kMeasure, *subgridded_item,
-                  containing_grid_area_size,
-                  /* fixed_available_size */ kIndefiniteLogicalSize,
-                  std::move(subgrid_layout_subtree))
-            : CreateConstraintSpaceForLayout(*subgridded_item,
-                                             subgridded_item.ParentLayoutData(),
-                                             std::move(subgrid_layout_subtree));
+        CreateConstraintSpace(LayoutResultCacheSlot::kMeasure, *subgridded_item,
+                              containing_grid_area_size,
+                              /* fixed_available_size */ kIndefiniteLogicalSize,
+                              std::move(subgrid_layout_subtree));
 
     // Skip this item if we aren't able to resolve our inline size.
     const auto& item_style = grid_item.node.Style();

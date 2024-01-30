@@ -1161,27 +1161,19 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit initial_block_size) const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    if (RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled()) {
-      if (initial_block_size == kIndefiniteSize) {
-        if (IndefiniteIntrinsicLogicalWidthsDirty()) {
-          return absl::nullopt;
-        }
-        return MinMaxSizesResult(
-            intrinsic_logical_widths_,
-            IntrinsicLogicalWidthsDependsOnBlockConstraints());
+    if (initial_block_size == kIndefiniteSize) {
+      if (IndefiniteIntrinsicLogicalWidthsDirty()) {
+        return absl::nullopt;
       }
-      if (min_max_sizes_cache_) {
-        if (DefiniteIntrinsicLogicalWidthsDirty()) {
-          return absl::nullopt;
-        }
-        return min_max_sizes_cache_->Find(initial_block_size);
+      return MinMaxSizesResult(
+          intrinsic_logical_widths_,
+          IntrinsicLogicalWidthsDependsOnBlockConstraints());
+    }
+    if (min_max_sizes_cache_) {
+      if (DefiniteIntrinsicLogicalWidthsDirty()) {
+        return absl::nullopt;
       }
-    } else {
-      if (initial_block_size == intrinsic_logical_widths_initial_block_size_) {
-        return MinMaxSizesResult(
-            intrinsic_logical_widths_,
-            IntrinsicLogicalWidthsDependsOnBlockConstraints());
-      }
+      return min_max_sizes_cache_->Find(initial_block_size);
     }
     return absl::nullopt;
   }
@@ -1196,11 +1188,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     //  - If the initial block-size is indefinite.
     //  - If we don't have any children which depend on the initial block-size
     //    (it can change and we wouldn't give a different answer).
-    if (!RuntimeEnabledFeatures::LayoutNewMinMaxCacheEnabled() ||
-        initial_block_size == kIndefiniteSize ||
+    if (initial_block_size == kIndefiniteSize ||
         !child_depends_on_block_constraints) {
       intrinsic_logical_widths_ = sizes;
-      intrinsic_logical_widths_initial_block_size_ = initial_block_size;
       SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
           depends_on_block_constraints);
       SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
@@ -1478,10 +1468,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;
-  LayoutUnit intrinsic_logical_widths_initial_block_size_;
   Member<MinMaxSizesCache> min_max_sizes_cache_;
 
-  Member<const LayoutResult> measure_result_;
   Member<MeasureCache> measure_cache_;
   LayoutResultList layout_results_;
 
