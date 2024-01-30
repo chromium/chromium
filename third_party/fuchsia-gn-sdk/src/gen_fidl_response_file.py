@@ -42,8 +42,6 @@ def main(args_list=None):
     parser.add_argument(
         "--json", help="The path for the JSON file to generate, if any")
     parser.add_argument(
-        "--tables", help="The path for the tables file to generate, if any")
-    parser.add_argument(
         "--name", help="The name for the generated FIDL library, if any")
     parser.add_argument(
         "--sources", help="List of FIDL source files", nargs="*")
@@ -75,9 +73,6 @@ def main(args_list=None):
 
     if args.json:
         response_file.append("--json %s" % args.json)
-
-    if args.tables:
-        response_file.append("--tables %s" % args.tables)
 
     if args.name:
         response_file.append("--name %s" % args.name)
