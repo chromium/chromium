@@ -45,7 +45,7 @@ build_webui_tests("build") {
     "os_page_availability_test.ts",
     "test_about_page_browser_proxy_chromeos.js",
     "test_api.ts",
-    "test_device_name_browser_proxy.js",
+    "test_device_name_browser_proxy.ts",
     "test_extension_control_browser_proxy.ts",
     "test_lacros_extension_control_browser_proxy.ts",
     "test_os_lifetime_browser_proxy.ts",

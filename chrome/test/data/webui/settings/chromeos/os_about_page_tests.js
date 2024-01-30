@@ -1472,7 +1472,7 @@ suite('EditHostnameDialogTest', function() {
     dialog = document.createElement('edit-hostname-dialog');
     document.body.appendChild(dialog);
 
-    deviceNameBrowserProxy.setDeviceNameResult(
+    deviceNameBrowserProxy.setDeviceNameResultForTesting(
         SetDeviceNameResult.UPDATE_SUCCESSFUL);
     dialog.shadowRoot.querySelector('#deviceName').value = 'TestName';
     dialog.shadowRoot.querySelector('#done').click();

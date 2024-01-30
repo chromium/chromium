@@ -6,36 +6,30 @@ import {SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
+  private deviceName_ = '';
+  private deviceNameResult_: SetDeviceNameResult =
+      SetDeviceNameResult.UPDATE_SUCCESSFUL;
+
   constructor() {
     super([
       'notifyReadyForDeviceName',
       'attemptSetDeviceName',
     ]);
-
-    /** @private {string} */
-    this.deviceName_ = '';
-
-    /** @private {!SetDeviceNameResult} */
-    this.deviceNameResult_ = SetDeviceNameResult.UPDATE_SUCCESSFUL;
   }
 
-  /** @param {!SetDeviceNameResult} deviceNameResult */
-  setDeviceNameResult(deviceNameResult) {
+  setDeviceNameResultForTesting(deviceNameResult: SetDeviceNameResult): void {
     this.deviceNameResult_ = deviceNameResult;
   }
 
-  /** @return {string} */
-  getDeviceName() {
+  getDeviceName(): string {
     return this.deviceName_;
   }
 
-  /** @override */
-  notifyReadyForDeviceName() {
+  notifyReadyForDeviceName(): void {
     this.methodCalled('notifyReadyForDeviceName');
   }
 
-  /** @override */
-  attemptSetDeviceName(name) {
+  attemptSetDeviceName(name: string): Promise<SetDeviceNameResult> {
     if (this.deviceNameResult_ === SetDeviceNameResult.UPDATE_SUCCESSFUL) {
       this.deviceName_ = name;
     }
