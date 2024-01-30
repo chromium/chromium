@@ -303,12 +303,12 @@ class GSL_POINTER span {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
-  constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
+  constexpr span<T> first(size_t count) const noexcept {
     CHECK_LE(count, size());
     return {data(), count};
   }
 
-  constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
+  constexpr span<T> last(size_t count) const noexcept {
     CHECK_LE(count, size());
     return {data() + (size() - count), count};
   }
@@ -321,9 +321,8 @@ class GSL_POINTER span {
     return span<T, kExtent>(data() + Offset, kExtent);
   }
 
-  constexpr span<T, dynamic_extent> subspan(
-      size_t offset,
-      size_t count = dynamic_extent) const noexcept {
+  constexpr span<T> subspan(size_t offset,
+                            size_t count = dynamic_extent) const noexcept {
     CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset);
     return {data() + offset, count != dynamic_extent ? count : size() - offset};
@@ -335,12 +334,22 @@ class GSL_POINTER span {
   // Similar to calling subspan() with the `offset` as the length on the first
   // call, and then the `offset` as the offset in the second.
   //
-  // This is a non-std extension that  is inspired by the Rust
-  // slice::split_at() and split_at_mut() methods.
-  constexpr std::pair<span<T, dynamic_extent>, span<T, dynamic_extent>>
-  split_at(size_t offset) const noexcept {
-    CHECK_LE(offset, size());
-    return {{data(), offset}, {data() + offset, size() - offset}};
+  // The split_at<N>() overload allows construction of a fixed-size span from a
+  // compile-time constant. If the input span is fixed-size, both output output
+  // spans will be. Otherwise, the first will be fixed-size and the second will
+  // be dynamic-size.
+  //
+  // This is a non-std extension that  is inspired by the Rust slice::split_at()
+  // and split_at_mut() methods.
+  constexpr std::pair<span<T>, span<T>> split_at(size_t offset) const noexcept {
+    return {first(offset), subspan(offset)};
+  }
+
+  template <size_t Offset>
+    requires(Offset <= N)
+  constexpr std::pair<span<T, Offset>, span<T, N - Offset>> split_at()
+      const noexcept {
+    return {first<Offset>(), subspan<Offset, N - Offset>()};
   }
 
   // [span.obs], span observers
@@ -500,12 +509,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return span<T, Count>(data() + (size() - Count), Count);
   }
 
-  constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
+  constexpr span<T> first(size_t count) const noexcept {
     CHECK_LE(count, size());
     return {data(), count};
   }
 
-  constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
+  constexpr span<T> last(size_t count) const noexcept {
     CHECK_LE(count, size());
     return {data() + (size() - count), count};
   }
@@ -518,9 +527,8 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
                           Count != dynamic_extent ? Count : size() - Offset);
   }
 
-  constexpr span<T, dynamic_extent> subspan(
-      size_t offset,
-      size_t count = dynamic_extent) const noexcept {
+  constexpr span<T> subspan(size_t offset,
+                            size_t count = dynamic_extent) const noexcept {
     CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset);
     return {data() + offset, count != dynamic_extent ? count : size() - offset};
@@ -532,12 +540,21 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // Similar to calling subspan() with the `offset` as the length on the first
   // call, and then the `offset` as the offset in the second.
   //
-  // This is a non-std extension that  is inspired by the Rust
-  // slice::split_at() and split_at_mut() methods.
-  constexpr std::pair<span<T, dynamic_extent>, span<T, dynamic_extent>>
-  split_at(size_t offset) const noexcept {
-    CHECK_LE(offset, size());
-    return {{data(), offset}, {data() + offset, size() - offset}};
+  // The split_at<N>() overload allows construction of a fixed-size span from a
+  // compile-time constant. If the input span is fixed-size, both output output
+  // spans will be. Otherwise, the first will be fixed-size and the second will
+  // be dynamic-size.
+  //
+  // This is a non-std extension that  is inspired by the Rust slice::split_at()
+  // and split_at_mut() methods.
+  constexpr std::pair<span<T>, span<T>> split_at(size_t offset) const noexcept {
+    return {first(offset), subspan(offset)};
+  }
+
+  template <size_t Offset>
+  constexpr std::pair<span<T, Offset>, span<T>> split_at() const noexcept {
+    CHECK_LE(Offset, size());
+    return {first<Offset>(), subspan(Offset)};
   }
 
   // [span.obs], span observers
