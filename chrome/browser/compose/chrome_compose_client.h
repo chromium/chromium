@@ -61,6 +61,7 @@ class ChromeComposeClient
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
   bool ShouldTriggerPopup(
       const autofill::FormFieldData& trigger_field) override;
+  compose::PageUkmTracker* getPageUkmTracker() override;
 
   // ComposeClientPageHandler
   // Shows the compose dialog.
@@ -224,7 +225,8 @@ class ChromeComposeClient
   // Used to test Compose in a tab at |chrome://compose|.
   std::unique_ptr<ComposeSession> debug_session_;
 
-  // On destruction reports per-pageload UKM metrics (if any).
+  // Collects per-pageload UKM metrics and reports them on destruction (if any
+  // were collected).
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_;
 
   bool skip_show_dialog_for_test_ = false;
