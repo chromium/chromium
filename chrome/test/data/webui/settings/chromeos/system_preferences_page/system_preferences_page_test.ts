@@ -68,6 +68,7 @@ suite('<settings-system-preferences-page>', () => {
   setup(() => {
     loadTimeData.overrideValues({
       isGuest: false,
+      showOneDriveSettings: false,
       showOfficeSettings: false,
     });
 
@@ -142,6 +143,7 @@ suite('<settings-system-preferences-page>', () => {
     suite('when office settings are available', () => {
       setup(() => {
         recreateRoutesFromLoadTimeOverrides({
+          showOneDriveSettings: true,
           showOfficeSettings: true,
         });
 

@@ -119,6 +119,7 @@ suite('<files-settings-card>', () => {
 
   setup(() => {
     loadTimeData.overrideValues({
+      showOneDriveSettings: false,
       showOfficeSettings: false,
       enableDriveFsBulkPinning: false,
     });
@@ -166,7 +167,7 @@ suite('<files-settings-card>', () => {
     await assertSubpageTriggerFocused('#googleDriveRow', routes.GOOGLE_DRIVE);
   });
 
-  suite('with showOfficeSettings set to true', () => {
+  suite('with showOneDriveSettings set to true', () => {
     let testOneDriveBrowserProxy: OneDriveTestBrowserProxy;
 
     function setupBrowserProxy(options: ProxyOptions): void {
@@ -175,7 +176,7 @@ suite('<files-settings-card>', () => {
     }
 
     setup(() => {
-      loadTimeData.overrideValues({showOfficeSettings: true});
+      loadTimeData.overrideValues({showOneDriveSettings: true});
 
       // Reinitialize Router and routes based on load time data
       const testRouter = createRouterForTesting();
@@ -266,6 +267,34 @@ suite('<files-settings-card>', () => {
       assertEquals('Add your Microsoft account', oneDriveRow.subLabel);
     });
 
+    test('OneDrive row is focused when returning from subpage', async () => {
+      setupBrowserProxy({email: null});
+      await createFilesSettingsCard();
+
+      await assertSubpageTriggerFocused('#oneDriveRow', routes.ONE_DRIVE);
+    });
+  });
+
+  suite('with showOfficeSettings set to true', () => {
+    let testOneDriveBrowserProxy: OneDriveTestBrowserProxy;
+
+    function setupBrowserProxy(options: ProxyOptions): void {
+      testOneDriveBrowserProxy = new OneDriveTestBrowserProxy(options);
+      OneDriveBrowserProxy.setInstance(testOneDriveBrowserProxy);
+    }
+
+    setup(() => {
+      loadTimeData.overrideValues({showOfficeSettings: true});
+
+      // Reinitialize Router and routes based on load time data
+      const testRouter = createRouterForTesting();
+      Router.resetInstanceForTesting(testRouter);
+    });
+
+    teardown(() => {
+      testOneDriveBrowserProxy.handler.reset();
+    });
+
     test('Clicking office row navigates to office route', async () => {
       setupBrowserProxy({email: null});
       await createFilesSettingsCard();
@@ -278,20 +307,6 @@ suite('<files-settings-card>', () => {
       officeRow.click();
       flush();
       assertEquals(routes.OFFICE, Router.getInstance().currentRoute);
-    });
-
-    test('OneDrive row is focused when returning from subpage', async () => {
-      setupBrowserProxy({email: null});
-      await createFilesSettingsCard();
-
-      await assertSubpageTriggerFocused('#oneDriveRow', routes.ONE_DRIVE);
-    });
-
-    test('Office row is focused when returning from subpage', async () => {
-      setupBrowserProxy({email: null});
-      await createFilesSettingsCard();
-
-      await assertSubpageTriggerFocused('#officeRow', routes.OFFICE);
     });
   });
 

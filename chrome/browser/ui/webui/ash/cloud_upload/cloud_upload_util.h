@@ -329,6 +329,11 @@ bool IsODFSMounted(Profile* profile);
 bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);
 
+// Returns true if the IsMicrosoftOfficeOneDriveIntegrationAllowed() returns
+// true and if the ODFS extension is installed. It returns false otherwise.
+bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+    Profile* profile);
+
 // Returns true if url refers to an entry on any current mount provided by the
 // ODFS file system provider.
 bool UrlIsOnODFS(Profile* profile, const storage::FileSystemURL& url);

@@ -106,6 +106,14 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         },
       },
 
+      shouldShowOneDriveSettings_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('showOneDriveSettings');
+        },
+        readOnly: true,
+      },
+
       shouldShowOfficeSettings_: {
         type: Boolean,
         value: () => {
@@ -148,6 +156,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
   private shouldShowAddSmbDialog_: boolean;
+  private shouldShowOneDriveSettings_: boolean;
   private shouldShowOfficeSettings_: boolean;
 
 
@@ -160,7 +169,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
 
     this.smbBrowserProxy_ = SmbBrowserProxyImpl.getInstance();
 
-    if (this.shouldShowOfficeSettings_) {
+    if (this.shouldShowOneDriveSettings_) {
       this.oneDriveBrowserProxy_ = OneDriveBrowserProxy.getInstance();
     }
   }
@@ -168,7 +177,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.shouldShowOfficeSettings_) {
+    if (this.shouldShowOneDriveSettings_) {
       this.updateOneDriveEmail_();
       this.oneDriveBrowserProxy_!.observer.onODFSMountOrUnmount.addListener(
           this.updateOneDriveEmail_.bind(this));
