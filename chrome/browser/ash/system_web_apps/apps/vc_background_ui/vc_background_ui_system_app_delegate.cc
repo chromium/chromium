@@ -8,8 +8,10 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -37,6 +39,17 @@ VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
   info->scope = GURL(kChromeUIVcBackgroundURL);
   // TODO(b/311416410) real title and icon.
   info->title = u"VC Background";
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url,
+      {
+          {
+              "app_hub_icon_256.png",
+              256,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_256_PNG,
+          },
+      },
+      *info);
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
