@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   ChromiumBidi,
   InvalidArgumentException,
@@ -76,7 +77,7 @@ export class SubscriptionManager {
   // browsing contexts.
   // Channel `null` means no `channel` should be added.
   #channelToContextToEventMap = new Map<
-    string | null,
+    BidiPlusChannel,
     Map<
       BrowsingContext.BrowsingContext | null,
       Map<ChromiumBidi.EventNames, number>
@@ -91,7 +92,7 @@ export class SubscriptionManager {
   getChannelsSubscribedToEvent(
     eventMethod: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null
-  ): (string | null)[] {
+  ): BidiPlusChannel[] {
     const prioritiesAndChannels = Array.from(
       this.#channelToContextToEventMap.keys()
     )
@@ -105,7 +106,7 @@ export class SubscriptionManager {
       }))
       .filter(({priority}) => priority !== null) as {
       priority: number;
-      channel: string | null;
+      channel: BidiPlusChannel;
     }[];
 
     // Sort channels by priority.
@@ -117,7 +118,7 @@ export class SubscriptionManager {
   #getEventSubscriptionPriorityForChannel(
     eventMethod: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: string | null
+    channel: BidiPlusChannel
   ): null | number {
     const contextToEventMap = this.#channelToContextToEventMap.get(channel);
     if (contextToEventMap === undefined) {
@@ -166,7 +167,7 @@ export class SubscriptionManager {
   subscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: string | null
+    channel: BidiPlusChannel
   ): void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
@@ -221,7 +222,7 @@ export class SubscriptionManager {
   unsubscribeAll(
     events: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: string | null
+    channel: BidiPlusChannel
   ) {
     // Assert all contexts are known.
     for (const contextId of contextIds) {
@@ -251,7 +252,7 @@ export class SubscriptionManager {
   unsubscribe(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: string | null
+    channel: BidiPlusChannel
   ) {
     this.unsubscribeAll([eventName], [contextId], channel);
   }
@@ -259,7 +260,7 @@ export class SubscriptionManager {
   #checkUnsubscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: string | null
+    channel: BidiPlusChannel
   ): () => void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);

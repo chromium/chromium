@@ -17,7 +17,7 @@
 
 import type {CdpClient} from '../cdp/CdpClient';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
-import type {ChromiumBidi} from '../protocol/protocol.js';
+import type {Browser, ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/ProcessingQueue.js';
@@ -74,7 +74,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: CdpConnection,
     browserCdpClient: CdpClient,
     selfTargetId: string,
-    defaultUserContextId: string,
+    defaultUserContextId: Browser.UserContext,
     options?: MapperOptions,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn

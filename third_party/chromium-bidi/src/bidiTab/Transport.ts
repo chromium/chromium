@@ -15,6 +15,7 @@
  * limitations under the License. *
  */
 import type {BidiTransport} from '../bidiMapper/BidiMapper.js';
+import type {BidiPlusChannel} from '../protocol/chromium-bidi.js';
 import {
   type ChromiumBidi,
   ErrorCode,
@@ -64,7 +65,7 @@ export class WindowBidiTransport implements BidiTransport {
     plainCommandData: string,
     errorCode: ErrorCode,
     error: Error,
-    channel: string | null
+    channel: BidiPlusChannel
   ) {
     const errorResponse = WindowBidiTransport.#getErrorResponse(
       plainCommandData,

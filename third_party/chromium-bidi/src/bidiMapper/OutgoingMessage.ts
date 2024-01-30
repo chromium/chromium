@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
+import type {BidiPlusChannel} from '../protocol/chromium-bidi.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import type {Result} from '../utils/result.js';
 
 export class OutgoingMessage {
   readonly #message: ChromiumBidi.Message;
-  readonly #channel: string | null;
+  readonly #channel: BidiPlusChannel;
 
   private constructor(
     message: ChromiumBidi.Message,
-    channel: string | null = null
+    channel: BidiPlusChannel = null
   ) {
     this.#message = message;
     this.#channel = channel;
@@ -32,7 +33,7 @@ export class OutgoingMessage {
 
   static createFromPromise(
     messagePromise: Promise<Result<ChromiumBidi.Message>>,
-    channel: string | null
+    channel: BidiPlusChannel
   ): Promise<Result<OutgoingMessage>> {
     return messagePromise.then((message) => {
       if (message.kind === 'success') {
@@ -47,7 +48,7 @@ export class OutgoingMessage {
 
   static createResolved(
     message: ChromiumBidi.Message,
-    channel?: string | null
+    channel?: BidiPlusChannel
   ): Promise<Result<OutgoingMessage>> {
     return Promise.resolve({
       kind: 'success',
@@ -59,7 +60,7 @@ export class OutgoingMessage {
     return this.#message;
   }
 
-  get channel(): string | null {
+  get channel(): BidiPlusChannel {
     return this.#channel;
   }
 }

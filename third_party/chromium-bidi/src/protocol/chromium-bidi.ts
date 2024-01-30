@@ -118,10 +118,12 @@ export const EVENT_NAMES = new Set([
 
 export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
+export type BidiPlusChannel = string | null;
+
 export type Message = (
   | WebDriverBidi.Message
   | Cdp.Message
   | {launched: true}
 ) & {
-  channel?: WebDriverBidi.Script.Channel;
+  channel?: BidiPlusChannel;
 };

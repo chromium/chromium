@@ -913,13 +913,13 @@ export class BrowsingContextImpl {
       return {
         data: result.data,
       };
-    } catch (error: any) {
+    } catch (error) {
       // Effectively zero dimensions.
       if (
         (error as Error).message ===
         'invalid print parameters: content area is empty'
       ) {
-        throw new UnsupportedOperationException(error.message);
+        throw new UnsupportedOperationException((error as Error).message);
       }
       throw error;
     }

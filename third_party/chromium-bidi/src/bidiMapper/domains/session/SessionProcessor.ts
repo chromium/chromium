@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import type {
   ChromiumBidi,
   EmptyResult,
@@ -36,7 +37,7 @@ export class SessionProcessor {
 
   subscribe(
     params: Session.SubscriptionRequest,
-    channel: string | null = null
+    channel: BidiPlusChannel = null
   ): EmptyResult {
     this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
@@ -48,7 +49,7 @@ export class SessionProcessor {
 
   unsubscribe(
     params: Session.SubscriptionRequest,
-    channel: string | null = null
+    channel: BidiPlusChannel = null
   ): EmptyResult {
     this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],

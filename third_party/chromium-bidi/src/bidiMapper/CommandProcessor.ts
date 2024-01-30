@@ -23,6 +23,7 @@ import {
   UnknownErrorException,
   UnsupportedOperationException,
   type ChromiumBidi,
+  type Browser,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -78,7 +79,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     selfTargetId: string,
-    defaultUserContextId: string,
+    defaultUserContextId: Browser.UserContext,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     acceptInsecureCerts: boolean,

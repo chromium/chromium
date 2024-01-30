@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   ChromiumBidi,
   type BrowsingContext,
@@ -80,7 +81,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    * subscripting to all contexts.
    */
   #eventToContextsMap = new DefaultMap<
-    string,
+    ChromiumBidi.EventNames,
     Set<BrowsingContext.BrowsingContext | null>
   >(() => new Set());
   /**
@@ -109,7 +110,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   static #getMapKey(
     eventName: ChromiumBidi.EventNames,
     browsingContext: BrowsingContext.BrowsingContext | null,
-    channel?: string | null
+    channel?: BidiPlusChannel
   ) {
     return JSON.stringify({eventName, browsingContext, channel});
   }
@@ -153,7 +154,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: string | null
+    channel: BidiPlusChannel
   ): void {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -192,7 +193,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
-    channel: string | null
+    channel: BidiPlusChannel
   ) {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -228,7 +229,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   #markEventSent(
     eventWrapper: EventWrapper,
-    channel: string | null,
+    channel: BidiPlusChannel,
     eventName: ChromiumBidi.EventNames
   ) {
     if (!eventBufferLength.has(eventName)) {
@@ -253,7 +254,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   #getBufferedEvents(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: string | null
+    channel: BidiPlusChannel
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMapKey = EventManager.#getMapKey(

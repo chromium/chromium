@@ -23,6 +23,7 @@ import {
   InvalidArgumentException,
   type EmptyResult,
   NoSuchUserContextException,
+  type Browser,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -50,7 +51,7 @@ export class BrowsingContextProcessor {
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
-  readonly #defaultUserContextId: string;
+  readonly #defaultUserContextId: Browser.UserContext;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -64,7 +65,7 @@ export class BrowsingContextProcessor {
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
     sharedIdWithFrame: boolean,
-    defaultUserContextId: string,
+    defaultUserContextId: Browser.UserContext,
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;

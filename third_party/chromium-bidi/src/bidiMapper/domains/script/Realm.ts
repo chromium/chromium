@@ -685,7 +685,7 @@ export abstract class Realm {
       if (
         !(
           error.code === CdpErrorConstants.GENERIC_ERROR &&
-          (error as Error).message === 'Invalid remote object id'
+          error.message === 'Invalid remote object id'
         )
       ) {
         throw error;
