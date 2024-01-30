@@ -155,10 +155,10 @@ void PickerController::StartSearch(const std::u16string& query,
           u"Matching links",
           {{
               PickerSearchResult::BrowsingHistory(
-                  GURL("www.foo.com"),
+                  GURL("http://www.foo.com"),
                   ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
               PickerSearchResult::BrowsingHistory(
-                  GURL("crbug.com"),
+                  GURL("http://crbug.com"),
                   ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
           }}),
       PickerSearchResults::Section(
