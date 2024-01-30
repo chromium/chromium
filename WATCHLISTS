@@ -3221,7 +3221,6 @@
     'switch_access': ['anastasi+watch@google.com'],
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'system_web_apps': [ 'ortuno@chromium.org',
-                         'dominicschulz@google.com',
                          'qjw@chromium.org'],
     'tab_alert_indicators': ['jophba+watch@chromium.org'],
     'tab_capture': ['jophba+watch@chromium.org',

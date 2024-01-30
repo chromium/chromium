@@ -3441,7 +3441,7 @@
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
-    "owners": [ "ortuno@chromium.org", "dominicschulz@chromium.org" ],
+    "owners": [ "ortuno@chromium.org", "cros-web-apps-infra-team@google.com" ],
     "expiry_milestone": 110
   },
   {
@@ -7664,11 +7664,6 @@
     "name": "system-color-chooser",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 123
-  },
-  {
-    "name": "system-extensions",
-    "owners": [ "calamity@chromium.org", "dominicschulz@chromium.org" ],
-    "expiry_milestone": 110
   },
   {
     "name": "system-keyboard-lock",
