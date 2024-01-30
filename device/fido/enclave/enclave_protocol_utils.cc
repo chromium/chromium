@@ -397,11 +397,11 @@ cbor::Value BuildGetAssertionCommand(
                     cbor::Value(kGetAssertionCommandName));
   entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
 
-  cbor::Value::ArrayValue cbor_wrapped_keys;
-  for (auto& wrapped_key : wrapped_secrets) {
-    cbor_wrapped_keys.emplace_back(std::move(wrapped_key));
+  cbor::Value::ArrayValue cbor_wrapped_secrets;
+  for (auto& wrapped_secret : wrapped_secrets) {
+    cbor_wrapped_secrets.emplace_back(std::move(wrapped_secret));
   }
-  entry_map.emplace("wrapped_secrets", std::move(cbor_wrapped_keys));
+  entry_map.emplace("wrapped_secrets", std::move(cbor_wrapped_secrets));
 
   int passkey_byte_size = passkey.ByteSize();
   std::vector<uint8_t> serialized_passkey;

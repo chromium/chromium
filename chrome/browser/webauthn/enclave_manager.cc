@@ -451,7 +451,7 @@ enclave::SigningCallback EnclaveManager::HardwareKeySigningCallback() {
       user_->wrapped_hardware_private_key(), user_->device_id());
 }
 
-std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedKey(
+std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
     int32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
@@ -462,7 +462,7 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedKey(
   return ToVector(it->second);
 }
 
-std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedKeys() {
+std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedSecrets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
   std::vector<std::vector<uint8_t>> ret;
@@ -473,7 +473,7 @@ std::vector<std::vector<uint8_t>> EnclaveManager::GetWrappedKeys() {
 }
 
 std::pair<int32_t, std::vector<uint8_t>>
-EnclaveManager::GetCurrentWrappedKey() {
+EnclaveManager::GetCurrentWrappedSecret() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_ready());
   CHECK(!user_->wrapped_security_domain_secrets().empty());

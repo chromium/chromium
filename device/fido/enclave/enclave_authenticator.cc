@@ -88,8 +88,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                           MakeCredentialOptions options,
                                           MakeCredentialCallback callback) {
   CHECK(!pending_get_assertion_request_ && !pending_make_credential_request_);
-  CHECK_EQ(ui_request_->wrapped_keys.size(), 1u);
-  CHECK(ui_request_->wrapped_key_version.has_value());
+  CHECK_EQ(ui_request_->wrapped_secrets.size(), 1u);
+  CHECK(ui_request_->wrapped_secret_version.has_value());
 
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
@@ -99,7 +99,7 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
            std::move(ui_request_->access_token),
            BuildMakeCredentialCommand(
                std::move(pending_make_credential_request_->options.json),
-               std::move(ui_request_->wrapped_keys.back())),
+               std::move(ui_request_->wrapped_secrets.back())),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
                           weak_factory_.GetWeakPtr()));
@@ -120,7 +120,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                *ui_request_->entity,
                std::move(pending_get_assertion_request_->options.json),
                pending_get_assertion_request_->request.client_data_json,
-               std::move(ui_request_->wrapped_keys)),
+               std::move(ui_request_->wrapped_secrets)),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
                           weak_factory_.GetWeakPtr()));
@@ -138,7 +138,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::tie(opt_response, opt_entity, error_description) =
       ParseMakeCredentialResponse(std::move(*response),
                                   pending_make_credential_request_->request,
-                                  *ui_request_->wrapped_key_version);
+                                  *ui_request_->wrapped_secret_version);
   if (!opt_response || !opt_entity) {
     FIDO_LOG(ERROR) << "Error in registration response from server: "
                     << error_description;

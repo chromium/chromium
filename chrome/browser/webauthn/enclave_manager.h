@@ -108,16 +108,13 @@ class EnclaveManager : public KeyedService {
   device::enclave::SigningCallback HardwareKeySigningCallback();
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
-  std::optional<std::vector<uint8_t>> GetWrappedKey(int32_t version);
+  std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
   // Fetch all wrapped security domain secrets, for when it's unknown which one
   // a WebauthnCredentialSpecifics will need. Only valid to call if `is_ready`.
-  std::vector<std::vector<uint8_t>> GetWrappedKeys();
+  std::vector<std::vector<uint8_t>> GetWrappedSecrets();
   // Get the version and value of the current wrapped secret. Only valid to call
   // if `is_ready`.
-  //
-  // TODO(enclave): rename everything that's currently "wrapped_key" to be
-  // "wrapped_secret" so that it matches up with the naming in the enclave code.
-  std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedKey();
+  std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedSecret();
 
   // Get an access token for contacting the enclave.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> GetAccessToken(

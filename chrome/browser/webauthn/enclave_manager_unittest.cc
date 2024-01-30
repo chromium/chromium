@@ -281,7 +281,7 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  const int32_t kKeyVersion = 417;
+  const int32_t kSecretVersion = 417;
   url_loader_factory_.AddResponse(
       GetFullJoinSecurityDomainsURLForTesting(
           trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
@@ -290,7 +290,7 @@ TEST_F(EnclaveManagerTest, Basic) {
       MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kKeyVersion);
+                     /*last_key_version=*/kSecretVersion);
   ASSERT_FALSE(manager_.is_idle());
   RunUntilIdle();
   ASSERT_TRUE(manager_.is_idle());
@@ -301,8 +301,8 @@ TEST_F(EnclaveManagerTest, Basic) {
   {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
     ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-    ui_request->wrapped_keys = {
-        *manager_.GetWrappedKey(/*version=*/kKeyVersion)};
+    ui_request->wrapped_secrets = {
+        *manager_.GetWrappedSecret(/*version=*/kSecretVersion)};
     ui_request->entity = GetTestEntity();
 
     enclave::EnclaveAuthenticator authenticator(
@@ -348,12 +348,13 @@ TEST_F(EnclaveManagerTest, Basic) {
   {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
     ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-    int32_t key_version;
-    std::vector<uint8_t> wrapped_key;
-    std::tie(key_version, wrapped_key) = manager_.GetCurrentWrappedKey();
-    EXPECT_EQ(key_version, kKeyVersion);
-    ui_request->wrapped_keys = {std::move(wrapped_key)};
-    ui_request->wrapped_key_version = kKeyVersion;
+    int32_t secret_version;
+    std::vector<uint8_t> wrapped_secret;
+    std::tie(secret_version, wrapped_secret) =
+        manager_.GetCurrentWrappedSecret();
+    EXPECT_EQ(secret_version, kSecretVersion);
+    ui_request->wrapped_secrets = {std::move(wrapped_secret)};
+    ui_request->wrapped_secret_version = kSecretVersion;
 
     std::optional<sync_pb::WebauthnCredentialSpecifics> specifics;
 
@@ -423,7 +424,7 @@ TEST_F(EnclaveManagerTest, Basic) {
     EXPECT_EQ(specifics->user_id(), "uid");
     EXPECT_EQ(specifics->user_name(), "user");
     EXPECT_EQ(specifics->user_display_name(), "display name");
-    EXPECT_EQ(specifics->key_version(), kKeyVersion);
+    EXPECT_EQ(specifics->key_version(), kSecretVersion);
   }
 }
 
