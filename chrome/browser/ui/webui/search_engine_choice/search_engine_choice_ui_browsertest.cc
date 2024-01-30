@@ -93,7 +93,6 @@ struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
-  bool show_search_engine_omnibox = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -110,8 +109,6 @@ const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
-    {.test_suffix = "ShowSearchEngineOmnibox",
-     .show_search_engine_omnibox = true},
     {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
     {.test_suffix = "NarrowSize", .dialog_dimensions = gfx::Size(300, 900)},
 #endif
@@ -120,33 +117,6 @@ const TestParam kTestParams[] = {
     // The test will crash if we exceed that height.
     {.test_suffix = "ShortSize", .dialog_dimensions = gfx::Size(988, 376)},
 };
-
-class SearchEngineChoiceNavigationObserver
-    : public content::TestNavigationObserver {
- public:
-  explicit SearchEngineChoiceNavigationObserver(GURL url)
-      : content::TestNavigationObserver(url) {}
-
-  void NavigationOfInterestDidFinish(
-      content::NavigationHandle* navigation_handle) override {
-    web_contents_ = navigation_handle->GetWebContents();
-  }
-
-  content::WebContents* web_contents() const { return web_contents_; }
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
-};
-
-// Click on a search engine to display the search engine omnibox.
-const char kShowSearchEngineOmniboxJsString[] =
-    "(() => {"
-    "  const app = document.querySelector('search-engine-choice-app');"
-    "  const searchEngineList = app.shadowRoot.querySelectorAll("
-    "      'cr-radio-button');"
-    "  searchEngineList[0].click();"
-    "  return true;"
-    "})();";
 }  // namespace
 
 class SearchEngineChoiceUIPixelTest
@@ -187,7 +157,7 @@ class SearchEngineChoiceUIPixelTest
         /*dialog_disabled=*/false);
 
     GURL url = GURL(chrome::kChromeUISearchEngineChoiceURL);
-    SearchEngineChoiceNavigationObserver observer(url);
+    content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
     views::NamedWidgetShownWaiter widget_waiter(
@@ -213,14 +183,6 @@ class SearchEngineChoiceUIPixelTest
     ShowSearchEngineChoiceDialog(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
-    content::WebContents* web_contents = observer.web_contents();
-    CHECK(web_contents);
-
-    if (GetParam().show_search_engine_omnibox) {
-      EXPECT_EQ(true, content::EvalJs(web_contents,
-                                      kShowSearchEngineOmniboxJsString));
-    }
-
     observer.Wait();
   }
 
