@@ -30,8 +30,10 @@ class CSSRuleTest : public PageTestBase {
   }
 
   StyleRule* MakeSignalingRule() {
+    StyleRule* non_signaling_rule = MakeNonSignalingRule();
     return css_test_helpers::MakeSignalingRule(
-        MakeNonSignalingRule(), CSSSelector::Signal::kBareDeclarationShift);
+        std::move(*non_signaling_rule),
+        CSSSelector::Signal::kBareDeclarationShift);
   }
 };
 

@@ -104,12 +104,15 @@ CSSSelectorList* ParseSelectorList(const String&,
                                    bool is_within_scope);
 
 // Make the incoming StyleRule carry the specified signal.
-// Note that this calls std::move on the incoming StyleRule.
-StyleRule* MakeSignalingRule(StyleRule*, CSSSelector::Signal);
+StyleRule* MakeSignalingRule(StyleRule&&, CSSSelector::Signal);
 
 // Make the incoming StyleRule invisible. (See CSSSelector::IsInvisible).
-// Note that this calls std::move on the incoming StyleRule.
-StyleRule* MakeInvisibleRule(StyleRule*);
+StyleRule* MakeInvisibleRule(StyleRule&&);
+
+StyleRule* ParseSignalingRule(Document& document,
+                              String text,
+                              CSSSelector::Signal);
+StyleRule* ParseInvisibleRule(Document& document, String text);
 
 }  // namespace css_test_helpers
 }  // namespace blink

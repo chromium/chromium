@@ -18,7 +18,9 @@ namespace blink {
 
 using css_test_helpers::MakeInvisibleRule;
 using css_test_helpers::MakeSignalingRule;
+using css_test_helpers::ParseInvisibleRule;
 using css_test_helpers::ParseRule;
+using css_test_helpers::ParseSignalingRule;
 
 class StyleRuleTest : public PageTestBase {};
 
@@ -64,12 +66,6 @@ std::pair<CSSNestingType, const StyleRule*> FindNestingContext(
       unparsed_selector ? unparsed_selector->GetNestingType()
                         : CSSNestingType::kNone,
       parent_selector ? parent_selector->ParentRule() : nullptr);
-}
-
-StyleRule* ParseInvisibleRule(Document& document, String string) {
-  auto* style_rule = DynamicTo<StyleRule>(ParseRule(document, string));
-  CHECK(style_rule);
-  return MakeInvisibleRule(style_rule);
 }
 
 String ToString(const HeapVector<Member<StyleRuleBase>>& rules) {
@@ -303,9 +299,9 @@ TEST_F(StyleRuleTest, SetPreludeTextBecomesNonImplicitScope) {
 TEST_F(StyleRuleTest, HasSignalingChildRule_StyleRule) {
   StyleRule* parent_rule =
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 1px; }"));
-  StyleRule* signaling_rule = MakeSignalingRule(
-      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }")),
-      CSSSelector::Signal::kBareDeclarationShift);
+  StyleRule* signaling_rule =
+      ParseSignalingRule(GetDocument(), "div { color: red; }",
+                         CSSSelector::Signal::kBareDeclarationShift);
 
   EXPECT_FALSE(parent_rule->IsSignaling());
   EXPECT_TRUE(signaling_rule->IsSignaling());
@@ -336,9 +332,9 @@ TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule_NoSignal) {
 TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule) {
   HeapVector<Member<StyleRuleBase>> child_rules;
   child_rules.push_back(ParseRule(GetDocument(), "div { color: green; }"));
-  child_rules.push_back(MakeSignalingRule(
-      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }")),
-      CSSSelector::Signal::kBareDeclarationShift));
+  child_rules.push_back(
+      ParseSignalingRule(GetDocument(), "div { color: red; }",
+                         CSSSelector::Signal::kBareDeclarationShift));
   auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
       "width:100px", /* condition_is_supported */ true, std::move(child_rules));
   EXPECT_FALSE(supports_rule->IsSignaling());
@@ -349,9 +345,15 @@ TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule) {
 TEST_F(StyleRuleTest, HasSignalingChildRule_GroupingRule_Invisible) {
   HeapVector<Member<StyleRuleBase>> child_rules;
   child_rules.push_back(ParseRule(GetDocument(), "div { color: green; }"));
-  child_rules.push_back(MakeInvisibleRule(MakeSignalingRule(
-      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }")),
-      CSSSelector::Signal::kBareDeclarationShift)));
+
+  // Create a rule that's both invisible and signaling.
+  auto* style_rule =
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "div { color: red; }"));
+  style_rule = MakeInvisibleRule(std::move(*style_rule));
+  style_rule = MakeSignalingRule(std::move(*style_rule),
+                                 CSSSelector::Signal::kBareDeclarationShift);
+  child_rules.push_back(style_rule);
+
   auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
       "width:100px", /* condition_is_supported */ true, std::move(child_rules));
   EXPECT_FALSE(supports_rule->IsSignaling());

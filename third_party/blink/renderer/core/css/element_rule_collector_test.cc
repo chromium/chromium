@@ -25,8 +25,8 @@
 
 namespace blink {
 
-using css_test_helpers::MakeSignalingRule;
 using css_test_helpers::ParseRule;
+using css_test_helpers::ParseSignalingRule;
 
 static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   auto* style_rule =
@@ -605,9 +605,8 @@ TEST_F(ElementRuleCollectorSignalTest, NoSignal) {
 TEST_F(ElementRuleCollectorSignalTest, SignalAloneInMatchResult) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddStyleRule(
-      MakeSignalingRule(DynamicTo<StyleRule>(
-                            ParseRule(GetDocument(), "body { color: green; }")),
-                        CSSSelector::Signal::kBareDeclarationShift),
+      ParseSignalingRule(GetDocument(), "body { color: green; }",
+                         CSSSelector::Signal::kBareDeclarationShift),
       *medium_, kRuleHasNoSpecialState);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);
@@ -625,9 +624,8 @@ TEST_F(ElementRuleCollectorSignalTest, SignalInMatchResult) {
       DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
       *medium_, kRuleHasNoSpecialState);
   rule_set->AddStyleRule(
-      MakeSignalingRule(DynamicTo<StyleRule>(
-                            ParseRule(GetDocument(), "body { color: green; }")),
-                        CSSSelector::Signal::kBareDeclarationShift),
+      ParseSignalingRule(GetDocument(), "body { color: green; }",
+                         CSSSelector::Signal::kBareDeclarationShift),
       *medium_, kRuleHasNoSpecialState);
   MatchResult result;
   CollectIntoMatchResult(body_, rule_set, result);

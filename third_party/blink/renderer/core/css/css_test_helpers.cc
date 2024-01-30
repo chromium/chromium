@@ -242,11 +242,10 @@ CSSSelectorList* ParseSelectorList(const String& string,
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 
-StyleRule* MakeSignalingRule(StyleRule* style_rule,
+StyleRule* MakeSignalingRule(StyleRule&& style_rule,
                              CSSSelector::Signal signal) {
-  CHECK(style_rule);
   HeapVector<CSSSelector> selectors;
-  const CSSSelector* selector = style_rule->FirstSelector();
+  const CSSSelector* selector = style_rule.FirstSelector();
   CHECK(selector);
   while (true) {
     selectors.push_back(*selector);
@@ -256,13 +255,12 @@ StyleRule* MakeSignalingRule(StyleRule* style_rule,
     }
     ++selector;
   }
-  return StyleRule::Create(selectors, std::move(*style_rule));
+  return StyleRule::Create(selectors, std::move(style_rule));
 }
 
-StyleRule* MakeInvisibleRule(StyleRule* style_rule) {
-  CHECK(style_rule);
+StyleRule* MakeInvisibleRule(StyleRule&& style_rule) {
   HeapVector<CSSSelector> selectors;
-  const CSSSelector* selector = style_rule->FirstSelector();
+  const CSSSelector* selector = style_rule.FirstSelector();
   CHECK(selector);
   while (true) {
     selectors.push_back(*selector);
@@ -272,7 +270,25 @@ StyleRule* MakeInvisibleRule(StyleRule* style_rule) {
     }
     ++selector;
   }
-  return StyleRule::Create(selectors, std::move(*style_rule));
+  return StyleRule::Create(selectors, std::move(style_rule));
+}
+
+StyleRule* ParseSignalingRule(Document& document,
+                              String text,
+                              CSSSelector::Signal signal) {
+  auto* style_rule = DynamicTo<StyleRule>(ParseRule(document, text));
+  if (!style_rule) {
+    return nullptr;
+  }
+  return MakeSignalingRule(std::move(*style_rule), signal);
+}
+
+StyleRule* ParseInvisibleRule(Document& document, String text) {
+  auto* style_rule = DynamicTo<StyleRule>(ParseRule(document, text));
+  if (!style_rule) {
+    return nullptr;
+  }
+  return MakeInvisibleRule(std::move(*style_rule));
 }
 
 }  // namespace css_test_helpers
