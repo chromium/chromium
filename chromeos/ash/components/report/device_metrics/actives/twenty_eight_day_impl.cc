@@ -37,9 +37,7 @@ TwentyEightDayImpl::TwentyEightDayImpl(UseCaseParameters* params)
   LoadActivesCachePref();
 }
 
-TwentyEightDayImpl::~TwentyEightDayImpl() {
-  SaveActivesCachePref();
-}
+TwentyEightDayImpl::~TwentyEightDayImpl() = default;
 
 void TwentyEightDayImpl::Run(base::OnceCallback<void()> callback) {
   FilterActivesCache();
