@@ -58,7 +58,6 @@ source_set("bulk_upload_ui") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
