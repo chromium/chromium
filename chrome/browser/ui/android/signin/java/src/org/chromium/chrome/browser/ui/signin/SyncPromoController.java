@@ -304,7 +304,10 @@ public class SyncPromoController {
                 visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
         if (accountInfo == null) return false;
 
-        return accountInfo.getAccountCapabilities().canOfferExtendedSyncPromos() == Tribool.TRUE;
+        return accountInfo
+                        .getAccountCapabilities()
+                        .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
+                == Tribool.TRUE;
     }
 
     private boolean canShowBookmarkPromo() {

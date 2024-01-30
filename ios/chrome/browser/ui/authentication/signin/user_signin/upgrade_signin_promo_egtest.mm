@@ -123,8 +123,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 - (void)testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -142,8 +143,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 - (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -160,8 +162,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:NO
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:NO
+                                                  forIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -175,8 +178,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 - (void)testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -200,8 +204,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 

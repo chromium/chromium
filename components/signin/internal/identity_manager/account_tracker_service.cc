@@ -691,15 +691,16 @@ void AccountTrackerService::LoadFromPrefs() {
           is_under_advanced_protection.value();
     }
 
-    if (std::optional<int> can_offer_extended_chrome_sync_promos =
+    if (std::optional<int> deprecated_can_offer_extended_chrome_sync_promos =
             dict->FindIntByDottedPath(
                 kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
       // Migrate to Capability names based pref paths.
       ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
       base::Value::Dict& update_dict = (*update)[i].GetDict();
       SetAccountCapabilityState(
-          update_dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
-          ParseTribool(can_offer_extended_chrome_sync_promos));
+          update_dict,
+          kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+          ParseTribool(deprecated_can_offer_extended_chrome_sync_promos));
       update_dict.RemoveByDottedPath(
           kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
     }

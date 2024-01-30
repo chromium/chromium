@@ -75,8 +75,10 @@ enum class UserSelectableType;
                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
 + (void)setCanHaveEmailAddressDisplayed:(BOOL)value
                             forIdentity:(FakeSystemIdentity*)fakeIdentity;
-+ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity;
++ (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity;
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 

@@ -198,11 +198,18 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyGaiaId) {
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue) {
   std::optional<AccountCapabilities> capabilities =
       AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue(
-          {{kCanOfferExtendedChromeSyncPromosCapabilityName, true}}));
+          {{kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+            true}}));
 
   ASSERT_TRUE(capabilities.has_value());
-  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kTrue);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kTrue);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kTrue);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_EmptyList) {
@@ -210,26 +217,37 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_EmptyList) {
       AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue({}));
 
   ASSERT_TRUE(capabilities.has_value());
-  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kUnknown);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kUnknown);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kUnknown);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_SeveralCapabilities) {
   std::optional<AccountCapabilities> capabilities =
       AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue(
           {{"testcapability", true},
-           {kCanOfferExtendedChromeSyncPromosCapabilityName, false}}));
+           {kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+            false}}));
 
   ASSERT_TRUE(capabilities.has_value());
-  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kFalse);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kFalse);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
   base::Value::Dict dict;
   base::Value* list = dict.Set("accountCapabilities", base::Value::List());
   base::Value::Dict entry;
-  entry.Set("name", kCanOfferExtendedChromeSyncPromosCapabilityName);
+  entry.Set(
+      "name",
+      kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
   entry.Set("intValue", 42);
   list->GetList().Append(std::move(entry));
 
@@ -237,8 +255,10 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
       AccountCapabilitiesFromValue(dict);
 
   ASSERT_TRUE(capabilities.has_value());
-  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
-            signin::Tribool::kUnknown);
+  EXPECT_EQ(
+      capabilities
+          ->can_show_history_sync_opt_ins_without_minor_mode_restrictions(),
+      signin::Tribool::kUnknown);
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_DoesNotContainList) {

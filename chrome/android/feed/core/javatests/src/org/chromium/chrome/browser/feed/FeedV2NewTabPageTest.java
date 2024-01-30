@@ -356,7 +356,10 @@ public class FeedV2NewTabPageTest {
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
         mAccountManagerTestRule.addAccount(
-                "test@gmail.com", capabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
+                "test@gmail.com",
+                capabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                        .build());
         mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();

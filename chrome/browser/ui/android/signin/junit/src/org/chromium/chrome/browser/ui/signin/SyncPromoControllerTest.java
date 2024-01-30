@@ -108,10 +108,14 @@ public class SyncPromoControllerTest {
     public void shouldHideSyncPromoForNTPWhenDefaultAccountCannotOfferSyncPromos() {
         mAccountManagerTestRule.addAccount(
                 "test1@gmail.com",
-                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
+                mAccountCapabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                        .build());
         mAccountManagerTestRule.addAccount(
                 "test2@gmail.com",
-                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
+                mAccountCapabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
+                        .build());
 
         Assert.assertFalse(mSyncPromoController.canShowSyncPromo());
     }
@@ -128,10 +132,14 @@ public class SyncPromoControllerTest {
     public void shouldShowSyncPromoForNTPWhenSecondaryAccountCannotOfferSyncPromos() {
         mAccountManagerTestRule.addAccount(
                 "test1@gmail.com",
-                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
+                mAccountCapabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
+                        .build());
         mAccountManagerTestRule.addAccount(
                 "test2@gmail.com",
-                mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
+                mAccountCapabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                        .build());
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }

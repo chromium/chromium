@@ -894,7 +894,7 @@ void InjectNTP(Browser* browser) {
   // sync promos and displays the sign-in promo if possible.
   __weak SceneController* weakSelf = self;
   base::Time fetch_start = base::Time::Now();
-  system_identity_manager->CanOfferExtendedSyncPromos(
+  system_identity_manager->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
       defaultIdentity, base::BindOnce(^(CapabilityResult result) {
         base::TimeDelta fetch_duration = (base::Time::Now() - fetch_start);
         base::UmaHistogramTimes(

@@ -17,10 +17,12 @@ import java.util.HashMap;
 public final class AccountCapabilitiesBuilder {
     private final HashMap<String, Boolean> mCapabilities = new HashMap<>();
 
-    /** Sets the canOfferExtendedSyncPromos capability value. */
-    public AccountCapabilitiesBuilder setCanOfferExtendedSyncPromos(boolean value) {
+    /** Sets the canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value. */
+    public AccountCapabilitiesBuilder setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+            boolean value) {
         mCapabilities.put(
-                AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
+                AccountCapabilitiesConstants
+                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
                 value);
         return this;
     }

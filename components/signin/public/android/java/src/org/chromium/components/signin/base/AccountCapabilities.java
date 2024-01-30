@@ -72,10 +72,13 @@ public class AccountCapabilities {
                 AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
     }
 
-    /** @return canOfferExtendedSyncPromos capability value. */
-    public @Tribool int canOfferExtendedSyncPromos() {
+    /**
+     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
+     */
+    public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME);
+                AccountCapabilitiesConstants
+                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
     /** @return canRunChromePrivacySandboxTrials capability value. */

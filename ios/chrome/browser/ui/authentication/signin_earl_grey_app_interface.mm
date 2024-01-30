@@ -167,14 +167,17 @@
   mutator->set_can_have_email_address_displayed(value);
 }
 
-+ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity {
++ (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity {
   FakeSystemIdentityManager* systemIdentityManager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   AccountCapabilitiesTestMutator* mutator =
       systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
-  mutator->set_can_offer_extended_chrome_sync_promos(value);
+  mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      value);
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

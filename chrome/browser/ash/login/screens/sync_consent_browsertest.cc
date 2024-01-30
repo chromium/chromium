@@ -323,7 +323,8 @@ class SyncConsentTest
     AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByGaiaId(test::kTestGaiaId);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_offer_extended_chrome_sync_promos(!is_minor_user);
+    mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+        !is_minor_user);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

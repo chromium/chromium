@@ -465,7 +465,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.TRUE);
+        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.TRUE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.TRUE);
         Assert.assertEquals(
@@ -483,7 +483,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
+        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.FALSE);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
         Assert.assertEquals(
@@ -501,7 +501,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
-        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
+        Assert.assertEquals(capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
         Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);
         Assert.assertEquals(

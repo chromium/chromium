@@ -74,9 +74,10 @@ signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::can_offer_extended_chrome_sync_promos()
-    const {
-  return GetCapabilityByName(kCanOfferExtendedChromeSyncPromosCapabilityName);
+signin::Tribool AccountCapabilities::
+    can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
+  return GetCapabilityByName(
+      kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
 }
 
 signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()

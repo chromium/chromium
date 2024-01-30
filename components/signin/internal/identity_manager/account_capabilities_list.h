@@ -22,9 +22,10 @@ ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
                    CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
                    "accountcapabilities/haytqlldmfya")
 
-ACCOUNT_CAPABILITY(kCanOfferExtendedChromeSyncPromosCapabilityName,
-                   CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
-                   "accountcapabilities/gi2tklldmfya")
+ACCOUNT_CAPABILITY(
+    kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+    CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
+    "accountcapabilities/gi2tklldmfya")
 
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,

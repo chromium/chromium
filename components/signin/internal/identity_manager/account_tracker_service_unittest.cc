@@ -1885,10 +1885,12 @@ TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
 
   // The capability is unknown, and none of the capability-related keys should
   // be set.
-  EXPECT_EQ(signin::Tribool::kUnknown,
-            account_tracker()
-                ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
-                .capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kUnknown,
+      account_tracker()
+          ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
+          .capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
   ASSERT_FALSE(update->empty());
   base::Value::Dict* dict = (*update)[0].GetIfDict();
@@ -1916,8 +1918,11 @@ TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
   ASSERT_EQ(1u, infos.size());
   CheckAccountDetails(kAccountKeyAlpha, infos[0]);
   // The deprecated key has been read.
-  EXPECT_EQ(signin::Tribool::kTrue,
-            infos[0].capabilities.can_offer_extended_chrome_sync_promos());
+  EXPECT_EQ(
+      signin::Tribool::kTrue,
+      infos[0]
+          .capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
   // The deprecated key has been removed.
   EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
   // The new key has been written.
