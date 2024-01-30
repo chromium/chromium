@@ -15,6 +15,7 @@ def __filegroups(ctx):
         "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
             "type": "glob",
             "includes": [
+                "*.framework",
                 "*.h",
                 "*.json",
                 "*.modulemap",
