@@ -3511,7 +3511,6 @@ static_library("browser") {
       "//components/external_intents/android",
       "//components/favicon/android",
       "//components/favicon/core:database",
-      "//components/history_clusters/ui",
       "//components/image_fetcher:android",
       "//components/image_fetcher/core:metrics",
       "//components/infobars/android",

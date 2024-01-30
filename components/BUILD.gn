@@ -451,7 +451,6 @@ test("components_unittests") {
       "//components/heavy_ad_intervention:unit_tests",
       "//components/history/content/browser:unit_tests",
       "//components/history_clusters/core:unit_tests",
-      "//components/history_clusters/ui:unit_tests",
       "//components/invalidation/impl:unit_tests",
       "//components/javascript_dialogs:unit_tests",
       "//components/js_injection/common:unit_tests",

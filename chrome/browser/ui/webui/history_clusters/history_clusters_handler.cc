@@ -39,7 +39,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/ui/query_clusters_state.h"
+#include "components/history_clusters/core/query_clusters_state.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/page_image_service/image_service.h"
 #include "components/prefs/pref_service.h"

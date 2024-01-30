@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/ui/query_clusters_state.h"
+#include "components/history_clusters/core/query_clusters_state.h"
 
 #include <set>
 #include <string>
@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -25,6 +26,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/similar_visit.h"
 #include "url/gurl.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
 
@@ -214,8 +216,8 @@ void QueryClustersState::OnGotUngroupedVisits(
     ungrouped_cluster.should_show_on_prominent_ui_surfaces = false;
     ungrouped_cluster.label_source =
         history::Cluster::LabelSource::kUngroupedVisits;
-    // TODO(crbug.com/1519988): Localize this string before enabling the flag.
-    ungrouped_cluster.label = u"Ungrouped Visits";
+    ungrouped_cluster.label = l10n_util::GetStringUTF16(
+            IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_OTHER_MATCHING_VISITS);
     ungrouped_cluster.raw_label = ungrouped_cluster.label;
     clusters.push_back(std::move(ungrouped_cluster));
   }

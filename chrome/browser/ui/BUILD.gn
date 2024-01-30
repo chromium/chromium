@@ -535,7 +535,6 @@ static_library("ui") {
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_clusters/history_clusters_internals/webui:constants",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
-    "//components/history_clusters/ui",
     "//components/image_fetcher/core",
     "//components/infobars/content",
     "//components/infobars/core",

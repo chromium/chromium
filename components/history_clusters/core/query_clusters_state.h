@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
-#define COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
 
 #include <optional>
 #include <string>
@@ -162,4 +162,4 @@ class QueryClustersState {
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
