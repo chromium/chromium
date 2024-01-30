@@ -101,6 +101,11 @@ struct OffsetWithSpacing {
   float spacing;
 };
 
+struct DeprecatedInkBounds : public GarbageCollected<DeprecatedInkBounds> {
+  void Trace(Visitor*) const {}
+  gfx::RectF ink_bounds;
+};
+
 // There are two options for how OffsetForPosition behaves:
 // IncludePartialGlyphs - decides what to do when the position hits more than
 // 50% of the glyph. If enabled, we count that glyph, if disable we don't.
@@ -144,7 +149,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
               TextDirection);
   ShapeResult(const ShapeResult&);
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(deprecated_ink_bounds_); }
 
   static ShapeResult* CreateEmpty(const ShapeResult& other) {
     return MakeGarbageCollected<ShapeResult>(other.primary_font_, 0, 0,
@@ -386,10 +391,16 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Only used by CachingWordShapeIterator
   // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
-  void SetDeprecatedInkBounds(gfx::RectF r) const {
-    deprecated_ink_bounds_ = r;
+  void SetDeprecatedInkBounds(gfx::RectF ink_bounds) {
+    if (!deprecated_ink_bounds_) {
+      deprecated_ink_bounds_ = MakeGarbageCollected<DeprecatedInkBounds>();
+    }
+    deprecated_ink_bounds_->ink_bounds = ink_bounds;
   }
-  gfx::RectF DeprecatedInkBounds() const { return deprecated_ink_bounds_; }
+  gfx::RectF GetDeprecatedInkBounds() const {
+    DCHECK(deprecated_ink_bounds_);
+    return deprecated_ink_bounds_->ink_bounds;
+  }
 
   String ToString() const;
   void ToString(StringBuilder*) const;
@@ -531,7 +542,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Only used by CachingWordShapeIterator and stored here for memory reduction
   // reasons. See https://crbug.com/955776
   // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
-  mutable gfx::RectF deprecated_ink_bounds_;
+  Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
 
   Vector<scoped_refptr<RunInfo>> runs_;
   scoped_refptr<const SimpleFontData> primary_font_;

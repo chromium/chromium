@@ -91,8 +91,8 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
       }
 
       if (found_from_x || found_to_x) {
-        min_y = std::min(min_y, result->DeprecatedInkBounds().y());
-        max_y = std::max(max_y, result->DeprecatedInkBounds().bottom());
+        min_y = std::min(min_y, result->GetDeprecatedInkBounds().y());
+        max_y = std::max(max_y, result->GetDeprecatedInkBounds().bottom());
       }
 
       if (found_from_x && found_to_x)

@@ -78,7 +78,8 @@ struct SameSizeAsRunInfo : public RefCounted<SameSizeAsRunInfo> {
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
 struct SameSizeAsShapeResult {
-  float floats[5];
+  float width;
+  UntracedMember<void*> member;
   Vector<int> vector;
   void* pointers[2];
   unsigned integers[2];

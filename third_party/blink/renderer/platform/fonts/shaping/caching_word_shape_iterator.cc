@@ -17,7 +17,7 @@ const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
     return *cache_entry;
 
   HarfBuzzShaper shaper(word_run.NormalizedUTF16());
-  const ShapeResult* shape_result = shaper.Shape(font, word_run.Direction());
+  ShapeResult* shape_result = shaper.Shape(font, word_run.Direction());
   if (!shape_result)
     return nullptr;
 

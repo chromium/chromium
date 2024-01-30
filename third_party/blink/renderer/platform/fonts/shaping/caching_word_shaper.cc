@@ -54,7 +54,7 @@ float CachingWordShaper::Width(const TextRun& run, gfx::RectF* glyph_bounds) {
       if (run.Rtl())
         width -= word_result->Width();
       if (glyph_bounds) {
-        gfx::RectF adjusted_bounds = word_result->DeprecatedInkBounds();
+        gfx::RectF adjusted_bounds = word_result->GetDeprecatedInkBounds();
         // Translate glyph bounds to the current glyph position which
         // is the total width before this glyph.
         adjusted_bounds.set_x(adjusted_bounds.x() + width);
