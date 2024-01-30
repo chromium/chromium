@@ -307,6 +307,21 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
       std::move(callback));
 }
 
+base::CancelableTaskTracker::TaskId HistoryService::ToAnnotatedVisits(
+    const VisitVector& visit_rows,
+    bool compute_redirect_chain_start_properties,
+    ToAnnotatedVisitsCallback callback,
+    base::CancelableTaskTracker* tracker) const {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::ToAnnotatedVisitsFromRows,
+                     history_backend_, visit_rows,
+                     compute_redirect_chain_start_properties),
+      std::move(callback));
+}
+
 base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
     const std::vector<int64_t>& ids_to_delete,
     const std::vector<Cluster>& clusters_to_add,
@@ -1071,6 +1086,20 @@ base::CancelableTaskTracker::TaskId HistoryService::QueryURL(
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::QueryURL, history_backend_, url,
+                     want_visits),
+      std::move(callback));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::QueryURLs(
+    const std::vector<GURL>& urls,
+    bool want_visits,
+    QueryURLsCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::QueryURLs, history_backend_, urls,
                      want_visits),
       std::move(callback));
 }

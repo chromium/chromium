@@ -21,6 +21,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_test_support.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
+#include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -47,6 +48,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ntp::MockHistoryService;
 
 class MockCartService : public CartService {
  public:

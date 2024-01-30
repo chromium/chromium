@@ -299,6 +299,21 @@ class HistoryService : public KeyedService,
       QueryURLCallback callback,
       base::CancelableTaskTracker* tracker);
 
+  using QueryURLsCallback =
+      base::OnceCallback<void(std::vector<QueryURLResult>)>;
+
+  // Queries the basic information about the URLs in the history database. If
+  // the caller is interested in the visits (each time the URL is visited),
+  // set `want_visits` to true. If these are not needed, the function will be
+  // faster by setting this to false. Same as QueryURL but takes a
+  // vector of URLs and returns a vector of results.
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId QueryURLs(
+      const std::vector<GURL>& urls,
+      bool want_visits,
+      QueryURLsCallback callback,
+      base::CancelableTaskTracker* tracker);
+
   // Provides the result of a query. See QueryResults in history_types.h.
   // The common use will be to use QueryResults.Swap to suck the contents of
   // the results out of the passed in parameter and take ownership of them.
@@ -604,6 +619,16 @@ class HistoryService : public KeyedService,
       bool compute_redirect_chain_start_properties,
       bool get_unclustered_visits_only,
       GetAnnotatedVisitsCallback callback,
+      base::CancelableTaskTracker* tracker) const;
+
+  // Does the same as GetAnnotatedVisits above but uses
+  // visits instead of querying for the visits with the options.
+  using ToAnnotatedVisitsCallback =
+      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
+  virtual base::CancelableTaskTracker::TaskId ToAnnotatedVisits(
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties,
+      ToAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 
   // Delete and add 2 sets of clusters. Doing this in one call avoids an

@@ -292,6 +292,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
   QueryURLResult QueryURL(const GURL& url, bool want_visits);
+  std::vector<QueryURLResult> QueryURLs(const std::vector<GURL>& urls,
+                                        bool want_visits);
   QueryResults QueryHistory(const std::u16string& text_query,
                             const QueryOptions& options);
 
@@ -503,13 +505,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool* limited_by_max_count = nullptr);
 
   // Utility method to Construct `AnnotatedVisit`s.
-  std::vector<AnnotatedVisit> ToAnnotatedVisits(
+  std::vector<AnnotatedVisit> ToAnnotatedVisitsFromRows(
       const VisitVector& visit_rows,
       bool compute_redirect_chain_start_properties) override;
 
   // Like above, but will first construct `visit_rows` from each `VisitID`
-  // before delegating to the overloaded `ToAnnotatedVisits()` above.
-  std::vector<AnnotatedVisit> ToAnnotatedVisits(
+  // before delegating to the `ToAnnotatedVisitsFromRows()` above.
+  std::vector<AnnotatedVisit> ToAnnotatedVisitsFromIds(
       const std::vector<VisitID>& visit_ids,
       bool compute_redirect_chain_start_properties);
 

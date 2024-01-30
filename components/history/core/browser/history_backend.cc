@@ -1974,6 +1974,16 @@ QueryURLResult HistoryBackend::QueryURL(const GURL& url, bool want_visits) {
   return result;
 }
 
+std::vector<QueryURLResult> HistoryBackend::QueryURLs(
+    const std::vector<GURL>& urls,
+    bool want_visits) {
+  std::vector<QueryURLResult> results;
+  for (auto url : urls) {
+    results.push_back(QueryURL(url, want_visits));
+  }
+  return results;
+}
+
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 HistoryBackend::GetHistorySyncControllerDelegate() {
   if (history_sync_bridge_) {
@@ -2253,10 +2263,11 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
 
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());
 
-  return ToAnnotatedVisits(visit_rows, compute_redirect_chain_start_properties);
+  return ToAnnotatedVisitsFromRows(visit_rows,
+                                   compute_redirect_chain_start_properties);
 }
 
-std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
+std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromRows(
     const VisitVector& visit_rows,
     bool compute_redirect_chain_start_properties) {
   if (!db_)
@@ -2308,7 +2319,7 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
   return annotated_visits;
 }
 
-std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
+std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisitsFromIds(
     const std::vector<VisitID>& visit_ids,
     bool compute_redirect_chain_start_properties) {
   if (!db_)
@@ -2319,13 +2330,14 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
     if (db_->GetRowForVisit(visit_id, &visit_row))
       visit_rows.push_back(visit_row);
   }
-  return ToAnnotatedVisits(visit_rows, compute_redirect_chain_start_properties);
+  return ToAnnotatedVisitsFromRows(visit_rows,
+                                   compute_redirect_chain_start_properties);
 }
 
 std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
     const std::vector<VisitID>& visit_ids,
     bool include_duplicates) {
-  auto annotated_visits = ToAnnotatedVisits(
+  auto annotated_visits = ToAnnotatedVisitsFromIds(
       visit_ids, /*compute_redirect_chain_start_properties=*/false);
   std::vector<ClusterVisit> cluster_visits;
   std::set<VisitID> seen_duplicate_ids;

@@ -17,7 +17,7 @@ import type {MenuItem, ModuleHeaderElementV2} from '../module_header';
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';
 
-export const MAX_TABS = 10;
+export const MAX_TABS = 5;
 
 export interface TabResumptionModuleElement {
   $: {

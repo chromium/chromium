@@ -10,7 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -114,12 +117,67 @@ TabResumptionPageHandler::TabResumptionPageHandler(
     content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
-      page_handler_(this, std::move(pending_page_handler)) {
+      page_handler_(this, std::move(pending_page_handler)),
+      visibility_threshold_(
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ntp_features::kNtpTabResumptionModule,
+              ntp_features::kNtpTabResumptionModuleVisibilityThresholdDataParam,
+              /*Default value for visibility threshold*/ 0.5))) {
   DCHECK(profile_);
   DCHECK(web_contents_);
 }
 
 TabResumptionPageHandler::~TabResumptionPageHandler() = default;
+
+void TabResumptionPageHandler::OnQueryURLsComplete(
+    std::vector<history::mojom::TabPtr> tabs,
+    GetTabsCallback callback,
+    std::vector<history::QueryURLResult> results) {
+  history::VisitVector visit_rows;
+  for (auto result : results) {
+    for (auto visit : result.visits) {
+      visit_rows.push_back(visit);
+    }
+  }
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->ToAnnotatedVisits(
+      visit_rows,
+      /*compute_redirect_chain_start_properties=*/false,
+      base::BindOnce(&TabResumptionPageHandler::OnAnnotatedVisits,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(tabs),
+                     std::move(callback)),
+      &task_tracker_);
+}
+
+void TabResumptionPageHandler::OnAnnotatedVisits(
+    std::vector<history::mojom::TabPtr> tabs,
+    GetTabsCallback callback,
+    const std::vector<history::AnnotatedVisit> annotated_visits) {
+  std::vector<history::mojom::TabPtr> scored_tabs;
+  std::set<int> scored_tab_indices;
+  for (const auto& annotated_visit : annotated_visits) {
+    float visibility_score =
+        annotated_visit.content_annotations.model_annotations.visibility_score;
+    /* If score is -1, it has not been evaluated for visibility */
+    if (visibility_score < visibility_threshold_ && visibility_score >= 0) {
+      continue;
+    }
+    for (size_t i = 0; i < tabs.size(); i++) {
+      if (annotated_visit.url_row.url() == tabs[i]->url &&
+          scored_tab_indices.find(i) == scored_tab_indices.end()) {
+        scored_tab_indices.insert(i);
+        break;
+      }
+    }
+  }
+
+  for (auto i : scored_tab_indices) {
+    scored_tabs.push_back(std::move(tabs[i]));
+  }
+
+  std::move(callback).Run(std::move(scored_tabs));
+}
 
 void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
@@ -143,7 +201,18 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   }
 
   auto tabs_mojom = GetForeignTabs();
-  std::move(callback).Run(std::move(tabs_mojom));
+  std::vector<GURL> urls;
+  for (const auto& tab : tabs_mojom) {
+    urls.push_back(tab->url);
+  }
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->QueryURLs(
+      urls, /*want_visits=*/true,
+      base::BindOnce(&TabResumptionPageHandler::OnQueryURLsComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(tabs_mojom),
+                     std::move(callback)),
+      &task_tracker_);
 }
 
 // static

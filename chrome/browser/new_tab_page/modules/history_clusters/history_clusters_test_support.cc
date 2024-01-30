@@ -31,10 +31,6 @@ MockHistoryClustersModuleService::MockHistoryClustersModuleService()
 
 MockHistoryClustersModuleService::~MockHistoryClustersModuleService() = default;
 
-MockHistoryService::MockHistoryService() = default;
-
-MockHistoryService::~MockHistoryService() = default;
-
 history::ClusterVisit SampleVisitForURL(
     history::VisitID id,
     GURL url,

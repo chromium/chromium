@@ -51,7 +51,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool GetForeignVisit(const std::string& originator_cache_guid,
                        VisitID originator_visit_id,
                        VisitRow* visit_row) override;
-  std::vector<AnnotatedVisit> ToAnnotatedVisits(
+  std::vector<AnnotatedVisit> ToAnnotatedVisitsFromRows(
       const VisitVector& visit_rows,
       bool compute_redirect_chain_start_properties) override;
   VisitID AddSyncedVisit(
