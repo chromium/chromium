@@ -32497,6 +32497,36 @@ should be able to be added at any place in this file.
   <description>User started a browser safety check in settings.</description>
 </action>
 
+<action name="Settings.SafetyHub.IncognitoLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Incognito' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
+<action name="Settings.SafetyHub.SafeBrowsingLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Safe Browsing' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
+<action name="Settings.SafetyHub.SafetyToolsLinkClicked">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded whenever the user clicks on 'Safety Tools' link in the Education
+    module of Safety Check page in settings.
+  </description>
+</action>
+
 <action name="Settings.Searching">
   <owner>dschuyler@chromium.org</owner>
   <description>

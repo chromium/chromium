@@ -131,6 +131,24 @@ export class SettingsSafetyHubModuleElement extends
     item.style.display = visible ? 'flex' : '';
   }
 
+  private addItemLinkClickListeners(items: NodeListOf<HTMLElement>) {
+    // Module items might contain links. If there is any link in the module,
+    // this function adds a listener for the "Click" event on each link. 'Click'
+    // events will be handled by derived module elements. For that, add
+    // on-sh-module-item-link-click property to settings-safety-hub-module
+    // element in the html file.
+    for (const item of items) {
+      const links = item.querySelectorAll('a');
+      links.forEach((link) => {
+        link.addEventListener('click', function() {
+          this.dispatchEvent(new CustomEvent(
+              'sh-module-item-link-click',
+              {bubbles: true, composed: true, detail: item}));
+        });
+      });
+    }
+  }
+
   private onSitesChanged_() {
     const items =
         this.shadowRoot!.querySelectorAll<HTMLElement>('#siteList .list-item');
@@ -148,6 +166,9 @@ export class SettingsSafetyHubModuleElement extends
     if (this.sites && this.sites.length !== items.length) {
       setTimeout(this.onSitesChanged_.bind(this), 0);
     }
+
+    // Add an event listener to link elements of the module.
+    this.addItemLinkClickListeners(items);
   }
 
   /**
