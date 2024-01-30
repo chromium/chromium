@@ -154,7 +154,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
  private:
   // Starts a focus session by updating UI elements, starting `timer_`, and
   // setting `current_session_` to the desired session duration and end time.
-  void StartFocusSession();
+  void StartFocusSession(focus_mode_histogram_names::ToggleSource source);
 
   // Called every time a second passes on `timer_` while the session is active.
   void OnTimerTick();

@@ -1060,6 +1060,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Feature pod"/>
 </enum>
 
+<enum name="FocusModeStartSessionSource">
+  <int value="0" label="Focus panel"/>
+  <int value="1" label="Feature pod"/>
+</enum>
+
 <enum name="GlanceableStudentAssignmentList">
   <int value="0" label="Assigned"/>
   <int value="1" label="NoDueDate"/>

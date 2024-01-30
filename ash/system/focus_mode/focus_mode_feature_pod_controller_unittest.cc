@@ -127,6 +127,39 @@ TEST_F(FocusModeFeaturePodControllerTest, PressIconTogglesFocusModeSession) {
       /*expected_count=*/1);
 }
 
+// Verify that when toggling a focus mode through the QS tile or the focus
+// panel, the histogram will record it.
+TEST_F(FocusModeFeaturePodControllerTest, CheckStartSessionSourceHistograms) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 1. Start a focus session from the feature pod.
+  controller->ToggleFocusMode(
+      focus_mode_histogram_names::ToggleSource::kFeaturePod);
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
+      /*sample=*/focus_mode_histogram_names::StartSessionSource::kFeaturePod,
+      /*expected_count=*/1);
+
+  controller->ToggleFocusMode(
+      focus_mode_histogram_names::ToggleSource::kFeaturePod);
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a new focus session from the focus panel.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
+      /*sample=*/focus_mode_histogram_names::StartSessionSource::kFocusPanel,
+      /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kStartSessionSourceHistogramName, 2);
+}
+
 // Tests that pressing the label works and shows the `FocusModeDetailedView`.
 TEST_F(FocusModeFeaturePodControllerTest, PressLabelEntersFocusPanel) {
   controller_->OnLabelPressed();

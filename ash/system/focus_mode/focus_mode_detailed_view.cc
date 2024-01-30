@@ -83,6 +83,7 @@ constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
+constexpr int kTimerTextfieldCornerRadius = 8;
 
 // Task view constants.
 constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(4, 24, 22, 24);
@@ -613,7 +614,7 @@ void FocusModeDetailedView::CreateTimerView() {
   // Override the rounded highlight path set in `SystemTextfield` to keep it the
   // same as the corner radius for the task textfield.
   views::InstallRoundRectHighlightPathGenerator(timer_textfield_, gfx::Insets(),
-                                                8);
+                                                kTimerTextfieldCornerRadius);
 
   views::Label* minutes_label = textfield_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(

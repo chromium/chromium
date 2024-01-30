@@ -743,4 +743,36 @@ TEST_F(FocusModeDetailedViewTest, StartSessionWithActiveTimerTextfield) {
           prefs::kFocusModeSessionDuration));
 }
 
+// Verify that when toggling a focus mode, the histogram will record the initial
+// session duration.
+TEST_F(FocusModeDetailedViewTest, CheckInitialDurationHistograms) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 1. Start a focus session with the minimum session duration.
+  controller->SetInactiveSessionDuration(focus_mode_util::kMinimumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectTimeBucketCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      focus_mode_util::kMinimumDuration, 1);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a new focus session with the maximum session duration.
+  controller->SetInactiveSessionDuration(focus_mode_util::kMaximumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectTimeBucketCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      focus_mode_util::kMaximumDuration, 1);
+
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      2);
+}
+
 }  // namespace ash
