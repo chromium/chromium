@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
@@ -33,18 +34,6 @@ static const char AboutThisSiteRenderModeParameterValue[] = "minimal";
 // when the website was first indexed and other data if available.
 class AboutThisSiteService : public KeyedService {
  public:
-  // Provides platform-independant access to an optimization guide service.
-  // OptimizationGuideService on iOS doesn't implement OptimizationGuideDecider,
-  // therefore the interface cannot be used in this service.
-  class Client {
-   public:
-    virtual bool IsOptimizationGuideAllowed() = 0;
-    virtual optimization_guide::OptimizationGuideDecision CanApplyOptimization(
-        const GURL& url,
-        optimization_guide::OptimizationMetadata* optimization_metadata) = 0;
-    virtual ~Client() = default;
-  };
-
   using DecisionAndMetadata =
       std::pair<optimization_guide::OptimizationGuideDecision,
                 std::optional<page_info::proto::AboutThisSiteMetadata>>;
@@ -74,8 +63,11 @@ class AboutThisSiteService : public KeyedService {
     kMaxValue = kSameTabNavigation
   };
 
-  explicit AboutThisSiteService(std::unique_ptr<Client> client,
-                                TemplateURLService* template_url_service);
+  explicit AboutThisSiteService(
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      bool is_off_the_record,
+      PrefService* prefs,
+      TemplateURLService* template_url_service);
   ~AboutThisSiteService() override;
 
   AboutThisSiteService(const AboutThisSiteService&) = delete;
@@ -95,10 +87,19 @@ class AboutThisSiteService : public KeyedService {
   base::WeakPtr<AboutThisSiteService> GetWeakPtr();
 
  private:
-  std::unique_ptr<Client> client_;
+  const raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
+  const bool is_off_the_record_;
+  const raw_ptr<PrefService> prefs_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
+
+  // Virtual for tests.
+  virtual bool IsOptimizationGuideAllowed() const;
+  virtual optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::OptimizationMetadata* optimization_metadata) const;
 };
 
 }  // namespace page_info

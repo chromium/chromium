@@ -981,8 +981,6 @@ static_library("browser") {
     "page_info/about_this_site_service_factory.h",
     "page_info/about_this_site_tab_helper.cc",
     "page_info/about_this_site_tab_helper.h",
-    "page_info/chrome_about_this_site_service_client.cc",
-    "page_info/chrome_about_this_site_service_client.h",
     "page_info/page_info_features.cc",
     "page_info/page_info_features.h",
     "page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.cc",
