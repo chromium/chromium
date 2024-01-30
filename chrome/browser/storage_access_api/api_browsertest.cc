@@ -731,6 +731,28 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPromptsBrowserTest,
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPromptsBrowserTest,
+                       AccessGranted_NoSubsequentUserInteraction) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->ResetCounts();
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
+      GetFrame(), /*omit_user_gesture=*/true));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
+}
+
 // Validate that if an iframe obtains access, then cookies become unblocked for
 // just that top-level/third-party combination and are still blocked for other
 // combinations.
