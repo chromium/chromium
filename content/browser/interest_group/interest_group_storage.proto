@@ -20,3 +20,11 @@ message AdProtos {
   }
   repeated AdProto ads = 1;
 }
+
+message BiddingAndAuctionServerKeyProtos {
+  message BiddingAndAuctionServerKeyProto {
+    string key = 1;
+    int32 id = 2;
+  }
+  repeated BiddingAndAuctionServerKeyProto keys = 1;
+}

@@ -33,9 +33,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "content/browser/interest_group/interest_group_ad.pb.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
+#include "content/browser/interest_group/interest_group_storage.pb.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -88,6 +89,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 21 - 2023/11 - crrev.com/c/5063314
 // Version 22 - 2023/12 - crrev.com/c/5063589
 // Version 23 - 2024/01 - crrev.com/c/5173733
+// Version 24 - 2024/01 - crrev.com/c/5245196
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -120,7 +122,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // starting and duration columns to starting_time and type columns to the debug
 // report cooldown table.
 // Version 23 adds trusted bidding signals URL length limit.
-const int kCurrentVersionNumber = 23;
+// Version 24 adds cached B&A server keys.
+const int kCurrentVersionNumber = 24;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -779,7 +782,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV23Schema(sql::Database& db) {
+bool CreateV24Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -933,7 +936,31 @@ bool CreateV23Schema(sql::Database& db) {
     return false;
   }
 
+  DCHECK(!db.DoesTableExist("bidding_and_auction_server_keys"));
+  static const char kBAKeysTableSql[] =
+      // clang-format off
+      "CREATE TABLE bidding_and_auction_server_keys("
+        "coordinator TEXT NOT NULL,"
+        "keys BLOB NOT NULL,"
+        "expiration INTEGER NOT NULL,"
+      "PRIMARY KEY(coordinator))";
+  // clang-format on
+  if (!db.Execute(kBAKeysTableSql)) {
+    return false;
+  }
   return true;
+}
+
+bool UpgradeV23SchemaToV24(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kBAKeysTableSql[] =
+      // clang-format off
+    "CREATE TABLE bidding_and_auction_server_keys("
+      "coordinator TEXT NOT NULL,"
+      "keys BLOB NOT NULL,"
+      "expiration INTEGER NOT NULL,"
+    "PRIMARY KEY(coordinator))";
+  // clang-format on
+  return db.Execute(kBAKeysTableSql);
 }
 
 bool UpgradeV22SchemaToV23(sql::Database& db, sql::MetaTable& meta_table) {
@@ -4015,6 +4042,76 @@ bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
   return true;
 }
 
+bool ClearExpiredBiddingAndAuctionKeys(sql::Database& db, base::Time now) {
+  sql::Statement clear_expired_keys(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM bidding_and_auction_server_keys "
+                            "WHERE expiration<?"));
+  clear_expired_keys.BindTime(0, now);
+  return clear_expired_keys.Run();
+}
+
+bool DoSetBiddingAndAuctionServerKeys(
+    sql::Database& db,
+    const url::Origin& coordinator,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    base::Time expiration) {
+  BiddingAndAuctionServerKeyProtos key_protos;
+  for (const BiddingAndAuctionServerKey& key : keys) {
+    BiddingAndAuctionServerKeyProtos_BiddingAndAuctionServerKeyProto*
+        key_proto = key_protos.add_keys();
+    key_proto->set_key(key.key);
+    key_proto->set_id(key.id);
+  }
+  sql::Statement insert_keys_statement(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE INTO "
+      "bidding_and_auction_server_keys(coordinator,keys,expiration) "
+      "VALUES  (?,?,?)"));
+
+  insert_keys_statement.Reset(true);
+  insert_keys_statement.BindString(0, Serialize(coordinator));
+  insert_keys_statement.BindBlob(1, key_protos.SerializeAsString());
+  insert_keys_statement.BindTime(2, expiration);
+  return insert_keys_statement.Run();
+}
+
+std::vector<BiddingAndAuctionServerKey> DoGetBiddingAndAuctionServerKeys(
+    sql::Database& db,
+    const url::Origin& coordinator) {
+  sql::Statement keys_statement(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT keys "
+                            "FROM bidding_and_auction_server_keys "
+                            "WHERE coordinator = ? AND expiration>?"));
+  if (!keys_statement.is_valid()) {
+    DLOG(ERROR)
+        << "DoGetBiddingAndAuctionServerKeys SQL statement did not compile.";
+    return {};
+  }
+
+  keys_statement.Reset(true);
+  keys_statement.BindString(0, Serialize(coordinator));
+  keys_statement.BindTime(1, base::Time::Now());
+
+  if (keys_statement.Step()) {
+    std::string key_blob = keys_statement.ColumnString(0);
+    BiddingAndAuctionServerKeyProtos keys;
+    bool success = keys.ParseFromString(key_blob);
+
+    if (not success || keys.keys().empty()) {
+      return {};
+    }
+    std::vector<BiddingAndAuctionServerKey> out;
+    out.reserve(keys.keys_size());
+    for (const auto& key : keys.keys()) {
+      out.emplace_back(key.key(), key.id());
+    }
+    return out;
+  }
+  return {};
+}
+
 bool DoPerformDatabaseMaintenance(sql::Database& db,
                                   base::Time now,
                                   size_t max_owners,
@@ -4051,6 +4148,9 @@ bool DoPerformDatabaseMaintenance(sql::Database& db,
     return false;
   }
   if (!DeleteExpiredDebugReportCooldown(db, now)) {
+    return false;
+  }
+  if (!ClearExpiredBiddingAndAuctionKeys(db, now)) {
     return false;
   }
   return transaction.Commit();
@@ -4192,7 +4292,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV23Schema(*db_);
+    return CreateV24Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -4296,6 +4396,11 @@ bool InterestGroupStorage::InitializeSchema() {
         ABSL_FALLTHROUGH_INTENDED;
       case 22:
         if (!UpgradeV22SchemaToV23(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 23:
+        if (!UpgradeV23SchemaToV24(*db_, meta_table)) {
           return false;
         }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
@@ -4742,6 +4847,27 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
               std::back_inserter(result));
   }
   return result;
+}
+
+void InterestGroupStorage::SetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    base::Time expiration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+  DoSetBiddingAndAuctionServerKeys(*db_, coordinator, keys, expiration);
+}
+
+std::vector<BiddingAndAuctionServerKey>
+InterestGroupStorage::GetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return {};
+  }
+  return DoGetBiddingAndAuctionServerKeys(*db_, coordinator);
 }
 
 base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
