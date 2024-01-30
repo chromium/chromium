@@ -449,48 +449,6 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                          BreakGlyphsOption,
                          GlyphIndexResult*) const;
 
-  // Helper class storing a map between offsets and x-positions.
-  // Unlike the RunInfo and GlyphData structures in ShapeResult, which operates
-  // in glyph order, this class stores a map between character index and the
-  // total accumulated advance for each character. Allowing constant time
-  // mapping from character index to x-position and O(log n) time, using binary
-  // search, from x-position to character index.
-  class CharacterPositionData {
-    USING_FAST_MALLOC(CharacterPositionData);
-
-   public:
-    explicit CharacterPositionData(unsigned num_characters)
-        : data_(num_characters) {}
-
-    ShapeResultCharacterData& operator[](unsigned index) {
-      return data_[index];
-    }
-    const ShapeResultCharacterData& operator[](unsigned index) const {
-      return data_[index];
-    }
-
-    // Returns the next or previous offsets respectively at which it is safe to
-    // break without reshaping.
-    unsigned NextSafeToBreakOffset(unsigned offset) const;
-    unsigned PreviousSafeToBreakOffset(unsigned offset) const;
-
-    // Returns the offset of the last character that fully fits before the given
-    // x-position.
-    unsigned OffsetForPosition(float x, bool rtl) const;
-
-    // Returns the x-position for a given offset.
-    float PositionForOffset(unsigned offset, bool rtl) const;
-
-   private:
-    // This vector is indexed by visual-offset; the character offset from the
-    // left edge regardless of the TextDirection.
-    Vector<ShapeResultCharacterData> data_;
-    unsigned start_offset_;
-    float width_;
-
-    friend class ShapeResult;
-  };
-
   // Append a copy of a range within an existing result to another result.
   //
   // For sequential copies the run_index argument indicates the run to start at.
@@ -545,8 +503,15 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
 
   Vector<scoped_refptr<RunInfo>> runs_;
+
+  // Stores x-positions for quick mapping between offsets and x-positions.
+  // Unlike the RunInfo and GlyphData, which operates in glyph order, this
+  // class stores a map between character index and the total accumulated
+  // advance for each character. Allowing constant time mapping from character
+  // index to x-position and O(log n) time, using binary search, from
+  // x-position to character index.
+  mutable Vector<ShapeResultCharacterData> character_position_;
   scoped_refptr<const SimpleFontData> primary_font_;
-  mutable std::unique_ptr<CharacterPositionData> character_position_;
 
   unsigned start_index_;
   unsigned num_characters_;
