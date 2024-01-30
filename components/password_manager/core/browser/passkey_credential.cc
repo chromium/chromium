@@ -17,6 +17,10 @@
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace password_manager {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -51,6 +55,23 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+namespace {
+
+int GetAuthenticationLabelForPasskeysFromAndroid() {
+#if BUILDFLAG(IS_ANDROID)
+  // CredMan is Android specific and when it is enabled, the label changes.
+  return webauthn::WebAuthnCredManDelegate::CredManMode() ==
+                 webauthn::WebAuthnCredManDelegate::CredManEnabledMode::
+                     kNonGpmPasskeys
+             ? IDS_PASSWORD_MANAGER_PASSKEY
+             : IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+#else
+  return IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
 
 PasskeyCredential::PasskeyCredential(Source source,
                                      RpId rp_id,
@@ -90,7 +111,7 @@ std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
       id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
       break;
     case Source::kAndroidPhone:
-      id = IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+      id = GetAuthenticationLabelForPasskeysFromAndroid();
       break;
     case Source::kGooglePasswordManager:
       // TODO(https://crbug.com/1459620): Update this when a proper string is

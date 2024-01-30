@@ -61,6 +61,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1996,6 +1998,10 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
 #endif
 
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
+#if BUILDFLAG(IS_ANDROID)
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;

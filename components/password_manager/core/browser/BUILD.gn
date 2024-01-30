@@ -260,11 +260,13 @@ source_set("passkey_credential") {
     "//base",
     "//components/strings:components_strings",
     "//components/sync/protocol",
-    "//third_party/abseil-cpp:absl",
     "//ui/base",
   ]
   if (!is_ios) {
     deps += [ "//components/webauthn/core/browser" ]
+  }
+  if (is_android) {
+    deps += [ "//components/webauthn/android" ]
   }
 }
 
