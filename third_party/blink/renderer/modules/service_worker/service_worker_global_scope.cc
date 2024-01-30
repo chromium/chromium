@@ -1546,8 +1546,9 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
   event_init->setCancelable(true);
   event_init->setClientId(
       params->request->is_main_resource_load ? String() : params->client_id);
-  event_init->setResultingClientId(
-      !params->request->is_main_resource_load ? String() : params->client_id);
+  event_init->setResultingClientId(!params->request->is_main_resource_load
+                                       ? String()
+                                       : params->resulting_client_id);
   event_init->setIsReload(params->request->is_reload);
 
   mojom::blink::FetchAPIRequest& fetch_request = *params->request;

@@ -658,6 +658,7 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   auto params = blink::mojom::DispatchFetchEventParams::New();
   params->request = std::move(request_);
   params->client_id = client_id_;
+  params->resulting_client_id = client_id_;
   params->preload_url_loader_client_receiver =
       std::move(preload_url_loader_client_receiver_);
   params->is_offline_capability_check = is_offline_capability_check_;

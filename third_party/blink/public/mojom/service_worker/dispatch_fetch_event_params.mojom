@@ -13,12 +13,19 @@ import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 // This struct is used by ServiceWorker main resource or subreosurce loader,
 // those are located in both browser and renderer processes. This is used to
 // pass parameters to ServiceWorker global scope.
+//
+// Specification: https://w3c.github.io/ServiceWorker/#fetchevent-interface
 struct DispatchFetchEventParams {
   // FetchEvent#request.
   FetchAPIRequest request;
 
   // FetchEvent#clientId.
+  // The value come from a unique ID generated in the browser process.
   string client_id;
+
+  // FetchEvent#resultingClientId.
+  // The value come from a unique ID generated in the browser process.
+  string resulting_client_id;
 
   // FetchEvent#preloadResponse.
   pending_receiver<network.mojom.URLLoaderClient>? preload_url_loader_client_receiver;
