@@ -63,50 +63,6 @@ function validateStatsReport(statsReport) {
   }
 }
 
-// Assert that the stats report have stats objects of
-// given types
-function assert_stats_report_has_stats(statsReport, statsTypes) {
-  const hasTypes = new Set([...statsReport.values()]
-    .map(stats => stats.type));
-
-  for(const type of statsTypes) {
-    assert_true(hasTypes.has(type),
-      `Expect statsReport to contain stats object of type ${type}`);
-  }
-}
-
-function findStatsFromReport(statsReport, predicate, message) {
-  for (const stats of statsReport.values()) {
-    if (predicate(stats)) {
-      return stats;
-    }
-  }
-
-  assert_unreached(message || 'none of stats in statsReport satisfy given condition')
-}
-
-// Get stats object of type that is expected to be
-// found in the statsReport
-function getRequiredStats(statsReport, type) {
-  for(const stats of statsReport.values()) {
-    if(stats.type === type) {
-      return stats;
-    }
-  }
-
-  assert_unreached(`required stats of type ${type} is not found in stats report`);
-}
-
-// Get stats object by the stats ID.
-// This is used to retreive other stats objects
-// linked to a stats object
-function getStatsById(statsReport, statsId) {
-  assert_true(statsReport.has(statsId),
-    `Expect stats report to have stats object with id ${statsId}`);
-
-  return statsReport.get(statsId);
-}
-
 // Validate an ID field in a stats object by making sure
 // that the linked stats object is found in the stats report
 // and have the type field value same as expected type
@@ -114,7 +70,10 @@ function getStatsById(statsReport, statsId) {
 // as validateStatsReport already does all validations
 function validateIdField(statsReport, stats, field, type) {
   assert_string_field(stats, field);
-  const linkedStats = getStatsById(statsReport, stats[field]);
+  assert_true(statsReport.has(stats[field]),
+    `Expect stats report to have stats object with id ${stats[field]}`);
+
+  const linkedStats = statsReport.get(stats[field]);
   assert_equals(linkedStats.type, type,
     `Expect linked stats object to have type ${type}`);
 }
@@ -730,7 +689,6 @@ function validateDataChannelStats(statsReport, stats) {
       DOMString             tlsVersion;
       DOMString             dtlsCipher;
       DOMString             srtpCipher;
-      DOMString             tlsGroup;
       unsigned long         selectedCandidatePairChanges;
     };
 
@@ -779,7 +737,6 @@ function validateTransportStats(statsReport, stats) {
   assert_optional_string_field(stats, 'tlsVersion');
   assert_optional_string_field(stats, 'dtlsCipher');
   assert_optional_string_field(stats, 'srtpCipher');
-  assert_optional_string_field(stats, 'tlsGroup');
   assert_optional_unsigned_int_field(stats, 'selectedCandidatePairChanges');
 }
 
