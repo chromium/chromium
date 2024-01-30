@@ -16,6 +16,8 @@ source_set("app_shim") {
     "app_shim_manager_mac.h",
     "app_shim_termination_manager.cc",
     "app_shim_termination_manager.h",
+    "code_signature_mac.h",
+    "code_signature_mac.cc",
     "mach_bootstrap_acceptor.cc",
     "mach_bootstrap_acceptor.h",
     "web_app_shim_manager_delegate_mac.cc",
