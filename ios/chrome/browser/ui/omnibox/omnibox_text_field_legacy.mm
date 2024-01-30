@@ -730,7 +730,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)forwardKeyCommandRight {
   [self.omniboxKeyboardDelegate
-      performKeyboardAction:OmniboxKeyboardActionRightArrow];
+      performKeyboardAction:OmniboxKeyboardActionDownArrow];
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
