@@ -338,6 +338,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   absl::optional<OffsetInfo> TryCalculateOffset(
       const NodeInfo& node_info,
       const ComputedStyle& style,
+      AnchorEvaluatorImpl*,
       const LogicalAnchorQueryMap* anchor_queries,
       const LayoutObject* implicit_anchor,
       bool try_fit_available_space,

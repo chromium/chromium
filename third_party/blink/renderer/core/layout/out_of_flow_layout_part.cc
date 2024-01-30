@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -1957,6 +1958,16 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // See non_overflowing_scroll_range.h for documentation.
   Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
+  WritingDirectionMode self_writing_direction =
+      node_info.node.Style().GetWritingDirection();
+  // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
+  absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
+  CreateAnchorEvaluator(
+      anchor_evaluator_storage, node_info.container_info,
+      self_writing_direction, node_info.node.Style().AnchorDefault(),
+      *node_info.node.GetLayoutBox(), anchor_queries, implicit_anchor);
+  AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
+
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
   // result fits the available space.
   OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox());
@@ -1967,9 +1978,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Do @try placement decisions on the *base style* to avoid interference
     // from animations and transitions.
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
-    offset_info = TryCalculateOffset(node_info, style, anchor_queries,
-                                     implicit_anchor, has_next_fallback_style,
-                                     is_first_run, &non_overflowing_range);
+    offset_info = TryCalculateOffset(
+        node_info, style, anchor_evaluator, anchor_queries, implicit_anchor,
+        has_next_fallback_style, is_first_run, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && has_next_fallback_style) {
@@ -1990,10 +2001,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Once the @try placement has been decided, calculate the offset again,
     // using the non-base style.
     NonOverflowingScrollRange non_overflowing_range_unused;
-    offset_info =
-        TryCalculateOffset(node_info, iter.ActivateStyleForChosenFallback(),
-                           anchor_queries, implicit_anchor, iter.HasNextStyle(),
-                           is_first_run, &non_overflowing_range_unused);
+    offset_info = TryCalculateOffset(
+        node_info, iter.ActivateStyleForChosenFallback(), anchor_evaluator,
+        anchor_queries, implicit_anchor, iter.HasNextStyle(), is_first_run,
+        &non_overflowing_range_unused);
   }
 
   if (iter.UsesFallbackStyle()) {
@@ -2012,11 +2023,24 @@ absl::optional<OutOfFlowLayoutPart::OffsetInfo>
 OutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
+    AnchorEvaluatorImpl* anchor_evaluator,
     const LogicalAnchorQueryMap* anchor_queries,
     const LayoutObject* implicit_anchor,
     bool try_fit_available_space,
     bool is_first_run,
     NonOverflowingScrollRange* out_non_overflowing_range) {
+  // TryCalculateOffset may be called multiple times if we have multiple @try
+  // candidates. However, the AnchorEvaluatorImpl instance remains the same
+  // across TryCalculateOffset calls, and was created with the "original"
+  // writing-mode/anchor-default values.
+  //
+  // Those properties are not allowed within @try, so it should not be possible
+  // to end up with a candidate style with different values.
+  DCHECK_EQ(node_info.node.Style().GetWritingDirection(),
+            candidate_style.GetWritingDirection());
+  DCHECK(base::ValuesEquivalent(node_info.node.Style().AnchorDefault(),
+                                candidate_style.AnchorDefault()));
+
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction =
@@ -2046,13 +2070,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       return offset_info;
     }
   }
-
-  absl::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
-  CreateAnchorEvaluator(
-      anchor_evaluator_storage, node_info.container_info,
-      candidate_writing_direction, candidate_style.AnchorDefault(),
-      *node_info.node.GetLayoutBox(), anchor_queries, implicit_anchor);
-  AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
   const LogicalAlignment alignment =
       ComputeAlignment(candidate_style, container_writing_direction,
