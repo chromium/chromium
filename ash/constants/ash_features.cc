@@ -1022,12 +1022,6 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri{
     &kFastPairPwaCompanion, "pwa-companion-play-store-uri",
     /*default*/ ""};
 
-// Allows Fast Pair to use software scanning on devices which don't support
-// hardware offloading of BLE scans.
-BASE_FEATURE(kFastPairSoftwareScanning,
-             "FastPairSoftwareScanning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables support for software-based scanning on devices that don't support
 // hardware-based BLE advertisement filtering.
 BASE_FEATURE(kFastPairSoftwareScanningSupport,
@@ -3414,10 +3408,6 @@ bool IsFastPairPwaCompanionEnabled() {
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
   return base::FeatureList::IsEnabled(
       kFastPairPreventNotificationsForRecentlyLostDevice);
-}
-
-bool IsFastPairSoftwareScanningEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
 }
 
 bool IsFastPairSoftwareScanningSupportEnabled() {

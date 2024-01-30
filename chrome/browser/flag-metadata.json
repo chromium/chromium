@@ -4076,14 +4076,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "fast-pair-software-scanning",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "fast-pair-software-scanning-support",
     "owners": [
       "//ash/quick_pair/OWNERS",

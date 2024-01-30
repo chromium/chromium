@@ -38,19 +38,6 @@ TEST_F(FastPairSupportUtilsTest, HasHardwareSupportForHardwareState) {
   EXPECT_TRUE(HasHardwareSupport(adapter_));
 }
 
-TEST_F(FastPairSupportUtilsTest, HasHardwareSupportForFlagState) {
-  EXPECT_TRUE(HasHardwareSupport(adapter_));
-
-  adapter_->SetHardwareOffloadingStatus(
-      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
-          kNotSupported);
-  EXPECT_FALSE(HasHardwareSupport(adapter_));
-
-  base::test::ScopedFeatureList feature_list{
-      features::kFastPairSoftwareScanning};
-  EXPECT_TRUE(HasHardwareSupport(adapter_));
-}
-
 TEST_F(FastPairSupportUtilsTest, DisableAllowCrossDeviceFeatureSuite) {
   EXPECT_TRUE(HasHardwareSupport(adapter_));
 

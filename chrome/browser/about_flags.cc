@@ -7548,11 +7548,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSavedDevicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSavedDevices)},
 
-    {"fast-pair-software-scanning",
-     flag_descriptions::kFastPairSoftwareScanningName,
-     flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanning)},
-
     {"fast-pair-software-scanning-support",
      flag_descriptions::kFastPairSoftwareScanningSupportName,
      flag_descriptions::kFastPairSoftwareScanningSupportDescription, kOsCrOS,

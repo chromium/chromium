@@ -6045,12 +6045,6 @@ const char kFastPairPwaCompanionName[] = "Enable Fast Pair Web Companion";
 const char kFastPairPwaCompanionDescription[] =
     "Enables Fast Pair Web Companion link after device pairing.";
 
-const char kFastPairSoftwareScanningName[] =
-    "Enable Fast Pair Software Scanning";
-const char kFastPairSoftwareScanningDescription[] =
-    "Allow using Fast Pair on devices which don't support hardware offloading "
-    "of BLE scans. For development use.";
-
 const char kFastPairSoftwareScanningSupportName[] =
     "Enable Fast Pair Software Scanning Support";
 const char kFastPairSoftwareScanningSupportDescription[] =
