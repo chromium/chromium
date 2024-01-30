@@ -48,7 +48,7 @@ def main():
         RunCommand([BUILD_RUST_PY_PATH, '--sync-for-gnrt'])
 
         # Get a Rust sysroot to build gnrt with.
-        InstallRustBetaSysroot(RUST_REVISION, [RustTargetTriple(None)])
+        InstallRustBetaSysroot(RUST_REVISION, [RustTargetTriple()])
 
     cargo_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'cargo{EXE}')
     rustc_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'rustc{EXE}')

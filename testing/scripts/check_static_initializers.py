@@ -32,7 +32,7 @@ _LINUX_SI_ALLOWLIST = {
         # TODO(crbug.com/1445935): Rust stdlib argv handling.
         # https://github.com/rust-lang/rust/blob/b08148f6a76010ea3d4e91d61245aa7aac59e4b4/library/std/src/sys/unix/args.rs#L107-L127
         # https://github.com/rust-lang/rust/issues/111921
-        '.* : std::sys::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper',
+        '.* : std::sys::pal::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper',
 
         # Added by libgcc due to USE_EH_FRAME_REGISTRY.
         'crtstuff\\.c : frame_dummy',
