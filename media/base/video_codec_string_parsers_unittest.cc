@@ -227,6 +227,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
     ASSERT_TRUE(result);
     EXPECT_EQ(AV1PROFILE_PROFILE_HIGH, result->profile);
     EXPECT_EQ(10u, result->bit_depth);
+    EXPECT_EQ(VideoChromaSampling::k444, result->subsampling);
   }
 
   {
@@ -311,6 +312,10 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
 TEST(ParseAv1CodecId, VerifyOptionalMonochrome) {
   // monochrome is either 0, 1 and leading zeros are not allowed.
   EXPECT_FALSE(ParseAv1CodecId("av01.0.04M.08.00"));
+
+  // monochrome is not allowed with high profile.
+  EXPECT_FALSE(ParseAv1CodecId("av01.1.04M.08.1"));
+
   for (int i = 0; i <= 9; ++i) {
     const std::string codec_string = base::StringPrintf("av01.0.00M.08.%d", i);
     SCOPED_TRACE(codec_string);
@@ -382,7 +387,7 @@ TEST(ParseAv1CodecId, VerifyOptionalSubsampling) {
   {
     auto result = ParseAv1CodecId("av01.1.00M.10.0.100");
     ASSERT_TRUE(result);
-    EXPECT_EQ(result->subsampling, VideoChromaSampling::k420);
+    EXPECT_EQ(result->subsampling, VideoChromaSampling::k444);
   }
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.000");

@@ -289,6 +289,7 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       result.profile = AV1PROFILE_PROFILE_MAIN;
       break;
     case 1:
+      result.subsampling = VideoChromaSampling::k444;
       result.profile = AV1PROFILE_PROFILE_HIGH;
       break;
     case 2:
@@ -327,6 +328,10 @@ absl::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   const int monochrome = values[4];
   if (fields[4].size() != 1 || monochrome > 1) {
     DVLOG(3) << __func__ << " Invalid monochrome (" << fields[4] << ")";
+    return absl::nullopt;
+  }
+  if (monochrome == 1 && result.profile == AV1PROFILE_PROFILE_HIGH) {
+    DVLOG(3) << "Monochrome isn't supported in high profile.";
     return absl::nullopt;
   }
 
