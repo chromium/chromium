@@ -31,6 +31,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -210,7 +212,11 @@ public class CustomTabMinimizationManager
                 throw e;
             }
         }
-        if (!mMinimized) return;
+        if (!mMinimized) {
+            recordMinimizeSuccess(/* success= */ false);
+            Toast.makeText(mActivity, R.string.minimize_failure_toast, Toast.LENGTH_SHORT).show();
+            return;
+        }
         recordMinimizeSuccessAfterException();
 
         maybeSaveLastMinimizeDelegate();
