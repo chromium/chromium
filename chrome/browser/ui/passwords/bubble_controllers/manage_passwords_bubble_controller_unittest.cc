@@ -171,7 +171,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnManageClicked) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  base::span<std::unique_ptr<password_manager::PasswordForm> const>
       credentials = controller()->GetCredentials();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       expected_credentials =

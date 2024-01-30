@@ -25,7 +25,7 @@
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 ManagePasswordsListView::ManagePasswordsListView(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+    base::span<std::unique_ptr<password_manager::PasswordForm> const>
         credentials,
     ui::ImageModel favicon,
     base::RepeatingCallback<void(password_manager::PasswordForm)>
