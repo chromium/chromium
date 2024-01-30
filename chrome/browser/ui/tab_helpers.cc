@@ -557,8 +557,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   if (base::FeatureList::IsEnabled(
           payments::facilitated::kEnablePixDetection)) {
-    payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
-        CreateForWebContents(web_contents);
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
+          CreateForWebContents(web_contents, optimization_guide_decider);
+    }
   }
 #else  // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {

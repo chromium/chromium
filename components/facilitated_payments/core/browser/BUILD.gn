@@ -12,6 +12,19 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/optimization_guide/core",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "facilitated_payments_manager_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//components/optimization_guide/core",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

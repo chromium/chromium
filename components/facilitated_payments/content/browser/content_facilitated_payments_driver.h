@@ -7,6 +7,10 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
+
 namespace payments::facilitated {
 
 // Implementation of `FacilitatedPaymentsDriver` for Android/Desktop. It
@@ -16,7 +20,8 @@ namespace payments::facilitated {
 // `FacilitatedPaymentsAgent` throughout its entire lifetime.
 class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
  public:
-  ContentFacilitatedPaymentsDriver();
+  explicit ContentFacilitatedPaymentsDriver(
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   ContentFacilitatedPaymentsDriver(const ContentFacilitatedPaymentsDriver&) =
       delete;
   ContentFacilitatedPaymentsDriver& operator=(
