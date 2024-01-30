@@ -317,20 +317,20 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
 
   bool is_ad_resource =
       GetResource() && GetResource()->GetResourceRequest().IsAdResource();
-  static const features::LowPriorityAsyncScriptExecutionTarget target =
+  static const features::AsyncScriptExperimentalSchedulingTarget target =
       features::kLowPriorityAsyncScriptExecutionTargetParam.Get();
   switch (target) {
-    case features::LowPriorityAsyncScriptExecutionTarget::kAds:
+    case features::AsyncScriptExperimentalSchedulingTarget::kAds:
       if (!is_ad_resource) {
         return false;
       }
       break;
-    case features::LowPriorityAsyncScriptExecutionTarget::kNonAds:
+    case features::AsyncScriptExperimentalSchedulingTarget::kNonAds:
       if (is_ad_resource) {
         return false;
       }
       break;
-    case features::LowPriorityAsyncScriptExecutionTarget::kBoth:
+    case features::AsyncScriptExperimentalSchedulingTarget::kBoth:
       break;
   }
 

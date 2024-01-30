@@ -679,6 +679,20 @@ const base::FeatureParam<bool> kDelayAsyncScriptExecutionWhenLcpFoundInHtml{
     &kDelayAsyncScriptExecution, "delay_async_exec_when_lcp_found_in_html",
     false};
 
+// kDelayAsyncScriptExecution will change evaluation schedule for the
+// specified target.
+const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>::Option
+    async_script_experimental_scheduling_targets[] = {
+        {AsyncScriptExperimentalSchedulingTarget::kAds, "ads"},
+        {AsyncScriptExperimentalSchedulingTarget::kNonAds, "non_ads"},
+        {AsyncScriptExperimentalSchedulingTarget::kBoth, "both"},
+};
+const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
+    kDelayAsyncScriptExecutionTargetParam{
+        &kDelayAsyncScriptExecution, "delay_async_script_execution_target",
+        AsyncScriptExperimentalSchedulingTarget::kBoth,
+        &async_script_experimental_scheduling_targets};
+
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1374,18 +1388,12 @@ const base::FeatureParam<AsyncScriptPrioritisationType>
         &async_script_prioritisation_types};
 // kLowPriorityAsyncScriptExecution will change evaluation schedule for the
 // specified target.
-const base::FeatureParam<LowPriorityAsyncScriptExecutionTarget>::Option
-    low_priority_async_script_execution_targets[] = {
-        {LowPriorityAsyncScriptExecutionTarget::kAds, "ads"},
-        {LowPriorityAsyncScriptExecutionTarget::kNonAds, "non_ads"},
-        {LowPriorityAsyncScriptExecutionTarget::kBoth, "both"},
-};
-const base::FeatureParam<LowPriorityAsyncScriptExecutionTarget>
+const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
     kLowPriorityAsyncScriptExecutionTargetParam{
         &kLowPriorityAsyncScriptExecution,
         "low_priority_async_script_execution_target",
-        LowPriorityAsyncScriptExecutionTarget::kBoth,
-        &low_priority_async_script_execution_targets};
+        AsyncScriptExperimentalSchedulingTarget::kBoth,
+        &async_script_experimental_scheduling_targets};
 
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",

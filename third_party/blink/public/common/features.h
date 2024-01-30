@@ -336,6 +336,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionWhenLcpFoundInHtml;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kDelayAsyncScriptExecutionDelayByDefaultParam;
+enum class AsyncScriptExperimentalSchedulingTarget {
+  kAds,
+  kNonAds,
+  kBoth,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AsyncScriptExperimentalSchedulingTarget>
+    kDelayAsyncScriptExecutionTargetParam;
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
@@ -817,13 +825,8 @@ enum class AsyncScriptPrioritisationType {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptPrioritisationType>
     kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam;
-enum class LowPriorityAsyncScriptExecutionTarget {
-  kAds,
-  kNonAds,
-  kBoth,
-};
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    LowPriorityAsyncScriptExecutionTarget>
+    AsyncScriptExperimentalSchedulingTarget>
     kLowPriorityAsyncScriptExecutionTargetParam;
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
