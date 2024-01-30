@@ -2415,7 +2415,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
 
     const pedalElTab =
-        $$(matchEls[1]!.shadowRoot!.querySelectorAll('cr-realbox-action')![1]!,
+        $$(matchEls[1]!.shadowRoot!.querySelectorAll('cr-realbox-action')[1]!,
            '.contents')!;
 
     pedalElTab.dispatchEvent(leftClick);

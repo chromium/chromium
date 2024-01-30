@@ -72,7 +72,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
 export function getLocalAndServerCreditCardListItems() {
   return document.body.querySelector('settings-payments-section')!.shadowRoot!
       .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
-          'settings-credit-card-list-entry')!;
+          'settings-credit-card-list-entry');
 }
 
 /**

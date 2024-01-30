@@ -234,7 +234,7 @@ suite('SearchEnginePageTests', function() {
     // The default engines list should not collapse and should show all entries
     // in the list by default.
     const lists =
-        defaultsListElement.shadowRoot!.querySelectorAll('dom-repeat')!;
+        defaultsListElement.shadowRoot!.querySelectorAll('dom-repeat');
     assertEquals(1, lists.length);
     const defaultsEntries = lists[0]!.items;
     assertEquals(searchEnginesInfo.defaults.length, defaultsEntries!.length);
@@ -325,7 +325,7 @@ suite('SearchEnginePageTests', function() {
     assertFalse(radioGroup.hidden);
 
     const radioButtons =
-        page.shadowRoot!.querySelectorAll('controlled-radio-button')!;
+        page.shadowRoot!.querySelectorAll('controlled-radio-button');
     assertEquals(2, radioButtons.length);
     assertEquals('true', radioButtons.item(0)!.name);
     assertEquals('false', radioButtons.item(1)!.name);

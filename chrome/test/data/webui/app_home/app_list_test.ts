@@ -652,7 +652,7 @@ suite('AppListTest', () => {
     await callbackRouterRemote.$.flushForTesting();
     flush();
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('.item')!;
+    const appItems = appListElement.shadowRoot!.querySelectorAll('.item');
     assertTrue(!!appItems, 'No apps.');
 
     let found = false;

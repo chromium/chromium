@@ -93,7 +93,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   }
 
   function getSiteList(): NodeListOf<HTMLElement> {
-    return testElement.$.module.shadowRoot!.querySelectorAll('.site-entry')!;
+    return testElement.$.module.shadowRoot!.querySelectorAll('.site-entry');
   }
 
   async function createPage() {

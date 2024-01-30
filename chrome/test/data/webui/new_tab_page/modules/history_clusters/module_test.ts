@@ -451,7 +451,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           assertLayoutSet(moduleElement, expectedLayout);
 
           const visitElements = moduleElement.shadowRoot!.querySelectorAll(
-              'ntp-history-clusters-tile')!;
+              'ntp-history-clusters-tile');
           assertEquals(LAYOUT_1_MIN_VISITS, visitElements.length);
           visitElements.forEach(visitElement => {
             const title = $$(visitElement, '#title')!.textContent!.trim();

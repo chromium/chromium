@@ -57,7 +57,7 @@ suite('PaymentsSectionIban', function() {
   function getIbanListItems() {
     return document.body.querySelector('settings-payments-section')!.shadowRoot!
         .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
-            'settings-iban-list-entry')!;
+            'settings-iban-list-entry');
   }
 
   /**

@@ -270,9 +270,9 @@ export class PolicyRowElement extends CustomElement {
     if (this.hasInfos_) {
       infoRowDisplay!.hidden = !infoRowDisplay.hidden;
     }
-    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-conflict-data')!
+    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-conflict-data')
         .forEach(row => row!.hidden = !row.hidden);
-    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-superseded-data')!
+    this.shadowRoot!.querySelectorAll<HTMLElement>('.policy-superseded-data')
         .forEach(row => row!.hidden = !row.hidden);
   }
 }

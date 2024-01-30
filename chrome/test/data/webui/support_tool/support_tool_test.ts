@@ -220,7 +220,7 @@ suite('SupportToolTest', function() {
     assertEquals(
         issueDetails.shadowRoot!.querySelector('cr-input')!.value,
         'testcaseid');
-    const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option')!;
+    const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option');
     // IssueDetailsElement adds DONT_INCLUDE_EMAIL string to the email addresses
     // options as for use to give the option to not include email address.
     assertEquals(EMAIL_ADDRESSES.length + 1, emailOptions.length);

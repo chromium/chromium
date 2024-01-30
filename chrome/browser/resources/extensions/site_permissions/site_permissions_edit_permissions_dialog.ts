@@ -306,7 +306,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
 
   private onHostAccessChange_(e: DomRepeatEvent<ExtensionSiteAccessInfo>) {
     const selectMenu = this.shadowRoot!.querySelectorAll<HTMLSelectElement>(
-        '.extension-host-access')![e.model.index];
+        '.extension-host-access')[e.model.index];
     assert(selectMenu);
 
     const originalSiteAccess = e.model.item.siteAccess;

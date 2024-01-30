@@ -232,7 +232,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     if (id !== undefined) {
       const index = parseInt(id, 10);
       const menuElement =
-          this.shadowRoot!.querySelectorAll('cr-action-menu')![index];
+          this.shadowRoot!.querySelectorAll('cr-action-menu')[index];
       menuElement!.showAtPosition(config);
     }
   }
