@@ -173,10 +173,6 @@ public final class ProductionSupportedFlagList {
                 "Enable optimization for immediate activation and draw when interactive."),
         Flag.baseFeature(GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
-                "Uses GooglePlayService's 'connectionless' APIs for Safe Browsing "
-                        + "security checks."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                 "Enables brotli compression support in WebView."),
         Flag.baseFeature(NetFeatures.PRIORITY_HEADER, "Enables the HTTP priority header."),
