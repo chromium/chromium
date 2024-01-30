@@ -12,17 +12,17 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
- * The app menu shown when pressing ("...") in the Hub. Some functionality may be disabled or
- * missing on certain panes.
+ * The app menu shown when pressing ("...") in the Hub on a tab swicther pane.
  */
-public class HubAppMenuFacility extends StationFacility<HubStation> {
+public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitcherBaseStation> {
     // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
     // public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
-    public HubAppMenuFacility(
-            HubStation station, ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+    public HubTabSwitcherAppMenuFacility(
+            HubTabSwitcherBaseStation station,
+            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
         super(station);
         mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
     }

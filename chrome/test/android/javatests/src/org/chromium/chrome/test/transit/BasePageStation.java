@@ -19,6 +19,7 @@ import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
@@ -82,10 +83,15 @@ public abstract class BasePageStation extends TransitStation {
     }
 
     /** Opens the hub by pressing the toolbar tab switcher button. */
-    public HubStation openHub() {
+    public <T extends HubBaseStation> T openHub(Class<T> expectedDestination) {
         recheckEnterConditions();
 
-        HubStation destination = new HubStation(mChromeTabbedActivityTestRule);
+        T destination =
+                expectedDestination.cast(
+                        HubStationUtils.createHubStation(
+                                mIncognito ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
+                                mChromeTabbedActivityTestRule));
+
         return Trip.travelSync(
                 this, destination, (e) -> onView(TAB_SWITCHER_BUTTON).perform(click()));
     }
