@@ -26,6 +26,7 @@ source_set("openscreen_platform") {
   public_deps = [
     ":openscreen_platform_without_sockets",
     "//base",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 

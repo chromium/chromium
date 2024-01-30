@@ -126,7 +126,7 @@ network::mojom::NetworkContext* VideoConferencingRoutine::GetNetworkContext() {
 }
 
 std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(
-    UdpProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     base::span<const uint8_t> data,
     net::NetworkTrafficAnnotationTag tag,
@@ -138,7 +138,7 @@ std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(
 }
 
 std::unique_ptr<TlsProber> VideoConferencingRoutine::CreateAndExecuteTlsProber(
-    TlsProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     bool negotiate_tls,
     TlsProber::TlsProbeCompleteCallback callback) {

@@ -95,7 +95,7 @@ CastSocket* CastSocketServiceImpl::GetSocket(
 }
 
 void CastSocketServiceImpl::OpenSocket(
-    NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     const CastSocketOpenParams& open_params,
     CastSocket::OnOpenCallback open_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());

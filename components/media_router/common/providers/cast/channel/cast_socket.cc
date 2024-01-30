@@ -73,7 +73,7 @@ void OnConnected(
 }
 
 void ConnectOnUIThread(
-    CastSocketImpl::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     const net::AddressList& remote_address_list,
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
@@ -92,18 +92,20 @@ CastSocket::Observer::~Observer() {
   CHECK(!IsInObserverList());
 }
 
-CastSocketImpl::CastSocketImpl(NetworkContextGetter network_context_getter,
-                               const CastSocketOpenParams& open_params,
-                               const scoped_refptr<Logger>& logger)
+CastSocketImpl::CastSocketImpl(
+    network::NetworkContextGetter network_context_getter,
+    const CastSocketOpenParams& open_params,
+    const scoped_refptr<Logger>& logger)
     : CastSocketImpl(network_context_getter,
                      open_params,
                      logger,
                      AuthContext::Create()) {}
 
-CastSocketImpl::CastSocketImpl(NetworkContextGetter network_context_getter,
-                               const CastSocketOpenParams& open_params,
-                               const scoped_refptr<Logger>& logger,
-                               const AuthContext& auth_context)
+CastSocketImpl::CastSocketImpl(
+    network::NetworkContextGetter network_context_getter,
+    const CastSocketOpenParams& open_params,
+    const scoped_refptr<Logger>& logger,
+    const AuthContext& auth_context)
     : channel_id_(0),
       open_params_(open_params),
       logger_(logger),

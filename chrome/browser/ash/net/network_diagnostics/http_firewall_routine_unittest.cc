@@ -70,7 +70,7 @@ class TestDelegate : public HttpFirewallRoutine::Delegate {
 
   // Delegate:
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) override {

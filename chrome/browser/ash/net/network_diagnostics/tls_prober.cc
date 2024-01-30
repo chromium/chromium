@@ -52,7 +52,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
 
 }  // namespace
 
-TlsProber::TlsProber(NetworkContextGetter network_context_getter,
+TlsProber::TlsProber(network::NetworkContextGetter network_context_getter,
                      net::HostPortPair host_port_pair,
                      bool negotiate_tls,
                      TlsProbeCompleteCallback callback)

@@ -173,7 +173,7 @@ void OnCookiesAndExcludedReceived(
 }  // namespace
 
 CookieManagerImpl::CookieManagerImpl(
-    GetNetworkContextCallback get_network_context)
+    network::NetworkContextGetter get_network_context)
     : get_network_context_(std::move(get_network_context)) {}
 
 CookieManagerImpl::~CookieManagerImpl() = default;

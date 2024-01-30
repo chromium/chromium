@@ -154,7 +154,7 @@ network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
 }
 
 std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(
-    TlsProber::NetworkContextGetter network_context_getter,
+    network::NetworkContextGetter network_context_getter,
     net::HostPortPair host_port_pair,
     bool negotiate_tls,
     TlsProber::TlsProbeCompleteCallback callback) {

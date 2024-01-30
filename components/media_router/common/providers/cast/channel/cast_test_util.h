@@ -101,7 +101,7 @@ class MockCastSocketService : public CastSocketServiceImpl {
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
   ~MockCastSocketService() override;
 
-  void OpenSocket(NetworkContextGetter network_context_getter,
+  void OpenSocket(network::NetworkContextGetter network_context_getter,
                   const CastSocketOpenParams& open_params,
                   CastSocket::OnOpenCallback open_cb) override {
     OpenSocket_(open_params.ip_endpoint, open_cb);

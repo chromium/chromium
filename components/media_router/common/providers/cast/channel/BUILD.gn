@@ -62,6 +62,7 @@ static_library("channel") {
   ]
   public_deps = [
     "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

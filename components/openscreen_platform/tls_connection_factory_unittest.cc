@@ -13,6 +13,7 @@
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/tls_client_connection.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,7 +98,7 @@ class TlsConnectionFactoryTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    SetNetworkContextGetter(openscreen_platform::NetworkContextGetter());
+    SetNetworkContextGetter(network::NetworkContextGetter());
   }
 
  protected:

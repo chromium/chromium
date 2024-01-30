@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
@@ -38,8 +39,6 @@ class TlsProber {
     kMojoDisconnectFailure,
     kSuccess,
   };
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using OnConnectCompleteOnUIThreadCallback =
       base::OnceCallback<void(int result,
                               const std::optional<net::IPEndPoint>& peer_addr)>;
@@ -53,7 +52,7 @@ class TlsProber {
   // before |callback| is invoked.  The TlsProber must be created on the UI
   // thread and will invoke |callback| on the UI thread.
   // |network_context_getter| will be invoked on the UI thread.
-  TlsProber(NetworkContextGetter network_context_getter,
+  TlsProber(network::NetworkContextGetter network_context_getter,
             net::HostPortPair host_port_pair,
             bool negotiate_tls,
             TlsProbeCompleteCallback callback);
@@ -105,7 +104,7 @@ class TlsProber {
   void OnDone(int result, ProbeExitEnum probe_exit_enum);
 
   // Gets the active profile-specific network context.
-  const NetworkContextGetter network_context_getter_;
+  const network::NetworkContextGetter network_context_getter_;
   // Contains the hostname and port.
   const net::HostPortPair host_port_pair_;
   // Indicates whether TLS support must be added to the underlying socket.

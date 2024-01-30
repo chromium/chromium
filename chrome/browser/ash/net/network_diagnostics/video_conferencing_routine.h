@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/udp_prober.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
  public:
   using UdpProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<UdpProber>(
-          UdpProber::NetworkContextGetter network_context_getter,
+          network::NetworkContextGetter network_context_getter,
           net::HostPortPair host_port_pair,
           base::span<const uint8_t> data,
           net::NetworkTrafficAnnotationTag tag,
@@ -41,7 +42,7 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
           UdpProber::UdpProbeCompleteCallback callback)>;
   using TlsProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<TlsProber>(
-          TlsProber::NetworkContextGetter network_context_getter,
+          network::NetworkContextGetter network_context_getter,
           net::HostPortPair host_port_pair,
           bool negotiate_tls,
           TlsProber::TlsProbeCompleteCallback callback)>;
@@ -89,7 +90,7 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
 
   // Creates and instance of UdpProber.
   static std::unique_ptr<UdpProber> CreateAndExecuteUdpProber(
-      UdpProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       base::span<const uint8_t> data,
       net::NetworkTrafficAnnotationTag tag,
@@ -98,7 +99,7 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
 
   // Creates an instance of TlsProber.
   static std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback);

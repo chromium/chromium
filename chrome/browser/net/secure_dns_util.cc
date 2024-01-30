@@ -107,7 +107,7 @@ void UpdateProbeHistogram(bool success) {
 
 std::unique_ptr<DnsProbeRunner> MakeProbeRunner(
     net::DnsOverHttpsConfig doh_config,
-    const DnsProbeRunner::NetworkContextGetter& network_context_getter) {
+    const network::NetworkContextGetter& network_context_getter) {
   net::DnsConfigOverrides overrides;
   overrides.search = std::vector<std::string>();
   overrides.attempts = 1;

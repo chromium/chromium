@@ -119,7 +119,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   }
 
   std::unique_ptr<UdpProber> CreateAndExecuteUdpProber(
-      UdpProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       base::span<const uint8_t> data,
       net::NetworkTrafficAnnotationTag tag,
@@ -135,7 +135,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   }
 
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) {
