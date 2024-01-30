@@ -454,12 +454,6 @@ Called by update_autofill_enums.py.-->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: accepted"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: edited"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
-  <int value="1888" label="BIRTHDATE_DAY: edited"/>
-  <int value="1889" label="BIRTHDATE_DAY: accepted"/>
-  <int value="1904" label="BIRTHDATE_MONTH: edited"/>
-  <int value="1905" label="BIRTHDATE_MONTH: accepted"/>
-  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: edited"/>
-  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: accepted"/>
   <int value="1936" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: edited"/>
   <int value="1937" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: accepted"/>
   <int value="1952"
@@ -944,16 +938,6 @@ Called by update_autofill_enums.py.-->
   <int value="8199" label="UNKNOWN_TYPE: False Positive (Empty)"/>
   <int value="8200" label="UNKNOWN_TYPE: False Negative (Mismatch)"/>
   <int value="8201" label="UNKNOWN_TYPE: False Negative (Unknown)"/>
-  <int value="8448" label="BIRTHDATE: True Positive"/>
-  <int value="8449" label="BIRTHDATE: True Negative (Ambiguous)"/>
-  <int value="8450" label="BIRTHDATE: True Negative (Unknown)"/>
-  <int value="8451" label="BIRTHDATE: True Negative (Empty)"/>
-  <int value="8452" label="BIRTHDATE: False Positive (Mismatch)"/>
-  <int value="8453" label="BIRTHDATE: False Positive (Ambiguous)"/>
-  <int value="8454" label="BIRTHDATE: False Positive (Unknown)"/>
-  <int value="8455" label="BIRTHDATE: False Positive (Empty)"/>
-  <int value="8456" label="BIRTHDATE: False Negative (Mismatch)"/>
-  <int value="8457" label="BIRTHDATE: False Negative (Unknown)"/>
   <int value="8704" label="IBAN: True Positive"/>
   <int value="8705" label="IBAN: True Negative (Ambiguous)"/>
   <int value="8706" label="IBAN: True Negative (Unknown)"/>
@@ -2614,51 +2598,6 @@ Called by update_autofill_enums.py.-->
   <int value="702"
       label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
              both predictions"/>
-  <int value="709" label="BIRTHDATE_DAY - Predictions equal - Value agrees"/>
-  <int value="710" label="BIRTHDATE_DAY - Predictions equal - Value disagrees"/>
-  <int value="711"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="712"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="713"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="714"
-      label="BIRTHDATE_DAY - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="715" label="BIRTHDATE_MONTH - Predictions equal - Value agrees"/>
-  <int value="716"
-      label="BIRTHDATE_MONTH - Predictions equal - Value disagrees"/>
-  <int value="717"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="718"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="719"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="720"
-      label="BIRTHDATE_MONTH - Predictions different - Value agrees with both
-             predictions"/>
-  <int value="721"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
-  <int value="722"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value disagrees"/>
-  <int value="723"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="724"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="725"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="726"
-      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
-             with both predictions"/>
   <int value="727"
       label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
              Value agrees"/>

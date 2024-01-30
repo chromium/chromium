@@ -28,7 +28,6 @@ FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kBirthdateField:
     case FieldTypeGroup::kIban:
       // If `group` is not one of the groups we offer group filling for
       // (name, address and phone field), we default back to fill full form

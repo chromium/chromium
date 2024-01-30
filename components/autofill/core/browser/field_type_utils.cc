@@ -87,7 +87,6 @@ bool IsAddressType(FieldType type) {
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return true;
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kUnfillable:

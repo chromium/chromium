@@ -18,7 +18,6 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return FormType::kAddressForm;
     case FieldTypeGroup::kCreditCard:
       return FormType::kCreditCardForm;

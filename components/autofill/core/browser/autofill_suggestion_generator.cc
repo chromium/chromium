@@ -634,8 +634,6 @@ PopupItemId GetProfileSuggestionPopupItemId(
         return PopupItemId::kFillFullPhoneNumber;
       case FieldTypeGroup::kEmail:
         return PopupItemId::kFillFullEmail;
-      case FieldTypeGroup::kBirthdateField:
-        return PopupItemId::kAddressEntry;
       case FieldTypeGroup::kNoGroup:
       case FieldTypeGroup::kCreditCard:
       case FieldTypeGroup::kPasswordField:
@@ -745,7 +743,6 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
       case FieldTypeGroup::kTransaction:
       case FieldTypeGroup::kUsernameField:
       case FieldTypeGroup::kUnfillable:
-      case FieldTypeGroup::kBirthdateField:
       case FieldTypeGroup::kIban:
         labels.emplace_back();
     }
@@ -789,7 +786,6 @@ FieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kBirthdateField:
     case FieldTypeGroup::kIban:
       return {triggering_field_type};
   }

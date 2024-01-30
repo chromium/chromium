@@ -107,9 +107,6 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_ADDRESS", ADDRESS_HOME_ADDRESS},
          {"ADDRESS_HOME_ADDRESS_WITH_NAME", ADDRESS_HOME_ADDRESS_WITH_NAME},
          {"ADDRESS_HOME_FLOOR", ADDRESS_HOME_FLOOR},
-         {"BIRTHDATE_DAY", BIRTHDATE_DAY},
-         {"BIRTHDATE_MONTH", BIRTHDATE_MONTH},
-         {"BIRTHDATE_4_DIGIT_YEAR", BIRTHDATE_4_DIGIT_YEAR},
          {"PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX",
           PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX},
          {"PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX",
@@ -257,9 +254,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case PRICE:
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
-    case BIRTHDATE_DAY:
-    case BIRTHDATE_MONTH:
-    case BIRTHDATE_4_DIGIT_YEAR:
     case UNKNOWN_TYPE:
     case MAX_VALID_FIELD_TYPE:
       return false;
@@ -429,12 +423,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Address locality and landmark";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
-    case BIRTHDATE_DAY:
-      return "Birthdate day";
-    case BIRTHDATE_MONTH:
-      return "Birthdate month";
-    case BIRTHDATE_4_DIGIT_YEAR:
-      return "Birthdate year";
     case CREDIT_CARD_NAME_FULL:
       return "Credit card full name";
     case CREDIT_CARD_NAME_FIRST:
@@ -588,11 +576,6 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case USERNAME:
       return FieldTypeGroup::kUsernameField;
 
-    case BIRTHDATE_DAY:
-    case BIRTHDATE_MONTH:
-    case BIRTHDATE_4_DIGIT_YEAR:
-      return FieldTypeGroup::kBirthdateField;
-
     case PRICE:
     case SEARCH_TERM:
     case NUMERIC_QUANTITY:
@@ -667,7 +650,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kBirthdateDay:
     case HtmlFieldType::kBirthdateMonth:
     case HtmlFieldType::kBirthdateYear:
-      return FieldTypeGroup::kBirthdateField;
+      return FieldTypeGroup::kNoGroup;
 
     case HtmlFieldType::kUpiVpa:
       return FieldTypeGroup::kNoGroup;
@@ -793,13 +776,6 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kEmail:
       return EMAIL_ADDRESS;
 
-    case HtmlFieldType::kBirthdateDay:
-      return BIRTHDATE_DAY;
-    case HtmlFieldType::kBirthdateMonth:
-      return BIRTHDATE_MONTH;
-    case HtmlFieldType::kBirthdateYear:
-      return BIRTHDATE_4_DIGIT_YEAR;
-
     case HtmlFieldType::kAdditionalNameInitial:
       return NAME_MIDDLE_INITIAL;
 
@@ -822,6 +798,9 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
       return IBAN_VALUE;
 
     // These types aren't stored; they're transient.
+    case HtmlFieldType::kBirthdateDay:
+    case HtmlFieldType::kBirthdateMonth:
+    case HtmlFieldType::kBirthdateYear:
     case HtmlFieldType::kUpiVpa:
     case HtmlFieldType::kTransactionAmount:
     case HtmlFieldType::kTransactionCurrency:

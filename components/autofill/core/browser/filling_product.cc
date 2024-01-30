@@ -101,7 +101,6 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return FillingProduct::kAddress;
     case FieldTypeGroup::kCreditCard:
       return FillingProduct::kCreditCard;

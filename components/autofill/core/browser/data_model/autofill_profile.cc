@@ -1236,7 +1236,6 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
       return &address_;
 
     case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kBirthdateField:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kPasswordField:
@@ -1344,7 +1343,6 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return field_type;
     // For field-by-field filling in manual fallback autofill, the field's type
     // will not be used but the type that generated the suggested value will.

@@ -148,7 +148,6 @@ PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kBirthdateField:
       return PopupType::kAddresses;
   }
 }

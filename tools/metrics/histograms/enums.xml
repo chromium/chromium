@@ -959,9 +959,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="33" label="TelLocalSuffix"/>
   <int value="34" label="TelExtension"/>
   <int value="35" label="Email"/>
-  <int value="36" label="BirthdateDay"/>
-  <int value="37" label="BirthdateMonth"/>
-  <int value="38" label="BirthdateYear"/>
+  <int value="36" label="BirthdateDay (deprecated)"/>
+  <int value="37" label="BirthdateMonth (deprecated)"/>
+  <int value="38" label="BirthdateYear (deprecated)"/>
   <int value="39" label="TransactionAmount"/>
   <int value="40" label="TransactionCurrency"/>
   <int value="41" label="AdditionalNameInitial"/>
@@ -1095,9 +1095,6 @@ Called by update_autofill_enums.py.-->
   <int value="114" label="ADDRESS_HOME_ADDRESS"/>
   <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
   <int value="116" label="ADDRESS_HOME_FLOOR"/>
-  <int value="118" label="BIRTHDATE_DAY"/>
-  <int value="119" label="BIRTHDATE_MONTH"/>
-  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
   <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
   <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
   <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
@@ -1342,12 +1339,6 @@ Called by update_autofill_enums.py.-->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Empty on page load"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: Pre-filled on page load"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: Empty on page load"/>
-  <int value="1888" label="BIRTHDATE_DAY: Pre-filled on page load"/>
-  <int value="1889" label="BIRTHDATE_DAY: Empty on page load"/>
-  <int value="1904" label="BIRTHDATE_MONTH: Pre-filled on page load"/>
-  <int value="1905" label="BIRTHDATE_MONTH: Empty on page load"/>
-  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: Pre-filled on page load"/>
-  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: Empty on page load"/>
   <int value="1936"
       label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Pre-filled on page load"/>
   <int value="1937"

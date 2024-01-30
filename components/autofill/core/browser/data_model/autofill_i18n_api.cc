@@ -160,9 +160,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NOT_PASSWORD:
     case SINGLE_USERNAME:
     case NOT_USERNAME:
-    case BIRTHDATE_DAY:
-    case BIRTHDATE_MONTH:
-    case BIRTHDATE_4_DIGIT_YEAR:
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
     case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
     case PHONE_HOME_NUMBER_PREFIX:
