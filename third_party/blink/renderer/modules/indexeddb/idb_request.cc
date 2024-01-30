@@ -723,6 +723,12 @@ void IDBRequest::SetResult(IDBAny* result) {
 }
 
 void IDBRequest::SendResultValue(std::unique_ptr<IDBValue> value) {
+  // See crbug.com/1519989
+  if (!CanStillSendResult()) {
+    metrics_.RecordAndReset();
+    return;
+  }
+
   if (pending_cursor_) {
     // Value should be null, signifying the end of the cursor's range.
     DCHECK(value->IsNull());

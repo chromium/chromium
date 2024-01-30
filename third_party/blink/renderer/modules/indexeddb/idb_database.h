@@ -250,6 +250,8 @@ class MODULES_EXPORT IDBDatabase final
   void Abort(int64_t transaction_id);
   void DidBecomeInactive() { database_remote_->DidBecomeInactive(); }
 
+  bool IsConnectionOpen() const;
+
  protected:
   // EventTarget
   DispatchEventResult DispatchEventInternal(Event&) override;
