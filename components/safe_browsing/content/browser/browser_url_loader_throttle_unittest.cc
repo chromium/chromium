@@ -1332,4 +1332,36 @@ TEST_F(SBBrowserUrlLoaderThrottleDisableOnUIThreadTest,
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
+// Regression test for https://crbug.com/1522248.
+TEST_F(SBBrowserUrlLoaderThrottleDisableOnUIThreadTest,
+       VerifyDefer_FirstUrlAlreadyBlockedWhenSkipCheckCompletes) {
+  SetUpTest(/*async_check_enabled=*/true);
+  AddCallbackInfo(/*should_proceed=*/false,
+                  /*should_show_interstitial=*/true,
+                  /*should_delay_callback=*/true);
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/true);
+
+  CallWillStartRequest();
+  bool defer = false;
+  net::RedirectInfo redirect_info;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+  throttle_->WillRedirectRequest(&redirect_info, *response_head_, &defer,
+                                 &to_be_removed_headers, &modified_headers,
+                                 &modified_cors_exempt_headers);
+  // At this point, the skip check checker is scheduled but not executed.
+
+  // Since proceed is false, the checkers will be deleted first and then the
+  // callback from skip check checker will be run. This should not cause a
+  // crash.
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
+  task_environment_.RunUntilIdle();
+
+  defer = CallWillProcessResponse();
+  EXPECT_TRUE(defer);
+}
+
 }  // namespace safe_browsing

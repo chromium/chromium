@@ -396,6 +396,12 @@ void BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl(
     return;
   }
 
+  if (blocked_) {
+    // The original URL may already be blocked while skip check checker is
+    // performing the check. In that case, the SB checkers were already deleted.
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
     sync_sb_checker_->CheckUrl(url, method);
     if (async_sb_checker_) {
