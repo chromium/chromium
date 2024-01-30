@@ -266,6 +266,7 @@ void HandleAccessibilityRequestCallback(
 
     base::Value::Dict descriptor = BuildTargetDescriptor(rvh);
     descriptor.Set(kNative, is_native_enabled);
+    descriptor.Set(kScreenReader, is_web_enabled && screenreader);
     descriptor.Set(kWeb, is_web_enabled);
     page_list.Append(std::move(descriptor));
   }
