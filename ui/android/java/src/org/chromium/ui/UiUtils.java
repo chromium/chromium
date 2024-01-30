@@ -450,8 +450,8 @@ public class UiUtils {
     public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         // The status bar should always be black in automotive devices to match the black back
-        // button toolbar, so we should use dark theme icons.
-        if (useDarkIcons || BuildInfo.getInstance().isAutomotive) {
+        // button toolbar, so we should not use dark icons.
+        if (useDarkIcons && !BuildInfo.getInstance().isAutomotive) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
