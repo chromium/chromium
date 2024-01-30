@@ -533,8 +533,15 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                                 false));
 }
 
+// TODO(crbug.com/1522194): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DeactivatedActionItemsOverflow \
+  DISABLED_DeactivatedActionItemsOverflow
+#else
+#define MAYBE_DeactivatedActionItemsOverflow DeactivatedActionItemsOverflow
+#endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       DeactivatedActionItemsOverflow) {
+                       MAYBE_DeactivatedActionItemsOverflow) {
   RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {
                     AddDummyButtonsToToolbarTillElementOverflows(
                         ChromeActionIds::kActionSidePanelShowBookmarks);
