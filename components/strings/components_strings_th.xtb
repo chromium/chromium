@@ -649,7 +649,7 @@
 <translation id="2224337661447660594">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="2225927550500503913">เปิดบัตรเสมือนแล้ว</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้<ph name="END_LINK" />เครือข่าย Wi-Fi</translation>
-<translation id="2228057197024893428">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
+<translation id="2228057197024893428">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="2229456043301340598">ทางลัดที่ซ้ำกันถูกข้าม: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">แผ่นซีดี</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
@@ -755,7 +755,7 @@
 <translation id="24699311393038040">กระดาษ (เคลือบ)</translation>
 <translation id="2470767536994572628">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียวและกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="2479410451996844060">URL ค้นหาไม่ถูกต้อง</translation>
-<translation id="2480300195898055381">ในบัญชี Google ที่ใช้อีเมล <ph name="USER_EMAIL" /></translation>
+<translation id="2480300195898055381">ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="248348093745724435">นโยบายเครื่อง</translation>
 <translation id="2490199669743245365">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -776,7 +776,7 @@
 <translation id="2521736961081452453">สร้างแบบฟอร์ม</translation>
 <translation id="2523886232349826891">บันทึกไว้เฉพาะในอุปกรณ์นี้</translation>
 <translation id="2524461107774643265">เพิ่มข้อมูลอื่นๆ</translation>
-<translation id="2526280916094749336">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
+<translation id="2526280916094749336">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="2527451058878391043">CVC จะแสดงอยู่บนด้านหน้าของบัตร โดยเป็นรหัส 4 หลักที่ด้านขวาบนเหนือหมายเลขบัตร</translation>
 <translation id="2529899080962247600">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะไม่สนใจรายการอื่นๆ ทั้งหมด</translation>
 <translation id="253493526287553278">ดูรายละเอียดรหัสโปรโมชัน</translation>
@@ -2413,7 +2413,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5838278095973806738">คุณไม่ควรป้อนข้อมูลที่ละเอียดอ่อนบนเว็บไซต์นี้ (ตัวอย่างเช่น รหัสผ่านหรือบัตรเครดิต) เนื่องจากผู้โจมตีอาจขโมยข้อมูลดังกล่าวไปได้</translation>
 <translation id="5838732667866024867">คุณใช้ลูกศรซ้าย/ขวาเพื่อตรวจสอบการเปลี่ยนแปลงราคาบนกราฟได้</translation>
-<translation id="5840318881868981258">ในบัญชี Google ที่ใช้อีเมล <ph name="ACCOUNT" /></translation>
+<translation id="5840318881868981258">ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">บันทึกในบัญชีไหม</translation>
 <translation id="5847181246682413476">แหล่งจ่ายไฟ</translation>
 <translation id="5851548754964597211">รายการแท็บ</translation>
@@ -2524,7 +2524,7 @@
 <translation id="6051221802930200923">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้การปักหมุดใบรับรอง โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
 <translation id="6051898664905071243">จำนวนหน้า:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053584886670442526">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
+<translation id="6053584886670442526">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="6053735090575989697">ดูข้อมูลเพิ่มเติมเกี่ยวกับวิธีที่ Google ปกป้องข้อมูลของคุณในนโยบายความเป็นส่วนตัว</translation>
 <translation id="6055888660316801977">Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="6055982527635883756">ซอง (Archival)</translation>

@@ -1470,7 +1470,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
-<translation id="8730621377337864115">Concluído</translation>
+<translation id="8730621377337864115">Concluir</translation>
 <translation id="8731958888085671579">Ocultar "Localizar na página"</translation>
 <translation id="87371078663613140">Explore as opções na barra de menus</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} perfil salvo disponível acima do teclado.}one{{count} perfil salvo disponível acima do teclado.}other{{count} perfis salvos disponíveis acima do teclado.}}</translation>

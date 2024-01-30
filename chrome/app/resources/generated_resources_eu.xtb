@@ -600,7 +600,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1467005863208369884">Ezin da egiaztatu fitxategia, Arakatze segurua desaktibatuta dagoelako</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="1468571364034902819">Ezin da erabili profil hau</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{Gehitu fitxa talde berri batean}other{Gehitu fitxak talde berri batean}}</translation>
 <translation id="1470350905258700113">Erabili gailu hau</translation>
 <translation id="1470946456740188591">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu edo desaktibatzeko, erabili Ktrl + Bilatu + 7 lasterbidea</translation>
 <translation id="1471034383866732283">Irakurtzeko moduak ezin du aurkitu eduki nagusia orrian</translation>
@@ -4517,7 +4517,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="450099669180426158">Harridura-ikurraren ikonoa</translation>
 <translation id="4501530680793980440">Berretsi kendu nahi duzula</translation>
 <translation id="4502423230170890588">Kendu gailu honetatik</translation>
-<translation id="4502477450742595012">Egin klik eskuineko botoiarekin fitxa batean eta hautatu "Gehitu fitxa talde berrian"</translation>
+<translation id="4502477450742595012">Egin klik eskuineko botoiarekin fitxa batean eta hautatu "Gehitu fitxa talde berri batean"</translation>
 <translation id="4503748371388753124">Ordenagailuak Trusted Platform Module (TPM) segurtasun-gailu bat du; ChromeOS Flex-en ezinbesteko segurtasun-eginbideak inplementatzeko erabiltzen da gailu hori. Informazio gehiago lortzeko, joan Chromebook-en laguntza-zentrora: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookieak onartzen dira}=1{Cookieak onartzen dira, salbuespen batekin}other{Cookieak onartzen dira, {COUNT} salbuespenekin}}</translation>
 <translation id="4504940961672722399">Luzapena erabiltzeko, sakatu ikonoa edo <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -7828,7 +7828,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7170236477717446850">Profileko argazkia</translation>
 <translation id="7171000599584840888">Gehitu profil bat…</translation>
 <translation id="7171259390164035663">Ez erregistratu</translation>
-<translation id="7172470549472604877">{NUM_TABS,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
+<translation id="7172470549472604877">{NUM_TABS,plural, =1{Gehitu fitxa talde berri batean}other{Gehitu fitxak talde berri batean}}</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7174199383876220879">Berria! Kontrolatu musika, bideoak eta beste.</translation>
 <translation id="7175037578838465313">Konfiguratu <ph name="NAME" /></translation>
@@ -8445,7 +8445,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7659154729610375585">Ezkutuko modutik irten nahi duzu hala ere?</translation>
 <translation id="7659336857671800422">Irakurri Pribatutasun-gida</translation>
 <translation id="7659584679870740384">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
-<translation id="7660146600670077843">Egin klik eskuineko botoiarekin fitxa batean eta hautatu "Gehitu fitxa talde berrian"</translation>
+<translation id="7660146600670077843">Egin klik eskuineko botoiarekin fitxa batean eta hautatu "Gehitu fitxa talde berri batean"</translation>
 <translation id="7661259717474717992">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea</translation>
 <translation id="7661451191293163002">Ezin izan da lortu erregistro-ziurtagiri bat.</translation>
 <translation id="7662164944369232556">Ezin izan dira deskargatu testu-hautematearen fitxategiak. Saiatu berriro geroago.</translation>

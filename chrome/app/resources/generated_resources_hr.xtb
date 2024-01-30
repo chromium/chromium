@@ -993,7 +993,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1757301747492736405">Deinstalacija na čekanju</translation>
 <translation id="175772926354468439">Omogućiti temu</translation>
 <translation id="1757786065507923842">Upit za roditeljsko dopuštenje nije uspio.</translation>
-<translation id="17584710573359123">Prikaz u Chrome web-trgovini</translation>
+<translation id="17584710573359123">Prikaz u Chrome Web Storeu</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> ponovo je mapiran na opciju <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Računi korisnika <ph name="NAME" /></translation>
 <translation id="176272781006230109">prijedlozi za kupnju</translation>
@@ -1199,7 +1199,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1905375423839394163">Naziv Chromebook uređaja</translation>
 <translation id="1906181697255754968">Web-lokacije obično pristupaju datotekama i mapama na vašem uređaju radi značajki poput automatskog spremanja vašeg rada</translation>
-<translation id="1906488504371069394">Otkrijte više proširenja i tema u <ph name="BEGIN_LINK" />Chrome web-trgovini<ph name="END_LINK" /></translation>
+<translation id="1906488504371069394">Otkrijte više proširenja i tema u <ph name="BEGIN_LINK" />Chrome Web Storeu<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Pišite pomoću glasa. Upotrijebite Pretraživanje + D i počnite govoriti.</translation>
 <translation id="1907659324308286326">Nekim Thunderbolt ili USB4 uređajima treba pristup memoriji da bi pravilno funkcionirali.</translation>
 <translation id="1908591798274282246">Ponovo otvori zatvorenu grupu</translation>
@@ -2225,7 +2225,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2673873887296220733">Želite li kopirati jednu datoteku u mapu <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="267442004702508783">osvježavanje</translation>
 <translation id="2674764818721168631">Isključeno</translation>
-<translation id="2676084251379299915">Ovo proširenje onemogućilo je pravilo tvrtke jer više nije dostupno u Chrome web-trgovini.</translation>
+<translation id="2676084251379299915">Ovo proširenje onemogućilo je pravilo tvrtke jer više nije dostupno u Chrome Web Storeu.</translation>
 <translation id="2678063897982469759">Ponovo omogući</translation>
 <translation id="2678100101831051676">Emitiranje nije uspjelo.</translation>
 <translation id="2678468611080193228">Pokušajte privremeno dopustiti kolačiće treće strane, što znači manje zaštite, ali vjerojatnije je da će značajke web-lokacije funkcionirati</translation>
@@ -5723,7 +5723,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5470735824776589490">Da biste mogli izvršiti Powerwash, trebate ponovo pokrenuti uređaj. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Bok! Ja sam vaš glas alata za pretvaranje teksta u govor.</translation>
 <translation id="5472627187093107397">Spremanje zaporki za ovu web-lokaciju</translation>
-<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome web-trgovini</translation>
+<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome Web Storeu</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Ako nastavite, pristajete na to da ovaj uređaj također može, između ostalog i mobilnim podatkovnim prijenosom, automatski preuzimati i instalirati ažuriranja i aplikacije koje šalju Google, djetetov mobilni operater i proizvođač uređaja. Neke od tih aplikacija mogu nuditi kupnje putem aplikacije.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora imati najmanje jedan znak}one{PIN mora imati najmanje # znak}few{PIN mora imati najmanje # znaka}other{PIN mora imati najmanje # znakova}}</translation>
@@ -5937,7 +5937,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5637476008227280525">Omogućivanje mobilnih podataka</translation>
 <translation id="563811590465749036">Da biste upotrebljavali Google upravitelj zaporki s macOS Keychainom, ponovo pokrenite Chrome i dopustite pristup Keychainu. Kartice će se ponovo otvoriti nakon ponovnog pokretanja</translation>
 <translation id="563821631542362636">Dopusti web-lokaciji da sprema podatke</translation>
-<translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome web-trgovini<ph name="END_LINK" /></translation>
+<translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome Web Storeu<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste vidjeli više opcija</translation>
 <translation id="5640133431808313291">Upravljajte sigurnosnim ključevima</translation>
 <translation id="5641608986289282154">Počnite upotrebljavati <ph name="DEVICE_OS" /></translation>
@@ -6971,7 +6971,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6476482583633999078">Brzina govora</translation>
 <translation id="6477822444490674459">Sinkronizacija obavijesti nije podržana za telefone na poslovnom profilu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Želite li zadržati opasnu datoteku?</translation>
-<translation id="6479881432656947268">Posjetite Chrome web-trgovinu</translation>
+<translation id="6479881432656947268">Posjetite Chrome Web Store</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
 <translation id="6483485061007832714">Otvorite preuzimanje</translation>
@@ -8087,7 +8087,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="737728204345822099">Na sigurnosnom ključu može se zadržati evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="7377451353532943397">Nastavi blokirati pristup senzorima</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>
-<translation id="73786666777299047">Otvori Chrome web-trgovinu</translation>
+<translation id="73786666777299047">Otvori Chrome Web Store</translation>
 <translation id="7380272457268061606">Želite li onemogućiti oporavak lokalnih podataka?</translation>
 <translation id="7380459290951585794">Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>
@@ -9822,7 +9822,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8708000541097332489">Izbriši pri izlazu</translation>
 <translation id="870805141700401153">Microsoftovo pojedinačno kodno potpisivanje</translation>
 <translation id="8708671767545720562">&amp;Više informacija</translation>
-<translation id="8709368517685334931">Starije boje možete pronaći u Chrome web-trgovini</translation>
+<translation id="8709368517685334931">Starije boje možete pronaći u Chrome Web Storeu</translation>
 <translation id="8711402221661888347">Kiseli krastavci</translation>
 <translation id="8711538096655725662">Automatski se pokreće na svim web-lokacijama koje posjetite</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

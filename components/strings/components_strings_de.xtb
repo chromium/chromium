@@ -620,7 +620,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2166378884831602661">Diese Website kann keine sichere Verbindung bereitstellen</translation>
 <translation id="2168151236314517198">Die Administratorrichtlinie blockiert das Drucken dieses Inhalts</translation>
 <translation id="2175630235841878061">Dateien mit mehr als 100 MB können nicht heruntergeladen werden</translation>
-<translation id="2176974405772725904">Adresse in Konto speichern</translation>
+<translation id="2176974405772725904">Adresse im Konto speichern</translation>
 <translation id="2178665390943006934">Schaltfläche „Chrome aktualisieren“ – aktivieren, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2182170103603703676">Geschirrspüler</translation>
@@ -2768,7 +2768,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
 <translation id="6547208576736763147">Doppelte Lochung links</translation>
 <translation id="6549443526281184652">Kostüme</translation>
-<translation id="6551873053534932690">Adresse in Konto speichern?</translation>
+<translation id="6551873053534932690">Adresse im Konto speichern?</translation>
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
 <translation id="6557715786897013164">14 × 17 Zoll</translation>
@@ -2831,7 +2831,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6687230248707087982">Umschlag (unbedruckt)</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
 <translation id="6687696737818665306">Schauspiel und Theater</translation>
-<translation id="6688743156324860098">Aktualisieren…</translation>
+<translation id="6688743156324860098">Aktualisieren</translation>
 <translation id="6688775486821967877">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte versuche es später noch einmal</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus deinem Konto.</translation>
@@ -3187,7 +3187,7 @@ Weitere Details:
 <translation id="738439098860678026">Früherziehung</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
-<translation id="7392089738299859607">Adresse aktualisieren</translation>
+<translation id="7392089738299859607">Aktualisieren</translation>
 <translation id="739728382607845710">Symbol für die Zahlungsabwicklung</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -3937,7 +3937,7 @@ Weitere Details:
 <translation id="8806696968588872703">Kunststoff (Satin)</translation>
 <translation id="8807160976559152894">Nach jeder Seite zuschneiden</translation>
 <translation id="8809203544698246977">Hier werden blockierte Themen angezeigt</translation>
-<translation id="8811470563853401328">Adresse in Konto speichern?</translation>
+<translation id="8811470563853401328">Adresse im Konto speichern?</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814707942599948500">Umschlag C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>

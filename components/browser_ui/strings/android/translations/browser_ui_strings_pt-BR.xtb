@@ -465,7 +465,7 @@
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quando essa configuração está ativada, os sites podem pedir para procurar dispositivos Bluetooth. Quando está desativada, os sites não podem procurar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
-<translation id="8730621377337864115">Concluído</translation>
+<translation id="8730621377337864115">Concluir</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site permitido}one{# site permitido}other{# sites permitidos}}</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>
