@@ -234,11 +234,14 @@ bool IntersectionGeometry::RootGeometry::operator==(
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
 String IntersectionGeometry::CachedRects::ToString() const {
+  auto transform_to_string = [](const gfx::Transform& t) {
+    return t.IsIdentityOr2dTranslation() ? t.To2dTranslation().ToString()
+                                         : t.ToString();
+  };
   return String::Format(
-      "local_target_rect: %s target_rect: %s local_root_rect: %s root_rect: %s "
-      "intersection_rect: %s %s %s min_scroll_delta_to_update %s %s"
-      "target_transform: %s root_transform: %s does_intersect: %d "
-      "relationship: %d root_scrolls_target: %d",
+      "target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
+      "min_to_update %s %s target_t: %s root_t: %s intersect: %d "
+      "rel: %d r_scrolls_t: %d",
       local_target_rect.ToString().c_str(), target_rect.ToString().c_str(),
       local_root_rect.ToString().c_str(), root_rect.ToString().c_str(),
       unscrolled_unclipped_intersection_rect.ToString().c_str(),
@@ -246,9 +249,9 @@ String IntersectionGeometry::CachedRects::ToString() const {
       intersection_rect.ToString().c_str(),
       computed_min_scroll_delta_to_update.ToString().c_str(),
       min_scroll_delta_to_update.ToString().c_str(),
-      target_to_view_transform.ToString().c_str(),
-      root_to_view_transform.ToString().c_str(), does_intersect, relationship,
-      root_scrolls_target);
+      transform_to_string(target_to_view_transform).c_str(),
+      transform_to_string(root_to_view_transform).c_str(), does_intersect,
+      relationship, root_scrolls_target);
 }
 #endif
 
