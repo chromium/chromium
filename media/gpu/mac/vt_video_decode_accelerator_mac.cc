@@ -2326,11 +2326,13 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
     const gfx::Size frame_size(CVPixelBufferGetWidth(frame.image.get()),
                                CVPixelBufferGetHeight(frame.image.get()));
+    // These SharedImages may be read by the raster interface for import of
+    // video frames to canvas as well as 2-copy import of video frames to WebGL
+    // and by the GLES2 interface for 1-copy import of video frames to WebGL.
     const uint32_t shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
         gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
         gpu::SHARED_IMAGE_USAGE_GLES2_READ;
     GLenum target = gl_client_.supports_arb_texture_rectangle
                         ? GL_TEXTURE_RECTANGLE_ARB
