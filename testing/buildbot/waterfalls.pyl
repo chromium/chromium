@@ -173,6 +173,7 @@
         ],
         'mixins': [
           'chromeos-reven',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_no_gtests',
