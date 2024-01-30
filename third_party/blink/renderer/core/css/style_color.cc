@@ -175,6 +175,9 @@ StyleColor& StyleColor::operator=(const StyleColor& other) {
               *other.color_or_unresolved_color_mix_.unresolved_color_mix));
     }
   } else {
+    if (IsUnresolvedColorMixFunction()) {
+      color_or_unresolved_color_mix_.unresolved_color_mix.reset();
+    }
     color_or_unresolved_color_mix_.color =
         other.color_or_unresolved_color_mix_.color;
   }
