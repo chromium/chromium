@@ -645,11 +645,21 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
   DCHECK_GT(tabs_in_group.length(), 0u);
 
   int from_index = tabs_in_group.start();
-  if (to_index < from_index)
-    from_index = tabs_in_group.end() - 1;
 
-  for (size_t i = 0; i < tabs_in_group.length(); ++i)
+  if (to_index < from_index) {
+    // When moving a group to the left, we move the tabs towards
+    // end of the group first. This way we do not need to update the to_index.
+    from_index = tabs_in_group.end() - 1;
+  } else if (to_index > from_index) {
+    // When moving a group to the right, we move the tabs towards
+    // the beginning of the group first. This way we do not need to update the
+    // from_index.
+    to_index += tabs_in_group.length() - 1;
+  }
+
+  for (size_t i = 0; i < tabs_in_group.length(); ++i) {
     MoveWebContentsAtImpl(from_index, to_index, false);
+  }
 
   MoveTabGroup(group);
 }
