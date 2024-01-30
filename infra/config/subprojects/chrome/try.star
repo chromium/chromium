@@ -149,6 +149,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-sherlock-qemu",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-internal-images-roller",
 )
 
