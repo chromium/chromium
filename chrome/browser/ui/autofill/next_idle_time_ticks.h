@@ -27,6 +27,12 @@ class NextIdleTimeTicks {
   // feature is disabled, it defaults to measuring the time immediately.
   static NextIdleTimeTicks CaptureNextIdleTimeTicks();
 
+  // Returns a `NextIdleTimeTicks` whose value is set to `delay` +
+  // `base::TimeTicksNow()` once `delay` has passed on the UI thread and the UI
+  // thread has become idle afterwards.
+  static NextIdleTimeTicks CaptureNextIdleTimeTicksWithDelay(
+      base::TimeDelta delay);
+
   // The first `TimeTicks` at which the UI thread this `NextIdleTimeTicks` was
   // created on then became idle. `is_null()` if this has not occurred yet.
   base::TimeTicks value() const;

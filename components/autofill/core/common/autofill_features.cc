@@ -434,6 +434,19 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
              "AutofillPopupImprovedTimingChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, then the timing measurement of when the Autofill
+// popup is considered to have been shown only happens at a delay - 500 ms after
+// showing the popup. The same protection mechanisms as for
+// `kAutofillPopupImprovedTimingChecks` are used, but only after 500 ms have
+// passed. The intent is to ensure that events that the user triggered within
+// 500 ms of the popup are showing do not arrive delayed on the UI thread of the
+// browser process.
+// TODO(crbug.com/475902): If this feature proves effective, combine it with
+// `kAutofillPopupImprovedTimingChecks`.
+BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
+             "AutofillPopupImprovedTimingChecksV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the threshold for accepting Autofill popup suggestions
 // should take into account latency information of the user event.
 BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,

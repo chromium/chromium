@@ -280,7 +280,12 @@ void AutofillPopupControllerImpl::Show(
     // event when suggestions changed.
     FireControlsChangedEvent(true);
   }
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+
+  time_view_shown_ = base::FeatureList::IsEnabled(
+                         features::kAutofillPopupImprovedTimingChecksV2)
+                         ? NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+                               kIgnoreEarlyClicksOnPopupDuration)
+                         : NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 
   if (IsRootPopup()) {
     // We may already be observing from a previous `Show` call.
