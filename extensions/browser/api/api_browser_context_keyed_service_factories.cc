@@ -25,7 +25,6 @@
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/messaging/message_service.h"
-#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/api/power/power_api.h"

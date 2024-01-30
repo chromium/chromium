@@ -18,8 +18,6 @@ source_set("messaging") {
     "message_service.cc",
     "message_service.h",
     "message_service_bindings.cc",
-    "messaging_api_message_filter.cc",
-    "messaging_api_message_filter.h",
     "messaging_delegate.cc",
     "messaging_delegate.h",
   ]

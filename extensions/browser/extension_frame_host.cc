@@ -175,13 +175,9 @@ void ExtensionFrameHost::OpenChannelToExtension(
   TRACE_EVENT("extensions", "ExtensionFrameHost::OpenChannelToExtension",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
-#else
   MessageServiceApi::GetMessageService()->OpenChannelToExtension(
       render_frame_host->GetBrowserContext(), render_frame_host, port_id, *info,
       channel_type, channel_name, std::move(port), std::move(port_host));
-#endif
 }
 
 void ExtensionFrameHost::OpenChannelToNativeApp(
@@ -196,13 +192,9 @@ void ExtensionFrameHost::OpenChannelToNativeApp(
   TRACE_EVENT("extensions", "ExtensionFrameHost::OnOpenChannelToNativeApp",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
-#else
   MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
       render_frame_host->GetBrowserContext(), render_frame_host, port_id,
       native_app_name, std::move(port), std::move(port_host));
-#endif
 }
 
 void ExtensionFrameHost::OpenChannelToTab(
@@ -221,14 +213,10 @@ void ExtensionFrameHost::OpenChannelToTab(
   TRACE_EVENT("extensions", "ExtensionFrameHost::OpenChannelToTab",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
-#else
   MessageServiceApi::GetMessageService()->OpenChannelToTab(
       render_frame_host->GetBrowserContext(), render_frame_host, port_id,
       tab_id, frame_id, document_id ? *document_id : std::string(),
       channel_type, channel_name, std::move(port), std::move(port_host));
-#endif
 }
 
 }  // namespace extensions

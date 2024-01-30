@@ -49,7 +49,6 @@ void MessagePort::DecrementLazyKeepaliveCount(Activity::Type activity_type) {}
 
 void MessagePort::NotifyResponsePending() {}
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void MessagePort::ClosePort(bool close_channel) {
   if (!weak_channel_delegate_) {
     return;
@@ -80,6 +79,5 @@ void MessagePort::AddReceiver(
   receivers_.Add(this, std::move(receiver),
                  std::make_pair(render_process_id, port_context));
 }
-#endif
 
 }  // namespace extensions

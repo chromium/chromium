@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -31,9 +30,7 @@ struct PortContext;
 
 // One side of the communication handled by extensions::MessageService.
 class MessagePort
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     : public mojom::MessagePortHost
-#endif
 {
  public:
   // Delegate handling the channel between the port and its host.
@@ -63,11 +60,7 @@ class MessagePort
   MessagePort(const MessagePort&) = delete;
   MessagePort& operator=(const MessagePort&) = delete;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  virtual ~MessagePort();
-#else
   ~MessagePort() override;
-#endif
 
   // Called right before a channel is created for this MessagePort and |port|.
   // This allows us to ensure that the ports have no RenderFrameHost instances
@@ -134,22 +127,18 @@ class MessagePort
     is_for_onetime_channel_ = is_for_onetime_channel;
   }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void AddReceiver(
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost> receiver,
       int render_process_id,
       const PortContext& port_context);
-#endif
 
  protected:
   MessagePort();
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // mojom::MessagePortHost overrides:
   void ClosePort(bool close_hannel) override;
   void PostMessage(Message message) override;
   void ResponsePending() override;
-#endif
 
   base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
   const PortId port_id_;
@@ -161,11 +150,9 @@ class MessagePort
   // This port was created for one-time messaging channel.
   bool is_for_onetime_channel_ = false;
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   mojo::AssociatedReceiverSet<mojom::MessagePortHost,
                               std::pair<int, PortContext>>
       receivers_;
-#endif
 };
 
 }  // namespace extensions

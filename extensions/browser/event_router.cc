@@ -280,9 +280,6 @@ void EventRouter::DispatchEventToSender(
   ReportEvent(histogram_value, extension,
               /*did_enqueue=*/false);
   mojom::EventDispatcher::DispatchEventCallback callback;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  callback = base::DoNothing();
-#else
   if (worker_thread_id != kMainThreadId) {
     callback = base::BindOnce(
         &EventRouter::DecrementInFlightEventsForServiceWorker,
@@ -300,7 +297,6 @@ void EventRouter::DispatchEventToSender(
   } else {
     callback = base::DoNothing();
   }
-#endif
   ObserveProcess(rph);
   DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                            event_id, event_name, std::move(event_args),
@@ -1187,9 +1183,6 @@ void EventRouter::DispatchEventToProcess(
 
   int event_id = g_extension_event_id.GetNext();
   mojom::EventDispatcher::DispatchEventCallback callback;
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  callback = base::DoNothing();
-#else
   // This mirrors the IncrementInFlightEvents below.
   if (!extension) {
     callback = base::DoNothing();
@@ -1207,7 +1200,6 @@ void EventRouter::DispatchEventToProcess(
   } else {
     callback = base::DoNothing();
   }
-#endif
 
   DispatchExtensionMessage(process, worker_thread_id, listener_context,
                            GenerateHostIdFromExtensionId(extension_id),

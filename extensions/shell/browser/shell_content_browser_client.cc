@@ -28,10 +28,8 @@
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_protocols.h"
@@ -112,19 +110,12 @@ ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 
 void ShellContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC) || BUILDFLAG(ENABLE_NACL)
+#if BUILDFLAG(ENABLE_NACL)
   int render_process_id = host->GetID();
   BrowserContext* browser_context = browser_main_parts_->browser_context();
-#endif
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  host->AddFilter(
-      new ExtensionMessageFilter(render_process_id, browser_context));
-  host->AddFilter(
-      new MessagingAPIMessageFilter(render_process_id, browser_context));
-#endif
+
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
-#if BUILDFLAG(ENABLE_NACL)
   host->AddFilter(new nacl::NaClHostMessageFilter(
       render_process_id, browser_context->IsOffTheRecord(),
       browser_context->GetPath()));

@@ -10,11 +10,9 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
-#include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -22,7 +20,6 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
-#include "extensions/buildflags/buildflags.h"
 
 namespace extensions {
 
@@ -33,10 +30,6 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   EventRouterFactory::GetInstance();
   ExtensionActionManager::EnsureFactoryBuilt();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
-  ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
-#endif
   ExtensionPrefsFactory::GetInstance();
   ExtensionPrefsHelperFactory::GetInstance();
   ImageLoaderFactory::GetInstance();

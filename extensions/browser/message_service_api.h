@@ -6,12 +6,9 @@
 #define EXTENSIONS_BROWSER_MESSAGE_SERVICE_API_H_
 
 #include "extensions/browser/service_worker/worker_id.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-struct ExtensionMsg_ExternalConnectionInfo;
 
 namespace content {
 class BrowserContext;
@@ -26,11 +23,7 @@ class MessageServiceApi {
  public:
   virtual ~MessageServiceApi() = default;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  using ExternalConnectionInfo = ExtensionMsg_ExternalConnectionInfo;
-#else
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
-#endif
   using Source = absl::variant<content::RenderFrameHost*, WorkerId>;
 
   virtual void OpenChannelToExtension(
