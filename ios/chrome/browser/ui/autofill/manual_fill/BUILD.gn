@@ -134,7 +134,6 @@ source_set("manual_fill_ui") {
     "//ios/chrome/browser/shared/ui/table_view:table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/ui/settings/password:title_view",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
