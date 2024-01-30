@@ -289,7 +289,8 @@ void Server::Initialize() {
   // events immediately after an output is bound to the client and before the
   // data in these events might be needed by the client.
   wl_global_create(wl_display_.get(), &zaura_output_manager_interface,
-                   kZAuraOutputManagerVersion, this, bind_aura_output_manager);
+                   kZAuraOutputManagerVersion, nullptr,
+                   bind_aura_output_manager);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface,
                    /*version=*/1, display_, bind_subcompositor);
   OnDidProcessDisplayChanges(
@@ -320,7 +321,7 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &wp_presentation_interface, /*version=*/1,
                    display_, bind_presentation);
   wl_global_create(wl_display_.get(), &zcr_secure_output_v1_interface,
-                   /*version=*/1, display_, bind_secure_output);
+                   /*version=*/1, nullptr, bind_secure_output);
   wl_global_create(wl_display_.get(), &zcr_alpha_compositing_v1_interface,
                    /*version=*/1, display_, bind_alpha_compositing);
   wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface,
@@ -385,7 +386,7 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface,
                    /*version=*/1, display_, bind_extended_drag);
   wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface,
-                   /*version=*/3, display_, bind_zxdg_output_manager);
+                   /*version=*/3, nullptr, bind_zxdg_output_manager);
   wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
                    /*version=*/1, display_, bind_zwp_idle_inhibit_manager);
 
