@@ -100,9 +100,6 @@ public class AutofillProviderUMA {
     public static final int DOM_MUTATION_AFTER_AUTOFILL = 6;
     public static final int SUBMISSION_SOURCE_HISTOGRAM_COUNT = 7;
 
-    // The million seconds from user touched the field to the autofill session starting.
-    public static final String UMA_AUTOFILL_TRIGGERING_TIME = "Autofill.WebView.TriggeringTime";
-
     // The million seconds from the autofill session starting to the suggestion being displayed.
     public static final String UMA_AUTOFILL_SUGGESTION_TIME = "Autofill.WebView.SuggestionTime";
 
