@@ -261,6 +261,15 @@ CookieControlsController::GetConfidenceLevel(
       break;
   }
 
+  // 3PCD prevents SameSite=None cookies from being sent when the top-level
+  // document is sandboxed without `allow-origin`. For instance when loaded
+  // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
+  // allow the user to opt into sending SameSite=None cookies again in those
+  // contexts.
+  if (HasOriginSandboxedTopLevelDocument()) {
+    return CookieControlsBreakageConfidenceLevel::kMedium;
+  }
+
   // If no 3P sites have attempted to access site data, nor were any stateful
   // bounces recorded, return low confidence. Take into account both allow and
   // blocked counts, since the breakage might be related to storage
@@ -313,6 +322,11 @@ CookieControlsController::GetConfidenceLevel(
   // accessed 3P storage, but there is no signal that would give us high
   // confidence.
   return CookieControlsBreakageConfidenceLevel::kMedium;
+}
+
+bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
+  return GetWebContents()->GetPrimaryMainFrame()->IsSandboxed(
+      network::mojom::WebSandboxFlags::kOrigin);
 }
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(

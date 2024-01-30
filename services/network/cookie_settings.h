@@ -205,6 +205,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const url::Origin* top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
+  // Forwards to FirstPartyURL in most cases, except when the top-level
+  // document is sandboxed (such as due to Content-Security-Policy). We do this
+  // to allow searching for explicit content settings which may re-enable
+  // SameSite=None cookies on those pages.
+  static GURL FirstPartyURLForMetadata(
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin* top_frame_origin);
+
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 

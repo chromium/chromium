@@ -86,6 +86,18 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
   }
 }
 
+bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
+  if (!top_frame_origin) {
+    return false;
+  }
+  if (!top_frame_origin->opaque()) {
+    return false;
+  }
+  const GURL url =
+      top_frame_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace
 
 // static
@@ -256,8 +268,17 @@ CookieSettings::GetCookieSettingWithMetadata(
     const url::Origin* top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return GetCookieSettingInternal(
-      url, GetFirstPartyURL(site_for_cookies, top_frame_origin),
+      url, FirstPartyURLForMetadata(site_for_cookies, top_frame_origin),
       IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
+}
+
+// static
+GURL CookieSettings::FirstPartyURLForMetadata(
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin* top_frame_origin) {
+  return IsOriginOpaqueHttpOrHttps(top_frame_origin)
+             ? top_frame_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+             : GetFirstPartyURL(site_for_cookies, top_frame_origin);
 }
 
 bool CookieSettings::AnnotateAndMoveUserBlockedCookies(

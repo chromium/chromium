@@ -154,6 +154,8 @@ class CookieControlsController final
       int blocked_sites,
       int bounce_count);
 
+  bool HasOriginSandboxedTopLevelDocument() const;
+
   // Updates the blocked cookie count of |icon_|.
   void PresentBlockedCookieCounter();
 

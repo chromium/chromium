@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
@@ -30,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -44,6 +46,7 @@ const char* kHostA = "a.test";
 const char* kHostB = "b.test";
 const char* kHostC = "c.test";
 const char* kHostD = "d.test";
+const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
 
 bool ThirdPartyPartitionedStorageAllowedByDefault() {
   return base::FeatureList::IsEnabled(
@@ -951,9 +954,50 @@ IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
                 /*expected_cookie=*/true);
 }
 
+std::unique_ptr<net::test_server::HttpResponse>
+HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kEchoCookiesWithCorsPath) {
+    return nullptr;
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  std::string content;
+
+  // Get the 'Cookie' header that was sent in the request.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+      it != request.headers.end()) {
+    content = it->second;
+  }
+
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("text/plain");
+  // Set the cors enabled headers.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kOrigin);
+      it != request.headers.end()) {
+    http_response->AddCustomHeader("Access-Control-Allow-Headers",
+                                   "credentials");
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
+    http_response->AddCustomHeader("Access-Control-Allow-Methods", "GET");
+    http_response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+  }
+  http_response->AddCustomHeader("Vary", "Origin");
+  http_response->set_content(content);
+
+  return http_response;
+}
+
 class ThirdPartyCookiePhaseoutPolicyStorageBrowserTest
     : public CookiePolicyBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
+    CookiePolicyBrowserTest::SetUpOnMainThread();
+  }
+
  protected:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {blink::features::kWebSQLAccess,
             net::features::kForceThirdPartyCookieBlocking,
@@ -973,6 +1017,50 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
                                     /*include_cookies=*/false);
   storage::test::ExpectStorageForFrame(GetNestedFrame(),
                                        /*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
+                       SandboxedTopLevelFrame) {
+  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
+                     "thirdparty=1;SameSite=None;Secure");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL(
+          kHostA,
+          "/set-header?Content-Security-Policy: sandbox allow-scripts")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  constexpr char script[] = R"JS(
+      fetch($1, {credentials: 'include', mode: 'cors'}).then(
+          (result) => result.text());
+  )JS";
+  GURL url = https_server()->GetURL(kHostB, kEchoCookiesWithCorsPath);
+  EXPECT_THAT(EvalJs(web_contents->GetPrimaryMainFrame(),
+                     content::JsReplace(script, url))
+                  .ExtractString(),
+              net::CookieStringIs(testing::IsEmpty()));
+
+  // Adding an explicit content setting should re-enable SameSite=None cookies
+  // on sandboxed pages.
+  auto* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  map->SetContentSettingDefaultScope(
+      https_server()->GetURL(kHostB, "/"), https_server()->GetURL(kHostA, "/"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL(
+          kHostA,
+          "/set-header?Content-Security-Policy: sandbox allow-scripts")));
+
+  EXPECT_THAT(EvalJs(web_contents->GetPrimaryMainFrame(),
+                     content::JsReplace(script, url))
+                  .ExtractString(),
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key("thirdparty"))));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

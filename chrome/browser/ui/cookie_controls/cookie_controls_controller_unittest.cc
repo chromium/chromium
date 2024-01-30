@@ -25,7 +25,9 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1601,6 +1603,26 @@ TEST_P(CookieControlsUserBypassTest, CachedCookieAccessReports) {
        origin1,
        {*cookie1},
        false});
+}
+
+TEST_P(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
+  if (!GetParam()) {
+    return;
+  }
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader("Content-Security-Policy", "sandbox");
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  navigation->SetResponseHeaders(headers);
+  navigation->Start();
+  navigation->Commit();
+
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CookieControlsUserBypassTest, testing::Bool());
