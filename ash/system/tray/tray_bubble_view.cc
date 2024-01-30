@@ -327,6 +327,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   if (init_params.anchor_mode == AnchorMode::kRect) {
     SetAnchorView(nullptr);
     SetAnchorRect(init_params.anchor_rect);
+  } else {
+    SetAnchorView(init_params.anchor_view);
+    SetAnchorRect(gfx::Rect());
   }
 
   message_center::MessageCenter::Get()->AddObserver(this);
@@ -479,13 +482,17 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     bubble_border->SetCornerRadius(params_.corner_radius);
   }
   bubble_border->set_avoid_shadow_overlap(true);
-  if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value()) {
+  if (params_.insets.has_value()) {
     bubble_border->set_insets(params_.insets.value());
   }
 
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
-  static_cast<BubbleFrameView*>(frame.get())
-      ->SetBubbleBorder(std::move(bubble_border));
+  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
+  frame_ptr->SetBubbleBorder(std::move(bubble_border));
+  if (params_.anchor_mode == AnchorMode::kView) {
+    frame_ptr->set_use_anchor_window_bounds(false);
+  }
+
   return frame;
 }
 

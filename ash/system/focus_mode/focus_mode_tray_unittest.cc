@@ -483,4 +483,32 @@ TEST_F(FocusModeTrayTest, EndingMomentUpdateSessionDuration) {
             controller->current_session()->session_duration());
 }
 
+// Tests that the focus mode tray is repositioned when the device scale factor
+// changes.
+TEST_F(FocusModeTrayTest, UpdateScaleFactor) {
+  FocusModeController::Get()->ToggleFocusMode();
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
+
+  // Since no zoom factor has been set on the display, it should be 1.
+  const display::ManagedDisplayInfo& display =
+      display_manager()->GetDisplayInfo(GetPrimaryDisplay().id());
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      1.f);
+
+  const gfx::Rect& initial_bounds = GetBubbleView()->GetBoundsInScreen();
+
+  // Set the device scale factor to 2.
+  constexpr float zoom_factor = 2.0f;
+  display_manager()->UpdateZoomFactor(display.id(), zoom_factor);
+  EXPECT_EQ(
+      display_manager()->GetDisplayForId(display.id()).device_scale_factor(),
+      zoom_factor);
+
+  // The bubble should have been repositioned due to the scale factor changing,
+  // so the bounds should be different than when there was a scale factor of 1.
+  EXPECT_NE(initial_bounds, GetBubbleView()->GetBoundsInScreen());
+}
+
 }  // namespace ash
