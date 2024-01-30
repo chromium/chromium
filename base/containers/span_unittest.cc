@@ -526,6 +526,11 @@ TEST(SpanTest, FromRefOfMutableStackVariable) {
   s[0] = 456;
   EXPECT_EQ(456, x);
   EXPECT_EQ(456, s[0]);
+
+  auto b = byte_span_from_ref(x);
+  static_assert(std::is_same_v<decltype(b), span<uint8_t, sizeof(int)>>);
+  EXPECT_EQ(reinterpret_cast<uint8_t*>(&x), b.data());
+  EXPECT_EQ(sizeof(int), b.size());
 }
 
 TEST(SpanTest, FromRefOfConstStackVariable) {
@@ -537,6 +542,11 @@ TEST(SpanTest, FromRefOfConstStackVariable) {
   EXPECT_EQ(1u, s.size());
   EXPECT_EQ(sizeof(int), s.size_bytes());
   EXPECT_EQ(123, s[0]);
+
+  auto b = byte_span_from_ref(x);
+  static_assert(std::is_same_v<decltype(b), span<const uint8_t, sizeof(int)>>);
+  EXPECT_EQ(reinterpret_cast<const uint8_t*>(&x), b.data());
+  EXPECT_EQ(sizeof(int), b.size());
 }
 
 TEST(SpanTest, ConvertNonConstIntegralToConst) {
@@ -1341,16 +1351,51 @@ TEST(SpanTest, AsByteSpan) {
   {
     constexpr int kArray[] = {2, 3, 5, 7, 11, 13};
     auto byte_span = as_byte_span(kArray);
-    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 6u * sizeof(int)>>);
     EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kArray));
     EXPECT_EQ(byte_span.size(), sizeof(kArray));
   }
   {
+    const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
+    auto byte_span = as_byte_span(kVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kVec.data()));
+    EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
+  }
+  {
     int kMutArray[] = {2, 3, 5, 7};
     auto byte_span = as_byte_span(kMutArray);
-    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 4u * sizeof(int)>>);
     EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kMutArray));
     EXPECT_EQ(byte_span.size(), sizeof(kMutArray));
+  }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_byte_span(kMutVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<const uint8_t>>);
+    EXPECT_EQ(byte_span.data(),
+              reinterpret_cast<const uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
+  }
+}
+
+TEST(SpanTest, AsWritableByteSpan) {
+  {
+    int kMutArray[] = {2, 3, 5, 7};
+    auto byte_span = as_writable_byte_span(kMutArray);
+    static_assert(
+        std::is_same_v<decltype(byte_span), span<uint8_t, 4u * sizeof(int)>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutArray));
+    EXPECT_EQ(byte_span.size(), sizeof(kMutArray));
+  }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_writable_byte_span(kMutVec);
+    static_assert(std::is_same_v<decltype(byte_span), span<uint8_t>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
 }
 
@@ -1738,7 +1783,8 @@ TEST(SpanTest, CopyFrom) {
   span<int> dynamic_span = base::make_span(vec);
 
   // Handle empty cases gracefully.
-  empty_static_span.copy_from(empty_dynamic_span);
+  // Dynamic size to static size requires an explicit conversion.
+  empty_static_span.copy_from(make_span<0u>(empty_dynamic_span));
   empty_dynamic_span.copy_from(empty_static_span);
   static_span.first(empty_static_span.size()).copy_from(empty_static_span);
   dynamic_span.first(empty_dynamic_span.size()).copy_from(empty_dynamic_span);
@@ -1746,23 +1792,117 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_THAT(vec, ElementsAre(4, 5, 6));
 
   // Test too small destinations.
-  EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(static_span.first(2u).copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2u).copy_from(static_span), "");
 
-  static_span.first(2u).copy_from(static_span.last(2u));
-  EXPECT_THAT(arr, ElementsAre(2, 3, 3));
+  std::vector<int> source = {7, 8, 9};
 
-  dynamic_span.first(2u).copy_from(dynamic_span.last(2u));
-  EXPECT_THAT(vec, ElementsAre(5, 6, 6));
+  static_span.first(2u).copy_from(span(source).last(2u));
+  EXPECT_THAT(arr, ElementsAre(8, 9, 3));
 
-  static_span.last(1u).copy_from(dynamic_span.last(1u));
-  EXPECT_THAT(arr, ElementsAre(2, 3, 6));
+  dynamic_span.first(2u).copy_from(span(source).last(2u));
+  EXPECT_THAT(vec, ElementsAre(8, 9, 6));
 
-  dynamic_span.first(1u).copy_from(static_span.first(1u));
-  EXPECT_THAT(vec, ElementsAre(2, 6, 6));
+  static_span.first(1u).copy_from(span(source).last(1u));
+  EXPECT_THAT(arr, ElementsAre(9, 9, 3));
+
+  dynamic_span.first(1u).copy_from(span(source).last(1u));
+  EXPECT_THAT(vec, ElementsAre(9, 9, 6));
+}
+
+TEST(SpanTest, CopyFromConversion) {
+  int arr[] = {1, 2, 3};
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> dynamic_span = base::make_span(vec);
+
+  std::vector convert_from = {7, 8, 9};
+  // Dynamic size to static size requires an explicit conversion.
+  static_span.copy_from(make_span<3u>(convert_from));
+  dynamic_span.copy_from(convert_from);
+  EXPECT_THAT(static_span, ElementsAre(7, 8, 9));
+  EXPECT_THAT(dynamic_span, ElementsAre(7, 8, 9));
+
+  std::array<int, 3u> convert_from_fixed = {4, 5, 6};
+  static_span.copy_from(convert_from_fixed);
+  dynamic_span.copy_from(convert_from_fixed);
+  EXPECT_THAT(static_span, ElementsAre(4, 5, 6));
+  EXPECT_THAT(dynamic_span, ElementsAre(4, 5, 6));
+
+  int convert_from_array[] = {1, 2, 3};
+  static_span.copy_from(convert_from_array);
+  dynamic_span.copy_from(convert_from_array);
+  EXPECT_THAT(static_span, ElementsAre(1, 2, 3));
+  EXPECT_THAT(dynamic_span, ElementsAre(1, 2, 3));
+
+  int convert_from_const_array[] = {-1, -2, -3};
+  static_span.copy_from(convert_from_const_array);
+  dynamic_span.copy_from(convert_from_const_array);
+  EXPECT_THAT(static_span, ElementsAre(-1, -2, -3));
+  EXPECT_THAT(dynamic_span, ElementsAre(-1, -2, -3));
+}
+
+TEST(SpanTest, SplitAt) {
+  int arr[] = {1, 2, 3};
+  span<int, 0> empty_static_span;
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> empty_dynamic_span;
+  span<int> dynamic_span = base::make_span(vec);
+
+  {
+    auto [left, right] = empty_static_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 0u);
+  }
+  {
+    auto [left, right] = empty_dynamic_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 0u);
+  }
+
+  {
+    auto [left, right] = static_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 3u);
+    EXPECT_EQ(right.front(), 1);
+  }
+  {
+    auto [left, right] = static_span.split_at(3u);
+    EXPECT_EQ(left.size(), 3u);
+    EXPECT_EQ(right.size(), 0u);
+    EXPECT_EQ(left.front(), 1);
+  }
+  {
+    auto [left, right] = static_span.split_at(1u);
+    EXPECT_EQ(left.size(), 1u);
+    EXPECT_EQ(right.size(), 2u);
+    EXPECT_EQ(left.front(), 1);
+    EXPECT_EQ(right.front(), 2);
+  }
+
+  {
+    auto [left, right] = dynamic_span.split_at(0u);
+    EXPECT_EQ(left.size(), 0u);
+    EXPECT_EQ(right.size(), 3u);
+    EXPECT_EQ(right.front(), 4);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at(3u);
+    EXPECT_EQ(left.size(), 3u);
+    EXPECT_EQ(right.size(), 0u);
+    EXPECT_EQ(left.front(), 4);
+  }
+  {
+    auto [left, right] = dynamic_span.split_at(1u);
+    EXPECT_EQ(left.size(), 1u);
+    EXPECT_EQ(right.size(), 2u);
+    EXPECT_EQ(left.front(), 4);
+    EXPECT_EQ(right.front(), 5);
+  }
 }
 
 }  // namespace base

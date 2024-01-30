@@ -175,7 +175,9 @@ void FromVolatileArrayDisallowed() {
 void FixedSizeCopyTooSmall() {
   const int src[] = {1, 2, 3};
   int dst[2];
-  base::make_span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{span size mismatch}}
+  base::make_span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{no viable conversion}}
+
+  base::make_span(dst).copy_from(src);  // expected-error@*:* {{no viable conversion}}
 }
 
 void FromRefNoSuchFunctionForIntLiteral() {
