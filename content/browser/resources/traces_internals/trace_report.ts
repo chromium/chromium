@@ -213,7 +213,7 @@ export class TraceReportElement extends PolymerElement {
     this.isLoading = false;
   }
 
-  private uploadStateEqual(value1: number, value2: UploadState): boolean {
+  private uploadStateEqual(value1: UploadState, value2: UploadState): boolean {
     return value1 === value2;
   }
 
@@ -227,6 +227,11 @@ export class TraceReportElement extends PolymerElement {
       composed: true,
       detail: new Notification(NotificationTypeEnum.ERROR, message),
     }));
+  }
+
+  private isDownloadDisabled_(isLoading: boolean, uploadState: UploadState):
+      boolean {
+    return isLoading || uploadState === UploadState.UPLOADED;
   }
 }
 
