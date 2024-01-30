@@ -32,6 +32,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     PROVISIONING_FAILURE = 3,
     NO_CELLULAR_DATA = 4,
     TETHERING_UNSUPPORTED = 5,
+    CANCELLED_FOR_NEWER_CONNECTION = 6,
+    TETHER_SHUTDOWN_DURING_CONNECTION = 7,
     CONNECTION_TO_HOST_RESULT_MAX,
   };
 
@@ -39,6 +41,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     UNKNOWN_ERROR,
     CLIENT_CONNECTION_TIMEOUT,
     CLIENT_CONNECTION_INTERNAL_ERROR,
+    CLIENT_CONNECTION_NETWORK_CONNECTION_HANDLER_FAILED,
+    CLIENT_CONNECTION_NETWORK_STATE_WAS_NULL,
     TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED,
     TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED,
     ENABLING_HOTSPOT_FAILED,
@@ -122,8 +126,22 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
                            RecordConnectionResultFailureNoCellData);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
                            RecordConnectionResultFailureEnablingHotspotFailed);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailureShutDownDuringConnectionAttempt);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailureClientConnection_NetworkConnectionHandlerFailed);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailureClientConnection_NetworkStateWasNull);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
                            RecordConnectionResultFailureEnablingHotspotTimeout);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailureCancelledForNewerConnection);
+  FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
+                           RecordConnectionResult);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
                            RecordConnectToHostDuration);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
@@ -172,6 +190,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     USER_CANCELLATION = 2,
     TETHERING_UNSUPPORTED = 3,
     NO_CELLULAR_DATA = 4,
+    SHUT_DOWN_DURING_CONNECTION = 5,
+    CANCELLED_FOR_NEWER_CONNECTION_ATTEMPT = 6,
     kMax
   };
 
@@ -195,8 +215,10 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   enum class ConnectionToHostResult_FailureClientConnectionEventType {
     TIMEOUT = 0,
-    CANCELED_BY_USER = 1,
+    CANCELED_BY_USER = 1,  // Obsolete
     INTERNAL_ERROR = 2,
+    NETWORK_CONNECTION_HANDLER_FAILED = 3,
+    NETWORK_STATE_WAS_NULL = 4,
     FAILURE_CLIENT_CONNECTION_MAX
   };
 

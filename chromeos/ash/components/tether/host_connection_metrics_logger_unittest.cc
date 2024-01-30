@@ -228,6 +228,62 @@ TEST_F(HostConnectionMetricsLoggerTest,
           ConnectionToHostResult_UnavoidableErrorEventType::OTHER);
 }
 
+TEST_F(
+    HostConnectionMetricsLoggerTest,
+    RecordConnectionResultFailureClientConnection_NetworkConnectionHandlerFailed) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::
+          CLIENT_CONNECTION_NETWORK_CONNECTION_HANDLER_FAILED);
+
+  VerifyFailure_ClientConnection(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_FailureClientConnectionEventType::
+              NETWORK_CONNECTION_HANDLER_FAILED);
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          CLIENT_CONNECTION_ERROR);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
+  VerifyUnavoidableErrorResult(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_UnavoidableErrorEventType::OTHER);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailureClientConnection_NetworkStateWasNull) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::CLIENT_CONNECTION_NETWORK_STATE_WAS_NULL);
+
+  VerifyFailure_ClientConnection(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_FailureClientConnectionEventType::
+              NETWORK_STATE_WAS_NULL);
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          CLIENT_CONNECTION_ERROR);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
+  VerifyUnavoidableErrorResult(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_UnavoidableErrorEventType::OTHER);
+}
+
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureClientConnection_Timeout) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
@@ -453,6 +509,36 @@ TEST_F(HostConnectionMetricsLoggerTest,
   VerifyUnavoidableErrorResult(
       HostConnectionMetricsLogger::
           ConnectionToHostResult_UnavoidableErrorEventType::NO_CELLULAR_DATA);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailureShutDownDuringConnectionAttempt) {
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::
+          TETHER_SHUTDOWN_DURING_CONNECTION,
+      test_devices_[0].GetDeviceId(), std::nullopt);
+
+  VerifyEndResult(ConnectionToHostResult::TETHER_SHUTDOWN_DURING_CONNECTION);
+  VerifyUnavoidableErrorResult(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_UnavoidableErrorEventType::
+              SHUT_DOWN_DURING_CONNECTION);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailureCancelledForNewerConnection) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::
+          CANCELLED_FOR_NEWER_CONNECTION,
+      test_devices_[0].GetDeviceId(), std::nullopt);
+
+  VerifyEndResult(ConnectionToHostResult::CANCELLED_FOR_NEWER_CONNECTION);
+  VerifyUnavoidableErrorResult(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_UnavoidableErrorEventType::
+              CANCELLED_FOR_NEWER_CONNECTION_ATTEMPT);
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,

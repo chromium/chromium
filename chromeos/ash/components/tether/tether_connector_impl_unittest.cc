@@ -564,7 +564,8 @@ TEST_F(TetherConnectorImplTest, TestConnectingToWifiFails) {
   EXPECT_EQ(kPassword, fake_wifi_hotspot_connector_->most_recent_password());
   EXPECT_EQ(fake_active_host_->GetTetherNetworkGuid(),
             fake_wifi_hotspot_connector_->most_recent_tether_network_guid());
-  fake_wifi_hotspot_connector_->CallMostRecentCallback("");
+  fake_wifi_hotspot_connector_->CallMostRecentCallback(base::unexpected(
+      WifiHotspotConnector::WifiHotspotConnectionError::kTimeout));
 
   // The failure should have resulted in the host being disconnected.
   EXPECT_EQ(ActiveHost::ActiveHostStatus::DISCONNECTED,

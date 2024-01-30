@@ -18,9 +18,10 @@ FakeWifiHotspotConnector::FakeWifiHotspotConnector(
 FakeWifiHotspotConnector::~FakeWifiHotspotConnector() = default;
 
 void FakeWifiHotspotConnector::CallMostRecentCallback(
-    const std::string& wifi_guid) {
+    base::expected<std::string,
+                   WifiHotspotConnector::WifiHotspotConnectionError> result) {
   EXPECT_FALSE(!most_recent_callback_);
-  std::move(most_recent_callback_).Run(wifi_guid);
+  std::move(most_recent_callback_).Run(result);
 }
 
 void FakeWifiHotspotConnector::ConnectToWifiHotspot(

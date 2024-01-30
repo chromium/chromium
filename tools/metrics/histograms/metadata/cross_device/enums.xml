@@ -347,6 +347,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Timeout while waiting to connect"/>
   <int value="1" label="(obsolete) Canceled"/>
   <int value="2" label="Internal error"/>
+  <int value="3" label="Network Connection Handler Failed"/>
+  <int value="4" label="Network State was null"/>
 </enum>
 
 <enum name="InstantTethering_ConnectionToHostResult_Failure_TetheringTimeout">
@@ -370,6 +372,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User cancellation"/>
   <int value="3" label="Tethering unsupported"/>
   <int value="4" label="No cellular data"/>
+  <int value="5" label="Feature shut down during connection attempt"/>
+  <int value="6" label="Cancelled for newer connection attempt"/>
 </enum>
 
 <enum name="InstantTethering_FeatureState">

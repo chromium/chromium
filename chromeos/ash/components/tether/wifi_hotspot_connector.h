@@ -7,15 +7,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/ash/components/tether/active_host.h"
 
 namespace base {
 class TaskRunner;
@@ -31,6 +30,14 @@ namespace tether {
 // Connects to a Wi-Fi hotspot, given an SSID and password.
 class WifiHotspotConnector : public NetworkStateHandlerObserver {
  public:
+  enum class WifiHotspotConnectionError {
+    kTimeout,
+    kWifiHotspotConnectorClassDestroyed,
+    kCancelledForNewerConnectionAttempt,
+    kNetworkConnectionHandlerFailed,
+    kNetworkStateWasNull,
+  };
+
   WifiHotspotConnector(NetworkHandler* network_handler,
                        NetworkConnect* network_connect);
 
@@ -41,7 +48,8 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
 
   // Function which receives the GUID of the connected Wi-Fi hotspot. If
   // the string passed is empty, an error occurred trying to connect.
-  using WifiConnectionCallback = base::OnceCallback<void(const std::string&)>;
+  using WifiConnectionCallback = base::OnceCallback<void(
+      base::expected<std::string, WifiHotspotConnectionError>)>;
 
   // Connects to the Wi-Fi network with SSID |ssid| and password |password|,
   // invoking |callback| when the connection succeeds, fails, or times out.
@@ -69,7 +77,8 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
 
   void UpdateWaitingForWifi();
   void InitiateConnectionToCurrentNetwork();
-  void CompleteActiveConnectionAttempt(bool success);
+  void CompleteActiveConnectionAttempt(
+      absl::optional<WifiHotspotConnectionError> error);
   void CreateWifiConfiguration();
   void RequestWifiScan();
   base::Value::Dict CreateWifiPropertyDictionary(const std::string& ssid,
@@ -104,6 +113,10 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
 
   base::WeakPtrFactory<WifiHotspotConnector> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const WifiHotspotConnector::WifiHotspotConnectionError error);
 
 }  // namespace tether
 
