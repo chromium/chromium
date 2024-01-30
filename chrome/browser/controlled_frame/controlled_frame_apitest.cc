@@ -189,6 +189,9 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
   )"));
 }
 
+// TODO(odejesush): Add tests for the rest of the Promise API methods.
+const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
+
 }  // namespace
 
 class ControlledFrameApiTest
@@ -748,6 +751,39 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
   )",
                            webtransport_server().server_address().port())));
 }
+
+class ControlledFramePromiseApiTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePromiseApiTest, PromiseAPIs) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  Browser* app_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::WebContents* app_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  const GURL& test_url =
+      url_info.origin().GetURL().Resolve("/controlled_frame_api_test.html");
+  ASSERT_TRUE(content::NavigateToURL(app_contents, test_url));
+
+  const GURL& original_controlled_frame_url =
+      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
+  ASSERT_TRUE(
+      CreateControlledFrame(app_contents, original_controlled_frame_url));
+
+  EXPECT_EQ("SUCCESS",
+            content::EvalJs(app_contents, content::JsReplace(R"(
+      (async function() {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        return await testAPI(frame, $1);
+      })();
+    )",
+                                                             GetParam())));
+}
+
+INSTANTIATE_TEST_SUITE_P(PromiseAPIs,
+                         ControlledFramePromiseApiTest,
+                         testing::ValuesIn(kControlledFramePromiseApiMethods));
 
 class ControlledFrameServiceWorkerTest
     : public extensions::ServiceWorkerBasedBackgroundTest {

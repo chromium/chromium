@@ -25,10 +25,11 @@ class ChromeWebViewElement extends WebViewElement {
 }
 
 // Forward remaining ChromeWebViewElement.foo* method calls to
-// ChromeWebViewImpl.foo* or WebViewInternal.foo*.
+// ChromeWebViewImpl.foo* or WebViewInternal.foo*. WebView APIs don't support
+// promise-based syntax so |promiseMethodDetails| is left empty.
 forwardApiMethods(
     ChromeWebViewElement, ChromeWebViewImpl, WebViewInternal,
-    WEB_VIEW_API_METHODS);
+    WEB_VIEW_API_METHODS, /*promiseMethodDetails=*/[]);
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override

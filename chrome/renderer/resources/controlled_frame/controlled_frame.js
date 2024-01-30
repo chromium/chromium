@@ -6,11 +6,15 @@
 
 var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
 var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
+var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
+var CONTROLLED_FRAME_API_METHODS =
+    require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
+var CONTROLLED_FRAME_PROMISE_API_METHODS =
+    require('controlledFrameApiMethods').CONTROLLED_FRAME_PROMISE_API_METHODS;
 var registerElement = require('guestViewContainerElement').registerElement;
 var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
 var WebViewElement = require('webViewElement').WebViewElement;
 var WebViewInternal = getInternalApi('webViewInternal');
-var WEB_VIEW_API_METHODS = require('webViewApiMethods').WEB_VIEW_API_METHODS;
 
 class ControlledFrameElement extends WebViewElement {
   static get observedAttributes() {
@@ -28,7 +32,7 @@ class ControlledFrameElement extends WebViewElement {
 // ChromeWebViewImpl.foo* or WebViewInternal.foo*.
 forwardApiMethods(
     ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
-    WEB_VIEW_API_METHODS);
+    CONTROLLED_FRAME_API_METHODS, CONTROLLED_FRAME_PROMISE_API_METHODS);
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override
