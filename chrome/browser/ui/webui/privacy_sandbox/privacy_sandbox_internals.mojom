@@ -4,6 +4,7 @@
 module privacy_sandbox_internals.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "components/content_settings/core/common/content_settings.mojom";
 
 // Mojo interface for DevUI access to data for Privacy Sandbox state.
@@ -14,8 +15,9 @@ interface PageHandler {
   // registered will return a null Value.
   ReadPref(string pref_name) => (mojo_base.mojom.Value s);
 
-  // Return a list of COOKIES ContentSettings for the current profile.
-  GetCookieSettings() => (
+  // Return a list of ContentSettings for the current profile and given type.
+  // Reads directly from the HostContentSettingsMap.
+  ReadContentSettings(content_settings.mojom.ContentSettingsType type) => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
   // Return a list of TPCD_METADATA_GRANTS ContentSettings for the current
@@ -23,29 +25,13 @@ interface PageHandler {
   GetTpcdMetadataGrants() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
-  // Return a list of TPCD_HEURISTICS_GRANTS ContentSettings for the current
-  // profile.
-  GetTpcdHeuristicsGrants() => (
-    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
-
-  // Return a list of TPCD_TRIAL ContentSettings for the current
-  // profile.
-  GetTpcdTrial() => (
-    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
-
-  // Return a list of TOP_LEVEL_TPCD_TRIAL ContentSettings for the current
-  // profile.
-  GetTopLevelTpcdTrial() => (
-    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
-
-  // Convert ContentSettingsPattern into a string representation.
+  // Return a string representation of a ContentSettingsPattern.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);
 
-  // Converts a string into a ContentSettingsPattern.
+  // Return a ContentSettingsPattern representing a string.
   StringToContentSettingsPattern(string s) => (
     content_settings.mojom.ContentSettingsPattern pattern);
-
 };
 
 
