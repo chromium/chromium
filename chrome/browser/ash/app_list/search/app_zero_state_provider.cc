@@ -12,7 +12,7 @@
 namespace app_list {
 
 AppZeroStateProvider::AppZeroStateProvider(AppSearchDataSource* data_source)
-    : data_source_(data_source) {
+    : SearchProvider(SearchCategory::kApps), data_source_(data_source) {
   // NOTE: Unlike AppSearchProvider, AppZeroStateProvider does not have to
   // update search model when app status, or other app information changes. The
   // recent apps UI implementation updates app representations independently of

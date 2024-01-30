@@ -54,7 +54,8 @@ bool IsDriveDisabled(Profile* profile) {
 }  // namespace
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
-    : profile_(profile),
+    : SearchProvider(SearchCategory::kFiles),
+      profile_(profile),
       thumbnail_loader_(profile),
       file_suggest_service_(
           ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(

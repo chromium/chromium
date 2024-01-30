@@ -14,6 +14,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -43,7 +44,8 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     SearchController* search_controller,
     drive::DriveIntegrationService* drive_service,
     session_manager::SessionManager* session_manager)
-    : profile_(profile),
+    : SearchProvider(SearchCategory::kFiles),
+      profile_(profile),
       drive_service_(drive_service),
       session_manager_(session_manager),
       file_suggest_service_(

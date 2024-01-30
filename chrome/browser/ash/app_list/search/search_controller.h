@@ -211,6 +211,8 @@ class SearchController {
 
   bool disable_ranking_for_test_ = false;
 
+  std::vector<ControlCategory> toggleable_categories_;
+
   // If set, called when results set by a provider change. Only set by tests.
   ResultsChangedCallback results_changed_callback_for_test_;
 

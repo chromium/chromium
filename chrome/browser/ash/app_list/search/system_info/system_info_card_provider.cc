@@ -65,7 +65,8 @@ double ConvertKBtoBytes(uint32_t amount) {
 }  // namespace
 
 SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
-    : total_disk_space_calculator_(profile),
+    : SearchProvider(SearchCategory::kSystemInfoCard),
+      total_disk_space_calculator_(profile),
       free_disk_space_calculator_(profile),
       my_files_size_calculator_(profile),
       drive_offline_size_calculator_(profile),

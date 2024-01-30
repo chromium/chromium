@@ -5160,6 +5160,7 @@ source_set("unit_tests") {
     "app_list/search/ranking/removed_results_ranker_unittest.cc",
     "app_list/search/ranking/score_normalizing_ranker_unittest.cc",
     "app_list/search/search_controller_unittest.cc",
+    "app_list/search/search_engine_unittest.cc",
     "app_list/search/search_metrics_manager_unittest.cc",
     "app_list/search/search_session_metrics_manager_unittest.cc",
     "app_list/search/system_info/cpu_usage_data_unittest.cc",

@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -93,7 +94,8 @@ class AssistantTextSearchResult : public ChromeSearchResult {
 
 // AssistantTextSearchProvider -------------------------------------------------
 
-AssistantTextSearchProvider::AssistantTextSearchProvider() {
+AssistantTextSearchProvider::AssistantTextSearchProvider()
+    : SearchProvider(SearchCategory::kAssistant) {
   UpdateResults();
 
   // Bind observers.

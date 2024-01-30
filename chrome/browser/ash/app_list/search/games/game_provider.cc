@@ -130,7 +130,7 @@ std::vector<std::pair<const apps::Result*, double>> SearchGames(
 
 GameProvider::GameProvider(Profile* profile,
                            AppListControllerDelegate* list_controller)
-    : SearchProvider(ControlCategory::kGames),
+    : SearchProvider(SearchCategory::kGames),
       profile_(profile),
       list_controller_(list_controller),
       app_discovery_service_(

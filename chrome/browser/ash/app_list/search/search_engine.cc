@@ -10,35 +10,40 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
+
+SearchOptions::SearchOptions() = default;
+
+SearchOptions::~SearchOptions() = default;
+
+SearchOptions::SearchOptions(const SearchOptions&) = default;
+
+SearchOptions& SearchOptions::operator=(const SearchOptions&) = default;
 
 SearchEngine::SearchEngine(Profile* profile) : profile_(profile) {}
 
 SearchEngine::~SearchEngine() = default;
 
 void SearchEngine::AddProvider(std::unique_ptr<SearchProvider> provider) {
-  providers_.emplace_back(std::move(provider));
+  providers_[provider->search_category()].push_back(std::move(provider));
 }
 
 void SearchEngine::StartSearch(const std::u16string& query,
+                               SearchOptions search_options,
                                SearchResultsCallback callback) {
+  StopQuery();
   on_search_done_ = std::move(callback);
 
   auto on_provider_results = base::BindRepeating(
       &SearchEngine::OnProviderResults, base::Unretained(this));
-  for (const auto& provider : providers_) {
-    // Does not start the search of a provider if its control category is
-    // disabled.
-    // TODO(b/315709613): make it as a search option and move the logic back to
-    // the SC.
-    if (ash::features::IsLauncherSearchControlEnabled() &&
-        !IsControlCategoryEnabled(profile_, provider->control_category())) {
-      continue;
+
+  for (const auto& category :
+       search_options.search_categories.value_or(GetAllSearchCategories())) {
+    for (const auto& provider : providers_[category]) {
+      provider->Start(query, on_provider_results);
     }
-    provider->Start(query, on_provider_results);
   }
 }
 
@@ -49,42 +54,42 @@ void SearchEngine::OnProviderResults(
 }
 
 void SearchEngine::StopQuery() {
-  std::for_each(providers_.begin(), providers_.end(),
-                [](const auto& provider) { provider->StopQuery(); });
+  for (const auto& [category, providers] : providers_) {
+    for (const auto& provider : providers) {
+      provider->StopQuery();
+    }
+  }
 }
 
 void SearchEngine::StartZeroState(SearchResultsCallback callback) {
+  StopZeroState();
   on_search_done_ = std::move(callback);
 
   auto on_provider_results = base::BindRepeating(
       &SearchEngine::OnProviderResults, base::Unretained(this));
-  std::for_each(providers_.begin(), providers_.end(),
-                [&](const auto& provider) {
-                  provider->StartZeroState(on_provider_results);
-                });
+
+  for (const auto& [category, providers] : providers_) {
+    for (const auto& provider : providers) {
+      provider->StartZeroState(on_provider_results);
+    }
+  }
 }
 
 void SearchEngine::StopZeroState() {
-  std::for_each(providers_.begin(), providers_.end(),
-                [](const auto& provider) { provider->StopZeroState(); });
+  for (const auto& [category, providers] : providers_) {
+    for (const auto& provider : providers) {
+      provider->StopZeroState();
+    }
+  }
 }
 
-// TODO(b/315709613): Remove from providers and move the logic back to the SC.
-std::vector<ash::AppListSearchControlCategory>
-SearchEngine::GetToggleableCategories() const {
-  // Use a set to deduplicate and sort the elements in order.
-  std::set<ash::AppListSearchControlCategory> category_set;
-  for (auto& provider : providers_) {
-    // Cannot toggle is not an actual search category.
-    if (provider->control_category() ==
-        ash::AppListSearchControlCategory::kCannotToggle) {
-      continue;
-    }
-
-    category_set.insert(provider->control_category());
+std::vector<SearchCategory> SearchEngine::GetAllSearchCategories() const {
+  std::vector<SearchCategory> categories;
+  for (const auto& [category, _] : providers_) {
+    categories.push_back(category);
   }
-  return std::vector<ash::AppListSearchControlCategory>(category_set.begin(),
-                                                        category_set.end());
+
+  return categories;
 }
 
 size_t SearchEngine::ReplaceProvidersForResultTypeForTest(
@@ -92,10 +97,13 @@ size_t SearchEngine::ReplaceProvidersForResultTypeForTest(
     std::unique_ptr<SearchProvider> new_provider) {
   DCHECK_EQ(result_type, new_provider->ResultType());
 
-  size_t removed_providers = base::EraseIf(
-      providers_, [&](const std::unique_ptr<SearchProvider>& provider) {
-        return provider->ResultType() == result_type;
-      });
+  size_t removed_providers = 0;
+  for (auto& [category, providers] : providers_) {
+    removed_providers += base::EraseIf(
+        providers, [&](const std::unique_ptr<SearchProvider>& provider) {
+          return provider->ResultType() == result_type;
+        });
+  }
   if (!removed_providers) {
     return 0u;
   }

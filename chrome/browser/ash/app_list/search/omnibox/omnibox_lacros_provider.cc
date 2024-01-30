@@ -49,7 +49,8 @@ OmniboxLacrosProvider::OmniboxLacrosProvider(
     Profile* profile,
     AppListControllerDelegate* list_controller,
     crosapi::CrosapiManager* crosapi_manager)
-    : search_provider_(nullptr),
+    : SearchProvider(SearchCategory::kOmnibox),
+      search_provider_(nullptr),
       profile_(profile),
       list_controller_(list_controller) {
   DCHECK(profile_);

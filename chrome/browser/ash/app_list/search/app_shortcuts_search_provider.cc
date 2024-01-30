@@ -34,7 +34,7 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 AppShortcutsSearchProvider::AppShortcutsSearchProvider(
     Profile* profile,
     AppListControllerDelegate* app_list_controller)
-    : SearchProvider(ControlCategory::kAppShortcuts),
+    : SearchProvider(SearchCategory::kAppShortcuts),
       profile_(profile),
       app_list_controller_(app_list_controller) {
   DCHECK(profile_);

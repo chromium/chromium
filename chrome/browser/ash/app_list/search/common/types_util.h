@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 
 namespace app_list {
 
@@ -19,6 +20,10 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type);
 // Converts display type to a debug string.
 std::string DisplayTypeToString(
     const ash::SearchResultDisplayType display_type);
+
+// Converts SearchCategory enums into ControlCategory used in the UI.
+ash::AppListSearchControlCategory MapSearchCategoryToControlCategory(
+    SearchCategory search_category);
 
 }  // namespace app_list
 

@@ -80,7 +80,7 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
     int max_results,
     Profile* profile,
     AppListControllerDelegate* list_controller)
-    : SearchProvider(ControlCategory::kPlayStore),
+    : SearchProvider(SearchCategory::kPlayStore),
       max_results_(max_results),
       profile_(profile),
       list_controller_(list_controller) {

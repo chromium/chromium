@@ -38,7 +38,7 @@ bool IsNonLatinLocale(base::StringPiece locale) {
 }  // namespace
 
 AppSearchProvider::AppSearchProvider(AppSearchDataSource* data_source)
-    : SearchProvider(ControlCategory::kApps), data_source_(data_source) {
+    : SearchProvider(SearchCategory::kApps), data_source_(data_source) {
   app_updates_subscription_ =
       data_source_->SubscribeToAppUpdates(base::BindRepeating(
           &AppSearchProvider::UpdateResults, base::Unretained(this)));
