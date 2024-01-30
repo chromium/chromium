@@ -32,6 +32,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -47,6 +48,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -57,6 +59,13 @@ constexpr int kIconSize = 32;
 constexpr int kNestedDialogIconSize = 24;
 constexpr int kInfoPaneCornerRadius = 10;
 constexpr int kProgressViewHorizontalPadding = 45;
+
+views::View* GetRootView(views::View* view) {
+  while (view->parent()) {
+    view = view->parent();
+  }
+  return view;
+}
 
 gfx::Insets BottomPadding(views::DistanceMetric distance) {
   return gfx::Insets::TLBR(
@@ -385,6 +394,39 @@ class InstallSuccessView : public InstallerDialogView {
 BEGIN_METADATA(InstallSuccessView)
 END_METADATA
 
+class DimOverlayView : public views::View {
+  METADATA_HEADER(DimOverlayView, views::View)
+
+ public:
+  DimOverlayView() {
+    SetBackground(views::CreateSolidBackground(SkColorSetARGB(125, 0, 0, 0)));
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  std::string GetObjectName() const override { return "DimOverlayView"; }
+};
+
+BEGIN_METADATA(DimOverlayView)
+END_METADATA
+
+void IsolatedWebAppInstallerViewImpl::Dim(bool dim) {
+  views::View* root = GetRootView(this);
+
+  // Undim: remove all |DimOverlayView|
+  if (!dim) {
+    for (views::View* child : root->children()) {
+      if (child->GetObjectName().compare("DimOverlayView") == 0) {
+        root->RemoveChildView(child);
+      }
+    }
+    return;
+  }
+
+  // Dim: add a |DimOverlayView| as the last child.
+  root->AddChildView(std::make_unique<DimOverlayView>());
+}
+
 // static
 void IsolatedWebAppInstallerView::SetDialogButtons(
     views::DialogDelegate* dialog_delegate,
@@ -479,6 +521,7 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
 
 void IsolatedWebAppInstallerViewImpl::ShowDialog(
     const IsolatedWebAppInstallerModel::Dialog& dialog) {
+  Dim(true);
   absl::visit(
       base::Overloaded{
           [this](const IsolatedWebAppInstallerModel::BundleInvalidDialog&) {
@@ -578,17 +621,16 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       .SetTitle(l10n_util::GetStringUTF16(title))
       .AddParagraph(ui::DialogModelLabel(subtitle).set_is_secondary())
       .DisableCloseOnDeactivate()
-      .AddCancelButton(base::BindOnce(
-          &IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled,
-          base::Unretained(this)))
+      .AddCancelButton(base::BindOnce(&Delegate::OnChildDialogCanceled,
+                                      base::Unretained(delegate_)))
       .SetDialogDestroyingCallback(base::BindOnce(
           &IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying,
           weak_ptr_factory_.GetWeakPtr()));
 
   if (ok_label.has_value()) {
     dialog_model_builder.AddOkButton(
-        base::BindOnce(&IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted,
-                       base::Unretained(this)),
+        base::BindOnce(&Delegate::OnChildDialogAccepted,
+                       base::Unretained(delegate_)),
         ui::DialogModel::Button::Params().SetLabel(
             l10n_util::GetStringUTF16(ok_label.value())));
   }
@@ -627,16 +669,6 @@ void IsolatedWebAppInstallerViewImpl::ShowChildDialog(
   widget->Show();
 }
 
-void IsolatedWebAppInstallerViewImpl::OnChildDialogAccepted() {
-  dialog_visible_ = false;
-  delegate_->OnChildDialogAccepted();
-}
-
-void IsolatedWebAppInstallerViewImpl::OnChildDialogCanceled() {
-  dialog_visible_ = false;
-  delegate_->OnChildDialogCanceled();
-}
-
 void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
   for (views::View* child : children()) {
     child->SetVisible(child == view);
@@ -645,6 +677,8 @@ void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
 
 void IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying() {
   child_widget_ = nullptr;
+  dialog_visible_ = false;
+  Dim(false);
 }
 
 BEGIN_METADATA(IsolatedWebAppInstallerViewImpl)
