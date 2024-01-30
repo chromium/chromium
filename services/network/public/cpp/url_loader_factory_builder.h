@@ -91,7 +91,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
 
   // This `Finish()` variant connects the resulting factory to the given
   // `PendingReceiver`.
-  template <typename... Args>
+  // `OutType` is only for consistency with other `Finish()` variants for
+  // `content/browser/loader/url_loader_factory_utils.cc` callers.
+  template <typename OutType = void, typename... Args>
   void Finish(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
               Args... terminal_args) && {
     if (IsEmpty()) {
