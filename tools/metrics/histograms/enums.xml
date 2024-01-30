@@ -4955,6 +4955,12 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="12" label="ChromeOS button click"/>
 </enum>
 
+<enum name="DemoModeHighlightsError">
+  <int value="0" label="Attract loop break timestamp is invalid"/>
+  <int value="1" label="Page view duration is invalid"/>
+  <int value="2" label="Details page view duration is invalid"/>
+</enum>
+
 <enum name="DemoModeIdleLogoutWarningEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Canceled"/>

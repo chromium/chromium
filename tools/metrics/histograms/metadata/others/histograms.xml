@@ -4294,6 +4294,17 @@ chromium-metrics-reviews@google.com.
   <token key="HighlightsDetailsPageName" variants="HighlightsDetailsPageName"/>
 </histogram>
 
+<histogram name="DemoMode.Highlights.Error" enum="DemoModeHighlightsError"
+    expires_after="2024-05-24">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    Unexpected Demo Mode Highlight app error. The metrics will be emitted when
+    encounting an error.
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.Highlights.FirstInteraction"
     enum="DemoModeHighlightsAction" expires_after="2024-05-24">
   <owner>llin@chromium.org</owner>
