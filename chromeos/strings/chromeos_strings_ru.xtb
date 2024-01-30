@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">умножьте</translation>
 <translation id="1145018782460575098">Открыто окно со сведениями о доступных обновлениях (<ph name="NUM_UPDATES" />) встроенного ПО для внешних устройств.</translation>
 <translation id="1145516343487477149">Находите нужные справочные статьи и ответы на частые вопросы об устройствах Chromebook.</translation>
 <translation id="1154390310959620237">Можно настроить не более пяти сочетаний клавиш. Чтобы добавить новое сочетание, удалите одно из существующих.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">По области сканирования</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
+<translation id="1371650399987522809">Отзыв об обоях, созданных при помощи технологий ИИ от Google</translation>
 <translation id="1387854245479784695">Использование ЦП всеми ядрами</translation>
 <translation id="1394661041439318933">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Запрос ping к шлюзу</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Сенсорная панель</translation>
 <translation id="1561927818299383735">подсветка</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не удается обновить устройство</translation>
+<translation id="1566493343215789965">разделите</translation>
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Установить как обои</translation>
 <translation id="1578784163189013834">Выбрать фон заставки</translation>
 <translation id="160633243685262989">Предварительный просмотр изображения</translation>
 <translation id="1611649489706141841">вперед</translation>
 <translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Генерируются изображения…</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1626590945318984973">Недопустимое сочетание клавиш. Выберите новое без функциональных клавиш и клавиши <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="2880569433548999039">Динамическая заставка с облаками</translation>
 <translation id="2926057806159140518">Введите имя пользователя и пароль или отсканируйте QR-код.</translation>
+<translation id="2938573842839598578">Чтобы получить приблизительный результат, <ph name="OPERATOR_TEXT" /> значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" />.</translation>
 <translation id="2940811910881150316">Не удается протестировать устройство. Откройте его крышку.</translation>
 <translation id="2941112035454246133">Низкий</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локальное удостоверение (необязательно)</translation>
 <translation id="3565064564551103223">Разрешенные IP-адреса</translation>
 <translation id="3569407787324516067">Заставка</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7180865173735832675">Настроить</translation>
 <translation id="7184043045742675738">Чтобы настроить кнопку, нажмите на любую клавишу. Измените положение с помощью мыши или клавиш со стрелками.</translation>
+<translation id="7206979415662233817">Условия использования</translation>
 <translation id="7212547870105584639">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Обновление встроенного ПО на внешних устройствах</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">цвет клавиатуры</translation>
 <translation id="7317831949569936035">Регистрация в учебном заведении</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Вам должно быть не менее 18 лет, и вы должны согласиться использовать ИИ-обои в соответствии с <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Условиями использования Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />дополнительными условиями использования генеративного искусственного интеллекта<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ИИ для создания обоев предназначено только для личного и некоммерческого использования. Когда вы создаете запрос, согласно <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политике конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> его текст отправляется на серверы ИИ от Google, а затем используется для генерации предложений обоев. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7353413232959255829">Результат поиска <ph name="LIST_POSITION" /> из <ph name="LIST_SIZE" />: "<ph name="SEARCH_RESULT_TEXT" />". Нажмите Ввод, чтобы перейти в найденный раздел.</translation>

@@ -1500,6 +1500,7 @@ Neuinstallation</translation>
 <translation id="6981291220124935078">Zugriff aktivieren</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="698231206551913481">Durch das Entfernen des Nutzers werden alle mit ihm verknüpften Dateien und lokalen Daten endgültig gelöscht.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> unterstützt die Auflösung <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nicht. Die Auflösung wurde in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) geändert. Bitte klicke auf „Bestätigen“, um die Änderung beizubehalten. Die vorherige Einstellung wird in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="6989752354829085073">Sieh dir eine kurze Einführung zur Bedienung deines Chromebooks an. Nach sechs Schritten bist du startklar.</translation>
 <translation id="7004910047186208204">Mit Mobilfunknetz verbinden</translation>
 <translation id="7005239792648594238">Öffne eine App, um loszulegen</translation>

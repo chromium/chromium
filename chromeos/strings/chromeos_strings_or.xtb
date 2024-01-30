@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1124772482545689468">ୟୁଜର</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ଗୁଣନ</translation>
 <translation id="1145018782460575098">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି। <ph name="NUM_UPDATES" />ଟି ଅପଡେଟ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="1145516343487477149">ସହାୟତା ଆର୍ଟିକିଲ ଏବଂ ସାଧାରଣ Chromebook ପ୍ରଶ୍ନଗୁଡ଼ିକର ଉତ୍ତର ପାଆନ୍ତୁ</translation>
 <translation id="1154390310959620237">ଆପଣ କେବଳ 5ଟି ସର୍ଟକଟକୁ କଷ୍ଟମାଇଜ କରିପାରିବେ। ଏକ ନୂଆ ସର୍ଟକଟକୁ ଯୋଗ କରିବା ପାଇଁ କୌଣସି ସର୍ଟକଟକୁ ଡିଲିଟ କରନ୍ତୁ।</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
+<translation id="1371650399987522809">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର ପାଇଁ ମତାମତ</translation>
 <translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
 <translation id="1561927818299383735">ବେକଲିଟ ରଙ୍ଗ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="1566493343215789965">ହରଣ</translation>
 <translation id="1567064801249837505">ଆଲବମ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="1578784163189013834">ସ୍କ୍ରିନ୍ ସେଭରର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="160633243685262989">ଇମେଜର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1611649489706141841">ଆଗକୁ ବଢ଼ିବା କୀ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
+<translation id="1615576200479539465">ଇମେଜଗୁଡ଼ିକୁ ଜେନେରେଟ କରାଯାଉଛି...</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="1626590945318984973">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଫଙ୍କସନ ଏବଂ <ph name="META_KEY" /> କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର ନକରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
 <translation id="2880569433548999039">କ୍ଲାଉଡ ଫ୍ଲୋ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="2926057806159140518">ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର QR କୋଡ ସ୍କାନ କରନ୍ତୁ</translation>
+<translation id="2938573842839598578">ଏକ ଆନୁମାନିକ ଫଳାଫଳ ପାଇଁ, <ph name="CATEGORY_TEXT" /> ମୂଲ୍ୟକୁ <ph name="CONVERSION_RATE" />ରେ <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବକୁ ଲିଡ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="2941112035454246133">କମ୍</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS ଅପଡେଟ</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
+<translation id="3547264467365135390">ସୂତ୍ର</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
 <translation id="3569407787324516067">ସ୍କ୍ରିନ୍ ସେଭର୍</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7180865173735832675">କଷ୍ଟୋମାଇଜ୍</translation>
 <translation id="7184043045742675738">ଆପଣଙ୍କ ବଟନକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଯେ କୌଣସି କୀ'ରେ କ୍ଲିକ କରନ୍ତୁ। ମାଉସ କିମ୍ବା ତୀର କୀ'ଗୁଡ଼ିକ ସହ କୀ ରିପୋଜିସନ କରନ୍ତୁ।</translation>
+<translation id="7206979415662233817">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="7212547870105584639">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">କୀ'ବୋର୍ଡ ରଙ୍ଗ</translation>
 <translation id="7317831949569936035">ସ୍କୁଲ ପଞ୍ଜିକରଣ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ଆପଣଙ୍କ ବୟସ ଅତି କମରେ 18 ବର୍ଷ ହୋଇଥିବା ଆବଶ୍ୟକ ଏବଂ AI ୱାଲପେପରଗୁଡ଼ିକର ଆପଣଙ୍କ ବ୍ୟବହାର <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ଏବଂ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ଜେନେରେଟିଭ AI ଅତିରିକ୍ତ ସେବା ସର୍ତ୍ତାବଳୀ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />ର ଅଧୀନ ବୋଲି ଆପଣ ରାଜି ହେବା ଆବଶ୍ୟକ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଆପଣ କେବଳ ବ୍ୟକ୍ତିଗତ ଏବଂ ଅଣ-କମର୍ସିଆଲ ବ୍ୟବହାର ପାଇଁ AI ମାଧ୍ୟମରେ ୱାଲପେପରଗୁଡ଼ିକ ତିଆରି କରିପାରିବେ। ଆପଣ ୱାଲପେପର ସମ୍ବନ୍ଧୀୟ ସହାୟତା ପାଇବା ସମୟରେ, ୱାଲପେପର ପରମର୍ଶ ଜେନେରେଟ କରିବାକୁ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ଟେକ୍ସଟ ପଠାଯାଏ, ଏହା <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ର ଅଧୀନ ଅଟେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />ଟିରୁ <ph name="LIST_POSITION" /> ନମ୍ବର ସର୍ଚ୍ଚ ଫଳାଫଳ: <ph name="SEARCH_RESULT_TEXT" />। ସର୍ଟକଟକୁ ନାଭିଗେଟ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ।</translation>

@@ -1055,7 +1055,6 @@
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3068991664510324412">電腦與電玩遊戲</translation>
 <translation id="3080254622891793721">圖片</translation>
-<translation id="3081538120861307764">為評估廣告成效，網站之間僅會分享特定類型的資料，例如廣告的放送時間。</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
@@ -1102,7 +1101,7 @@
 <translation id="3162559335345991374">目前使用的 Wi-Fi 網路可能會要求您造訪登入網頁。</translation>
 <translation id="3166370127092388416">{NUM_COOKIES,plural, =0{第三方 Cookie，不允許任何網站}=1{第三方 Cookie，已允許 1 個網站}other{第三方 Cookie，已允許 # 個網站}}</translation>
 <translation id="3168744840365648658">無線電設備</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">探索</translation>
 <translation id="3171703252520926121">房地產服務</translation>
 <translation id="3175081911749765310">網路服務</translation>
 <translation id="3176929007561373547">檢查您的 Proxy 設定，或是與您的網路管理員聯絡
@@ -1561,7 +1560,6 @@
 <translation id="4065659219963895623">餐廳</translation>
 <translation id="4067098466788473230">研究津貼與獎學金</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
-<translation id="4070790659619547722">使用廣告評估功能時，網站之間僅會分享特定類型的資料，例如在一天中向使用者放送廣告的時段。</translation>
 <translation id="4072486802667267160">處理你的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看卡片</translation>
@@ -3476,7 +3474,6 @@
 <translation id="7785790577395078482">這台平板電腦</translation>
 <translation id="7786368602962652765">必填欄位沒有內容，請先填寫再儲存。</translation>
 <translation id="7786432318297177736">這些搜尋引擎是採隨機方式排列，你隨時可以前往設定頁面變更預設設定。</translation>
-<translation id="7790488044432570133">你造訪的網站可以要求 Chrome 提供資訊，協助網站評估廣告成效。Chrome 僅允許網站收集特定類型的資料，例如在一天中向使用者放送廣告的時段。</translation>
 <translation id="7791011319128895129">尚未發布</translation>
 <translation id="7791196057686275387">綑綁式裝訂</translation>
 <translation id="7791543448312431591">新增</translation>

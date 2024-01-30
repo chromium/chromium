@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">שגיאה פנימית</translation>
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">להכפיל</translation>
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
 <translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
 <translation id="1154390310959620237">אפשר להתאים אישית רק 5 קיצורי דרך. עליך למחוק קיצור דרך כדי להוסיף קיצור דרך חדש.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
+<translation id="1371650399987522809">‏משוב לגבי טפט שמבוסס על AI מבית Google</translation>
 <translation id="1387854245479784695">המדד הזה נצבר מכל הליבות</translation>
 <translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">לוח מגע</translation>
 <translation id="1561927818299383735">צבע התאורה האחורית</translation>
 <translation id="1565038567006703504">לא ניתן לעדכן את <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">לחלק</translation>
 <translation id="1567064801249837505">אלבומים</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">המערכת יוצרת תמונות…</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1626590945318984973">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי להשתמש במקשי הפונקציות ובמקש <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
+<translation id="2938573842839598578">כדי לקבל תוצאה משוערת, צריך <ph name="OPERATOR_TEXT" /> את הערך של ה<ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
 <translation id="2941112035454246133">נמוכה</translation>
 <translation id="3008341117444806826">רענון</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
+<translation id="3547264467365135390">נוסחה</translation>
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
 <translation id="3569407787324516067">שומר מסך</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7184043045742675738">כדי להתאים אישית את הלחצן, מקישים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
+<translation id="7206979415662233817">תנאים והגבלות</translation>
 <translation id="7212547870105584639">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">צבע המקלדת</translation>
 <translation id="7317831949569936035">הרשמה לשימוש בית ספרי</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">‏עליך להיות בגיל 18 לפחות ולאשר שהשימוש שלך בטפטים מבוססי-AI יהיה כפוף <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />לתנאים ולהגבלות של Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ו<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />לתנאים ולהגבלות הנוספים ל-AI גנרטיבי<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          מותר ליצור טפטים באמצעות AI רק לשימוש אישי ולא לשימוש מסחרי. כשמקבלים עזרה לגבי יצירת טפטים, הטקסט של הבקשה נשלח לשרתים של ה-AI מבית Google כדי ליצור הצעות לטפטים, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7353413232959255829">‏תוצאת חיפוש <ph name="LIST_POSITION" /> מתוך <ph name="LIST_SIZE" />:‏ <ph name="SEARCH_RESULT_TEXT" />. צריך להקיש על Enter כדי לנווט לקיצור הדרך.</translation>

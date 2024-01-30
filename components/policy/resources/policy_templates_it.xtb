@@ -232,6 +232,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="1158844608156732189">La configurazione Kerberos (una riga per elemento array); visita la pagina https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Consenti protocollo QUIC</translation>
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
+<translation id="1161685818042751282">Non importare i certificati del server TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma.</translation>
 <translation id="1163080558183062209">Disattiva tipi di stampanti nell'elenco di tipi non consentiti</translation>
 <translation id="1163389598183927209">Un gruppo di criteri relativi a <ph name="PRIVACY_SANDBOX_NAME" />. Visita il sito <ph name="PRIVACY_SANDBOX_URL" /> per avere informazioni dettagliate sull'impegno di <ph name="PRODUCT_NAME" /> per ritirare i cookie di terze parti.</translation>
 <translation id="1165923723751466821">Consenti gli accessi come ospite al browser e gli accessi ai profili</translation>
@@ -448,6 +449,7 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1369698103169067223">I Glanceables non sono attivati per gli utenti.</translation>
+<translation id="1370341503636288922">Attiva gli aggiornamenti automatici estesi</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
 <translation id="1371851989348083665">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
@@ -756,6 +758,7 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 <translation id="1635748761015837179">Consenti la scrittura su dispositivi di archiviazione esterni</translation>
 <translation id="1639468541408865385">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
+<translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
 <translation id="1641117061932613266">Attiva il servizio <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Consente di impostare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
 
@@ -1279,6 +1282,7 @@ Le metriche con chiave URL includono anche gli identificatori e le statistiche s
 
 Se questo criterio non viene consentito, gli utenti non possono attivare la raccolta di metriche con chiave URL.</translation>
 <translation id="2012296492055302633">Attiva sempre la Schermata privata</translation>
+<translation id="2013002651531781796">Non attivare gli aggiornamenti automatici estesi</translation>
 <translation id="2014757022750736514">Consente di stabilire il comportamento della schermata di accesso, da cui gli utenti possono accedere ai propri account. Le impostazioni consentono di decidere chi può accedere, che tipi di account sono consentiti, quali metodi di autenticazione devono essere usati. Sono disponibili anche impostazioni generali relative ad accessibilità, metodo di immissione e lingue.</translation>
 <translation id="201557587962247231">Frequenza dei caricamenti del rapporto sullo stato del dispositivo</translation>
 <translation id="2016031354108680330">Attiva l'accesso root alle macchine virtuali Linux</translation>
@@ -1543,6 +1547,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_OS_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
+<translation id="2215746393279570703">Impostazioni del servizio SSO mobile</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -2387,6 +2392,11 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
 
       Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Limitazioni:</translation>
+<translation id="2952574113954326102">Consente di configurare un elenco di domini dei cookie bloccati da non trasferire quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro quando il servizio SSO mobile è attivato.
+
+Se un cookie è impostato per un dominio che corrisponde a uno dei filtri forniti, viene escluso dal trasferimento. I domini dei cookie vengono associati in base alle regole dei campi "host" descritte nella pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format, tutti gli altri campi vengono ignorati. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> ha la precedenza.</translation>
 <translation id="2957506574938329824">Non consentire ad alcun sito di richiedere l'accesso ai dispositivi Bluetooth tramite l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo di account per l'autenticazione <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Invia sempre i punti di accesso Wi-Fi al server durante le operazioni per stabilire il fuso orario</translation>
@@ -3150,6 +3160,7 @@ Le connessioni che non superano il controllo non andranno a buon fine con l'erro
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori al ritardo di inattività.</translation>
 <translation id="3550875587920006460">Consente di impostare una pianificazione personalizzata per verificare la presenza di aggiornamenti. La scelta è valida per tutti gli utenti e per tutte le interfacce sul dispositivo. Dopo aver impostato il criterio, il dispositivo controllerà se ci sono aggiornamenti disponibili in base alla pianificazione. Il criterio deve essere rimosso per annullare ulteriori controlli pianificati della disponibilità di aggiornamenti.</translation>
+<translation id="3550963062099410653">Attiva/disattiva gli aggiornamenti automatici estesi</translation>
 <translation id="355118380775352753">Siti web da aprire in un browser alternativo</translation>
 <translation id="3554498762428140109">Attiva Copertura finestra nativa</translation>
 <translation id="3554984410014457319">Consente all'Assistente Google di ascoltare la frase di attivazione vocale</translation>
@@ -5167,6 +5178,7 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
+<translation id="5345892164332459671">Disattiva il servizio SSO mobile e non trasferire le autenticazioni del web service dell'utente su un nuovo dispositivo</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
 <translation id="534836255587440809">Disattiva i clic automatici nella schermata di accesso</translation>
@@ -5790,6 +5802,13 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Se il criterio viene impostato su Disattivato o se non viene configurato, i log di sistema non vengono segnalati.</translation>
 <translation id="5861856285460256766">Configurazione codice di accesso genitori</translation>
 <translation id="5868414965372171132">Configurazione di rete a livello di utente</translation>
+<translation id="5868454276721377379">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro, il servizio SSO mobile ripristina lo stato dell'autenticazione dell'utente nel web service dal dispositivo precedente a quello nuovo. Ciò si ottiene trasferendo i cookie dell'utente tra i dispositivi.
+
+Se il criterio viene attivato, al momento dell'accesso lo stato dell'autenticazione dell'utente nel web service verrà ripristinato automaticamente dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> usato.
+Se il criterio viene disattivato o se non viene configurato, al momento dell'accesso lo stato dell'autenticazione dell'utente nel web service non verrà ripristinato su un altro dispositivo.
+
+I domini dei web service di cui è stato bloccato il ripristino possono essere configurati utilizzando il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />, mentre le eccezioni a questo criterio possono essere configurate utilizzando il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" />.
+Se entrambi i criteri non vengono configurati, tutte le autenticazioni dei web service, ad eccezione di quelle di Google, verranno trasferite.</translation>
 <translation id="5871786561822073630">Non consentire l'utilizzo della funzionalità di trasporto dei dizionari di compressione</translation>
 <translation id="587242272905978723">Consenti a <ph name="PLUGIN_VM_NAME" /> di raccogliere i dati sull'utilizzo di <ph name="PLUGIN_VM_NAME" />.
 
@@ -5944,6 +5963,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Se questo criterio viene impostato su Vero, i siti possono inviare moduli WebAssembly anche tra origini senza limitazioni.
 
       Se viene impostato su Falso o se non viene configurato, i siti possono inviare moduli WebAssembly solo a finestre e worker nella stessa origine.</translation>
+<translation id="6008497706608447728">Elenco di domini bloccati del servizio SSO mobile</translation>
 <translation id="6011193465932186973">Impronta</translation>
 <translation id="6011969832398368671">Consenti ai siti di richiedere all'utente l'accesso di scrittura di file e directory</translation>
 <translation id="601234435141599215">Consenti il port forwarding nelle macchine virtuali Linux</translation>
@@ -6340,6 +6360,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
 
       Nota: non attivare questo criterio se il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> è impostato su Attivato perché quest'ultimo ha la stessa funzione lato client. La sincronizzazione ospitata su Google viene disattivata completamente in questo caso.</translation>
 <translation id="6320935916601887506">Per impostazione predefinita verrà utilizzato il nuovo comportamento offsetParent.</translation>
+<translation id="6321635563435539529">Impostazioni del servizio SSO mobile</translation>
 <translation id="632248221998836641">Sostituisci il controllo della connettività IPv6. Esegui sempre una query sul record AAAA per la risoluzione dei nomi host.</translation>
 <translation id="6324274808543634377">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="6327643515544933974">Impostazioni USB web</translation>
@@ -7105,6 +7126,7 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 
       Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6882028194958060206">Applica l'impostazione dei contenuti Flash a tutti i contenuti (deprecato)</translation>
+<translation id="6883050310557769428">Consente di verificare che il servizio SSO mobile sia attivo e di controllare la lista bloccata di domini dei cookie e le relative eccezioni.</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6889617338886728275">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente concessa. Ciò estenderà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
@@ -7344,6 +7366,7 @@ Se non viene configurato, le immagini sono consentite, ma gli utenti possono cam
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
 <translation id="7074437930865599190">Blocca la versione principale della stringa user agent a 99</translation>
+<translation id="7075847434649667522">Utilizza i certificati TLS aggiunti dagli utenti da archivi di attendibilità della piattaforma per autenticare il server</translation>
 <translation id="7077471517869658421">Gli utenti possono modificare liberamente il valore dell'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione".</translation>
 <translation id="707988220162760379">Apri sempre i file PDF utilizzando un visualizzatore PDF esterno</translation>
 <translation id="7081401546407362463">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
@@ -7923,6 +7946,11 @@ Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> si connette ai 
 <translation id="7554382342294940216">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> può aggirare qualsiasi proxy per l'autenticazione captive portal. Queste pagine web di autenticazione, a partire dalla pagina di accesso al captive portal fino al rilevamento di una connessione a Internet attiva da parte di Chrome, si aprono in una finestra separata, ignorando tutte le impostazioni del criterio e le limitazioni relative all'utente corrente. Questo criterio viene applicato soltanto se viene configurato un proxy (tramite criterio, estensione o da parte dell'utente in chrome://settings).
 
       Se viene impostato su Disattivato o se non viene configurato, qualsiasi pagina di autenticazione captive portal viene visualizzata in una nuova scheda del browser standard, in base alle impostazioni del proxy dell'utente corrente.</translation>
+<translation id="756693807309043286">Consente di configurare l'elenco di domini dei cookie esclusi dalla lista bloccata da trasferire quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro, quando il servizio SSO mobile è attivato.
+
+Se un cookie è impostato per un dominio che corrisponde a uno dei filtri forniti, viene incluso nel trasferimento. I domini dei cookie vengono associati in base alle regole dei campi "host" descritte nella pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format, tutti gli altri campi vengono ignorati. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />. Per consentire il trasferimento solo di un numero limitato di domini, blocca tutti i domini impostando il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" /> su <ph name="WILDCARD_VALUE" /> e configura qui le eccezioni della lista bloccata.</translation>
 <translation id="7567373982693549834">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per ogni utente.
 
       Se il valore di questo criterio non viene impostato, la funzionalità viene considerata vietata.
@@ -7995,6 +8023,13 @@ Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> si connette ai 
 <translation id="7635106595080609261">La mancata configurazione o l'impostazione del criterio su Attivato consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
 
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
+<translation id="7637839788175449523">Se il criterio viene impostato su true, i dispositivi autorizzano gli aggiornamenti automatici estesi.
+
+Se il criterio viene impostato su false o se non viene configurato, i dispositivi non riceveranno più aggiornamenti
+dopo la scadenza degli aggiornamenti automatici.
+
+Gli aggiornamenti automatici estesi e gli aggiornamenti automatici sono documentati all'indirizzo
+https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
 <translation id="7643151458117317518">Un criterio per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
@@ -8938,7 +8973,12 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
+<translation id="8467267413626499807">Attiva il servizio SSO mobile</translation>
+<translation id="846994437739309080">Se questo criterio è attivato (o non impostato), i certificati TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma verranno utilizzati nella creazione di percorsi per l'autenticazione del server TLS.
+
+Se questo criterio è disattivato, i certificati TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma non verranno utilizzati nella creazione di percorsi per l'autenticazione del server TLS.</translation>
 <translation id="8470317291588703478">Non viene forzata la Modalità con restrizioni di YouTube</translation>
+<translation id="8473107305327396242">Importa i certificati del server TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">Quando cerca il percorso migliore, WebRTC utilizzerà tutte le interfacce disponibili.</translation>
 <translation id="8479496880635054740">Disattiva la tastiera virtuale di accessibilità nella schermata di accesso</translation>
@@ -9080,6 +9120,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se viene impostato su Falso, vengono avviate automaticamente solo le finestre del browser.</translation>
 <translation id="8583509234908413302">Consenti downgrade a protocolli TLS/DTLS precedenti in WebRTC</translation>
 <translation id="8584279193368801689">Consente di limitare la modalità di stampa PIN. Se il criterio non viene impostato non vengono applicate limitazioni. Se la modalità non è disponibile, questo criterio viene ignorato. Tieni presente che la funzionalità di stampa PIN viene attivata solo per le stampanti che usano uno dei protocolli IPPS, HTTPS, USB o IPP-over-USB.</translation>
+<translation id="858510846828945657">Elenco delle eccezioni alla lista bloccata dei domini del servizio SSO mobile</translation>
 <translation id="8587229956764455752">Consenti la creazione di nuovi account utente</translation>
 <translation id="8589285015138337712">Non consentire all'utente di personalizzare le scorciatoie di sistema</translation>
 <translation id="8589346048177748110">Se il criterio è impostato su true, gli utenti possono giocare al gioco del dinosauro. Se il criterio è impostato su false, gli utenti non possono giocare al gioco del dinosauro quando il dispositivo è offline.
@@ -9550,6 +9591,21 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="9004469022085379212">Se il criterio viene attivato, al dispositivo viene consentito di eseguire macchine virtuali su <ph name="PRODUCT_OS_NAME" />. I criteri <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> devono essere attivati per utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Se il criterio viene disattivato, significa che il dispositivo non può eseguire macchine virtuali. Tramite la disattivazione del criterio, questo viene applicato all'avvio di nuove macchine virtuali, non a quelle già in esecuzione.
 
 Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può eseguire macchine virtuali. I dispositivi non gestiti non possono eseguire macchine virtuali.</translation>
+<translation id="9005558710192691218">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivato.
+
+Se questo criterio contiene il valore "<ph name="COMMON_NAME" />", per accedere è possibile utilizzare qualsiasi account.
+
+Se questo criterio contiene il valore "<ph name="ORGANIZATIONS_NAME" />", per accedere è possibile utilizzare account di lavoro o della scuola.
+
+Se questo criterio contiene il valore "<ph name="CONSUMERS_NAME" />", per accedere è possibile utilizzare account <ph name="MICROSOFT_NAME" /> personali.
+
+Se questo criterio contiene nomi di dominio o ID tenant, per accedere è possibile utilizzare gli account di questi nomi di dominio o ID tenant (vedi la pagina https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints).
+
+Se questo criterio non viene configurato o se contiene soltanto un valore vuoto, si comporta come se "<ph name="COMMON_NAME" />" fosse stato specificato per gli utenti normali e "<ph name="ORGANIZATIONS_NAME" />" per gli utenti aziendali.
+
+La modifica delle limitazioni potrebbe comportare la disconnessione degli utenti dal proprio account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alle nuove limitazioni.
+
+Nota: al momento verrà presa in considerazione solo la prima voce. Le estensioni successive supporteranno più voci.</translation>
 <translation id="9007632512838819703">Questo criterio è deprecato. Usa il criterio <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 
       Consente di forzare la disattivazione delle lingue per il controllo ortografico. Le lingue dell'elenco non riconosciute verranno ignorate.

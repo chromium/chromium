@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multiplica</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
 <translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks.</translation>
 <translation id="1154390310959620237">Solo puedes personalizar 5 combinaciones de teclas. Borra una combinación de teclas para agregar una nueva.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar al área de escaneo</translation>
 <translation id="1367951781824006909">Selecciona un archivo</translation>
+<translation id="1371650399987522809">Comentarios sobre el fondo de pantalla potenciado por la IA de Google</translation>
 <translation id="1387854245479784695">Este valor es una combinación de todos los núcleos</translation>
 <translation id="1394661041439318933">Nivel de batería de la funda <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Se puede hacer ping a la puerta de enlace</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1561927818299383735">color retroiluminado</translation>
 <translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">divide</translation>
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir el fondo del protector de pantalla</translation>
 <translation id="160633243685262989">Obtener vista previa de la imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generando imágenes…</translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
 <translation id="1626590945318984973">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas sin usar las teclas de función ni de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Protector de pantalla Flujo de nubes</translation>
 <translation id="2926057806159140518">Ingresa tu nombre de usuario y contraseña, o bien, escanea tu código QR</translation>
+<translation id="2938573842839598578">Para obtener un resultado aproximado, <ph name="OPERATOR_TEXT" /> el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">No se puede probar el dispositivo. Vuelve a abrir la tapa para realizar pruebas.</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Actualización del SO</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
+<translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
 <translation id="3565064564551103223">IP habilitadas</translation>
 <translation id="3569407787324516067">Protector de pantalla</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7184043045742675738">Haz clic en cualquier tecla para personalizar tu botón. Cambia la posición de la tecla con las teclas del mouse o de flecha.</translation>
+<translation id="7206979415662233817">Condiciones del Servicio</translation>
 <translation id="7212547870105584639">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualizaciones de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Proveedor de red celular</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">color del teclado</translation>
 <translation id="7317831949569936035">Inscripción en una institución educativa</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Debes tener al menos 18 años y aceptar que el uso de los fondos de pantalla creados con IA esté sujeto a las <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Condiciones del Servicio de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> y a las <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Condiciones del Servicio Adicionales para IA Generativas<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Solo puedes crear fondos de pantalla con IA para uso personal y no comercial. Cuando recibes ayuda sobre el fondo de pantalla, se envía texto a los servidores de la IA de Google para generar sugerencias de fondos de pantalla, sujeto a la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Presiona la tecla de búsqueda+barra espaciadora para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7353413232959255829">Resultado de la búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Presiona Intro para navegar al acceso directo.</translation>

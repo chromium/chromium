@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">gange</translation>
 <translation id="1145018782460575098">Vinduet Opdater firmware for eksterne enheder er åbent. <ph name="NUM_UPDATES" /> opdateringer er tilgængelige.</translation>
 <translation id="1145516343487477149">Find artikler i Hjælp og svar på almindelige spørgsmål om Chromebook</translation>
 <translation id="1154390310959620237">Du kan kun tilpasse 5 genveje. Du skal slette en genvej for at tilføje en ny.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
+<translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Googles AI</translation>
 <translation id="1387854245479784695">Dette er den aggregerede værdi for alle kerner</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchplade</translation>
 <translation id="1561927818299383735">farve på baggrundslys</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> kan ikke opdateres</translation>
+<translation id="1566493343215789965">dividere</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1578784163189013834">Vælg baggrund til Pauseskærm</translation>
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Genererer billeder...</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1626590945318984973">Genvejen er ikke tilgængelig. Tryk en ny genvej uden at bruge funktions- og <ph name="META_KEY" />-tasterne.</translation>
 <translation id="1639239467298939599">Indlæser</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Pauseskærmen Flow med skyer</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
+<translation id="2938573842839598578">Se et omtrentligt resultat ved at <ph name="OPERATOR_TEXT" /> værdien <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Enheden kan ikke testes. Åbn skærmen igen for at teste den.</translation>
 <translation id="2941112035454246133">Lav</translation>
 <translation id="3008341117444806826">OPDATER</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
+<translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfrit)</translation>
 <translation id="3565064564551103223">Tilladte IP'er</translation>
 <translation id="3569407787324516067">Pauseskærm</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7180865173735832675">Tilpas</translation>
 <translation id="7184043045742675738">Klik på en tast for at tilpasse din knap. Juster tasten med musen eller piletasterne.</translation>
+<translation id="7206979415662233817">Servicevilkår</translation>
 <translation id="7212547870105584639">Administrer indstillinger for APN-netværk. APN'er opretter forbindelse mellem et mobilnetværk og internettet. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Opdateringer af firmware på eksterne enheder</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">tastaturfarve</translation>
 <translation id="7317831949569936035">Skoleindskrivning</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Du skal være mindst 18 år gammel, og du skal acceptere, at din brug af AI-baggrunde er underlagt <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles servicevilkår<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Yderligere servicevilkår for generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kan kun oprette baggrunde med AI til personlig og ikke-kommerciel brug. Når du får hjælp til baggrunde, sendes teksten til Googles AI-servere for at generere forslag til baggrunde i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tryk på søgetasten og mellemrumstasten for at se resultater i Google Søgning.</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7353413232959255829">Søgeresultat <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryk på Enter for at gå til genvejen.</translation>

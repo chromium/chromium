@@ -231,6 +231,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 <translation id="1158844608156732189">Kerberos-configuratie (één regel per matrixitem), zie https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">QUIC-protocol toestaan</translation>
 <translation id="1160939557934457296">Doorgaan vanaf de Safe Browsing-waarschuwingspagina uitzetten</translation>
+<translation id="1161685818042751282">Importeer geen door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
 <translation id="1163080558183062209">Printertypen op blokkeerlijst uitzetten</translation>
 <translation id="1163389598183927209">Een groep beleidsregels voor <ph name="PRIVACY_SANDBOX_NAME" />. Ga naar <ph name="PRIVACY_SANDBOX_URL" /> voor meer informatie over de aanpak van <ph name="PRODUCT_NAME" /> om cookies van derden te beëindigen.</translation>
 <translation id="1165923723751466821">Toestaan dat gebruikers als gast of met een profiel inloggen bij de browser</translation>
@@ -447,6 +448,7 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1369698103169067223">Glanceables staan niet aan voor gebruikers.</translation>
+<translation id="1370341503636288922">Aanmelden voor uitgebreide automatische updates</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
 <translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
@@ -761,6 +763,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
+<translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2-service aanzetten</translation>
 <translation id="1641394008743444477">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgezet.
 
@@ -1269,6 +1272,7 @@ URL-sleutelstatistieken omvatten ook de ID's en gebruiksstatistieken van andere 
 
 Als je dit beleid instelt op niet toegestaan, kunnen gebruikers de verzameling van URL-sleutelstatistieken niet aanzetten.</translation>
 <translation id="2012296492055302633">Het privacyscherm altijd aanzetten</translation>
+<translation id="2013002651531781796">Uitgebreide automatische updates niet toestaan</translation>
 <translation id="2014757022750736514">Beheert het gedrag van het inlogscherm, waar gebruikers inloggen op hun accounts. Instellingen zijn onder andere wie kan inloggen, welke typen accounts zijn toegestaan, welke verificatiemethoden moeten worden gebruikt, en algemene instellingen voor toegankelijkheid, invoermethoden en taal.</translation>
 <translation id="201557587962247231">De frequentie van uploads van rapporten over de apparaatstatus</translation>
 <translation id="2016031354108680330">Roottoegang tot virtuele Linux-machines aanzetten</translation>
@@ -1532,6 +1536,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
+<translation id="2215746393279570703">Instellingen voor zwevende SSO</translation>
 <translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -2369,6 +2374,11 @@ Dit beleid is verwijderd in Chrome 99.
 
 Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2952347049958405264">Beperkingen:</translation>
+<translation id="2952574113954326102">Hiermee stel je een lijst in met geblokkeerde cookiedomeinen die niet worden verplaatst wanneer een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten als de zwevende SSO-service aanstaat.
+
+Als er een cookie is ingesteld voor een domein dat overeenkomt met een van de aangegeven filters, wordt de cookie uitgesloten van de verplaatsing. Cookiedomeinen worden gekoppeld aan de hand van de host-veldregels in https://support.google.com/chrome/a?p=url_blocklist_filter_format. Alle andere velden worden genegeerd. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> krijgt voorrang.</translation>
 <translation id="2957506574938329824">Niet toestaan dat sites toegang tot Bluetooth-apparaten vragen via de Web Bluetooth API</translation>
 <translation id="2957513448235202597">Accounttype voor <ph name="HTTP_NEGOTIATE" />-verificatie</translation>
 <translation id="2959469725686993410">Wifi-toegangspunten altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
@@ -3128,6 +3138,7 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner zijn dan de inactieve vertraging.</translation>
 <translation id="3550875587920006460">Hiermee kan een custom planning worden ingesteld om te controleren op updates. Dit is van toepassing op alle gebruikers en op alle interfaces op het apparaat. Nadat de planning is ingesteld, controleert het apparaat op updates in overeenstemming met de planning. Het beleid moet worden verwijderd om meer geplande updatecontroles te annuleren.</translation>
+<translation id="3550963062099410653">Uitgebreide automatische updates aan-/uitzetten</translation>
 <translation id="355118380775352753">Websites die worden geopend in de alternatieve browser</translation>
 <translation id="3554498762428140109">Native occlusie van vensters aanzetten</translation>
 <translation id="3554984410014457319">De Google Assistent laten luisteren naar de spraakactiveringszin</translation>
@@ -5116,6 +5127,7 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
 <translation id="5335910979215357815">De Save and Share API aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden.</translation>
 <translation id="5339096331970464266">Het virtuele toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5340008866815063393">Rapportage van beleidsgegevens aanzetten</translation>
+<translation id="5345892164332459671">Zwevende SSO uitzetten en de webserviceverificaties van de gebruiker niet naar een nieuw apparaat verplaatsen</translation>
 <translation id="5345910753471481870">De Google Lens-knop niet tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
 <translation id="534836255587440809">Automatisch klikken op het inlogscherm uitzetten</translation>
@@ -5739,6 +5751,13 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
       Als je het beleid niet toepast of niet instelt, worden er geen systeemlogboeken gerapporteerd.</translation>
 <translation id="5861856285460256766">Configuratie van toegangscode voor ouders</translation>
 <translation id="5868414965372171132">Netwerkconfiguratie op gebruikersniveau</translation>
+<translation id="5868454276721377379">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, herstelt de zwevende SSO-service de verificatiestatus van de gebruiker van het vorige apparaat naar het nieuwe apparaat. Hiervoor worden de cookies van de gebruiker naar verschillende apparaten verplaatst.
+
+Als je het beleid toepast, wordt de webserviceverificatiestatus van de gebruiker bij het inloggen automatisch hersteld vanaf het <ph name="PRODUCT_OS_NAME" />-apparaat dat de gebruiker het laatst heeft gebruikt.
+Als je het beleid niet toepast of niet instelt, wordt de webserviceverificatiestatus van de gebruiker niet hersteld als de gebruiker inlogt op een ander apparaat.
+
+De webservicedomeinen waarvan het herstel is geblokkeerd, kun je configureren via het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />. Uitzonderingen op dit beleid kun je configureren via het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" />.
+Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties (behalve Google-verificaties) verplaatst.</translation>
 <translation id="5871786561822073630">Gebruik van de compressiefunctie voor woordenboekoverdracht niet toestaan</translation>
 <translation id="587242272905978723">Sta <ph name="PLUGIN_VM_NAME" /> toe om gebruiksgegevens van <ph name="PLUGIN_VM_NAME" /> te verzamelen.
 
@@ -5893,6 +5912,7 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
       Als je dit beleid instelt op True, kunnen sites zonder beperkingen WebAssembly-modules cross-origin versturen.
 
       Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
+<translation id="6008497706608447728">Lijst met geblokkeerde domeinen voor zwevende SSO-service</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011969832398368671">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's</translation>
 <translation id="601234435141599215">Poortdoorschakeling naar virtuele Linux-machines toestaan</translation>
@@ -6284,6 +6304,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 
       Opmerking: Pas dit beleid niet toe als <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> aanstaat, want die functie heeft dezelfde functionaliteit aan de clientzijde. In dit geval staat de door Google gehoste synchronisatie helemaal uit.</translation>
 <translation id="6320935916601887506">Standaard wordt het nieuwe offsetParent-gedrag gebruikt.</translation>
+<translation id="6321635563435539529">Instellingen voor zwevende SSO-service</translation>
 <translation id="632248221998836641">De IPv6-bereikbaarheidscheck overschrijven. Vraag de AAAA-record altijd op voor hostnaamresolutie.</translation>
 <translation id="6324274808543634377">F11-/F12-instellingen gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="6327643515544933974">Web-USB-instellingen</translation>
@@ -7029,6 +7050,7 @@ Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet b
 
       Als je het beleid niet instelt, gelden er geen beperkingen voor de reeks apps die de gebruiker beschikbaar kan maken op het vergrendelscherm.</translation>
 <translation id="6882028194958060206">Instelling voor Flash-content uitbreiden naar alle content (beëindigd)</translation>
+<translation id="6883050310557769428">Bepaalt of zwevende SSO aanstaat en beheert de blokkeerlijst voor cookiedomeinen en de uitzonderingen daarop.</translation>
 <translation id="6889123056995503704">De gebruiker bepaalt het downgradegedrag voor kanalen</translation>
 <translation id="6889617338886728275">Hiermee kun je een lijst met URL-patronen opgeven van sites waarvoor het recht voor vensterbeheer automatisch wordt verleend. Dit biedt sites de mogelijkheid om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
@@ -7265,6 +7287,7 @@ Als je het beleid niet instelt, is de weergave van afbeeldingen toegestaan maar 
 <translation id="7072208053150563108">Wijzigingsfrequentie van computerwachtwoord</translation>
 <translation id="7072567600438630966">Toestaan dat Phone Hub wordt aangezet.</translation>
 <translation id="7074437930865599190">Hoofdversie van tekenreeks voor User-agent vastzetten op 99</translation>
+<translation id="7075847434649667522">Door de gebruiker toegevoegde TLS-certificaten van truststores van het platform gebruiken voor serververificatie</translation>
 <translation id="7077471517869658421">Gebruikers kunnen de waarde wijzigen van de instelling De Launcher-/zoektoets gebruiken om het gedrag van functietoetsen te wijzigen.</translation>
 <translation id="707988220162760379">Pdf-bestanden altijd openen met een externe pdf-viewer</translation>
 <translation id="7081401546407362463">Lijst met bestandstypen die automatisch moeten worden geopend nadat ze zijn gedownload. Het voorafgaande scheidingsteken mag niet worden opgenomen als je het bestandstype vermeldt. Vermeld dus 'txt' in plaats van '.txt'.
@@ -7844,6 +7867,11 @@ Als je het beleid niet instelt, maakt <ph name="PRODUCT_NAME" /> alleen verbindi
 <translation id="7554382342294940216">Als je het beleid toepast, kan <ph name="PRODUCT_OS_NAME" /> elke proxy voor captive portal-verificatie omzeilen. Deze verificatiepagina's (vanaf de captive portal-inlogpagina totdat Chrome een internetverbinding waarneemt) worden in een afzonderlijk venster geopend, waarbij alle beleidsinstellingen en -beperkingen voor de huidige gebruiker worden genegeerd. Dit beleid is alleen van kracht als er een proxy is ingesteld (via beleid, extensie of door de gebruiker in chrome://settings).
 
       Als je het beleid niet toepast of niet instelt, worden captive portal-verificatiepagina's getoond in een (normaal) nieuw browsertabblad, waarbij de proxyinstellingen van de huidige gebruiker worden gebruikt.</translation>
+<translation id="756693807309043286">Hiermee stel je de lijst in met van de blokkeerlijst uitgezonderde cookiedomeinen die moeten worden verplaatst als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten en de zwevende SSO-service aanstaat.
+
+Als er een cookie wordt ingesteld voor een domein dat overeenkomt met een van de gebruikte filters, wordt de cookie ook meegenomen in de verplaatsing. Cookiedomeinen worden gekoppeld aan de hand van de host-veldregels in https://support.google.com/chrome/a?p=url_blocklist_filter_format. Alle andere velden worden genegeerd. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />. Als je maar een beperkt aantal domeinen wilt verplaatsen, blokkeer je alle domeinen door het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" /> in te stellen op <ph name="WILDCARD_VALUE" /> en stel je hier de uitzonderingen op de blokkeerlijst in.</translation>
 <translation id="7567373982693549834">Met dit beleid beheer je het gebruik van Android-apps van niet-vertrouwde bronnen (andere dan de Google Play Store) per gebruiker.
 
       Als de waarde voor dit beleid niet is ingesteld, wordt de functionaliteit behandeld alsof er geen toestemming is gegeven.
@@ -7915,6 +7943,11 @@ Als je het beleid niet instelt, maakt <ph name="PRODUCT_NAME" /> alleen verbindi
 <translation id="7635106595080609261">Als je dit beleid toepast of niet instelt, kan Chrome dialoogvensters voor het selecteren van bestanden bekijken en kunnen gebruikers deze openen.
 
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
+<translation id="7637839788175449523">Als je het beleid instelt op Waar, worden apparaten aangemeld voor uitgebreide automatische updates.
+
+Als je het beleid instelt op Onwaar of niet instelt, krijgen apparaten geen updates meer nadat de automatische update is verlopen.
+
+Uitgebreide automatische updates en automatische updates worden beschreven op https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
 <translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
@@ -8864,7 +8897,12 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 <translation id="8455529558077979314">Instellingen voor privacyscherm</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameters voor instant-URL die POST gebruikt</translation>
+<translation id="8467267413626499807">Zwevende SSO-service aanzetten</translation>
+<translation id="846994437739309080">Als je dit toepast (of niet instelt), worden door gebruikers toegevoegde TLS-certificaten uit truststores van het platform gebruikt om paden voor TLS-serververificatie te maken.
+
+Als je dit beleid niet toepast, worden door de gebruiker toegevoegde TLS-certificaten uit truststores van het platform niet gebruikt om paden voor TLS-serververificatie te maken.</translation>
 <translation id="8470317291588703478">Beperkte modus van YouTube niet afdwingen</translation>
+<translation id="8473107305327396242">Importeer door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC gebruikt alle beschikbare interfaces als naar het beste pad wordt gezocht.</translation>
 <translation id="8479496880635054740">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm uitzetten</translation>
@@ -9006,6 +9044,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als je dit beleid instelt op False, worden alleen browservensters automatisch geopend.</translation>
 <translation id="8583509234908413302">Downgraden van verouderde TLS/DTLS toestaan in WebRTC</translation>
 <translation id="8584279193368801689">Beperkt de modus voor afdrukken met pincode. Als het beleid niet is ingesteld, gelden er geen beperkingen. Als de modus niet beschikbaar is, wordt dit beleid genegeerd. Houd er rekening mee dat de functie voor afdrukken met pincode alleen werkt met printers die het protocol IPPS, HTTPS, USB of IPP-over-USB gebruiken.</translation>
+<translation id="858510846828945657">Lijst met uitzonderingen op de blokkeerlijst voor zwevende SSO-servicedomeinen</translation>
 <translation id="8587229956764455752">Het maken van nieuwe gebruikersaccounts toestaan</translation>
 <translation id="8589285015138337712">Niet toestaan dat de gebruiker systeemsneltoetsen aanpast</translation>
 <translation id="8589346048177748110">Als je het beleid instelt op True, kunnen gebruikers de dinosaurusgame spelen. Als je het beleid instelt op False, kunnen gebruikers de easter egg-dinosaurusgame niet spelen als het apparaat offline is.
@@ -9473,6 +9512,21 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="9004469022085379212">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
 
 Als je dit beleid niet instelt op een beheerd apparaat, kan het apparaat geen virtuele machines uitvoeren. Niet-beheerde apparaten kunnen virtuele machines uitvoeren.</translation>
+<translation id="9005558710192691218">Met dit beleid kunnen beheerders beperken welke accounts mogen inloggen bij <ph name="MICROSOFT_ONE_DRIVE_NAME" /> als het beleid <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> wordt toegepast.
+
+Als dit beleid de waarde <ph name="COMMON_NAME" /> bevat, kan elk account worden gebruikt om in te loggen.
+
+Als dit beleid de waarde <ph name="ORGANIZATIONS_NAME" /> bevat, kunnen werk- of schoolaccounts worden gebruikt om in te loggen.
+
+Als dit beleid de waarde <ph name="CONSUMERS_NAME" /> bevat, kunnen persoonlijke <ph name="MICROSOFT_NAME" />-accounts worden gebruikt om in te loggen.
+
+Als dit beleid domeinnamen of tenant-ID's bevat, kunnen accounts van deze domeinnamen of tenant-ID's (zie https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) worden gebruikt om in te loggen.
+
+Als dit beleid niet is ingesteld of alleen een lege waarde bevat, gedraagt het zich alsof '<ph name="COMMON_NAME" />' is aangegeven voor gewone gebruikers. Voor zakelijke gebruikers gedraagt het zich alsof '<ph name="ORGANIZATIONS_NAME" />' is aangegeven.
+
+Als je de beperkingen wijzigt, kunnen gebruikers worden uitgelogd van hun <ph name="MICROSOFT_ONE_DRIVE_NAME" />-account als dit niet voldoet aan de nieuwe beperkingen.
+
+Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding. Latere extensies ondersteunen meerdere vermeldingen.</translation>
 <translation id="9007632512838819703">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 
       De spellingcontrole voor talen wordt verplicht uitgezet. Niet-herkende talen in de lijst worden genegeerd.

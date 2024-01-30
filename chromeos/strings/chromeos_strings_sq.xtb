@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">shumëzo</translation>
 <translation id="1145018782460575098">Përditëso firmuerin për pajisjet e jashtme kur dritarja është e hapur. Ofrohen <ph name="NUM_UPDATES" /> përditësime.</translation>
 <translation id="1145516343487477149">Gjej artikuj të ndihmës dhe përgjigje për pyetjet e zakonshme për Chromebook</translation>
 <translation id="1154390310959620237">Mund të personalizosh vetëm 5 shkurtore. Fshi një shkurtore për të shtuar një të re.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
+<translation id="1371650399987522809">Komentet për imazhin e sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Blloku me prekje</translation>
 <translation id="1561927818299383735">ngjyra e ndriçimit të sfondit</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> nuk mund të përditësohet</translation>
+<translation id="1566493343215789965">pjesëto</translation>
 <translation id="1567064801249837505">Albumet</translation>
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="1578784163189013834">Zgjidh imazhin e sfondit të mbrojtësit të ekranit</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
 <translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Po gjenerohen imazhet...</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1626590945318984973">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa përdorur tastet e funksioneve dhe tastin "<ph name="META_KEY" />".</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="2880569433548999039">Mbrojtësi i ekranit për rrjedhën e reve</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
+<translation id="2938573842839598578">Për një rezultat të përafërt, <ph name="OPERATOR_TEXT" /> vlerën "<ph name="CATEGORY_TEXT" />" me <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Pajisja nuk mund të testohet. Rihap kapakun për ta provuar.</translation>
 <translation id="2941112035454246133">E ulët</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identiteti lokal (opsional)</translation>
 <translation id="3565064564551103223">IP-të e lejuara</translation>
 <translation id="3569407787324516067">Mbrojtësi i ekranit</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7184043045742675738">Kliko te një tast për të personalizuar butonin tënd. Ndrysho pozicionin e tastit me anë të miut ose tasteve të shigjetave.</translation>
+<translation id="7206979415662233817">Kushtet e shërbimit</translation>
 <translation id="7212547870105584639">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">ngjyra e tastierës</translation>
 <translation id="7317831949569936035">Regjistrimi për përdorimin në shkollë</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Duhet të jesh të paktën 18 vjeç dhe të pranosh që përdorimi i imazheve të sfondit nga IA nga ana jote është objekt i <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Kushteve të shërbimit të Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dhe <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Kushteve shtesë të shërbimit të inteligjencës artificiale gjeneruese<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Mund të krijosh imazhe sfondi me IA vetëm për përdorim personal dhe jotregtar. Kur merr ndihmë për imazhin e sfondit, teksti dërgohet te serverët e inteligjencës artificiale të Google për të gjeneruar sugjerime për imazhin e sfondit, objekt i <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Politikës së privatësisë të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin në "Kërko në Google".</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7353413232959255829">Rezultati i kërkimit <ph name="LIST_POSITION" /> nga <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Shtyp "Enter" për të naviguar për te shkurtorja.</translation>

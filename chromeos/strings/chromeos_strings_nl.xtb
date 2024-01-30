@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">vermenigvuldig</translation>
 <translation id="1145018782460575098">Het venster voor het updaten van firmware voor externe apparaten is geopend. <ph name="NUM_UPDATES" /> updates beschikbaar.</translation>
 <translation id="1145516343487477149">Help-artikelen en antwoorden op veelgestelde vragen over Chromebooks bekijken</translation>
 <translation id="1154390310959620237">Je kunt maximaal 5 sneltoetsen aanpassen. Verwijder een sneltoets om een nieuwe te kunnen toevoegen.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
+<translation id="1371650399987522809">Feedback voor achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kleur van achtergrondverlichting</translation>
 <translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
+<translation id="1566493343215789965">deel</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1578784163189013834">Achtergrond voor screensaver selecteren</translation>
 <translation id="160633243685262989">Voorbeeld van afbeelding bekijken</translation>
 <translation id="1611649489706141841">vooruit</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Afbeeldingen genereren…</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1626590945318984973">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder de functie- en <ph name="META_KEY" />-toetsen te gebruiken.</translation>
 <translation id="1639239467298939599">Laden</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="2880569433548999039">Screensaver Wolkenstroom</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
+<translation id="2938573842839598578">Voor een resultaat bij benadering <ph name="OPERATOR_TEXT" /> je de waarde <ph name="CATEGORY_TEXT" /> met/door <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Kan apparaat niet testen. Open de klep opnieuw om te testen.</translation>
 <translation id="2941112035454246133">Laag</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Chrome OS-update</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
+<translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Lokale identiteit (optioneel)</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
 <translation id="3569407787324516067">Screensaver</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7180865173735832675">Aanpassen</translation>
 <translation id="7184043045742675738">Klik op een toets om je knop aan te passen. Verplaats de toets met de muis of de pijltoetsen.</translation>
+<translation id="7206979415662233817">Servicevoorwaarden</translation>
 <translation id="7212547870105584639">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">toetsenbordkleur</translation>
 <translation id="7317831949569936035">Schoolinschrijving</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Je moet minstens 18 jaar oud zijn en ermee akkoord gaan dat je gebruik van AI-achtergronden valt onder de <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Servicevoorwaarden van Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en de <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Aanvullende Servicevoorwaarden voor generatieve AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+<ph name="LINE_BREAK" />
+Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel gebruik. Als je hulp voor de achtergrond krijgt, wordt er tekst naar de AI-servers van Google gestuurd om achtergrondsuggesties te genereren, in overeenstemming met het <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Privacybeleid van Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
 <translation id="7353413232959255829">Zoekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk op Enter om naar de snelkoppeling te gaan.</translation>
