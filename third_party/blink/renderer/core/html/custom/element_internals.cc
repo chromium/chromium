@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_validity_state_flags.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -338,168 +339,101 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
     explicitly_set_attr_elements_map_.erase(name);
     return;
   }
-  auto result = explicitly_set_attr_elements_map_.insert(name, nullptr);
-  if (result.is_new_entry) {
-    result.stored_value->value =
-        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
-  } else {
-    result.stored_value->value->clear();
-  }
-  result.stored_value->value->insert(element);
+
+  HeapVector<Member<Element>> vector;
+  vector.push_back(element);
+  FrozenArray<Element>* array =
+      MakeGarbageCollected<FrozenArray<Element>>(std::move(vector));
+  explicitly_set_attr_elements_map_.Set(name, array);
 }
 
 Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter == explicitly_set_attr_elements_map_.end())
+  auto it = explicitly_set_attr_elements_map_.find(name);
+  if (it == explicitly_set_attr_elements_map_.end()) {
     return nullptr;
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
+  }
+
+  FrozenArray<Element>* stored_elements = it->value.Get();
   DCHECK_EQ(stored_elements->size(), 1u);
-  return stored_elements->begin()->Get();
-}
-
-HeapVector<Member<Element>>* ElementInternals::GetAttrAssociatedElements(
-    const QualifiedName& name) const {
-  const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter == explicitly_set_attr_elements_map_.end())
-    return nullptr;
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
-
-  // Convert from our internal HeapLinkedHashSet of weak references to a
-  // HeapVector of strong references so that V8 can implicitly convert to a
-  // FrozenArray.
-  // TODO(crbug.com/1326808): Use FrozenArray for
-  // explicitly_set_attr_elements_map_ once crrev.com/c/5149923 lands, so that
-  // the same v8 value is returned each time.
-  HeapVector<Member<Element>>* results =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
-  results->ReserveInitialCapacity(stored_elements->size());
-  for (auto item : *stored_elements) {
-    results->push_back(item);
-  }
-
-  return results;
-}
-
-ScriptValue ElementInternals::GetElementArrayAttribute(
-    ScriptState* script_state,
-    const QualifiedName& name) {
-  HeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
-  v8::Isolate* isolate = script_state->GetIsolate();
-
-  v8::Local<v8::Value> v8_elements_as_frozen_array =
-      ToV8Traits<IDLNullable<IDLArray<Element>>>::ToV8(script_state, elements);
-  if (v8_elements_as_frozen_array->IsNull()) {
-    return ScriptValue::CreateNull(isolate);
-  }
-  return ScriptValue(isolate, v8_elements_as_frozen_array);
+  return stored_elements->front();
 }
 
 void ElementInternals::SetElementArrayAttribute(
-    ScriptState* script_state,
     const QualifiedName& name,
-    const ScriptValue given_value,
-    const char* const property_name) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
-                                 "ElementInternals", property_name);
-
-  HeapVector<Member<Element>>* given_elements =
-      NativeValueTraits<IDLNullable<IDLArray<Element>>>::NativeValue(
-          isolate, given_value.V8Value(), exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
-    LOG(ERROR) << "Had exception when trying to convert given value for "
-               << name.LocalName() << ": " << exception_state.Message();
-    return;
-  }
-
+    const HeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
     return;
   }
 
-  // Otherwise convert from our external strong references to our internal weak
-  // references.
-  auto stored_elements =
-      explicitly_set_attr_elements_map_.insert(name, nullptr);
-  if (stored_elements.is_new_entry) {
-    stored_elements.stored_value->value =
-        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
-  } else {
-    stored_elements.stored_value->value->clear();
+  FrozenArray<Element>* frozen_elements =
+      MakeGarbageCollected<FrozenArray<Element>>((std::move(*given_elements)));
+  explicitly_set_attr_elements_map_.Set(name, frozen_elements);
+}
+
+const FrozenArray<Element>* ElementInternals::GetElementArrayAttribute(
+    const QualifiedName& name) {
+  auto it = explicitly_set_attr_elements_map_.find(name);
+  if (it == explicitly_set_attr_elements_map_.end()) {
+    return nullptr;
   }
-
-  for (auto element : *given_elements) {
-    stored_elements.stored_value->value->insert(element);
-  }
+  return it->value.Get();
 }
 
-ScriptValue ElementInternals::ariaControlsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaControlsAttr);
+const FrozenArray<Element>* ElementInternals::ariaControlsElements() {
+  return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }
-void ElementInternals::setAriaControlsElements(ScriptState* script_state,
-                                               ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaControlsAttr,
-                           given_elements, "ariaControlsElements");
-}
-
-ScriptValue ElementInternals::ariaDescribedByElements(
-    ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state,
-                                  html_names::kAriaDescribedbyAttr);
-}
-void ElementInternals::setAriaDescribedByElements(ScriptState* script_state,
-                                                  ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaDescribedbyAttr,
-                           given_elements, "ariaDescribedByElements");
+void ElementInternals::setAriaControlsElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaControlsAttr, given_elements);
 }
 
-ScriptValue ElementInternals::ariaDetailsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr);
+const FrozenArray<Element>* ElementInternals::ariaDescribedByElements() {
+  return GetElementArrayAttribute(html_names::kAriaDescribedbyAttr);
 }
-void ElementInternals::setAriaDetailsElements(ScriptState* script_state,
-                                              ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaDetailsAttr,
-                           given_elements, "ariaDetailsElements");
-}
-
-ScriptValue ElementInternals::ariaErrorMessageElements(
-    ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state,
-                                  html_names::kAriaErrormessageAttr);
-}
-void ElementInternals::setAriaErrorMessageElements(ScriptState* script_state,
-                                                   ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaErrormessageAttr,
-                           given_elements, "ariaErrorMessageElements");
+void ElementInternals::setAriaDescribedByElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaDescribedbyAttr, given_elements);
 }
 
-ScriptValue ElementInternals::ariaFlowToElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr);
+const FrozenArray<Element>* ElementInternals::ariaDetailsElements() {
+  return GetElementArrayAttribute(html_names::kAriaDetailsAttr);
 }
-void ElementInternals::setAriaFlowToElements(ScriptState* script_state,
-                                             ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaFlowtoAttr,
-                           given_elements, "ariaFlowToElements");
-}
-
-ScriptValue ElementInternals::ariaLabelledByElements(
-    ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state,
-                                  html_names::kAriaLabelledbyAttr);
-}
-void ElementInternals::setAriaLabelledByElements(ScriptState* script_state,
-                                                 ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaLabelledbyAttr,
-                           given_elements, "ariaLabelledByElements");
+void ElementInternals::setAriaDetailsElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaDetailsAttr, given_elements);
 }
 
-ScriptValue ElementInternals::ariaOwnsElements(ScriptState* script_state) {
-  return GetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr);
+const FrozenArray<Element>* ElementInternals::ariaErrorMessageElements() {
+  return GetElementArrayAttribute(html_names::kAriaErrormessageAttr);
 }
-void ElementInternals::setAriaOwnsElements(ScriptState* script_state,
-                                           ScriptValue given_elements) {
-  SetElementArrayAttribute(script_state, html_names::kAriaOwnsAttr,
-                           given_elements, "ariaOwnsElements");
+void ElementInternals::setAriaErrorMessageElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaErrormessageAttr, given_elements);
+}
+
+const FrozenArray<Element>* ElementInternals::ariaFlowToElements() {
+  return GetElementArrayAttribute(html_names::kAriaFlowtoAttr);
+}
+void ElementInternals::setAriaFlowToElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaFlowtoAttr, given_elements);
+}
+
+const FrozenArray<Element>* ElementInternals::ariaLabelledByElements() {
+  return GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
+}
+void ElementInternals::setAriaLabelledByElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaLabelledbyAttr, given_elements);
+}
+
+const FrozenArray<Element>* ElementInternals::ariaOwnsElements() {
+  return GetElementArrayAttribute(html_names::kAriaOwnsAttr);
+}
+void ElementInternals::setAriaOwnsElements(
+    HeapVector<Member<Element>>* given_elements) {
+  SetElementArrayAttribute(html_names::kAriaOwnsAttr, given_elements);
 }
 
 bool ElementInternals::IsTargetFormAssociated() const {

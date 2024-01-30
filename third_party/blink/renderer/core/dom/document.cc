@@ -76,6 +76,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -705,6 +706,31 @@ void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
     new_document.element_explicitly_set_attr_elements_map_.insert(element,
                                                                   it->value);
     element_explicitly_set_attr_elements_map_.erase(it);
+  }
+}
+
+CachedAttrAssociatedElementsMap* Document::GetCachedAttrAssociatedElementsMap(
+    Element* element) {
+  DCHECK(element);
+  DCHECK(element->GetDocument() == this);
+  auto add_result =
+      element_cached_attr_associated_elements_map_.insert(element, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value =
+        MakeGarbageCollected<CachedAttrAssociatedElementsMap>();
+  }
+  return add_result.stored_value->value.Get();
+}
+
+void Document::MoveElementCachedAttrAssociatedElementsMapToNewDocument(
+    Element* element,
+    Document& new_document) {
+  DCHECK(element);
+  auto it = element_cached_attr_associated_elements_map_.find(element);
+  if (it != element_cached_attr_associated_elements_map_.end()) {
+    new_document.element_cached_attr_associated_elements_map_.insert(element,
+                                                                     it->value);
+    element_cached_attr_associated_elements_map_.erase(it);
   }
 }
 
@@ -9037,6 +9063,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(synchronous_mutation_observer_set_);
   visitor->Trace(fragment_directive_);
   visitor->Trace(element_explicitly_set_attr_elements_map_);
+  visitor->Trace(element_cached_attr_associated_elements_map_);
   visitor->Trace(display_lock_document_state_);
   visitor->Trace(render_blocking_resource_manager_);
   visitor->Trace(find_in_page_active_match_node_);

@@ -306,6 +306,13 @@ using DocumentClassFlags = base::
 using ExplicitlySetAttrElementsMap =
     HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>;
 
+// A map of IDL attribute name to Element FrozenArray value, for one particular
+// element.
+// This represents 'cached attr-associated elements' in the HTML specification.
+// https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#cached-attr-associated-elements
+using CachedAttrAssociatedElementsMap =
+    HeapHashMap<QualifiedName, Member<FrozenArray<Element>>>;
+
 // Represents the start and end time of the unload event.
 struct UnloadEventTiming {
   bool can_request;
@@ -1010,6 +1017,11 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ExplicitlySetAttrElementsMap* GetExplicitlySetAttrElementsMap(Element*);
   void MoveElementExplicitlySetAttrElementsMapToNewDocument(
+      Element*,
+      Document& new_document);
+
+  CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
+  void MoveElementCachedAttrAssociatedElementsMapToNewDocument(
       Element*,
       Document& new_document);
 
@@ -2704,6 +2716,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HeapHashMap<WeakMember<Element>, Member<ExplicitlySetAttrElementsMap>>
       element_explicitly_set_attr_elements_map_;
+  HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
+      element_cached_attr_associated_elements_map_;
 
   HeapObserverSet<SynchronousMutationObserver>
       synchronous_mutation_observer_set_;
