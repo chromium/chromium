@@ -3350,6 +3350,571 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<enum name="AutofillWebViewEventsBitmask">
+  <summary>
+    A bitmask indicating which fields differed during a FormDataAndroid
+    similarity check.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Structure sent"/>
+  <int value="2" label="Suggestion shown"/>
+  <int value="3" label="Structure sent, suggestion shown"/>
+  <int value="4" label="Autofilled"/>
+  <int value="5" label="Structure sent, autofilled"/>
+  <int value="6" label="Suggestion shown, autofilled"/>
+  <int value="7" label="Structure sent, suggestion shown, autofilled"/>
+  <int value="8" label="Changed field"/>
+  <int value="9" label="Structure sent, changed field"/>
+  <int value="10" label="Suggestion shown, changed field"/>
+  <int value="11" label="Structure sent, suggestion shown, changed field"/>
+  <int value="12" label="Autofilled, changed field"/>
+  <int value="13" label="Structure sent, autofilled, changed field"/>
+  <int value="14" label="Suggestion shown, autofilled, changed field"/>
+  <int value="15"
+      label="Structure sent, suggestion shown, autofilled, changed field"/>
+  <int value="16" label="Changed autofilled field"/>
+  <int value="17" label="Structure sent, changed autofilled field"/>
+  <int value="18" label="Suggestion shown, changed autofilled field"/>
+  <int value="19"
+      label="Structure sent, suggestion shown, changed autofilled field"/>
+  <int value="20" label="Autofilled, changed autofilled field"/>
+  <int value="21" label="Structure sent, autofilled, changed autofilled field"/>
+  <int value="22"
+      label="Suggestion shown, autofilled, changed autofilled field"/>
+  <int value="23"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field"/>
+  <int value="24" label="Changed field, changed autofilled field"/>
+  <int value="25"
+      label="Structure sent, changed field, changed autofilled field"/>
+  <int value="26"
+      label="Suggestion shown, changed field, changed autofilled field"/>
+  <int value="27"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field"/>
+  <int value="28" label="Autofilled, changed field, changed autofilled field"/>
+  <int value="29"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field"/>
+  <int value="30"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field"/>
+  <int value="31"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field"/>
+  <int value="32" label="Changed visibility"/>
+  <int value="33" label="Structure sent, changed visibility"/>
+  <int value="34" label="Suggestion shown, changed visibility"/>
+  <int value="35" label="Structure sent, suggestion shown, changed visibility"/>
+  <int value="36" label="Autofilled, changed visibility"/>
+  <int value="37" label="Structure sent, autofilled, changed visibility"/>
+  <int value="38" label="Suggestion shown, autofilled, changed visibility"/>
+  <int value="39"
+      label="Structure sent, suggestion shown, autofilled, changed visibility"/>
+  <int value="40" label="Changed field, changed visibility"/>
+  <int value="41" label="Structure sent, changed field, changed visibility"/>
+  <int value="42" label="Suggestion shown, changed field, changed visibility"/>
+  <int value="43"
+      label="Structure sent, suggestion shown, changed field, changed
+             visibility"/>
+  <int value="44" label="Autofilled, changed field, changed visibility"/>
+  <int value="45"
+      label="Structure sent, autofilled, changed field, changed visibility"/>
+  <int value="46"
+      label="Suggestion shown, autofilled, changed field, changed visibility"/>
+  <int value="47"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed visibility"/>
+  <int value="48" label="Changed autofilled field, changed visibility"/>
+  <int value="49"
+      label="Structure sent, changed autofilled field, changed visibility"/>
+  <int value="50"
+      label="Suggestion shown, changed autofilled field, changed visibility"/>
+  <int value="51"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             changed visibility"/>
+  <int value="52"
+      label="Autofilled, changed autofilled field, changed visibility"/>
+  <int value="53"
+      label="Structure sent, autofilled, changed autofilled field, changed
+             visibility"/>
+  <int value="54"
+      label="Suggestion shown, autofilled, changed autofilled field, changed
+             visibility"/>
+  <int value="55"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, changed visibility"/>
+  <int value="56"
+      label="Changed field, changed autofilled field, changed visibility"/>
+  <int value="57"
+      label="Structure sent, changed field, changed autofilled field, changed
+             visibility"/>
+  <int value="58"
+      label="Suggestion shown, changed field, changed autofilled field,
+             changed visibility"/>
+  <int value="59"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, changed visibility"/>
+  <int value="60"
+      label="Autofilled, changed field, changed autofilled field, changed
+             visibility"/>
+  <int value="61"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, changed visibility"/>
+  <int value="62"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, changed visibility"/>
+  <int value="63"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, changed visibility"/>
+  <int value="64" label="Submitted"/>
+  <int value="65" label="Structure sent, submitted"/>
+  <int value="66" label="Suggestion shown, submitted"/>
+  <int value="67" label="Structure sent, suggestion shown, submitted"/>
+  <int value="68" label="Autofilled, submitted"/>
+  <int value="69" label="Structure sent, autofilled, submitted"/>
+  <int value="70" label="Suggestion shown, autofilled, submitted"/>
+  <int value="71"
+      label="Structure sent, suggestion shown, autofilled, submitted"/>
+  <int value="72" label="Changed field, submitted"/>
+  <int value="73" label="Structure sent, changed field, submitted"/>
+  <int value="74" label="Suggestion shown, changed field, submitted"/>
+  <int value="75"
+      label="Structure sent, suggestion shown, changed field, submitted"/>
+  <int value="76" label="Autofilled, changed field, submitted"/>
+  <int value="77" label="Structure sent, autofilled, changed field, submitted"/>
+  <int value="78"
+      label="Suggestion shown, autofilled, changed field, submitted"/>
+  <int value="79"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             submitted"/>
+  <int value="80" label="Changed autofilled field, submitted"/>
+  <int value="81" label="Structure sent, changed autofilled field, submitted"/>
+  <int value="82"
+      label="Suggestion shown, changed autofilled field, submitted"/>
+  <int value="83"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             submitted"/>
+  <int value="84" label="Autofilled, changed autofilled field, submitted"/>
+  <int value="85"
+      label="Structure sent, autofilled, changed autofilled field, submitted"/>
+  <int value="86"
+      label="Suggestion shown, autofilled, changed autofilled field,
+             submitted"/>
+  <int value="87"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, submitted"/>
+  <int value="88" label="Changed field, changed autofilled field, submitted"/>
+  <int value="89"
+      label="Structure sent, changed field, changed autofilled field,
+             submitted"/>
+  <int value="90"
+      label="Suggestion shown, changed field, changed autofilled field,
+             submitted"/>
+  <int value="91"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, submitted"/>
+  <int value="92"
+      label="Autofilled, changed field, changed autofilled field, submitted"/>
+  <int value="93"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, submitted"/>
+  <int value="94"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, submitted"/>
+  <int value="95"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, submitted"/>
+  <int value="96" label="Changed visibility, submitted"/>
+  <int value="97" label="Structure sent, changed visibility, submitted"/>
+  <int value="98" label="Suggestion shown, changed visibility, submitted"/>
+  <int value="99"
+      label="Structure sent, suggestion shown, changed visibility, submitted"/>
+  <int value="100" label="Autofilled, changed visibility, submitted"/>
+  <int value="101"
+      label="Structure sent, autofilled, changed visibility, submitted"/>
+  <int value="102"
+      label="Suggestion shown, autofilled, changed visibility, submitted"/>
+  <int value="103"
+      label="Structure sent, suggestion shown, autofilled, changed
+             visibility, submitted"/>
+  <int value="104" label="Changed field, changed visibility, submitted"/>
+  <int value="105"
+      label="Structure sent, changed field, changed visibility, submitted"/>
+  <int value="106"
+      label="Suggestion shown, changed field, changed visibility, submitted"/>
+  <int value="107"
+      label="Structure sent, suggestion shown, changed field, changed
+             visibility, submitted"/>
+  <int value="108"
+      label="Autofilled, changed field, changed visibility, submitted"/>
+  <int value="109"
+      label="Structure sent, autofilled, changed field, changed visibility,
+             submitted"/>
+  <int value="110"
+      label="Suggestion shown, autofilled, changed field, changed visibility,
+             submitted"/>
+  <int value="111"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed visibility, submitted"/>
+  <int value="112"
+      label="Changed autofilled field, changed visibility, submitted"/>
+  <int value="113"
+      label="Structure sent, changed autofilled field, changed visibility,
+             submitted"/>
+  <int value="114"
+      label="Suggestion shown, changed autofilled field, changed visibility,
+             submitted"/>
+  <int value="115"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             changed visibility, submitted"/>
+  <int value="116"
+      label="Autofilled, changed autofilled field, changed visibility,
+             submitted"/>
+  <int value="117"
+      label="Structure sent, autofilled, changed autofilled field, changed
+             visibility, submitted"/>
+  <int value="118"
+      label="Suggestion shown, autofilled, changed autofilled field, changed
+             visibility, submitted"/>
+  <int value="119"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, changed visibility, submitted"/>
+  <int value="120"
+      label="Changed field, changed autofilled field, changed visibility,
+             submitted"/>
+  <int value="121"
+      label="Structure sent, changed field, changed autofilled field, changed
+             visibility, submitted"/>
+  <int value="122"
+      label="Suggestion shown, changed field, changed autofilled field,
+             changed visibility, submitted"/>
+  <int value="123"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, changed visibility, submitted"/>
+  <int value="124"
+      label="Autofilled, changed field, changed autofilled field, changed
+             visibility, submitted"/>
+  <int value="125"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, changed visibility, submitted"/>
+  <int value="126"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, changed visibility, submitted"/>
+  <int value="127"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, changed visibility, submitted"/>
+  <int value="128" label="Bottom sheet"/>
+  <int value="129" label="Structure sent, bottom sheet"/>
+  <int value="130" label="Suggestion shown, bottom sheet"/>
+  <int value="131" label="Structure sent, suggestion shown, bottom sheet"/>
+  <int value="132" label="Autofilled, bottom sheet"/>
+  <int value="133" label="Structure sent, autofilled, bottom sheet"/>
+  <int value="134" label="Suggestion shown, autofilled, bottom sheet"/>
+  <int value="135"
+      label="Structure sent, suggestion shown, autofilled, bottom sheet"/>
+  <int value="136" label="Changed field, bottom sheet"/>
+  <int value="137" label="Structure sent, changed field, bottom sheet"/>
+  <int value="138" label="Suggestion shown, changed field, bottom sheet"/>
+  <int value="139"
+      label="Structure sent, suggestion shown, changed field, bottom sheet"/>
+  <int value="140" label="Autofilled, changed field, bottom sheet"/>
+  <int value="141"
+      label="Structure sent, autofilled, changed field, bottom sheet"/>
+  <int value="142"
+      label="Suggestion shown, autofilled, changed field, bottom sheet"/>
+  <int value="143"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             bottom sheet"/>
+  <int value="144" label="Changed autofilled field, bottom sheet"/>
+  <int value="145"
+      label="Structure sent, changed autofilled field, bottom sheet"/>
+  <int value="146"
+      label="Suggestion shown, changed autofilled field, bottom sheet"/>
+  <int value="147"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             bottom sheet"/>
+  <int value="148" label="Autofilled, changed autofilled field, bottom sheet"/>
+  <int value="149"
+      label="Structure sent, autofilled, changed autofilled field, bottom
+             sheet"/>
+  <int value="150"
+      label="Suggestion shown, autofilled, changed autofilled field, bottom
+             sheet"/>
+  <int value="151"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, bottom sheet"/>
+  <int value="152"
+      label="Changed field, changed autofilled field, bottom sheet"/>
+  <int value="153"
+      label="Structure sent, changed field, changed autofilled field, bottom
+             sheet"/>
+  <int value="154"
+      label="Suggestion shown, changed field, changed autofilled field,
+             bottom sheet"/>
+  <int value="155"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, bottom sheet"/>
+  <int value="156"
+      label="Autofilled, changed field, changed autofilled field, bottom
+             sheet"/>
+  <int value="157"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, bottom sheet"/>
+  <int value="158"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, bottom sheet"/>
+  <int value="159"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, bottom sheet"/>
+  <int value="160" label="Changed visibility, bottom sheet"/>
+  <int value="161" label="Structure sent, changed visibility, bottom sheet"/>
+  <int value="162" label="Suggestion shown, changed visibility, bottom sheet"/>
+  <int value="163"
+      label="Structure sent, suggestion shown, changed visibility, bottom
+             sheet"/>
+  <int value="164" label="Autofilled, changed visibility, bottom sheet"/>
+  <int value="165"
+      label="Structure sent, autofilled, changed visibility, bottom sheet"/>
+  <int value="166"
+      label="Suggestion shown, autofilled, changed visibility, bottom sheet"/>
+  <int value="167"
+      label="Structure sent, suggestion shown, autofilled, changed
+             visibility, bottom sheet"/>
+  <int value="168" label="Changed field, changed visibility, bottom sheet"/>
+  <int value="169"
+      label="Structure sent, changed field, changed visibility, bottom sheet"/>
+  <int value="170"
+      label="Suggestion shown, changed field, changed visibility, bottom
+             sheet"/>
+  <int value="171"
+      label="Structure sent, suggestion shown, changed field, changed
+             visibility, bottom sheet"/>
+  <int value="172"
+      label="Autofilled, changed field, changed visibility, bottom sheet"/>
+  <int value="173"
+      label="Structure sent, autofilled, changed field, changed visibility,
+             bottom sheet"/>
+  <int value="174"
+      label="Suggestion shown, autofilled, changed field, changed visibility,
+             bottom sheet"/>
+  <int value="175"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed visibility, bottom sheet"/>
+  <int value="176"
+      label="Changed autofilled field, changed visibility, bottom sheet"/>
+  <int value="177"
+      label="Structure sent, changed autofilled field, changed visibility,
+             bottom sheet"/>
+  <int value="178"
+      label="Suggestion shown, changed autofilled field, changed visibility,
+             bottom sheet"/>
+  <int value="179"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             changed visibility, bottom sheet"/>
+  <int value="180"
+      label="Autofilled, changed autofilled field, changed visibility, bottom
+             sheet"/>
+  <int value="181"
+      label="Structure sent, autofilled, changed autofilled field, changed
+             visibility, bottom sheet"/>
+  <int value="182"
+      label="Suggestion shown, autofilled, changed autofilled field, changed
+             visibility, bottom sheet"/>
+  <int value="183"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, changed visibility, bottom sheet"/>
+  <int value="184"
+      label="Changed field, changed autofilled field, changed visibility,
+             bottom sheet"/>
+  <int value="185"
+      label="Structure sent, changed field, changed autofilled field, changed
+             visibility, bottom sheet"/>
+  <int value="186"
+      label="Suggestion shown, changed field, changed autofilled field,
+             changed visibility, bottom sheet"/>
+  <int value="187"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, changed visibility, bottom sheet"/>
+  <int value="188"
+      label="Autofilled, changed field, changed autofilled field, changed
+             visibility, bottom sheet"/>
+  <int value="189"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, changed visibility, bottom sheet"/>
+  <int value="190"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, changed visibility, bottom sheet"/>
+  <int value="191"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, changed visibility, bottom sheet"/>
+  <int value="192" label="Submitted, bottom sheet"/>
+  <int value="193" label="Structure sent, submitted, bottom sheet"/>
+  <int value="194" label="Suggestion shown, submitted, bottom sheet"/>
+  <int value="195"
+      label="Structure sent, suggestion shown, submitted, bottom sheet"/>
+  <int value="196" label="Autofilled, submitted, bottom sheet"/>
+  <int value="197" label="Structure sent, autofilled, submitted, bottom sheet"/>
+  <int value="198"
+      label="Suggestion shown, autofilled, submitted, bottom sheet"/>
+  <int value="199"
+      label="Structure sent, suggestion shown, autofilled, submitted, bottom
+             sheet"/>
+  <int value="200" label="Changed field, submitted, bottom sheet"/>
+  <int value="201"
+      label="Structure sent, changed field, submitted, bottom sheet"/>
+  <int value="202"
+      label="Suggestion shown, changed field, submitted, bottom sheet"/>
+  <int value="203"
+      label="Structure sent, suggestion shown, changed field, submitted,
+             bottom sheet"/>
+  <int value="204" label="Autofilled, changed field, submitted, bottom sheet"/>
+  <int value="205"
+      label="Structure sent, autofilled, changed field, submitted, bottom
+             sheet"/>
+  <int value="206"
+      label="Suggestion shown, autofilled, changed field, submitted, bottom
+             sheet"/>
+  <int value="207"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             submitted, bottom sheet"/>
+  <int value="208" label="Changed autofilled field, submitted, bottom sheet"/>
+  <int value="209"
+      label="Structure sent, changed autofilled field, submitted, bottom
+             sheet"/>
+  <int value="210"
+      label="Suggestion shown, changed autofilled field, submitted, bottom
+             sheet"/>
+  <int value="211"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             submitted, bottom sheet"/>
+  <int value="212"
+      label="Autofilled, changed autofilled field, submitted, bottom sheet"/>
+  <int value="213"
+      label="Structure sent, autofilled, changed autofilled field, submitted,
+             bottom sheet"/>
+  <int value="214"
+      label="Suggestion shown, autofilled, changed autofilled field,
+             submitted, bottom sheet"/>
+  <int value="215"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, submitted, bottom sheet"/>
+  <int value="216"
+      label="Changed field, changed autofilled field, submitted, bottom sheet"/>
+  <int value="217"
+      label="Structure sent, changed field, changed autofilled field,
+             submitted, bottom sheet"/>
+  <int value="218"
+      label="Suggestion shown, changed field, changed autofilled field,
+             submitted, bottom sheet"/>
+  <int value="219"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, submitted, bottom sheet"/>
+  <int value="220"
+      label="Autofilled, changed field, changed autofilled field, submitted,
+             bottom sheet"/>
+  <int value="221"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, submitted, bottom sheet"/>
+  <int value="222"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, submitted, bottom sheet"/>
+  <int value="223"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, submitted, bottom sheet"/>
+  <int value="224" label="Changed visibility, submitted, bottom sheet"/>
+  <int value="225"
+      label="Structure sent, changed visibility, submitted, bottom sheet"/>
+  <int value="226"
+      label="Suggestion shown, changed visibility, submitted, bottom sheet"/>
+  <int value="227"
+      label="Structure sent, suggestion shown, changed visibility, submitted,
+             bottom sheet"/>
+  <int value="228"
+      label="Autofilled, changed visibility, submitted, bottom sheet"/>
+  <int value="229"
+      label="Structure sent, autofilled, changed visibility, submitted,
+             bottom sheet"/>
+  <int value="230"
+      label="Suggestion shown, autofilled, changed visibility, submitted,
+             bottom sheet"/>
+  <int value="231"
+      label="Structure sent, suggestion shown, autofilled, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="232"
+      label="Changed field, changed visibility, submitted, bottom sheet"/>
+  <int value="233"
+      label="Structure sent, changed field, changed visibility, submitted,
+             bottom sheet"/>
+  <int value="234"
+      label="Suggestion shown, changed field, changed visibility, submitted,
+             bottom sheet"/>
+  <int value="235"
+      label="Structure sent, suggestion shown, changed field, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="236"
+      label="Autofilled, changed field, changed visibility, submitted, bottom
+             sheet"/>
+  <int value="237"
+      label="Structure sent, autofilled, changed field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="238"
+      label="Suggestion shown, autofilled, changed field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="239"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed visibility, submitted, bottom sheet"/>
+  <int value="240"
+      label="Changed autofilled field, changed visibility, submitted, bottom
+             sheet"/>
+  <int value="241"
+      label="Structure sent, changed autofilled field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="242"
+      label="Suggestion shown, changed autofilled field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="243"
+      label="Structure sent, suggestion shown, changed autofilled field,
+             changed visibility, submitted, bottom sheet"/>
+  <int value="244"
+      label="Autofilled, changed autofilled field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="245"
+      label="Structure sent, autofilled, changed autofilled field, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="246"
+      label="Suggestion shown, autofilled, changed autofilled field, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="247"
+      label="Structure sent, suggestion shown, autofilled, changed autofilled
+             field, changed visibility, submitted, bottom sheet"/>
+  <int value="248"
+      label="Changed field, changed autofilled field, changed visibility,
+             submitted, bottom sheet"/>
+  <int value="249"
+      label="Structure sent, changed field, changed autofilled field, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="250"
+      label="Suggestion shown, changed field, changed autofilled field,
+             changed visibility, submitted, bottom sheet"/>
+  <int value="251"
+      label="Structure sent, suggestion shown, changed field, changed
+             autofilled field, changed visibility, submitted, bottom sheet"/>
+  <int value="252"
+      label="Autofilled, changed field, changed autofilled field, changed
+             visibility, submitted, bottom sheet"/>
+  <int value="253"
+      label="Structure sent, autofilled, changed field, changed autofilled
+             field, changed visibility, submitted, bottom sheet"/>
+  <int value="254"
+      label="Suggestion shown, autofilled, changed field, changed autofilled
+             field, changed visibility, submitted, bottom sheet"/>
+  <int value="255"
+      label="Structure sent, suggestion shown, autofilled, changed field,
+             changed autofilled field, changed visibility, submitted, bottom
+             sheet"/>
+</enum>
+
 <enum name="AutofillWebViewFormSimilarityCheckResult">
   <summary>
     A bitmask indicating which fields differed during a FormDataAndroid

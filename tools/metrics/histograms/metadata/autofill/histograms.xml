@@ -5795,7 +5795,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.WebView.Events" units="Bitmask"
+<histogram name="Autofill.WebView.Events" enum="AutofillWebViewEventsBitmask"
     expires_after="2024-12-12">
   <owner>jkeitel@google.com</owner>
   <owner>battre@chromium.org</owner>
