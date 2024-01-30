@@ -31,9 +31,9 @@ void ExtensionsHatsHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
   web_ui()->RegisterMessageCallback(
-      "extensionsSafetyHubTriggerSurvey",
+      "extensionsSafetyHubPanelShown",
       base::BindRepeating(
-          &ExtensionsHatsHandler::HandleExtensionsSafetyHubTriggerSurvey,
+          &ExtensionsHatsHandler::HandleExtensionsSafetyHubPanelShown,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "extensionsSafetyHubExtensionKept",
@@ -58,11 +58,10 @@ void ExtensionsHatsHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
-void ExtensionsHatsHandler::HandleExtensionsSafetyHubTriggerSurvey(
+void ExtensionsHatsHandler::HandleExtensionsSafetyHubPanelShown(
     const base::Value::List& args) {
   content::WebContentsObserver::Observe(web_ui()->GetWebContents());
-  RequestHatsSurvey(HatsService::REQUIRE_SAME_ORIGIN,
-                    CreateSurveyStringsForNoInteraction());
+  review_panel_shown_ = args[0].GetBool();
 }
 
 void ExtensionsHatsHandler::HandleExtensionsSafetyHubExtensionKept(
@@ -106,40 +105,48 @@ void ExtensionsHatsHandler::InitExtensionStats() {
       continue;
     }
     number_installed_extensions_on_load_++;
-    base::TimeDelta time_since_install = base::Time::Now() -
-                         extension_prefs->GetFirstInstallTime(extension->id());
-    avg_extension_age_ += time_since_install;
-    if (time_since_last_extension_install_ > time_since_install) {
-      time_since_last_extension_install_ = time_since_install;
+    base::Time install_date =
+        extension_prefs->GetFirstInstallTime(extension->id());
+    if (install_date != base::Time()) {
+      base::TimeDelta time_since_install = base::Time::Now() - install_date;
+      avg_extension_age_ += time_since_install;
+      if (time_since_last_extension_install_ > time_since_install) {
+        time_since_last_extension_install_ = time_since_install;
+      }
     }
   }
   avg_extension_age_ =
-    number_installed_extensions_on_load_ > 0 ?
-        avg_extension_age_ / number_installed_extensions_on_load_ :
-        base::TimeDelta::Min();
+      number_installed_extensions_on_load_ > 0
+          ? avg_extension_age_ / number_installed_extensions_on_load_
+          : base::TimeDelta::Min();
 }
 
-SurveyStringData ExtensionsHatsHandler::CreateSurveyStringsForNoInteraction() {
-  base::TimeDelta time_spent_on_page =
-      base::Time::Now() - time_extension_page_opened_;
+SurveyStringData ExtensionsHatsHandler::CreateSurveyStrings() {
+  time_spent_on_page_ = base::Time::Now() - time_extension_page_opened_;
+  std::string review_panel_shown = review_panel_shown_ ? "True" : "False";
   // SurveyStringData for surveys on page load.
   return {{"Average extension age in days",
            base::NumberToString(avg_extension_age_.InDays())},
+          {"Age of profile in days",
+           base::NumberToString(
+               (base::Time::Now() - profile_->GetCreationTime()).InDays())},
           {"Time since last extension was installed in days",
            base::NumberToString(time_since_last_extension_install_.InDays())},
           {"Number of extensions installed",
            base::NumberToString(number_installed_extensions_on_load_)},
-          {"Time on extension page in minutes",
-           base::NumberToString(time_spent_on_page.InMinutes())},
-          {"Number of extensions removed", ""},
-          {"Number of extensions kept", ""},
-          {"Number of non-trigger extensions removed", ""},
+          {"Time on extension page in seconds",
+           base::NumberToString(time_spent_on_page_.InSeconds())},
+          {"Extension review panel shown", review_panel_shown},
+          {"Number of extensions removed",
+           base::NumberToString(number_of_triggering_extensions_removed_)},
+          {"Number of extensions kept",
+           base::NumberToString(number_of_extensions_kept_)},
+          {"Number of non-trigger extensions removed",
+           base::NumberToString(number_of_nontriggering_extensions_removed_)},
           {"Client Channel", client_channel_}};
 }
 
-void ExtensionsHatsHandler::RequestHatsSurvey(
-    HatsService::NavigationBehaviour navigation_behaviour,
-    SurveyStringData string_data) {
+void ExtensionsHatsHandler::RequestHatsSurvey(SurveyStringData survey_data) {
   HatsService* hats_service = HatsServiceFactory::GetForProfile(
       profile_, /* create_if_necessary = */ true);
   // The HaTS service may not be available for the profile, for example if it
@@ -147,45 +154,47 @@ void ExtensionsHatsHandler::RequestHatsSurvey(
   if (!hats_service) {
     return;
   }
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerExtensions, web_ui()->GetWebContents(),
-      features::kHappinessTrackingSurveysExtensionsSafetyHubTime.Get()
-          .InMilliseconds(),
-      {}, string_data, navigation_behaviour);
+  hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerExtensions, 0, {},
+                                    survey_data);
 }
 
-void ExtensionsHatsHandler::PrimaryPageChanged(content::Page& page) {
+void ExtensionsHatsHandler::HandleUserNavigation() {
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  // We want to check that the primary page change was not a window or tab being
-  // closed.
+  // We check that the primary page change was not a window.
   if ((!browser || browser->tab_strip_model()->empty() ||
-       web_ui()->GetWebContents()->IsBeingDestroyed()) &&
+       web_ui()->GetWebContents()->IsBeingDestroyed() ||
+       !base::FeatureList::IsEnabled(
+           features::kHappinessTrackingSurveysExtensionsSafetyHub)) &&
       !test_navigation_) {
     return;
   }
-  if (number_of_triggering_extensions_removed_ + number_of_extensions_kept_) {
-    base::TimeDelta time_spent_on_page =
-        base::Time::Now() - time_extension_page_opened_;
-    // SurveyStringData for when a user interacts with the review
-    // panel.
-    SurveyStringData survey_data = {
-        {"Average extension age in days",
-         base::NumberToString(avg_extension_age_.InDays())},
-        {"Time since last extension was installed in days",
-         base::NumberToString(time_since_last_extension_install_.InDays())},
-        {"Number of extensions installed",
-         base::NumberToString(number_installed_extensions_on_load_)},
-        {"Time on extension page in minutes",
-         base::NumberToString(time_spent_on_page.InMinutes())},
-        {"Number of extensions removed",
-         base::NumberToString(number_of_triggering_extensions_removed_)},
-        {"Number of extensions kept",
-         base::NumberToString(number_of_extensions_kept_)},
-        {"Number of non-trigger extensions removed",
-         base::NumberToString(number_of_nontriggering_extensions_removed_)},
-        {"Client Channel", client_channel_}};
-    RequestHatsSurvey(HatsService::ALLOW_ANY, survey_data);
+  SurveyStringData survey_data = CreateSurveyStrings();
+  // If the user has interacted with the review panel we will show them a
+  // survey.
+  bool panel_interaction =
+      number_of_triggering_extensions_removed_ + number_of_extensions_kept_;
+  features::ExtensionsSafetyHubHaTSArms survey_arm =
+      features::kHappinessTrackingSurveysExtensionsSurveyArm.Get();
+  if (panel_interaction &&
+      survey_arm ==
+          features::ExtensionsSafetyHubHaTSArms::kReviewPanelInteraction) {
+    RequestHatsSurvey(survey_data);
+  } else if (!panel_interaction &&
+             static_cast<int>(survey_arm) == review_panel_shown_ &&
+             time_spent_on_page_ >
+                 features::kHappinessTrackingSurveysExtensionsSafetyHubTime
+                     .Get()) {
+    RequestHatsSurvey(survey_data);
   }
+}
+
+void ExtensionsHatsHandler::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  HandleUserNavigation();
+}
+
+void ExtensionsHatsHandler::PrimaryPageChanged(content::Page& page) {
+  HandleUserNavigation();
 }
 
 }  // namespace extensions

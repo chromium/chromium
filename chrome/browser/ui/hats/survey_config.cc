@@ -398,10 +398,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       features::kHappinessTrackingSurveysExtensionsSafetyHubTriggerId.Get(),
       std::vector<std::string>{},
       std::vector<std::string>{
-          "Average extension age in days",
+          "Average extension age in days", "Age of profile in days",
           "Time since last extension was installed in days",
-          "Number of extensions installed", "Time on extension page in minutes",
-          "Number of extensions removed", "Number of extensions kept",
+          "Number of extensions installed", "Time on extension page in seconds",
+          "Extension review panel shown", "Number of extensions removed",
+          "Number of extensions kept",
           "Number of non-trigger extensions removed", "Client Channel"});
 
   // Autofill surveys.

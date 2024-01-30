@@ -44,7 +44,7 @@ suite('ExtensionsReviewPanel', function() {
   });
 
   test('ReviewPanelTextExists', async function() {
-    await browserProxy.whenCalled('triggerSurvey');
+    await browserProxy.whenCalled('panelShown');
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
     assertTrue(!!reviewPanelContainer);

@@ -35,20 +35,24 @@ class ExtensionsHatsHandler : public content::WebUIMessageHandler,
                            ExtensionsPageInteractions);
 
   // Handlers for JS hooks from the webui page.
-  void HandleExtensionsSafetyHubTriggerSurvey(const base::Value::List& args);
+  void HandleExtensionsSafetyHubPanelShown(const base::Value::List& args);
   void HandleExtensionsSafetyHubExtensionKept(const base::Value::List& args);
   void HandleExtensionsSafetyHubExtensionRemoved(const base::Value::List& args);
   void HandleExtensionsSafetyHubNonTriggerExtensionRemoved(
       const base::Value::List& args);
   void HandleExtensionsSafetyHubRemoveAll(const base::Value::List& args);
 
-  // content::WebContentsObserver overrides
+  void HandleUserNavigation();
+
+  // content::WebContentsObserver overrides. Handles the detection of a user
+  // navigating or closing the extensions tab.
   void PrimaryPageChanged(content::Page& page) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // Requests the appropriate HaTS survey.
-  void ExtensionsSafetyHubTriggerSurvey();
+  void ExtensionsSafetyHubPanelShown();
 
-  SurveyStringData CreateSurveyStringsForNoInteraction();
+  SurveyStringData CreateSurveyStrings();
 
   // Fill in needed extension metric data like the average age of the
   // extensions and the number of extensions installed.
@@ -58,8 +62,7 @@ class ExtensionsHatsHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // Requests a HaTS survey, and pass along needed string data.
-  void RequestHatsSurvey(HatsService::NavigationBehaviour navigation_behaviour,
-                         SurveyStringData string_data);
+  void RequestHatsSurvey(SurveyStringData string_data);
 
   // Functions for testing.
   void SetWebUI(content::WebUI* web_ui) { set_web_ui(web_ui); }
@@ -67,6 +70,7 @@ class ExtensionsHatsHandler : public content::WebUIMessageHandler,
 
   // Metric variables to track user actions involving the extensions safety
   // check.
+  bool review_panel_shown_ = false;
   int number_of_triggering_extensions_removed_ = 0;
   int number_of_nontriggering_extensions_removed_ = 0;
   int number_of_extensions_kept_ = 0;
@@ -74,6 +78,7 @@ class ExtensionsHatsHandler : public content::WebUIMessageHandler,
   std::string client_channel_;
   base::TimeDelta time_since_last_extension_install_;
   base::TimeDelta avg_extension_age_;
+  base::TimeDelta time_spent_on_page_;
   base::Time time_extension_page_opened_;
 
   // Used to mimic a page navigation for testing.
