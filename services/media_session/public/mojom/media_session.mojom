@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -225,6 +225,11 @@ struct MediaSessionInfo {
 
   // If true then media metadata will be hidden from the OS' media controllers.
   [MinVersion=16] bool hide_metadata;
+
+  // Indicates if this MediaSession should be ignored when finding a new active
+  // session. This occurs for instanced web app system media controls that
+  // cause the browser to never want to track web app media sessions.
+  [MinVersion=20] bool ignore_for_active_session;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed

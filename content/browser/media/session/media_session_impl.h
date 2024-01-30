@@ -364,6 +364,7 @@ class MediaSessionImpl : public MediaSession,
   friend class MediaSessionImplTest;
   friend class MediaSessionImplDurationThrottleTest;
   friend class MediaInternalsAudioFocusTest;
+  friend class WebAppSystemMediaControlsBrowserTest;
 
   CONTENT_EXPORT void RemoveAllPlayersForTest();
   CONTENT_EXPORT MediaSessionUmaHelper* uma_helper_for_test();
@@ -640,6 +641,10 @@ class MediaSessionImpl : public MediaSession,
   std::optional<PlayerIdentifier> guarding_player_id_;
 
   media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata_;
+
+  // Used by tests to force media sessions to be ignored when finding a new
+  // active session.
+  bool always_ignore_for_active_session_for_testing_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
