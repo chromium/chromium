@@ -39,64 +39,6 @@ class DataPipeProducer;
 
 namespace web_app {
 
-namespace internal {
-
-// This class is responsible for establishing and maintaining of
-// the IPC connection for parsing of the Signed Web Bundle.
-class SafeWebBundleParserConnection {
- public:
-  static base::expected<std::unique_ptr<SafeWebBundleParserConnection>,
-                        UnusableSwbnFileError>
-  CreateSafeWebBundleParserConnection(const base::File* web_bundle_file,
-                                      std::optional<GURL> base_url);
-
-  ~SafeWebBundleParserConnection();
-
-  using ReconnectCompleteCallback =
-      base::OnceCallback<void(base::expected<void, std::string> status)>;
-
-  // Subscribes the instance of this class on OnParserDisconnected
-  // events.
-  void StartProcessingDisconnects();
-  bool is_disconnected() const { return state_ != State::kConnected; }
-  // Tries to reestablish IPC connection.
-  void Reconnect(ReconnectCompleteCallback reconnect_callback);
-  void Close(base::OnceClosure close_callback);
-
-  // The public fields below violate encapsulation. The problem is that
-  // there is no good way (so far) how to treat them. Returning
-  // const reference is currently not an option because reading
-  // is not a const function of these types (even though logically it is
-  // const).
-  // So far it is better to leave these fields in such an ugly form
-  // to pay attention to them in the nearest future.
-  // TODO(peletskyi): Make proper encapsulation here.
-  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
-
-  // These fields we may not need after refactoring of the tests.
-  base::RepeatingClosure parser_disconnect_callback_for_testing_;
-  std::optional<base::File::Error> reconnection_file_error_for_testing_;
-
- private:
-  SafeWebBundleParserConnection(const base::File* web_bundle_file,
-                                std::optional<GURL> base_url);
-  void OnClosed(base::OnceClosure close_callback);
-  enum class State {
-    kConnected,
-    kDisconnected,
-  };
-
-  void OnParserDisconnected();
-
-  const raw_ref<const base::File> web_bundle_file_;
-  std::optional<GURL> base_url_;
-  State state_ = State::kDisconnected;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<SafeWebBundleParserConnection> weak_ptr_factory_{this};
-};
-}  // namespace internal
-
 // This class is a reader for Signed Web Bundles.
 //
 // `Create` returns a new instance of this class.
@@ -117,12 +59,6 @@ class SafeWebBundleParserConnection {
 // password, and fragment before looking up the corresponding response inside
 // the Signed Web Bundle. This is the same behavior as with unsigned Web
 // Bundles (see `content::WebBundleReader`).
-//
-// Internally, this class wraps a `data_decoder::SafeWebBundleParser` with
-// support for automatic reconnection in case it disconnects while parsing
-// responses. The `SafeWebBundleParser` might disconnect, for example, if one of
-// the other `DataDecoder`s that run on the same utility process crashes, or
-// when the utility process is terminated by Android's OOM killer.
 class SignedWebBundleReader {
  public:
   // Callers of this class can decide whether parsing the Signed Web Bundle
@@ -266,14 +202,6 @@ class SignedWebBundleReader {
 
   base::WeakPtr<SignedWebBundleReader> AsWeakPtr();
 
-  // Can be used in tests to set a callback that will be called if the
-  // underlying `SafeWebBundleParser` disconnects.
-  void SetParserDisconnectCallbackForTesting(base::RepeatingClosure callback);
-
-  // Can be used in tests to simulate an error occurring when reconnecting the
-  // parser after it has disconnected.
-  void SetReconnectionFileErrorForTesting(base::File::Error file_error);
-
  private:
   explicit SignedWebBundleReader(
       const base::FilePath& web_bundle_path,
@@ -364,7 +292,7 @@ class SignedWebBundleReader {
 
   base::FilePath web_bundle_path_;
   std::optional<GURL> base_url_;
-  std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
   base::flat_set<std::unique_ptr<mojo::DataPipeProducer>,
                  base::UniquePtrComparator>
       active_response_body_producers_;
@@ -405,8 +333,7 @@ class UnsecureReader {
   void OnFileOpened(base::File file);
 
   base::FilePath web_bundle_path_;
-  std::optional<base::File> file_;
-  std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
