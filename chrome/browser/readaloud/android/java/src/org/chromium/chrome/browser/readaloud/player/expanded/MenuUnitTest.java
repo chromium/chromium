@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -16,7 +17,11 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -170,5 +175,61 @@ public class MenuUnitTest {
         assertFalse(
                 ((RadioButton) mMenu.getItem(2).findViewById(R.id.readaloud_radio_button))
                         .isChecked());
+    }
+
+    @Test
+    public void testMenuItemLayoutInflated() {
+        MenuItem item = mMenu.addItem(1, 0, "testToggle", Action.TOGGLE);
+        LinearLayout layout =
+                (LinearLayout)
+                        mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu_item, null);
+        item.getLayoutSupplier().set(layout);
+        SwitchCompat button = (SwitchCompat) item.findViewById(R.id.toggle_switch);
+        assertNotNull(button);
+
+        // tests if onInitializeAccessibilityEvent is properly setting the event's checked state to
+        // match the button's checked state
+        AccessibilityDelegate accessibilityDelegate = layout.getAccessibilityDelegate();
+        assertNotNull(accessibilityDelegate);
+
+        AccessibilityEvent event = new AccessibilityEvent();
+        event.setAction(AccessibilityEvent.TYPE_VIEW_CLICKED);
+
+        item.setValue(true);
+        accessibilityDelegate.onInitializeAccessibilityEvent(layout, event);
+        assertEquals(button.isChecked(), event.isChecked());
+
+        item.setValue(false);
+        accessibilityDelegate.onInitializeAccessibilityEvent(layout, event);
+        assertEquals(button.isChecked(), event.isChecked());
+
+        // tests if onInitializeAccessibilityNodeInfo is properly setting the event's checked state
+        // to match the button's checked state and the same for checkable state
+        AccessibilityNodeInfo info = new AccessibilityNodeInfo();
+
+        item.setValue(true);
+        item.setItemEnabled(true);
+        accessibilityDelegate.onInitializeAccessibilityNodeInfo(layout, info);
+        assertEquals(button.isChecked(), info.isChecked());
+        assertEquals(button.isEnabled(), info.isEnabled());
+
+        item.setValue(false);
+        item.setItemEnabled(false);
+        accessibilityDelegate.onInitializeAccessibilityNodeInfo(layout, info);
+        assertEquals(button.isChecked(), info.isChecked());
+        assertEquals(button.isEnabled(), info.isEnabled());
+    }
+
+    @Test
+    public void testMenuItemLayoutInflated_NothingForActionExpand() {
+        MenuItem item = mMenu.addItem(1, 0, "testExpand", Action.EXPAND);
+        LinearLayout layout =
+                (LinearLayout)
+                        mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu_item, null);
+        item.getLayoutSupplier().set(layout);
+
+        // accessibility delegate will be null for action items without buttons
+        AccessibilityDelegate accessibilityDelegate = layout.getAccessibilityDelegate();
+        assertNull(accessibilityDelegate);
     }
 }
