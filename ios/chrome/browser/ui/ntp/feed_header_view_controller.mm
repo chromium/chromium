@@ -37,8 +37,7 @@ const CGFloat kHiddenFeedLabelFontSize = 16;
 // The width of the label for when the feed is hidden.
 const CGFloat kHiddenFeedLabelWidth = 250;
 // Insets for header menu button.
-const CGFloat kHeaderMenuButtonInsetTopAndBottom = 2;
-const CGFloat kHeaderMenuButtonInsetSides = 2;
+const CGFloat kHeaderMenuButtonInset = 2;
 // The height of the header container. The content is unaffected.
 const CGFloat kDiscoverFeedHeaderHeight = 40;
 const CGFloat kCustomSearchEngineLabelHeight = 18;
@@ -339,28 +338,28 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // Configures the feed header's menu button.
 - (void)configureMenuButton:(UIButton*)menuButton {
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
   menuButton.accessibilityIdentifier = kNTPFeedHeaderMenuButtonIdentifier;
   menuButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    [menuButton setImage:DefaultSymbolTemplateWithPointSize(
-                             kMenuSymbol, kFeedSymbolPointSize)
-                forState:UIControlStateNormal];
-    menuButton.backgroundColor =
+    buttonConfiguration.image =
+        DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
+    buttonConfiguration.background.backgroundColor =
         [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.8];
     menuButton.layer.cornerRadius = kButtonSize / 2;
     menuButton.clipsToBounds = YES;
   } else {
     UIImage* menuIcon = DefaultSymbolTemplateWithPointSize(
         kSettingsFilledSymbol, kFeedSymbolPointSize);
-    [menuButton setImage:menuIcon forState:UIControlStateNormal];
-    menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
-    UIEdgeInsets imageInsets = UIEdgeInsetsMake(
-        kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
-        kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
-    SetImageEdgeInsets(menuButton, imageInsets);
+    buttonConfiguration.image = menuIcon;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kGrey600Color];
+    buttonConfiguration.imagePadding = kHeaderMenuButtonInset;
   }
+  menuButton.configuration = buttonConfiguration;
   [menuButton addTarget:self
                  action:@selector(didTouchMenuButton)
        forControlEvents:UIControlEventTouchUpInside];
