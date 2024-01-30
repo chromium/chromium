@@ -28,9 +28,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Histogram for calculating the click-through rate (CTR) of the Compose
-    context menu item. Logged each time the menu item is displayed and when
-    Compose is opened from the context menu. CTR is calculated through
-    `opened`/`displayed`.
+    context menu item. Logged each time the context menu item is displayed and
+    when it's clicked by the user. CTR is calculated through
+    `clicked/displayed`.
   </summary>
 </histogram>
 

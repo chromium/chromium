@@ -35,3 +35,21 @@ static_library("browser") {
     "//services/metrics/public/cpp:ukm_builders",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "compose_manager_impl_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common:test_support",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

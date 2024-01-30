@@ -44,6 +44,7 @@ const char kComposeFirstRunSessionDialogShownCount[] =
     "Compose.Session.FRE.Disclaimer.DialogShownCount";
 const char kInnerTextNodeOffsetFound[] =
     "Compose.Dialog.InnerTextNodeOffsetFound";
+const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
 const char kOpenComposeDialogResult[] =
     "Compose.ContextMenu.OpenComposeDialogResult";
 
@@ -99,7 +100,7 @@ void PageUkmTracker::MaybeLogUkm() {
 ComposeSessionEvents::ComposeSessionEvents() {}
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
+  UMA_HISTOGRAM_ENUMERATION(kComposeContextMenuCtr, event);
 }
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
