@@ -29,6 +29,7 @@
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
 #include "net/base/port_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -428,7 +429,30 @@ TEST_F(EnclaveManagerTest, Basic) {
   }
 }
 
-TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistration) {
+TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
+  manager_.Start();
+  ASSERT_FALSE(manager_.is_registered());
+
+  // If secrets are provided before `RegisterIfNeeded` is called, the state
+  // machine should still trigger registration.
+  url_loader_factory_.AddResponse(
+      GetFullJoinSecurityDomainsURLForTesting(
+          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
+          trusted_vault::SecurityDomainId::kPasskeys)
+          .spec(),
+      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
+  RunUntilIdle();
+
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.is_loaded());
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_TRUE(manager_.is_ready());
+}
+
+TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   manager_.Start();
   manager_.RegisterIfNeeded();
   ASSERT_FALSE(manager_.is_registered());

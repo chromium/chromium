@@ -719,6 +719,7 @@ void EnclaveManager::Loop(Event in_event) {
           // object idles again, and will notice that the user still isn't
           // registered.
           FIDO_LOG(ERROR) << "Failed to register with enclave";
+          store_keys_args_.reset();
           state_ = State::kNextAction;
           break;
         }
@@ -782,7 +783,8 @@ void EnclaveManager::DoNextAction(Event event) {
     HandleIdentityChange();
   }
 
-  if (want_registration_ && user_ && !user_->registered()) {
+  if ((want_registration_ || store_keys_args_) && user_ &&
+      !user_->registered()) {
     want_registration_ = false;
     StartEnclaveRegistration();
     return;
@@ -1001,6 +1003,7 @@ void EnclaveManager::DoRegisteringWithEnclave(Event event) {
   if (!IsAllOk(response, 2)) {
     FIDO_LOG(ERROR) << "Registration resulted in error response: "
                     << cbor::DiagnosticWriter::Write(response);
+    store_keys_args_.reset();
     state_ = State::kNextAction;
     return;
   }
