@@ -385,15 +385,16 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CanShowPromoReturnsExpectedValue) {
-  RunTestSequence(QueryIPH(kToastTestFeature,
-                           user_education::FeaturePromoResult::Success()),
-                  AttemptIPH(kToastTestFeature,
-                             user_education::FeaturePromoResult::Success()),
-                  QueryIPH(kToastTestFeature,
-                           user_education::FeaturePromoResult::kBlockedByPromo),
-                  CancelIPH(),
-                  QueryIPH(kToastTestFeature,
-                           user_education::FeaturePromoResult::Success()));
+  RunTestSequence(
+      QueryIPH(kToastTestFeature,
+               user_education::FeaturePromoResult::Success()),
+      AttemptIPH(kToastTestFeature,
+                 user_education::FeaturePromoResult::Success()),
+      QueryIPH(kToastTestFeature,
+               user_education::FeaturePromoResult::kBlockedByPromo),
+      CancelIPH(),
+      QueryIPH(kToastTestFeature,
+               user_education::FeaturePromoResult::kPermanentlyDismissed));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,

@@ -71,7 +71,8 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
       switch (promo_type_) {
         case PromoType::kLegacy:
         case PromoType::kToast:
-          return FeaturePromoResult::Success();
+          return data->is_dismissed ? FeaturePromoResult::kPermanentlyDismissed
+                                    : FeaturePromoResult::Success();
         case PromoType::kCustomAction:
         case PromoType::kSnooze:
         case PromoType::kTutorial:
