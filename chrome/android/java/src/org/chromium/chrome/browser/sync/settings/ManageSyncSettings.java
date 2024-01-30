@@ -619,8 +619,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             if (type == UserSelectableType.PAYMENTS
                     && !ChromeFeatureList.isEnabled(
                             ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS)) {
-                // TODO(crbug.com/1459963): Consider overriding the delegate's
-                // isPreferenceControlledByCustodian() instead.
                 pref.setEnabled(
                         !syncEverything
                                 && !mSyncService.isTypeManagedByCustodian(type)
