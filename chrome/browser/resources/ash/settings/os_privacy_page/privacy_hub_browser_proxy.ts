@@ -8,6 +8,9 @@ export interface PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean>;
   getInitialCameraSwitchForceDisabledState(): Promise<boolean>;
   getCameraLedFallbackState(): Promise<boolean>;
+  getCurrentTimeZoneName(): Promise<string>;
+  getCurrentSunriseTime(): Promise<string>;
+  getCurrentSunsetTime(): Promise<string>;
   sendLeftOsPrivacyPage(): void;
   sendOpenedOsPrivacyPage(): void;
 }
@@ -25,6 +28,18 @@ export class PrivacyHubBrowserProxyImpl implements PrivacyHubBrowserProxy {
 
   getCameraLedFallbackState(): Promise<boolean> {
     return sendWithPromise('getCameraLedFallbackState');
+  }
+
+  getCurrentTimeZoneName(): Promise<string> {
+    return sendWithPromise('getCurrentTimeZoneName');
+  }
+
+  getCurrentSunriseTime(): Promise<string> {
+    return sendWithPromise('getCurrentSunriseTime');
+  }
+
+  getCurrentSunsetTime(): Promise<string> {
+    return sendWithPromise('getCurrentSunsetTime');
   }
 
   sendLeftOsPrivacyPage(): void {

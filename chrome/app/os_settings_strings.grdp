@@ -6494,6 +6494,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APP_PERMISSION_ROW_ANDROID_SETTINGS_LINK_ARIA_DESCRIPTION" desc="ARIA (accessibility) description describing the android settings link in the app permission rows of the privacy hub subpages.">
     Opens in new tab, Permission is <ph name="PERMISSION_STATE">$1<ex>Ask every time</ex></ph>
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Automatic time zone' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
+    Blocked. Time zone is currently set to <ph name="TIMEZONE">$1<ex>(UTC-X:XX)</ex></ph> and can only be updated manually.
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_BLOCKED_TEXT" desc="The sub-label displayed in the 'Sunset schedule' in the System services section of the privacy hub 'Location access' subpage when location access is not allowed.">
+    Blocked. Schedule is currently set to <ph name="SUNRISE_TIME">$1<ex>6am</ex></ph> - <ph name="SUNSET_TIME">$2<ex>6pm</ex></ph> and can only be updated manually.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
     Automatic time zone
   </message>
