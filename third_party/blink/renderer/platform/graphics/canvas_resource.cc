@@ -47,7 +47,6 @@
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -263,12 +262,6 @@ bool CanvasResource::PrepareUnacceleratedTransferableResource(
   out_resource->color_space = GetColorSpace();
 
   return true;
-}
-
-GrDirectContext* CanvasResource::GetGrContext() const {
-  if (!ContextProviderWrapper())
-    return nullptr;
-  return ContextProviderWrapper()->ContextProvider()->GetGrContext();
 }
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {

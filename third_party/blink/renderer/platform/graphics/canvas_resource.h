@@ -28,7 +28,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
-class GrDirectContext;
 class GrBackendTexture;
 class SkImage;
 
@@ -241,7 +240,6 @@ class PLATFORM_EXPORT CanvasResource
   viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::BufferFormat GetBufferFormat() const;
   gfx::ColorSpace GetColorSpace() const;
-  GrDirectContext* GetGrContext() const;
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const {
     NOTREACHED();
