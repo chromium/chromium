@@ -2583,6 +2583,86 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+// Check that accessing `biddingLogicUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, BiddingLogicUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingLogicUrl) return;"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.biddingLogicUrl is deprecated. Please use "
+      "interestGroup.biddingLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `biddingLogicURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when `biddingLogicUrl` is
+// removed.
+TEST_F(BidderWorkletTest, BiddingLogicUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingLogicURL) return;"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
   const std::string kGenerateBidBody =
       R"({ad: "biddingWasmHelperURL" in interestGroup ?
@@ -2696,6 +2776,131 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+// Check that accessing `updateUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, UpdateUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.updateUrl) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.updateUrl is deprecated. Please use "
+      "interestGroup.updateURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `dailyUpdateUrl` displays a warning.
+//
+// TODO(https://crbug.com/1420080): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, DailyUpdateUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.dailyUpdateUrl) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.dailyUpdateUrl is deprecated. Please use "
+      "interestGroup.updateURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `updateURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707) and TODO(https://crbug.com/1420080):
+// Remove this test when `dailyUpdateUrl` and `updateUrl` are removed.
+TEST_F(BidderWorkletTest, UpdateUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.updateURL) return;"));
+
+  update_url_ = GURL("https://url.test/update");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {

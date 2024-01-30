@@ -109,8 +109,14 @@ InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
     : LazyFiller(v8_helper), v8_logger_(v8_logger) {}
 
 void InterestGroupLazyFiller::ReInitialize(
+    const GURL* bidding_logic_url,
     const mojom::BidderWorkletNonSharedParams*
         bidder_worklet_non_shared_params) {
+  // These two are never null.
+  DCHECK(bidding_logic_url);
+  DCHECK(bidder_worklet_non_shared_params);
+
+  bidding_logic_url_ = bidding_logic_url;
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
 }
 
@@ -118,6 +124,18 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
   if (bidder_worklet_non_shared_params_->user_bidding_signals &&
       !DefineLazyAttribute(object, "userBiddingSignals",
                            &HandleUserBiddingSignals)) {
+    return false;
+  }
+  if (!DefineLazyAttribute(object, "biddingLogicURL", &HandleBiddingLogicUrl) ||
+      !DefineLazyAttribute(object, "biddingLogicUrl",
+                           &HandleDeprecatedBiddingLogicUrl)) {
+    return false;
+  }
+  if (bidder_worklet_non_shared_params_->update_url &&
+      (!DefineLazyAttribute(object, "updateURL", &HandleUpdateUrl) ||
+       !DefineLazyAttribute(object, "updateUrl", &HandleDeprecatedUpdateUrl) ||
+       !DefineLazyAttribute(object, "dailyUpdateUrl",
+                            &HandleDeprecatedDailyUpdateUrl))) {
     return false;
   }
   if (bidder_worklet_non_shared_params_->trusted_bidding_signals_keys &&
@@ -138,6 +156,7 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
 
 void InterestGroupLazyFiller::Reset() {
   bidder_worklet_non_shared_params_ = nullptr;
+  bidding_logic_url_ = nullptr;
 }
 
 // static
@@ -161,6 +180,74 @@ void InterestGroupLazyFiller::HandleUserBiddingSignals(
     try_catch.Reset();
     SetResult(info, v8::Null(isolate));
   }
+}
+
+// static
+void InterestGroupLazyFiller::HandleBiddingLogicUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->bidding_logic_url_ &&
+      gin::TryConvertToV8(isolate, self->bidding_logic_url_->spec(), &value)) {
+    SetResult(info, value);
+  } else {
+    SetResult(info, v8::Null(isolate));
+  }
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedBiddingLogicUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.biddingLogicUrl is deprecated."
+      " Please use interestGroup.biddingLogicURL instead.");
+  return HandleBiddingLogicUrl(name, info);
+}
+
+// static
+void InterestGroupLazyFiller::HandleUpdateUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->bidder_worklet_non_shared_params_ &&
+      self->bidder_worklet_non_shared_params_->update_url &&
+      gin::TryConvertToV8(
+          isolate, self->bidder_worklet_non_shared_params_->update_url->spec(),
+          &value)) {
+    SetResult(info, value);
+  } else {
+    SetResult(info, v8::Null(isolate));
+  }
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedUpdateUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.updateUrl is deprecated."
+      " Please use interestGroup.updateURL instead.");
+  return HandleUpdateUrl(name, info);
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedDailyUpdateUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.dailyUpdateUrl is deprecated."
+      " Please use interestGroup.updateURL instead.");
+  return HandleUpdateUrl(name, info);
 }
 
 // static

@@ -146,17 +146,6 @@ bool SetRenderUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
-bool SetBiddingLogicUrl(v8::Isolate* isolate,
-                        v8::Local<v8::Object> object,
-                        const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "biddingLogicURL", v8_value) &&
-         SetDictMember(isolate, object, "biddingLogicUrl", v8_value);
-}
-
 bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
                              v8::Local<v8::Object> object,
                              const std::string& val) {
@@ -166,18 +155,6 @@ bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
   }
   return SetDictMember(isolate, object, "biddingWasmHelperURL", v8_value) &&
          SetDictMember(isolate, object, "biddingWasmHelperUrl", v8_value);
-}
-
-bool SetUpdateUrl(v8::Isolate* isolate,
-                  v8::Local<v8::Object> object,
-                  const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "updateURL", v8_value) &&
-         SetDictMember(isolate, object, "updateUrl", v8_value) &&
-         SetDictMember(isolate, object, "dailyUpdateUrl", v8_value);
 }
 
 bool SetTrustedBiddingSignalsUrl(v8::Isolate* isolate,
@@ -1261,14 +1238,9 @@ BidderWorklet::V8State::GenerateSingleBid(
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
-      !SetBiddingLogicUrl(isolate, interest_group_object,
-                          script_source_url_.spec()) ||
       (wasm_helper_url_ &&
        !SetBiddingWasmHelperUrl(isolate, interest_group_object,
                                 wasm_helper_url_->spec())) ||
-      (bidder_worklet_non_shared_params.update_url &&
-       !SetUpdateUrl(isolate, interest_group_object,
-                     bidder_worklet_non_shared_params.update_url->spec())) ||
       (trusted_bidding_signals_url_ &&
        !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
                                     trusted_bidding_signals_url_->spec())) ||
@@ -1282,7 +1254,7 @@ BidderWorklet::V8State::GenerateSingleBid(
   }
 
   context_recycler->interest_group_lazy_filler()->ReInitialize(
-      &bidder_worklet_non_shared_params);
+      &script_source_url_, &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
           interest_group_object)) {
     return std::nullopt;

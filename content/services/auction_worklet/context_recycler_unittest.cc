@@ -70,7 +70,7 @@ class ContextRecyclerTest : public testing::Test {
     v8::Context::Scope ctx(helper_->scratch_context());
     std::optional<std::string> error_msg;
     EXPECT_TRUE(helper_
-                    ->Compile(code, GURL("https://example.org/script.js"),
+                    ->Compile(code, bidding_logic_url_,
                               /*debug_id=*/nullptr, error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value()) << error_msg.value();
@@ -128,6 +128,9 @@ class ContextRecyclerTest : public testing::Test {
   // fillers. If the passed in values are null, they are not reinitialized.
   // Either way, the script serializes the stashed object to JSON, which is
   // compared to `expected_result`.
+  //
+  // The same `bidding_logic_url` is used for both runs, since that doesn't
+  // change across runs, in production code.
   void RunBidderLazyFilterReuseTest(
       mojom::BidderWorkletNonSharedParams* ig_params,
       mojom::BiddingBrowserSignals* bs_params,
@@ -162,6 +165,7 @@ class ContextRecyclerTest : public testing::Test {
       mojom::BidderWorkletNonSharedParamsPtr ig_params2 =
           mojom::BidderWorkletNonSharedParams::New();
       ig_params2->user_bidding_signals.emplace("{\"j\": 1}");
+      ig_params2->update_url = GURL("https://example.org/update.json");
       ig_params2->trusted_bidding_signals_keys.emplace();
       ig_params2->trusted_bidding_signals_keys->push_back("a");
       ig_params2->trusted_bidding_signals_keys->push_back("b");
@@ -178,7 +182,7 @@ class ContextRecyclerTest : public testing::Test {
 
       ContextRecyclerScope scope(context_recycler);
       context_recycler.interest_group_lazy_filler()->ReInitialize(
-          ig_params2.get());
+          &bidding_logic_url_, ig_params2.get());
       context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
           bs_params2.get(), now2);
 
@@ -194,7 +198,8 @@ class ContextRecyclerTest : public testing::Test {
     {
       ContextRecyclerScope scope(context_recycler);
       if (ig_params) {
-        context_recycler.interest_group_lazy_filler()->ReInitialize(ig_params);
+        context_recycler.interest_group_lazy_filler()->ReInitialize(
+            &bidding_logic_url_, ig_params);
       }
       if (bs_params) {
         context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
@@ -224,6 +229,7 @@ class ContextRecyclerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  const GURL bidding_logic_url_{"https://example.org/script.js"};
   scoped_refptr<AuctionV8Helper> helper_;
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
   std::unique_ptr<AuctionV8Helper::TimeLimit> time_limit_;
@@ -887,6 +893,7 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
   mojom::BidderWorkletNonSharedParamsPtr ig_params =
       mojom::BidderWorkletNonSharedParams::New();
   ig_params->user_bidding_signals.emplace("{\"k\": 2}");
+  ig_params->update_url = GURL("https://example.org/update2.json");
   ig_params->trusted_bidding_signals_keys.emplace();
   ig_params->trusted_bidding_signals_keys->push_back("c");
   ig_params->trusted_bidding_signals_keys->push_back("d");
@@ -904,6 +911,11 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
   RunBidderLazyFilterReuseTest(
       ig_params.get(), bs_params.get(), now,
       "{\"userBiddingSignals\":{\"k\":2},"
+      "\"biddingLogicURL\":\"https://example.org/script.js\","
+      "\"biddingLogicUrl\":\"https://example.org/script.js\","
+      "\"updateURL\":\"https://example.org/update2.json\","
+      "\"updateUrl\":\"https://example.org/update2.json\","
+      "\"dailyUpdateUrl\":\"https://example.org/update2.json\","
       "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
       "\"priorityVector\":{\"e\":12},"
       "\"useBiddingSignalsPrioritization\":true,"
@@ -924,13 +936,19 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
       mojom::BidderWorkletNonSharedParams::New();
   mojom::BiddingBrowserSignalsPtr bs_params =
       mojom::BiddingBrowserSignals::New();
-  RunBidderLazyFilterReuseTest(ig_params.get(), bs_params.get(), now,
-                               "{\"userBiddingSignals\":null,"
-                               "\"trustedBiddingSignalsKeys\":null,"
-                               "\"priorityVector\":null,"
-                               "\"useBiddingSignalsPrioritization\":false,"
-                               "\"prevWins\":[],"
-                               "\"prevWinsMs\":[]}");
+  RunBidderLazyFilterReuseTest(
+      ig_params.get(), bs_params.get(), now,
+      "{\"userBiddingSignals\":null,"
+      "\"biddingLogicURL\":\"https://example.org/script.js\","
+      "\"biddingLogicUrl\":\"https://example.org/script.js\","
+      "\"updateURL\":null,"
+      "\"updateUrl\":null,"
+      "\"dailyUpdateUrl\":null,"
+      "\"trustedBiddingSignalsKeys\":null,"
+      "\"priorityVector\":null,"
+      "\"useBiddingSignalsPrioritization\":false,"
+      "\"prevWins\":[],"
+      "\"prevWinsMs\":[]}");
 }
 
 // Test to make sure lifetime managing/avoiding UaF is done right.
@@ -943,6 +961,11 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
 TEST_F(ContextRecyclerTest, BidderLazyFiller3) {
   RunBidderLazyFilterReuseTest(nullptr, nullptr, base::Time(),
                                "{\"userBiddingSignals\":null,"
+                               "\"biddingLogicURL\":null,"
+                               "\"biddingLogicUrl\":null,"
+                               "\"updateURL\":null,"
+                               "\"updateUrl\":null,"
+                               "\"dailyUpdateUrl\":null,"
                                "\"trustedBiddingSignalsKeys\":null,"
                                "\"priorityVector\":null,"
                                "\"useBiddingSignalsPrioritization\":null,"
