@@ -22,9 +22,11 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -184,7 +186,7 @@ PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
 }
 
 bool PdfOcrController::IsEnabled() const {
-  return is_enabled_;
+  return scoped_accessibility_mode_ != nullptr;
 }
 
 void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
@@ -239,18 +241,15 @@ void PdfOcrController::OnActivationChanged() {
     }
     CHECK_EQ(ScreenAIInstallState::GetInstance()->get_state(),
              ScreenAIInstallState::State::kReady);
-  }
-
-  is_enabled_ = is_always_active;
-
-  std::vector<content::WebContents*> html_web_contents_vector =
-      GetPdfHtmlWebContentses(profile_);
-  // Iterate over all WebContentses associated with PDF Viewer Mimehandlers and
-  // set the AXMode with the ui::AXMode::kPDFOcr flag.
-  for (auto* web_contents : html_web_contents_vector) {
-    ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-    ax_mode.set_mode(ui::AXMode::kPDFOcr, is_always_active);
-    web_contents->SetAccessibilityMode(ax_mode);
+    // This will send the `kPDFOcr` flag to all WebContents. Strictly speaking,
+    // it need only be sent to those associated with PDF Viewer Mimehandlers,
+    // but we have no filtering mechanism today. The others should simply ignore
+    // it.
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForBrowserContext(profile_, ui::AXMode::kPDFOcr);
+  } else {
+    scoped_accessibility_mode_.reset();
   }
 }
 

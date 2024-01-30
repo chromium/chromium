@@ -78,6 +78,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -3749,7 +3750,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   EnableChromeVox();
-  content::EnableAccessibilityForWebContents(web_contents());
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      web_contents(), ui::kAXModeComplete);
 
   // The following contains a sequence of calls to
   // sm_.ExpectSpeechPattern() and test_delegate()->Wait(). It is essential

@@ -47,7 +47,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
   static_cast<WebContentsImpl*>(web_contents)
-      ->AddAccessibilityMode(accessibility_mode);
+      ->AddAccessibilityModeForTesting(accessibility_mode);
   // Add the the accessibility mode on BrowserAccessibilityState so it can be
   // also be added to AXPlatformNode, auralinux uses this to determine if it
   // should enable accessibility or not.
@@ -66,7 +66,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
   static_cast<WebContentsImpl*>(web_contents)
-      ->AddAccessibilityMode(accessibility_mode);
+      ->AddAccessibilityModeForTesting(accessibility_mode);
   // Add the the accessibility mode on BrowserAccessibilityState so it can be
   // also be added to AXPlatformNode, auralinux uses this to determine if it
   // should enable accessibility or not.

@@ -33,6 +33,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -3551,7 +3552,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   BackForwardCacheDisabledTester tester;
 
   // Use Screen Reader.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Navigate to Page A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -3614,7 +3616,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   // Use Screen Reader.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Wait until we receive the kLoadComplete AX event. This means that the
   // kLoadStart event has definitely already passed and any kLoadStart we see
@@ -3712,7 +3715,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   // Use Screen Reader.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Wait until we receive the kLoadComplete AX event. This means that the
   // kLoadStart event has definitely already passed and any kLoadStart we see

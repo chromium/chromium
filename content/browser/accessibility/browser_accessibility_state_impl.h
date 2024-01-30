@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/browser/accessibility/scoped_mode_collection.h"
 #include "content/common/content_export.h"
@@ -84,10 +83,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void SetCaretBrowsingState(bool enabled) override;
   void SetPerformanceFilteringAllowed(bool enabled) override;
   bool IsPerformanceFilteringAllowed() override;
-#if BUILDFLAG(IS_ANDROID)
-  void SetImageLabelsModeForProfile(bool enabled,
-                                    BrowserContext* profile) override;
-#endif
   base::CallbackListSubscription RegisterFocusChangedCallback(
       FocusChangedCallback callback) override;
   std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForProcess(

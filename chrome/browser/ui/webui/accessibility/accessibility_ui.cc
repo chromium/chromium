@@ -39,6 +39,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -358,11 +359,11 @@ AccessibilityUIConfig::CreateWebUIController(content::WebUI* web_ui,
 
 AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
+  auto* const browser_context = web_ui->GetWebContents()->GetBrowserContext();
   // Set up the chrome://accessibility source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
-          web_ui->GetWebContents()->GetBrowserContext(),
-          chrome::kChromeUIAccessibilityHost);
+          browser_context, chrome::kChromeUIAccessibilityHost);
 
   // Add required resources.
   html_source->UseStringsJs();
@@ -372,7 +373,7 @@ AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
   html_source->SetRequestFilter(
       base::BindRepeating(&ShouldHandleAccessibilityRequestCallback),
       base::BindRepeating(&HandleAccessibilityRequestCallback,
-                          web_ui->GetWebContents()->GetBrowserContext()));
+                          browser_context));
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types parse-html-subset sanitize-inner-html;");
@@ -396,7 +397,22 @@ void AccessibilityUIObserver::AccessibilityEventReceived(
   }
 }
 
-AccessibilityUIMessageHandler::AccessibilityUIMessageHandler() = default;
+AccessibilityUIMessageHandler::PageAccessibilityMode::PageAccessibilityMode(
+    base::WeakPtr<content::WebContents> web_contents,
+    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode)
+    : web_contents(std::move(web_contents)),
+      accessibility_mode(std::move(accessibility_mode)) {}
+
+AccessibilityUIMessageHandler::PageAccessibilityMode::PageAccessibilityMode(
+    PageAccessibilityMode&& other) noexcept = default;
+
+AccessibilityUIMessageHandler::PageAccessibilityMode::~PageAccessibilityMode() =
+    default;
+
+AccessibilityUIMessageHandler::AccessibilityUIMessageHandler()
+    : process_accessibility_mode_(
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForProcess(ui::AXMode())) {}
 
 AccessibilityUIMessageHandler::~AccessibilityUIMessageHandler() {
   if (!observer_) {
@@ -414,8 +430,9 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
 
   web_ui()->RegisterMessageCallback(
       "toggleAccessibility",
-      base::BindRepeating(&AccessibilityUIMessageHandler::ToggleAccessibility,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setGlobalFlag",
       base::BindRepeating(&AccessibilityUIMessageHandler::SetGlobalFlag,
@@ -444,7 +461,25 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
-void AccessibilityUIMessageHandler::ToggleAccessibility(
+void AccessibilityUIMessageHandler::SetAccessibilityModeForWebContents(
+    content::WebContents* web_contents,
+    ui::AXMode mode) {
+  // Erase any items in the container for WebContentses that have since been
+  // destroyed.
+  std::erase_if(page_accessibility_modes_, [](const auto& item) {
+    return item.second.web_contents.WasInvalidated();
+  });
+
+  // Create/replace a ScopedAccessibilityMode targeting `web_contents`.
+  page_accessibility_modes_.insert_or_assign(
+      web_contents,
+      PageAccessibilityMode(
+          web_contents->GetWeakPtr(),
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForWebContents(web_contents, mode)));
+}
+
+void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
     const base::Value::List& args) {
   const base::Value::Dict& data = args[0].GetDict();
 
@@ -483,7 +518,7 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
     current_mode.set_mode(ui::AXMode::kHTML, true);
   }
 
-  web_contents->SetAccessibilityMode(current_mode);
+  SetAccessibilityModeForWebContents(web_contents, current_mode);
 
   if (should_request_tree) {
     base::Value::Dict request_data;
@@ -550,12 +585,19 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
     new_mode.set_mode(ui::AXMode::kHTML, true);
   }
 
-  content::BrowserAccessibilityState* state =
-      content::BrowserAccessibilityState::GetInstance();
-  if (enabled) {
-    state->AddAccessibilityModeFlags(new_mode);
-  } else {
-    state->RemoveAccessibilityModeFlags(new_mode);
+  ui::AXMode mode = process_accessibility_mode_->mode();
+  mode.set_mode(new_mode.flags(), enabled);
+  process_accessibility_mode_ =
+      content::BrowserAccessibilityState::GetInstance()
+          ->CreateScopedModeForProcess(mode);
+
+  // It's possible that the user is trying to remove a global flag that was set
+  // outside of chrome://accessibility. Modify the process-wide state
+  // accordingly. Note that this change will persist beyond the lifetime of
+  // chrome://accessibility.
+  if (!enabled) {
+    content::BrowserAccessibilityState::GetInstance()
+        ->RemoveAccessibilityModeFlags(new_mode);
   }
 }
 
@@ -609,9 +651,7 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
       content::WebContents::FromRenderViewHost(rvh);
   // No matter the state of the current web_contents, we want to force the mode
   // because we are about to show the accessibility tree
-  web_contents->SetAccessibilityMode(ui::AXMode(ui::kAXModeBasic));
-  // Enable AXMode to access to AX objects.
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  SetAccessibilityModeForWebContents(web_contents, ui::kAXModeComplete);
 
   std::vector<AXPropertyFilter> property_filters;
   AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);

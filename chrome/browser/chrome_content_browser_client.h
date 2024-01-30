@@ -783,9 +783,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* context,
       content::RenderFrameHost* render_frame_host) override;
 
-  ui::AXMode GetAXModeForBrowserContext(
-      content::BrowserContext* browser_context) override;
-
 #if BUILDFLAG(IS_ANDROID)
   ContentBrowserClient::WideColorGamutHeuristic GetWideColorGamutHeuristic()
       override;

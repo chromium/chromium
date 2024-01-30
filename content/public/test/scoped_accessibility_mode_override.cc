@@ -15,6 +15,18 @@ ScopedAccessibilityModeOverride::ScopedAccessibilityModeOverride(
           BrowserAccessibilityState::GetInstance()->CreateScopedModeForProcess(
               mode)) {}
 
+ScopedAccessibilityModeOverride::ScopedAccessibilityModeOverride(
+    WebContents* web_contents,
+    ui::AXMode mode)
+    : scoped_mode_(BrowserAccessibilityState::GetInstance()
+                       ->CreateScopedModeForWebContents(web_contents, mode)) {}
+
+ScopedAccessibilityModeOverride::ScopedAccessibilityModeOverride(
+    ScopedAccessibilityModeOverride&&) noexcept = default;
+
+ScopedAccessibilityModeOverride& ScopedAccessibilityModeOverride::operator=(
+    ScopedAccessibilityModeOverride&&) noexcept = default;
+
 ScopedAccessibilityModeOverride::~ScopedAccessibilityModeOverride() = default;
 
 void ScopedAccessibilityModeOverride::ResetMode() {

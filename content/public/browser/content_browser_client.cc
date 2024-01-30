@@ -23,7 +23,6 @@
 #include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -1316,11 +1315,6 @@ bool ContentBrowserClient::ShouldBlockRendererDebugURL(
 std::optional<base::TimeDelta>
 ContentBrowserClient::GetSpareRendererDelayForSiteURL(const GURL& site_url) {
   return std::nullopt;
-}
-
-ui::AXMode ContentBrowserClient::GetAXModeForBrowserContext(
-    BrowserContext* browser_context) {
-  return BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
 }
 
 #if BUILDFLAG(IS_ANDROID)

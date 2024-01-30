@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -22,11 +23,13 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -251,14 +254,14 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
         ->OverrideImageAnnotatorBinderForTesting(
             base::BindRepeating(&BindImageAnnotatorService));
 
-    ui::AXMode mode = ui::kAXModeComplete;
-    mode.set_mode(ui::AXMode::kLabelImages, true);
-    web_contents->SetAccessibilityMode(mode);
+    scoped_accessibility_mode_.emplace(
+        web_contents, ui::kAXModeComplete | ui::AXMode::kLabelImages);
 
     SetAcceptLanguages("en,fr");
   }
 
   void TearDownOnMainThread() override {
+    scoped_accessibility_mode_.reset();
     AccessibilityLabelsServiceFactory::GetForProfile(browser()->profile())
         ->OverrideImageAnnotatorBinderForTesting(base::NullCallback());
     InProcessBrowserTest::TearDownOnMainThread();
@@ -278,6 +281,8 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_;
+  std::optional<content::ScopedAccessibilityModeOverride>
+      scoped_accessibility_mode_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -553,9 +558,7 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kLabelImages, true);
-  web_contents->SetAccessibilityMode(mode);
+
   std::string svg_image =
       "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><circle "
       "cx='50' cy='50' r='40' fill='yellow' /></svg>";
@@ -594,9 +597,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kLabelImages, false);
-  web_contents->SetAccessibilityMode(mode);
+
+  scoped_accessibility_mode_ = content::ScopedAccessibilityModeOverride(
+      web_contents, ui::kAXModeComplete);
 
   // Block until there are at least two images that have been processed. One of
   // them should get the tutor message and the other shouldn't. The annotation
@@ -632,9 +635,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui::AXMode mode = ui::kAXModeComplete;
-  mode.set_mode(ui::AXMode::kLabelImages, false);
-  web_contents->SetAccessibilityMode(mode);
+
+  scoped_accessibility_mode_ = content::ScopedAccessibilityModeOverride(
+      web_contents, ui::kAXModeComplete);
 
   // Block until there are at least two images that have been processed. One of
   // them should get the tutor message and the other shouldn't. The annotation

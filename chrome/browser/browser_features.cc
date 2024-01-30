@@ -111,6 +111,16 @@ BASE_FEATURE(kQuickSettingsPWANotifications,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Keeps accessibility enabled for WebContents as ReadAnything observes changes
+// to the active WebContents. This is a holdback study to evaluate the impact of
+// the new behavior, whereby the accessibility modes required by ReadyAnything
+// are cleared on a WebContents when ReadAnything loses interest in it.
+BASE_FEATURE(kReadAnythingPermanentAccessibility,
+             "ReadAnythingPermanentAccessibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables being able to zoom a web page by double tapping in Chrome OS tablet
 // mode.

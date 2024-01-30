@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -933,7 +934,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {
       "\"></iframe>");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   auto FocusNodeAndReload = [this, &url](const std::string& node_name,
                                          const std::string& focus_node_script) {
@@ -975,7 +977,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       "<iframe></iframe>");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
   // Make sure we have an initial accessibility tree before continuing the test
   // setup, otherwise the wait for button 3 below seems to flake on linux.
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "1");
@@ -991,7 +994,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       "\"></iframe>");
   auto* inner_contents =
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
-  EnableAccessibilityForWebContents(inner_contents);
+  content::ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      inner_contents, ui::kAXModeComplete);
 
   EXPECT_TRUE(NavigateToURL(inner_contents, inner_url));
 
@@ -1061,7 +1065,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   auto* inner_contents =
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
-  EnableAccessibilityForWebContents(inner_contents);
+  content::ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      inner_contents, ui::kAXModeComplete);
 
   // Simulate focusing the placeholder for the inner contents. This involves
   // multiple steps of setting the focused frame within a frame tree and setting

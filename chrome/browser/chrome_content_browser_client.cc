@@ -46,8 +46,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
-#include "chrome/browser/accessibility/accessibility_labels_service.h"
-#include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
@@ -727,8 +725,6 @@
 #endif  // defined(_WINDOWS_)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #endif
 
@@ -7144,34 +7140,6 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
   using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
   URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
   return blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST;
-}
-
-ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  ui::AXMode ax_mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-
-  // TODO(accessibility): Dynamically create AccessibilityLabelsService and
-  // destroy it when unused.
-  auto* labels_service =
-      AccessibilityLabelsServiceFactory::GetForProfile(profile);
-  if (labels_service && labels_service->IsEnabled()) {
-    ax_mode.set_mode(ui::AXMode::kLabelImages, true);
-  }
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled()) {
-    // PdfOcrController will be enabled when the user turns on a screen reader
-    // or any other accessibility feature that needs it; before or even after
-    // starting the browser.
-    auto* pdf_ocr_controller =
-        screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
-    if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
-      ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  return ax_mode;
 }
 
 #if BUILDFLAG(IS_ANDROID)

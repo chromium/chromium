@@ -87,6 +87,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
@@ -11725,7 +11726,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Enable accessibility.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride inner_scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Start prerendering `kPrerenderingUrl`, which has an iframe attached.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);

@@ -29,6 +29,7 @@ struct AccessibilityStatusEventDetails;
 #endif
 
 namespace content {
+class ScopedAccessibilityMode;
 class WebContents;
 }
 
@@ -113,9 +114,9 @@ class PdfOcrController : public KeyedService,
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  // True when the kPDFOcr accessibility mode flag is sent to all PDF tabs
-  // associated with the controller's profile.
-  bool is_enabled_ = false;
+  // Enables the kPDFOcr accessibility mode flag for all tabs associated
+  // with the controller's profile.
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
 };

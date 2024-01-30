@@ -48,6 +48,10 @@ extern const char kBrowserCommandIdParam[];
 BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif

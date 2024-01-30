@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
@@ -21,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -66,8 +69,10 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    GetWebContents()->SetAccessibilityMode(ui::kAXModeComplete);
+    scoped_accessibility_mode_.emplace(GetWebContents(), ui::kAXModeComplete);
   }
+
+  void TearDownOnMainThread() override { scoped_accessibility_mode_.reset(); }
 
   content::WebContents* GetWebContents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -108,6 +113,8 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
+  std::optional<content::ScopedAccessibilityModeOverride>
+      scoped_accessibility_mode_;
 };
 
 // The test is flaky on Windows. See https://crbug.com/1221273

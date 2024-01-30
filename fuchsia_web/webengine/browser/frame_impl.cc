@@ -49,6 +49,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/event_filter.h"
@@ -1635,14 +1636,12 @@ void FrameImpl::OnPixelScaleUpdate(float pixel_scale) {
 }
 
 void FrameImpl::SetAccessibilityEnabled(bool enabled) {
-  auto* browser_accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
-  if (enabled) {
-    browser_accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else {
-    browser_accessibility_state->RemoveAccessibilityModeFlags(
-        ui::kAXModeComplete);
+  if (!enabled) {
+    scoped_accessibility_mode_.reset();
+  } else if (!scoped_accessibility_mode_) {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete);
   }
 }
 

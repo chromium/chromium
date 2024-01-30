@@ -140,6 +140,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/restore_type.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -1141,8 +1142,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       force_disable_overscroll_content_(false),
       last_dialog_suppressed_(false),
       accessibility_mode_(
-          GetContentClient()->browser()->GetAXModeForBrowserContext(
-              browser_context)),
+          BrowserAccessibilityState::GetInstance()
+              ->GetAccessibilityModeForBrowserContext(browser_context)),
       audio_stream_monitor_(this),
       media_web_contents_observer_(
           std::make_unique<MediaWebContentsObserver>(this)),
@@ -1894,7 +1895,12 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
       &RenderFrameHostImpl::UpdateAccessibilityMode);
 }
 
-void WebContentsImpl::AddAccessibilityMode(ui::AXMode mode) {
+void WebContentsImpl::ResetAccessibility() {
+  GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
+      &RenderFrameHostImpl::AccessibilityReset);
+}
+
+void WebContentsImpl::AddAccessibilityModeForTesting(ui::AXMode mode) {
   ui::AXMode new_mode(accessibility_mode_);
   new_mode |= mode;
   SetAccessibilityMode(new_mode);
@@ -2149,28 +2155,6 @@ bool WebContentsImpl::ShouldOverrideUserAgentForRendererInitiatedNavigation() {
       break;
   }
   return false;
-}
-
-void WebContentsImpl::EnableAccessibilityMode(ui::AXMode mode) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnableAccessibilityMode");
-  // If accessibility is already enabled, we'll need to force a reset
-  // in order to ensure new observers of accessibility events get the
-  // full accessibility tree from scratch.
-  bool need_reset = GetAccessibilityMode().has_mode(ui::AXMode::kWebContents);
-
-  ui::AXMode desired_mode =
-      GetContentClient()->browser()->GetAXModeForBrowserContext(
-          GetBrowserContext());
-  desired_mode |= mode;
-  AddAccessibilityMode(desired_mode);
-
-  // Accessibility mode updates include speculative RFH's as well as any inner
-  // trees. Iterate across these as we do for SetAccessibilityMode (which is
-  // called indirectly above via AddAccessibilityMode).
-  if (need_reset) {
-    GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
-        &RenderFrameHostImpl::AccessibilityReset);
-  }
 }
 
 bool WebContentsImpl::IsWebContentsOnlyAccessibilityModeForTesting() {
@@ -5071,8 +5055,10 @@ void WebContentsImpl::RecordAccessibilityEvents(
   // Only pass a callback to RecordAccessibilityEvents when starting to record.
   DCHECK_EQ(start_recording, callback.has_value());
   if (start_recording) {
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::kAXModeBasic);
+    // TODO(grt): Do we need to do the same for all inner WebContentses?.
+    recording_mode_ =
+        BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForWebContents(this, ui::kAXModeBasic);
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
     CHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();
@@ -5087,6 +5073,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
       event_recorder_->WaitForDoneRecording();
       event_recorder_.reset(nullptr);
     }
+    recording_mode_.reset();
   }
 }
 

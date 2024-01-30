@@ -3,6 +3,11 @@
 -AccessibilityLabelsMenuObserverTest.*
 -AutomationApiTest.*
 
+# These tests require that accessibility is disabled at startup, which is the
+# opposite of the situation when --force-renderer-accessibility is used.
+-AccessibilityLabelsBrowserTest.NotEnabledWithoutScreenReader
+-All/PdfOcrControllerBrowserTest.NotEnabledWithoutScreenReader/0
+
 # These tests still need to be triaged and either okayed to skip or fixed.
 -AdsInterventionManagerTestWithEnforcement.AdsInterventionEnforced_PageActivated
 -AdsInterventionManagerTestWithEnforcement.MultipleAdsInterventions_PageActivationClearedAfterFirst

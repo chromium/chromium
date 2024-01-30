@@ -590,10 +590,6 @@ class WebContents : public PageNavigator,
   virtual void SetAlwaysSendSubresourceNotifications() = 0;
   virtual bool GetSendSubresourceNotification() = 0;
 
-  // Adds accessibility mode. If accessibility is already enabled, it will be
-  // reset, i.e., the full accessibility tree will be sent to the observers.
-  virtual void EnableAccessibilityMode(ui::AXMode mode) = 0;
-
   // Returns true only if the WebContentsObserver accessibility mode is
   // enabled.
   virtual bool IsWebContentsOnlyAccessibilityModeForTesting() = 0;
@@ -604,7 +600,9 @@ class WebContents : public PageNavigator,
 
   virtual ui::AXMode GetAccessibilityMode() = 0;
 
-  virtual void SetAccessibilityMode(ui::AXMode mode) = 0;
+  // Forces a reset of accessibility state in the instance's renderers.
+  // Observers will receive a new accessibility tree.
+  virtual void ResetAccessibility() = 0;
 
   virtual std::string DumpAccessibilityTree(
       bool internal,

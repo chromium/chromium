@@ -75,7 +75,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-forward.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -2307,10 +2306,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldBlockRendererDebugURL(const GURL& url,
                                            BrowserContext* context,
                                            RenderFrameHost* render_frame_host);
-
-  // Returns the default accessibility mode for the given browser context.
-  virtual ui::AXMode GetAXModeForBrowserContext(
-      BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_ANDROID)
   // Defines the heuristics we can use to enable wide color gamut (WCG).

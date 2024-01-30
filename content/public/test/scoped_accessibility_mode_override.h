@@ -12,10 +12,15 @@
 namespace content {
 
 class ScopedAccessibilityMode;
+class WebContents;
 
 class ScopedAccessibilityModeOverride {
  public:
   explicit ScopedAccessibilityModeOverride(ui::AXMode mode);
+  ScopedAccessibilityModeOverride(WebContents* web_contents, ui::AXMode mode);
+  ScopedAccessibilityModeOverride(ScopedAccessibilityModeOverride&&) noexcept;
+  ScopedAccessibilityModeOverride& operator=(
+      ScopedAccessibilityModeOverride&&) noexcept;
   ScopedAccessibilityModeOverride(const ScopedAccessibilityModeOverride&) =
       delete;
   ScopedAccessibilityModeOverride& operator=(
