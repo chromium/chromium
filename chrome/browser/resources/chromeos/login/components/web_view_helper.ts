@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-
-/**
- * @fileoverview Web view helper.
- */
+import {assert, assertNotReached} from '//resources/js/assert.js';
 
 /**
  * Type of content to load into web view.
- * @enum {string}
  */
- export const ContentType = {
+export enum ContentType {
   /** UTF-8 encoded text/html content type. */
-  HTML: 'text/html',
+  HTML ='text/html',
   /** Base64 encoded application/pdf content type. */
-  PDF: 'application/pdf',
-};
+  PDF = 'application/pdf',
+}
 
 /** Web view helper shared between OOBE screens. */
 export class WebViewHelper {
@@ -26,24 +21,25 @@ export class WebViewHelper {
    * The content is loaded via XHR and is sent to web view via data url so that
    * it is properly sandboxed.
    *
-   * @param {!Object} webView is a WebView element to host the content.
-   * @param {string} url URL to load the content from.
-   * @param {!ContentType} contentType type of the content to
-   *     load.
+   * webView is a WebView element to host the content.
+   * url URL to load the content from.
+   * contentType type of the content to load.
    */
-  static loadUrlContentToWebView(webView, url, contentType) {
+  static loadUrlContentToWebView(webView: chrome.webviewTag.WebView,
+        url: string, contentType: ContentType): void {
     assert(webView.tagName === 'WEBVIEW');
 
-    const onError = function() {
+    const onError = function(): void {
       webView.src = 'about:blank';
     };
 
     /**
      * Sets contents to web view.
      * Prefixes data with appropriate scheme, MIME type and token.
-     * @param {string} data data string to set.
+     *
+     * data is the string to set.
      */
-    const setContents = function(data) {
+    const setContents = function(data: string): void {
       switch (contentType) {
         case ContentType.HTML:
           webView.src =
@@ -74,7 +70,7 @@ export class WebViewHelper {
         onError();
         return;
       }
-      const contents = /** @type {string} */ (xhr.response);
+      const contents = xhr.responseText;
       setContents(contents);
     };
 
