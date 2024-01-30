@@ -2377,19 +2377,6 @@ InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(
     Element* element,
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) {
-  if (element) {
-    // Before validating the style's registered properties values against the
-    // element, check if the style actually applies to the element.
-    InspectorStyleResolver resolver(element, pseudo_id, pseudo_argument);
-    RuleIndexList* matched_rules = resolver.MatchedRules();
-    if (!matched_rules ||
-        std::find_if(matched_rules->begin(), matched_rules->end(),
-                     [rule](auto matched_rule) {
-                       return matched_rule.first == rule;
-                     }) == matched_rules->end()) {
-      element = nullptr;
-    }
-  }
   std::unique_ptr<protocol::CSS::CSSRule> result =
       protocol::CSS::CSSRule::create()
           .setSelectorList(BuildObjectForSelectorList(rule))
