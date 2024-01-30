@@ -3452,9 +3452,9 @@ chromium-metrics-reviews@google.com.
     flush the buffer after 20s if we haven't had confirmation yet that the
     navigation will no longer receive any more registrations.
 
-    When flushing an OS registrations buffer, this histogram emits whether it
-    was triggered by a timeout or not. It will only emit if there actually are
-    buffered registrations to flush.
+    When flushing an OS registrations buffer, this histogram emits the reason
+    why the buffer was flushed. It will only emit if there actually are buffered
+    registrations to flush.
   </summary>
 </histogram>
 

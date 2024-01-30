@@ -3836,6 +3836,12 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Rejected by OS"/>
 </enum>
 
+<enum name="ConversionOsRegistrationsBufferFlushReason">
+  <int value="0" label="Navigation is done"/>
+  <int value="1" label="Buffer is full"/>
+  <int value="2" label="Timeout reached"/>
+</enum>
+
 <enum name="ConversionRegisterDataHostOutcome">
   <int value="0" label="Processed immediately"/>
   <int value="1" label="Deferred"/>

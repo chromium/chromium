@@ -145,6 +145,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   class RegistrationContext;
   class NavigationContextForPendingRegistration;
   class OsRegistrationsBuffer;
+  enum class OsRegistrationsBufferFlushReason;
 
   // Timer that can be used to be notified of sequential events. It uses a
   // single timer. When `Start` is called a timeout is added in a queue. If it
@@ -248,7 +249,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       std::vector<attribution_reporting::OsRegistrationItem>,
       const RegistrationContext&);
   void MaybeFlushOsRegistrationsBuffer(int64_t navigation_id,
-                                       bool due_to_timeout);
+                                       OsRegistrationsBufferFlushReason);
   void SubmitOsRegistrations(
       std::vector<attribution_reporting::OsRegistrationItem>,
       const RegistrationContext&,

@@ -759,6 +759,15 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
   }
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AttributionDataHostManagerImpl::OsRegistrationsBufferFlushReason {
+  kNavigationDone = 0,
+  kBufferFull = 1,
+  kTimeout = 2,
+  kMaxValue = kTimeout,
+};
+
 class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
  public:
   explicit OsRegistrationsBuffer(int64_t navigation_id)
@@ -778,8 +787,11 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
     return other.navigation_id_ < navigation_id;
   }
 
-  void Buffer(std::vector<attribution_reporting::OsRegistrationItem> items,
-              const RegistrationContext& registration_context) {
+  // Buffer `items` until the buffer is full. Returns items that were not added
+  // to the buffer.
+  std::vector<attribution_reporting::OsRegistrationItem> Buffer(
+      std::vector<attribution_reporting::OsRegistrationItem> items,
+      const RegistrationContext& registration_context) {
     // Only navigation-tied OS registrations should be buffered.
     CHECK(registration_context.navigation().has_value());
     CHECK_EQ(registration_context.navigation()->navigation_id(),
@@ -794,12 +806,25 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
           context_ == registration_context);
     }
 
-    // TODO(anthonygarant): Limit the number of buffered registrations.
-    registrations_.reserve(registrations_.size() + items.size());
-    std::move(items.begin(), items.end(), std::back_inserter(registrations_));
+    CHECK_LE(registrations_.size(), kMaxBufferSize);
+    const size_t items_to_buffer =
+        std::min(kMaxBufferSize - registrations_.size(), items.size());
+
+    registrations_.reserve(registrations_.size() + items_to_buffer);
+    std::move(items.begin(), items.begin() + items_to_buffer,
+              std::back_inserter(registrations_));
+
+    std::vector<attribution_reporting::OsRegistrationItem> non_buffered;
+    non_buffered.reserve(items.size() - items_to_buffer);
+    std::move(items.begin() + items_to_buffer, items.end(),
+              std::back_inserter(non_buffered));
+
+    return non_buffered;
   }
 
   bool IsEmpty() const { return registrations_.empty(); }
+
+  bool IsFull() const { return registrations_.size() == kMaxBufferSize; }
 
   const RegistrationContext& context() const {
     CHECK(context_.has_value());
@@ -814,6 +839,8 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
   }
 
  private:
+  static constexpr size_t kMaxBufferSize = 80u;
+
   int64_t navigation_id_;
 
   std::optional<RegistrationContext> context_;
@@ -1751,7 +1778,14 @@ void AttributionDataHostManagerImpl::MaybeBufferOsRegistrations(
     return;
   }
 
-  it->Buffer(std::move(items), registrations_context);
+  std::vector<attribution_reporting::OsRegistrationItem> not_buffered =
+      it->Buffer(std::move(items), registrations_context);
+  while (it->IsFull()) {
+    MaybeFlushOsRegistrationsBuffer(
+        navigation_id, OsRegistrationsBufferFlushReason::kBufferFull);
+    not_buffered = it->Buffer(std::move(not_buffered), registrations_context);
+  }
+  CHECK(not_buffered.empty());
 }
 
 void AttributionDataHostManagerImpl::OnOsHeaderParsed(
@@ -1869,7 +1903,10 @@ void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
 
   // All expected registrations tied to the navigation have been received and
   // processed.
-  MaybeFlushOsRegistrationsBuffer(navigation_id, due_to_timeout);
+  MaybeFlushOsRegistrationsBuffer(
+      navigation_id, due_to_timeout
+                         ? OsRegistrationsBufferFlushReason::kTimeout
+                         : OsRegistrationsBufferFlushReason::kNavigationDone);
   MaybeBindDeferredReceivers(navigation_id, due_to_timeout);
   ClearRegistrationsDeferUntilNavigation(navigation_id);
 }
@@ -1914,20 +1951,24 @@ void AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation(
 
 void AttributionDataHostManagerImpl::MaybeFlushOsRegistrationsBuffer(
     int64_t navigation_id,
-    bool due_to_timeout) {
+    OsRegistrationsBufferFlushReason reason) {
   auto it = os_buffers_.find(navigation_id);
   if (it == os_buffers_.end()) {
     return;
   }
 
   if (!it->IsEmpty()) {
-    base::UmaHistogramBoolean(
-        "Conversions.OsRegistrationsBufferFlushAfterTimeout", due_to_timeout);
+    base::UmaHistogramEnumeration(
+        "Conversions.OsRegistrationsBufferFlushReason", reason);
     SubmitOsRegistrations(it->TakeRegistrationItems(), it->context(),
                           it->context().navigation()->input_event());
   }
 
-  os_buffers_.erase(it);
+  // If we flushed the buffer due to it being full, the navigation is still
+  // active, we don't erase the buffer.
+  if (reason != OsRegistrationsBufferFlushReason::kBufferFull) {
+    os_buffers_.erase(it);
+  }
 }
 
 void AttributionDataHostManagerImpl::SubmitOsRegistrations(

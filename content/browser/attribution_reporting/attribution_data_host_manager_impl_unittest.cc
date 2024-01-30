@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/atomic_sequence_num.h"
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
@@ -22,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1409,6 +1411,117 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
+       BufferedNavigationTiedOsRegistrations_FlushedUponReachingLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::HistogramTester histograms;
+
+  scoped_feature_list.InitWithFeatures(
+      {network::features::kAttributionReportingCrossAppWeb,
+       blink::features::kKeepAliveInBrowserMigration,
+       blink::features::kAttributionReportingInBrowserMigration},
+      {});
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  const GURL reporting_url("https://report.test");
+  const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://source.test");
+
+  static base::AtomicSequenceNumber unique_id_counter;
+  const auto register_n_os_registrations = [&](size_t n) {
+    std::vector<std::string> urls;
+    for (size_t i = 0; i < n; ++i) {
+      urls.push_back(
+          base::JoinString({"\"https://", base::ToString(i), ".test\""}, ""));
+    }
+    BackgroundRegistrationsId id(unique_id_counter.GetNext());
+    data_host_manager_.NotifyBackgroundRegistrationStarted(
+        id, context_origin,
+        /*is_within_fenced_frame=*/false, RegistrationEligibility::kSource,
+        kFrameId, kLastNavigationId, attribution_src_token, kDevtoolsRequestId);
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       base::JoinString(urls, ", "));
+    EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
+        id, headers.get(), reporting_url,
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+        /*trigger_verifications*/ {}));
+    data_host_manager_.NotifyBackgroundRegistrationCompleted(id);
+    task_environment_.FastForwardBy(base::TimeDelta());
+  };
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
+    EXPECT_CALL(checkpoint, Call(0));
+
+    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(80);
+    EXPECT_CALL(checkpoint, Call(1));
+
+    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(160);
+    EXPECT_CALL(checkpoint, Call(2));
+
+    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(80);
+    EXPECT_CALL(checkpoint, Call(3));
+
+    EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(2);
+  }
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.NotifyNavigationWithBackgroundRegistrationsWillStart(
+      attribution_src_token, /*expected_registrations=*/5);
+
+  // The navigation starts, register data and completes.
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      attribution_src_token, AttributionInputEvent(), context_origin,
+      /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+      kDevtoolsRequestId);
+  auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://r.test/x")");
+  data_host_manager_.NotifyNavigationRegistrationData(
+      attribution_src_token, headers_2.get(), reporting_url,
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  register_n_os_registrations(1);
+  // Buffer not full yet, no registrations should have been received.
+  checkpoint.Call(0);
+
+  register_n_os_registrations(80);
+  // First buffer is full, it should have processed a first batch of 80.
+  checkpoint.Call(1);
+  // kBufferFull = 1
+  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
+                               /*sample=*/1, /*expected_count=*/1);
+
+  register_n_os_registrations(159);
+  // It should have filled the buffer twice and have processed two more batch.
+  checkpoint.Call(2);
+
+  register_n_os_registrations(79);
+  // It should have filled a buffer exactly and flushed it.
+  checkpoint.Call(3);
+
+  // Fifth and last background registration received. It should process the
+  // remaining items.
+  register_n_os_registrations(2);
+
+  // kNavigationDone = 0, kBufferFull = 1
+  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
+                               /*sample=*/0, /*expected_count=*/1);
+  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
+                               /*sample=*/1, /*expected_count=*/4);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
        DataHost_NavigationTiedOsRegistrationsAreBuffered) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1549,8 +1662,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueSample(
-      "Conversions.OsRegistrationsBufferFlushAfterTimeout", false, 1);
+  // kNavigationDone = 0
+  histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
+                                0, 1);
   histograms.ExpectUniqueSample(
       "Conversions.OsRegistrationsBufferWithSameContext", true, 2);
 }
@@ -1624,8 +1738,10 @@ TEST_F(
   // duration of 30s, the two received sources should be processed.
   task_environment_.FastForwardBy(base::Seconds(20));
   task_environment_.FastForwardBy(base::TimeDelta());
-  histograms.ExpectUniqueSample(
-      "Conversions.OsRegistrationsBufferFlushAfterTimeout", true, 1);
+
+  // kTimeout = 2
+  histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
+                                2, 1);
   histograms.ExpectUniqueSample(
       "Conversions.OsRegistrationsBufferWithSameContext", true, 1);
   checkpoint.Call(2);
