@@ -92,7 +92,7 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   // Return the last raw (i.e. unrounded) sensor reading.
   bool GetLatestRawReading(SensorReading* result) const;
   // Returns 'true' if the sensor is started; returns 'false' otherwise.
-  bool IsActiveForTesting() const;
+  bool is_active() const;
   using ConfigMap = std::map<Client*, std::list<PlatformSensorConfiguration>>;
   const ConfigMap& GetConfigMapForTesting() const;
 

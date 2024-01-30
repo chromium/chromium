@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -20,12 +21,18 @@ class VirtualPlatformSensor : public PlatformSensor {
  public:
   VirtualPlatformSensor(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
-                        PlatformSensorProvider* provider);
+                        PlatformSensorProvider* provider,
+                        std::optional<SensorReading> pending_reading);
 
-  // Simulates the reporting of a new reading by a platform sensor. The new
-  // reading still goes through the UpdateSharedBufferAndNotifyClients()
-  // machinery, which means it may not end up being stored (for example, if the
-  // sensor is not active or a threshold check fails).
+  // Simulates the reporting of a new reading by a platform sensor.
+  //
+  // The process of adding a new reading is asynchronous (i.e. it always goes
+  // via PostTask()). If the sensor is not active, the reading will be stashed
+  // and added once the sensor is started again (with the original timestamp).
+  //
+  // The new reading still goes through the
+  // UpdateSharedBufferAndNotifyClients() machinery, which means it may end up
+  // not being stored (for example, if a threshold check fails).
   void AddReading(const SensorReading&);
 
   // Simulates that a platform sensor has been removed and therefore stopped
@@ -64,10 +71,16 @@ class VirtualPlatformSensor : public PlatformSensor {
   double GetMinimumSupportedFrequency() override;
   double GetMaximumSupportedFrequency() override;
 
+  void DoAddReadingSync(const SensorReading&);
+
   std::optional<double> minimum_supported_frequency_;
   std::optional<double> maximum_supported_frequency_;
   std::optional<PlatformSensorConfiguration> optimal_configuration_;
   std::optional<mojom::ReportingMode> reporting_mode_;
+
+  std::optional<SensorReading> pending_reading_;
+
+  base::WeakPtrFactory<VirtualPlatformSensor> weak_ptr_factory_{this};
 };
 
 }  // namespace device

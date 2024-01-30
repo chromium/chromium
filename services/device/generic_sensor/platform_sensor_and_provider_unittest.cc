@@ -258,11 +258,11 @@ TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
   auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
-  EXPECT_TRUE(fake_sensor->IsActiveForTesting());
+  EXPECT_TRUE(fake_sensor->is_active());
 
   ON_CALL(*client, IsSuspended()).WillByDefault(Return(true));
   fake_sensor->UpdateSensor();
-  EXPECT_FALSE(fake_sensor->IsActiveForTesting());
+  EXPECT_FALSE(fake_sensor->is_active());
 
   SensorReading reading;
   reading.raw.timestamp = 1.0;
@@ -272,7 +272,7 @@ TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
 
   ON_CALL(*client, IsSuspended()).WillByDefault(Return(false));
   fake_sensor->UpdateSensor();
-  EXPECT_TRUE(fake_sensor->IsActiveForTesting());
+  EXPECT_TRUE(fake_sensor->is_active());
 
   // Set the exact same readings. They should be stored because
   // |last_raw_reading_| and |last_rounded_reading_| should not have been

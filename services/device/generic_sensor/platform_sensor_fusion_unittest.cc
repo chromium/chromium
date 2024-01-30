@@ -194,29 +194,29 @@ TEST_F(PlatformSensorFusionTest, SourceSensorAlreadyExists) {
 TEST_F(PlatformSensorFusionTest, SourceSensorWorksSeparately) {
   CreateAccelerometer();
   EXPECT_TRUE(accelerometer_);
-  EXPECT_FALSE(accelerometer_->IsActiveForTesting());
+  EXPECT_FALSE(accelerometer_->is_active());
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   accelerometer_->AddClient(client.get());
   accelerometer_->StartListening(client.get(), PlatformSensorConfiguration(10));
-  EXPECT_TRUE(accelerometer_->IsActiveForTesting());
+  EXPECT_TRUE(accelerometer_->is_active());
 
   CreateLinearAccelerationFusionSensor();
   EXPECT_TRUE(fusion_sensor_);
   EXPECT_EQ(SensorType::LINEAR_ACCELERATION, fusion_sensor_->GetType());
-  EXPECT_FALSE(fusion_sensor_->IsActiveForTesting());
+  EXPECT_FALSE(fusion_sensor_->is_active());
 
   fusion_sensor_->AddClient(client.get());
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(10));
-  EXPECT_TRUE(fusion_sensor_->IsActiveForTesting());
+  EXPECT_TRUE(fusion_sensor_->is_active());
 
   fusion_sensor_->StopListening(client.get(), PlatformSensorConfiguration(10));
-  EXPECT_FALSE(fusion_sensor_->IsActiveForTesting());
+  EXPECT_FALSE(fusion_sensor_->is_active());
 
-  EXPECT_TRUE(accelerometer_->IsActiveForTesting());
+  EXPECT_TRUE(accelerometer_->is_active());
 
   accelerometer_->RemoveClient(client.get());
-  EXPECT_FALSE(accelerometer_->IsActiveForTesting());
+  EXPECT_FALSE(accelerometer_->is_active());
 
   fusion_sensor_->RemoveClient(client.get());
 }
@@ -289,9 +289,9 @@ TEST_F(PlatformSensorFusionTest, AllSourceSensorsStoppedOnSingleSourceFailure) {
       fusion_sensor_);
   fusion_sensor_->StartListening(client.get(), PlatformSensorConfiguration(10));
 
-  EXPECT_FALSE(fusion_sensor_->IsActiveForTesting());
-  EXPECT_FALSE(accelerometer_->IsActiveForTesting());
-  EXPECT_FALSE(magnetometer_->IsActiveForTesting());
+  EXPECT_FALSE(fusion_sensor_->is_active());
+  EXPECT_FALSE(accelerometer_->is_active());
+  EXPECT_FALSE(magnetometer_->is_active());
 }
 
 TEST_F(PlatformSensorFusionTest, SourceSensorNeedsToBeCreated) {

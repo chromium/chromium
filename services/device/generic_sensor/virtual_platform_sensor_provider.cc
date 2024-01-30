@@ -16,13 +16,20 @@
 
 namespace device {
 
+struct VirtualPlatformSensorProvider::TypeMetadata {
+  mojom::VirtualSensorMetadataPtr mojo_metadata;
+  std::optional<SensorReading> pending_reading;
+};
+
 VirtualPlatformSensorProvider::VirtualPlatformSensorProvider() = default;
 VirtualPlatformSensorProvider::~VirtualPlatformSensorProvider() = default;
 
 bool VirtualPlatformSensorProvider::AddSensorOverride(
     mojom::SensorType type,
     mojom::VirtualSensorMetadataPtr metadata) {
-  return type_metadata_.try_emplace(type, std::move(metadata)).second;
+  auto type_metadata = std::make_unique<TypeMetadata>();
+  type_metadata->mojo_metadata = std::move(metadata);
+  return type_metadata_.try_emplace(type, std::move(type_metadata)).second;
 }
 
 void VirtualPlatformSensorProvider::RemoveSensorOverride(
@@ -49,6 +56,23 @@ bool VirtualPlatformSensorProvider::IsOverridingSensor(
         mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION);
   }
   return type_metadata_.contains(type);
+}
+
+void VirtualPlatformSensorProvider::AddReading(mojom::SensorType type,
+                                               const SensorReading& reading) {
+  if (!IsOverridingSensor(type)) {
+    NOTREACHED_NORETURN()
+        << "AddReading() was called but "
+           "VirtualPlatformSensorProvider is not overriding sensor type "
+        << type;
+  }
+
+  if (auto virtual_sensor = GetSensor(type)) {
+    static_cast<VirtualPlatformSensor*>(virtual_sensor.get())
+        ->AddReading(reading);
+  } else {
+    type_metadata_[type]->pending_reading = reading;
+  }
 }
 
 void VirtualPlatformSensorProvider::CreateSensorInternal(
@@ -81,23 +105,26 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
 
   const auto& metadata = type_metadata_[type];
 
-  if (!metadata->available) {
+  if (!metadata->mojo_metadata->available) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  auto sensor =
-      base::MakeRefCounted<VirtualPlatformSensor>(type, reading_buffer, this);
-  if (metadata->minimum_frequency.has_value()) {
+  std::optional<SensorReading> pending_reading;
+  metadata->pending_reading.swap(pending_reading);
+
+  auto sensor = base::MakeRefCounted<VirtualPlatformSensor>(
+      type, reading_buffer, this, std::move(pending_reading));
+  if (metadata->mojo_metadata->minimum_frequency.has_value()) {
     sensor->set_minimum_supported_frequency(
-        metadata->minimum_frequency.value());
+        metadata->mojo_metadata->minimum_frequency.value());
   }
-  if (metadata->maximum_frequency.has_value()) {
+  if (metadata->mojo_metadata->maximum_frequency.has_value()) {
     sensor->set_maximum_supported_frequency(
-        metadata->maximum_frequency.value());
+        metadata->mojo_metadata->maximum_frequency.value());
   }
-  if (metadata->reporting_mode.has_value()) {
-    sensor->set_reporting_mode(metadata->reporting_mode.value());
+  if (metadata->mojo_metadata->reporting_mode.has_value()) {
+    sensor->set_reporting_mode(metadata->mojo_metadata->reporting_mode.value());
   }
   std::move(callback).Run(std::move(sensor));
 }
