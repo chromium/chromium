@@ -514,10 +514,17 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableSafetyHub",
                           base::FeatureList::IsEnabled(features::kSafetyHub));
 
+  // Tracking Protection
   html_source->AddBoolean(
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
+  html_source->AddBoolean("isCookieSettingsUiAlignmentEnabled",
+                          base::FeatureList::IsEnabled(
+                              privacy_sandbox::kCookieSettingsUiAlignment));
+  html_source->AddBoolean(
+      "isIpProtectionV1Enabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1));
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(profile);
   html_source->AddBoolean(
@@ -525,6 +532,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       onboarding_service && onboarding_service->IsOffboarded() &&
           base::FeatureList::IsEnabled(
               privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice));
+
   html_source->AddBoolean(
       "isProactiveTopicsBlockingEnabled",
       base::FeatureList::IsEnabled(
