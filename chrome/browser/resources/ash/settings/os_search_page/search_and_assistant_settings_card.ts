@@ -89,7 +89,7 @@ export class SearchAndAssistantSettingsCardElement extends
           }
 
           return {
-            searchEngine: 'os-settings:google-drive',
+            searchEngine: '',
             assistant: '',
             contentRecommendations: '',
           };
