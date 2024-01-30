@@ -273,12 +273,12 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
   void AddBrowserLaunchInfo(const base::FilePath& file_path,
                             int32_t id,
-                            std::vector<GURL> urls,
+                            const std::vector<GURL>& urls,
                             int32_t active_tab_index = 0) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         app_constants::kChromeAppId, id);
-    launch_info->urls = urls;
-    launch_info->active_tab_index = active_tab_index;
+    launch_info->browser_extra_info.urls = urls;
+    launch_info->browser_extra_info.active_tab_index = active_tab_index;
     SaveAppLaunchInfo(file_path, std::move(launch_info));
   }
 
@@ -876,9 +876,12 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
   const auto app_restore_data_it = launch_list_it->second.find(kId1);
   EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
-  const auto& data = app_restore_data_it->second;
-  EXPECT_THAT(data->urls, ElementsAre(GURL(kExampleUrl1), GURL(kExampleUrl2)));
-  EXPECT_THAT(data->active_tab_index, testing::Optional(active_tab_index));
+  const app_restore::BrowserExtraInfo browser_info =
+      app_restore_data_it->second->browser_extra_info;
+  EXPECT_THAT(browser_info.urls,
+              ElementsAre(GURL(kExampleUrl1), GURL(kExampleUrl2)));
+  EXPECT_THAT(browser_info.active_tab_index,
+              testing::Optional(active_tab_index));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {

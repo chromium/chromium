@@ -46,6 +46,18 @@ std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
 
 }  // namespace
 
+BrowserExtraInfo::BrowserExtraInfo() = default;
+
+BrowserExtraInfo::BrowserExtraInfo(const BrowserExtraInfo&) = default;
+
+BrowserExtraInfo& BrowserExtraInfo::operator=(const BrowserExtraInfo&) =
+    default;
+
+BrowserExtraInfo::~BrowserExtraInfo() = default;
+
+bool BrowserExtraInfo::operator==(const BrowserExtraInfo& other) const =
+    default;
+
 WindowInfo::WindowInfo() = default;
 
 WindowInfo::~WindowInfo() = default;

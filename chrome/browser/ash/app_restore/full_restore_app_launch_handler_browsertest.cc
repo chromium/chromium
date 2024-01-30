@@ -349,7 +349,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
     auto app_launch_info = std::make_unique<::app_restore::AppLaunchInfo>(
         app_constants::kChromeAppId, window_id);
     if (app_type_browser) {
-      app_launch_info->app_type_browser = app_type_browser;
+      app_launch_info->browser_extra_info.app_type_browser = app_type_browser;
     }
     ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
                                       std::move(app_launch_info));

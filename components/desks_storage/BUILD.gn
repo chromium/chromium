@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//components/app_constants",
     "//components/prefs:test_support",
     "//components/sync:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",
     "//ui/gfx/range",

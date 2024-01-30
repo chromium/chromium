@@ -444,8 +444,9 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   }
 
   std::string app_name;
-  if (GetString(app, kAppName, &app_name))
-    app_launch_info->app_name = app_name;
+  if (GetString(app, kAppName, &app_name)) {
+    app_launch_info->browser_extra_info.app_name = app_name;
+  }
 
   std::string override_url;
   if (GetString(app, kOverrideUrl, &override_url)) {
@@ -456,7 +457,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   if (GetString(app, kLacrosProfileId, &lacros_profile_id_str)) {
     uint64_t lacros_profile_id = 0;
     if (base::StringToUint64(lacros_profile_id_str, &lacros_profile_id)) {
-      app_launch_info->lacros_profile_id = lacros_profile_id;
+      app_launch_info->browser_extra_info.lacros_profile_id = lacros_profile_id;
     }
   }
 
@@ -464,38 +465,40 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   app_launch_info->event_flag = 0;
 
   bool app_type_browser;
-  if (GetBool(app, kIsAppTypeBrowser, &app_type_browser))
-    app_launch_info->app_type_browser = app_type_browser;
+  if (GetBool(app, kIsAppTypeBrowser, &app_type_browser)) {
+    app_launch_info->browser_extra_info.app_type_browser = app_type_browser;
+  }
 
   if (app_id == app_constants::kLacrosAppId ||
       app_id == app_constants::kChromeAppId) {
     int active_tab_index;
-    if (GetInt(app, kActiveTabIndex, &active_tab_index))
-      app_launch_info->active_tab_index = active_tab_index;
+    if (GetInt(app, kActiveTabIndex, &active_tab_index)) {
+      app_launch_info->browser_extra_info.active_tab_index = active_tab_index;
+    }
 
     int first_non_pinned_tab_index;
-    if (GetInt(app, kFirstNonPinnedTabIndex, &first_non_pinned_tab_index))
-      app_launch_info->first_non_pinned_tab_index = first_non_pinned_tab_index;
+    if (GetInt(app, kFirstNonPinnedTabIndex, &first_non_pinned_tab_index)) {
+      app_launch_info->browser_extra_info.first_non_pinned_tab_index =
+          first_non_pinned_tab_index;
+    }
 
     // Fill in the URL list
-    const base::Value::List* tabs = app.FindList(kTabs);
-    if (tabs) {
+    if (const base::Value::List* tabs = app.FindList(kTabs)) {
       for (auto& tab : *tabs) {
         std::string url;
         if (GetString(tab.GetDict(), kTabUrl, &url)) {
-          app_launch_info->urls.emplace_back(url);
+          app_launch_info->browser_extra_info.urls.emplace_back(url);
         }
       }
     }
 
     // Fill the tab groups
-    const base::Value::List* tab_groups = app.FindList(kTabGroups);
-    if (tab_groups) {
+    if (const base::Value::List* tab_groups = app.FindList(kTabGroups)) {
       for (auto& tab : *tab_groups) {
         std::optional<tab_groups::TabGroupInfo> tab_group =
             MakeTabGroupInfoFromDict(tab.GetDict());
         if (tab_group.has_value()) {
-          app_launch_info->tab_group_infos.push_back(
+          app_launch_info->browser_extra_info.tab_group_infos.push_back(
               std::move(tab_group.value()));
         }
       }
@@ -899,31 +902,34 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   if (app->activation_index.has_value())
     app_data.Set(kZIndex, app->activation_index.value());
 
-  if (!app->urls.empty()) {
-    app_data.Set(kTabs, ConvertURLsToBrowserAppTabValues(app->urls));
+  if (!app->browser_extra_info.urls.empty()) {
+    app_data.Set(
+        kTabs, ConvertURLsToBrowserAppTabValues(app->browser_extra_info.urls));
   }
 
-  if (!app->tab_group_infos.empty()) {
+  if (!app->browser_extra_info.tab_group_infos.empty()) {
     base::Value::List tab_groups_value;
 
-    for (const auto& tab_group : app->tab_group_infos) {
+    for (const auto& tab_group : app->browser_extra_info.tab_group_infos) {
       tab_groups_value.Append(ConvertTabGroupInfoToDict(tab_group));
     }
 
     app_data.Set(kTabGroups, std::move(tab_groups_value));
   }
 
-  if (app->active_tab_index.has_value()) {
-    app_data.Set(kActiveTabIndex, app->active_tab_index.value());
+  if (app->browser_extra_info.active_tab_index.has_value()) {
+    app_data.Set(kActiveTabIndex,
+                 app->browser_extra_info.active_tab_index.value());
   }
 
-  if (app->first_non_pinned_tab_index.has_value()) {
+  if (app->browser_extra_info.first_non_pinned_tab_index.has_value()) {
     app_data.Set(kFirstNonPinnedTabIndex,
-                 app->first_non_pinned_tab_index.value());
+                 app->browser_extra_info.first_non_pinned_tab_index.value());
   }
 
-  if (app->app_type_browser.has_value()) {
-    app_data.Set(kIsAppTypeBrowser, app->app_type_browser.value());
+  if (app->browser_extra_info.app_type_browser.has_value()) {
+    app_data.Set(kIsAppTypeBrowser,
+                 app->browser_extra_info.app_type_browser.value());
   }
 
   app_data.Set(kAppId, app_id);
@@ -946,8 +952,9 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
                  static_cast<int>(app->snap_percentage.value()));
   }
 
-  if (app->app_name.has_value())
-    app_data.Set(kAppName, app->app_name.value());
+  if (app->browser_extra_info.app_name.has_value()) {
+    app_data.Set(kAppName, app->browser_extra_info.app_name.value());
+  }
 
   if (app->disposition.has_value()) {
     WindowOpenDisposition disposition =
@@ -966,9 +973,10 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.Set(kOverrideUrl, app->override_url->spec());
   }
 
-  if (app->lacros_profile_id.has_value()) {
+  if (app->browser_extra_info.lacros_profile_id.has_value()) {
     app_data.Set(kLacrosProfileId,
-                 base::NumberToString(app->lacros_profile_id.value()));
+                 base::NumberToString(
+                     app->browser_extra_info.lacros_profile_id.value()));
   }
 
   return base::Value(std::move(app_data));
@@ -1230,8 +1238,9 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
         static_cast<int32_t>(ToBaseWindowOpenDisposition(app.disposition()));
   }
 
-  if (app.has_app_name())
-    app_launch_info->app_name = app.app_name();
+  if (app.has_app_name()) {
+    app_launch_info->browser_extra_info.app_name = app.app_name();
+  }
 
   if (app.has_override_url()) {
     app_launch_info->override_url = GURL(app.override_url());
@@ -1254,24 +1263,26 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
       if (app.app().browser_app_window().has_active_tab_index()) {
-        app_launch_info->active_tab_index =
+        app_launch_info->browser_extra_info.active_tab_index =
             app.app().browser_app_window().active_tab_index();
       }
 
-      FillUrlList(app.app().browser_app_window(), &app_launch_info->urls);
+      FillUrlList(app.app().browser_app_window(),
+                  &app_launch_info->browser_extra_info.urls);
 
       if (app.app().browser_app_window().tab_groups_size() > 0) {
-        FillTabGroupInfosFromProto(app.app().browser_app_window(),
-                                   &app_launch_info->tab_group_infos);
+        FillTabGroupInfosFromProto(
+            app.app().browser_app_window(),
+            &app_launch_info->browser_extra_info.tab_group_infos);
       }
 
       if (app.app().browser_app_window().has_show_as_app()) {
-        app_launch_info->app_type_browser =
+        app_launch_info->browser_extra_info.app_type_browser =
             app.app().browser_app_window().show_as_app();
       }
 
       if (app.app().browser_app_window().has_first_non_pinned_tab_index()) {
-        app_launch_info->first_non_pinned_tab_index =
+        app_launch_info->browser_extra_info.first_non_pinned_tab_index =
             app.app().browser_app_window().first_non_pinned_tab_index();
       }
 
@@ -1488,28 +1499,30 @@ void FillBrowserAppTabs(const std::vector<GURL>& gurls,
 // `app_restore_data`.
 void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
                           BrowserAppWindow* out_browser_app_window) {
-  if (!app_restore_data->urls.empty()) {
-    FillBrowserAppTabs(app_restore_data->urls, out_browser_app_window);
+  const app_restore::BrowserExtraInfo browser_extra_info =
+      app_restore_data->browser_extra_info;
+  if (!browser_extra_info.urls.empty()) {
+    FillBrowserAppTabs(browser_extra_info.urls, out_browser_app_window);
   }
 
-  if (app_restore_data->active_tab_index.has_value()) {
+  if (browser_extra_info.active_tab_index.has_value()) {
     out_browser_app_window->set_active_tab_index(
-        app_restore_data->active_tab_index.value());
+        browser_extra_info.active_tab_index.value());
   }
 
-  if (app_restore_data->app_type_browser.has_value()) {
+  if (browser_extra_info.app_type_browser.has_value()) {
     out_browser_app_window->set_show_as_app(
-        app_restore_data->app_type_browser.value());
+        browser_extra_info.app_type_browser.value());
   }
 
-  if (!app_restore_data->tab_group_infos.empty()) {
-    FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos,
+  if (!browser_extra_info.tab_group_infos.empty()) {
+    FillBrowserAppTabGroupInfos(browser_extra_info.tab_group_infos,
                                 out_browser_app_window);
   }
 
-  if (app_restore_data->first_non_pinned_tab_index.has_value()) {
+  if (browser_extra_info.first_non_pinned_tab_index.has_value()) {
     out_browser_app_window->set_first_non_pinned_tab_index(
-        app_restore_data->first_non_pinned_tab_index.value());
+        browser_extra_info.first_non_pinned_tab_index.value());
   }
 }
 
@@ -1585,9 +1598,10 @@ void FillAppWithWindowOpenDisposition(
 void FillAppWithAppNameAndTitle(
     const app_restore::AppRestoreData* app_restore_data,
     WorkspaceDeskSpecifics_App* out_app) {
-  if (app_restore_data->app_name.has_value() &&
-      !app_restore_data->app_name.value().empty()) {
-    out_app->set_app_name(app_restore_data->app_name.value());
+  const std::string app_name =
+      app_restore_data->browser_extra_info.app_name.value_or("");
+  if (!app_name.empty()) {
+    out_app->set_app_name(app_name);
   }
 
   if (app_restore_data->title.has_value() &&

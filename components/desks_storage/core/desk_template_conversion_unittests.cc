@@ -28,6 +28,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -123,25 +124,22 @@ TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
   EXPECT_NE(browser_restore_data_zero,
             restore_data_zero->app_id_to_launch_list().end());
 
-  const auto browser_restore_data_zero_window_zero =
+  const auto browser_restore_data_zero_window_zero_it =
       browser_restore_data_zero->second.find(3000);
-
-  EXPECT_NE(browser_restore_data_zero_window_zero,
+  ASSERT_NE(browser_restore_data_zero_window_zero_it,
             browser_restore_data_zero->second.end());
-  EXPECT_FALSE(browser_restore_data_zero_window_zero->second->urls.empty());
-  EXPECT_EQ(browser_restore_data_zero_window_zero->second->urls[0],
-            GURL("https://www.chromium.org/"));
+  EXPECT_THAT(
+      browser_restore_data_zero_window_zero_it->second->browser_extra_info.urls,
+      testing::ElementsAre(GURL("https://www.chromium.org/")));
 
-  const auto browser_restore_data_zero_window_one =
+  const auto browser_restore_data_zero_window_one_it =
       browser_restore_data_zero->second.find(30001);
-
-  EXPECT_NE(browser_restore_data_zero_window_one,
+  ASSERT_NE(browser_restore_data_zero_window_one_it,
             browser_restore_data_zero->second.end());
-  EXPECT_FALSE(browser_restore_data_zero_window_one->second->urls.empty());
-  EXPECT_EQ(browser_restore_data_zero_window_one->second->urls[0],
-            GURL("chrome://version/"));
-  EXPECT_EQ(browser_restore_data_zero_window_one->second->urls[1],
-            GURL("https://dev.chromium.org/"));
+  EXPECT_THAT(
+      browser_restore_data_zero_window_one_it->second->browser_extra_info.urls,
+      testing::ElementsAre(GURL("chrome://version/"),
+                           GURL("https://dev.chromium.org/")));
 
   // Assert Desk Template one is correct.
   const auto* desk_template_one = templates_derived_from_policy[1].get();
@@ -168,16 +166,14 @@ TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
   EXPECT_NE(browser_restore_data_one,
             restore_data_one->app_id_to_launch_list().end());
 
-  const auto browser_restore_data_one_window_zero =
+  const auto browser_restore_data_one_window_zero_it =
       browser_restore_data_one->second.find(30001);
-
-  EXPECT_NE(browser_restore_data_one_window_zero,
+  ASSERT_NE(browser_restore_data_one_window_zero_it,
             browser_restore_data_one->second.end());
-  EXPECT_FALSE(browser_restore_data_one_window_zero->second->urls.empty());
-  EXPECT_EQ(browser_restore_data_one_window_zero->second->urls[0],
-            GURL("https://www.google.com/"));
-  EXPECT_EQ(browser_restore_data_one_window_zero->second->urls[1],
-            GURL("https://www.youtube.com/"));
+  EXPECT_THAT(
+      browser_restore_data_one_window_zero_it->second->browser_extra_info.urls,
+      testing::ElementsAre(GURL("https://www.google.com/"),
+                           GURL("https://www.youtube.com/")));
 }
 
 TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
@@ -227,25 +223,22 @@ TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
   EXPECT_EQ(restore_data->app_id_to_launch_list().size(), 1UL);
   EXPECT_NE(browser_restore_data, restore_data->app_id_to_launch_list().end());
 
-  const auto browser_restore_data_window_zero =
+  const auto browser_restore_data_window_zero_it =
       browser_restore_data->second.find(3000);
-
-  EXPECT_NE(browser_restore_data_window_zero,
+  ASSERT_NE(browser_restore_data_window_zero_it,
             browser_restore_data->second.end());
-  EXPECT_FALSE(browser_restore_data_window_zero->second->urls.empty());
-  EXPECT_EQ(browser_restore_data_window_zero->second->urls[0],
-            GURL("https://www.chromium.org/"));
+  EXPECT_THAT(
+      browser_restore_data_window_zero_it->second->browser_extra_info.urls,
+      testing::ElementsAre(GURL("https://www.chromium.org/")));
 
-  const auto browser_restore_data_window_one =
+  const auto browser_restore_data_window_one_it =
       browser_restore_data->second.find(30001);
-
-  EXPECT_NE(browser_restore_data_window_one,
+  ASSERT_NE(browser_restore_data_window_one_it,
             browser_restore_data->second.end());
-  EXPECT_FALSE(browser_restore_data_window_one->second->urls.empty());
-  EXPECT_EQ(browser_restore_data_window_one->second->urls[0],
-            GURL("chrome://version/"));
-  EXPECT_EQ(browser_restore_data_window_one->second->urls[1],
-            GURL("https://dev.chromium.org/"));
+  EXPECT_THAT(
+      browser_restore_data_window_one_it->second->browser_extra_info.urls,
+      testing::ElementsAre(GURL("chrome://version/"),
+                           GURL("https://dev.chromium.org/")));
 }
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
@@ -287,35 +280,32 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(ali->window_id.value(), 0);
   EXPECT_TRUE(ali->display_id.has_value());
   EXPECT_EQ(ali->display_id.value(), 100L);
-  EXPECT_TRUE(ali->active_tab_index.has_value());
-  EXPECT_EQ(ali->active_tab_index.value(), 1);
-  EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
-  EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
-  EXPECT_FALSE(ali->urls.empty());
-  EXPECT_EQ(ali->urls[0].spec(), kBrowserUrl1);
-  EXPECT_EQ(ali->urls[1].spec(), kBrowserUrl2);
-  EXPECT_FALSE(ali->tab_group_infos.empty());
-  EXPECT_EQ(ali->tab_group_infos[0], MakeSampleTabGroup());
-  EXPECT_TRUE(wi->window_state_type.has_value());
-  EXPECT_EQ(wi->window_state_type.value(), chromeos::WindowStateType::kNormal);
-  EXPECT_TRUE(wi->current_bounds.has_value());
-  EXPECT_EQ(wi->current_bounds.value().x(), 0);
-  EXPECT_EQ(wi->current_bounds.value().y(), 1);
-  EXPECT_EQ(wi->current_bounds.value().height(), 121);
-  EXPECT_EQ(wi->current_bounds.value().width(), 120);
+
+  app_restore::BrowserExtraInfo browser_extra_info = ali->browser_extra_info;
+  EXPECT_THAT(browser_extra_info.urls,
+              testing::ElementsAre(kBrowserUrl1, kBrowserUrl2));
+  EXPECT_THAT(browser_extra_info.active_tab_index, testing::Optional(1));
+  EXPECT_THAT(browser_extra_info.first_non_pinned_tab_index,
+              testing::Optional(1));
+  EXPECT_THAT(browser_extra_info.tab_group_infos,
+              testing::ElementsAre(MakeSampleTabGroup()));
+
+  EXPECT_THAT(wi->window_state_type,
+              testing::Optional(chromeos::WindowStateType::kNormal));
+  EXPECT_THAT(wi->current_bounds, testing::Optional(gfx::Rect(0, 1, 120, 121)));
 }
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       std::string_view(desk_test_util::kValidPolicyTemplateBrowserMinimized));
 
-  EXPECT_TRUE(parsed_json.has_value());
+  ASSERT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
 
   auto dt = desk_template_conversion::ParseDeskTemplateFromBaseValue(
       *parsed_json, ash::DeskTemplateSource::kPolicy);
 
-  EXPECT_TRUE(dt.has_value());
+  ASSERT_TRUE(dt.has_value());
   EXPECT_EQ(dt.value()->uuid(),
             base::Uuid::ParseCaseInsensitive(kTestUuidBrowser));
   EXPECT_EQ(dt.value()->created_time(),
@@ -325,45 +315,37 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
 
   const app_restore::RestoreData* rd = dt.value()->desk_restore_data();
 
-  EXPECT_TRUE(rd != nullptr);
-  EXPECT_EQ(rd->app_id_to_launch_list().size(), 1UL);
-  EXPECT_NE(rd->app_id_to_launch_list().find(app_constants::kChromeAppId),
-            rd->app_id_to_launch_list().end());
+  ASSERT_TRUE(rd);
+  EXPECT_THAT(rd->app_id_to_launch_list(),
+              testing::ElementsAre(
+                  testing::Pair(app_constants::kChromeAppId, testing::_)));
 
   const app_restore::AppRestoreData* ard =
       rd->GetAppRestoreData(app_constants::kChromeAppId, 0);
-  EXPECT_TRUE(ard != nullptr);
-  EXPECT_TRUE(ard->display_id.has_value());
-  EXPECT_EQ(ard->display_id.value(), 100L);
+  ASSERT_TRUE(ard);
+  EXPECT_THAT(ard->display_id, testing::Optional(100L));
+
   std::unique_ptr<app_restore::AppLaunchInfo> ali =
       ard->GetAppLaunchInfo(app_constants::kChromeAppId, 0);
+  ASSERT_TRUE(ali);
+  EXPECT_THAT(ali->window_id, testing::Optional(0));
+  EXPECT_THAT(ali->display_id, testing::Optional(100L));
+
+  EXPECT_THAT(ali->browser_extra_info.urls,
+              testing::ElementsAre(kBrowserUrl1, kBrowserUrl2));
+  EXPECT_THAT(ali->browser_extra_info.active_tab_index, testing::Optional(1));
+  EXPECT_THAT(ali->browser_extra_info.first_non_pinned_tab_index,
+              testing::Optional(1));
+  EXPECT_THAT(ali->browser_extra_info.tab_group_infos,
+              testing::ElementsAre(MakeSampleTabGroup()));
+
   std::unique_ptr<app_restore::WindowInfo> wi = ard->GetWindowInfo();
-  EXPECT_TRUE(ali != nullptr);
-  EXPECT_TRUE(wi != nullptr);
-  EXPECT_TRUE(ali->window_id.has_value());
-  EXPECT_EQ(ali->window_id.value(), 0);
-  EXPECT_TRUE(ali->display_id.has_value());
-  EXPECT_EQ(ali->display_id.value(), 100L);
-  EXPECT_TRUE(ali->active_tab_index.has_value());
-  EXPECT_EQ(ali->active_tab_index.value(), 1);
-  EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
-  EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
-  EXPECT_FALSE(ali->urls.empty());
-  EXPECT_EQ(ali->urls[0].spec(), kBrowserUrl1);
-  EXPECT_EQ(ali->urls[1].spec(), kBrowserUrl2);
-  EXPECT_FALSE(ali->tab_group_infos.empty());
-  EXPECT_EQ(ali->tab_group_infos[0], MakeSampleTabGroup());
-  EXPECT_TRUE(wi->window_state_type.has_value());
-  EXPECT_EQ(wi->window_state_type.value(),
-            chromeos::WindowStateType::kMinimized);
-  EXPECT_TRUE(wi->pre_minimized_show_state_type.has_value());
-  EXPECT_EQ(wi->pre_minimized_show_state_type.value(),
-            ui::WindowShowState::SHOW_STATE_NORMAL);
-  EXPECT_TRUE(wi->current_bounds.has_value());
-  EXPECT_EQ(wi->current_bounds.value().x(), 0);
-  EXPECT_EQ(wi->current_bounds.value().y(), 1);
-  EXPECT_EQ(wi->current_bounds.value().height(), 121);
-  EXPECT_EQ(wi->current_bounds.value().width(), 120);
+  ASSERT_TRUE(wi);
+  EXPECT_THAT(wi->window_state_type,
+              testing::Optional(chromeos::WindowStateType::kMinimized));
+  EXPECT_THAT(wi->pre_minimized_show_state_type,
+              testing::Optional(ui::WindowShowState::SHOW_STATE_NORMAL));
+  EXPECT_THAT(wi->current_bounds, testing::Optional(gfx::Rect(0, 1, 120, 121)));
 }
 
 TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
@@ -410,24 +392,22 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(ali_chrome != nullptr);
   EXPECT_TRUE(ali_chrome->window_id.has_value());
   EXPECT_EQ(ali_chrome->window_id.value(), 0);
-  EXPECT_TRUE(ali_chrome->display_id.has_value());
-  EXPECT_EQ(ali_chrome->display_id.value(), 100L);
-  EXPECT_FALSE(ali_chrome->active_tab_index.has_value());
-  EXPECT_TRUE(ali_chrome->urls.empty());
   EXPECT_TRUE(ali_chrome->override_url.has_value());
   EXPECT_EQ(ali_chrome->override_url.value(), kOverrideUrl);
-
-  EXPECT_TRUE(ali_pwa != nullptr);
+  EXPECT_TRUE(ali_chrome->display_id.has_value());
+  EXPECT_EQ(ali_chrome->display_id.value(), 100L);
+  EXPECT_FALSE(ali_chrome->browser_extra_info.active_tab_index.has_value());
+  EXPECT_TRUE(ali_chrome->browser_extra_info.urls.empty());
 
   EXPECT_TRUE(ali_pwa != nullptr);
   EXPECT_TRUE(ali_pwa->window_id.has_value());
   EXPECT_EQ(ali_pwa->window_id.value(), 1);
-  EXPECT_TRUE(ali_pwa->display_id.has_value());
-  EXPECT_EQ(ali_pwa->display_id.value(), 100L);
-  EXPECT_FALSE(ali_pwa->active_tab_index.has_value());
-  EXPECT_TRUE(ali_pwa->urls.empty());
   EXPECT_TRUE(ali_pwa->override_url.has_value());
   EXPECT_EQ(ali_pwa->override_url.value(), kOverrideUrl);
+  EXPECT_TRUE(ali_pwa->display_id.has_value());
+  EXPECT_EQ(ali_pwa->display_id.value(), 100L);
+  EXPECT_FALSE(ali_pwa->browser_extra_info.active_tab_index.has_value());
+  EXPECT_TRUE(ali_pwa->browser_extra_info.urls.empty());
 
   EXPECT_TRUE(wi_chrome != nullptr);
   EXPECT_TRUE(wi_chrome->window_state_type.has_value());

@@ -13,12 +13,11 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/tab_groups/tab_group_info.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace app_restore {
 
@@ -96,19 +95,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   apps::IntentPtr intent = nullptr;
 
   // Additional info for browsers.
-  // TODO(sammiequon): Replace this with a `BrowserExtraInfo` object.
-  std::vector<GURL> urls;
-  std::optional<int32_t> active_tab_index;
-  std::optional<int32_t> first_non_pinned_tab_index;
-  std::optional<bool> app_type_browser;
-  std::optional<std::string> app_name;
-  // For Browsers only, represents tab groups associated with this browser
-  // instance if there are any. This is only used in Desks Storage, tab groups
-  // in full restore are persisted by sessions. This field is not converted to
-  // base::value in base value conversions.
-  std::vector<tab_groups::TabGroupInfo> tab_group_infos;
-  // Lacros only, the ID of the lacros profile that this browser uses.
-  std::optional<uint64_t> lacros_profile_id;
+  BrowserExtraInfo browser_extra_info;
 
   // Window's information.
   // TODO(sammiequon): Replace this with a `WindowInfo` object.
@@ -127,8 +114,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
 
   // Extra ARC window's information.
   // TODO(sammiequon): Replace this with a `ArcExtraInfo` object.
-  std::optional<gfx::Size> minimum_size;
   std::optional<gfx::Size> maximum_size;
+  std::optional<gfx::Size> minimum_size;
   std::optional<gfx::Rect> bounds_in_root;
   std::optional<uint32_t> primary_color;
   std::optional<uint32_t> status_bar_color;

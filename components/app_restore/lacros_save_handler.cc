@@ -103,10 +103,9 @@ void LacrosSaveHandler::OnBrowserWindowAdded(aura::Window* const window,
   window_candidates_[lacros_window_id].app_id = app_constants::kLacrosAppId;
   window_candidates_[lacros_window_id].window_id = browser_session_id;
 
-  std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
-      std::make_unique<app_restore::AppLaunchInfo>(app_constants::kLacrosAppId,
-                                                   browser_session_id);
-  app_launch_info->app_type_browser = is_browser_app;
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_constants::kLacrosAppId, browser_session_id);
+  app_launch_info->browser_extra_info.app_type_browser = is_browser_app;
   save_handler->AddAppLaunchInfo(profile_path_, std::move(app_launch_info));
 
   if (window_info) {

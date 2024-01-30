@@ -100,17 +100,18 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
     // tab. However, in this case we want to display the SWA's icon via its app
     // id so to determine whether `restore_data` is an SWA we need to check
     // whether it's a browser.
+    const app_restore::BrowserExtraInfo browser_extra_info =
+        restore_data.second->browser_extra_info;
     const bool is_browser =
         IsBrowserAppId(app_id) &&
-        (!restore_data.second->app_type_browser.has_value() ||
-         !restore_data.second->app_type_browser.value());
+        !browser_extra_info.app_type_browser.value_or(false);
     const int activation_index =
         restore_data.second->activation_index.value_or(0);
     const int active_tab_index =
-        restore_data.second->active_tab_index.value_or(-1);
+        browser_extra_info.active_tab_index.value_or(-1);
     const std::u16string app_title = restore_data.second->title.value_or(u"");
-    if (!restore_data.second->urls.empty() && is_browser) {
-      const auto& urls = restore_data.second->urls;
+    if (!restore_data.second->browser_extra_info.urls.empty() && is_browser) {
+      const auto& urls = browser_extra_info.urls;
       // Make all urls that have the same domain identical.
       std::map<GURL, size_t> domain_to_url_index;
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
@@ -132,8 +133,7 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
       // PWAs will have the same app id as chrome. For these apps, retrieve
       // their app id from their app name if possible.
       std::string new_app_id = app_id;
-      const std::optional<std::string>& app_name =
-          restore_data.second->app_name;
+      const std::optional<std::string>& app_name = browser_extra_info.app_name;
       if (IsBrowserAppId(app_id) && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
 
