@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteStatus"
-    enum="AboutThisSiteStatus" expires_after="2024-03-10">
+    enum="AboutThisSiteStatus" expires_after="2025-03-10">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
