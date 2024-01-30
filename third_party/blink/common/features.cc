@@ -1157,12 +1157,6 @@ BASE_FEATURE(kAttributionReportingInBrowserMigration,
              "kAttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables reporting as LCP of the time the first frame of an animated image was
-// painted.
-BASE_FEATURE(kLCPAnimatedImagesReporting,
-             "LCPAnimatedImagesReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1287,11 +1281,6 @@ const base::FeatureParam<bool>
     kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover{
         &kHttpDiskCachePrewarming,
         "http_disk_cache_prewarming_trigger_on_pointer_down_or_hover", true};
-
-// Enables reporting as LCP of the time the first frame of a video was painted.
-BASE_FEATURE(kLCPVideoFirstFrame,
-             "LCPVideoFirstFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLegacyParsingOfXContentTypeOptions,
              "LegacyParsingOfXContentTypeOptions",

@@ -58,13 +58,6 @@ uint64_t DownScaleIfIntrinsicSizeIsSmaller(
   return visual_size;
 }
 
-bool ShouldReportAnimatedImages() {
-  return (
-      RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled() &&
-      (base::FeatureList::IsEnabled(features::kLCPAnimatedImagesReporting) ||
-       base::FeatureList::IsEnabled(features::kLCPVideoFirstFrame)));
-}
-
 void RecordPotentialSoftNavigationPaint(LocalFrameView* frame_view,
                                         gfx::RectF rect,
                                         Node* node) {
@@ -171,25 +164,11 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
   ImageRecord* largest_image_record = records_manager_.LargestImage();
   base::TimeTicks time = largest_image_record ? largest_image_record->paint_time
                                               : base::TimeTicks();
-  // This doesn't use ShouldReportAnimatedImages(), as it should only update the
-  // record when the appropriate base::Feature (either
-  // kLCPAnimatedImagesReporting or kLCPVideoFirstFrame) is enabled, regardless
-  // of the state of the LCPAnimatedImagesWebExposed runtime-enabled flag.
   bool animated_first_frame_ready =
       largest_image_record &&
       !largest_image_record->first_animated_frame_time.is_null();
   if (animated_first_frame_ready) {
-    // If there is no media_timing or no first video frame, use the
-    // kLCPAnimatedImagesReporting flag. Otherwise, use the kLCPVideoFirstFrame
-    // flag.
-    bool is_video =
-        largest_image_record->media_timing &&
-        !largest_image_record->media_timing->GetFirstVideoFrameTime().is_null();
-    if (is_video ? base::FeatureList::IsEnabled(features::kLCPVideoFirstFrame)
-                 : base::FeatureList::IsEnabled(
-                       features::kLCPAnimatedImagesReporting)) {
-      time = largest_image_record->first_animated_frame_time;
-    }
+    time = largest_image_record->first_animated_frame_time;
   }
 
   const uint64_t size =
@@ -350,7 +329,8 @@ bool ImagePaintTimingDetector::RecordImage(
     ImageRecord* record = records_manager_.GetPendingImage(record_id_hash);
     if (!record)
       return false;
-    if (ShouldReportAnimatedImages() && media_timing.IsPaintedFirstFrame()) {
+    if (media_timing.IsPaintedFirstFrame() &&
+        RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled()) {
       added_entry_in_latest_frame_ |=
           records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
                                                        frame_index_);
@@ -392,7 +372,8 @@ bool ImagePaintTimingDetector::RecordImage(
   if (!added_pending)
     return false;
 
-  if (ShouldReportAnimatedImages() && media_timing.IsPaintedFirstFrame()) {
+  if (media_timing.IsPaintedFirstFrame() &&
+      RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled()) {
     added_entry_in_latest_frame_ |=
         records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
                                                      frame_index_);
