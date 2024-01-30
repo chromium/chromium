@@ -109,7 +109,7 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   void SetProcessExited(ProcessNodeImpl* process_node) {
     process_node->SetProcessExitStatus(0);
     // After a process exits, GetCumulativeCPUUsage() starts returning an error.
-    SetProcessCPUUsageError(process_node, base::TimeDelta());
+    SetProcessCPUUsageError(process_node, true);
   }
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
@@ -117,12 +117,8 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
-                               base::TimeDelta usage_error) {
-    delegate_factory_.GetDelegate(process_node).SetError(usage_error);
-  }
-
-  void ClearProcessCPUUsageError(const ProcessNodeImpl* process_node) {
-    delegate_factory_.GetDelegate(process_node).ClearError();
+                               bool has_error) {
+    delegate_factory_.GetDelegate(process_node).SetError(has_error);
   }
 
   // Calls StartMonitoring() on the CPUMeasurementMonitor under test, and
@@ -1162,8 +1158,6 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   SetProcessId(renderer1.get());
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
   SetProcessId(renderer2.get());
-  const TestNodeWrapper<ProcessNodeImpl> renderer3 = CreateMockCPURenderer();
-  SetProcessId(renderer3.get());
 
   // Advance the clock before monitoring starts, so that the process launch
   // times can be distinguished from the start of monitoring.
@@ -1172,14 +1166,14 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   StartMonitoring();
   const auto monitoring_start_time = base::TimeTicks::Now();
 
-  // `renderer1` and `renderer2` measure 100% CPU usage. `renderer3` and
-  // `renderer4` have errors before the first measurement. `renderer4` is
-  // created after monitoring starts.
+  // `renderer1` measures 100% CPU usage. `renderer2` and `renderer3` have
+  // errors before the first measurement. `renderer3` is created after
+  // monitoring starts.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  const TestNodeWrapper<ProcessNodeImpl> renderer4 = CreateMockCPURenderer();
-  SetProcessId(renderer4.get());
-  SetProcessCPUUsageError(renderer3.get(), base::TimeDelta::Min());
-  SetProcessCPUUsageError(renderer4.get(), base::TimeDelta::Min());
+  const TestNodeWrapper<ProcessNodeImpl> renderer3 = CreateMockCPURenderer();
+  SetProcessId(renderer3.get());
+  SetProcessCPUUsageError(renderer2.get(), true);
+  SetProcessCPUUsageError(renderer3.get(), true);
 
   // Finish the measurement period.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
@@ -1190,19 +1184,13 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
               AllOf(CPUDeltaMatches(renderer1->GetResourceContext(),
                                     kTimeBetweenMeasurements),
                     StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(current_measurements_[renderer2->GetResourceContext()],
-              AllOf(CPUDeltaMatches(renderer2->GetResourceContext(),
-                                    kTimeBetweenMeasurements),
-                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_FALSE(
+      base::Contains(current_measurements_, renderer2->GetResourceContext()));
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer4->GetResourceContext()));
 
-  // Most platforms returns a zero TimeDelta on error.
-  SetProcessCPUUsageError(renderer1.get(), base::TimeDelta());
-  // Linux returns a negative TimeDelta on error.
-  SetProcessCPUUsageError(renderer2.get(), base::TimeDelta::Min());
+  // `renderer1` starts returning errors.
+  SetProcessCPUUsageError(renderer1.get(), true);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();
@@ -1212,19 +1200,14 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
               CPUDeltaMatchesWithMeasurementTime(
                   renderer1->GetResourceContext(), base::TimeDelta(),
                   previous_measurement_time));
-  EXPECT_THAT(current_measurements_[renderer2->GetResourceContext()],
-              CPUDeltaMatchesWithMeasurementTime(
-                  renderer2->GetResourceContext(), base::TimeDelta(),
-                  previous_measurement_time));
+  EXPECT_FALSE(
+      base::Contains(current_measurements_, renderer2->GetResourceContext()));
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer4->GetResourceContext()));
 
-  ClearProcessCPUUsageError(renderer1.get());
-  ClearProcessCPUUsageError(renderer2.get());
-  ClearProcessCPUUsageError(renderer3.get());
-  ClearProcessCPUUsageError(renderer4.get());
+  SetProcessCPUUsageError(renderer1.get(), false);
+  SetProcessCPUUsageError(renderer2.get(), false);
+  SetProcessCPUUsageError(renderer3.get(), false);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();
@@ -1235,15 +1218,12 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
               CPUDeltaMatches(renderer1->GetResourceContext(),
                               kTimeBetweenMeasurements * 2));
   EXPECT_THAT(current_measurements_[renderer2->GetResourceContext()],
-              CPUDeltaMatches(renderer2->GetResourceContext(),
-                              kTimeBetweenMeasurements * 2));
-  EXPECT_THAT(current_measurements_[renderer3->GetResourceContext()],
-              AllOf(CPUDeltaMatches(renderer3->GetResourceContext(),
+              AllOf(CPUDeltaMatches(renderer2->GetResourceContext(),
                                     kTimeBetweenMeasurements * 3),
                     StartTimeMatches(monitoring_start_time)));
-  // `renderer4` was created halfway through the first interval.
-  EXPECT_THAT(current_measurements_[renderer4->GetResourceContext()],
-              AllOf(CPUDeltaMatches(renderer4->GetResourceContext(),
+  // `renderer3` was created halfway through the first interval.
+  EXPECT_THAT(current_measurements_[renderer3->GetResourceContext()],
+              AllOf(CPUDeltaMatches(renderer3->GetResourceContext(),
                                     kTimeBetweenMeasurements * 2.5),
                     StartTimeMatches(monitoring_start_time +
                                      kTimeBetweenMeasurements / 2)));

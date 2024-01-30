@@ -282,16 +282,21 @@ void PageResourceCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // In case 1 and case 2, the numerator is `GetCumulativeCPUUsage() -
   // most_recent_measurement_`. In case 3 and 4, GetCumulativeCPUUsage() will
   // return an error code.
-  base::TimeDelta current_cpu_usage = delegate_->GetCumulativeCPUUsage();
-  if (!current_cpu_usage.is_positive()) {
+  std::optional<base::TimeDelta> current_cpu_usage =
+      delegate_->GetCumulativeCPUUsage();
+  if (!current_cpu_usage.has_value()) {
     // GetCumulativeCPUUsage() failed. Don't update the measurement state.
-    // Most platforms return a zero TimeDelta on error, Linux returns a
-    // negative.
+    return;
+  }
+  std::optional<base::TimeDelta> previous_measurement =
+      most_recent_measurement_;
+  most_recent_measurement_ = current_cpu_usage;
+  if (!previous_measurement.has_value()) {
+    // This is the first successful measurement. Nothing to do.
     return;
   }
   const base::TimeDelta current_measurement =
-      current_cpu_usage - most_recent_measurement_;
-  most_recent_measurement_ = current_cpu_usage;
+      current_cpu_usage.value() - previous_measurement.value();
 
   const double current_cpu_proportion =
       current_measurement / measurement_interval;
