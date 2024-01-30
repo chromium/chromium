@@ -66,13 +66,13 @@
 #include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "base/scoped_observation.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -180,7 +180,8 @@ constexpr char kExpectedPDFAXTree[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
-#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && !defined(MEMORY_SANITIZER)
+
 constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
     "pdfRoot 'PDF document containing 1 page'\n"
     "  banner\n"
@@ -217,7 +218,9 @@ constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "  region 'Page 1'\n"
     "    paragraph\n"
     "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
+
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) &&
+        // !defined(MEMORY_SANITIZER)
 
 }  // namespace
 
@@ -1249,7 +1252,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 
 // TODO(crbug.com/1516559): Add a dummy library that is built with Chrome for
 // memory sanitizer tests.
-#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && !defined(MEMORY_SANITIZER)
 
 class ScreenAIInstallStateObserver
     : public screen_ai::ScreenAIInstallState::Observer {
@@ -1446,4 +1449,5 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
   ASSERT_MULTILINE_STREQ(kExpectedBlankPDFAXTreeWithPdfOcr, ax_tree_dump);
 }
 
-#endif  // BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) &&
+        // !defined(MEMORY_SANITIZER)

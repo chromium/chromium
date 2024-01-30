@@ -274,10 +274,12 @@ vars = {
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.128.1.7c74998-gomaip',
 
-  # screen-ai CIPD package Linux version
+  # screen-ai CIPD packages
   # TODO(b/281483558): Use a tag to download the latest version of screen-ai
   # (e.g. 'version:121.3') and find a way to automate updating //DEPS with it.
   'screen_ai_linux': 'x8c4xOQj3V2uyBicjNa2YkN71brkj5FZg157RueHF_oC',
+  'screen_ai_macos_amd64': 'STOrwjObcsaURUq2izEeXtnwtRhC5HLOTrcfXssSSioC',
+  'screen_ai_macos_arm64': 'bxhon5NsSW9znRLRHd79tTy_bkPCZojzLWb57La9RxsC',
 
   # The path of the sysroots.json file.
   # This is used by vendor builds like Electron.
@@ -4155,6 +4157,28 @@ deps = {
           },
       ],
       'condition': 'checkout_linux',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/screen-ai/macos_amd64': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/screen-ai/mac-amd64',
+              'version': Var('screen_ai_macos_amd64'),
+          },
+      ],
+      'condition': 'checkout_mac',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/screen-ai/macos_arm64': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/screen-ai/mac-arm64',
+              'version': Var('screen_ai_macos_arm64'),
+          },
+      ],
+      'condition': 'checkout_mac',
       'dep_type': 'cipd',
   },
 

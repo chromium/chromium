@@ -2870,10 +2870,10 @@ if (!is_android) {
           [ "../browser/screen_ai/screen_ai_service_router_browsertest.cc" ]
 
       if (is_linux) {
-        # Add a data dependency for pdf_extension_accessibility_test.cc to
+        # Add a data dependency for screen_ai_service_router_browsertest.cc to
         # notify testing builders that this test needs this library, which will
         # need to be downloaded from CIPD as defined in //DEPS.
-        data_deps += [ "//third_party/screen-ai:screen_ai_linux" ]
+        data_deps += [ "//third_party/screen-ai:screen_ai" ]
       }
     }
 
@@ -3069,11 +3069,12 @@ if (!is_android) {
         "//pdf/loader",
       ]
 
-      if (is_linux) {
-        # Add a data dependency for pdf_extension_accessibility_test.cc to
-        # notify testing builders that this test needs this library, which will
-        # need to be downloaded from CIPD as defined in //DEPS.
-        data_deps += [ "//third_party/screen-ai:screen_ai_linux" ]
+      # Add a data dependency for pdf_extension_accessibility_test.cc to notify
+      # testing builders that this test needs this library, which will need to
+      # be downloaded from CIPD as defined in //DEPS.
+      if (is_linux ||
+          (is_mac && (target_cpu == "amd64" || target_cpu == "arm64"))) {
+        data_deps += [ "//third_party/screen-ai:screen_ai" ]
       }
 
       if (enable_printing) {
