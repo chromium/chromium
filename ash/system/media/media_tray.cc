@@ -311,6 +311,7 @@ void MediaTray::CloseBubble() {
   content_view_ = nullptr;
   empty_state_view_ = nullptr;
   bubble_.reset();
+  UpdateDisplayState();
   shelf()->UpdateAutoHideState();
 }
 
@@ -381,7 +382,10 @@ void MediaTray::UpdateDisplayState() {
                      !Shell::Get()->session_controller()->IsScreenLocked() &&
                      IsPinnedToShelf();
 
-  SetVisiblePreferred(should_show);
+  // If the bubble is open, we don't want to hide the media tray.
+  if (!bubble_) {
+    SetVisiblePreferred(should_show);
+  }
 }
 
 void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
@@ -489,15 +493,6 @@ void MediaTray::ShowEmptyState() {
   empty_state_view->layer()->SetFillsBoundsOpaquely(false);
   empty_state_view_ =
       GetBubbleView()->AddChildView(std::move(empty_state_view));
-}
-
-void MediaTray::AnchorUpdated() {
-  if (!GetBubbleView()) {
-    return;
-  }
-
-  GetBubbleView()->SetAnchorRect(
-      shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
 }
 
 BEGIN_METADATA(MediaTray)

@@ -546,61 +546,6 @@ TrayBackgroundView* StatusAreaWidget::GetSystemTrayAnchor() const {
   return unified_system_tray_;
 }
 
-gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
-  if (!media_tray_) {
-    return gfx::Rect();
-  }
-
-  // Calculate anchor rect of media tray bubble. This is required because the
-  // bubble can be visible while the tray button is hidden. (e.g. when user
-  // clicks the unpin button in the dialog, which will not close the dialog)
-  bool found_media_tray = false;
-  int offset = 0;
-
-  // Accumulate the width/height of all visible tray buttons after media tray.
-  for (views::View* tray_button : tray_buttons_) {
-    if (tray_button == media_tray_) {
-      found_media_tray = true;
-      continue;
-    }
-
-    if (!found_media_tray || !tray_button->GetVisible()) {
-      continue;
-    }
-
-    offset += shelf_->IsHorizontalAlignment() ? tray_button->width()
-                                              : tray_button->height();
-  }
-
-  // Use system tray anchor view (system tray or overview button tray if
-  // visible) to find media tray button's origin.
-  gfx::Rect system_tray_bounds = GetSystemTrayAnchor()->GetBoundsInScreen();
-
-  switch (shelf_->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      if (base::i18n::IsRTL()) {
-        return gfx::Rect(system_tray_bounds.origin() + gfx::Vector2d(offset, 0),
-                         gfx::Size());
-      } else {
-        return gfx::Rect(
-            system_tray_bounds.top_right() - gfx::Vector2d(offset, 0),
-            gfx::Size());
-      }
-    case ShelfAlignment::kLeft:
-      return gfx::Rect(
-          system_tray_bounds.bottom_right() - gfx::Vector2d(0, offset),
-          gfx::Size());
-    case ShelfAlignment::kRight:
-      return gfx::Rect(
-          system_tray_bounds.bottom_left() - gfx::Vector2d(0, offset),
-          gfx::Size());
-  }
-
-  NOTREACHED();
-  return gfx::Rect();
-}
-
 bool StatusAreaWidget::ShouldShowShelf() const {
   // If it has main bubble, return true.
   if (unified_system_tray_->IsBubbleShown()) {

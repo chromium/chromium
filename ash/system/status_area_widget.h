@@ -111,9 +111,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // |overview_button_tray_|.
   TrayBackgroundView* GetSystemTrayAnchor() const;
 
-  // Called by media tray to calculate anchor rect.
-  gfx::Rect GetMediaTrayAnchorRect() const;
-
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
@@ -197,7 +194,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   TrayBubbleView* open_shelf_pod_bubble() { return open_shelf_pod_bubble_; }
 
  private:
-  friend class MediaTrayTest;
   friend class TrayBackgroundViewTest;
   friend class TrayEventFilterTest;
 
