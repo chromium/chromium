@@ -13,10 +13,13 @@ import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 import android.util.SparseArray;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -24,6 +27,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +42,33 @@ import java.util.Map;
 public class TabWindowManagerImpl implements ActivityStateListener, TabWindowManager {
 
     public static final String TAG_MULTI_INSTANCE = "MultiInstance";
+
+    /**
+     * Debugging enums representing activity state in {@link #assertIndicesMatch}. These values are
+     * persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        PreAssignedActivityState.UNKNOWN,
+        PreAssignedActivityState.NOT_IN_APP_TASK_IS_FINISHING,
+        PreAssignedActivityState.NOT_IN_APP_TASK_NOT_FINISHING,
+        PreAssignedActivityState.IN_APP_TASK_SAME_TASK_IS_FINISHING,
+        PreAssignedActivityState.IN_APP_TASK_SAME_TASK_NOT_FINISHING,
+        PreAssignedActivityState.IN_APP_TASK_DIFFERENT_TASK_IS_FINISHING,
+        PreAssignedActivityState.IN_APP_TASK_DIFFERENT_TASK_NOT_FINISHING,
+    })
+    @interface PreAssignedActivityState {
+        int UNKNOWN = 0;
+        int NOT_IN_APP_TASK_IS_FINISHING = 1;
+        int NOT_IN_APP_TASK_NOT_FINISHING = 2;
+        int IN_APP_TASK_SAME_TASK_IS_FINISHING = 3;
+        int IN_APP_TASK_SAME_TASK_NOT_FINISHING = 4;
+        int IN_APP_TASK_DIFFERENT_TASK_IS_FINISHING = 5;
+        int IN_APP_TASK_DIFFERENT_TASK_NOT_FINISHING = 6;
+        int NUM_ENTRIES = 7;
+    }
+
     private TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
@@ -121,10 +153,11 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     private void assertIndicesMatch(
-            int requestedIndex, int returnedIndex, String type, Activity activity) {
+            int requestedIndex, int returnedIndex, String type, Activity newActivity) {
         if (requestedIndex == returnedIndex
                 || !BuildConfig.ENABLE_ASSERTS
                 || BuildConfig.IS_FOR_TEST
+                // Needed for ActivityManager.RecentTaskInfo.taskId
                 || VERSION.SDK_INT < VERSION_CODES.Q) {
             return;
         }
@@ -145,48 +178,100 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         + " and returned "
                         + returnedIndex
                         + " new activity: "
-                        + activity
+                        + newActivity
                         + " new activity task id: "
-                        + activity.getTaskId()
+                        + newActivity.getTaskId()
                         + " activity at requested index: "
                         + activityAtRequestedIndex;
-        if (activityAtRequestedIndex != null) {
-            // Start actively listen to activity status once conflict at index is found.
-            ApplicationStatus.registerStateListenerForActivity(
-                    (activityAtIndex, newState) -> {
-                        final int localTaskId = ApplicationStatus.getTaskId(activityAtIndex);
-                        Log.i(
-                                TAG_MULTI_INSTANCE,
-                                "ActivityAtRequestedIndex "
-                                        + activityAtIndex
-                                        + " taskId "
-                                        + localTaskId
-                                        + " newState "
-                                        + newState);
-                    },
-                    activityAtRequestedIndex);
-
+        if (activityAtRequestedIndex == null) {
+            recordUmaForAssertIndicesMatch(PreAssignedActivityState.UNKNOWN);
+        } else {
+            int activityAtRequestedIndexTaskId = activityAtRequestedIndex.getTaskId();
+            boolean isFinishing = activityAtRequestedIndex.isFinishing();
             message +=
                     " ApplicationStatus activity state: "
                             + ApplicationStatus.getStateForActivity(activityAtRequestedIndex)
                             + " activity task Id: "
-                            + activityAtRequestedIndex.getTaskId()
+                            + activityAtRequestedIndexTaskId
                             + " activity is finishing? "
-                            + activityAtRequestedIndex.isFinishing()
+                            + isFinishing
                             + " tasks: [";
             ActivityManager activityManager =
                     (ActivityManager)
                             activityAtRequestedIndex.getSystemService(Context.ACTIVITY_SERVICE);
+
+            boolean isInAppTask = false;
             for (AppTask task : activityManager.getAppTasks()) {
                 ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
                 message += info + ";\n";
+                if (info.taskId == activityAtRequestedIndexTaskId) {
+                    isInAppTask = true;
+                }
             }
 
             message += "]";
+
+            boolean isSameTask = activityAtRequestedIndexTaskId == newActivity.getTaskId();
+            @PreAssignedActivityState
+            int state = getPreAssignedActivityState(isInAppTask, isSameTask, isFinishing);
+            recordUmaForAssertIndicesMatch(state);
+
+            // Start actively listen to activity status once conflict at index is found.
+            ApplicationStatus.registerStateListenerForActivity(
+                    getActivityStateListenerForPreAssignedActivity(state),
+                    activityAtRequestedIndex);
         }
 
         assert requestedIndex == returnedIndex : message;
         Log.i(TAG_MULTI_INSTANCE, message);
+    }
+
+    private @PreAssignedActivityState int getPreAssignedActivityState(
+            boolean isInAppTask, boolean isSameTask, boolean isFinishing) {
+        if (!isInAppTask) {
+            return isFinishing
+                    ? PreAssignedActivityState.NOT_IN_APP_TASK_IS_FINISHING
+                    : PreAssignedActivityState.NOT_IN_APP_TASK_NOT_FINISHING;
+        }
+        if (isSameTask) {
+            return isFinishing
+                    ? PreAssignedActivityState.IN_APP_TASK_SAME_TASK_IS_FINISHING
+                    : PreAssignedActivityState.IN_APP_TASK_SAME_TASK_NOT_FINISHING;
+        }
+        return isFinishing
+                ? PreAssignedActivityState.IN_APP_TASK_DIFFERENT_TASK_IS_FINISHING
+                : PreAssignedActivityState.IN_APP_TASK_DIFFERENT_TASK_NOT_FINISHING;
+    }
+
+    private void recordUmaForAssertIndicesMatch(@PreAssignedActivityState int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.MultiWindowMode.AssertIndicesMatch",
+                state,
+                PreAssignedActivityState.NUM_ENTRIES);
+    }
+
+    private ActivityStateListener getActivityStateListenerForPreAssignedActivity(
+            @PreAssignedActivityState int state) {
+        return (activityAtIndex, newState) -> {
+            final int localTaskId = ApplicationStatus.getTaskId(activityAtIndex);
+            Log.i(
+                    TAG_MULTI_INSTANCE,
+                    "ActivityAtRequestedIndex "
+                            + activityAtIndex
+                            + " taskId "
+                            + localTaskId
+                            + " newState "
+                            + newState
+                            + " state during indices mismatch "
+                            + state);
+
+            if (newState == ActivityState.DESTROYED) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed",
+                        state,
+                        PreAssignedActivityState.NUM_ENTRIES);
+            }
+        };
     }
 
     @Override
