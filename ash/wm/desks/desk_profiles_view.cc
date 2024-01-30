@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -30,8 +31,7 @@ namespace {
 constexpr gfx::Size kIconButtonSize(22, 22);
 }  // namespace
 
-DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
-                                       Desk* desk)
+DeskProfilesButton::DeskProfilesButton(Desk* desk, bool owner_bar_is_overview)
     : desk_(desk) {
   desk_->AddObserver(this);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -44,6 +44,15 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
+  if (owner_bar_is_overview) {
+    focus_ring->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<DeskProfilesButton>(view);
+          CHECK(v);
+          return v->is_focused();
+        }));
+  }
+
   views::InstallCircleHighlightPathGenerator(this);
 
   LoadIconForProfile();
@@ -73,14 +82,18 @@ void DeskProfilesButton::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
   base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
   if (event.IsLeftMouseButton()) {
-    CreateMenu(event);
+    gfx::Point location_in_screen(event.location());
+    View::ConvertPointToScreen(this, &location_in_screen);
+    CreateMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);
   }
   return ImageButton::OnMousePressed(event);
 }
 
 void DeskProfilesButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
-    CreateMenu(*event);
+    gfx::Point location_in_screen(event->location());
+    View::ConvertPointToScreen(this, &location_in_screen);
+    CreateMenu(location_in_screen, ui::MENU_SOURCE_TOUCH);
   }
 }
 
@@ -114,13 +127,39 @@ void DeskProfilesButton::LoadIconForProfile() {
   }
 }
 
-void DeskProfilesButton::CreateMenu(const ui::LocatedEvent& event) {
+bool DeskProfilesButton::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_RETURN ||
+      event.key_code() == ui::VKEY_SPACE) {
+    CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
+  }
+
+  return ImageButton::OnKeyPressed(event);
+}
+
+views::View* DeskProfilesButton::GetView() {
+  return this;
+}
+
+void DeskProfilesButton::MaybeActivateFocusedView() {
+  CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
+}
+
+void DeskProfilesButton::MaybeCloseFocusedView(bool primary_action) {}
+void DeskProfilesButton::MaybeSwapFocusedView(bool right) {}
+
+void DeskProfilesButton::OnFocusableViewFocused() {
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
+void DeskProfilesButton::OnFocusableViewBlurred() {
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
+void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,
+                                    ui::MenuSourceType menu_source) {
   if (!desk_ || context_menu_) {
     return;
   }
-
-  gfx::Point location_in_screen(event.location());
-  View::ConvertPointToScreen(this, &location_in_screen);
 
   DeskActionContextMenu::Config menu_config;
   menu_config.on_context_menu_closed_callback = base::BindRepeating(
@@ -137,9 +176,7 @@ void DeskProfilesButton::CreateMenu(const ui::LocatedEvent& event) {
 
   context_menu_ =
       std::make_unique<DeskActionContextMenu>(std::move(menu_config));
-  context_menu_->ShowContextMenuForView(
-      this, location_in_screen,
-      event.IsTouchEvent() ? ui::MENU_SOURCE_TOUCH : ui::MENU_SOURCE_MOUSE);
+  context_menu_->ShowContextMenuForView(this, location_in_screen, menu_source);
 }
 
 void DeskProfilesButton::OnMenuClosed() {

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
@@ -15,17 +16,18 @@
 namespace ash {
 
 class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
-                                      public Desk::Observer {
+                                      public Desk::Observer,
+                                      public OverviewFocusableView {
   METADATA_HEADER(DeskProfilesButton, views::ImageButton)
 
  public:
-  explicit DeskProfilesButton(views::Button::PressedCallback callback,
-                              Desk* desk);
+  // Creates a DeskProfilesButton for desk `desk`. If `owner_bar_is_overview`,
+  // then a focus predicate is installed on the focus ring. This is required
+  // to properly implement the `OverviewFocusableView` interface.
+  DeskProfilesButton(Desk* desk, bool owner_bar_is_overview);
   DeskProfilesButton(const DeskProfilesButton&) = delete;
   DeskProfilesButton& operator=(const DeskProfilesButton&) = delete;
   ~DeskProfilesButton() override;
-
-  const Desk* desk() const { return desk_; }
 
   // This is non-null when the profile menu is visible.
   DeskActionContextMenu* menu() const { return context_menu_.get(); }
@@ -39,13 +41,23 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   // views::ImageButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+
+  // OverviewFocusableView:
+  views::View* GetView() override;
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
  private:
   // Loads the icon that is currently associated with `desk_`.
   void LoadIconForProfile();
 
   // Helper function to create context menu when needed.
-  void CreateMenu(const ui::LocatedEvent& event);
+  void CreateMenu(gfx::Point location_in_screen,
+                  ui::MenuSourceType menu_source);
 
   // Invoked when the context menu is closed.
   void OnMenuClosed();

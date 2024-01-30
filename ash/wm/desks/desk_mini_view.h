@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +26,7 @@ class DeskActionView;
 class DeskBarViewBase;
 class DeskNameView;
 class DeskPreviewView;
+class DeskProfilesButton;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -66,6 +66,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
+
+  DeskProfilesButton* desk_profiles_button() { return desk_profile_button_; }
 
   DeskBarViewBase* owner_bar() { return owner_bar_; }
   const DeskBarViewBase* owner_bar() const { return owner_bar_; }
@@ -173,8 +175,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnSetLacrosProfileId(uint64_t lacros_profile_id);
 
   void OnDeskPreviewPressed();
-
-  void OnDeskProfilesButtonPressed();
 
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);
