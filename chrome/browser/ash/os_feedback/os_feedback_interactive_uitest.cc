@@ -117,7 +117,14 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
-IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
+// crbug.com/1517839
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SubmitFeedbackThenExit DISABLED_SubmitFeedbackThenExit
+#else
+#define MAYBE_SubmitFeedbackThenExit SubmitFeedbackThenExit
+#endif
+IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
+                       MAYBE_SubmitFeedbackThenExit) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-3f028d06-0100-4b5b-b1f3-99ceeaf3d62b");
   // Query to pierce through Shadow DOM to find the description element on the
