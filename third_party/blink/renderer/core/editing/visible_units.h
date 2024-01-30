@@ -29,13 +29,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace gfx {
 class Point;
 class Rect;
+class RectF;
 }  // namespace gfx
 
 namespace blink {

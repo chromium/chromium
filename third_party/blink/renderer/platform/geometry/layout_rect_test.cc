@@ -14,7 +14,8 @@ TEST(DeprecatedLayoutRectTest, ToString) {
   DeprecatedLayoutRect empty_rect = DeprecatedLayoutRect();
   EXPECT_EQ("0,0 0x0", empty_rect.ToString());
 
-  DeprecatedLayoutRect rect(1, 2, 3, 4);
+  DeprecatedLayoutRect rect(LayoutUnit(1), LayoutUnit(2), LayoutUnit(3),
+                            LayoutUnit(4));
   EXPECT_EQ("1,2 3x4", rect.ToString());
 
   DeprecatedLayoutRect granular_rect(LayoutUnit(1.6f), LayoutUnit(2.7f),
