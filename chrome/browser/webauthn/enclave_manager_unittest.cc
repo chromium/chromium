@@ -348,8 +348,11 @@ TEST_F(EnclaveManagerTest, Basic) {
   {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
     ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-    ui_request->wrapped_keys = {
-        *manager_.GetWrappedKey(/*version=*/kKeyVersion)};
+    int32_t key_version;
+    std::vector<uint8_t> wrapped_key;
+    std::tie(key_version, wrapped_key) = manager_.GetCurrentWrappedKey();
+    EXPECT_EQ(key_version, kKeyVersion);
+    ui_request->wrapped_keys = {std::move(wrapped_key)};
     ui_request->wrapped_key_version = kKeyVersion;
 
     std::optional<sync_pb::WebauthnCredentialSpecifics> specifics;

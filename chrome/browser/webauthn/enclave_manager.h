@@ -112,6 +112,16 @@ class EnclaveManager : public KeyedService {
   // Fetch all wrapped security domain secrets, for when it's unknown which one
   // a WebauthnCredentialSpecifics will need. Only valid to call if `is_ready`.
   std::vector<std::vector<uint8_t>> GetWrappedKeys();
+  // Get the version and value of the current wrapped secret. Only valid to call
+  // if `is_ready`.
+  //
+  // TODO(enclave): rename everything that's currently "wrapped_key" to be
+  // "wrapped_secret" so that it matches up with the naming in the enclave code.
+  std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedKey();
+
+  // Get an access token for contacting the enclave.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> GetAccessToken(
+      base::OnceCallback<void(std::optional<std::string>)> callback);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -198,7 +208,7 @@ class EnclaveManager : public KeyedService {
   void DoWriteState();
   void WriteStateComplete(bool success);
 
-  void GetAccessToken();
+  void GetAccessTokenInternal();
   static base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
       const webauthn_pb::EnclaveLocalState_User& user,
       const StoreKeysArgs& args);
