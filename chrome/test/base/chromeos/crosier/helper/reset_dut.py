@@ -94,6 +94,7 @@ def reset_system_state_files():
     _run_cmd(["cryptohome", "--action=pkcs11_terminate"])
     _run_cmd(["cryptohome", "--action=unmount"])
     _run_cmd(["umount", "/run/namespaces/mnt_chrome"])
+    _run_cmd(["process_killer", "--session", "--mount_holders"])
 
     # Stops daemons that touch the system state files. Note the script does
     # not touch `ui` service because it runs as part of
