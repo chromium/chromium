@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -26,6 +27,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -46,7 +48,8 @@ declare global {
 export interface SettingsAutofillSectionElement {
   $: {
     autofillProfileToggle: SettingsToggleButtonElement,
-    autofillSyncToggle: SettingsToggleButtonElement,
+    autofillSyncToggleWrapper: HTMLElement,
+    autofillSyncToggle: CrToggleElement,
     addressSharedMenu: CrActionMenuElement,
     addAddress: CrButtonElement,
     addressList: HTMLElement,
@@ -96,6 +99,11 @@ export class SettingsAutofillSectionElement extends
   override ready() {
     super.ready();
     this.addEventListener('save-address', this.saveAddress_);
+
+    // This is to mimic the behaviour of <settings-toggle-button>.
+    this.$.autofillSyncToggleWrapper.addEventListener('click', () => {
+      this.$.autofillSyncToggle.click();
+    });
   }
 
   override connectedCallback() {
