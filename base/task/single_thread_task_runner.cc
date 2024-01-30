@@ -37,6 +37,10 @@ SingleThreadTaskRunner::CurrentDefaultHandle* GetCurrentDefaultHandle() {
 
 }  // namespace
 
+bool SingleThreadTaskRunner::BelongsToCurrentThread() const {
+  return RunsTasksInCurrentSequence();
+}
+
 // static
 const scoped_refptr<SingleThreadTaskRunner>&
 SingleThreadTaskRunner::GetCurrentDefault() {

@@ -232,7 +232,12 @@ void ChannelPosix::WaitForWriteOnIOThreadNoLock() {
     return;
   if (!write_watcher_)
     return;
-  if (io_task_runner_->RunsTasksInCurrentSequence()) {
+  // This may be called from a `RunOrPostTask()` callback running in sequence
+  // with the IO thread, but on a different thread. In that case,
+  // `RunsTaskInCurrentSequence()` would return true, so use
+  // `BelongsToCurrentThread()` to detect that we aren't on the IO thread
+  // (otherwise, `base::CurrentIOThread::Get()` would fail).
+  if (io_task_runner_->BelongsToCurrentThread()) {
     pending_write_ = true;
     base::CurrentIOThread::Get()->WatchFileDescriptor(
         socket_.get(), false /* persistent */,
