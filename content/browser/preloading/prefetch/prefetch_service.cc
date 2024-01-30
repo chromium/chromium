@@ -337,7 +337,7 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
   return origin_prober_.get();
 }
 
-void PrefetchService::AddPrefetchContainer(
+void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
@@ -362,7 +362,14 @@ void PrefetchService::AddPrefetchContainer(
 
   owned_prefetches_[prefetch_container_key] =
       std::move(owned_prefetch_container);
+}
 
+void PrefetchService::AddPrefetchContainer(
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetch_container->GetWeakPtr();
+  AddPrefetchContainerWithoutStartingPrefetch(
+      std::move(owned_prefetch_container));
   PrefetchUrl(std::move(prefetch_container));
 }
 
