@@ -478,7 +478,7 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
 // Autofill popup.
 BASE_FEATURE(kAutofillShowAutocompleteDeleteButton,
              "AutofillShowAutocompleteDeleteButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether granular filling will be available in the autofill popup.
 // TODO(crbug.com/1459990): Clean up when launched.
