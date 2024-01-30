@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CACHED_FILE_SYSTEM_H_
-#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CACHED_FILE_SYSTEM_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CLOUD_FILE_SYSTEM_H_
+#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CLOUD_FILE_SYSTEM_H_
 
 #include <memory>
 #include <string>
@@ -34,15 +34,15 @@ namespace ash::file_system_provider {
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
 // currently this is hidden behind the `FileSystemProviderContentCache` feature
 // flag.
-class CachedFileSystem : public ProvidedFileSystemInterface {
+class CloudFileSystem : public ProvidedFileSystemInterface {
  public:
-  CachedFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
+  CloudFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
                    ContentCache* content_cache);
 
-  CachedFileSystem(const CachedFileSystem&) = delete;
-  CachedFileSystem& operator=(const CachedFileSystem&) = delete;
+  CloudFileSystem(const CloudFileSystem&) = delete;
+  CloudFileSystem& operator=(const CloudFileSystem&) = delete;
 
-  ~CachedFileSystem() override;
+  ~CloudFileSystem() override;
 
   // ProvidedFileSystemInterface
   AbortCallback RequestUnmount(
@@ -134,9 +134,9 @@ class CachedFileSystem : public ProvidedFileSystemInterface {
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
   raw_ptr<ContentCache> content_cache_;  // Not owned.
 
-  base::WeakPtrFactory<CachedFileSystem> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CloudFileSystem> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::file_system_provider
 
-#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CACHED_FILE_SYSTEM_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CLOUD_FILE_SYSTEM_H_

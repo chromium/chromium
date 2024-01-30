@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/file_system_provider/cached_file_system.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
@@ -103,7 +103,7 @@ ExtensionProvider::CreateProvidedFileSystem(
   // is enabled and the provider is ODFS.
   if (file_system_info.cache_type() != CacheType::NONE) {
     return std::make_unique<ThrottledFileSystem>(
-        std::make_unique<CachedFileSystem>(
+        std::make_unique<CloudFileSystem>(
             std::make_unique<ProvidedFileSystem>(profile, file_system_info),
             content_cache));
   }

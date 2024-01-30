@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/cached_file_system.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 
 #include <memory>
 #include <utility>
@@ -70,20 +70,20 @@ std::ostream& operator<<(std::ostream& out,
 
 }  // namespace
 
-CachedFileSystem::CachedFileSystem(
+CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system,
     ContentCache* content_cache)
     : file_system_(std::move(file_system)), content_cache_(content_cache) {}
 
-CachedFileSystem::~CachedFileSystem() = default;
+CloudFileSystem::~CloudFileSystem() = default;
 
-AbortCallback CachedFileSystem::RequestUnmount(
+AbortCallback CloudFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(2) << "RequestUnmount {fsid = " << GetFileSystemId() << "}";
   return file_system_->RequestUnmount(std::move(callback));
 }
 
-AbortCallback CachedFileSystem::GetMetadata(const base::FilePath& entry_path,
+AbortCallback CloudFileSystem::GetMetadata(const base::FilePath& entry_path,
                                             MetadataFieldMask fields,
                                             GetMetadataCallback callback) {
   VLOG(2) << "GetMetadata {fsid = '" << GetFileSystemId() << "', entry_path = '"
@@ -91,7 +91,7 @@ AbortCallback CachedFileSystem::GetMetadata(const base::FilePath& entry_path,
   return file_system_->GetMetadata(entry_path, fields, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::GetActions(
+AbortCallback CloudFileSystem::GetActions(
     const std::vector<base::FilePath>& entry_paths,
     GetActionsCallback callback) {
   VLOG(2) << "GetActions {fsid = '" << GetFileSystemId() << "', entry_paths = '"
@@ -99,7 +99,7 @@ AbortCallback CachedFileSystem::GetActions(
   return file_system_->GetActions(entry_paths, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::ExecuteAction(
+AbortCallback CloudFileSystem::ExecuteAction(
     const std::vector<base::FilePath>& entry_paths,
     const std::string& action_id,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -110,7 +110,7 @@ AbortCallback CachedFileSystem::ExecuteAction(
                                      std::move(callback));
 }
 
-AbortCallback CachedFileSystem::ReadDirectory(
+AbortCallback CloudFileSystem::ReadDirectory(
     const base::FilePath& directory_path,
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
   VLOG(1) << "ReadDirectory {fsid = '" << GetFileSystemId()
@@ -118,7 +118,7 @@ AbortCallback CachedFileSystem::ReadDirectory(
   return file_system_->ReadDirectory(directory_path, callback);
 }
 
-AbortCallback CachedFileSystem::ReadFile(int file_handle,
+AbortCallback CloudFileSystem::ReadFile(int file_handle,
                                          net::IOBuffer* buffer,
                                          int64_t offset,
                                          int length,
@@ -129,7 +129,7 @@ AbortCallback CachedFileSystem::ReadFile(int file_handle,
   return file_system_->ReadFile(file_handle, buffer, offset, length, callback);
 }
 
-AbortCallback CachedFileSystem::OpenFile(const base::FilePath& file_path,
+AbortCallback CloudFileSystem::OpenFile(const base::FilePath& file_path,
                                          OpenFileMode mode,
                                          OpenFileCallback callback) {
   VLOG(1) << "OpenFile {fsid = '" << GetFileSystemId() << "', file_path = '"
@@ -137,7 +137,7 @@ AbortCallback CachedFileSystem::OpenFile(const base::FilePath& file_path,
   return file_system_->OpenFile(file_path, mode, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::CloseFile(
+AbortCallback CloudFileSystem::CloseFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(1) << "CloseFile {fsid = '" << GetFileSystemId() << "', file_handle = '"
@@ -145,7 +145,7 @@ AbortCallback CachedFileSystem::CloseFile(
   return file_system_->CloseFile(file_handle, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::CreateDirectory(
+AbortCallback CloudFileSystem::CreateDirectory(
     const base::FilePath& directory_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -156,7 +156,7 @@ AbortCallback CachedFileSystem::CreateDirectory(
                                        std::move(callback));
 }
 
-AbortCallback CachedFileSystem::DeleteEntry(
+AbortCallback CloudFileSystem::DeleteEntry(
     const base::FilePath& entry_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -165,7 +165,7 @@ AbortCallback CachedFileSystem::DeleteEntry(
   return file_system_->DeleteEntry(entry_path, recursive, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::CreateFile(
+AbortCallback CloudFileSystem::CreateFile(
     const base::FilePath& file_path,
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(1) << "CreateFile {fsid = '" << GetFileSystemId() << "', file_path = '"
@@ -173,7 +173,7 @@ AbortCallback CachedFileSystem::CreateFile(
   return file_system_->CreateFile(file_path, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::CopyEntry(
+AbortCallback CloudFileSystem::CopyEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -182,7 +182,7 @@ AbortCallback CachedFileSystem::CopyEntry(
   return file_system_->CopyEntry(source_path, target_path, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::WriteFile(
+AbortCallback CloudFileSystem::WriteFile(
     int file_handle,
     net::IOBuffer* buffer,
     int64_t offset,
@@ -195,7 +195,7 @@ AbortCallback CachedFileSystem::WriteFile(
                                  std::move(callback));
 }
 
-AbortCallback CachedFileSystem::FlushFile(
+AbortCallback CloudFileSystem::FlushFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(1) << "FlushFile {fsid = '" << GetFileSystemId() << "', file_handle = '"
@@ -203,7 +203,7 @@ AbortCallback CachedFileSystem::FlushFile(
   return file_system_->FlushFile(file_handle, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::MoveEntry(
+AbortCallback CloudFileSystem::MoveEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -212,7 +212,7 @@ AbortCallback CachedFileSystem::MoveEntry(
   return file_system_->MoveEntry(source_path, target_path, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::Truncate(
+AbortCallback CloudFileSystem::Truncate(
     const base::FilePath& file_path,
     int64_t length,
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -221,7 +221,7 @@ AbortCallback CachedFileSystem::Truncate(
   return file_system_->Truncate(file_path, length, std::move(callback));
 }
 
-AbortCallback CachedFileSystem::AddWatcher(
+AbortCallback CloudFileSystem::AddWatcher(
     const GURL& origin,
     const base::FilePath& entry_path,
     bool recursive,
@@ -237,7 +237,7 @@ AbortCallback CachedFileSystem::AddWatcher(
                                   std::move(notification_callback));
 }
 
-void CachedFileSystem::RemoveWatcher(
+void CloudFileSystem::RemoveWatcher(
     const GURL& origin,
     const base::FilePath& entry_path,
     bool recursive,
@@ -249,31 +249,31 @@ void CachedFileSystem::RemoveWatcher(
                               std::move(callback));
 }
 
-const ProvidedFileSystemInfo& CachedFileSystem::GetFileSystemInfo() const {
+const ProvidedFileSystemInfo& CloudFileSystem::GetFileSystemInfo() const {
   return file_system_->GetFileSystemInfo();
 }
 
-OperationRequestManager* CachedFileSystem::GetRequestManager() {
+OperationRequestManager* CloudFileSystem::GetRequestManager() {
   return file_system_->GetRequestManager();
 }
 
-Watchers* CachedFileSystem::GetWatchers() {
+Watchers* CloudFileSystem::GetWatchers() {
   return file_system_->GetWatchers();
 }
 
-const OpenedFiles& CachedFileSystem::GetOpenedFiles() const {
+const OpenedFiles& CloudFileSystem::GetOpenedFiles() const {
   return file_system_->GetOpenedFiles();
 }
 
-void CachedFileSystem::AddObserver(ProvidedFileSystemObserver* observer) {
+void CloudFileSystem::AddObserver(ProvidedFileSystemObserver* observer) {
   file_system_->AddObserver(observer);
 }
 
-void CachedFileSystem::RemoveObserver(ProvidedFileSystemObserver* observer) {
+void CloudFileSystem::RemoveObserver(ProvidedFileSystemObserver* observer) {
   file_system_->RemoveObserver(observer);
 }
 
-void CachedFileSystem::Notify(
+void CloudFileSystem::Notify(
     const base::FilePath& entry_path,
     bool recursive,
     storage::WatcherManager::ChangeType change_type,
@@ -289,21 +289,21 @@ void CachedFileSystem::Notify(
                               std::move(changes), tag, std::move(callback));
 }
 
-void CachedFileSystem::Configure(
+void CloudFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
   return file_system_->Configure(std::move(callback));
 }
 
-base::WeakPtr<ProvidedFileSystemInterface> CachedFileSystem::GetWeakPtr() {
+base::WeakPtr<ProvidedFileSystemInterface> CloudFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<ScopedUserInteraction>
-CachedFileSystem::StartUserInteraction() {
+CloudFileSystem::StartUserInteraction() {
   return file_system_->StartUserInteraction();
 }
 
-const std::string CachedFileSystem::GetFileSystemId() const {
+const std::string CloudFileSystem::GetFileSystemId() const {
   return file_system_->GetFileSystemInfo().file_system_id();
 }
 
