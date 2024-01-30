@@ -1188,6 +1188,25 @@ class ChoobeDisplaySizeTester extends ScreenElementApi {
   }
 }
 
+class HWDataCollectionScreenTester extends ScreenElementApi {
+  constructor() {
+    super('hw-data-collection');
+    this.nextButton = new PolymerElementApi(this, '#acceptButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipHwDataCollection');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
 
 export class OobeApiProvider {
   constructor() {
@@ -1223,6 +1242,7 @@ export class OobeApiProvider {
       ChoobeDrivePinningScreen: new ChoobeDrivePinningScreenTester(),
       ChoobeTouchpadScrollScreen: new ChoobeTouchpadScrollScreenTester(),
       ChoobeDisplaySizeScreen: new ChoobeDisplaySizeTester(),
+      HWDataCollectionScreen: new HWDataCollectionScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
