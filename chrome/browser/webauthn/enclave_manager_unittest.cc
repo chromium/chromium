@@ -182,6 +182,11 @@ std::unique_ptr<network::NetworkService> CreateNetwork(
   return service;
 }
 
+scoped_refptr<device::JSONRequest> JSONFromString(base::StringPiece json_str) {
+  base::Value json_request = base::JSONReader::Read(json_str).value();
+  return base::MakeRefCounted<device::JSONRequest>(std::move(json_request));
+}
+
 class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
  public:
   EnclaveManagerTest()
@@ -276,6 +281,7 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
+  const int32_t kKeyVersion = 417;
   url_loader_factory_.AddResponse(
       GetFullJoinSecurityDomainsURLForTesting(
           trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
@@ -283,7 +289,8 @@ TEST_F(EnclaveManagerTest, Basic) {
           .spec(),
       MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)}, /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kKeyVersion);
   ASSERT_FALSE(manager_.is_idle());
   RunUntilIdle();
   ASSERT_TRUE(manager_.is_idle());
@@ -291,50 +298,130 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_TRUE(manager_.is_ready());
 
-  auto ui_request = std::make_unique<enclave::CredentialRequest>();
-  ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-  ui_request->wrapped_keys = {*manager_.GetWrappedKey(/*version=*/417)};
-  ui_request->entity = GetTestEntity();
+  {
+    auto ui_request = std::make_unique<enclave::CredentialRequest>();
+    ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+    ui_request->wrapped_keys = {
+        *manager_.GetWrappedKey(/*version=*/kKeyVersion)};
+    ui_request->entity = GetTestEntity();
 
-  enclave::EnclaveAuthenticator authenticator(
-      std::move(ui_request), /*save_passkey_callback=*/
-      base::BindRepeating(
-          [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
-      network_context_.get());
-  device::CtapGetAssertionRequest ctap_request("test.com", R"({"foo": "bar"})");
-  ctap_request.allow_list.emplace_back(device::PublicKeyCredentialDescriptor(
-      device::CredentialType::kPublicKey, /*id=*/{1, 2, 3, 4}));
+    enclave::EnclaveAuthenticator authenticator(
+        std::move(ui_request), /*save_passkey_callback=*/
+        base::BindRepeating(
+            [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
+        network_context_.get());
 
-  const base::StringPiece json_request_str =
-      R"({
-           "allowCredentials": [ ],
-           "challenge": "CYO8B30gOPIOVFAaU61J7PvoETG_sCZQ38Gzpu",
-           "rpId": "webauthn.io",
-           "userVerification": "preferred"
-         })";
-  base::Value json_request = base::JSONReader::Read(json_request_str).value();
-  device::CtapGetAssertionOptions ctap_options;
-  ctap_options.json =
-      base::MakeRefCounted<device::JSONRequest>(std::move(json_request));
+    device::CtapGetAssertionRequest ctap_request("test.com",
+                                                 R"({"foo": "bar"})");
+    ctap_request.allow_list.emplace_back(device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, /*id=*/{1, 2, 3, 4}));
 
-  auto quit_closure = task_env_.QuitClosure();
-  device::CtapDeviceResponseCode status;
-  std::vector<device::AuthenticatorGetAssertionResponse> responses;
-  authenticator.GetAssertion(
-      std::move(ctap_request), std::move(ctap_options),
-      base::BindLambdaForTesting(
-          [&quit_closure, &status, &responses](
-              device::CtapDeviceResponseCode in_status,
-              std::vector<device::AuthenticatorGetAssertionResponse>
-                  in_responses) {
-            status = in_status;
-            responses = std::move(in_responses);
-            quit_closure.Run();
-          }));
-  task_env_.RunUntilQuit();
+    device::CtapGetAssertionOptions ctap_options;
+    ctap_options.json = JSONFromString(R"({
+        "allowCredentials": [ ],
+        "challenge": "CYO8B30gOPIOVFAaU61J7PvoETG_sCZQ38Gzpu",
+        "rpId": "webauthn.io",
+        "userVerification": "preferred"
+    })");
 
-  ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
-  ASSERT_EQ(responses.size(), 1u);
+    auto quit_closure = task_env_.QuitClosure();
+    std::optional<device::CtapDeviceResponseCode> status;
+    std::vector<device::AuthenticatorGetAssertionResponse> responses;
+    authenticator.GetAssertion(
+        std::move(ctap_request), std::move(ctap_options),
+        base::BindLambdaForTesting(
+            [&quit_closure, &status, &responses](
+                device::CtapDeviceResponseCode in_status,
+                std::vector<device::AuthenticatorGetAssertionResponse>
+                    in_responses) {
+              status = in_status;
+              responses = std::move(in_responses);
+              quit_closure.Run();
+            }));
+    task_env_.RunUntilQuit();
+
+    ASSERT_TRUE(status.has_value());
+    ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
+    ASSERT_EQ(responses.size(), 1u);
+  }
+
+  {
+    auto ui_request = std::make_unique<enclave::CredentialRequest>();
+    ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+    ui_request->wrapped_keys = {
+        *manager_.GetWrappedKey(/*version=*/kKeyVersion)};
+    ui_request->wrapped_key_version = kKeyVersion;
+
+    std::optional<sync_pb::WebauthnCredentialSpecifics> specifics;
+
+    enclave::EnclaveAuthenticator authenticator(
+        std::move(ui_request), /*save_passkey_callback=*/
+        base::BindLambdaForTesting(
+            [&specifics](sync_pb::WebauthnCredentialSpecifics in_specifics) {
+              specifics.emplace(std::move(in_specifics));
+            }),
+        network_context_.get());
+
+    std::vector<device::PublicKeyCredentialParams::CredentialInfo>
+        pub_key_params;
+    pub_key_params.emplace_back(
+        device::PublicKeyCredentialParams::CredentialInfo());
+
+    device::MakeCredentialOptions ctap_options;
+    ctap_options.json = JSONFromString(R"({
+        "attestation": "none",
+        "authenticatorSelection": {
+          "residentKey": "preferred",
+          "userVerification": "preferred"
+        },
+        "challenge": "xHyLYEorFsaL6vb",
+        "extensions": { "credProps": true },
+        "pubKeyCredParams": [
+          { "alg": -7, "type": "public-key" },
+          { "alg": -257, "type": "public-key" }
+        ],
+        "rp": {
+          "id": "webauthn.io",
+          "name": "webauthn.io"
+        },
+        "user": {
+          "displayName": "test",
+          "id": "ZEdWemRB",
+          "name": "test"
+        }
+      })");
+
+    auto quit_closure = task_env_.QuitClosure();
+    std::optional<device::CtapDeviceResponseCode> status;
+    std::optional<device::AuthenticatorMakeCredentialResponse> response;
+    authenticator.MakeCredential(
+        /*request=*/{R"({"foo": "bar"})",
+                     /*rp=*/{"rpid", "rpname"},
+                     /*user=*/{{'u', 'i', 'd'}, "user", "display name"},
+                     device::PublicKeyCredentialParams(
+                         std::move(pub_key_params))},
+        std::move(ctap_options),
+        base::BindLambdaForTesting(
+            [&quit_closure, &status, &response](
+                device::CtapDeviceResponseCode in_status,
+                std::optional<device::AuthenticatorMakeCredentialResponse>
+                    in_responses) {
+              status = in_status;
+              response = std::move(in_responses);
+              quit_closure.Run();
+            }));
+    task_env_.RunUntilQuit();
+
+    ASSERT_TRUE(status.has_value());
+    ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
+    ASSERT_TRUE(response.has_value());
+    ASSERT_TRUE(specifics.has_value());
+    EXPECT_EQ(specifics->rp_id(), "rpid");
+    EXPECT_EQ(specifics->user_id(), "uid");
+    EXPECT_EQ(specifics->user_name(), "user");
+    EXPECT_EQ(specifics->user_display_name(), "display name");
+    EXPECT_EQ(specifics->key_version(), kKeyVersion);
+  }
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistration) {
@@ -351,7 +438,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistration) {
           .spec(),
       MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)}, /*last_key_version=*/417);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
   RunUntilIdle();
 
   ASSERT_TRUE(manager_.is_idle());

@@ -62,10 +62,11 @@ const char kGetAssertionRequestProtobufKey[] = "protobuf";
 // JSON keys for GetAssertion response fields.
 const char kGetAssertionResponseKey[] = "response";
 
+const char kMakeCredentialRequestWrappedSecretKey[] = "wrapped_secret";
+
 // JSON keys for MakeCredential response fields.
 const char kMakeCredentialResponseEncryptedKey[] = "encrypted";
 const char kMakeCredentialResponsePubKeyKey[] = "pub_key";
-const char kMakeCredentialResponseVersionKey[] = "version";
 
 // Specific command names recognizable by the enclave processor.
 const char kGetAssertionCommandName[] = "passkeys/assert";
@@ -282,7 +283,8 @@ std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
            absl::optional<sync_pb::WebauthnCredentialSpecifics>,
            std::string>
 ParseMakeCredentialResponse(cbor::Value response_value,
-                            const CtapMakeCredentialRequest& request) {
+                            const CtapMakeCredentialRequest& request,
+                            int32_t wrapped_secret_version) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
     return {absl::nullopt, absl::nullopt,
             "Command response was not a valid CBOR array."};
@@ -312,13 +314,6 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     return {
         absl::nullopt, absl::nullopt,
         "Command response did not contain a successful response or an error."};
-  }
-
-  absl::optional<int> version_field =
-      success_response->FindInt(kMakeCredentialResponseVersionKey);
-  if (!version_field) {
-    return {absl::nullopt, absl::nullopt,
-            "MakeCredential response did not contain a version."};
   }
 
   const std::vector<uint8_t>* pubkey_field =
@@ -354,7 +349,7 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   entity.set_user_name(request.user.name ? *request.user.name : std::string());
   entity.set_user_display_name(
       request.user.display_name ? *request.user.display_name : std::string());
-  entity.set_key_version(*version_field);
+  entity.set_key_version(wrapped_secret_version);
   entity.set_encrypted(
       std::string(encrypted_field->begin(), encrypted_field->end()));
 
@@ -423,12 +418,15 @@ cbor::Value BuildGetAssertionCommand(
   return cbor::Value(entry_map);
 }
 
-cbor::Value BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request) {
+cbor::Value BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
+                                       std::vector<uint8_t> wrapped_secret) {
   cbor::Value::MapValue entry_map;
 
   entry_map.emplace(cbor::Value(kRequestCommandKey),
                     cbor::Value(kMakeCredentialCommandName));
   entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
+  entry_map.emplace(cbor::Value(kMakeCredentialRequestWrappedSecretKey),
+                    cbor::Value(std::move(wrapped_secret)));
 
   return cbor::Value(entry_map);
 }

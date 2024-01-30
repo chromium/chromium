@@ -88,6 +88,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                           MakeCredentialOptions options,
                                           MakeCredentialCallback callback) {
   CHECK(!pending_get_assertion_request_ && !pending_make_credential_request_);
+  CHECK_EQ(ui_request_->wrapped_keys.size(), 1u);
+  CHECK(ui_request_->wrapped_key_version.has_value());
 
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
@@ -96,7 +98,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   Transact(network_context_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            BuildMakeCredentialCommand(
-               std::move(pending_make_credential_request_->options.json)),
+               std::move(pending_make_credential_request_->options.json),
+               std::move(ui_request_->wrapped_keys.back())),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
                           weak_factory_.GetWeakPtr()));
@@ -134,7 +137,8 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::string error_description;
   std::tie(opt_response, opt_entity, error_description) =
       ParseMakeCredentialResponse(std::move(*response),
-                                  pending_make_credential_request_->request);
+                                  pending_make_credential_request_->request,
+                                  *ui_request_->wrapped_key_version);
   if (!opt_response || !opt_entity) {
     FIDO_LOG(ERROR) << "Error in registration response from server: "
                     << error_description;
