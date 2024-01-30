@@ -114,6 +114,11 @@ AutofillProfile ConstructCompleteProfile(
                                            VerificationStatus::kParsed);
   profile.set_language_code("en");
 
+  // Set testing values for the birthdate.
+  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
+
   return profile;
 }
 
@@ -341,6 +346,11 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
   specifics.set_address_home_language_code("en");
+
+  // Set values for the birthdate.
+  specifics.set_birthdate_day(14);
+  specifics.set_birthdate_month(3);
+  specifics.set_birthdate_year(1997);
 
   // All of the following types are not part of the default address model, but
   // rather belong to a model customized for a particular country. Nevertheless
