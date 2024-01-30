@@ -28,12 +28,17 @@ Example usages
   the underlying test binary can be specified in the command.
 
   ./build/lacros/test_runner.py test out/lacros/browser_tests \\
-    --ash-chrome-version=793554
+    --ash-chrome-version=120.0.6099.0
 
   The above command runs tests with a given version of ash-chrome, which is
-  useful to reproduce test failures, the version corresponds to the commit
-  position of commits on the master branch, and a list of prebuilt versions can
-  be found at: gs://ash-chromium-on-linux-prebuilts/x86_64.
+  useful to reproduce test failures. A list of prebuilt versions can
+  be found at:
+  https://chrome-infra-packages.appspot.com/p/chromium/testing/linux-ash-chromium/x86_64/ash.zip
+  Click on any instance, you should see the version number for that instance.
+  Also, there are refs, which points to the instance for that channel. It should
+  be close the prod version but no guarantee.
+  For legacy refs, like legacy119, it point to the latest version for that
+  milestone.
 
   ./testing/xvfb.py ./build/lacros/test_runner.py test out/lacros/browser_tests
 
@@ -823,9 +828,9 @@ def Main():
       '--ash-chrome-version',
       type=str,
       help='Version of an prebuilt ash-chrome to use for testing, for example: '
-      '"793554", and the version corresponds to the commit position of commits '
-      'on the main branch. If not specified, will use the latest version '
-      'available')
+      '"120.0.6099.0", and the version corresponds to the commit position of '
+      'commits on the main branch. If not specified, will use the latest '
+      'version available')
   version_group.add_argument(
       '--ash-chrome-path',
       type=str,
