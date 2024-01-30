@@ -492,6 +492,12 @@ BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
              "CanvasFreeMemoryWhenHidden",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When hibernating, make sure that the just-used transfer memory (to transfer
+// the snapshot) is freed.
+BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
+             "Canvas2DHibernationReleaseTransferMemory",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to capture the source location of JavaScript execution, which is one
 // of the renderer eviction reasons for Back/Forward Cache.
 BASE_FEATURE(kCaptureJSExecutionLocation,

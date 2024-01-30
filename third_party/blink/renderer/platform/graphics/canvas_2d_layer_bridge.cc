@@ -44,6 +44,20 @@
 
 namespace blink {
 
+namespace {
+
+gpu::ContextSupport* GetContextSupport() {
+  if (!SharedGpuContext::ContextProviderWrapper() ||
+      !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
+    return nullptr;
+  }
+  return SharedGpuContext::ContextProviderWrapper()
+      ->ContextProvider()
+      ->ContextSupport();
+}
+
+}  // namespace
+
 // static
 bool Canvas2DLayerBridge::IsHibernationEnabled() {
   return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
@@ -150,6 +164,21 @@ void Canvas2DLayerBridge::Hibernate() {
   // shouldBeDirectComposited() may have changed.
   resource_host_->SetNeedsCompositingUpdate();
   logger_->DidStartHibernating();
+
+  // We've just used a large transfer cache buffer to get the snapshot, make
+  // sure that it's collected. Calling `SetAggressivelyFreeResources()` also
+  // frees things immediately, so use that, since deferring cleanup until the
+  // next flush is not a viable option (since we are not visible, when
+  // will a flush come?).
+  if (base::FeatureList::IsEnabled(
+          features::kCanvas2DHibernationReleaseTransferMemory)) {
+    if (auto* context_support = GetContextSupport()) {
+      // Unnecessary since there would be an early return above otherwise, but
+      // let's document that.
+      DCHECK(!resource_host_->IsPageVisible());
+      context_support->SetAggressivelyFreeResources(true);
+    }
+  }
 }
 
 void Canvas2DLayerBridge::LoseContext() {
@@ -269,14 +298,10 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
 
   // Conserve memory.
   if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden) &&
-      resource_host_->GetRasterMode() == RasterMode::kGPU &&
-      SharedGpuContext::ContextProviderWrapper() &&
-      SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
-    auto* context_support = SharedGpuContext::ContextProviderWrapper()
-                                ->ContextProvider()
-                                ->ContextSupport();
-    if (context_support)
+      resource_host_->GetRasterMode() == RasterMode::kGPU) {
+    if (auto* context_support = GetContextSupport()) {
       context_support->SetAggressivelyFreeResources(!page_is_visible);
+    }
   }
 
   if (!lose_context_in_background_ && !lose_context_in_background_scheduled_ &&
