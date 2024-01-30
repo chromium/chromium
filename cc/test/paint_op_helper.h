@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/skottie_wrapper.h"
 
 namespace cc {
@@ -574,7 +575,18 @@ class PaintOpHelper {
   }
 
   static std::string ToString(const PaintRecord& record) {
-    return record.empty() ? "(empty)" : "<paint record>";
+    std::ostringstream str;
+    str << "<PaintRecord>[";
+    bool is_first = true;
+    for (const PaintOp& op : record) {
+      if (!is_first) {
+        str << ", ";
+      }
+      str << ToString(op);
+      is_first = false;
+    }
+    str << "]";
+    return str.str();
   }
 
   static std::string ToString(const SkTextBlob& blob) {

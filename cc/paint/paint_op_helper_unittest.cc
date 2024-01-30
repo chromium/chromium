@@ -14,6 +14,27 @@
 namespace cc {
 namespace {
 
+TEST(PaintOpHelper, PaintRecordEmptyToString) {
+  PaintOpBuffer buffer;
+  EXPECT_EQ(PaintOpHelper::ToString(buffer.ReleaseAsRecord()),
+            "<PaintRecord>[]");
+}
+
+TEST(PaintOpHelper, PaintRecordOneOpToString) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveOp>();
+  EXPECT_EQ(PaintOpHelper::ToString(buffer.ReleaseAsRecord()),
+            "<PaintRecord>[SaveOp()]");
+}
+
+TEST(PaintOpHelper, PaintRecordMultipleOpsToString) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveOp>();
+  buffer.push<RotateOp>(360.0f);
+  EXPECT_EQ(PaintOpHelper::ToString(buffer.ReleaseAsRecord()),
+            "<PaintRecord>[SaveOp(), RotateOp(degrees=360.000)]");
+}
+
 TEST(PaintOpHelper, AnnotateToString) {
   AnnotateOp op(PaintCanvas::AnnotationType::kUrl, SkRect::MakeXYWH(1, 2, 3, 4),
                 nullptr);
@@ -181,7 +202,7 @@ TEST(PaintOpHelper, DrawPathToString) {
 TEST(PaintOpHelper, DrawRecordToString) {
   DrawRecordOp op((PaintRecord()));
   std::string str = PaintOpHelper::ToString(op);
-  EXPECT_EQ(str, "DrawRecordOp(record=(empty))");
+  EXPECT_EQ(str, "DrawRecordOp(record=<PaintRecord>[])");
 }
 
 TEST(PaintOpHelper, DrawRectToString) {
@@ -485,7 +506,7 @@ TEST(PaintOpHelperFilters, RecordPaintFilter) {
                            /*raster_scale=*/{0.5f, 0.8f},
                            RecordPaintFilter::ScalingBehavior::kFixedScale);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
-            "RecordPaintFilter(record=<paint record>, "
+            "RecordPaintFilter(record=<PaintRecord>[SaveOp()], "
             "record_bounds=[0.000,0.000 100.000x100.000], "
             "raster_scale=[0.5x0.8], scaling_behavior=kFixedScale, "
             "crop_rect=(nil))");
