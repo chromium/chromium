@@ -264,7 +264,7 @@
     Block
   </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION" desc="Explanatory text for the Manage Topics settings page" translateable="false">
-    Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics.<ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph> Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
+    Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BODY" desc="When a user unblocks a topic, a toast appears explaining what they did and and how that can make the topic active. The toast appears for at most 10 seconds." translateable="false">
     This topic is unblocked and may become active based on your browsing history
