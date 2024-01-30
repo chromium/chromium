@@ -1725,7 +1725,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("copyBetweenWindowsLocalToUsb").NewDirectoryTree(),
-        TestCase("copyBetweenWindowsUsbToLocal").NewDirectoryTree(),
+        // TODO(crbug.com/1523263): Re-enable this flaky test.
+        // TestCase("copyBetweenWindowsUsbToLocal").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("copyBetweenWindowsLocalToDrive"),
         TestCase("copyBetweenWindowsLocalToUsb"),
