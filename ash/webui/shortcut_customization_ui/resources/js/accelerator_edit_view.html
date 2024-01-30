@@ -112,14 +112,14 @@
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden="[[showEditView(viewState)]]">
       <cr-icon-button id="editButton"
-          aria-label="[[i18n('editButtonAriaLabel')]]"
+          aria-label="[[getEditAriaLabel(acceleratorInfo)]]"
           class="clickable-button"
           iron-icon="shortcut-customization:edit"
           on-click="onEditButtonClicked">
       </cr-icon-button>
       <hr aria-hidden="true">
       <cr-icon-button id="deleteButton"
-          aria-label="[[i18n('deleteButtonAriaLabel')]]"
+          aria-label="[[getDeleteAriaLabel(acceleratorInfo)]]"
           class="clickable-button"
           iron-icon="shortcut-customization:delete"
           on-click="onDeleteButtonClicked">

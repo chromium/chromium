@@ -109,6 +109,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         notify: true,
       },
 
+      description: {
+        type: String,
+        value: '',
+      },
+
       action: {
         type: Number,
         value: 0,
@@ -154,6 +159,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   statusMessage: string;
   hasError: boolean;
   recordedError: boolean;
+  description: string;
   action: number;
   source: AcceleratorSource;
   sourceIsLocked: boolean;
@@ -236,9 +242,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     this.pendingKeyEvent = resetKeyEvent();
-
-    // Announce hint message when focus and start capture.
-    this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
   }
 
   async endCapture(shouldDelay: boolean): Promise<void> {
@@ -285,10 +288,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         composed: true,
       }));
       this.startCapture();
+      // Announce the hint message.
+      this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
     }
   }
 
   private handleKeyDown(e: CustomEvent): void {
+    // Announce the key pressed.
+    this.makeA11yAnnouncement(e.detail.keyEvent.keyDisplay);
     const rewrittenKeyEvent = e.detail.keyEvent;
     const pendingAccelerator = keyEventToAccelerator(rewrittenKeyEvent);
     if (this.hasError) {
@@ -448,10 +455,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
                                  Subactions.kNoErrorSuccess);
         getShortcutProvider().recordUserAction(
             UserAction.kSuccessfulModification);
-        const message = (this.viewState == ViewState.ADD) ?
-            this.i18n('shortcutAdded') :
-            this.i18n('shortcutEdited');
-        this.makeA11yAnnouncement(message);
         this.fireUpdateEvent();
         return;
       }
@@ -573,6 +576,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     return this.lookupManager.getHasLauncherButton() ?
         this.i18n('iconLabelOpenLauncher') :
         this.i18n('iconLabelOpenSearch');
+  }
+
+  private getEditButtonAriaLabel(): string {
+    return this.i18n('editButtonForRow', this.description);
   }
 }
 

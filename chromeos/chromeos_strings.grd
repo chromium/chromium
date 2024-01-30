@@ -4255,11 +4255,20 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals">
           Cancel
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals">
-          Edit
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_FOR_ROW" desc="Text read aloud by screen reader describing the edit button for the acceleartor row.">
+          Edit button for <ph name="SHORTCUT_DESCRIPTION">$1<ex>Open Quick Settings</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_FOR_ACTION" desc="Text read aloud by screen reader describing the edit button for the action.">
+          Edit button for <ph name="ACCELERATOR_INFO">$1<ex>ctrl T</ex></ph>.
+        </message>
+         <message name="IDS_SHORTCUT_CUSTOMIZATION_DELETE_BUTTON_FOR_ACTION" desc="Text read aloud by screen reader describing the delete button for the action.">
+          Delete button for <ph name="ACCELERATOR_INFO">$1<ex>ctrl T</ex></ph>.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_SHORTCUT" desc="Title for a dialog that allows the user to edit a shortcut.">
           Edit shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_LOCK" desc="The text read aloud by the screen reader describing the lock icon.">
+          Lock
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
             desc="The message shown to indicate that a user policy is in place
@@ -4342,8 +4351,17 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_A11Y" desc="Accessibility text for the selected accelerator row.">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_READ_ONLY_A11Y" desc="Accessibility text for the selected accelerator row when customization is not allowed.">
           <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph>, <ph name="ACCELERATOR_INFO">$2<ex>ctrl T</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_A11Y" desc="Accessibility text for the selected accelerator row.">
+          <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph>, <ph name="ACCELERATOR_INFO">$2<ex>ctrl T</ex></ph>, <ph name="ROW_STATUS">$3<ex>locked</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ROW_STATUS_EDITABLE" desc="Accessibility text that indicates that the selected accelerator row can be edited.">
+          editable
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ROW_STATUS_LOCKED" desc="Accessibility text that indicates that the selected accelerator row is locked.">
+          locked
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_A11Y" desc="Accessibility text for the edit button.">
           Edit shortcut
@@ -4362,6 +4380,12 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_EDITED_A11Y" desc="The text read by the screen reader when shortcut is edited successfully.">
           Shortcut edited
+        </message>
+         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_DELETED_A11Y" desc="The text read by the screen reader when shortcut is deleted successfully.">
+          Shortcut deleted
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_RESTORED_A11Y" desc="The text read by the screen reader when shortcut is restored successfully.">
+          Shortcut restored
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.

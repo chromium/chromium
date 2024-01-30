@@ -248,44 +248,6 @@ suite('acceleratorRowTest', function() {
     assertEquals(2, keys2.length);
   });
 
-  test('ElementFocusableWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: true});
-    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
-
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-    acceleratorInfo.state = AcceleratorState.kEnabled;
-
-    rowElement.acceleratorInfos = [acceleratorInfo];
-    rowElement.description = 'test shortcut';
-    await flush();
-
-    const containerElement =
-        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
-    assertEquals(0, containerElement.tabIndex);
-  });
-
-  test('ElementFocusableWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: false});
-    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
-
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-    acceleratorInfo.state = AcceleratorState.kEnabled;
-
-    rowElement.acceleratorInfos = [acceleratorInfo];
-    rowElement.description = 'test shortcut';
-    await flush();
-
-    const containerElement =
-        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
-    assertEquals(-1, containerElement.tabIndex);
-  });
-
   test('GetAriaLabelForStandardRow', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
@@ -300,7 +262,7 @@ suite('acceleratorRowTest', function() {
 
     await flush();
     assertEquals(
-        'Open notifications, ctrl c.',
+        'Open notifications, ctrl c, editable.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
@@ -325,7 +287,7 @@ suite('acceleratorRowTest', function() {
 
     await flush();
     assertEquals(
-        'Open Calculator app, ctrl c or ctrl d.',
+        'Open Calculator app, ctrl c or ctrl d, editable.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
@@ -364,7 +326,7 @@ suite('acceleratorRowTest', function() {
     rowElement.description = description;
     await flush();
     assertEquals(
-        'Go through tabs 1 to 8, ctrl + 1 through 8.',
+        'Go through tabs 1 to 8, ctrl + 1 through 8, locked.',
         rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });

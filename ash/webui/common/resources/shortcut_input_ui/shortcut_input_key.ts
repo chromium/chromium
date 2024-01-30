@@ -135,10 +135,6 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
     return this.i18n(ariaLabelStringId);
   }
 
-  private getAriaHidden(): boolean {
-    return this.keyState === KeyInputState.NOT_SELECTED;
-  }
-
   private onKeyChanged(): void {
     this.hasIcon = this.key in KeyToIconNameMap;
   }

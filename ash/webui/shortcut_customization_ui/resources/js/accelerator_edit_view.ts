@@ -23,7 +23,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, EditAction, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {getAccelerator} from './shortcut_utils.js';
+import {getAccelerator, getAriaLabelForStandardAcceleratorInfo} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
     CustomEvent<{action: number, source: AcceleratorSource}>;
@@ -275,6 +275,18 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
 
   getStatusMessageForTesting(): string {
     return this.statusMessage;
+  }
+
+  private getEditAriaLabel(): string {
+    return this.i18n(
+        'editButtonForAction',
+        getAriaLabelForStandardAcceleratorInfo(this.acceleratorInfo));
+  }
+
+  private getDeleteAriaLabel(): string {
+    return this.i18n(
+        'deleteButtonForAction',
+        getAriaLabelForStandardAcceleratorInfo(this.acceleratorInfo));
   }
 }
 

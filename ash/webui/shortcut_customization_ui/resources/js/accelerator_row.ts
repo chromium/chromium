@@ -85,11 +85,18 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
+  protected subcategoryIsLocked: boolean;
   protected isLocked: boolean;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
+
+  override async connectedCallback(): Promise<void> {
+    super.connectedCallback();
+    this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
+        this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
+  }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -155,11 +162,6 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
         new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
   }
 
-  protected getTabIndex(): number {
-    // If customization is disabled, this element should not be tab-focusable.
-    return !isCustomizationAllowed() ? -1 : 0;
-  }
-
   protected onFocusOrMouseEnter(): void {
     if (this.lookupManager.getSearchResultRowFocused()) {
       return;
@@ -171,25 +173,43 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     this.lookupManager.setSearchResultRowFocused(false);
   }
 
-  private getAriaLabel(): string {
-    let acceleratorText;
+  private rowIsLocked(): boolean {
+    // Accelerator row is locked if the subcategory or the source is locked or
+    // it is text accelerator or if all accelerator infos are locked.
+    return this.subcategoryIsLocked || this.isLocked || this.isTextLayout() ||
+        (this.acceleratorInfos.length > 0 &&
+         this.acceleratorInfos.every(info => info.locked));
+  }
 
+  private getAcceleratorText(): string {
+    // No shortcut assigned case:
     if (this.acceleratorInfos.length === 0) {
-      // No shortcut assigned case:
-      acceleratorText = this.i18n('noShortcutAssigned');
-    } else if (this.isDefaultLayout()) {
-      // Default accelerator:
-      acceleratorText = getAriaLabelForStandardAccelerators(
-          this.acceleratorInfos as StandardAcceleratorInfo[],
-          this.i18n('acceleratorTextDivider'));
-    } else {
-      // Text accelerator:
-      acceleratorText = getAriaLabelForTextAccelerators(
-          this.acceleratorInfos as TextAcceleratorInfo[]);
+      return this.i18n('noShortcutAssigned');
     }
+    return this.isDefaultLayout() ?
+        getAriaLabelForStandardAccelerators(
+            this.acceleratorInfos as StandardAcceleratorInfo[],
+            this.i18n('acceleratorTextDivider')) :
+        getAriaLabelForTextAccelerators(
+            this.acceleratorInfos as TextAcceleratorInfo[]);
+  }
 
-    return this.i18n(
-        'acceleratorRowAriaLabel', this.description, acceleratorText);
+  private getAriaLabel(): string {
+    if (!isCustomizationAllowed()) {
+      return this.i18n(
+          'acceleratorRowAriaLabelReadOnly', this.description,
+          this.getAcceleratorText());
+    } else {
+      const rowStatus =
+          this.rowIsLocked() ? this.i18n('locked') : this.i18n('editable');
+      return this.i18n(
+          'acceleratorRowAriaLabel', this.description,
+          this.getAcceleratorText(), rowStatus);
+    }
+  }
+
+  private getEditButtonAriaLabel(): string {
+    return this.i18n('editButtonForRow', this.description);
   }
 
   static get template(): HTMLTemplateElement {
