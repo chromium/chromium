@@ -31,18 +31,19 @@ The Port classes encapsulate Port-specific (platform-specific) behavior
 in the web test infrastructure.
 """
 
-import time
 import collections
+import hashlib
 import json
 import logging
 import optparse
 import re
 import sys
 import tempfile
+import time
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import Optional, Set, Tuple
+from typing import Literal, Optional, Set, Tuple
 
 import six
 from six.moves import zip_longest
@@ -1162,13 +1163,112 @@ class Port(object):
             self._filesystem.join(self.web_tests_dir(), path))
         manifest_path = self._filesystem.join(self.web_tests_dir(), path,
                                               MANIFEST_NAME)
-        if not self._filesystem.exists(manifest_path) or self.get_option(
-                'manifest_update', False):
+        if self.should_update_manifest(path):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
         return WPTManifest.from_file(self, manifest_path,
                                      self.get_option('test_types'),
                                      exclude_jsshell)
+
+    def should_update_manifest(self, path: Literal[WPT_DIRS]) -> bool:
+        """Check if a WPT manifest should be updated.
+
+        If no `--{no-,}manifest-update` switch is explicitly passed, then guess
+        if an update is needed by checking if a hash of the WPT directory's
+        contents changed from the last update. The previous hash is cached on
+        the filesystem.
+        """
+        manifest_path = self._path_finder.path_from_web_tests(
+            path, MANIFEST_NAME)
+        if not self._filesystem.exists(manifest_path):
+            return True
+        manifest_update: Optional[bool] = self.get_option('manifest_update')
+        # Use an explicit manifest setting, if given. `None` will guess if the
+        # manifest needs an update.
+        #
+        # TODO(crbug.com/)1411505: If this logic holds up for
+        # `lint_test_expectations.py`, consider activating this for other
+        # `blinkpy` tools by defaulting to `manifest_update=None`.
+        if manifest_update is not None:
+            return manifest_update
+
+        # `.wptcache` is the default cache directory for `wpt manifest`, and
+        # it's gitignored by `//third_party/wpt_tools/wpt/.gitignore`.
+        last_digest_file = self._path_finder.path_from_chromium_base(
+            'third_party', 'wpt_tools', 'wpt', '.wptcache', path, 'digest')
+        self._filesystem.maybe_make_directory(
+            self._filesystem.dirname(last_digest_file))
+        try:
+            last_digest = self._filesystem.read_text_file(last_digest_file)
+        except FileNotFoundError:
+            last_digest = ''
+        current_digest = self._wpt_digest(path)
+        if current_digest != last_digest:
+            self._filesystem.write_text_file(last_digest_file, current_digest)
+            return True
+        return False
+
+    def _wpt_digest(self, path: Literal[WPT_DIRS]) -> str:
+        """Create a digest of the given WPT directory's contents.
+
+        The hashing scheme is designed so that a change in the contents of a
+        non-gitignored file under the WPT directory implies a different digest,
+        which in turn implies a manifest update. The hash preimage consists of
+        the current revision for the WPT tree object, followed by uncommitted
+        files (including untracked ones) and their own digests:
+
+            5cf97fce0437ed53da24111f1451bfcef962db0c
+            /path/to/external/wpt/staged.html:abbf720ea8b3f4db6331d534d5a0030c69781187
+            /path/to/external/wpt/untracked.html:818e59092bd8e12bd2fb9c7d4775a4ce1ee816cb
+            ...
+
+        This skips manifest rebuilds when:
+          * Changing non-WPT files (e.g., the browser code under test).
+          * Rebasing with no WPT changes (the WPT revision stays the same).
+            This will often skip updates for `wpt_internal/`, which doesn't
+            receive many changes.
+        """
+        wpt_dir = self._path_finder.path_from_web_tests(path)
+        pathspec = self._filesystem.relpath(
+            wpt_dir, self._path_finder.path_from_chromium_base())
+        # `git` uses forward slashes for pathspecs, even on Windows.
+        pathspec = pathspec.replace(self._filesystem.sep, '/')
+        git = self.host.git()
+        # As of this writing, checking for tracked changes takes:
+        #   * ~0.3s for `external/wpt`
+        #   * ~0.2s for `wpt_internal`
+        #
+        # Checking for untracked changes takes:
+        #   * ~0.4s for `external/wpt`
+        #   * ~0.2s for `wpt_internal`
+        #
+        # `git rev-parse HEAD:<wpt-dir>` is <0.02s in both directories. In
+        # total, the initial check for deciding whether to update the manifest
+        # or not takes ~1.1s. Paying this fixed cost seems worthwhile to
+        # almost always skip updating the `wpt_internal/` manifest (~1s), and
+        # sometimes skip updating `external/wpt` (~10s).
+        base_rev = git.run(['rev-parse', f'HEAD:{pathspec}'])
+        tracked_files = git.changed_files(path=wpt_dir)
+        untracked_files = git.run([
+            'ls-files',
+            '--other',
+            '--exclude-standard',
+            '-z',
+            'HEAD',
+            wpt_dir,
+        ]).split('\x00')[:-1]
+
+        hasher = hashlib.sha256()
+        hasher.update(base_rev.encode())
+        changed_files = map(self._path_from_chromium_base,
+                            {*tracked_files, *untracked_files})
+        for changed_file in sorted(changed_files):
+            try:
+                file_digest = self._filesystem.sha1(changed_file)
+            except FileNotFoundError:
+                file_digest = ''
+            hasher.update(f'{changed_file}:{file_digest}\n'.encode())
+        return hasher.hexdigest()
 
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""
