@@ -171,9 +171,6 @@ class PasswordStoreAndroidBackend
 
   PrefService* prefs() { return prefs_; }
 
-  // TODO(b/306673712): Move to account implementation.
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
-
   // Subclasses can override this method
   // to have a special handling for different errors. This function returns
   // whether the error is recoverable or not.
@@ -182,6 +179,8 @@ class PasswordStoreAndroidBackend
   // Subclasses can override this method to react when GMSCore responds
   // successfully.
   virtual void OnCallToGMSCoreSucceeded() = 0;
+  // Subclasses have to provide an account which will be used for retries.
+  virtual std::string GetAccountToRetryOperation() = 0;
 
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);

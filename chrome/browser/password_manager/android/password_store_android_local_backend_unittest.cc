@@ -364,4 +364,169 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
 }
 
+class PasswordStoreAndroidLocalBackendRetriesTest
+    : public PasswordStoreAndroidLocalBackendTest,
+      public testing::WithParamInterface<AndroidBackendAPIErrorCode> {};
+
+TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
+       GetAllLoginsIsRetriedUntilSuccess) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins(IsEmpty()))
+      .Times(3)
+      .WillRepeatedly(Return(kJobId));
+
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError,
+                            static_cast<int>(GetParam())};
+
+  // Initiating the first call.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  for (int i = 0; i < 2; i++) {
+    consumer().OnError(kJobId, error);
+    // Runs the delayed tasks which results in GetAllLogins being called on
+    // the bridge.
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
+TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
+       GetAutofillableLoginsIsRetriedUntilSuccess) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAutofillableLogins(IsEmpty()))
+      .Times(3)
+      .WillRepeatedly(Return(kJobId));
+
+  // Initiating the first call.
+  backend().GetAutofillableLoginsAsync(mock_reply.Get());
+
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError,
+                            static_cast<int>(GetParam())};
+
+  for (int i = 0; i < 2; i++) {
+    consumer().OnError(kJobId, error);
+    // Runs the delayed tasks which results in GetAllLogins being called on
+    // the bridge.
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
+  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
+TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
+       GetAllLoginsIsRetriedUntilTimeout) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins(IsEmpty()))
+      .Times(6)
+      .WillRepeatedly(Return(kJobId));
+
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError,
+                            static_cast<int>(GetParam())};
+
+  // Initiating the first call.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  for (int i = 0; i < 5; i++) {
+    consumer().OnError(kJobId, error);
+    // Runs the delayed tasks which results in GetAllLogins being called on
+    // the bridge.
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordStoreBackendError>(PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kUncategorized,
+          PasswordStoreBackendErrorRecoveryType::kRecoverable))));
+  consumer().OnError(kJobId, error);
+
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
+TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
+       GetAutofillableLoginsIsRetriedUntilTimeout) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAutofillableLogins(IsEmpty()))
+      .Times(6)
+      .WillRepeatedly(Return(kJobId));
+
+  // Initiating the first call.
+  backend().GetAutofillableLoginsAsync(mock_reply.Get());
+
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError,
+                            static_cast<int>(GetParam())};
+
+  for (int i = 0; i < 5; i++) {
+    consumer().OnError(kJobId, error);
+    // Runs the delayed tasks which results in GetAllLogins being called on
+    // the bridge.
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordStoreBackendError>(PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kUncategorized,
+          PasswordStoreBackendErrorRecoveryType::kRecoverable))));
+  consumer().OnError(kJobId, error);
+
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordStoreAndroidLocalBackendRetriesTest,
+    testing::ValuesIn(
+        {AndroidBackendAPIErrorCode::kNetworkError,
+         AndroidBackendAPIErrorCode::kApiNotConnected,
+         AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
+         AndroidBackendAPIErrorCode::kReconnectionTimedOut,
+         AndroidBackendAPIErrorCode::kBackendGeneric}),
+    [](const ::testing::TestParamInfo<AndroidBackendAPIErrorCode>& info) {
+      return "APIErrorCode_" + base::ToString(static_cast<int>(info.param));
+    });
+
 }  // namespace password_manager

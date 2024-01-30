@@ -72,13 +72,6 @@ using password_manager::GetRegexForPSLMatching;
 using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
-std::string GetSyncingAccount(const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  return sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-      sync_service);
-}
-
 std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
                                    bool include_psl) {
   if (include_psl) {
@@ -390,7 +383,6 @@ void PasswordStoreAndroidBackend::Init(
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
-  sync_service_ = nullptr;
   lifecycle_helper_->UnregisterObserver();
   // TODO(https://crbug.com/1229654): Implement (e.g. unsubscribe from GMS).
   std::move(shutdown_completed).Run();
@@ -754,9 +746,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
               ? &PasswordStoreAndroidBackend::GetAllLoginsInternal
               : &PasswordStoreAndroidBackend::GetAutofillableLoginsInternal;
       RetryOperation(base::BindOnce(method, weak_ptr_factory_.GetWeakPtr(),
-                                    // TODO(b/306673712): Avoid using sync
-                                    // account for local retires.
-                                    GetSyncingAccount(sync_service_),
+                                    GetAccountToRetryOperation(),
                                     std::move(*reply).Get<LoginsOrErrorReply>(),
                                     operation),
                      delay);

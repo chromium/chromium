@@ -191,6 +191,7 @@ void PasswordStoreAndroidAccountBackend::InitBackend(
 void PasswordStoreAndroidAccountBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   affiliated_match_helper_ = nullptr;
+  sync_service_ = nullptr;
   PasswordStoreAndroidBackend::Shutdown(std::move(shutdown_completed));
 }
 
@@ -349,6 +350,11 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
 void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {
   // Since the API call has succeeded, it's safe to reenable saving.
   prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
+}
+
+std::string PasswordStoreAndroidAccountBackend::GetAccountToRetryOperation() {
+  CHECK(sync_service_);
+  return GetSyncingAccount(sync_service_);
 }
 
 void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(

@@ -167,4 +167,8 @@ void PasswordStoreAndroidLocalBackend::OnCallToGMSCoreSucceeded() {
   // TODO(b/319422508): Enable password saving for local storage.
 }
 
+std::string PasswordStoreAndroidLocalBackend::GetAccountToRetryOperation() {
+  return std::string();
+}
+
 }  // namespace password_manager

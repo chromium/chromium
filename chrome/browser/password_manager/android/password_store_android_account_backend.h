@@ -81,12 +81,13 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+ private:
   // PasswordStoreAndroidBackend implementation.
   PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
       AndroidBackendAPIErrorCode error) override;
   void OnCallToGMSCoreSucceeded() override;
+  std::string GetAccountToRetryOperation() override;
 
- private:
   // If |forms_or_error| contains forms, it retrieves and fills in affiliation
   // and branding information for Android credentials in the forms and invokes
   // |callback| with the result. If an error was received instead, it directly
@@ -113,6 +114,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
 
   raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
   raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_ = nullptr;
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>

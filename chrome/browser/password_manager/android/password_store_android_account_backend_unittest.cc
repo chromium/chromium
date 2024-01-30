@@ -1704,9 +1704,10 @@ class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
                     PasswordStoreBackendErrorType>> {
  protected:
   PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest() {
-    backend().InitBackend(/*affiliated_match_helper=*/nullptr,
-                          PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-                          base::NullCallback(), base::DoNothing());
+    backend().InitBackend(
+        /*affiliated_match_helper=*/nullptr,
+        PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+        base::NullCallback(), base::DoNothing());
     backend().OnSyncServiceInitialized(sync_service());
     ON_CALL(*bridge_helper(), CanRemoveUnenrollment)
         .WillByDefault(Return(true));
