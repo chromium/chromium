@@ -121,19 +121,19 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
-constexpr const char kChallengeBytesFetchDurationHistogramName[] =
+constexpr char kChallengeBytesFetchDurationHistogramName[] =
     "QuickStart.ChallengeBytes.FetchDuration";
-constexpr const char kChallengeBytesFailureReasonHistogramName[] =
+constexpr char kChallengeBytesFailureReasonHistogramName[] =
     "QuickStart.ChallengeBytes.FailureReason";
-constexpr const char kChallengeBytesFetchResultHistogramName[] =
+constexpr char kChallengeBytesFetchResultHistogramName[] =
     "QuickStart.ChallengeBytes.FetchResult";
-constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+constexpr char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
-constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+constexpr char kAttestationCertificateFetchResultHistogramName[] =
     "QuickStart.AttestationCertificate.FetchResult";
-constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+constexpr char kAttestationCertificateFetchDurationHistogramName[] =
     "QuickStart.AttestationCertificate.FetchDuration";
-constexpr const char kGaiaAuthenticationDurationHistogramName[] =
+constexpr char kGaiaAuthenticationDurationHistogramName[] =
     "QuickStart.GaiaAuthentication.Duration";
 constexpr char kGaiaAuthenticationResultHistogramName[] =
     "QuickStart.GaiaAuthentication.Result";
@@ -1141,11 +1141,11 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeLogsMetricsForNetworkTimeouts) {
   ASSERT_THAT(response, VariantWith<AuthCodeParsingErrorResponse>(_));
 
   histogram_tester.ExpectBucketCount(
-      "QuickStart.GaiaAuthentication.Result",
+      kGaiaAuthenticationResultHistogramName,
       /*sample=*/
       QuickStartMetrics::GaiaAuthenticationResult::kResponseParsingError, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "QuickStart.GaiaAuthentication.Duration",
+      kGaiaAuthenticationDurationHistogramName,
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
