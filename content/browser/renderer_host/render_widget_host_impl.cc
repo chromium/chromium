@@ -1527,6 +1527,13 @@ void RenderWidgetHostImpl::StartNewContentRenderingTimeout() {
   new_content_rendering_timeout_->Start(new_content_rendering_delay_);
 }
 
+void RenderWidgetHostImpl::SetNewContentRenderingTimeoutForTesting(
+    base::TimeDelta timeout) {
+  CHECK(new_content_rendering_timeout_);
+  CHECK(!new_content_rendering_timeout_->IsRunning());
+  new_content_rendering_delay_ = timeout;
+}
+
 void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
   ForwardMouseEventWithLatencyInfo(mouse_event,
                                    ui::LatencyInfo(ui::SourceEventType::MOUSE));

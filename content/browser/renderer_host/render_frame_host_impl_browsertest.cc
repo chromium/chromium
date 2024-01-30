@@ -7801,6 +7801,29 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
   ~RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition() override =
       default;
 
+  SkBitmap GrabViewSnapshot() {
+    base::RunLoop run_loop;
+    gfx::Image snapshot;
+    auto callback = [&](gfx::Image captured) {
+      snapshot = std::move(captured);
+      run_loop.Quit();
+    };
+
+    auto* rwhv = web_contents()->GetRenderWidgetHostView();
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, call sites should pass in the bounds with correct offset
+    // to capture the intended content area.
+    gfx::Rect snapshot_bounds(rwhv->GetViewBounds());
+    snapshot_bounds.Offset(0, rwhv->GetNativeView()->content_offset());
+#else
+    gfx::Rect snapshot_bounds(rwhv->GetViewBounds().size());
+#endif
+    ui::GrabViewSnapshotAsync(rwhv->GetNativeView(), snapshot_bounds,
+                              base::BindLambdaForTesting(callback));
+    run_loop.Run();
+    return snapshot.AsBitmap();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -7870,12 +7893,17 @@ viz::SurfaceId GetFirstSurfaceIdAfterNavigation(RenderWidgetHostView* view) {
 // BFCache, we explicitly set its fallback surface to the current View to avoid
 // visual glitches.
 //
-// This test is disabled because it's flaky on Windows, fails on iOS, and when
-// updated to use correct APIs, started failing consistently on Android and
-// Linux. TODO(https://crbug.com/1472026): Investigate and re-enable.
+// TODO(https://crbug.com/1472026): Investigate and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#else
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#endif
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
-    DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
   // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
   // event.
   const GURL url_red(embedded_test_server()->GetURL(
@@ -7898,6 +7926,11 @@ IN_PROC_BROWSER_TEST_F(
       RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
   // The BFCached `RenderWidgetHostImpl` must have a stopped timer.
   ASSERT_FALSE(rwhi_red->IsContentRenderingTimeoutRunning());
+  // Set the timeout to a max value, such that we can guarantee to manually
+  // force the timer to fire via
+  // `RenderWidgetHostImpl::ForceFirstFrameAfterNavigationTimeout()`. Deflake
+  // the tests.
+  rwhi_red->SetNewContentRenderingTimeoutForTesting(base::TimeDelta::Max());
 
   // Navigate back to Red.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -7918,29 +7951,19 @@ IN_PROC_BROWSER_TEST_F(
       GetCurrentSurfaceIdOnDelegatedFrameHost(rfh_red->GetView())
           .IsSameOrNewerThan(first_surface_id_after_nav_after_bfcache_restore));
 
-  {
-    base::test::TestFuture<gfx::Image> future;
-    ui::GrabViewSnapshotAsync(web_contents()->GetView()->GetNativeView(),
-                              gfx::Rect(web_contents()->GetSize()),
-                              future.GetCallback());
-    AssertBitmapOfColor(future.Take().AsBitmap(), SK_ColorGREEN);
-  }
+  AssertBitmapOfColor(GrabViewSnapshot(), SK_ColorGREEN);
 
+  // Manually force the timer to fire, since the timeout is infinity.
   ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
   rwhi_red->ForceFirstFrameAfterNavigationTimeout();
+  ASSERT_FALSE(rwhi_red->IsContentRenderingTimeoutRunning());
 
+  // TODO(https://crbug.com/1472026): If the red page's renderer still hasn't
+  // submitted a new frame after the ContentRenderingTimeout is up, we should
+  // abort the transition. Expand this test to cover that behavior when we have
+  // a way to abort the transition.
   WaitForBrowserCompositorFramePresented(web_contents());
-
-  // `ForceFirstFrameAfterNavigationTimeout` resets the fallback surface id to
-  // `first_surface_id_after_nav_` of the `DelegatedFrameHost{Android}`. This
-  // should have no effects on the screen.
-  {
-    base::test::TestFuture<gfx::Image> future;
-    ui::GrabViewSnapshotAsync(web_contents()->GetView()->GetNativeView(),
-                              gfx::Rect(web_contents()->GetSize()),
-                              future.GetCallback());
-    AssertBitmapOfColor(future.Take().AsBitmap(), SK_ColorGREEN);
-  }
+  AssertBitmapOfColor(GrabViewSnapshot(), SK_ColorRED);
 }
 
 // Tests that when a RenderFrameHost is stored in BFCache, that the visibility
