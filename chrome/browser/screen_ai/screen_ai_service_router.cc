@@ -166,26 +166,44 @@ void ScreenAIServiceRouter::GetServiceStateAsync(
   }
 }
 
+std::set<ScreenAIServiceRouter::Service>
+ScreenAIServiceRouter::GetAllPendingStatusServices() {
+  std::set<Service> services;
+  for (const auto& it : pending_state_requests_) {
+    services.insert(it.first);
+  }
+  return services;
+}
+
 void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   switch (state) {
-    case ScreenAIInstallState::State::kNotDownloaded:  // Falls through.
+    case ScreenAIInstallState::State::kNotDownloaded:
+      ABSL_FALLTHROUGH_INTENDED;
+
     case ScreenAIInstallState::State::kDownloading:
       return;
 
-    case ScreenAIInstallState::State::kDownloadFailed:
-      CallPendingStatusRequests(Service::kMainContentExtraction, false);
-      CallPendingStatusRequests(Service::kOCR, false);
-      break;
-
-    case ScreenAIInstallState::State::kDownloaded:
-    case ScreenAIInstallState::State::kReady:
-      for (const auto& request : pending_state_requests_) {
-        InitializeServiceIfNeeded(request.first);
+    case ScreenAIInstallState::State::kDownloadFailed: {
+      std::set<Service> all_services = GetAllPendingStatusServices();
+      for (Service service : all_services) {
+        CallPendingStatusRequests(service, false);
       }
       break;
+    }
+
+    case ScreenAIInstallState::State::kDownloaded:
+      ABSL_FALLTHROUGH_INTENDED;
+
+    case ScreenAIInstallState::State::kReady: {
+      std::set<Service> all_services = GetAllPendingStatusServices();
+      for (Service service : all_services) {
+        InitializeServiceIfNeeded(service);
+      }
+      break;
+    }
   }
 
-  // No need to observe after library is downloaded or failed to download.
+  // No need to observe after library is downloaded or download has failed.
   component_ready_observer_.Reset();
 }
 
@@ -285,7 +303,7 @@ void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
   LaunchIfNotRunning();
 
   if (!screen_ai_service_factory_.is_bound()) {
-    CallPendingStatusRequests(service, false);
+    SetLibraryLoadState(request_id, false);
     return;
   }
 

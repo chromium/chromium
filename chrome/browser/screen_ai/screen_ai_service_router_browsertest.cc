@@ -131,11 +131,15 @@ class ScreenAIServiceRouterTest : public InProcessBrowserTest,
     router()->GetServiceStateAsync(
         service, base::BindOnce(&ResultsWaiter::OnResultsCallback,
                                 waiter_.GetWeakPtr()));
+    TriggerDownloadFailIfNeeded();
+    waiter_.WaitForResult();
+  }
+
+  void TriggerDownloadFailIfNeeded() {
     if (!IsEnabled(Params::kLibraryAvailable)) {
       ScreenAIInstallState::GetInstance()->SetState(
           ScreenAIInstallState::State::kDownloadFailed);
     }
-    waiter_.WaitForResult();
   }
 
   bool ExpectedInitializationResult(ScreenAIServiceRouter::Service service) {
@@ -201,6 +205,59 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest, MixedInitialization) {
   service = ScreenAIServiceRouter::Service::kOCR;
   GetServiceStateAndWaitForResult(service);
   EXPECT_EQ(waiter_.GetResult(), ExpectedInitializationResult(service));
+}
+
+// Tests if asking for initialization of a second service before getting the
+// result of the first one passes.
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
+                       MixedInitializationWithoutWait) {
+  ScreenAIServiceRouter::Service service1 =
+      ScreenAIServiceRouter::Service::kOCR;
+  ScreenAIServiceRouter::Service service2 =
+      ScreenAIServiceRouter::Service::kMainContentExtraction;
+
+  ResultsWaiter waiter1;
+  ResultsWaiter waiter2;
+
+  router()->GetServiceStateAsync(
+      service1,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter1.GetWeakPtr()));
+  router()->GetServiceStateAsync(
+      service2,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
+
+  TriggerDownloadFailIfNeeded();
+
+  waiter1.WaitForResult();
+  waiter2.WaitForResult();
+
+  EXPECT_EQ(waiter1.GetResult(), ExpectedInitializationResult(service1));
+  EXPECT_EQ(waiter2.GetResult(), ExpectedInitializationResult(service2));
+}
+
+// Tests if repeated asking for initialization of a service before getting the
+// result of the first request passes.
+IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
+                       RepeatedInitializationWithoutWait) {
+  ScreenAIServiceRouter::Service service = ScreenAIServiceRouter::Service::kOCR;
+
+  ResultsWaiter waiter1;
+  ResultsWaiter waiter2;
+
+  router()->GetServiceStateAsync(
+      service,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter1.GetWeakPtr()));
+  router()->GetServiceStateAsync(
+      service,
+      base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
+
+  TriggerDownloadFailIfNeeded();
+
+  waiter1.WaitForResult();
+  waiter2.WaitForResult();
+
+  EXPECT_EQ(waiter1.GetResult(), ExpectedInitializationResult(service));
+  EXPECT_EQ(waiter2.GetResult(), ExpectedInitializationResult(service));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
