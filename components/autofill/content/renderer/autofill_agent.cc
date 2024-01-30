@@ -1620,6 +1620,22 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   }
   WebDocument document = render_frame->GetWebFrame()->GetDocument();
 
+  // We check if we have a cached `last_interacted_.form_id`. In that case we
+  // return either the extracted form or `last_interacted_.saved_state` as a
+  // fallback if extraction fails. The remaining logic deals with formless
+  // fields. The reason why we check the ID and not the form is that we might've
+  // been caching a form that was removed, hence the form will be null but the
+  // ID won't.
+  if (last_interacted_.form_id.GetId()) {
+    if (std::optional<FormData> extracted_form_data =
+            form_util::ExtractFormData(document,
+                                       last_interacted_.form_id.GetForm(),
+                                       field_data_manager())) {
+      return extracted_form_data;
+    }
+    return last_interacted_.saved_state;
+  }
+
   // Checks whether all elements represented by `element_ids` in `document` have
   // disappeared (removed/hidden).
   auto all_control_elements_disappeared =
@@ -1633,20 +1649,6 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
             elements, form_util::IsWebElementFocusableForAutofill);
       };
 
-  // We check if we have a cached `last_interacted_.form_id`. In that case we
-  // return either the extracted form or `last_interacted_.saved_state` as a
-  // fallback if extraction fails. The remaining logic deals with formless
-  // fields. The reason why we check the ID and not the form is that we might've
-  // been caching a form that was removed, hence the form will be null but the
-  // ID won't.
-  if (last_interacted_.form_id.GetId()) {
-    if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, last_interacted_.form_id.GetForm(),
-            field_data_manager())) {
-      return form;
-    }
-    return last_interacted_.saved_state;
-  }
   // Criteria to decide on the submission of the form of formless elements,
   // assuming submission has been inferred:
   // - Formless elements were autofilled.
@@ -1663,9 +1665,10 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
                 kAutofillDontCheckForDisappearingFormlessElementsForSubmission)))) {
     // Return the extracted form or `last_interacted_.saved_state` as a fallback
     // if extraction fails.
-    if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, WebFormElement(), field_data_manager())) {
-      return form;
+    if (std::optional<FormData> extracted_form_data =
+            form_util::ExtractFormData(document, WebFormElement(),
+                                       field_data_manager())) {
+      return extracted_form_data;
     }
     return last_interacted_.saved_state;
   }
