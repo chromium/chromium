@@ -41,20 +41,6 @@ BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsStoreOwnerKeyInPrivateSlotEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          kStoreOwnerKeyInPrivateSlot.name)) {
-    // Return the value if it was overridden by Finch, command line, etc.
-    return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
-  }
-
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel == version_info::Channel::STABLE ||
-      channel == version_info::Channel::BETA) {
-    // TODO(b/264397430): Disable on beta and stable channels for now, remove
-    // the condition when the new code is more reliable.
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
 }
 
