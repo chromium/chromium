@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/observer_list.h"
 #include "base/version.h"
 
 class PrefService;
@@ -115,7 +115,7 @@ class ScreenAIInstallState {
   base::FilePath component_binary_path_;
   State state_ = State::kNotDownloaded;
 
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace screen_ai

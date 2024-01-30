@@ -184,7 +184,7 @@ void ScreenAIInstallState::RecordComponentInstallationResult(bool install,
 
 void ScreenAIInstallState::AddObserver(
     ScreenAIInstallState::Observer* observer) {
-  observers_.push_back(observer);
+  observers_.AddObserver(observer);
   observer->StateChanged(state_);
 
   // Adding an observer indicates that we need the component.
@@ -206,10 +206,7 @@ void ScreenAIInstallState::DownloadComponent() {
 
 void ScreenAIInstallState::RemoveObserver(
     ScreenAIInstallState::Observer* observer) {
-  auto pos = base::ranges::find(observers_, observer);
-  if (pos != observers_.end()) {
-    observers_.erase(pos);
-  }
+  observers_.RemoveObserver(observer);
 }
 
 void ScreenAIInstallState::SetComponentFolder(
@@ -241,15 +238,15 @@ void ScreenAIInstallState::SetState(State state) {
   }
 
   state_ = state;
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->StateChanged(state_);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.StateChanged(state_);
   }
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
   DCHECK_EQ(state_, State::kDownloading);
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->DownloadProgressChanged(progress);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.DownloadProgressChanged(progress);
   }
 }
 
@@ -293,8 +290,8 @@ void ScreenAIInstallState::SetComponentFolderForTesting() {
 
 void ScreenAIInstallState::SetStateForTesting(State state) {
   state_ = state;
-  for (ScreenAIInstallState::Observer* observer : observers_) {
-    observer->StateChanged(state_);
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.StateChanged(state_);
   }
 }
 
