@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFra
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragmentBase;
+import org.chromium.chrome.browser.safety_check.SafetyCheckBridge;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
@@ -526,6 +527,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             SafetyCheckCoordinator.create(
                     (SafetyCheckSettingsFragment) fragment,
                     new SafetyCheckUpdatesDelegateImpl(),
+                    new SafetyCheckBridge(mProfile),
                     mSettingsLauncher,
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
