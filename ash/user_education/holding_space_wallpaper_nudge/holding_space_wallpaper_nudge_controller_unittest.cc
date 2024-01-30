@@ -17,6 +17,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
@@ -78,6 +79,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Pair;
+using ::testing::WithArgs;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -761,12 +763,13 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   if (complete_drop_of_files_app_data) {
     EXPECT_CALL(holding_space_client,
                 PinFiles(ElementsAre(Eq(base::FilePath("//path/to/a")),
-                                     Eq(base::FilePath("//path/to/b")))))
-        .WillOnce(
+                                     Eq(base::FilePath("//path/to/b"))),
+                         Eq(holding_space_metrics::EventSource::kWallpaper)))
+        .WillOnce(WithArgs<0>(
             Invoke([&](const std::vector<base::FilePath>& unpinned_file_paths) {
               holding_space_model.AddItems(CreateHoldingSpaceItems(
                   HoldingSpaceItem::Type::kPinnedFile, unpinned_file_paths));
-            }));
+            })));
   }
 
   // Release the left button. Note that this will complete the drop if it
@@ -1391,12 +1394,13 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   if (expect_drop_to_pin) {
     EXPECT_CALL(holding_space_client,
                 PinFiles(ElementsAre(Eq(base::FilePath("//path/to/a")),
-                                     Eq(base::FilePath("//path/to/b")))))
-        .WillOnce(
+                                     Eq(base::FilePath("//path/to/b"))),
+                         Eq(holding_space_metrics::EventSource::kWallpaper)))
+        .WillOnce(WithArgs<0>(
             Invoke([&](const std::vector<base::FilePath>& unpinned_file_paths) {
               holding_space_model.AddItems(CreateHoldingSpaceItems(
                   HoldingSpaceItem::Type::kPinnedFile, unpinned_file_paths));
-            }));
+            })));
   }
 
   // Create and show a widget from which data can be drag-and-dropped.

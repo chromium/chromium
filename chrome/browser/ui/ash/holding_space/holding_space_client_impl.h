@@ -28,19 +28,27 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   // HoldingSpaceClient:
   const std::string& AddItemOfType(HoldingSpaceItem::Type type,
                                    const base::FilePath& file_path) override;
-  void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
+  void CopyImageToClipboard(const HoldingSpaceItem&,
+                            holding_space_metrics::EventSource event_source,
+                            SuccessCallback) override;
   base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   bool IsDriveDisabled() const override;
   void OpenDownloads(SuccessCallback callback) override;
   void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
+                 holding_space_metrics::EventSource event_source,
                  SuccessCallback callback) override;
   void OpenMyFiles(SuccessCallback callback) override;
-  void PinFiles(const std::vector<base::FilePath>& file_paths) override;
-  void PinItems(const std::vector<const HoldingSpaceItem*>& items) override;
+  void PinFiles(const std::vector<base::FilePath>& file_paths,
+                holding_space_metrics::EventSource event_source) override;
+  void PinItems(const std::vector<const HoldingSpaceItem*>& items,
+                holding_space_metrics::EventSource event_source) override;
   void RemoveFileSuggestions(
       const std::vector<base::FilePath>& absolute_file_paths) override;
-  void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
-  void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;
+  void ShowItemInFolder(const HoldingSpaceItem& item,
+                        holding_space_metrics::EventSource event_source,
+                        SuccessCallback) override;
+  void UnpinItems(const std::vector<const HoldingSpaceItem*>& items,
+                  holding_space_metrics::EventSource event_source) override;
 
  private:
   const raw_ptr<Profile> profile_;

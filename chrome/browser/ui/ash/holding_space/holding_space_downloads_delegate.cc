@@ -920,42 +920,48 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetProgress(in_progress_download->GetProgress());
 }
 
-void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
-                                           HoldingSpaceCommandId command_id) {
+void HoldingSpaceDownloadsDelegate::Cancel(
+    const HoldingSpaceItem* item,
+    HoldingSpaceCommandId command_id,
+    holding_space_metrics::EventSource event_source) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kCancel);
+          {item}, holding_space_metrics::ItemAction::kCancel, event_source);
       in_progress_download->Cancel();
       return;
     }
   }
 }
 
-void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
-                                          HoldingSpaceCommandId command_id) {
+void HoldingSpaceDownloadsDelegate::Pause(
+    const HoldingSpaceItem* item,
+    HoldingSpaceCommandId command_id,
+    holding_space_metrics::EventSource event_source) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kPause);
+          {item}, holding_space_metrics::ItemAction::kPause, event_source);
       in_progress_download->Pause();
       return;
     }
   }
 }
 
-void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item,
-                                           HoldingSpaceCommandId command_id) {
+void HoldingSpaceDownloadsDelegate::Resume(
+    const HoldingSpaceItem* item,
+    HoldingSpaceCommandId command_id,
+    holding_space_metrics::EventSource event_source) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kResume);
+          {item}, holding_space_metrics::ItemAction::kResume, event_source);
       in_progress_download->Resume();
       return;
     }

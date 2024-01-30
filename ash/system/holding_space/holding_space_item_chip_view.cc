@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -515,8 +516,11 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
       secondary_action_pause_->GetVisible()
           ? HoldingSpaceCommandId::kPauseItem
           : HoldingSpaceCommandId::kResumeItem;
-  if (!holding_space_util::ExecuteInProgressCommand(item(), command_id))
+  if (!holding_space_util::ExecuteInProgressCommand(
+          item(), command_id,
+          holding_space_metrics::EventSource::kHoldingSpaceItem)) {
     NOTREACHED();
+  }
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {

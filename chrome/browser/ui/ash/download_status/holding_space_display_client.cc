@@ -103,7 +103,8 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
         holding_space_util::IsInProgressCommand(id)) {
       in_progress_commands.emplace_back(
           id, command_info.text_id, command_info.icon,
-          base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
+          base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId,
+                           holding_space_metrics::EventSource>(
               command_info.command_callback));
     }
   }

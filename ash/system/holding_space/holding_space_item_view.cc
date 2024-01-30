@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -474,7 +475,8 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
     if (!holding_space_util::ExecuteInProgressCommand(
-            item(), HoldingSpaceCommandId::kCancelItem)) {
+            item(), HoldingSpaceCommandId::kCancelItem,
+            holding_space_metrics::EventSource::kHoldingSpaceItem)) {
       NOTREACHED();
     }
     return;
@@ -487,10 +489,13 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
-  if (is_item_pinned)
-    HoldingSpaceController::Get()->client()->UnpinItems({item()});
-  else
-    HoldingSpaceController::Get()->client()->PinItems({item()});
+  if (is_item_pinned) {
+    HoldingSpaceController::Get()->client()->UnpinItems(
+        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+  } else {
+    HoldingSpaceController::Get()->client()->PinItems(
+        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+  }
 
   if (weak_ptr)
     UpdatePrimaryAction();

@@ -141,7 +141,8 @@ void HoldingSpaceKeyedService::AddPrintedPdf(
 }
 
 void HoldingSpaceKeyedService::AddPinnedFiles(
-    const std::vector<storage::FileSystemURL>& file_system_urls) {
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    holding_space_metrics::EventSource event_source) {
   if (!IsInitialized()) {
     return;
   }
@@ -183,13 +184,14 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
     RecordTimeFromFirstEntryToFirstPin(profile_);
 
   holding_space_metrics::RecordItemAction(
-      items_to_record, holding_space_metrics::ItemAction::kPin);
+      items_to_record, holding_space_metrics::ItemAction::kPin, event_source);
 
   AddItems(std::move(items), /*allow_duplicates=*/false);
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFiles(
-    const std::vector<storage::FileSystemURL>& file_system_urls) {
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    holding_space_metrics::EventSource event_source) {
   if (!IsInitialized()) {
     return;
   }
@@ -218,7 +220,7 @@ void HoldingSpaceKeyedService::RemovePinnedFiles(
     return;
 
   holding_space_metrics::RecordItemAction(
-      items_to_record, holding_space_metrics::ItemAction::kUnpin);
+      items_to_record, holding_space_metrics::ItemAction::kUnpin, event_source);
 
   holding_space_model_.RemoveItems(items);
 }

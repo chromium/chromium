@@ -453,9 +453,11 @@ void HoldingSpaceTray::PerformDrop(
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
-  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
-  did_drop_to_pin_ = true;
+  HoldingSpaceController::Get()->client()->PinFiles(
+      unpinned_file_paths,
+      holding_space_metrics::EventSource::kHoldingSpaceTray);
 
+  did_drop_to_pin_ = true;
   output_drag_op = DragOperation::kCopy;
 }
 

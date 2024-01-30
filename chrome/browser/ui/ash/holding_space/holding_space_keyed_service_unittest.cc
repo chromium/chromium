@@ -2589,7 +2589,8 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, RemoveAll) {
       {file_manager::util::GetFileManagerFileSystemContext(profile)
            ->CrackURLInFirstPartyContext(
                holding_space_util::ResolveFileSystemUrl(profile,
-                                                        pinned_file_path))});
+                                                        pinned_file_path))},
+      holding_space_metrics::EventSource::kTest);
 
   ASSERT_EQ(2u, model->items().size());
   service->RemoveAll();
@@ -2835,7 +2836,8 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
             {file_manager::util::GetFileManagerFileSystemContext(profile)
                  ->CrackURLInFirstPartyContext(
                      holding_space_util::ResolveFileSystemUrl(profile,
-                                                              file_path))});
+                                                              file_path))},
+            holding_space_metrics::EventSource::kTest);
         break;
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
         EXPECT_EQ(
