@@ -121,6 +121,8 @@ constexpr char kDeviceAttestationCertificateKey[] =
     "deviceAttestationCertificate";
 constexpr char kChromeOS[] = "CHROME_OS";
 
+constexpr const char kChallengeBytesFailureReasonHistogramName[] =
+    "QuickStart.ChallengeBytes.FailureReason";
 constexpr const char kChallengeBytesFetchResultHistogramName[] =
     "QuickStart.ChallengeBytes.FetchResult";
 constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
@@ -519,6 +521,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   auto challenge_bytes = FetchChallengeBytes();
   histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                      /*sample=*/false, 1);
+  histogram_tester.ExpectBucketCount(
+      kChallengeBytesFailureReasonHistogramName,
+      /*sample=*/GoogleServiceAuthError::State::SERVICE_ERROR, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -558,6 +563,10 @@ TEST_F(SecondDeviceAuthBrokerTest,
     auto challenge_bytes = FetchChallengeBytes();
     histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                        /*sample=*/false, 1);
+    histogram_tester.ExpectBucketCount(
+        kChallengeBytesFailureReasonHistogramName,
+        /*sample=*/GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE,
+        1);
   }
 }
 
@@ -574,6 +583,9 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesLogsMetricsForSuccess) {
   auto challenge_bytes = FetchChallengeBytes();
   histogram_tester.ExpectBucketCount(kChallengeBytesFetchResultHistogramName,
                                      /*sample=*/true, 1);
+  histogram_tester.ExpectBucketCount(
+      kChallengeBytesFailureReasonHistogramName,
+      /*sample=*/GoogleServiceAuthError::State::NONE, 1);
 }
 
 TEST_F(

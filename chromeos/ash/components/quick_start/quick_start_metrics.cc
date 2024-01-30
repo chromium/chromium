@@ -15,6 +15,8 @@ namespace ash::quick_start {
 
 namespace {
 
+constexpr const char kChallengeBytesFailureReasonHistogramName[] =
+    "QuickStart.ChallengeBytes.FailureReason";
 constexpr const char kChallengeBytesFetchResultHistogramName[] =
     "QuickStart.ChallengeBytes.FetchResult";
 constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
@@ -168,6 +170,9 @@ void QuickStartMetrics::RecordChallengeBytesRequestEnded(
   const bool is_success = status.state() == GoogleServiceAuthError::State::NONE;
   base::UmaHistogramBoolean(kChallengeBytesFetchResultHistogramName,
                             /*sample=*/is_success);
+  base::UmaHistogramEnumeration(kChallengeBytesFailureReasonHistogramName,
+                                /*sample=*/status.state(),
+                                GoogleServiceAuthError::NUM_STATES);
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
