@@ -110,7 +110,7 @@ function runCodeTest()
             else if (expectedCode < 0)
                 expectedCode = 0;
             expectedCode = Math.floor(expectedCode);
-            shouldBe("exceptionMessage", '"Failed to execute \'close\' on \'WebSocket\': The code must be either 1000, or between 3000 and 4999. ' + expectedCode + ' is neither."');
+            shouldBe("exceptionMessage", '"Failed to execute \'close\' on \'WebSocket\': The close code must be either 1000, or between 3000 and 4999. ' + expectedCode + ' is neither."');
         }
     }
 }

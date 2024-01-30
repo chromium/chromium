@@ -34,7 +34,7 @@ namespace blink {
 
 namespace {
 
-// Name, decription, and legacy code name and value of DOMExceptions.
+// Name, description, and legacy code name and value of DOMExceptions.
 // https://webidl.spec.whatwg.org/#idl-DOMException-error-names
 const struct DOMExceptionEntry {
   DOMExceptionCode code;
@@ -173,7 +173,11 @@ const struct DOMExceptionEntry {
     // FedCM API
     // https://fedidcg.github.io/FedCM/#browser-api-identity-credential-error-interface
     {DOMExceptionCode::kIdentityCredentialError, "IdentityCredentialError",
-     "An attempt to retrieve an IdentityCredential has failed."}
+     "An attempt to retrieve an IdentityCredential has failed."},
+
+    // WebSocketStream API https://websockets.spec.whatwg.org/
+    {DOMExceptionCode::kWebSocketError, "WebSocketError",
+     "The WebSocket connection was closed."},
 
     // Extra comment to keep the end of the initializer list on its own line.
 };

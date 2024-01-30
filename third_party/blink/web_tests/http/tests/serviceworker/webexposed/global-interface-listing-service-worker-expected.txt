@@ -2968,6 +2968,11 @@ interface WebSocket : EventTarget
     setter onerror
     setter onmessage
     setter onopen
+interface WebSocketError : DOMException
+    attribute @@toStringTag
+    getter closeCode
+    getter reason
+    method constructor
 interface WebSocketStream
     attribute @@toStringTag
     getter closed

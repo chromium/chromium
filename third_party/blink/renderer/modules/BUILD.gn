@@ -613,6 +613,7 @@ source_set("unit_tests") {
     "websockets/mock_websocket_channel.h",
     "websockets/websocket_channel_impl_test.cc",
     "websockets/websocket_common_test.cc",
+    "websockets/websocket_error_test.cc",
     "websockets/websocket_message_chunk_accumulator_test.cc",
     "websockets/websocket_stream_test.cc",
     "worklet/animation_and_paint_worklet_thread_test.cc",
