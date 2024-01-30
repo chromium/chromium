@@ -42,7 +42,9 @@
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Updates with `suggestions`.
-- (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions;
+- (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions
+           showScrollHint:(BOOL)showScrollHint
+               completion:(void (^)(BOOL finished))completion;
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.

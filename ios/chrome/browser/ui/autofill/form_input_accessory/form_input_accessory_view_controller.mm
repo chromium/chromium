@@ -54,11 +54,17 @@
 // The ID of the field that was last announced by VoiceOver.
 @property(nonatomic, assign) autofill::FieldRendererId lastAnnouncedFieldId;
 
+// Whether to show the scroll hint.
+@property(nonatomic, assign) BOOL showScrollHint;
+
 @end
 
 @implementation FormInputAccessoryViewController {
   // Is the preferred omnibox position at the bottom.
   BOOL _isBottomOmnibox;
+
+  // Whether the keyboard was closed before the keyboard accessory appeared.
+  BOOL _keyboardWasClosed;
 }
 
 @synthesize addressButtonHidden = _addressButtonHidden;
@@ -82,6 +88,7 @@
     _manualFillAccessoryViewController =
         [[ManualFillAccessoryViewController alloc] initWithDelegate:self];
     [self addChildViewController:_manualFillAccessoryViewController];
+    _keyboardWasClosed = YES;
   }
   return self;
 }
@@ -147,6 +154,18 @@
 
 #pragma mark - UIViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // `showScrollHint` will be set to YES only when `viewDidAppear` is called
+  // from a state where the keyboard was previously closed, otherwise it will be
+  // set to NO. `viewDidAppear` is called when they keyboard accessory remains
+  // open after a user switches between fields on a form, but `viewDidDisappear`
+  // is not, so `showScrollHint` will not be set to YES in that scenario.
+  self.showScrollHint = _keyboardWasClosed;
+  _keyboardWasClosed = NO;
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
 
@@ -163,6 +182,9 @@
     // Reset the manual fill view controller.
     [self.manualFillAccessoryViewController resetAnimated:NO];
   }
+
+  // Whether the keyboard was closed the next time the keyboard accessory opens.
+  _keyboardWasClosed = YES;
 }
 
 #pragma mark - Public
@@ -179,7 +201,16 @@
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
   [self createFormSuggestionViewIfNeeded];
-  [self.formSuggestionView updateSuggestions:suggestions];
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(BOOL finished) {
+    // Disable the scroll hint once it's been shown once.
+    if (finished) {
+      weakSelf.showScrollHint = NO;
+    }
+  };
+  [self.formSuggestionView updateSuggestions:suggestions
+                              showScrollHint:self.showScrollHint
+                                  completion:completion];
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
