@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,6 +50,7 @@ public class NotificationSuspenderUnitTest {
 
     private static final String TEST_ORIGIN = "https://example.com";
     private static final String TEST_ORIGIN_SUBDOMAIN = "https://subdomain.example.com";
+    private static final String TEST_ORIGIN_OTHER_PORT = "https://example.com:444";
     private static final String TEST_OTHER_ORIGIN = "https://not-example.com";
     private static final String TEST_ORIGIN_HTTP = "http://example.com";
     private static final String TEST_OTHER_ORIGIN_HTTP = "http://not-example.com";
@@ -180,6 +186,56 @@ public class NotificationSuspenderUnitTest {
     }
 
     /**
+     * Verifies that storeNotificationResourcesFromOrigins correctly identifies the notifications
+     * originating from the given schemeful origins.
+     */
+    @SmallTest
+    @Test
+    public void testStoreNotificationResourcesFromOrigins_MultipleOrigins() {
+        populateTestNotifications();
+
+        MatcherAssert.assertThat(
+                mNotificationSuspender.storeNotificationResourcesFromOrigins(
+                        Arrays.asList(
+                                Uri.parse(TEST_ORIGIN_SUBDOMAIN),
+                                Uri.parse(TEST_ORIGIN_HTTP),
+                                Uri.parse(TEST_ORIGIN_OTHER_PORT),
+                                Uri.parse(TEST_OTHER_ORIGIN))),
+                containsInAnyOrder(
+                        TEST_NOTIFICATION_ID_SUBDOMAIN,
+                        TEST_NOTIFICATION_ID_HTTP,
+                        TEST_NOTIFICATION_ID_OTHER_DOMAIN));
+
+        // Expect the matching notifications to be stored...
+        Mockito.verify(mNotificationSuspenderJniMock)
+                .storeNotificationResources(
+                        ArgumentMatchers.eq(mProfile),
+                        /* notificationIds= */ ArgumentMatchers.eq(
+                                new String[] {
+                                    TEST_NOTIFICATION_ID_HTTP,
+                                    TEST_NOTIFICATION_ID_SUBDOMAIN,
+                                    TEST_NOTIFICATION_ID_OTHER_DOMAIN
+                                }),
+                        /* origins= */ ArgumentMatchers.eq(
+                                new String[] {
+                                    TEST_ORIGIN_HTTP, TEST_ORIGIN_SUBDOMAIN, TEST_OTHER_ORIGIN
+                                }),
+                        /* resources= */ ArgumentMatchers.eq(
+                                Collections.nCopies(9, null).toArray(new Bitmap[0])));
+
+        // ... but not cancelled, so that the rest is still the original list.
+        Assert.assertEquals(
+                new String[] {
+                    TEST_NOTIFICATION_ID,
+                    TEST_NOTIFICATION_ID_SAME_ORIGIN,
+                    TEST_NOTIFICATION_ID_HTTP,
+                    TEST_NOTIFICATION_ID_SUBDOMAIN,
+                    TEST_NOTIFICATION_ID_OTHER_DOMAIN
+                },
+                getActiveNotificationIds());
+    }
+
+    /**
      * Verifies that storeNotificationResources correctly captures the icon / badge / image; even
      * for a notification that is not presently active.
      */
@@ -237,10 +293,35 @@ public class NotificationSuspenderUnitTest {
                 .reDisplayNotifications(
                         ArgumentMatchers.eq(mProfile),
                         /* origins= */ MockitoHamcrest.argThat(
-                                org.hamcrest.Matchers.arrayContainingInAnyOrder(
+                                arrayContainingInAnyOrder(
                                         TEST_ORIGIN,
                                         TEST_ORIGIN_HTTP,
                                         TEST_OTHER_ORIGIN,
                                         TEST_OTHER_ORIGIN_HTTP)));
+    }
+
+    /**
+     * Verifies that testUnsuspendNotificationsFromOrigins triggers restoring notifications from the
+     * correct origins.
+     */
+    @SmallTest
+    @Test
+    public void testUnsuspendNotificationsFromOrigins() {
+        mNotificationSuspender.unsuspendNotificationsFromOrigins(
+                Arrays.asList(
+                        Uri.parse(TEST_ORIGIN_HTTP),
+                        Uri.parse(TEST_ORIGIN_SUBDOMAIN),
+                        Uri.parse(TEST_ORIGIN_OTHER_PORT),
+                        Uri.parse(TEST_OTHER_ORIGIN)));
+
+        Mockito.verify(mNotificationSuspenderJniMock)
+                .reDisplayNotifications(
+                        ArgumentMatchers.eq(mProfile),
+                        /* origins= */ MockitoHamcrest.argThat(
+                                arrayContainingInAnyOrder(
+                                        TEST_ORIGIN_HTTP,
+                                        TEST_ORIGIN_SUBDOMAIN,
+                                        TEST_ORIGIN_OTHER_PORT,
+                                        TEST_OTHER_ORIGIN)));
     }
 }
