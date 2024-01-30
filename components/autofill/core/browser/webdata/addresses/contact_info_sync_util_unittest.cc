@@ -99,11 +99,6 @@ AutofillProfile ConstructCompleteProfile(
   profile.SetRawInfo(COMPANY_NAME, u"Google, Inc.");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1.800.555.1234");
 
-  // Set birthdate-related values.
-  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
-  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
-  profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
-
   // Add some `ProfileTokenQuality` observations.
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST,
@@ -328,14 +323,6 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_phone_home_whole_number(), "1.800.555.1234",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
-  // Set birthdate-related values and statuses.
-  SetToken(specifics.mutable_birthdate_day(), 14,
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_birthdate_month(), 3,
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_birthdate_year(), 1997,
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-
   // Add some `ProfileTokenQuality` observations.
   ContactInfoSpecifics::Observation* observation =
       specifics.mutable_name_first()->mutable_metadata()->add_observations();
@@ -508,9 +495,8 @@ class ContactInfoSyncUtilTest
 };
 
 // Test that converting AutofillProfile -> ContactInfoSpecifics works.
-// TODO(https://crbug.com/1523077): fails on multiple bots.
 TEST_P(ContactInfoSyncUtilTest,
-       DISABLED_CreateContactInfoEntityDataFromAutofillProfile) {
+       CreateContactInfoEntityDataFromAutofillProfile) {
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
   ContactInfoSpecifics specifics =
       GetContactInfoSpecificsForCountry(GetParam());
@@ -589,9 +575,7 @@ TEST_F(ContactInfoSyncUtilTest,
 
 // Test that the conversion of a profile to specifics preserve the unsupported
 // fields.
-// TODO(https://crbug.com/1523077): fails on multiple bots.
-TEST_P(ContactInfoSyncUtilTest,
-       DISABLED_ContactInfoSpecificsFromAutofillProfile) {
+TEST_P(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
   // Create the base message that only contains unsupported fields in both the
   // top-level and a nested message.
   sync_pb::ContactInfoSpecifics contact_info_specifics_with_only_unknown_fields;
