@@ -8,18 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "ash/shell_observer.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/exo/wayland/output_controller.h"
 #include "components/exo/wayland/scoped_wl.h"
-#include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_observer.h"
 
 struct wl_resource;
 struct wl_client;
@@ -34,7 +30,6 @@ class ClientTracker;
 class SerialTracker;
 class UiControls;
 struct WaylandDataDeviceManager;
-class WaylandDisplayOutput;
 struct WaylandKeyboardExtension;
 struct WaylandSeat;
 struct WaylandTextInputExtension;
@@ -47,8 +42,7 @@ class WaylandWatcher;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
 // requests are dispatched into the given Exosphere display.
-class Server : public display::DisplayManagerObserver,
-               public ash::ShellObserver {
+class Server : public OutputController::Delegate {
  public:
   using ServerGetter = base::RepeatingCallback<Server*(wl_display*)>;
   using StartCallback = base::OnceCallback<void(bool)>;
@@ -95,21 +89,14 @@ class Server : public display::DisplayManagerObserver,
   // Dispatch() should block waiting for the file descriptor to become ready.
   void Dispatch(base::TimeDelta timeout);
 
-  // Send all buffered events to the clients.
-  void Flush();
+  // OutputController::Delegate:
+  void Flush() override;
+  wl_display* GetWaylandDisplay() override;
 
-  // display::DisplayManagerObserver:
-  void OnDidProcessDisplayChanges(
-      const DisplayConfigurationChange& configuration_change) override;
-
-  // ash::ShellObserver:
-  void OnDisplayForNewWindowsChanged() override;
+  Display* GetDisplay() { return display_; }
 
   // Returns the wl_resource for the wl_output bound to the `client`.
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
-
-  Display* GetDisplay() { return display_; }
-  wl_display* GetWaylandDisplay() { return wl_display_.get(); }
 
   // Returns whether a client associated with this server has started
   // destruction.
@@ -120,8 +107,6 @@ class Server : public display::DisplayManagerObserver,
  protected:
   friend class UiControls;
   friend class WestonTest;
-  void AddWaylandOutput(int64_t id,
-                        std::unique_ptr<WaylandDisplayOutput> output);
 
  private:
   friend class ScopedEventDispatchDisabler;
@@ -140,7 +125,7 @@ class Server : public display::DisplayManagerObserver,
   std::unique_ptr<SerialTracker> serial_tracker_;
   std::unique_ptr<SerialTracker> rotation_serial_tracker_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wl_display_;
-  base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>> outputs_;
+  std::unique_ptr<OutputController> output_controller_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;
   std::unique_ptr<WaylandSeat> seat_data_;
   std::unique_ptr<wayland::WaylandWatcher> wayland_watcher_;
@@ -153,10 +138,6 @@ class Server : public display::DisplayManagerObserver,
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<UiControls> ui_controls_holder_;
   std::unique_ptr<ClientTracker> client_tracker_;
-
-  base::ScopedObservation<display::DisplayManager,
-                          display::DisplayManagerObserver>
-      display_manager_observation_{this};
 };
 
 }  // namespace wayland
