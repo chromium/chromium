@@ -535,10 +535,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     # Delete suspect testcase from tests.
     tests = [test for test in tests if not test in self._crashes]
 
-    # Sort tests by hash.
-    # TODO(crbug.com/1257820): Add sorting logic back to _PartitionTests.
-    tests = self._SortTests(tests)
-
     max_shard_size = self._test_instance.test_launcher_batch_limit
 
     shards.extend(self._PartitionTests(tests, device_count, max_shard_size))
@@ -631,8 +627,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           trim_test = '%s.%s' % (test_suite, test_name)
           trim_tests.append(trim_test)
 
-        if not trim_test in pre_tests or len(
-            pre_tests[trim_test]) < len(trim_tests):
+        # The trim test should exist at first place. For example, if a test has
+        # been disabled, there is no need to run PRE_ test with this test.
+        if trim_test in tests and (not trim_test in pre_tests or len(
+            pre_tests[trim_test]) < len(trim_tests)):
           pre_tests[trim_test] = trim_tests
 
     all_tests = []

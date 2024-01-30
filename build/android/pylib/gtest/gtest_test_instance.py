@@ -614,6 +614,7 @@ class GtestTestInstance(test_instance.TestInstance):
     disabled_filter_items = []
 
     if disabled_prefixes is None:
+      # TODO(crbug/1257820): Remove PRE_ once flag is ready.
       disabled_prefixes = ['FAILS_', 'PRE_']
       if '--run-manual' not in self._flags:
         disabled_prefixes += ['MANUAL_']

@@ -162,6 +162,7 @@ class LocalDeviceTestRun(test_run.TestRun):
         self._env.ResetCurrentTry()
         while self._env.current_try < self._env.max_tries and tests:
           tries = self._env.current_try
+          tests = self._SortTests(tests)
           grouped_tests = self._GroupTests(tests)
           logging.info('STARTING TRY #%d/%d', tries + 1, self._env.max_tries)
           if tries > 0 and self._env.recover_devices:
@@ -241,6 +242,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     tests_and_names = ((t, self._GetUniqueTestName(t)) for t in tests)
 
     tests_and_results = {}
+    # TODO(crbug/1257820): Add retry logic for PRE_ tests.
     for test, name in tests_and_names:
       if name.endswith('*'):
         tests_and_results[name] = (test, [
@@ -323,6 +325,11 @@ class LocalDeviceTestRun(test_run.TestRun):
       # if the size of the test group is larger than the max partition size on
       # its own, just put the group in its own shard instead of splitting up the
       # group.
+      # TODO(crbug/1257820): Add logic to support PRE_ test recognition but it
+      # may hurt performance in most scenarios. Currently all PRE_ tests are
+      # partitioned into the last shard. Unless the number of PRE_ tests are
+      # larger than the partition size, the PRE_ test may get assigned into a
+      # different shard and cause test failure.
       if (last_partition_size + test_count > partition_size
           and last_partition_size > 0):
         num_desired_partitions -= 1
