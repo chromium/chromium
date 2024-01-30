@@ -289,9 +289,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_LooseSimilarityCheck",
                     "enable_features": [
-                        "AndroidAutofillPrefillRequestsForLoginForms"
+                        "AndroidAutofillPrefillRequestsForLoginForms",
+                        "AndroidAutofillUsePwmPredictionsForOverrides"
                     ]
                 }
             ]
