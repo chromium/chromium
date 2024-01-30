@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ClientSidePhishing" summary="Client Side Phishing"/>
   <variant name="ClientSidePhishingImageEmbedder"
       summary="Client Side Phishing Image Embedder"/>
+  <variant name="Compose" summary="Weights for On-Device Compose"/>
   <variant name="ContextualPageActionPriceTracking"
       summary="Contextual Page Action: Show price tracking"/>
   <variant name="GeolocationPermissions" summary="Geolocation permissions"/>

@@ -121,6 +121,8 @@ std::string GetStringNameForOptimizationTarget(
       return "TextSafety";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER:
       return "SegmentationAndroidHomeModuleRanker";
+    case proto::OPTIMIZATION_TARGET_COMPOSE:
+      return "Compose";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
