@@ -6,7 +6,8 @@ module chromeos.settings.mojom;
 
 // Enumeration of each setting in the Chrome OS Settings app. Numerical values
 // are used for metrics; do not change or reuse values. Add new values to the
-// OsSetting enum in tools/metrics/histograms/enums.xml.
+// OsSetting enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
 enum Setting {
   // Network section.
   kConfigureEthernet = 0,
@@ -315,4 +316,7 @@ enum Setting {
   kAddKerberosTicketV2 = 1800,
   kRemoveKerberosTicketV2 = 1801,
   kSetActiveKerberosTicketV2 = 1802,
+
+  // Multitasking section.
+  kSnapWindowSuggestions = 1900,
 };

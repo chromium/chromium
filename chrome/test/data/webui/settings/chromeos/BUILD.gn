@@ -349,6 +349,7 @@ build_webui_tests("build") {
 
     "settings_scheduler_slider/settings_scheduler_slider_test.ts",
 
+    "system_preferences_page/multitasking_settings_card_test.ts",
     "system_preferences_page/startup_settings_card_test.ts",
     "system_preferences_page/storage_and_power_settings_card_test.ts",
     "system_preferences_page/system_preferences_page_test.ts",

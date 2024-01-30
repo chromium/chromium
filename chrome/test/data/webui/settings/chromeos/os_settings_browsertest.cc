@@ -39,8 +39,10 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
 class OSSettingsMochaTestRevampEnabled : public OSSettingsMochaTest {
  protected:
   OSSettingsMochaTestRevampEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsRevampWayfinding);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kOsSettingsRevampWayfinding,
+         ash::features::kFasterSplitScreenSetup},
+        {});
   }
 
  private:
@@ -1632,6 +1634,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
                        SystemPreferencesPageStartupSettingsCard) {
   RunSettingsTest("system_preferences_page/startup_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       SystemPreferencesPageMultitaskingSettingsCard) {
+  RunSettingsTest("system_preferences_page/multitasking_settings_card_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,

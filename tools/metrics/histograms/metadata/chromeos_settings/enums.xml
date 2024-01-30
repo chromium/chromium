@@ -340,6 +340,7 @@ chromium-metrics-reviews@google.com.
   <int value="1800" label="Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>
+  <int value="1900" label="Show snap window suggestions"/>
 </enum>
 
 <enum name="OsSettingSearchBoxUserAction">
@@ -388,6 +389,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Reset"/>
   <int value="17" label="About Chrome OS"/>
   <int value="18" label="Kerberos"/>
+  <int value="19" label="System Preferences"/>
 </enum>
 
 <enum name="OsSettingsSubpage">

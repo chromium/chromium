@@ -33,6 +33,7 @@ SystemPreferencesSection::SystemPreferencesSection(
       date_time_subsection_(profile, search_tag_registry),
       files_subsection_(profile, search_tag_registry),
       languages_subsection_(profile, search_tag_registry, pref_service),
+      multitasking_subsection_(profile, search_tag_registry),
       power_subsection_(profile, search_tag_registry, pref_service),
       reset_subsection_(profile, search_tag_registry),
       search_subsection_(profile, search_tag_registry),
@@ -50,6 +51,7 @@ void SystemPreferencesSection::AddLoadTimeData(
   date_time_subsection_.AddLoadTimeData(html_source);
   files_subsection_.AddLoadTimeData(html_source);
   languages_subsection_.AddLoadTimeData(html_source);
+  multitasking_subsection_.AddLoadTimeData(html_source);
   power_subsection_.AddLoadTimeData(html_source);
   reset_subsection_.AddLoadTimeData(html_source);
   search_subsection_.AddLoadTimeData(html_source);
@@ -70,6 +72,7 @@ void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
   date_time_subsection_.AddHandlers(web_ui);
   files_subsection_.AddHandlers(web_ui);
   languages_subsection_.AddHandlers(web_ui);
+  multitasking_subsection_.AddHandlers(web_ui);
   power_subsection_.AddHandlers(web_ui);
   reset_subsection_.AddHandlers(web_ui);
   search_subsection_.AddHandlers(web_ui);
@@ -98,6 +101,7 @@ bool SystemPreferencesSection::LogMetric(mojom::Setting setting,
   return date_time_subsection_.LogMetric(setting, value) ||
          files_subsection_.LogMetric(setting, value) ||
          languages_subsection_.LogMetric(setting, value) ||
+         multitasking_subsection_.LogMetric(setting, value) ||
          power_subsection_.LogMetric(setting, value) ||
          reset_subsection_.LogMetric(setting, value) ||
          search_subsection_.LogMetric(setting, value) ||
@@ -110,6 +114,7 @@ void SystemPreferencesSection::RegisterHierarchy(
   date_time_subsection_.RegisterHierarchy(generator);
   files_subsection_.RegisterHierarchy(generator);
   languages_subsection_.RegisterHierarchy(generator);
+  multitasking_subsection_.RegisterHierarchy(generator);
   power_subsection_.RegisterHierarchy(generator);
   reset_subsection_.RegisterHierarchy(generator);
   search_subsection_.RegisterHierarchy(generator);

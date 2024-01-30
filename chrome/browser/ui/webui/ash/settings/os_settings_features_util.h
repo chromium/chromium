@@ -37,6 +37,9 @@ bool IsAppRestoreAvailableForProfile(const Profile* profile);
 // Determines if per-app language settings are available for `profile`.
 bool IsPerAppLanguageEnabled(const Profile* profile);
 
+// Determines if multitasking section of System Preferences is allowed.
+bool ShouldShowMultitasking();
+
 }  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_FEATURES_UTIL_H_

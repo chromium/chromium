@@ -91,3 +91,7 @@ export function shouldShowQuickAnswersSettings(): boolean {
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');
 }
+
+export function shouldShowMultitasking(): boolean {
+  return loadTimeData.getBoolean('shouldShowMultitasking');
+}

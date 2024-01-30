@@ -877,6 +877,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kDockedMagnifierScreenHeightDivisor] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kSnapWindowSuggestions] =
+      settings_api::PrefType::kBoolean;
 
   // Input method settings.
   (*s_allowlist)[::prefs::kLanguagePreloadEngines] =

@@ -6543,6 +6543,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu. This static list describes device storage, battery/energy saver, and language settings.">
     Storage, power, language
   </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_TITLE" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    Multitasking
+  </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_LABEL" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    Show window snap suggestions
+  </message>
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
+    If you snap a window, you'll see window suggestions for the other side
+  </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power
   </message>

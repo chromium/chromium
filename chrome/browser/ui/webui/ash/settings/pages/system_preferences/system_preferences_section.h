@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/languages/languages_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/reset/reset_section.h"
@@ -49,6 +50,7 @@ class SystemPreferencesSection : public OsSettingsSection {
   DateTimeSection date_time_subsection_;
   FilesSection files_subsection_;
   LanguagesSection languages_subsection_;
+  MultitaskingSection multitasking_subsection_;
   PowerSection power_subsection_;
   ResetSection reset_subsection_;
   SearchSection search_subsection_;

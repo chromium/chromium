@@ -3496,6 +3496,8 @@ static_library("ui") {
       "webui/ash/settings/pages/multidevice/multidevice_handler.h",
       "webui/ash/settings/pages/multidevice/multidevice_section.cc",
       "webui/ash/settings/pages/multidevice/multidevice_section.h",
+      "webui/ash/settings/pages/multitasking/multitasking_section.cc",
+      "webui/ash/settings/pages/multitasking/multitasking_section.h",
       "webui/ash/settings/pages/os_settings_section.cc",
       "webui/ash/settings/pages/os_settings_section.h",
       "webui/ash/settings/pages/os_settings_sections.cc",

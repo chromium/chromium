@@ -327,6 +327,7 @@ build_webui("build") {
     "parental_controls_page/parental_controls_settings_card.ts",
     "personalization_page/personalization_page.ts",
     "settings_scheduler_slider/settings_scheduler_slider.ts",
+    "system_preferences_page/multitasking_settings_card.ts",
     "system_preferences_page/startup_settings_card.ts",
     "system_preferences_page/storage_and_power_settings_card.ts",
     "system_preferences_page/system_preferences_page.ts",

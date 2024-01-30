@@ -71,4 +71,9 @@ bool IsPerAppLanguageEnabled(const Profile* profile) {
           arc::IsArcPlayStoreEnabledForProfile(profile));
 }
 
+bool ShouldShowMultitasking() {
+  return ash::features::IsOsSettingsRevampWayfindingEnabled() &&
+         ash::features::IsFasterSplitScreenSetupEnabled();
+}
+
 }  // namespace ash::settings

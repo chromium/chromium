@@ -256,6 +256,7 @@ export {createRouter as createRouterForTesting, Route, Router, routes} from './r
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {SettingsSchedulerSliderElement} from './settings_scheduler_slider/settings_scheduler_slider.js';
+export {MultitaskingSettingsCardElement} from './system_preferences_page/multitasking_settings_card.js';
 export {StartupSettingsCardElement} from './system_preferences_page/startup_settings_card.js';
 export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
