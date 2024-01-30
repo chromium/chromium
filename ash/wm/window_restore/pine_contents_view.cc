@@ -180,7 +180,7 @@ class PineItemView : public views::BoxLayoutView {
 
     // If at least one favicon was added, relayout.
     if (needs_layout) {
-      Layout();
+      DeprecatedLayoutImmediately();
     }
   }
 

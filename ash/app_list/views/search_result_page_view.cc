@@ -171,7 +171,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
   AnimateToSearchResultsState(ShouldShowSearchResultView()
                                   ? SearchResultsState::kExpanded
                                   : SearchResultsState::kActive);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SearchResultPageView::UpdatePageBoundsForState(

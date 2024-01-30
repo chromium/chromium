@@ -350,7 +350,7 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT, label));
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 }  // namespace
@@ -428,7 +428,7 @@ void VpnDetailedView::OnGetNetworkStateList(NetworkStateList networks) {
 
   // Layout the updated list.
   scroll_content()->SizeToPreferredSize();
-  scroller()->Layout();
+  scroller()->DeprecatedLayoutImmediately();
 
   if (scroll_to_show_view) {
     // Scroll the list so that `scroll_to_show_view` is in view. The ScrollView

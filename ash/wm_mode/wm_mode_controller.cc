@@ -385,7 +385,7 @@ void WmModeController::MaybeRebuildMoveToDeskSubMenu() {
     button->SetEnabled(!desk->is_active());
   }
 
-  pie_menu_view_->Layout();
+  pie_menu_view_->DeprecatedLayoutImmediately();
 }
 
 bool WmModeController::IsTargetingPieMenu(aura::Window* event_target) const {

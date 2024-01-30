@@ -121,7 +121,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 
   if (bounds_animator_.IsAnimating())
     bounds_animator_.Cancel();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SavedDeskGridView::AddOrUpdateEntries(

@@ -875,7 +875,7 @@ void AshNotificationView::AnimateSingleToGroup(
         parent->AnimateSingleToGroupFadeIn();
 
         expand_button->set_previous_bounds(expand_button->GetContentsBounds());
-        parent->Layout();
+        parent->DeprecatedLayoutImmediately();
         expand_button->AnimateSingleToGroupNotification();
       },
       weak_factory_.GetWeakPtr(), left_content_, right_content(),
@@ -1784,7 +1784,8 @@ void AshNotificationView::AnimateResizeAfterRemoval(
         self->set_is_animating(false);
 
         if (self->shown_in_popup_) {
-          self->grouped_notifications_scroll_view_->Layout();
+          self->grouped_notifications_scroll_view_
+              ->DeprecatedLayoutImmediately();
         }
       },
       weak_factory_.GetWeakPtr());
@@ -1803,9 +1804,9 @@ void AshNotificationView::AnimateResizeAfterRemoval(
   }
 
   if (shown_in_popup_) {
-    grouped_notifications_scroll_view_->Layout();
+    grouped_notifications_scroll_view_->DeprecatedLayoutImmediately();
   } else {
-    Layout();
+    DeprecatedLayoutImmediately();
     PreferredSizeChanged();
   }
 
@@ -1888,7 +1889,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     // Ensure layout is up-to-date before animating expand button. This is used
     // for its bounds animation.
     if (needs_layout()) {
-      Layout();
+      DeprecatedLayoutImmediately();
     }
     DCHECK(!needs_layout());
 

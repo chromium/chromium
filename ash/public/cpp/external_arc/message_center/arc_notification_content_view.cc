@@ -445,7 +445,7 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
       GetWidget()->GetFocusTraversable());
   floating_control_buttons_widget_->SetFocusTraversableParentView(this);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
@@ -576,7 +576,7 @@ void ArcNotificationContentView::HideCopiedSurface() {
     return;
   DCHECK(surface_->GetWindow());
   surface_->GetWindow()->layer()->SetOpacity(1.0f);
-  Layout();
+  DeprecatedLayoutImmediately();
   surface_copy_.reset();
 
   // Re-install the mask since the custom mask is unset by
@@ -856,7 +856,7 @@ void ArcNotificationContentView::OnWindowBoundsChanged(
     return;
 
   UpdatePreferredSize();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcNotificationContentView::OnWindowDestroying(aura::Window* window) {

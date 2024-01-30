@@ -75,7 +75,7 @@ void TrayContainer::UpdateLayout() {
   if (layout_manager_)
     views::View::SetLayoutManager(std::move(layout_manager_));
 
-  Layout();
+  DeprecatedLayoutImmediately();
   layout_inputs_ = new_layout_inputs;
 }
 

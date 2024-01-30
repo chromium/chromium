@@ -158,7 +158,7 @@ void WindowMirrorView::InitLayerOwner() {
     EnsureAllChildrenAreVisible(mirror_layer);
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 ui::Layer* WindowMirrorView::GetMirrorLayer() {

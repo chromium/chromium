@@ -239,7 +239,7 @@ void QuickSettingsView::SetDetailedView(
   // that it can be initialized through `OnViewBoundsChanged`. The
   // `CalendarView` depends on `OnViewsBoundsChanged` to check if it can
   // `ScrollToToday`.
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void QuickSettingsView::ResetDetailedView() {

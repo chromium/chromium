@@ -81,7 +81,7 @@ class BirchBarView::BirchChipsContainer : public views::BoxLayoutView {
     if (iter != chips_.end()) {
       RemoveChildViewT(chip);
       chips_.erase(iter);
-      Layout();
+      DeprecatedLayoutImmediately();
     }
   }
 

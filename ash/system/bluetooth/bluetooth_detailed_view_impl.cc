@@ -147,7 +147,7 @@ views::View* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
 
 void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {
   device_list_->InvalidateLayout();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 views::View* BluetoothDetailedViewImpl::device_list() {

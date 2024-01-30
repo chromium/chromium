@@ -128,7 +128,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
         0.f, 0.f, kWindowMiniViewCornerRadius, kWindowMiniViewCornerRadius));
     layer->SetIsFastRoundedCorner(true);
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   backdrop_view_->SetVisible(visible);
@@ -221,14 +221,14 @@ void WindowMiniView::SetShowPreview(bool show) {
   // `backdrop_view_` in the Layout method so that we can enter
   // `WindowMiniView::RefreshPreviewRoundedCorners` in the first layout to
   // cancel the rounded corners for the Layer of the view. This is a very subtle
-  // logic. If the Layout is not here. We will lose the opportunity to adjust
-  // the Layer fillet. Maybe we should refactor here.
-  Layout();
+  // logic. If this DeprecatedLayoutImmediately() call is not here, we will lose
+  // the opportunity to adjust the Layer fillet. Maybe we should refactor here.
+  DeprecatedLayoutImmediately();
 
   // The preferred size of `WindowMiniView` is tied to the presence or absence
-  // of `preview_view_`. Although we have called Layout here, but for
-  // `LayoutManagerBase`, this will not invalidate the cache. We need to
-  // actively call cache invalidation.
+  // of `preview_view_`. Although we have performed Layout above, this will not
+  // invalidate the cache in `LayoutManagerBase`. We need to actively call cache
+  // invalidation.
   PreferredSizeChanged();
 }
 

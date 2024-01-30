@@ -311,7 +311,7 @@ void StackedNotificationBar::OnIconAnimatedOut(std::string notification_id,
   if (notification)
     AddNotificationIcon(notification, /*at_front=*/false);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 StackedNotificationBar::StackedNotificationBarIcon*

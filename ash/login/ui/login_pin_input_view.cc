@@ -183,7 +183,7 @@ LoginPinInputView::LoginPinInputView() : length_(kDefaultLength) {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 LoginPinInputView::~LoginPinInputView() = default;
@@ -237,7 +237,7 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
                           base::Unretained(this))));
 
   SetReadOnly(was_readonly);
-  Layout();
+  DeprecatedLayoutImmediately();
   SetVisible(was_visible);
 }
 

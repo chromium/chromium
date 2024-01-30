@@ -633,7 +633,7 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   UpdateButtonsVisibility();
   OnSearchBoxActiveChanged(active);
 
-  content_container_->Layout();
+  content_container_->DeprecatedLayoutImmediately();
   UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }
@@ -688,7 +688,7 @@ void SearchBoxViewBase::NotifyGestureEvent() {
 
 void SearchBoxViewBase::OnSearchBoxFocusedChanged() {
   UpdateSearchBoxBorder();
-  Layout();
+  DeprecatedLayoutImmediately();
   UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }

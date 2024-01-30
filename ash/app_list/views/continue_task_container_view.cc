@@ -296,7 +296,7 @@ void ContinueTaskContainerView::Update() {
   // Layout the container so the task bounds are set to their intended
   // positions, which will be used to configure container update animation
   // sequences when animating.
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (needs_animation) {
     ScheduleContainerUpdateAnimation(views_to_fade_out, views_to_slide_out,

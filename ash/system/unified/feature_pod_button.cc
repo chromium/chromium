@@ -104,7 +104,7 @@ FeaturePodLabelButton::~FeaturePodLabelButton() = default;
 
 void FeaturePodLabelButton::Layout() {
   DCHECK(views::FocusRing::Get(this));
-  views::FocusRing::Get(this)->Layout();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   LayoutInCenter(label_, GetContentsBounds().y());
   LayoutInCenter(sub_label_, GetContentsBounds().CenterPoint().y() +
                                  kUnifiedFeaturePodInterLabelPadding);
@@ -251,7 +251,7 @@ void FeaturePodButton::SetLabel(const std::u16string& label) {
     return;
 
   label_button_->SetLabel(label);
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 
@@ -260,7 +260,7 @@ void FeaturePodButton::SetSubLabel(const std::u16string& sub_label) {
     return;
 
   label_button_->SetSubLabel(sub_label);
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 
@@ -279,7 +279,7 @@ void FeaturePodButton::SetIconAndLabelTooltips(const std::u16string& text) {
 
 void FeaturePodButton::ShowDetailedViewArrow() {
   label_button_->ShowDetailedViewArrow();
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 

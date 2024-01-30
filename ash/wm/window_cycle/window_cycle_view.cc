@@ -395,7 +395,7 @@ void WindowCycleView::ScrollToWindow(aura::Window* target) {
   horizontal_distance_dragged_ = 0.f;
 
   if (GetWidget())
-    Layout();
+    DeprecatedLayoutImmediately();
 }
 
 void WindowCycleView::SetTargetWindow(aura::Window* new_target) {
@@ -462,7 +462,7 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
   // With one of its children now gone, we must re-layout `mirror_container_`.
   // This must happen before `ScrollToWindow()` to make sure our own `Layout()`
   // works correctly when it's calculating highlight bounds.
-  parent->Layout();
+  parent->DeprecatedLayoutImmediately();
   SetTargetWindow(new_target);
   ScrollToWindow(new_target);
 }
@@ -480,7 +480,7 @@ void WindowCycleView::DestroyContents() {
 
 void WindowCycleView::Drag(float delta_x) {
   horizontal_distance_dragged_ += delta_x;
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void WindowCycleView::StartFling(float velocity_x) {
@@ -496,7 +496,7 @@ void WindowCycleView::StartFling(float velocity_x) {
 bool WindowCycleView::OnFlingStep(float offset) {
   DCHECK(fling_handler_);
   horizontal_distance_dragged_ += offset;
-  Layout();
+  DeprecatedLayoutImmediately();
   return true;
 }
 

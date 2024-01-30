@@ -604,7 +604,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   desk_name_view_->SetText(new_name);
   desk_preview_->SetAccessibleName(new_name);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void DeskMiniView::ContentsChanged(views::Textfield* sender,
@@ -623,7 +623,7 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
     desk_name_view_->SetText(trimmed_new_contents);
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,

@@ -249,7 +249,7 @@ void AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
 
 void AudioDetailedView::Update() {
   UpdateAudioDevices();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void AudioDetailedView::OnAccessibilityStatusChanged() {
@@ -787,7 +787,7 @@ void AudioDetailedView::UpdateScrollableList() {
   }
 
   container->SizeToPreferredSize();
-  scroller()->Layout();
+  scroller()->DeprecatedLayoutImmediately();
 }
 
 void AudioDetailedView::UpdateDeviceContainerColor(

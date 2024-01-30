@@ -399,7 +399,7 @@ void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
 
   // Ensure layout is up-to-date before animating views.
   if (needs_layout()) {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
   DCHECK(!needs_layout());
 
@@ -756,7 +756,7 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
   folder_view_->ConfigureForFolderItemView(folder_item_view,
                                            std::move(hide_callback));
   showing_folder_ = true;
-  Layout();
+  DeprecatedLayoutImmediately();
   folder_background_view_->SetVisible(true);
   folder_view_->ScheduleShowHideAnimation(/*show=*/true,
                                           /*hide_for_reparent=*/false);
@@ -859,7 +859,7 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
 
 void AppListBubbleView::HideFolderView(bool animate, bool hide_for_reparent) {
   showing_folder_ = false;
-  Layout();
+  DeprecatedLayoutImmediately();
   folder_background_view_->SetVisible(false);
   if (!hide_for_reparent) {
     apps_page_->scrollable_apps_grid_view()->ResetForShowApps();

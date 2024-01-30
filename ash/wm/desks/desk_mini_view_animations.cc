@@ -230,7 +230,7 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
         // make sure the button's text will be updated correctly while going
         // back to zero state.
         bar_view->UpdateDeskButtonsVisibility();
-        bar_view->Layout();
+        bar_view->DeprecatedLayoutImmediately();
         if (OverviewController* overview_controller =
                 Shell::Get()->overview_controller()) {
           if (overview_controller->InOverviewSession()) {

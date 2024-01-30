@@ -560,7 +560,7 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   items_container()->layer()->SetTransform(gfx::Transform());
   if (IsDragging()) {
-    Layout();
+    DeprecatedLayoutImmediately();
     UpdateDropTargetRegion();
     MaybeStartPageFlipTimer(last_drag_point());
   } else {
@@ -577,7 +577,7 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
     } else {
       ClearSelectedView();
     }
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -591,7 +591,7 @@ void PagedAppsGridView::TransitionStarting() {
 void PagedAppsGridView::TransitionStarted() {
   if (abs(pagination_model_.transition().target_page -
           pagination_model_.selected_page()) > 1) {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   pagination_metrics_tracker_ =

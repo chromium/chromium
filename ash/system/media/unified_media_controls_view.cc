@@ -258,7 +258,7 @@ void UnifiedMediaControlsView::SetArtwork(
   artwork_view_->SetImageSize(image_size);
   artwork_view_->SetImage(*artwork);
 
-  Layout();
+  DeprecatedLayoutImmediately();
   artwork_view_->SetClipPath(GetArtworkClipPath());
 }
 

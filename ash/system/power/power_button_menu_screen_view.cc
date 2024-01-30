@@ -186,7 +186,7 @@ void PowerButtonMenuScreenView::OnWidgetShown(
   if (power_button_position_ != PowerButtonPosition::NONE) {
     UpdateMenuBoundsOrigins();
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 PowerButtonMenuCurtainView*

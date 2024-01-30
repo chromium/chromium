@@ -623,7 +623,7 @@ void PaginationView::TotalPagesChanged(int previous_page_count,
     }
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void PaginationView::TransitionChanged() {

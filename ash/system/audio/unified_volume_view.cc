@@ -269,7 +269,7 @@ void UnifiedVolumeView::OnAccessibilityStatusChanged() {
 }
 
 void UnifiedVolumeView::ChildVisibilityChanged(views::View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void UnifiedVolumeView::VisibilityChanged(View* starting_from,

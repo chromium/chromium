@@ -679,7 +679,7 @@ void HomeButton::CreateNudgeLabel() {
                                           *nudge_label_);
   }
   expandable_container_->SetVisible(false);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void HomeButton::CreateQuickAppButton() {

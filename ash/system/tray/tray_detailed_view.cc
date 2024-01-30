@@ -160,7 +160,7 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
         gfx::Insets::TLBR(0, start_width - end_width, 0, 0)));
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void TrayDetailedView::CreateScrollableList() {

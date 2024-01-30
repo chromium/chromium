@@ -148,7 +148,7 @@ void OverviewItemView::RefreshPreviewView() {
     return;
 
   preview_view()->RecreatePreviews();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 gfx::Size OverviewItemView::GetPreviewViewSize() const {

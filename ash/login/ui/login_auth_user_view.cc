@@ -294,7 +294,7 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
                                        /*send_native_event=*/true);
     }
 
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   // views::View:
@@ -1311,7 +1311,7 @@ void LoginAuthUserView::OnSwitchButtonClicked() {
                           : InputFieldMode::PIN_WITH_TOGGLE;
   SetAuthMethods(auth_methods_, auth_metadata_);
   // Layout and animate.
-  Layout();
+  DeprecatedLayoutImmediately();
   ApplyAnimationPostLayout(/*animate*/ true);
 }
 

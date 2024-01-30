@@ -462,7 +462,7 @@ void FolderHeaderView::Update() {
     UpdateFolderNameAccessibleName();
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void FolderHeaderView::UpdateFolderNameAccessibleName() {
@@ -594,7 +594,7 @@ void FolderHeaderView::UpdateFolderName(
 
   UpdateFolderNameAccessibleName();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool FolderHeaderView::ShouldNameViewClearFocus(const ui::KeyEvent& key_event) {

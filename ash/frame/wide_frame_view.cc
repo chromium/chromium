@@ -229,7 +229,7 @@ void WideFrameView::OnImmersiveFullscreenExited() {
   widget_->GetNativeWindow()->SetTransparent(false);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenExited();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void WideFrameView::SetVisibleFraction(double visible_fraction) {

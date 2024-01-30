@@ -538,7 +538,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
     AddChildView(std::move(policy_enforced_icon));
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(NotifierSettingsView, NotifierButton, views::Button)
@@ -736,7 +736,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
 
   contents_view_ptr->SetBoundsRect(
       gfx::Rect(contents_view_ptr->GetPreferredSize()));
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,

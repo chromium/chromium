@@ -259,7 +259,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
     base::UmaHistogramBoolean("Ash.SearchResultUpdateAnimationShortened",
                               aggregate_animation_info.use_short_animations);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 
   last_search_result_count_ = result_count;
   last_result_metadata_.swap(search_result_metadata);

@@ -127,7 +127,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
   Reset();
   AppendAccessibilityList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE);
-  Layout();
+  DeprecatedLayoutImmediately();
 
   if (!::features::IsDictationOfflineAvailable() &&
       !captions::IsLiveCaptionFeatureSupported()) {

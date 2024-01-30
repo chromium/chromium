@@ -343,7 +343,7 @@ void SavedDeskLibraryView::AddOrUpdateEntries(
                                                    order_first_uuid, animate);
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SavedDeskLibraryView::DeleteEntries(const std::vector<base::Uuid>& uuids,
@@ -353,7 +353,7 @@ void SavedDeskLibraryView::DeleteEntries(const std::vector<base::Uuid>& uuids,
   if (save_and_recall_grid_view_)
     save_and_recall_grid_view_->DeleteEntries(uuids, delete_animation);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,

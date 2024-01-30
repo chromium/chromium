@@ -313,7 +313,7 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
     }
     remove_user_button_->SetAlert(true);
 
-    Layout();
+    DeprecatedLayoutImmediately();
 
     // Change the node's description to force assistive technologies, like
     // ChromeVox, to report the updated description.

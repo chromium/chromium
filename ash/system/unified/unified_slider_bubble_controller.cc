@@ -286,7 +286,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
       UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
           bubble_view_->AddChildView(slider_controller_->CreateView()));
       ConfigureSliderViewStyle(slider_view, slider_type);
-      bubble_view_->Layout();
+      bubble_view_->DeprecatedLayoutImmediately();
     }
 
     // If mouse is hovered, do not restart auto close timer.

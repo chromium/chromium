@@ -68,12 +68,12 @@ void NotificationSwipeControlView::ShowButtons(ButtonPosition button_position,
         views::BoxLayout::MainAxisAlignment::kStart);
   }
   ShowSettingsButton(show_settings);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NotificationSwipeControlView::HideButtons() {
   ShowSettingsButton(false);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NotificationSwipeControlView::UpdateButtonsVisibility() {

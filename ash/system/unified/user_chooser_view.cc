@@ -287,7 +287,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
 
 void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
   capture_icon_->SetVisible(capture_state != MediaCaptureState::kNone);
-  Layout();
+  DeprecatedLayoutImmediately();
 
   int res_id = 0;
   switch (capture_state) {

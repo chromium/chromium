@@ -151,7 +151,7 @@ void AppListAssistantMainStage::OnThemeChanged() {
 
 void AppListAssistantMainStage::OnViewPreferredSizeChanged(views::View* view) {
   PreferredSizeChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

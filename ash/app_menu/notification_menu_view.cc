@@ -110,7 +110,7 @@ void NotificationMenuView::AddNotificationItemView(
     // ensure that enough room is allocated for the overflow view.
     notification_item_view_delegate_->OnOverflowAddedOrRemoved();
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void NotificationMenuView::UpdateNotificationItemView(

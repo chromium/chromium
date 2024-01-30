@@ -240,9 +240,9 @@ gfx::Rect StatusAreaWidgetDelegate::GetTargetBounds() const {
 void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
   if (animate) {
     StatusAreaWidgetDelegateAnimationSettings settings(layer());
-    Layout();
+    DeprecatedLayoutImmediately();
   } else {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -311,7 +311,7 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // Layout on |child| needs to be updated based on new border value before
   // displaying; otherwise |child| will be showing with old border size.
   // Fix for crbug.com/623438.
-  child->Layout();
+  child->DeprecatedLayoutImmediately();
 }
 
 }  // namespace ash

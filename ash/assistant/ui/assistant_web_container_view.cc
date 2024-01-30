@@ -105,7 +105,7 @@ void AssistantWebContainerView::ChildPreferredSizeChanged(views::View* child) {
   // Because AssistantWebContainerView has a fixed size, it does not re-layout
   // its children when their preferred size changes. To address this, we need to
   // explicitly request a layout pass.
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

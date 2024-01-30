@@ -295,7 +295,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
 
   // The animation relies on the correct positions of views, so force layout.
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
   DCHECK(!needs_layout());
 
   // This part of the animation has a longer duration than the bubble part
@@ -654,7 +654,7 @@ void AppListBubbleAppsPage::OnNudgeRemoved() {
   const gfx::Rect current_grid_bounds = scrollable_apps_grid_view_->bounds();
 
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
 
   const gfx::Rect target_grid_bounds = scrollable_apps_grid_view_->bounds();
   const int offset = current_grid_bounds.y() - target_grid_bounds.y();
@@ -847,7 +847,7 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded(
   // to calculate visible items. Therefore trigger layout before starting the
   // fade in animation.
   if (toast_visibility_change)
-    Layout();
+    DeprecatedLayoutImmediately();
 
   // Ensure to scroll before triggering apps grid fade in animation so that
   // the bubble apps page's layout is ready.
@@ -953,7 +953,7 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
   // Layout will change the position of the separator and apps grid based on the
   // visibility of the continue section view and recent apps.
   if (needs_layout())
-    Layout();
+    DeprecatedLayoutImmediately();
 
   // The vertical offset for slide animations is the difference in separator
   // position from before layout versus its position now.

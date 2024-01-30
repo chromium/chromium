@@ -730,7 +730,7 @@ void LoginShelfView::UpdateUi() {
       features::IsUseLoginShelfWidgetEnabled()) {
     PreferredSizeChanged();
   } else {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 

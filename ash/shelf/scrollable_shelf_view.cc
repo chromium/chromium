@@ -807,7 +807,7 @@ void ScrollableShelfView::ChildPreferredSizeChanged(views::View* child) {
   // Add/remove a shelf icon may change the layout strategy.
   UpdateAvailableSpaceAndScroll();
   shelf_container_view_->TranslateShelfView(scroll_offset_);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ScrollableShelfView::OnScrollEvent(ui::ScrollEvent* event) {
@@ -1074,7 +1074,7 @@ void ScrollableShelfView::OnShelfAlignmentChanged(
   right_arrow_->set_is_horizontal_alignment(is_horizontal_alignment);
   scroll_offset_ = gfx::Vector2dF();
   ScrollToMainOffset(CalculateMainAxisScrollDistance(), /*animating=*/false);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ScrollableShelfView::OnShelfConfigUpdated() {
@@ -1213,7 +1213,7 @@ void ScrollableShelfView::CancelScrollForItemDrag() {
 
 void ScrollableShelfView::OnImplicitAnimationsCompleted() {
   during_scroll_animation_ = false;
-  Layout();
+  DeprecatedLayoutImmediately();
 
   EnableShelfRoundedCorners(/*enable=*/false);
 
