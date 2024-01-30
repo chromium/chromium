@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 // Datatypes and interfaces of heatmap palm rejection API.
 
@@ -46,6 +46,8 @@ struct HeatmapPalmRejectionConfig {
   uint32 input_node;
   // The index of the output node in TF model.
   uint32 output_node;
+  // The threshold to decide whether the TF model result indicates a palm.
+  [MinVersion=1] double palm_threshold;
 };
 
 // The result of processing a frame of heatmap data.
