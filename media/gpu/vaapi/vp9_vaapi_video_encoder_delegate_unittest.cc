@@ -591,6 +591,12 @@ struct VP9VaapiVideoEncoderDelegateTestParam {
   size_t num_temporal_layers;
 } kTestCasesForVP9VaapiVideoEncoderDelegateTest[] = {
     // {inter_layer_pred, num_of_spatial_layers, num_of_temporal_layers}
+    {SVCInterLayerPredMode::kOn, 1u, 1u},
+    {SVCInterLayerPredMode::kOn, 1u, 2u},
+    {SVCInterLayerPredMode::kOn, 1u, 3u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 1u, 3u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 1u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 2u},
     {SVCInterLayerPredMode::kOnKeyPic, 2u, 3u},
