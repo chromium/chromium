@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "components/cross_device/logging/logging.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 #include "third_party/nearby/sharing/proto/wire_format.pb.h"
@@ -108,6 +109,8 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   if (!frame) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to read remote paired key encrpytion";
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::kFailedToReadEncryptionFrame);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -130,6 +133,9 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
         << ": we are only allowing connections with contacts. "
            "Rejecting connection from unknown ShareTarget - "
         << share_target_.id;
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::
+            kUnableToVerifyRemotePublicCertificateWhileRestrictedToContacts);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -157,6 +163,8 @@ void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
   if (!frame) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to read remote paired key result";
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::kFailedToReadResultFrame);
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
     return;
   }
@@ -318,6 +326,8 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
     if (!frame->get_paired_key_encryption()->optional_signed_data) {
       CD_LOG(VERBOSE, Feature::NS)
           << __func__ << ": No fallback signature to verify.";
+      RecordNearbySharePairedKeyVerificationError(
+          NearbySharePairedKeyVerificationError::kMissingOptionalSignature);
       return PairedKeyVerificationResult::kFail;
     }
 
@@ -331,6 +341,9 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
           << __func__
           << ": Unable to verify remote paired key encryption frame. "
              "Fallback signature verification failed.";
+      RecordNearbySharePairedKeyVerificationError(
+          NearbySharePairedKeyVerificationError::
+              kUnableToVerifyOptionalSignature);
       return PairedKeyVerificationResult::kFail;
     }
   }

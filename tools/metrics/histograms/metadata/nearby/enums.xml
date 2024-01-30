@@ -322,6 +322,20 @@ chromium-metrics-reviews@google.com.
   <int value="1416" label="Cancel selected on visibility page"/>
 </enum>
 
+<enum name="NearbySharePairedKeyVerificationError">
+  <int value="0"
+      label="IncomingFramesReader timed out or failed to parse Encryption
+             frame"/>
+  <int value="1"
+      label="IncomingFramesReader timed out or failed to parse Result frame"/>
+  <int value="2"
+      label="Unable to verify remote public certificate while restricted to
+             contacts"/>
+  <int value="3"
+      label="Unable to verify main signature and optional signature missing"/>
+  <int value="4" label="Unable to verify both main and optional signatures"/>
+</enum>
+
 <enum name="NearbyShareServiceStatusCode">
   <int value="0" label="Ok"/>
   <int value="1" label="Error"/>
