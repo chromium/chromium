@@ -259,9 +259,10 @@ namespace bindings {
     ScriptState* script_state,
     ScriptWrappable* script_wrappable) {
   CHECK(script_wrappable);
-  v8::Local<v8::Value> wrapper =
-      DOMDataStore::GetWrapper(script_wrappable, script_state->GetIsolate());
-  if (LIKELY(!wrapper.IsEmpty())) {
+  v8::Local<v8::Object> wrapper;
+  if (LIKELY(
+          DOMDataStore::GetWrapper(script_state->GetIsolate(), script_wrappable)
+              .ToLocal(&wrapper))) {
     return wrapper;
   }
 
@@ -274,9 +275,9 @@ namespace bindings {
     ScriptWrappable* script_wrappable,
     v8::Local<v8::Object> creation_context_object) {
   CHECK(script_wrappable);
-  v8::Local<v8::Value> wrapper =
-      DOMDataStore::GetWrapper(script_wrappable, isolate);
-  if (LIKELY(!wrapper.IsEmpty())) {
+  v8::Local<v8::Object> wrapper;
+  if (LIKELY(DOMDataStore::GetWrapper(isolate, script_wrappable)
+                 .ToLocal(&wrapper))) {
     return wrapper;
   }
 

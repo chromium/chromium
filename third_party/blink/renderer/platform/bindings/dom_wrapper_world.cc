@@ -298,12 +298,12 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
 }
 
 // static
-bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
+bool DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
     ScriptWrappable* object,
     const v8::Local<v8::Object>& handle) {
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
-    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
+    if (data_store.ClearInMapIfEqualTo(object, handle)) {
       return true;
     }
   }
@@ -311,12 +311,12 @@ bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
 }
 
 // static
-bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
+bool DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
     ScriptWrappable* object,
     const v8::TracedReference<v8::Object>& handle) {
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
-    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
+    if (data_store.ClearInMapIfEqualTo(object, handle)) {
       return true;
     }
   }

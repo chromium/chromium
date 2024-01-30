@@ -39,9 +39,9 @@ v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) const {
 }
 
 v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) {
-  v8::Local<v8::Object> wrapper = script_state->World().DomDataStore().Get(
-      this, script_state->GetIsolate());
-  if (LIKELY(!wrapper.IsEmpty())) {
+  v8::Local<v8::Object> wrapper;
+  if (LIKELY(DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
+                 .ToLocal(&wrapper))) {
     return wrapper;
   }
 
@@ -49,7 +49,7 @@ v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) {
 }
 
 v8::Local<v8::Value> FrozenArrayBase::Wrap(ScriptState* script_state) {
-  DCHECK(!script_state->World().DomDataStore().ContainsWrapper(this));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   v8::Local<v8::Value> wrapper = MakeV8ArrayToBeFrozen(script_state);
 

@@ -144,7 +144,7 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   // [NewObject] must always create a new wrapper.  Check that a wrapper
   // does not exist yet.
-  DCHECK(DOMDataStore::GetWrapper(new_text, GetDocument().GetAgent().isolate())
+  DCHECK(DOMDataStore::GetWrapper(GetDocument().GetAgent().isolate(), new_text)
              .IsEmpty());
 
   return new_text;

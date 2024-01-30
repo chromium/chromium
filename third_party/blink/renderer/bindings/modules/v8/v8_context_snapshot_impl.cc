@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_window.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
@@ -245,9 +246,10 @@ void DeserializeInternalFieldCallback(v8::Local<v8::Object> object,
       V8DOMWrapper::SetNativeInfo(deserializer_data->isolate, object,
                                   V8HTMLDocument::GetWrapperTypeInfo(),
                                   deserializer_data->html_document);
-      bool result = deserializer_data->html_document->SetWrapper(
-          deserializer_data->isolate, V8HTMLDocument::GetWrapperTypeInfo(),
-          object);
+      const bool result =
+          DOMDataStore::SetWrapperInInlineStorage</*entered_context=*/false>(
+              deserializer_data->isolate, deserializer_data->html_document,
+              V8HTMLDocument::GetWrapperTypeInfo(), object);
       CHECK(result);
       break;
     }

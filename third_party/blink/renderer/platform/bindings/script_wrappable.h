@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class DOMDataStore;
 class ScriptState;
 
 // ScriptWrappable provides a way to map from/to C++ DOM implementation to/from
@@ -174,77 +175,21 @@ class PLATFORM_EXPORT ScriptWrappable
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper);
 
-  // Associates this instance with the given |wrapper| if this instance is not
-  // yet associated with any wrapper.  Returns true if the given wrapper is
-  // associated with this instance, or false if this instance is already
-  // associated with a wrapper.  In the latter case, |wrapper| will be updated
-  // to the existing wrapper.
-  [[nodiscard]] bool SetWrapper(v8::Isolate* isolate,
-                                const WrapperTypeInfo* wrapper_type_info,
-                                v8::Local<v8::Object>& wrapper) {
-    DCHECK(!wrapper.IsEmpty());
-    if (UNLIKELY(ContainsWrapper())) {
-      wrapper = MainWorldWrapper(isolate);
-      return false;
-    }
-    if (wrapper_type_info->SupportsDroppingWrapper()) {
-      main_world_wrapper_.Reset(
-          isolate, wrapper, TraceWrapperV8Reference<v8::Object>::IsDroppable{});
-    } else {
-      main_world_wrapper_.Reset(isolate, wrapper);
-    }
-    DCHECK(ContainsWrapper());
-    return true;
-  }
-
-  bool IsEqualTo(const v8::Local<v8::Object>& other) const {
-    return main_world_wrapper_ == other;
-  }
-
-  bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    const bool contains_wrapper = ContainsWrapper();
-    if (contains_wrapper) {
-      return_value.SetNonEmpty(main_world_wrapper_);
-    }
-    return contains_wrapper;
-  }
-
-
  protected:
   ScriptWrappable() = default;
 
  private:
-  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
-
-  v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
-    return main_world_wrapper_.Get(isolate);
-  }
-
-  // Clear the main world wrapper if it is set to |handle|.
-  template <typename HandleType>
-  inline bool ClearMainWorldWrapperIfEqualTo(const HandleType& handle);
-
   static_assert(
       std::is_trivially_destructible<
           TraceWrapperV8Reference<v8::Object>>::value,
       "TraceWrapperV8Reference<v8::Object> should be trivially destructible.");
 
-  TraceWrapperV8Reference<v8::Object> main_world_wrapper_;
-
-  // These classes are exceptionally allowed to directly interact with the main
-  // world wrapper.
+  // Inline storage for the a single wrapper reference. Only
+  // `DOMDataStore::UncheckedInlineStorageForWrappable()` should access this
+  // field.
+  TraceWrapperV8Reference<v8::Object> wrapper_;
   friend class DOMDataStore;
-  friend class DOMWrapperWorld;
 };
-
-template <typename HandleType>
-bool ScriptWrappable::ClearMainWorldWrapperIfEqualTo(const HandleType& handle) {
-  if (main_world_wrapper_ == handle) {
-    main_world_wrapper_.Reset();
-    return true;
-  }
-  return false;
-}
 
 // Defines |GetWrapperTypeInfo| virtual method which returns the WrapperTypeInfo
 // of the instance. Also declares a static member of type WrapperTypeInfo, of

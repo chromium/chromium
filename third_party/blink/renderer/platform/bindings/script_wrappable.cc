@@ -20,9 +20,9 @@ struct SameSizeAsScriptWrappable {
 ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 
 v8::Local<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
-  v8::Local<v8::Value> wrapper =
-      DOMDataStore::GetWrapper(this, script_state->GetIsolate());
-  if (LIKELY(!wrapper.IsEmpty())) {
+  v8::Local<v8::Object> wrapper;
+  if (LIKELY(DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
+                 .ToLocal(&wrapper))) {
     return wrapper;
   }
   return Wrap(script_state);
@@ -31,8 +31,8 @@ v8::Local<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
 v8::Local<v8::Value> ScriptWrappable::ToV8(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context_object) {
-  v8::Local<v8::Value> wrapper = DOMDataStore::GetWrapper(this, isolate);
-  if (LIKELY(!wrapper.IsEmpty())) {
+  v8::Local<v8::Object> wrapper;
+  if (LIKELY(DOMDataStore::GetWrapper(isolate, this).ToLocal(&wrapper))) {
     return wrapper;
   }
   CHECK(!creation_context_object.IsEmpty());
@@ -44,7 +44,7 @@ v8::Local<v8::Value> ScriptWrappable::ToV8(
 v8::Local<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+  DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
   v8::Local<v8::Object> wrapper =
       V8DOMWrapper::CreateWrapper(script_state, wrapper_type_info);
@@ -61,7 +61,7 @@ v8::Local<v8::Object> ScriptWrappable::AssociateWithWrapper(
 }
 
 void ScriptWrappable::Trace(Visitor* visitor) const {
-  visitor->Trace(main_world_wrapper_);
+  visitor->Trace(wrapper_);
 }
 
 const char* ScriptWrappable::NameInHeapSnapshot() const {

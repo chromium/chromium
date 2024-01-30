@@ -122,9 +122,17 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
                ToScriptWrappable(global->GetPrototype().As<v8::Object>()));
     }
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
-    DOMWrapperWorld::ClearWrapperIfEqualTo(GetFrame()->DomWindow(), global);
+    script_state_->World().DomDataStore().ClearIfEqualTo(
+        GetFrame()->DomWindow(), global);
+#if DCHECK_IS_ON()
+    Vector<scoped_refptr<DOMWrapperWorld>> all_worlds;
+    DOMWrapperWorld::AllWorldsInIsolate(script_state_->GetIsolate(),
+                                        all_worlds);
+    for (auto& world : all_worlds) {
+      DCHECK(!world->DomDataStore().EqualTo(GetFrame()->DomWindow(), global));
+    }
+#endif  // DCHECK_IS_ON()
     script_state_->DetachGlobalObject();
-
 #if DCHECK_IS_ON()
     DidDetachGlobalObject();
 #endif
@@ -533,7 +541,7 @@ void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
 
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Object> document_wrapper =
-      world_->DomDataStore().Get(document, GetIsolate());
+      world_->DomDataStore().Get(GetIsolate(), document).ToLocalChecked();
   // When a non-configurable own property (e.g. unforgeable attribute) already
   // exists, `SetAccessor` fails and throws. Ignore the exception because own
   // properties have priority over named properties.
@@ -560,7 +568,7 @@ void LocalWindowProxy::NamedItemRemoved(HTMLDocument* document,
     return;
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Object> document_wrapper =
-      world_->DomDataStore().Get(document, GetIsolate());
+      world_->DomDataStore().Get(GetIsolate(), document).ToLocalChecked();
   document_wrapper
       ->Delete(GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name))
       .ToChecked();

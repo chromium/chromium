@@ -75,10 +75,16 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
     v8::HandleScope handle_scope(GetIsolate());
     v8::Local<v8::Object> global = global_proxy_.Get(GetIsolate());
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
-    DOMWrapperWorld::ClearWrapperIfEqualTo(GetFrame()->DomWindow(), global);
+    world_->DomDataStore().ClearIfEqualTo(GetFrame()->DomWindow(), global);
 #if DCHECK_IS_ON()
+    Vector<scoped_refptr<DOMWrapperWorld>> all_worlds;
+    DOMWrapperWorld::AllWorldsInIsolate(GetIsolate(), all_worlds);
+    for (auto& world : all_worlds) {
+      DCHECK(!world->DomDataStore().EqualTo(GetFrame()->DomWindow(), global));
+    }
+
     DidDetachGlobalObject();
-#endif
+#endif  // DCHECK_IS_ON()
   }
 
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsInitialized);

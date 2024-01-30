@@ -186,24 +186,17 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return *v8_object_data_store_;
   }
 
-  // Clear the reference pointing from |object| to |handle| in any world.
-  template <typename HandleType>
-  inline static bool ClearWrapperIfEqualTo(ScriptWrappable* object,
-                                           const HandleType& handle);
-
-  // Clear the reference pointing from |object| to |handle| in the main world.
-  template <typename HandleType>
-  inline static bool ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
-                                                    const HandleType& handle);
-
- private:
-  static bool ClearNonMainWorldWrapperIfEqualTo(
+  // Methods iterate all worlds and invokes the clearing methods on
+  // DOMDataStore. The WorldMap is only known to the DOMWrapperWorld and as such
+  // the iteration cannot be folded into DOMDataStore.
+  static bool ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
       ScriptWrappable* object,
       const v8::Local<v8::Object>& handle);
-  static bool ClearNonMainWorldWrapperIfEqualTo(
+  static bool ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(
       ScriptWrappable* object,
       const v8::TracedReference<v8::Object>& handle);
 
+ private:
   DOMWrapperWorld(v8::Isolate*,
                   WorldType,
                   int32_t world_id,
@@ -221,24 +214,6 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
   Persistent<DOMDataStore> dom_data_store_;
   Persistent<V8ObjectDataStore> v8_object_data_store_;
 };
-
-// static
-template <typename HandleType>
-bool DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
-                                                     const HandleType& handle) {
-  return object->ClearMainWorldWrapperIfEqualTo(handle);
-}
-
-// static
-template <typename HandleType>
-bool DOMWrapperWorld::ClearWrapperIfEqualTo(ScriptWrappable* object,
-                                            const HandleType& handle) {
-  if (ClearMainWorldWrapperIfEqualTo(object, handle)) {
-    return true;
-  }
-  // Slow path: |object| may point to |handle| in any non-main DOM world.
-  return DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(object, handle);
-}
 
 }  // namespace blink
 
