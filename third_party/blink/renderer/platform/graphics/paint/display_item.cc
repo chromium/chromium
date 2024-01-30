@@ -214,10 +214,9 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
                                    const PaintArtifact& paint_artifact,
                                    bool client_known_to_be_alive) const {
   json.SetString("id", IdAsString(paint_artifact));
-  if (IsSubsequenceTombstone())
+  if (IsSubsequenceTombstone()) {
     return;
-
-  json.SetString("clientDebugName", paint_artifact.ClientDebugName(client_id_));
+  }
   if (client_known_to_be_alive) {
     json.SetString("invalidation", PaintInvalidationReasonToString(
                                        GetPaintInvalidationReason()));

@@ -76,37 +76,42 @@ size_t PaintChunk::MemoryUsageInBytes() const {
   return total_size;
 }
 
-static String ToStringImpl(const PaintChunk& c, const String& id_string) {
+static String ToStringImpl(const PaintChunk& c,
+                           const String& id_string,
+                           bool concise) {
   StringBuilder sb;
-  sb.AppendFormat(
-      "PaintChunk(begin=%u, end=%u, id=%s cacheable=%d props=(%s) bounds=%s "
-      "rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
-      "effectively_invisible=%d drawscontent=%d "
-      "is_moved_from_cached_subsequence=%d",
-      c.begin_index, c.end_index, id_string.Utf8().c_str(), c.is_cacheable,
-      c.properties.ToString().Utf8().c_str(), c.bounds.ToString().c_str(),
-      c.rect_known_to_be_opaque.ToString().c_str(),
-      cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
-      c.effectively_invisible, c.DrawsContent(),
-      c.is_moved_from_cached_subsequence);
-  if (c.hit_test_data) {
-    sb.Append(", hit_test_data=");
-    sb.Append(c.hit_test_data->ToString());
-  }
-  if (c.region_capture_data) {
-    sb.Append(", region_capture_data=");
-    sb.Append(ToString(*c.region_capture_data));
+  sb.AppendFormat("PaintChunk(%u-%u id=%s cacheable=%d bounds=%s from_cache=%d",
+                  c.begin_index, c.end_index, id_string.Utf8().c_str(),
+                  c.is_cacheable, c.bounds.ToString().c_str(),
+                  c.is_moved_from_cached_subsequence);
+  if (!concise) {
+    sb.AppendFormat(
+        " props=(%s) rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
+        "effectively_invisible=%d drawscontent=%d",
+        c.properties.ToString().Utf8().c_str(),
+        c.rect_known_to_be_opaque.ToString().c_str(),
+        cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
+        c.effectively_invisible, c.DrawsContent());
+    if (c.hit_test_data) {
+      sb.Append(" hit_test_data=");
+      sb.Append(c.hit_test_data->ToString());
+    }
+    if (c.region_capture_data) {
+      sb.Append(" region_capture_data=");
+      sb.Append(ToString(*c.region_capture_data));
+    }
   }
   sb.Append(')');
   return sb.ToString();
 }
 
-String PaintChunk::ToString() const {
-  return ToStringImpl(*this, id.ToString());
+String PaintChunk::ToString(bool concise) const {
+  return ToStringImpl(*this, id.ToString(), concise);
 }
 
-String PaintChunk::ToString(const PaintArtifact& paint_artifact) const {
-  return ToStringImpl(*this, id.ToString(paint_artifact));
+String PaintChunk::ToString(const PaintArtifact& paint_artifact,
+                            bool concise) const {
+  return ToStringImpl(*this, id.ToString(paint_artifact), concise);
 }
 
 std::ostream& operator<<(std::ostream& os, const PaintChunk& chunk) {

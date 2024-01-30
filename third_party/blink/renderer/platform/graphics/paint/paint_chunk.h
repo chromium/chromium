@@ -126,8 +126,9 @@ struct PLATFORM_EXPORT PaintChunk {
 
   // The no-argument version is for operator<< which is used in DCHECK and unit
   // tests. It doesn't output the debug name of the client.
-  String ToString() const;
-  String ToString(const PaintArtifact& paint_artifact) const;
+  String ToString(bool concise = false) const;
+  String ToString(const PaintArtifact& paint_artifact,
+                  bool concise = false) const;
 
   // Index of the first drawing in this chunk.
   wtf_size_t begin_index;

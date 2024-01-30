@@ -394,20 +394,24 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
                              return index < chunk.end_index;
                            });
       DCHECK_NE(chunk, chunks.end());
-      NOTREACHED() << "DisplayItem "
-                   << display_item.AsDebugString(*new_paint_artifact_).Utf8()
-                   << " (index="
-                   << new_display_item_list.size()
-                   // The last chunk might not be the chunk the new item would
-                   // be in because the new item might start a new chunk.
-                   << " last chunk "
-                   << chunks.back().ToString(*new_paint_artifact_).Utf8()
-                   << ")\n has duplicated id with previous "
-                   << new_display_item_list[index]
-                          .AsDebugString(*new_paint_artifact_)
-                          .Utf8()
-                   << " (index=" << index << " in chunk "
-                   << chunk->ToString(*new_paint_artifact_).Utf8() << ")";
+      NOTREACHED()
+          << "DisplayItem "
+          << display_item.AsDebugString(*new_paint_artifact_).Utf8()
+          << " (index="
+          << new_display_item_list.size()
+          // The last chunk might not be the chunk the new item would
+          // be in because the new item might start a new chunk.
+          << " last chunk "
+          << chunks.back()
+                 .ToString(*new_paint_artifact_, /*concise=*/true)
+                 .Utf8()
+          << ")\n has duplicated id with previous "
+          << new_display_item_list[index]
+                 .AsDebugString(*new_paint_artifact_)
+                 .Utf8()
+          << " (index=" << index << " in chunk "
+          << chunk->ToString(*new_paint_artifact_, /*concise=*/true).Utf8()
+          << ")";
     }
     AddToIdIndexMap(display_item.GetId(), new_display_item_list.size() - 1,
                     new_display_item_id_index_map_);
