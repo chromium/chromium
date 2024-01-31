@@ -311,13 +311,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   out->expects_direct_from_seller_signals_header_ad_slot =
       data.expects_direct_from_seller_signals_header_ad_slot();
 
-  if (data.has_seller_experiment_group_id()) {
-    out->seller_experiment_group_id = data.seller_experiment_group_id();
-  }
-
-  if (data.has_all_buyer_experiment_group_id()) {
-    out->all_buyer_experiment_group_id = data.all_buyer_experiment_group_id();
-  }
+  out->seller_experiment_group_id = data.seller_experiment_group_id();
+  out->all_buyer_experiment_group_id = data.all_buyer_experiment_group_id();
 
   // Seller must be HTTPS. This also excludes opaque origins, for which scheme()
   // returns an empty string.

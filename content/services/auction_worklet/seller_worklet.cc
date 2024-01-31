@@ -798,8 +798,7 @@ void SellerWorklet::ReportResult(
         browser_signal_highest_scoring_other_bid_currency,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
-    uint32_t scoring_signals_data_version,
-    bool has_scoring_signals_data_version,
+    std::optional<uint32_t> scoring_signals_data_version,
     uint64_t trace_id,
     ReportResultCallback callback) {
   CHECK((!direct_from_seller_seller_signals &&
@@ -838,11 +837,8 @@ void SellerWorklet::ReportResult(
   report_result_task->browser_signals_component_auction_report_result_params =
       std::move(browser_signals_component_auction_report_result_params);
   report_result_task->trace_id = trace_id;
-
-  if (has_scoring_signals_data_version) {
-    report_result_task->scoring_signals_data_version =
-        scoring_signals_data_version;
-  }
+  report_result_task->scoring_signals_data_version =
+      scoring_signals_data_version;
   report_result_task->callback = std::move(callback);
 
   if (direct_from_seller_seller_signals) {
@@ -1273,10 +1269,8 @@ void SellerWorklet::V8State::ScoreAd(
         component_auction_modified_bid_params->ad = "null";
       }
 
-      component_auction_modified_bid_params->bid = result_idl.bid.value_or(0);
-      component_auction_modified_bid_params->has_bid =
-          result_idl.bid.has_value();
-      if (component_auction_modified_bid_params->has_bid) {
+      component_auction_modified_bid_params->bid = result_idl.bid;
+      if (component_auction_modified_bid_params->bid.has_value()) {
         bool drop_for_invalid_currency = false;
         if (result_idl.bid_currency.has_value()) {
           if (!blink::IsValidAdCurrencyCode(*result_idl.bid_currency)) {
@@ -1365,9 +1359,9 @@ void SellerWorklet::V8State::ScoreAd(
   // this after checking the score to avoid validating modified bid values from
   // reporting errors when desirability is <= 0.
   if (component_auction_modified_bid_params &&
-      component_auction_modified_bid_params->has_bid) {
+      component_auction_modified_bid_params->bid.has_value()) {
     // Fail if the new bid is not valid or is 0 or less.
-    if (!IsValidBid(component_auction_modified_bid_params->bid)) {
+    if (!IsValidBid(component_auction_modified_bid_params->bid.value())) {
       errors_out.push_back(base::StrCat(
           {decision_logic_url_.spec(), " scoreAd() returned an invalid bid."}));
       PostScoreAdCallbackToUserThreadOnError(
@@ -1503,12 +1497,12 @@ void SellerWorklet::V8State::ReportResult(
             browser_signals_component_auction_report_result_params
                 ->top_level_seller_signals,
             browser_signals) ||
-        (browser_signals_component_auction_report_result_params
-             ->has_modified_bid &&
+        (browser_signals_component_auction_report_result_params->modified_bid
+             .has_value() &&
          !browser_signals_dict.Set(
              "modifiedBid",
              browser_signals_component_auction_report_result_params
-                 ->modified_bid))) {
+                 ->modified_bid.value()))) {
       PostReportResultCallbackToUserThread(
           std::move(callback),
           /*signals_for_winner=*/std::nullopt,

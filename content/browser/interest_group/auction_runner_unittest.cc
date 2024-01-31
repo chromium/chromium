@@ -10908,9 +10908,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
               /*ad=*/"null",
-              /*bid=*/0,
-              /*bid_currency=*/std::nullopt,
-              /*has_bid=*/false),
+              /*bid=*/std::nullopt,
+              /*bid_currency=*/std::nullopt),
           /*bid_in_seller_currency=*/std::nullopt,
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
@@ -11051,45 +11050,38 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
       // Bad bids.
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
-           /*bid=*/0, /*bid_currency=*/std::nullopt,
-           /*has_bid=*/true),
+           /*bid=*/0, /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
-           /*bid=*/-1, /*bid_currency=*/std::nullopt,
-           /*has_bid=*/true),
+           /*bid=*/-1, /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
            /*bid=*/std::numeric_limits<double>::infinity(),
-           /*bid_currency=*/std::nullopt,
-           /*has_bid=*/true),
+           /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
            /*bid=*/-std::numeric_limits<double>::infinity(),
-           /*bid_currency=*/std::nullopt,
-           /*has_bid=*/true),
+           /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
            /*bid=*/-std::numeric_limits<double>::quiet_NaN(),
-           /*bid_currency=*/std::nullopt,
-           /*has_bid=*/true),
+           /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
 
       // Bad currencies.
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
            /*bid=*/2,
-           /*bid_currency=*/blink::AdCurrency::From("USD"),
-           /*has_bid=*/true),
+           /*bid_currency=*/blink::AdCurrency::From("USD")),
        "Invalid component_auction_modified_bid_params bid_currency"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
            /*bid=*/2,
-           /*bid_currency=*/blink::AdCurrency::From("CAD"),
-           /*has_bid=*/true),
+           /*bid_currency=*/blink::AdCurrency::From("CAD")),
        "Invalid component_auction_modified_bid_params bid_currency"}};
 
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
@@ -11210,9 +11202,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
               /*ad=*/"null",
-              /*bid=*/0,
-              /*bid_currency=*/std::nullopt,
-              /*has_bid=*/false),
+              /*bid=*/std::nullopt,
+              /*bid_currency=*/std::nullopt),
           /*bid_in_seller_currency=*/std::nullopt,
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,

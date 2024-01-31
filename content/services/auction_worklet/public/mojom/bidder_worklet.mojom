@@ -239,11 +239,7 @@ interface GenerateBidClient {
   // wins per `kanon_mode` passed to GenerateBid.
   //
   // `bidding_signals_data_version` The value of the Data-Version header served
-  //  with the trusted bidding signals.
-  //
-  // `has_bidding_signals_data_version` True to indicate Data-Version header
-  //  was present in the HTTP response for the trusted bidding signals.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //  with the trusted bidding signals, if the header was present.
   //
   // `debug_loss_report_url` The URL to request if the auction runs to
   //  completion and this bid does not win. All bidders are allowed to send loss
@@ -259,15 +255,13 @@ interface GenerateBidClient {
   // `set_priority` The value of the updated priority for this interest group.
   //  This priority should be applied to the interest group after the auction.
   //  The priority is not changed if null.
-  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
-  //  optional integer support is added to Mojo.
   //
   // `update_priority_signals_overrides` A map of new values to be written to
   //  the interest group's priorityOverrides map. Null values mean to delete the
   //  corresponding value, if present. Values with keys not in the map are
   //  preserved.
   //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
-  //  optional integer support is added to Mojo.
+  //  that's supported as a value in a Mojo map.
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
@@ -289,12 +283,10 @@ interface GenerateBidClient {
   OnGenerateBidComplete(
       BidderWorkletBid? bid,
       BidderWorkletKAnonEnforcedBid? kanon_bid,
-      uint32 bidding_signals_data_version,
-      bool has_bidding_signals_data_version,
+      uint32? bidding_signals_data_version,
       url.mojom.Url? debug_loss_report_url,
       url.mojom.Url? debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      double? set_priority,
       map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
       array<PrivateAggregationRequest> pa_requests,
       array<PrivateAggregationRequest> non_kanon_pa_requests,

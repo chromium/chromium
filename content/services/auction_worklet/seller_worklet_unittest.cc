@@ -415,13 +415,8 @@ class SellerWorkletTest : public testing::Test {
                   !component_auction_modified_bid_params.is_null()) {
                 EXPECT_EQ(expected_component_auction_modified_bid_params->ad,
                           component_auction_modified_bid_params->ad);
-                EXPECT_EQ(
-                    expected_component_auction_modified_bid_params->has_bid,
-                    component_auction_modified_bid_params->has_bid);
-                if (expected_component_auction_modified_bid_params->has_bid) {
-                  EXPECT_EQ(expected_component_auction_modified_bid_params->bid,
-                            component_auction_modified_bid_params->bid);
-                }
+                EXPECT_EQ(expected_component_auction_modified_bid_params->bid,
+                          component_auction_modified_bid_params->bid);
               }
               EXPECT_EQ(expected_debug_loss_report_url, debug_loss_report_url);
               EXPECT_EQ(expected_debug_win_report_url, debug_win_report_url);
@@ -599,8 +594,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signals_component_auction_report_result_params_.Clone(),
-        browser_signal_data_version_.value_or(0),
-        browser_signal_data_version_.has_value(),
+        browser_signal_data_version_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<std::string>& expected_signals_for_winner,
@@ -660,8 +654,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signals_component_auction_report_result_params_.Clone(),
-        browser_signal_data_version_.value_or(0),
-        browser_signal_data_version_.has_value(),
+        browser_signal_data_version_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<std::string>& signals_for_winner,
@@ -953,8 +946,8 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
   const mojom::ComponentAuctionModifiedBidParamsPtr
       kExpectedComponentAuctionModifiedBidParams =
           mojom::ComponentAuctionModifiedBidParams::New(
-              /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-              /*has_bid=*/false);
+              /*ad=*/"null", /*bid=*/std::nullopt,
+              /*bid_currency=*/std::nullopt);
 
   // With a null `browser_signals_other_seller_`, returning a raw score is
   // allowed, and if returning an object, `allowComponentAuction` doesn't
@@ -1061,26 +1054,24 @@ TEST_F(SellerWorkletTest, ScoreAdAd) {
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:1, allowComponentAuction:true}", 1, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       R"({ad:"foo", desirability:1, allowComponentAuction:true})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/R"("foo")", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/R"("foo")", /*bid=*/std::nullopt,
+          /*bid_currency=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:[[35]], desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"[[35]]", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"[[35]]", /*bid=*/std::nullopt,
+          /*bid_currency=*/std::nullopt));
 }
 
 // Test the `rejectReason` output field of scoreAd().
@@ -1179,14 +1170,12 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true, bid:13}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/13, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/13, /*bid_currency=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:1.2}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/std::nullopt));
 
   // Can also specify the currency.
   RunScoreAdWithReturnValueExpectingResult(
@@ -1196,30 +1185,26 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
           /*ad=*/"null", /*bid=*/1.2,
-          /*bid_currency=*/blink::AdCurrency::From("USD"),
-          /*has_bid=*/true));
+          /*bid_currency=*/blink::AdCurrency::From("USD")));
 
   // Not providing a bid is fine.
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt));
 
   // JS coercions happen for bid as well.
   RunScoreAdWithReturnValueExpectingResult(
       R"({ad:null, desirability:1, allowComponentAuction:true, bid:"5"})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/5, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/5, /*bid_currency=*/std::nullopt));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:[4]}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/4, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/4, /*bid_currency=*/std::nullopt));
 
   // Invalid bids result in errors.
   RunScoreAdWithReturnValueExpectingResult(
@@ -1294,8 +1279,7 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
           /*ad=*/"null", /*bid=*/1.2,
-          /*bid_currency=*/blink::AdCurrency::From("CAD"),
-          /*has_bid=*/true));
+          /*bid_currency=*/blink::AdCurrency::From("CAD")));
   auction_ad_config_non_shared_params_.seller_currency = std::nullopt;
 
   // In component auctions, there is also verification against parent auction's
@@ -1320,8 +1304,7 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
           /*ad=*/"null", /*bid=*/1.2,
-          /*bid_currency=*/blink::AdCurrency::From("EUR"),
-          /*has_bid=*/true));
+          /*bid_currency=*/blink::AdCurrency::From("EUR")));
   component_expect_bid_currency_ = std::nullopt;
 
   // A 0 bid is normally considered invalid, unless desirability is 0, in which
@@ -1345,8 +1328,7 @@ TEST_F(SellerWorkletTest, ScoreAdDoesNotModifyBidCurrency) {
        "sellerCurrency, expected 'USD' got 'CAD'."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false),
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt),
       /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/std::nullopt,
@@ -1488,8 +1470,7 @@ TEST_F(SellerWorkletTest, ScoreAdTopLevelSeller) {
              {desirability: 2, allowComponentAuction: true} : 0)",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt));
 
   // `topLevelSeller` should be empty when a component seller is scoring a bid.
   // Must set `allowComponentAuction` to true for any value to be returned.
@@ -1520,8 +1501,7 @@ TEST_F(SellerWorkletTest, ScoreAdComponentSeller) {
              0 : {desirability: 2, allowComponentAuction: true})",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
-          /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/std::nullopt, /*bid_currency=*/std::nullopt));
 
   // `componentSeller` should be set when a component seller is scoring a bid.
   // Must set `allowComponentAuction` to true for any value to be returned.
@@ -2623,8 +2603,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
   browser_signals_component_auction_report_result_params_ =
       mojom::ComponentAuctionReportResultParams::New(
           /*top_level_seller_signals=*/"null",
-          /*modified_bid=*/0,
-          /*has_modified_bid=*/false);
+          /*modified_bid=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.topLevelSeller === "https://top.seller.test" ? 2 : 0)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
@@ -2653,8 +2632,7 @@ TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
   browser_signals_component_auction_report_result_params_ =
       mojom::ComponentAuctionReportResultParams::New(
           /*top_level_seller_signals=*/"null",
-          /*modified_bid=*/0,
-          /*has_modified_bid=*/false);
+          /*modified_bid=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
       R"("componentSeller" in browserSignals ? 0 : 2)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
@@ -2697,8 +2675,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
   browser_signals_component_auction_report_result_params_ =
       mojom::ComponentAuctionReportResultParams::New(
           /*top_level_seller_signals=*/"null",
-          /*modified_bid=*/0,
-          /*has_modified_bid=*/false);
+          /*modified_bid=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.topLevelSellerSignals === null ? 3 : 0",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
@@ -2732,21 +2709,20 @@ TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
       /*expected_report_url=*/std::nullopt);
 
   // Component auctions should only receive a `modifiedBid` field when
-  // `has_modified_bid` is true.
+  // `modified_bid` has a value.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
   browser_signals_component_auction_report_result_params_ =
       mojom::ComponentAuctionReportResultParams::New(
           /*top_level_seller_signals=*/"null",
-          /*modified_bid=*/4,
-          /*has_modified_bid=*/true);
+          /*modified_bid=*/4);
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.modifiedBid",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"4",
       /*expected_report_url=*/std::nullopt);
-  browser_signals_component_auction_report_result_params_->has_modified_bid =
-      false;
+  browser_signals_component_auction_report_result_params_->modified_bid =
+      std::nullopt;
   RunReportResultCreatedScriptExpectingResult(
       "'modifiedBid' in browserSignals ? 0 : 3",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
@@ -3378,8 +3354,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signal_highest_scoring_other_bid_,
           browser_signal_highest_scoring_other_bid_currency_,
           browser_signals_component_auction_report_result_params_.Clone(),
-          browser_signal_data_version_.value_or(0),
-          browser_signal_data_version_.has_value(),
+          browser_signal_data_version_,
           /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop](
@@ -3447,8 +3422,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signals_component_auction_report_result_params_.Clone(),
-      browser_signal_data_version_.value_or(0),
-      browser_signal_data_version_.has_value(),
+      browser_signal_data_version_,
       /*trace_id=*/1,
       base::BindOnce([](const std::optional<std::string>& signals_for_winner,
                         const std::optional<GURL>& report_url,

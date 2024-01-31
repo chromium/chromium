@@ -535,11 +535,10 @@ struct AuctionAdConfig {
 
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
-  // TODO(https://crbug.com/657632): Update when optional integers supported.
-  bool has_seller_experiment_group_id = false;
-  uint16 seller_experiment_group_id;
-  bool has_all_buyer_experiment_group_id = false;
-  int16 all_buyer_experiment_group_id;
+  uint16? seller_experiment_group_id;
+  // TODO(https://crbug.com/1523625): This should be uint16, but compat impact
+  // is unclear.
+  int16? all_buyer_experiment_group_id;
   map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
 
   // Optionally specifies that some bids will be provided as signed exchanges,

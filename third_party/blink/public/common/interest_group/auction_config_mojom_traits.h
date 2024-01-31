@@ -417,24 +417,15 @@ struct BLINK_COMMON_EXPORT
     return params.expects_direct_from_seller_signals_header_ad_slot;
   }
 
-  static bool has_seller_experiment_group_id(
+  // TODO(https://crbug.com/1523625): These should be unit16!
+  static std::optional<std::int16_t> seller_experiment_group_id(
       const blink::AuctionConfig& config) {
-    return config.seller_experiment_group_id.has_value();
+    return config.seller_experiment_group_id;
   }
 
-  static std::int16_t seller_experiment_group_id(
+  static std::optional<std::int16_t> all_buyer_experiment_group_id(
       const blink::AuctionConfig& config) {
-    return config.seller_experiment_group_id.value_or(0);
-  }
-
-  static bool has_all_buyer_experiment_group_id(
-      const blink::AuctionConfig& config) {
-    return config.all_buyer_experiment_group_id.has_value();
-  }
-
-  static std::int16_t all_buyer_experiment_group_id(
-      const blink::AuctionConfig& config) {
-    return config.all_buyer_experiment_group_id.value_or(0);
+    return config.all_buyer_experiment_group_id;
   }
 
   static const base::flat_map<url::Origin, uint16_t>&

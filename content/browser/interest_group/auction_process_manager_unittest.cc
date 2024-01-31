@@ -76,8 +76,7 @@ class TestAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      bool has_experiment_nonce,
-      uint16_t experiment_nonce) override {
+      std::optional<uint16_t> experiment_id) override {
     NOTREACHED();
   }
 
@@ -95,8 +94,7 @@ class TestAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      bool has_experiment_nonce,
-      uint16_t experiment_nonce) override {
+      std::optional<uint16_t> experiment_id) override {
     NOTREACHED();
   }
 

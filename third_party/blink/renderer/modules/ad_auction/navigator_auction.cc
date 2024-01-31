@@ -1893,7 +1893,6 @@ bool CopyPerBuyerExperimentIdsFromIdlToMojo(
   for (const auto& per_buyer_experiment_id :
        input.perBuyerExperimentGroupIds()) {
     if (per_buyer_experiment_id.first == "*") {
-      output.has_all_buyer_experiment_group_id = true;
       output.all_buyer_experiment_group_id = per_buyer_experiment_id.second;
       continue;
     }
@@ -2426,7 +2425,6 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   }
 
   if (config.hasSellerExperimentGroupId()) {
-    mojo_config->has_seller_experiment_group_id = true;
     mojo_config->seller_experiment_group_id = config.sellerExperimentGroupId();
   }
 

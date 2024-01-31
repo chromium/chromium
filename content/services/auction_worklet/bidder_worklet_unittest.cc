@@ -134,12 +134,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   using GenerateBidCallback = base::OnceCallback<void(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -189,10 +187,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
     return base::BindOnce(
         [](mojom::BidderWorkletBidPtr bid,
            mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-           uint32_t data_version, bool has_data_version,
+           std::optional<uint32_t> data_version,
            const std::optional<GURL>& debug_loss_report_url,
-           const std::optional<GURL>& debug_win_report_url, double set_priority,
-           bool has_set_priority,
+           const std::optional<GURL>& debug_win_report_url,
+           std::optional<double> set_priority,
            base::flat_map<std::string,
                           auction_worklet::mojom::PrioritySignalsDoublePtr>
                update_priority_signals_overrides,
@@ -229,12 +227,10 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   void OnGenerateBidComplete(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -250,8 +246,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
 
     std::move(generate_bid_callback_)
         .Run(std::move(bid), std::move(kanon_bid), data_version,
-             has_data_version, debug_loss_report_url, debug_win_report_url,
-             set_priority, has_set_priority,
+             debug_loss_report_url, debug_win_report_url, set_priority,
              std::move(update_priority_signals_overrides),
              std::move(pa_requests), std::move(non_kanon_pa_requests),
              bidding_latency, std::move(generate_bid_dependency_latencies),
@@ -770,12 +765,10 @@ class BidderWorkletTest : public testing::Test {
   void GenerateBidCallback(
       mojom::BidderWorkletBidPtr bid,
       mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-      uint32_t data_version,
-      bool has_data_version,
+      std::optional<uint32_t> data_version,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      double set_priority,
-      bool has_set_priority,
+      std::optional<double> set_priority,
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
@@ -786,20 +779,12 @@ class BidderWorkletTest : public testing::Test {
           generate_bid_dependency_latencies,
       mojom::RejectReason reject_reason,
       const std::vector<std::string>& errors) {
-    std::optional<uint32_t> maybe_data_version;
-    if (has_data_version) {
-      maybe_data_version = data_version;
-    }
-    std::optional<double> maybe_set_priority;
-    if (has_set_priority) {
-      maybe_set_priority = set_priority;
-    }
     bid_ = std::move(bid);
     kanon_bid_ = std::move(kanon_bid);
-    data_version_ = maybe_data_version;
+    data_version_ = data_version;
     bid_debug_loss_report_url_ = debug_loss_report_url;
     bid_debug_win_report_url_ = debug_win_report_url;
-    set_priority_ = maybe_set_priority;
+    set_priority_ = set_priority;
 
     update_priority_signals_overrides_.clear();
     for (const auto& override : update_priority_signals_overrides) {
@@ -3220,10 +3205,10 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid,
                   mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                  uint32_t data_version, bool has_data_version,
+                  std::optional<uint32_t> data_version,
                   const std::optional<GURL>& debug_loss_report_url,
                   const std::optional<GURL>& debug_win_report_url,
-                  double set_priority, bool has_set_priority,
+                  std::optional<double> set_priority,
                   base::flat_map<
                       std::string,
                       auction_worklet::mojom::PrioritySignalsDoublePtr>
@@ -3240,7 +3225,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                 EXPECT_EQ(GURL("https://response.test/"),
                           bid->ad_descriptor.url);
                 EXPECT_FALSE(kanon_bid);
-                EXPECT_FALSE(has_data_version);
+                EXPECT_FALSE(data_version.has_value());
                 EXPECT_TRUE(errors.empty());
                 ++num_generate_bid_calls;
                 if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -3339,10 +3324,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3357,8 +3342,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(10u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(10u, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -3466,10 +3451,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3484,8 +3469,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(42u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(42u, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {
@@ -3599,10 +3584,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3616,8 +3601,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(22u, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(22u, data_version.value());
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
@@ -3711,10 +3696,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid,
                 mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
-                uint32_t data_version, bool has_data_version,
+                std::optional<uint32_t> data_version,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
-                double set_priority, bool has_set_priority,
+                std::optional<double> set_priority,
                 base::flat_map<std::string,
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
@@ -3729,8 +3714,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
               EXPECT_EQ(i + 1, bid->bid);
               EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
-              EXPECT_EQ(i, data_version);
-              EXPECT_TRUE(has_data_version);
+              ASSERT_TRUE(data_version.has_value());
+              EXPECT_EQ(i, data_version.value());
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls) {

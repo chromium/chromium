@@ -31,13 +31,9 @@ struct ComponentAuctionModifiedBidParams {
   string ad;
 
   // Bid value and currency to send to the top-level seller seller in place of
-  // BidderWorkletBid::bid. Only valid if `has_bid` is true.
-  double bid;
+  // BidderWorkletBid::bid.
+  double? bid;
   blink.mojom.AdCurrency? bid_currency;
-
-  // True to indicate that `bid` has been populated.
-  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
-  bool has_bid;
 };
 
 // Input parameters specific to a component auction's ReportResult() method.
@@ -48,13 +44,7 @@ struct ComponentAuctionReportResultParams {
   // The stochastically rounded numeric value of the bid returned by the
   // component seller's ScoreAd() method. May be the same value as the original
   // bid.
-  double modified_bid;
-
-  // True to indicate that `modified_bid` has been populated. False if the
-  // component seller's ScoreAd() method didn't return a bid value (either the
-  // same value of the original bid or a different value).
-  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
-  bool has_modified_bid;
+  double? modified_bid;
 };
 
 // Represents the time between SellerWorklet::ScoreAd and each of the
@@ -334,11 +324,7 @@ interface SellerWorklet {
   //  for top-level sellers.
   //
   // `scoring_signals_data_version` The value of the Data-Version header served
-  //  with the trusted scoring signals.
-  //
-  // `has_scoring_signals_data_version` True to indicate Data-Version header
-  //  was present in the HTTP response for the trusted scoring signals.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //  with the trusted scoring signals, if the header was present.
   //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
@@ -380,8 +366,7 @@ interface SellerWorklet {
       blink.mojom.AdCurrency? browser_signal_highest_scoring_other_bid_currency,
       ComponentAuctionReportResultParams?
           browser_signals_component_auction_report_result_params,
-      uint32 scoring_signals_data_version,
-      bool has_scoring_signals_data_version,
+      uint32? scoring_signals_data_version,
       uint64 trace_id) =>
           (string? signals_for_winner,
            url.mojom.Url? report_url,

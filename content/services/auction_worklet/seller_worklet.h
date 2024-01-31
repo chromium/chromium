@@ -141,8 +141,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
           browser_signal_highest_scoring_other_bid_currency,
       auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
           browser_signals_component_auction_report_result_params,
-      uint32_t scoring_signals_data_version,
-      bool browser_signal_has_data_version,
+      std::optional<uint32_t> scoring_signals_data_version,
       uint64_t trace_id,
       ReportResultCallback callback) override;
   void ConnectDevToolsAgent(

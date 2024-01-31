@@ -243,11 +243,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     generate_bid_client_->OnGenerateBidComplete(
         /*bid=*/nullptr,
         /*kanon_bid=*/std::move(mojo_kanon_bid),
-        /*bidding_signals_data_version=*/0,
-        /*has_bidding_signals_data_version=*/false, debug_loss_report_url,
+        /*bidding_signals_data_version=*/std::nullopt, debug_loss_report_url,
         /*debug_win_report_url=*/std::nullopt,
-        /*set_priority=*/0,
-        /*has_set_priority=*/false,
+        /*set_priority=*/std::nullopt,
         /*update_priority_signals_overrides=*/
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
@@ -265,12 +263,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
           "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
           std::move(ad_descriptor), ad_component_descriptors,
           /*modeling_signals=*/std::nullopt, duration),
-      /*kanon_bid=*/std::move(mojo_kanon_bid),
-      bidding_signals_data_version.value_or(0),
-      bidding_signals_data_version.has_value(), debug_loss_report_url,
-      debug_win_report_url,
-      /*set_priority=*/0,
-      /*has_set_priority=*/false,
+      /*kanon_bid=*/std::move(mojo_kanon_bid), bidding_signals_data_version,
+      debug_loss_report_url, debug_win_report_url,
+      /*set_priority=*/std::nullopt,
       /*update_priority_signals_overrides=*/
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
@@ -418,8 +413,7 @@ void MockSellerWorklet::ReportResult(
         browser_signal_highest_scoring_other_bid_currency,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
-    uint32_t browser_signal_data_version,
-    bool browser_signal_has_data_version,
+    std::optional<uint32_t> browser_signal_data_version,
     uint64_t trace_id,
     ReportResultCallback report_result_callback) {
   report_result_callback_ = std::move(report_result_callback);
@@ -535,8 +529,7 @@ void MockAuctionProcessManager::LoadBidderWorklet(
     const url::Origin& top_window_origin,
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
         permissions_policy_state,
-    bool has_experiment_group_id,
-    uint16_t experiment_group_id) {
+    std::optional<uint16_t> experiment_group_id) {
   // Make sure this request came over the right pipe.
   url::Origin owner = url::Origin::Create(script_source_url);
   EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
@@ -566,8 +559,7 @@ void MockAuctionProcessManager::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
         permissions_policy_state,
-    bool has_experiment_group_id,
-    uint16_t experiment_group_id) {
+    std::optional<uint16_t> experiment_group_id) {
   EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
   // Make sure this request came over the right pipe.
