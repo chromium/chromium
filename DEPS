@@ -272,7 +272,7 @@ vars = {
   # reclient CIPD package
   'reclient_package': 'infra/rbe/client/',
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.128.1.7c74998-gomaip',
+  'reclient_version': 're_client_version:0.130.0.546556b-gomaip',
 
   # screen-ai CIPD package Linux version
   # TODO(b/281483558): Use a tag to download the latest version of screen-ai
