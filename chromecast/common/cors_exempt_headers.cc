@@ -5,6 +5,7 @@
 #include "chromecast/common/cors_exempt_headers.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
@@ -43,7 +44,7 @@ base::span<const char*> GetLegacyCorsExemptHeaders() {
   return base::span<const char*>(kExemptHeaders);
 }
 
-bool IsCorsExemptHeader(base::StringPiece header) {
+bool IsCorsExemptHeader(std::string_view header) {
   static const base::NoDestructor<base::flat_set<std::string>>
       exempt_header_set(kExemptHeaders,
                         kExemptHeaders + std::size(kExemptHeaders));

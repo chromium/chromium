@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/memory/ref_counted_memory.h"
@@ -51,7 +52,7 @@ class CastResourceDelegate : public ui::ResourceBundle::Delegate {
   std::optional<std::string> LoadDataResourceString(int resource_id) override;
   bool GetRawDataResource(int resource_id,
                           ui::ResourceScaleFactor scale_factor,
-                          base::StringPiece* value) const override;
+                          std::string_view* value) const override;
   bool GetLocalizedString(int message_id, std::u16string* value) const override;
 
   // Adds/removes/clears extra localized strings.
