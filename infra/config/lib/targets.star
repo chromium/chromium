@@ -251,9 +251,8 @@ _LEGACY_MATRIX_CONFIG = nodes.create_scoped_node_type("legacy-matrix-config", _L
 # * target-bundle (>=0)
 #   * created when a bundle references a compile target in
 #     additional_compile_targets
-#   * not traversed, created only to ensure the compile target exists
-# TODO(gbeaty) Traverse the edge from target-bundle instead of storing the
-# additional_compile_targets as node props
+#   * traversed when generating targets spec files for builders that have their
+#     tests defined in starlark
 _COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
 
 # A collection of compile targets to build and tests to run with optional
@@ -272,6 +271,11 @@ _COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
 # Children:
 # * target-bundle (>=0)
 #   * created when a bundle references another bundle in targets
+#   * traversed when generating targets spec files for builders that have their
+#     tests defined in starlark
+# * compile-target (>=0)
+#   * created when a bundle references a compile target in
+#     additional_compile_targets
 #   * traversed when generating targets spec files for builders that have their
 #     tests defined in starlark
 #
@@ -402,13 +406,10 @@ def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
 def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
     key = _TARGET_BUNDLE.add(name, props = dict(
         builder_group = builder_group,
-        additional_compile_targets = set(additional_compile_targets),
         test_spec_by_name = test_spec_by_name,
         modifications_by_name = modifications_by_name,
     ))
 
-    # We won't actually traverse the edge for compile targets, but adding the
-    # edge ensures that the compile target has been declared
     for t in additional_compile_targets:
         graph.add_edge(key, _COMPILE_TARGET.key(t))
     for t in targets:
@@ -1431,7 +1432,7 @@ def _get_bundle_resolver():
             # TODO: crbug.com/1420012 - Update the handling of conflicting defs
             # so that more context is provided about where the error is
             # resulting from
-            additional_compile_targets = set(n.props.additional_compile_targets)
+            additional_compile_targets = set([t.key.id for t in graph.children(n.key, _COMPILE_TARGET.kind)])
             test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
             for child in graph.children(n.key, kind = _TARGET_BUNDLE.kind):
                 child_resolved_bundle = resolved_bundle_by_bundle_node[child]
