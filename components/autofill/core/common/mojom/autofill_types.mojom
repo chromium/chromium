@@ -360,7 +360,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
-  FieldRendererId unique_renderer_id;
+  FieldRendererId renderer_id;
   FormRendererId host_form_id;
   uint32 properties_mask;
   int32 form_control_ax_id;
@@ -394,7 +394,7 @@ struct FormFieldData {
 // (components/autofill/core/common/form_field_filling_data.h)
 struct FormFieldData_FillData {
   mojo_base.mojom.String16 value;
-  FieldRendererId unique_renderer_id;
+  FieldRendererId renderer_id;
   bool is_autofilled;
   Section section;
   bool force_override;
@@ -415,7 +415,7 @@ struct FormData {
   url.mojom.Url action;
   bool is_action_empty;
   bool is_form_tag;
-  FormRendererId unique_renderer_id;
+  FormRendererId renderer_id;
   array<FrameTokenWithPredecessor> child_frames;
   SubmissionIndicatorEvent submission_event;
   array<FormFieldData> fields;
@@ -426,7 +426,7 @@ struct FormData {
 // autofill::FormData::FillData
 // (components/autofill/core/common/form_filling_data.h)
 struct FormData_FillData {
-  FormRendererId unique_renderer_id;
+  FormRendererId renderer_id;
   array<FormFieldData_FillData> fields;
 };
 

@@ -246,9 +246,9 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.aria_description;
   }
 
-  static autofill::FieldRendererId unique_renderer_id(
+  static autofill::FieldRendererId renderer_id(
       const autofill::FormFieldData& r) {
-    return r.unique_renderer_id;
+    return r.renderer_id;
   }
 
   static autofill::FormRendererId host_form_id(
@@ -354,9 +354,9 @@ struct StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
     return r.value;
   }
 
-  static autofill::FieldRendererId unique_renderer_id(
+  static autofill::FieldRendererId renderer_id(
       const autofill::FormFieldData::FillData& r) {
-    return r.unique_renderer_id;
+    return r.renderer_id;
   }
 
   static bool is_autofilled(const autofill::FormFieldData::FillData& r) {
@@ -419,9 +419,8 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 
   static bool is_form_tag(const autofill::FormData& r) { return r.is_form_tag; }
 
-  static autofill::FormRendererId unique_renderer_id(
-      const autofill::FormData& r) {
-    return r.unique_renderer_id;
+  static autofill::FormRendererId renderer_id(const autofill::FormData& r) {
+    return r.renderer_id;
   }
 
   static const std::vector<autofill::FrameTokenWithPredecessor>& child_frames(
@@ -456,9 +455,9 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 template <>
 struct StructTraits<autofill::mojom::FormData_FillDataDataView,
                     autofill::FormData::FillData> {
-  static autofill::FormRendererId unique_renderer_id(
+  static autofill::FormRendererId renderer_id(
       const autofill::FormData::FillData& r) {
-    return r.unique_renderer_id;
+    return r.renderer_id;
   }
 
   static const std::vector<autofill::FormFieldData::FillData>& fields(

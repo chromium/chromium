@@ -160,7 +160,7 @@ struct FormData {
 
   // An identifier that is unique across all forms in all frames.
   // Must not be leaked to renderer process. See FieldGlobalId for details.
-  FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+  FormGlobalId global_id() const { return {host_frame, renderer_id}; }
 
   // TODO(crbug/1211834): This function is deprecated. Use FormData::DeepEqual()
   // instead.
@@ -230,7 +230,7 @@ struct FormData {
   // frame. In the browser process, it should only be used in conjunction with
   // |host_frame| to identify a field; see global_id(). It is not persistent
   // between page loads and therefore not used in comparison in SameFieldAs().
-  FormRendererId unique_renderer_id;
+  FormRendererId renderer_id;
 
   // A monotonically increasing counter that indicates the generation of the
   // form: if `f.version < g.version`, then `f` has been received from the
@@ -281,7 +281,7 @@ struct FormData::FillData {
   ~FillData();
 
   // An identifier of the form that is unique among forms from the same frame.
-  FormRendererId unique_renderer_id;
+  FormRendererId renderer_id;
 
   // A vector of all the fields in the form that we want the renderer to fill.
   std::vector<FormFieldData::FillData> fields;

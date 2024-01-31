@@ -277,7 +277,7 @@ std::vector<Section> SectionTestCases() {
   // doesn't exist yet because SectionTestCases() is called by
   // INSTANTIATE_TEST_SUITE_P().
   field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
-  field.unique_renderer_id = FieldRendererId(123);
+  field.renderer_id = FieldRendererId(123);
   s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
 
@@ -307,7 +307,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.css_classes = u"class1";
   input.aria_label = u"aria label";
   input.aria_description = u"aria description";
-  input.unique_renderer_id = FieldRendererId(1234);
+  input.renderer_id = FieldRendererId(1234);
   input.host_form_id = FormRendererId(123);
   input.max_length = 12345;
   input.is_autofilled = true;
@@ -337,7 +337,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
       "DatalistLabel", "DatalistName", "DatalistValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
-  input.unique_renderer_id = FieldRendererId(1234);
+  input.renderer_id = FieldRendererId(1234);
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.autocomplete_attribute = "on";
