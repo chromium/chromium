@@ -166,8 +166,6 @@ UIImage* DefaultFavicon() {
                                  cornerRadius:kCornerSize];
   UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
   params.visiblePath = visiblePath;
-  // Remove the default shadow path.
-  params.shadowPath = [UIBezierPath bezierPath];
   return params;
 }
 
