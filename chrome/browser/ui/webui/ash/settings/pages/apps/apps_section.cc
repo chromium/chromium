@@ -205,6 +205,34 @@ const std::vector<SearchConcept>& GetAndroidPlayStoreDisabledSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetManageIsolatedWebAppsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_MANAGE_ISOLATED_WEB_APPS,
+        mojom::kManageIsolatedWebAppsSubpagePath,
+        ash::features::IsOsSettingsRevampWayfindingEnabled()
+            ? mojom::SearchResultIcon::kNotifications
+            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kManageIsolatedWebApps}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTurnOnIsolatedWebAppsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS,
+        mojom::kManageIsolatedWebAppsSubpagePath,
+        ash::features::IsOsSettingsRevampWayfindingEnabled()
+            ? mojom::SearchResultIcon::kNotifications
+            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kEnableIsolatedWebAppsOnOff},
+        {IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
@@ -425,6 +453,11 @@ AppsSection::AppsSection(Profile* profile,
     }
 
     UpdateAndroidSearchTags();
+  }
+
+  if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile)) {
+    updater.AddSearchTags(GetManageIsolatedWebAppsSearchConcepts());
+    updater.AddSearchTags(GetTurnOnIsolatedWebAppsSearchConcepts());
   }
 }
 

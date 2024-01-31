@@ -925,6 +925,15 @@
   <message name="IDS_OS_SETTINGS_TAG_ANDROID_TURN_ON_PLAY_STORE_ALT1" desc="Text for search result item which, when clicked, navigates the user to apps settings, with a button to turn on the Play Store (Android app store). Alternate phrase for: 'Turn on Play Store'">
     Enable Play Store
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_MANAGE_ISOLATED_WEB_APPS" desc="Text for search result item which, when clicked, navigates the user to manage isolated web apps settings.">
+    Manage isolated web apps
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS" desc="Text for search result item which, when clicked, navigates the user to manage isolated web apps settings with turn on isolated web apps toggle. Alternate phrase for: 'Enable isolated web apps'">
+    Turn on isolated web apps
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS_ALT1" desc="Text for search result item which, when clicked, navigates the user to manage isolated web apps settings with turn on isolated web apps toggle. Alternate phrase for: 'Turn on isolated web apps'">
+    Enable isolated web apps
+  </message>
 
   <!-- Crostini section. -->
   <message name="IDS_OS_SETTINGS_TAG_CROSTINI" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings. Alternate phrase for: 'Crostini, Developers'">
