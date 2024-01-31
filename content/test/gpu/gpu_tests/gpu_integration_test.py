@@ -35,6 +35,7 @@ import validate_tag_consistency
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
+from gpu_tests import overlay_support
 
 TEST_WAS_SLOW = 'test_was_slow'
 
@@ -1005,6 +1006,13 @@ class GpuIntegrationTest(
 
   def setUp(self) -> None:
     self._EnsureTabIsAvailable()
+
+    # Append overlay support for extra Intel GPUs when the extra device id is
+    # current active GPU's device id
+    gpu = self.browser.GetSystemInfo().gpu.devices[0]
+    extra_device_id = self._extra_intel_device_id_with_overlays
+    if extra_device_id and extra_device_id != gpu.device_id:
+      overlay_support.AppendOverlayConfigWithExtraIntelGPU(gpu)
 
   @staticmethod
   def GetJSONResultsDelimiter() -> str:

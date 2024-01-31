@@ -446,6 +446,17 @@ OVERLAY_CONFIGS = {
 }
 
 
+def AppendOverlayConfigWithExtraIntelGPU(gpu: gpu_device.GPUDevice) -> None:
+  """Append a GpuOverlayConfig instance for extra Intel GPU not listed in
+  OVERLAY_CONFIGS.
+  """
+  assert gpu.vendor_id == gpu_helper.GpuVendors.INTEL
+  overlay_config = OVERLAY_CONFIGS.get(gpu.vendor_id, {})
+  if not overlay_config.get(gpu.device_id, None):
+    overlay_config.setdefault(gpu.device_id,
+                              AllHardwareSupportDirectCompositionConfig())
+
+
 def GetOverlayConfigForGpu(gpu: gpu_device.GPUDevice) -> GpuOverlayConfig:
   """Retrieves the GpuOverlayConfig instance for a particular GPU."""
   overlay_config = OVERLAY_CONFIGS.get(gpu.vendor_id,
