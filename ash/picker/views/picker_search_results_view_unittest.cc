@@ -6,7 +6,6 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results.h"
-#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -110,7 +109,7 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsTextResult) {
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* result_view =
+  views::View* result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
@@ -134,7 +133,7 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsGifResult) {
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* gif_result_view =
+  views::View* gif_result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(gif_result_view);
   LeftClickOn(gif_result_view);

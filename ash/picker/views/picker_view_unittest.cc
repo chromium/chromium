@@ -10,7 +10,6 @@
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_view.h"
-#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -114,7 +113,7 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 // that the first item is a category. This probably won't be the case once more
 // of the zero state view has been implemented. We should have a better way of
 // getting a category item.
-PickerItemView* GetCategoryItemView(PickerView* picker_view) {
+views::View* GetCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
       .section_views_for_testing()[0]
       ->item_views_for_testing()[0];
@@ -227,9 +226,9 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
                   ->item_views_for_testing(),
               Not(IsEmpty()));
 
-  PickerItemView* result_view = view->search_results_view_for_testing()
-                                    .section_views_for_testing()[0]
-                                    ->item_views_for_testing()[0];
+  views::View* result_view = view->search_results_view_for_testing()
+                                 .section_views_for_testing()[0]
+                                 ->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
@@ -243,7 +242,7 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  views::View* category_item_view = GetCategoryItemView(picker_view);
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
 
@@ -259,7 +258,7 @@ TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
 
   // Switch to category view.
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  views::View* category_item_view = GetCategoryItemView(picker_view);
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
   // Type something into the search field.
@@ -277,7 +276,7 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
 
   // Switch to category view.
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  views::View* category_item_view = GetCategoryItemView(picker_view);
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
   // Type something into the search field.

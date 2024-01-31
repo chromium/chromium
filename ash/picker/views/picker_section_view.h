@@ -47,7 +47,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
     return large_grid_items_container_;
   }
 
-  base::span<const raw_ptr<PickerItemView>> item_views_for_testing() const {
+  base::span<const raw_ptr<views::View>> item_views_for_testing() const {
     return item_views_;
   }
 
@@ -76,7 +76,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::View> list_items_container_ = nullptr;
 
   // The views for each result item.
-  std::vector<raw_ptr<PickerItemView>> item_views_;
+  std::vector<raw_ptr<views::View>> item_views_;
 };
 
 }  // namespace ash
