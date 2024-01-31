@@ -794,3 +794,21 @@ ci.builder(
     ),
     xcode = xcode.xcode_default,
 )
+
+ci.builder(
+    name = "linux-codeql-generator",
+    description_html = "Compiles a CodeQL database on a Linux host and uploads the result.",
+    executable = "recipe:chrome_codeql_database_builder",
+    # Run once daily at 5am Pacific/1 PM UTC
+    schedule = "0 13 * * *",
+    cores = 32,
+    ssd = True,
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "codeql-linux",
+            short_name = "cdql-lnx",
+        ),
+    ],
+    contact_team_email = "chrome-memory-safety-team@google.com",
+)
