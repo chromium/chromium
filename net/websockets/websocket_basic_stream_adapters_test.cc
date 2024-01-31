@@ -354,8 +354,8 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
   WebSocketSpdyStreamAdapterTest()
       : url_("wss://www.example.org/"),
         key_(HostPortPair::FromURL(url_),
-             ProxyChain::Direct(),
              PRIVACY_MODE_DISABLED,
+             ProxyChain::Direct(),
              SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),

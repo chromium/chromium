@@ -1225,7 +1225,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
   EXPECT_TRUE(
       common_connect_job_params_->spdy_session_pool->FindAvailableSession(
           SpdySessionKey(kHttpsProxyServer.host_port_pair(),
-                         ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+                         PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable),
           /* enable_ip_based_pooling = */ false,
@@ -1233,7 +1233,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
   EXPECT_FALSE(
       common_connect_job_params_->spdy_session_pool->FindAvailableSession(
           SpdySessionKey(kHttpsProxyServer.host_port_pair(),
-                         ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+                         PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
           /* enable_ip_based_pooling = */ false,

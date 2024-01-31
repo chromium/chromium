@@ -23,8 +23,8 @@ SpdySessionKey::SpdySessionKey() = default;
 
 SpdySessionKey::SpdySessionKey(
     const HostPortPair& host_port_pair,
-    const ProxyChain& proxy_chain,
     PrivacyMode privacy_mode,
+    const ProxyChain& proxy_chain,
     SessionUsage session_usage,
     const SocketTag& socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,

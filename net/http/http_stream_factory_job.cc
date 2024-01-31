@@ -473,13 +473,13 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     auto [last_proxy_partial_chain, last_proxy_server] =
         proxy_chain.SplitLast();
     const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
-    return SpdySessionKey(last_proxy_host_port_pair, last_proxy_partial_chain,
-                          PRIVACY_MODE_DISABLED, SessionUsage::kProxy,
+    return SpdySessionKey(last_proxy_host_port_pair, PRIVACY_MODE_DISABLED,
+                          last_proxy_partial_chain, SessionUsage::kProxy,
                           socket_tag, network_anonymization_key,
                           secure_dns_policy);
   }
-  return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_chain,
-                        privacy_mode, SessionUsage::kDestination, socket_tag,
+  return SpdySessionKey(HostPortPair::FromURL(origin_url), privacy_mode,
+                        proxy_chain, SessionUsage::kDestination, socket_tag,
                         network_anonymization_key, secure_dns_policy);
 }
 

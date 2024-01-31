@@ -83,8 +83,8 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
   ~SpdyStreamTest() override = default;
 
   base::WeakPtr<SpdySession> CreateDefaultSpdySession() {
-    SpdySessionKey key(HostPortPair::FromURL(url_), ProxyChain::Direct(),
-                       PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+    SpdySessionKey key(HostPortPair::FromURL(url_), PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());

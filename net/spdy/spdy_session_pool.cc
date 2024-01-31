@@ -345,8 +345,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
         if (!compare_result.is_socket_tag_match) {
           SpdySessionKey old_key = available_session->spdy_session_key();
           SpdySessionKey new_key(
-              old_key.host_port_pair(), old_key.proxy_chain(),
-              old_key.privacy_mode(), old_key.session_usage(), key.socket_tag(),
+              old_key.host_port_pair(), old_key.privacy_mode(),
+              old_key.proxy_chain(), old_key.session_usage(), key.socket_tag(),
               old_key.network_anonymization_key(), old_key.secure_dns_policy());
 
           // If there is already a session with |new_key|, skip this one.
@@ -392,7 +392,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
                 GetDnsAliasesForSessionKey(*it);
             UnmapKey(*it);
             SpdySessionKey new_pool_alias_key = SpdySessionKey(
-                it->host_port_pair(), it->proxy_chain(), it->privacy_mode(),
+                it->host_port_pair(), it->privacy_mode(), it->proxy_chain(),
                 it->session_usage(), key.socket_tag(),
                 it->network_anonymization_key(), it->secure_dns_policy());
             MapKeyToAvailableSession(new_pool_alias_key, available_session,
