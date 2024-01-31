@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -80,6 +81,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabModel mTabModel;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -187,8 +189,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @SmallTest
-    public void testCreateTabModelFilterSupplier_AlreadyInitialized() {
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+    public void testCreateTabModelFilterSupplier_AlreadyCreated() {
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
         var supplier = mFactory.createTabModelFilterSupplier(false);
         verify(mTabModelSelector, never()).addObserver(any());
@@ -197,8 +199,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @SmallTest
-    public void testCreateTabModelFilterSupplier_WaitForInit() {
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+    public void testCreateTabModelFilterSupplier_WaitForChange() {
+        when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
 
         var supplier = mFactory.createTabModelFilterSupplier(false);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
@@ -206,7 +208,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
         TabModelSelectorObserver observer = mTabModelSelectorObserverCaptor.getValue();
 
-        observer.onTabStateInitialized();
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+        observer.onChange();
         verify(mTabModelSelector).removeObserver(observer);
         assertEquals(mTabModelFilter, supplier.get());
     }

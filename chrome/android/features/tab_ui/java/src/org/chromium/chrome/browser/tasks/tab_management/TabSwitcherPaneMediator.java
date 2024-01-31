@@ -84,6 +84,14 @@ public class TabSwitcherPaneMediator
                 public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
                     notifyBackPressStateChangedInternal();
                 }
+
+                @Override
+                public void restoreCompleted() {
+                    if (Boolean.TRUE.equals(mIsVisibleSupplier.get())) {
+                        mResetHandler.resetWithTabList(mTabModelFilterSupplier.get(), false);
+                        setInitialScrollIndexOffset();
+                    }
+                }
             };
     private final Callback<Boolean> mOnAnimatingChanged = this::onAnimatingChanged;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
