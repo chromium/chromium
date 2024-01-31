@@ -1,0 +1,99 @@
+Test that property rules cannot be rendered invalid by edits
+{
+    error : {
+        code : -32000
+        message : Failed applying edit #0: SyntaxError Style text is not valid.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Failed applying edit #0: SyntaxError Style text is not valid.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Failed applying edit #0: SyntaxError Style text is not valid.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : syntax
+                        range : {
+                            endColumn : 34
+                            endLine : 1
+                            startColumn : 15
+                            startLine : 1
+                        }
+                        text : syntax: "<length>";
+                        value : "<length>"
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : initial-value
+                        range : {
+                            endColumn : 52
+                            endLine : 1
+                            startColumn : 35
+                            startLine : 1
+                        }
+                        text : initial-value: 0;
+                        value : 0
+                    }
+                    [2] : {
+                        disabled : false
+                        implicit : false
+                        name : inherits
+                        range : {
+                            endColumn : 68
+                            endLine : 1
+                            startColumn : 53
+                            startLine : 1
+                        }
+                        text : inherits: true;
+                        value : true
+                    }
+                    [3] : {
+                        name : syntax
+                        value : "<length>"
+                    }
+                    [4] : {
+                        name : initial-value
+                        value : 0
+                    }
+                    [5] : {
+                        name : inherits
+                        value : true
+                    }
+                ]
+                cssText : syntax: "<length>"; initial-value: 0; inherits: true;
+                range : {
+                    endColumn : 68
+                    endLine : 1
+                    startColumn : 15
+                    startLine : 1
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+

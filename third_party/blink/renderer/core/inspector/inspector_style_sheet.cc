@@ -181,12 +181,12 @@ class StyleSheetHandler final : public CSSParserObserver {
       const String& parsed_text,
       Document* document,
       CSSRuleSourceDataList* result,
-      absl::optional<IssueReportingContext> issueReportingContext = {})
+      absl::optional<IssueReportingContext> issue_reporting_context = {})
       : parsed_text_(parsed_text),
         document_(document),
         result_(result),
         current_rule_data_(nullptr),
-        issueReportingContext_(issueReportingContext),
+        issue_reporting_context_(issue_reporting_context),
         line_endings_(std::make_unique<LineEndings>()) {
     DCHECK(result_);
   }
@@ -222,7 +222,7 @@ class StyleSheetHandler final : public CSSParserObserver {
   CSSRuleSourceDataList* result_;
   CSSRuleSourceDataList current_rule_data_stack_;
   CSSRuleSourceData* current_rule_data_;
-  absl::optional<IssueReportingContext> issueReportingContext_;
+  absl::optional<IssueReportingContext> issue_reporting_context_;
   std::unique_ptr<LineEndings> line_endings_;
   // A property that fails to parse (ObserveProperty with is_parsed=false)
   // temporarily becomes a replaceable property. A replaceable property can be
@@ -496,7 +496,7 @@ static OrdinalNumber AddOrdinalNumbers(OrdinalNumber a, OrdinalNumber b) {
 }
 
 TextPosition StyleSheetHandler::GetTextPosition(unsigned start_offset) {
-  if (!issueReportingContext_) {
+  if (!issue_reporting_context_) {
     return TextPosition::BelowRangePosition();
   }
   const LineEndings* line_endings = GetLineEndings();
@@ -504,10 +504,10 @@ TextPosition StyleSheetHandler::GetTextPosition(unsigned start_offset) {
       TextPosition::FromOffsetAndLineEndings(start_offset, *line_endings);
   if (start.line_.ZeroBasedInt() == 0) {
     start.column_ = AddOrdinalNumbers(
-        start.column_, issueReportingContext_->OffsetInSource.column_);
+        start.column_, issue_reporting_context_->OffsetInSource.column_);
   }
-  start.line_ = AddOrdinalNumbers(start.line_,
-                                  issueReportingContext_->OffsetInSource.line_);
+  start.line_ = AddOrdinalNumbers(
+      start.line_, issue_reporting_context_->OffsetInSource.line_);
   return start;
 }
 
@@ -515,25 +515,25 @@ void StyleSheetHandler::ObserveErroneousAtRule(
     unsigned start_offset,
     CSSAtRuleID id,
     const Vector<CSSPropertyID, 2>& invalid_properties) {
-  if (!issueReportingContext_) {
-    return;
-  }
   switch (id) {
-    case CSSAtRuleID::kCSSAtRuleImport: {
-      TextPosition start = GetTextPosition(start_offset);
-      AuditsIssue::ReportStylesheetLoadingLateImportIssue(
-          document_, issueReportingContext_->DocumentURL, start.line_,
-          start.column_);
+    case CSSAtRuleID::kCSSAtRuleImport:
+      if (issue_reporting_context_) {
+        TextPosition start = GetTextPosition(start_offset);
+        AuditsIssue::ReportStylesheetLoadingLateImportIssue(
+            document_, issue_reporting_context_->DocumentURL, start.line_,
+            start.column_);
+      }
       break;
-    }
     case CSSAtRuleID::kCSSAtRuleProperty: {
       if (invalid_properties.empty()) {
-        // Invoked from the prelude handling, which means the name is invalid.
-        TextPosition start = GetTextPosition(start_offset);
-        AuditsIssue::ReportPropertyRuleIssue(
-            document_, issueReportingContext_->DocumentURL, start.line_,
-            start.column_,
-            protocol::Audits::PropertyRuleIssueReasonEnum::InvalidName, {});
+        if (issue_reporting_context_) {
+          // Invoked from the prelude handling, which means the name is invalid.
+          TextPosition start = GetTextPosition(start_offset);
+          AuditsIssue::ReportPropertyRuleIssue(
+              document_, issue_reporting_context_->DocumentURL, start.line_,
+              start.column_,
+              protocol::Audits::PropertyRuleIssueReasonEnum::InvalidName, {});
+        }
       } else {
         // The rule is being dropped because it lacks required descriptors, or
         // some descriptors have invalid values. The rule has already been
@@ -585,6 +585,9 @@ static std::pair<const char*, const char*> GetPropertyNameAndIssueReason(
 void StyleSheetHandler::ReportPropertyRuleFailure(
     unsigned start_offset,
     CSSPropertyID invalid_property) {
+  if (!issue_reporting_context_) {
+    return;
+  }
   auto [property_name, issue_reason] =
       GetPropertyNameAndIssueReason(invalid_property);
   if (!property_name) {
@@ -605,7 +608,7 @@ void StyleSheetHandler::ReportPropertyRuleFailure(
       property_data ? property_data->range.start : start_offset);
   String value = property_data ? property_data->value : String();
   AuditsIssue::ReportPropertyRuleIssue(
-      document_, issueReportingContext_->DocumentURL, start.line_,
+      document_, issue_reporting_context_->DocumentURL, start.line_,
       start.column_, issue_reason, value);
 }
 
@@ -644,7 +647,13 @@ bool VerifyRuleText(Document* document, const String& rule_text) {
   return true;
 }
 
-bool VerifyStyleText(Document* document, const String& text) {
+bool VerifyStyleText(Document* document,
+                     const String& text,
+                     StyleRule::RuleType rule_type = StyleRule::kStyle) {
+  if (rule_type == StyleRule::kProperty) {
+    return VerifyRuleText(document, "@property --property {" + text + "}");
+  }
+
   return VerifyRuleText(document, "div {" + text + "}");
 }
 
@@ -1610,17 +1619,18 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
                                            SourceRange* new_range,
                                            String* old_text,
                                            ExceptionState& exception_state) {
-  if (!VerifyStyleText(page_style_sheet_->OwnerDocument(), text)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Style text is not valid.");
-    return nullptr;
-  }
-
   CSSRuleSourceData* source_data = FindRuleByBodyRange(range);
   if (!source_data || !source_data->HasProperties()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
+    return nullptr;
+  }
+
+  if (!VerifyStyleText(page_style_sheet_->OwnerDocument(), text,
+                       source_data->type)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Style text is not valid.");
     return nullptr;
   }
 
