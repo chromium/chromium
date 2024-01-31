@@ -23,7 +23,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::PartitionAllocGetSlotStartAndSize(address);
   if constexpr (AllowDangling) {
     partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
         slot_start, slot_size)
@@ -42,7 +42,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReleaseInternal(
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::PartitionAllocGetSlotStartAndSize(address);
   if constexpr (AllowDangling) {
     if (partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
             slot_start, slot_size)
@@ -64,7 +64,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReportIfDanglingInternal(
   if (partition_alloc::internal::IsUnretainedDanglingRawPtrCheckEnabled()) {
     if (IsSupportedAndNotNull(address)) {
       auto [slot_start, slot_size] =
-          partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+          partition_alloc::PartitionAllocGetSlotStartAndSize(address);
       partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
           slot_start, slot_size)
           ->ReportIfDangling();
@@ -102,7 +102,7 @@ bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::IsPointeeAlive(
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::PartitionAllocGetSlotStartAndSize(address);
   return partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
              slot_start, slot_size)
       ->IsAlive();
