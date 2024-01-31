@@ -92,7 +92,7 @@ std::u16string DeskSwitchButton::GetTitle() const {
       return desk_controller->GetDeskName(index);
     }
   }
-  return base::EmptyString16();
+  return std::u16string();
 }
 
 void DeskSwitchButton::UpdateUi(const Desk* active_desk) {

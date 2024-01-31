@@ -24,7 +24,7 @@ namespace ash {
 namespace {
 
 const GURL kActiveUrl = GURL("https://wwww.test.com");
-const GURL kEmptyUrl = GURL::EmptyGURL();
+const GURL kEmptyUrl;
 
 constexpr char kNonMatchingPattern[] = "google.com";
 constexpr char kMatchingPattern[] = "test.com";

@@ -315,7 +315,7 @@ std::u16string ChannelIndicatorView::GetAccessibleNameString() const {
   if (label())
     return label()->GetAccessibleName();
 
-  return base::EmptyString16();
+  return std::u16string();
 }
 
 BEGIN_METADATA(ChannelIndicatorView)

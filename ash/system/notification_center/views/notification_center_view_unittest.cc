@@ -555,7 +555,7 @@ TEST_P(NotificationCenterViewTest, NotificationPartialSwipe) {
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
   auto id2 = test_api()->AddCustomNotification(
-      u"title", u"message", ui::ImageModel(), base::EmptyString16(), GURL(),
+      u"title", u"message", ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), optional_fields);
 
   view = test_api()->GetNotificationViewForId(id2);

@@ -338,23 +338,19 @@ void DeskButton::OnButtonPressed() {
 std::u16string DeskButton::GetDeskNameLabelText(const Desk* active_desk) const {
   int active_desk_index = DesksController::Get()->GetDeskIndex(active_desk);
   if (active_desk->name().empty() || active_desk_index < 0) {
-    return base::EmptyString16();
+    return std::u16string();
   }
 
   if (zero_state_) {
     base::i18n::BreakIterator iter(active_desk->name(),
                                    base::i18n::BreakIterator::BREAK_CHARACTER);
     if (!iter.Init()) {
-      return base::EmptyString16();
+      return std::u16string();
     }
     if (active_desk->is_name_set_by_user()) {
-      if (!iter.Advance()) {
-        return base::EmptyString16();
-      }
-      return iter.GetString();
-    } else {
-      return u"#" + base::NumberToString16(active_desk_index + 1);
+      return iter.Advance() ? iter.GetString() : std::u16string();
     }
+    return u"#" + base::NumberToString16(active_desk_index + 1);
   }
 
   return active_desk->name();

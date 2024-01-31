@@ -136,7 +136,7 @@ class TestShellDelegate : public ShellDelegate {
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;
 
-  GURL last_committed_url_ = GURL::EmptyGURL();
+  GURL last_committed_url_;
 
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 

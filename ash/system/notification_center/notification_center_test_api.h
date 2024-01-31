@@ -73,7 +73,7 @@ class NotificationCenterTestApi {
       const std::u16string& title,
       const std::u16string& message,
       const ui::ImageModel& icon = ui::ImageModel(),
-      const std::u16string& display_source = base::EmptyString16(),
+      const std::u16string& display_source = std::u16string(),
       const GURL& url = GURL(),
       const message_center::NotifierId& notifier_id =
           message_center::NotifierId(),
