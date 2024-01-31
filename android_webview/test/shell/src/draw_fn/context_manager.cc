@@ -42,6 +42,7 @@
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/color_space.h"
 
 namespace draw_fn {
@@ -629,8 +630,9 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
           .fSignalSemaphores = &end_semaphore,
       };
       uint32_t queue_index = device_queue_->GetVulkanQueueIndex();
-      skgpu::MutableTextureState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                                       queue_index);
+      skgpu::MutableTextureState state =
+          skgpu::MutableTextureStates::MakeVulkan(
+              VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
       GrSemaphoresSubmitted submitted =
           gr_context_->flush(sk_surface.get(), flush_info, &state);
       CHECK_EQ(GrSemaphoresSubmitted::kYes, submitted);
