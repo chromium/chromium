@@ -186,7 +186,16 @@ UIColor* DimColorIncognito() {
     // The text should be search term (`_match.contents`) for searches,
     // otherwise page title (`_match.description`).
     std::u16string textString =
-        !self.isURL ? _match.contents : _match.description;
+        self.isURL ? _match.description : _match.contents;
+
+    // Clipboard suggestion "Text you copied" text is stored in description.
+    // The content is empty as iOS doesn't access the clipboard when creating
+    // the match.
+    if (_match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
+        _match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+      textString = _match.description;
+    }
+
     NSString* text = base::SysUTF16ToNSString(textString);
 
     // If for some reason the title is empty, copy the detailText.

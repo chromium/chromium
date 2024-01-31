@@ -546,8 +546,6 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // a fill_into_edit of "http://foo.com".
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
 
-// TODO(crbug.com/1470185): iOS annotates clipboard searches as URLs.
-#if !BUILDFLAG(IS_IOS)
   const bool is_starter_pack = AutocompleteMatch::IsStarterPackType(match.type);
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
     DCHECK(!is_starter_pack);
@@ -557,7 +555,6 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     DCHECK(is_search_type != match.keyword.empty() || is_starter_pack)
         << "type: " << match.type << ", keyword: " << match.keyword;
   }
-#endif
 
   const bool keyword_matches =
       base::StartsWith(base::UTF16ToUTF8(input.text()),
