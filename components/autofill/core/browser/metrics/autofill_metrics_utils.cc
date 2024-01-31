@@ -134,9 +134,6 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return SettingsVisibleFieldTypeForMetrics::kDependentLocality;
 
-    case FieldType::NAME_HONORIFIC_PREFIX:
-      return SettingsVisibleFieldTypeForMetrics::kHonorificPrefix;
-
     case FieldType::COMPANY_NAME:
       return SettingsVisibleFieldTypeForMetrics::kCompany;
 

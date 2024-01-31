@@ -3197,7 +3197,6 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="State"/>
   <int value="8" label="StreetAddress"/>
   <int value="9" label="DependentLocality"/>
-  <int value="10" label="HonorificPrefix"/>
   <int value="11" label="Company"/>
 </enum>
 
