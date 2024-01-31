@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -911,6 +912,9 @@ void AudioDetailedView::CreateExtraTitleRowButtons() {
           base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
                               weak_factory_.GetWeakPtr()),
           IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS));
+  settings->SetProperty(
+      views::kElementIdentifierKey,
+      kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);
   settings_button_ =
       tri_view()->AddView(TriView::Container::END, std::move(settings));
 }

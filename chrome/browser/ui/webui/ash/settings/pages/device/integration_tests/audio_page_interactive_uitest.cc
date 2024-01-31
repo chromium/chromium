@@ -5,7 +5,10 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/accelerators/accelerator_lookup.h"
 #include "ash/ash_element_identifiers.h"
+#include "ash/public/cpp/accelerator_actions.h"
+#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/test/gtest_tags.h"
@@ -17,6 +20,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -231,6 +235,14 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
 
   auto FocusElement(const InteractiveAshTest::DeepQuery& query) {
     return Steps(ExecuteJsAt(kOsSettingsElementId, query, "el => el.focus()"));
+  }
+
+  ui::Accelerator GetAccelerator(uint32_t action) {
+    return Shell::Get()
+        ->accelerator_lookup()
+        ->GetAcceleratorsForAction(action)
+        .front()
+        .accelerator;
   }
 
   CrasAudioHandler* audio_handler() const { return audio_handler_; }
@@ -531,6 +543,47 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
 
   // Expect noise cancellation is off now.
   EXPECT_FALSE(audio_handler()->GetNoiseCancellationState());
+}
+
+// Verify quick settings button to launch audio settings is disabled on lock
+// screen.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
+                       LaunchAudioSettingDisabledOnLockScreen) {
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+
+  RunTestSequence(
+      Log("Open quick settings bubble"),
+      PressButton(kUnifiedSystemTrayElementId),
+      WaitForShow(kQuickSettingsViewElementId),
+
+      Log("Click audio detailed view button"),
+      PressButton(kQuickSettingsAudioDetailedViewButtonElementId),
+      WaitForShow(kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId),
+
+      CheckViewProperty(
+          kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId,
+          &views::Button::GetEnabled, true),
+      Log("Expected audio settings button is enabled"),
+
+      Log("Open audio settings page and ensure it exists"),
+      LoadAudioSettingsPage(),
+
+      Log("Lock screen"),
+      SendAccelerator(kOsSettingsElementId,
+                      GetAccelerator(AcceleratorAction::kLockScreen)),
+
+      Log("Open quick settings bubble"),
+      PressButton(kUnifiedSystemTrayElementId),
+      WaitForShow(kQuickSettingsViewElementId),
+
+      Log("Click audio detailed view button"),
+      PressButton(kQuickSettingsAudioDetailedViewButtonElementId),
+      WaitForShow(kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId),
+
+      CheckViewProperty(
+          kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId,
+          &views::Button::GetEnabled, false),
+      Log("Expected audio settings button is disabled"));
 }
 
 }  // namespace

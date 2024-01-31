@@ -49,6 +49,12 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
+    kQuickSettingsAudioDetailedViewAudioSettingsButtonElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kQuickSettingsAudioDetailedViewButtonElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
     kQuickSettingsSettingsButtonElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kQuickSettingsViewElementId);

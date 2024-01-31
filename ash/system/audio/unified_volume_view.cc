@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -24,6 +25,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -59,6 +61,9 @@ UnifiedVolumeView::UnifiedVolumeView(
   }
 
   more_button_->SetIconColor(cros_tokens::kCrosSysSecondary);
+  more_button_->SetProperty(views::kElementIdentifierKey,
+                            kQuickSettingsAudioDetailedViewButtonElementId);
+
   // TODO(b/257151067): Update the a11y name id.
   // Adds the live caption button before `more_button_`.
   Shell::Get()->accessibility_controller()->AddObserver(this);
