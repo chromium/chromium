@@ -1344,8 +1344,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
               : new_position->GetAnchor();
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
-  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
-  bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+  bool is_text_node = IsTextForReadAnything(anchor_node->id());
   const std::set<ui::AXNodeID>* node_ids = selection_node_ids().empty()
                                                ? &display_node_ids()
                                                : &selection_node_ids();
@@ -1374,7 +1373,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     }
     was_previously_spoken =
         NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
-    is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
+    is_text_node = IsTextForReadAnything(anchor_node->id());
     contains_node = base::Contains(*node_ids, anchor_node->id());
   }
 
@@ -1454,4 +1453,10 @@ void ReadAnythingAppModel::ResetReadAloudState() {
   current_text_index_ = 0;
   processed_granularity_index_ = -1;
   processed_granularities_on_current_page_.clear();
+}
+
+bool ReadAnythingAppModel::IsTextForReadAnything(
+    ui::AXNodeID ax_node_id) const {
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
+  return (GetHtmlTag(ax_node_id).length() == 0);
 }

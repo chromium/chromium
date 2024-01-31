@@ -326,6 +326,8 @@ class ReadAnythingAppModel {
 
   void ResetReadAloudState();
 
+  bool IsTextForReadAnything(ui::AXNodeID ax_node_id) const;
+
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetNextText which called
   // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
