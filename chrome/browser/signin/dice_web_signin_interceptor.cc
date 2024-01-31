@@ -71,6 +71,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -183,18 +184,6 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
   return ShouldShowChromeSigninBubbleWithReason::kShouldShow;
 }
 
-// Assumes that if it is unsure to show the bubble or not, then we shouldn't
-// display it.
-bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
-                                  const std::string& email,
-                                  signin_metrics::AccessPoint access_point,
-                                  size_t bubble_shown_count) {
-  ShouldShowChromeSigninBubbleWithReason should_show =
-      MaybeShouldShowChromeSigninBubble(manager, email, access_point,
-                                        bubble_shown_count);
-  return should_show == ShouldShowChromeSigninBubbleWithReason::kShouldShow;
-}
-
 // Returns true if we have the minimum extended account information needed to
 // make a best-effort intercept heuristic decision. If we fail to retrieve
 // this information we will cancel the interception completely.
@@ -280,6 +269,16 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
   return false;
 }
 
+void RecordShouldShowChromeSigninBubbleReason(
+    ShouldShowChromeSigninBubbleWithReason reason) {
+  // This metric will be recorded both when `switches::kUnoDesktop` is
+  // enabled and disabled when the Chrome Signin bubble is expected to be
+  // shown or not.
+  base::UmaHistogramEnumeration(
+      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
+      reason);
+}
+
 }  // namespace
 
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
@@ -333,7 +332,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
     bool is_sync_signin,
     const std::string& email,
-    bool record_signin_metrics,
+    bool update_state,
     const ProfileAttributesEntry** entry) const {
   bool signin_interception_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled);
@@ -397,14 +396,11 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
                                         state_->access_point_,
                                         GetChromeSigninBubbleShownCount(email));
-  if (record_signin_metrics) {
-    // This metric will be recorded both when `switches::kUnoDesktop` is
-    // enabled and disabled when the Chrome Signin bubble is expected to be
-    // shown or not.
-    base::UmaHistogramEnumeration(
-        "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
-        should_show_chrome_signin_bubble);
+  if (update_state) {
+    state_->should_show_chrome_signin_bubble_ =
+        should_show_chrome_signin_bubble;
   }
+
   // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
   if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
     // If the access point is not set, it is unclear if we have to show the
@@ -419,8 +415,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     }
   }
 
-  // From this point the remaining possible interceptions involve creating a new
-  // profile.
+  // From this point the remaining possible interceptions involve creating a
+  // new profile.
   if (!profiles::IsProfileCreationAllowed()) {
     return SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed;
   }
@@ -510,7 +506,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   const ProfileAttributesEntry* entry = nullptr;
   std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
-                          /*record_signin_metrics=*/true, &entry);
+                          /*update_state=*/true, &entry);
   state_->account_id_ = account_id;
   state_->is_interception_in_progress_ = true;
   state_->new_account_interception_ = is_new_account;
@@ -519,6 +515,10 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (heuristic_outcome &&
       !SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
     RecordSigninInterceptionHeuristicOutcome(*heuristic_outcome);
+    if (state_->should_show_chrome_signin_bubble_) {
+      RecordShouldShowChromeSigninBubbleReason(
+          state_->should_show_chrome_signin_bubble_.value());
+    }
     Reset();
     return;
   }
@@ -693,6 +693,20 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
   return true;
 }
 
+bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
+    const std::string& email) {
+  state_->should_show_chrome_signin_bubble_ = MaybeShouldShowChromeSigninBubble(
+      identity_manager_, email, state_->access_point_,
+      GetChromeSigninBubbleShownCount(email));
+  CHECK(state_->should_show_chrome_signin_bubble_.has_value());
+  RecordShouldShowChromeSigninBubbleReason(
+      state_->should_show_chrome_signin_bubble_.value());
+
+  return base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+         state_->should_show_chrome_signin_bubble_ ==
+             ShouldShowChromeSigninBubbleWithReason::kShouldShow;
+}
+
 void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
@@ -861,10 +875,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  } else if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
-             ShouldShowChromeSigninBubble(
-                 identity_manager_, info.email, state_->access_point_,
-                 GetChromeSigninBubbleShownCount(info.email))) {
+  } else if (ShouldShowChromeSigninBubble(info.email)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
     RecordSigninInterceptionHeuristicOutcome(

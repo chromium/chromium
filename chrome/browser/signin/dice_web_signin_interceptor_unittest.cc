@@ -1780,6 +1780,40 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
       ShouldShowChromeSigninBubbleWithReason::kShouldShow, 1);
 }
 
+TEST_F(DiceWebSigninInterceptorTest,
+       InterceptShouldNotShowWaitForAccountInfoAvailableMetricRecorded) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email)
+                   .has_value());
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .Times(0);
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+  // Delegate was not called yet.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  auto expected_outcome =
+      SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible;
+  EXPECT_EQ(interceptor()->is_interception_in_progress(),
+            SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
+      ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUnknownAccessPoint,
+      1);
+}
+
 TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
        InterceptShouldNotShowChromeSigninBubbleOnAccessPointUnkown) {
   AccountInfo account_info =
