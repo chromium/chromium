@@ -306,7 +306,7 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 // `country_code`.
 // If the exact match is not found, extracts the digits (ignoring leading '00'
 // or '+') from each option and compares them with the `country_code`.
-std::u16string GetPhoneCountryCodeSelectControlForInput(
+std::u16string GetPhoneCountryCodeSelectControlValue(
     const std::u16string& country_code,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
@@ -381,8 +381,8 @@ std::u16string GetValueForProfileSelectControl(
           data_util::GetCountryCodeWithFallback(profile, app_locale),
           address_normalizer, failure_to_fill);
     case PHONE_HOME_COUNTRY_CODE:
-      return GetPhoneCountryCodeSelectControlForInput(value, field_options,
-                                                      failure_to_fill);
+      return GetPhoneCountryCodeSelectControlValue(value, field_options,
+                                                   failure_to_fill);
     default:
       return GetSelectControlValue(value, field_options, failure_to_fill)
           .value_or(u"");
