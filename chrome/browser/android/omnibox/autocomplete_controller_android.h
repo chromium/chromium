@@ -89,6 +89,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
       const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
 
+  void CreateNavigationObserver(JNIEnv* env,
+                                uintptr_t navigation_handle_ptr,
+                                uintptr_t match_ptr);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
   // Called by Java to destroy this instance.

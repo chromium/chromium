@@ -2881,6 +2881,8 @@ static_library("browser") {
       "android/ntp/recent_tabs_page_prefs.h",
       "android/omnibox/autocomplete_controller_android.cc",
       "android/omnibox/autocomplete_controller_android.h",
+      "android/omnibox/chrome_omnibox_navigation_observer_android.cc",
+      "android/omnibox/chrome_omnibox_navigation_observer_android.h",
       "android/omnibox/geolocation_header.cc",
       "android/omnibox/geolocation_header.h",
       "android/omnibox/omnibox_prerender.cc",

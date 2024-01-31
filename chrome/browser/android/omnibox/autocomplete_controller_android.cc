@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/omnibox/chrome_omnibox_navigation_observer_android.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
@@ -57,6 +58,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cookies/cookie_util.h"
@@ -453,6 +455,22 @@ void AutocompleteControllerAndroid::SetVoiceMatches(
     voice_suggest_provider->AddVoiceSuggestion(voice_matches[index],
                                                confidence_scores[index]);
   }
+}
+
+void AutocompleteControllerAndroid::CreateNavigationObserver(
+    JNIEnv* env,
+    uintptr_t navigation_handle_ptr,
+    uintptr_t match_ptr) {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxShortcutsAndroid)) {
+    return;
+  }
+
+  auto* navigation_handle =
+      reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
+  const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
+
+  ChromeOmniboxNavigationObserverAndroid::Create(navigation_handle, profile_,
+                                                 input_.text(), match);
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()
