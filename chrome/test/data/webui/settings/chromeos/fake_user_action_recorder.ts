@@ -7,46 +7,45 @@
  * ash.settings.mojom.UserActionRecorderRemote for testing.
  */
 
+import {userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+
 /**
  * Fake implementation of ash.settings.mojom.UserActionRecorderRemote.
- *
- * @implements {ash.settings.mojom.UserActionRecorderInterface}
  */
-export class FakeUserActionRecorder {
-  constructor() {
-    this.pageFocusCount = 0;
-    this.pageBlurCount = 0;
-    this.clickCount = 0;
-    this.navigationCount = 0;
-    this.searchCount = 0;
-    this.settingChangeCount = 0;
-  }
+export class FakeUserActionRecorder implements
+    userActionRecorderMojom.UserActionRecorderInterface {
+  pageFocusCount = 0;
+  pageBlurCount = 0;
+  clickCount = 0;
+  navigationCount = 0;
+  searchCount = 0;
+  settingChangeCount = 0;
 
-  recordPageFocus() {
+  recordPageFocus(): void {
     ++this.pageFocusCount;
   }
 
-  recordPageBlur() {
+  recordPageBlur(): void {
     ++this.pageBlurCount;
   }
 
-  recordClick() {
+  recordClick(): void {
     ++this.clickCount;
   }
 
-  recordNavigation() {
+  recordNavigation(): void {
     ++this.navigationCount;
   }
 
-  recordSearch() {
+  recordSearch(): void {
     ++this.searchCount;
   }
 
-  recordSettingChange() {
+  recordSettingChange(): void {
     ++this.settingChangeCount;
   }
 
-  recordSettingChangeWithDetails() {
+  recordSettingChangeWithDetails(): void {
     ++this.settingChangeCount;
   }
 }

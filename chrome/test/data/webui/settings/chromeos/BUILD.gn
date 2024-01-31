@@ -35,7 +35,7 @@ build_webui_tests("build") {
     "fake_settings_private.js",
     "fake_settings_search_handler.ts",
     "fake_system_display.ts",
-    "fake_user_action_recorder.js",
+    "fake_user_action_recorder.ts",
     "fake_users_private.ts",
     "internet_page_tests.js",
     "lacros_extension_controlled_indicator_test.ts",
