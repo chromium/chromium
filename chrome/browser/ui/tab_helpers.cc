@@ -31,6 +31,7 @@
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
@@ -521,7 +522,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) ||
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
   }
 

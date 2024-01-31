@@ -101,9 +101,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   // flag after FSA Persistent Permissions feature launch.
   ChromeFileSystemAccessPermissionContextTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessPersistentPermissions,
-         permissions::features::kOneTimePermission},
-        {});
+        {features::kFileSystemAccessPersistentPermissions}, {});
   }
   void SetUp() override {
     // Create a scoped directory under %TEMP% instead of using
