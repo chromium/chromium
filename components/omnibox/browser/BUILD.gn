@@ -748,6 +748,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/omnibox/Shortcuts.v0.sql",
     "//components/test/data/omnibox/Shortcuts.v1.sql",
     "//components/test/data/omnibox/adder.tflite",
+    "//components/test/data/omnibox/badword_hashes_test.txt",
     "//components/test/data/omnibox/in_memory_url_index_test.sql",
     "//components/test/data/omnibox/in_memory_url_index_test_limited.sql",
     "//components/test/data/omnibox/on_device_head_test_deep_model.bin",
