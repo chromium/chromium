@@ -2799,7 +2799,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6687230248707087982">Enveloppe (ordinaire)</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6687696737818665306">Théâtre et arts dramatiques</translation>
-<translation id="6688743156324860098">Modifier…</translation>
+<translation id="6688743156324860098">Mettre à jour…</translation>
 <translation id="6688775486821967877">La carte virtuelle n'est pas disponible pour le moment. Veuillez réessayer plus tard.</translation>
 <translation id="6689249931105087298">Valeur relative avec compression des points noirs</translation>
 <translation id="6689271823431384964">Chrome propose d'enregistrer vos cartes dans votre compte Google, car vous êtes connecté. Vous pouvez modifier ce comportement dans les paramètres. Le nom du titulaire de la carte provient de votre compte.</translation>
@@ -2835,7 +2835,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6754547388777247439">Comptes épargne</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
-<translation id="6767985426384634228">Modifier l'adresse ?</translation>
+<translation id="6767985426384634228">Mettre à jour l'adresse ?</translation>
 <translation id="6770747695101757579">Papier (coton)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Prêts commerciaux</translation>
@@ -3153,7 +3153,7 @@ Informations supplémentaires :
 <translation id="738439098860678026">Crèches et jardins d'enfants</translation>
 <translation id="7388594495505979117">{0,plural, =1{Votre appareil va redémarrer dans 1 minute}one{Votre appareil va redémarrer dans # minute}other{Votre appareil va redémarrer dans # minutes}}</translation>
 <translation id="7390545607259442187">Valider la carte</translation>
-<translation id="7392089738299859607">Modifier l'adresse</translation>
+<translation id="7392089738299859607">Mettre à jour l'adresse</translation>
 <translation id="739728382607845710">Icône du gestionnaire de paiement</translation>
 <translation id="7399802613464275309">Contrôle de sécurité</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -3436,7 +3436,7 @@ Informations supplémentaires :
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour accéder à la page du contrôle de sécurité de Chrome dans les paramètres</translation>
 <translation id="7916162853251942238">Base pour flexographie</translation>
 <translation id="7927971017714848357">Terrains et terres</translation>
-<translation id="793209273132572360">Modifier l'adresse ?</translation>
+<translation id="793209273132572360">Mettre à jour l'adresse ?</translation>
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Saisissez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> souhaite diffuser un contenu protégé. L'identité de votre appareil sera validée par Google.</translation>

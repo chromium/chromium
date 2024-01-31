@@ -267,7 +267,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="247737702124049222">Tính năng mô tả hình ảnh đang bật</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2482878487686419369">Thông báo</translation>
-<translation id="2496180316473517155">Lịch sử duyệt web</translation>
+<translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2497852260688568942">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="250020030759455918">Trong Chrome, bạn sẽ thấy trạng thái đăng nhập, dữ liệu duyệt web và dữ liệu trang web trên <ph name="SITE_NAME" /></translation>
 <translation id="2510106555128151389">Đang cài đặt <ph name="WEBAPK_NAME" />...</translation>
@@ -854,7 +854,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5468068603361015296">Bạn vẫn muốn tải <ph name="FILE_NAME" /> xuống?</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
 <translation id="5486841595534124508">Biểu trưng của thông báo về quyền riêng tư cho trung tâm thông tin chi tiết về trang chuyển hướng đến trang hoạt động của tôi.</translation>
-<translation id="5487521232677179737">Xóa dữ liệu</translation>
+<translation id="5487521232677179737">Xoá dữ liệu</translation>
 <translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
@@ -1292,13 +1292,13 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
 <translation id="7630202231528827509">URL của nhà cung cấp</translation>
 <translation id="7638584964844754484">Cụm mật khẩu không chính xác</translation>
-<translation id="7641339528570811325">Xóa dữ liệu duyệt web…</translation>
+<translation id="7641339528570811325">Xoá dữ liệu duyệt web…</translation>
 <translation id="7646772052135772216">Tính năng đồng bộ hóa mật khẩu hiện không hoạt động</translation>
 <translation id="7655240423373329753">7 ngày qua</translation>
 <translation id="7655900163790317559">Đang bật Bluetooth…</translation>
 <translation id="7656721520530864426">Không có trang web nào</translation>
 <translation id="7656862631699126784">Bật chế độ Khoá thẻ ẩn danh</translation>
-<translation id="7658239707568436148">Hủy</translation>
+<translation id="7658239707568436148">Huỷ</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
 <translation id="768232549260819724">Đã sao chép GIF</translation>
@@ -1375,7 +1375,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8013372441983637696">Xóa cả dữ liệu của bạn trên Chrome khỏi thiết bị này</translation>
 <translation id="8015452622527143194">Trả lại mọi nội dung trên trang về kích thước mặc định</translation>
-<translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
+<translation id="8026334261755873520">Xoá dữ liệu duyệt web</translation>
 <translation id="8027863900915310177">Chọn vị trí lưu tệp tải xuống</translation>
 <translation id="8030852056903932865">Phê duyệt</translation>
 <translation id="8032569120109842252">Đang theo dõi</translation>

@@ -448,7 +448,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1347512539447549782">Storan Linux</translation>
 <translation id="1347975661240122359">Kemas kini akan bermula apabila bateri mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Tetapan kebolehaksesan tetikus</translation>
-<translation id="1353275871123211385">Untuk menggunakan kawalan ibu bapa seperti kelulusan apl dan had masa skrin, kanak-kanak mesti mempunyai Google Account yang diurus oleh ibu/bapa. Akaun sekolah boleh ditambah kemudian untuk alatan seperti Bilik Darjah Google.</translation>
+<translation id="1353275871123211385">Untuk menggunakan kawalan ibu bapa seperti kelulusan apl dan had masa skrin, kanak-kanak mesti mempunyai Google Account yang diurus oleh ibu/bapa. Akaun sekolah boleh ditambah kemudian untuk alatan seperti Google Classroom.</translation>
 <translation id="135389172849514421">Berfungsi di luar talian</translation>
 <translation id="1353980523955420967">Tidak menemui PPD. Pastikan Chromebook anda berada dalam talian dan cuba lagi.</translation>
 <translation id="1354045473509304750">Teruskan membenarkan <ph name="HOST" /> menggunakan dan mengalihkan kamera anda</translation>
@@ -7500,7 +7500,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6923633482430812883">Ralat semasa melekapkan kongsi. Sila pastikan bahawa pelayan fail yang bersambung dengan anda itu menyokong SMBv2 atau yang lebih baharu.</translation>
 <translation id="6925127338315966709">Anda sedang menambahkan profil terurus pada penyemak imbas ini. Pentadbir anda boleh mengawal profil dan dapat mengakses data profil itu. Penanda halaman, sejarah, kata laluan dan tetapan lain boleh disegerakkan kepada akaun anda dan diurus oleh pentadbir anda.</translation>
 <translation id="6928650056523249512">Alih keluar kebenaran secara automatik daripada laman yang tidak digunakan</translation>
-<translation id="6929126689972602640">Kawalan ibu bapa tidak disokong untuk akaun institusi pengajian. Untuk menambah akaun institusi pengajian untuk mengakses Bilik Darjah Google dan laman web lain untuk membuat kerja sekolah di rumah, log masuk menggunakan akaun peribadi kanak-kanak itu dahulu. Anda boleh menambah akaun institusi pengajian dalam persediaan kemudian.</translation>
+<translation id="6929126689972602640">Kawalan ibu bapa tidak disokong untuk akaun institusi pengajian. Untuk menambah akaun institusi pengajian bagi mengakses Google Classroom dan laman web lain untuk membuat kerja sekolah di rumah, log masuk menggunakan akaun peribadi kanak-kanak itu dahulu. Anda boleh menambah akaun institusi pengajian dalam persediaan kemudian.</translation>
 <translation id="6929760895658557216">Okey Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah ditolak}other{# sambungan telah ditolak}}</translation>
 <translation id="6931690462168617033">Klik kekuatan</translation>

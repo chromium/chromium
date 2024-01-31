@@ -4047,7 +4047,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4116704186509653070">Opna aftur</translation>
 <translation id="4117714603282104018">Snertisvörun snertiflatar</translation>
 <translation id="4118579674665737931">Endurræstu tækið og reyndu aftur.</translation>
-<translation id="412022815379960229">Þú getur flett í gegnum minningarnar þínar á Google myndum í hvert sinn sem þú ert innskráð(ur).</translation>
+<translation id="412022815379960229">Þú getur flett í gegnum minningarnar þínar á Google-myndum í hvert sinn sem þú ert innskráð(ur).</translation>
 <translation id="4120388883569225797">Ekki er hægt að endurstilla þennan öryggislykil</translation>
 <translation id="4120817667028078560">Of löng slóð</translation>
 <translation id="4124823734405044952">Öryggislykilinn hefur verið endurstilltur</translation>
@@ -5645,7 +5645,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5435779377906857208">Veita <ph name="HOST" /> alltaf aðgang að staðsetningunni þinni</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">Minningar á Google myndum</translation>
+<translation id="5436575196282187764">Minningar á Google-myndum</translation>
 <translation id="5439680044267106777">Sleppa og setja upp nýjan prófíl</translation>
 <translation id="544083962418256601">Búa til flýtileiðir...</translation>
 <translation id="5441133529460183413">Vefforrit sótt í Chrome vafra</translation>
@@ -6026,7 +6026,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Athuga stöðu tjóðrunar</translation>
 <translation id="5753570386948603678">Eyða úr ferli</translation>
-<translation id="5755022574660047665">minningar úr Google myndum</translation>
+<translation id="5755022574660047665">minningar úr Google-myndum</translation>
 <translation id="5756163054456765343">Hjálparmiðstöð</translation>
 <translation id="5757187557809630523">næsta lag</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
@@ -8137,7 +8137,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="744341768939279100">Búa til nýjan prófíl</translation>
 <translation id="744366959743242014">Hleður gögnum. Þetta gæti tekið nokkrar sekúndur.</translation>
 <translation id="7443806024147773267">Hafðu aðgang að aðgangsorðunum þínum hvenær sem þú ert skráð(ur) inn á Google reikninginn þinn</translation>
-<translation id="7444970023873202833">Skoðaðu fleiri minningar í Google myndum</translation>
+<translation id="7444970023873202833">Skoðaðu fleiri minningar í Google-myndum</translation>
 <translation id="7444983668544353857">Slökkva á <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Setja forrit upp sjálfkrafa</translation>
 <translation id="7448664748118305024">Eyða gögnum sem vefsvæði hafa vistað í tækinu þegar þú lokar öllum gluggum</translation>
@@ -8533,7 +8533,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7745554356330788383">Endurhladdu þessari síðu til að nota uppfærðar stillingar „<ph name="EXTENSION_NAME" />“ á þessu vefsvæði</translation>
 <translation id="7745677556280361868">Fjarlægja þetta net á áskriftarsíðu Aðgangspunkts?</translation>
 <translation id="7746045113967198252">Stækkaðu eða minnkaðu atriði á skjánum, þar á meðal texta. Þú getur einnig fundið þetta síðar í „Stillingar &gt; Tæki &gt; Skjáir“.</translation>
-<translation id="7746739418892731373">Þú sérð helstu myndir og myndskeið úr safninu þínu í Google myndum. Þú getur stjórnað því hvaða hápunktar birtast á <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
+<translation id="7746739418892731373">Þú sérð helstu myndir og myndskeið úr safninu þínu í Google-myndum. Þú getur stjórnað því hvaða hápunktar birtast á <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
         <ph name="BREAK" />
         Þú getur stjórnað stillingum þessa spjalds á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
@@ -10057,7 +10057,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8934732568177537184">Halda áfram</translation>
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8940081510938872932">Tölvan er að gera of margt í einu sem stendur. Reyndu aftur síðar.</translation>
-<translation id="8940381019874223173">Úr Google myndum</translation>
+<translation id="8940381019874223173">Úr Google-myndum</translation>
 <translation id="8940888110818450052">Innskráningarkostir</translation>
 <translation id="8941173171815156065">Afturkalla heimildina „<ph name="PERMISSION" />“'</translation>
 <translation id="8941688920560496412">Slökkt er á <ph name="DEVICE_NAME" /></translation>
