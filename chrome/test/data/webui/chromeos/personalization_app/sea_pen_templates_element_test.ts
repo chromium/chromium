@@ -30,14 +30,14 @@ suite('SeaPenTemplatesElementTest', function() {
     seaPenTemplatesElement = initElement(SeaPenTemplatesElement);
     await waitAfterNextRender(seaPenTemplatesElement);
 
-    const templates =
-        seaPenTemplatesElement.shadowRoot!
-            .querySelectorAll<WallpaperGridItemElement>(
-                `${WallpaperGridItemElement.is}[data-sea-pen-image]`);
-    assertEquals(12, templates.length, 'there are 12 templates');
+    const templates = seaPenTemplatesElement.shadowRoot!.querySelectorAll<
+        WallpaperGridItemElement>(
+        `${WallpaperGridItemElement.is}[data-sea-pen-image]:not([hidden])`);
+    assertEquals(9, templates.length, 'there are 9 templates');
+    await waitAfterNextRender(templates[1]!);
     assertEquals(templates[1]!.innerText, 'Minerals');
     templates[1]!.dispatchEvent(new CustomEvent('mouseover', {bubbles: true}));
-    await waitAfterNextRender(seaPenTemplatesElement);
+    await waitAfterNextRender(templates[1]!);
     assertEquals(
         templates[1]!.innerText,
         'A close-up image of\nagate\nwith\nwarm\nhues');
