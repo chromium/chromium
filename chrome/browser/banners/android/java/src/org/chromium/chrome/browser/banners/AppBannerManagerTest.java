@@ -715,7 +715,7 @@ public class AppBannerManagerTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"AppBanners"})
     public void testModalNativeAppBannerCanBeTriggeredMultipleTimesBrowserTab() throws Exception {
         triggerModalBannerMultipleTimes(
@@ -729,7 +729,7 @@ public class AppBannerManagerTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"AppBanners"})
     public void testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
