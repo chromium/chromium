@@ -372,6 +372,14 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   run_loop.Run();
 }
 
+// Test that the Demo Mode Highlight App has a minimum window size of 800 pixels
+// x 600 pixels.
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeAppMinWindowSize) {
+  WaitForTestSystemAppInstall();
+  auto* system_app = GetManager().GetSystemApp(SystemWebAppType::DEMO_MODE);
+  EXPECT_EQ(system_app->GetMinimumWindowSize(), gfx::Size(800, 600));
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     DemoModeAppIntegrationTestBase);
 
