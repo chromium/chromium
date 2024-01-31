@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/google_api_keys.h"
 #include "net/http/http_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,7 +34,7 @@ constexpr char kEmail[] = "test-user@example.com";
 constexpr char16_t kEmail16[] = u"test-user@example.com";
 const char kEssentialSearchURL[] =
     "https://chromeoscompliance-pa.googleapis.com/v1/essentialsearch/"
-    "socscookieheader";
+    "socscookieheader?key=%s";
 }  // namespace
 
 class SocsCookieFetcherConsumerTest
@@ -161,7 +162,9 @@ TEST_F(SocsCookieFetcherTest, FetchSocsCookieSucceed) {
         "cookieHeader": "SOCS=socs_cookie;"
     })";
 
-  url_loader_factory_.AddResponse(kEssentialSearchURL, kValidJsonResponse,
+  std::string essential_search_url =
+      base::StringPrintf(kEssentialSearchURL, google_apis::GetAPIKey().c_str());
+  url_loader_factory_.AddResponse(essential_search_url, kValidJsonResponse,
                                   net::HTTP_OK);
 
   socs_cookie_fetcher_->StartFetching();
