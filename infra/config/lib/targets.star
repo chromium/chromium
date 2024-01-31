@@ -46,12 +46,23 @@ _TARGET_LABEL_MAPPING = nodes.create_unscoped_node_type("target-label-mapping")
 # * project (1)
 #   * created for all mixins
 #   * traversed to generate entries in mixins.pyl
+# * legacy-test (>=0)
+#   * created when a test specifies a mixin in mixins
+#   * traversed to generate the mixins field for a test when generating a
+#     basic suite in test_suites.pyl
+# * legacy-basic-suite-config (>=0)
+#   * created when the config for a test in a basic suite references a mixin
+#   * traversed to generate the mixins field for a test when generating a
+#     basic suite in test_suites.pyl
 # * legacy-matrix-config (>=0)
 #   * created when the matrix config for a basic suite in a matrix compound
 #     suite references a mixin
 #   * traversed to generate the mixins field in test_suites.pyl for the config
 #     for a basic suite in a matrix compound suite
-# TODO(gbeaty) add necessary edges to generate mixins fields in basic suites
+# * legacy-remove-mixin (>=0)
+#   * created when a test specifies a mixin in remove_mixins
+#   * traversed to generate the remove_mixins field for a test when generating a
+#     basic suite in test_suites.pyl
 _TARGET_MIXIN = nodes.create_unscoped_node_type("target-mixin")
 
 # A set of modifications to make when multiply expanding a test in a matrix
@@ -81,9 +92,13 @@ _TARGET_VARIANT = nodes.create_unscoped_node_type("target-variant")
 #   * created by targets.test.gtest_test and targets.tests.isolated_script_test
 #   * traversed when generating details in test_suites.pyl for a test in a basic
 #     suite that references a binary
+# * target-mixin (>=0)
+#   * created when a test specifies a mixin in mixins
+#   * traversed to generate the mixins field for a test when generating a
+#     basic suite in test_suites.pyl
 #
 # Parents:
-# * legacy-basic-suite (>=0)
+# * legacy-basic-suite-config (>=0)
 #   * created when a basic suite references a test
 #   * traversed to generate the details for a test when generating a basic suite
 #     in test_suites.pyl
@@ -95,7 +110,7 @@ _LEGACY_TEST = nodes.create_unscoped_node_type("legacy-test")
 # * targets.legacy_basic_suite
 #
 # Children:
-# * legacy-test (>0)
+# * legacy-basic-suite-config (>0)
 #   * created when a basic suite references a test
 #   * traversed to generate the details for a test when generating a basic suite
 #     in test_suites.pyl
@@ -112,6 +127,51 @@ _LEGACY_TEST = nodes.create_unscoped_node_type("legacy-test")
 #   * created when a matrix compound suite includes a basic suite
 #   * not traversed, created only to ensure the basic suite exists
 _LEGACY_BASIC_SUITE = nodes.create_unscoped_node_type("legacy-basic-suite")
+
+# Modifications to apply to a test included in a basic suite
+#
+# Created by:
+# * targets.legacy_basic_suite
+#
+# Children:
+# * legacy-test (1)
+#   * created when a basic suite references a test
+#   * traversed to generate the details for a test when generating a basic suite
+#     in test_suites.pyl
+# * target-mixin (>=0)
+#   * created when the config for a test in a basic suite references a mixin
+#   * traversed to generate the mixins field for a test when generating a
+#     basic suite in test_suites.pyl
+# * legacy-remove-mixin (>=0)
+#   * created when a test specifies a mixin in remove_mixins
+#   * traversed to generate the remove_mixins field for a test when generating a
+#     basic suite in test_suites.pyl
+#
+# Parents:
+# * legacy-basic-suite (0)
+#   * created when a basic suite references a test
+#   * traversed to generate the details for a test when generating a basic suite
+#     in test_suites.pyl
+_LEGACY_BASIC_SUITE_CONFIG = nodes.create_scoped_node_type("legacy-basic-suite-config", _LEGACY_BASIC_SUITE.kind)
+
+# A mixin to remove from a test included in a basic suite.
+#
+# Created by:
+# * targets.legacy_basic_suite
+#   * created when the config for a test specifies remove_mixins
+#
+# Children:
+# * target-mixin (1)
+#   * created when a test specifies a mixin in remove_mixins
+#   * traversed to generate the remove_mixins field for a test when generating a
+#     basic suite in test_suites.pyl
+#
+# Parents:
+# * legacy-basic-suite-config (>=0)
+#   * created when a test specifies a mixin in remove_mixins
+#   * traversed to generate the remove_mixins field for a test when generating a
+#     basic suite in test_suites.pyl
+_LEGACY_BASIC_SUITE_REMOVE_MIXIN = nodes.create_link_node_type("legacy-remove-mixin", _LEGACY_BASIC_SUITE_CONFIG, _TARGET_MIXIN)
 
 # A compound suite, which is a set of basic suites
 #
@@ -309,8 +369,7 @@ def _basic_suite_test_config(
         script = None,
         binary = None,
         telemetry_test_name = None,
-        args = None,
-        mixins = None):
+        args = None):
     """The details for the test included when included in a basic suite.
 
     When generating test_suites.pyl, these values will be written out
@@ -324,20 +383,21 @@ def _basic_suite_test_config(
         telemetry_test_name: The telemetry test to run. Only applicable
             to telemetry test types.
         args: Arguments to be passed to the test binary.
-        mixins: Mixins to apply when expanding the test.
     """
     return struct(
         script = script,
         binary = binary,
         telemetry_test_name = telemetry_test_name,
-        mixins = mixins,
         args = args,
     )
 
-def _create_legacy_test(*, name, basic_suite_test_config):
-    return _LEGACY_TEST.add(name, props = dict(
+def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
+    test_key = _LEGACY_TEST.add(name, props = dict(
         basic_suite_test_config = basic_suite_test_config,
     ))
+    for m in args.listify(mixins):
+        graph.add_edge(test_key, _TARGET_MIXIN.key(m))
+    return test_key
 
 def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
     key = _TARGET_BUNDLE.add(name, props = dict(
@@ -597,8 +657,8 @@ def _gpu_telemetry_test(
         basic_suite_test_config = _basic_suite_test_config(
             telemetry_test_name = telemetry_test_name,
             args = args,
-            mixins = mixins,
         ),
+        mixins = mixins,
     )
     _create_test_target(
         name = name,
@@ -627,9 +687,9 @@ def _gtest_test(*, name, binary = None, mixins = None, args = None):
         name = name,
         basic_suite_test_config = _basic_suite_test_config(
             binary = binary,
-            mixins = mixins,
             args = args,
         ),
+        mixins = mixins,
     )
 
     # Make sure that the binary actually exists
@@ -662,9 +722,9 @@ def _isolated_script_test(*, name, binary = None, mixins = None, args = None):
         name = name,
         basic_suite_test_config = _basic_suite_test_config(
             binary = binary,
-            mixins = mixins,
             args = args,
         ),
+        mixins = mixins,
     )
 
     # Make sure that the binary actually exists
@@ -1153,15 +1213,24 @@ def _legacy_basic_suite(*, name, tests):
             the test, which must be an instance returned from
             targets.legacy_test_config.
     """
-    key = _LEGACY_BASIC_SUITE.add(name, props = dict(
-        tests = tests,
-    ))
+    key = _LEGACY_BASIC_SUITE.add(name)
     graph.add_edge(keys.project(), key)
     for t, config in tests.items():
         if not config:
             fail("The value for test {} in basic suite {} must be an object returned from targets.legacy_test_config"
                 .format(t, name))
-        graph.add_edge(key, _LEGACY_TEST.key(t))
+        d = {a: getattr(config, a) for a in dir(config)}
+        mixins = d.pop("mixins") or []
+        remove_mixins = d.pop("remove_mixins") or []
+        config_key = _LEGACY_BASIC_SUITE_CONFIG.add(name, t, props = dict(
+            config = struct(**d),
+        ))
+        graph.add_edge(key, config_key)
+        graph.add_edge(config_key, _LEGACY_TEST.key(t))
+        for m in mixins:
+            graph.add_edge(config_key, _TARGET_MIXIN.key(m))
+        for r in remove_mixins:
+            _LEGACY_BASIC_SUITE_REMOVE_MIXIN.link(config_key, _TARGET_MIXIN.key(r))
 
 def _legacy_test_config(
         *,
@@ -1495,6 +1564,9 @@ def _formatter(*, indent_level = 1, indent_size = 2):
         state["indent"] -= indent_size
         add_line(s)
 
+    def lines():
+        return list(state["lines"])
+
     def output():
         return "\n".join(state["lines"])
 
@@ -1502,6 +1574,7 @@ def _formatter(*, indent_level = 1, indent_size = 2):
         add_line = add_line,
         open_scope = open_scope,
         close_scope = close_scope,
+        lines = lines,
         output = output,
     )
 
@@ -1730,12 +1803,6 @@ def _generate_variants_pyl(ctx):
 
 lucicfg.generator(_generate_variants_pyl)
 
-def _is_empty(s):
-    for a in dir(s):
-        if getattr(s, a) != None:
-            return False
-    return True
-
 def _generate_test_suites_pyl(ctx):
     formatter = _formatter()
 
@@ -1745,8 +1812,15 @@ def _generate_test_suites_pyl(ctx):
         formatter.add_line("")
         formatter.open_scope("'{}': {{".format(suite.key.id))
 
-        for test_node in graph.children(suite.key, _LEGACY_TEST.kind, graph.KEY_ORDER):
-            test_name = test_node.key.id
+        for test_config_node in graph.children(suite.key, _LEGACY_BASIC_SUITE_CONFIG.kind, graph.KEY_ORDER):
+            test_name = test_config_node.key.id
+            suite_test_config = test_config_node.props.config
+
+            test_nodes = graph.children(test_config_node.key, _LEGACY_TEST.kind)
+            if len(test_nodes) != 1:
+                fail("internal error: test config {} should have exactly 1 test: {}", test_config_node, test_nodes)
+            test_node = test_nodes[0]
+            target_test_config = test_node.props.basic_suite_test_config
 
             binary_nodes = graph.children(test_node.key, _TARGET_BINARY.kind)
             if len(binary_nodes) > 1:
@@ -1756,44 +1830,44 @@ def _generate_test_suites_pyl(ctx):
                 binary_test_config = binary_nodes[0].props.test_config
             binary_test_config = binary_test_config or _binary_test_config()
 
-            target_test_config = test_node.props.basic_suite_test_config
-            suite_test_config = suite.props.tests[test_node.key.id]
-
-            if _is_empty(binary_test_config) and _is_empty(target_test_config) and _is_empty(suite_test_config):
-                formatter.add_line("'{}': {{}},".format(test_name))
-                continue
-
-            formatter.open_scope("'{}': {{".format(test_name))
+            test_formatter = _formatter(indent_level = 0)
 
             if target_test_config.script:
-                formatter.add_line("'script': '{}',".format(target_test_config.script))
+                test_formatter.add_line("'script': '{}',".format(target_test_config.script))
 
             # This is intentionally transforming binary -> test to remain
             # backwards-compatible with //testing/buildbot
             if target_test_config.binary:
-                formatter.add_line("'test': '{}',".format(target_test_config.binary))
+                test_formatter.add_line("'test': '{}',".format(target_test_config.binary))
             if binary_test_config.results_handler:
-                formatter.add_line("'results_handler': '{}',".format(binary_test_config.results_handler))
+                test_formatter.add_line("'results_handler': '{}',".format(binary_test_config.results_handler))
 
             if target_test_config.telemetry_test_name:
-                formatter.add_line("'telemetry_test_name': '{}',".format(target_test_config.telemetry_test_name))
+                test_formatter.add_line("'telemetry_test_name': '{}',".format(target_test_config.telemetry_test_name))
 
             if suite_test_config.tast_expr:
-                formatter.add_line("'tast_expr': '{}',".format(suite_test_config.tast_expr))
+                test_formatter.add_line("'tast_expr': '{}',".format(suite_test_config.tast_expr))
             if suite_test_config.test_level_retries:
-                formatter.add_line("'test_level_retries': {},".format(suite_test_config.test_level_retries))
+                test_formatter.add_line("'test_level_retries': {},".format(suite_test_config.test_level_retries))
 
-            mixins = args.listify(target_test_config.mixins, suite_test_config.mixins)
+            mixins = []
+            for n in (test_node, test_config_node):
+                # The order that mixins are declared is significant,
+                # DEFINITION_ORDER preserves the order that the edges were added
+                # from the parent to the child
+                for mixin in graph.children(n.key, _TARGET_MIXIN.kind, graph.DEFINITION_ORDER):
+                    mixins.append(mixin.key.id)
             if mixins:
-                formatter.open_scope("'mixins': [")
+                test_formatter.open_scope("'mixins': [")
                 for m in mixins:
-                    formatter.add_line("'{}',".format(m))
-                formatter.close_scope("],")
-            if suite_test_config.remove_mixins:
-                formatter.open_scope("'remove_mixins': [")
-                for m in suite_test_config.remove_mixins:
-                    formatter.add_line("'{}',".format(m))
-                formatter.close_scope("],")
+                    test_formatter.add_line("'{}',".format(m))
+                test_formatter.close_scope("],")
+            remove_mixins = [n.key.id for n in _LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)]
+            if remove_mixins:
+                test_formatter.open_scope("'remove_mixins': [")
+                for m in remove_mixins:
+                    test_formatter.add_line("'{}',".format(m))
+                test_formatter.close_scope("],")
 
             mixin_values = dict(suite_test_config.mixin_values or {})
 
@@ -1809,9 +1883,16 @@ def _generate_test_suites_pyl(ctx):
                 value = getattr(binary_test_config, a)
                 if value:
                     mixin_values.setdefault(a, value)
-            _generate_mixin_values(formatter, mixin_values)
+            _generate_mixin_values(test_formatter, mixin_values)
 
-            formatter.close_scope("},")
+            test_lines = test_formatter.lines()
+            if test_lines:
+                formatter.open_scope("'{}': {{".format(test_name))
+                for l in test_lines:
+                    formatter.add_line(l)
+                formatter.close_scope("},")
+            else:
+                formatter.add_line("'{}': {{}},".format(test_name))
 
         formatter.close_scope("},")
 
