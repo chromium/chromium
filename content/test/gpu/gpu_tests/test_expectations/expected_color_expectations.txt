@@ -104,7 +104,6 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
-crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ chromeos chromeos-board-amd64-generic cros-chrome target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
