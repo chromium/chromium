@@ -107,7 +107,7 @@ void WebContentsObserverProxy::DidStopLoading() {
   GURL url = web_contents()->GetLastCommittedURL();
   bool assume_valid = SetToBaseURLForDataURLIfNeeded(&url);
   // DidStopLoading is the last event we should get.
-  base_url_of_last_started_data_url_ = GURL::EmptyGURL();
+  base_url_of_last_started_data_url_ = GURL();
   Java_WebContentsObserverProxy_didStopLoading(
       env, java_observer_, url::GURLAndroid::FromNativeGURL(env, url),
       assume_valid);

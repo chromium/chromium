@@ -789,10 +789,10 @@ void PushMessagingManager::GetSubscriptionInfo(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingService* push_service = GetService();
   if (!push_service) {
-    std::move(callback).Run(
-        false /* is_valid */, GURL::EmptyGURL() /* endpoint */,
-        std::nullopt /* expiration_time */, std::vector<uint8_t>() /* p256dh */,
-        std::vector<uint8_t>() /* auth */);
+    std::move(callback).Run(false /* is_valid */, GURL() /* endpoint */,
+                            std::nullopt /* expiration_time */,
+                            std::vector<uint8_t>() /* p256dh */,
+                            std::vector<uint8_t>() /* auth */);
     return;
   }
 

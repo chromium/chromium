@@ -398,7 +398,7 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
   // |resource_url| of the requested resource as the key. Return an empty GURL
   // as the second key.
   if (!process_lock.is_locked_to_site()) {
-    return GURL::EmptyGURL();
+    return GURL();
   }
 
   // Case 2: Don't cache the code corresponding to opaque origins. The same

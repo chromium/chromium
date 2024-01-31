@@ -596,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseInitialRFHInRestoredTab) {
   // Create a new shell for session restore. At this point, since we haven't
   // loaded anything yet, the restored shell's initial RFH should still be in an
   // unassigned SiteInstance and an unused process.
-  Shell* restore_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* restore_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                                GURL(), nullptr, gfx::Size());
   WebContentsImpl* restore_contents =
       static_cast<WebContentsImpl*>(restore_shell->web_contents());
   RenderFrameHostWrapper restore_rfh(restore_contents->GetPrimaryMainFrame());

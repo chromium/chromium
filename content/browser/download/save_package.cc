@@ -276,7 +276,7 @@ GURL SavePackage::GetUrlToBeSaved(RenderFrameHost* main_frame) {
   // be different (like having "view-source:" on the front).
   NavigationEntry* visible_entry =
       rfh->frame_tree()->controller().GetVisibleEntry();
-  return visible_entry ? visible_entry->GetURL() : GURL::EmptyGURL();
+  return visible_entry ? visible_entry->GetURL() : GURL();
 }
 
 void SavePackage::Cancel(bool user_action, bool cancel_download_item) {

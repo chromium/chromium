@@ -109,8 +109,8 @@ void MessagePortProvider::PostMessageToFrame(
   for (size_t i = 0; i < ports.size(); ++i)
     descriptors.push_back(ports[i].PassPort());
   PostMessageToFrameInternal(page, source_origin,
-                             target_origin.value_or(base::EmptyString16()),
-                             data, std::move(descriptors));
+                             target_origin.value_or(std::u16string()), data,
+                             std::move(descriptors));
 }
 #endif
 
