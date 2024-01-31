@@ -639,11 +639,10 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   EXPECT_CALL(pdm(), AddObserver).Times(0);
   EXPECT_CALL(pdm(), UpdateProfile).Times(0);
   // The Autofill popup must be reopened when editor dialog is closed.
-  EXPECT_CALL(
-      driver(),
-      RendererShouldTriggerSuggestions(
-          queried_form_triggering_field_id_,
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
+                            queried_form_triggering_field_id_,
+                            AutofillSuggestionTriggerSource::
+                                kShowPromptAfterDialogClosedNonManualFallback));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
@@ -671,11 +670,10 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   EXPECT_CALL(pdm(), AddObserver(&external_delegate()));
   EXPECT_CALL(pdm(), UpdateProfile(profile));
   // The Autofill popup must be reopened when editor dialog is closed.
-  EXPECT_CALL(
-      driver(),
-      RendererShouldTriggerSuggestions(
-          queried_form_triggering_field_id_,
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
+                            queried_form_triggering_field_id_,
+                            AutofillSuggestionTriggerSource::
+                                kShowPromptAfterDialogClosedNonManualFallback));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
@@ -790,11 +788,10 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
   EXPECT_CALL(pdm(), AddObserver).Times(0);
   EXPECT_CALL(pdm(), RemoveByGUID).Times(0);
   // The Autofill popup must be reopened when the delete dialog is closed.
-  EXPECT_CALL(
-      driver(),
-      RendererShouldTriggerSuggestions(
-          queried_form_triggering_field_id_,
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
+                            queried_form_triggering_field_id_,
+                            AutofillSuggestionTriggerSource::
+                                kShowPromptAfterDialogClosedNonManualFallback));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
 
@@ -820,11 +817,10 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
   EXPECT_CALL(pdm(), AddObserver(&external_delegate()));
   EXPECT_CALL(pdm(), RemoveByGUID(profile.guid()));
   // The Autofill popup must be reopened when the delete dialog is closed.
-  EXPECT_CALL(
-      driver(),
-      RendererShouldTriggerSuggestions(
-          queried_form_triggering_field_id_,
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
+                            queried_form_triggering_field_id_,
+                            AutofillSuggestionTriggerSource::
+                                kShowPromptAfterDialogClosedNonManualFallback));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
 
@@ -2327,7 +2323,8 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
 
 TEST_F(AutofillExternalDelegateUnitTest,
        ShouldNotShowAutocompleteSuggestionAfterDialogIsClosed) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+  IssueOnQuery(AutofillSuggestionTriggerSource::
+                   kShowPromptAfterDialogClosedNonManualFallback);
 
   EXPECT_CALL(client(), ShowAutofillPopup).Times(0);
 

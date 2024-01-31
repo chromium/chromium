@@ -599,7 +599,9 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by selecting the Autofill password manager manual
   // fallback entry from the Chrome context menu.
   kManualFallbackPasswords,
-  // Suggestions triggered by the user closing a dialog after performing some
-  // action.
-  kShowPromptAfterDialogClosed,
+  // Suggestions are triggered after the user the user closed a dialog. For
+  // example, this can be profile edit or delete dialog. This trigger source
+  // is used only if the suggestions were triggered manually via the Chrome
+  // context menu.
+  kShowPromptAfterDialogClosedNonManualFallback,
 };

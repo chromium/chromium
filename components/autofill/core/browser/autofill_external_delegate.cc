@@ -85,7 +85,8 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessory;
@@ -242,8 +243,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   bool has_autofill_suggestions = base::ranges::any_of(
       input_suggestions, IsAutofillAndFirstLayerSuggestionId,
       &Suggestion::popup_item_id);
-  if (trigger_source_ ==
-          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed &&
+  if (trigger_source_ == AutofillSuggestionTriggerSource::
+                             kShowPromptAfterDialogClosedNonManualFallback &&
       !has_autofill_suggestions) {
     // User changed or deleted the only Autofill profile shown in the popup,
     // avoid showing any other suggestions in this case.
@@ -934,7 +935,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
       /*user_saved_changes=*/false);
   manager_->driver().RendererShouldTriggerSuggestions(
       query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+      AutofillSuggestionTriggerSource::
+          kShowPromptAfterDialogClosedNonManualFallback);
 }
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
@@ -951,14 +953,16 @@ void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
   }
   manager_->driver().RendererShouldTriggerSuggestions(
       query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+      AutofillSuggestionTriggerSource::
+          kShowPromptAfterDialogClosedNonManualFallback);
 }
 
 void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
   pdm_observation_.Reset();
   manager_->driver().RendererShouldTriggerSuggestions(
       query_field_.global_id(),
-      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+      AutofillSuggestionTriggerSource::
+          kShowPromptAfterDialogClosedNonManualFallback);
 }
 
 void AutofillExternalDelegate::OnCreditCardScanned(
