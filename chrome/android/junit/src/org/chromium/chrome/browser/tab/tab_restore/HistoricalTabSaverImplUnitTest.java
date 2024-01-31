@@ -93,8 +93,7 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
-        byte[] bytes = new byte[0];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer buf = ByteBuffer.allocateDirect(0);
         verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, -1);
     }
 
@@ -104,8 +103,7 @@ public class HistoricalTabSaverImplUnitTest {
      */
     @Test
     public void testCreateHistoricalTab_FromGroup_NonNullBuffer() {
-        byte[] bytes = new byte[3];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer buf = ByteBuffer.allocateDirect(3);
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
@@ -126,8 +124,7 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));
 
-        byte[] bytes = new byte[0];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer buf = ByteBuffer.allocateDirect(0);
         verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, -1);
     }
 
@@ -137,8 +134,7 @@ public class HistoricalTabSaverImplUnitTest {
      */
     @Test
     public void testCreateHistoricalTab_FromBulk_NonNullBuffer() {
-        byte[] bytes = new byte[3];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer buf = ByteBuffer.allocateDirect(3);
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 

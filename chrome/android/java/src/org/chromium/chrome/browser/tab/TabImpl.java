@@ -1432,9 +1432,9 @@ class TabImpl implements Tab {
     private ByteBuffer getWebContentsStateByteBuffer() {
         // Return a temp byte buffer if the state is null.
         if (mWebContentsState == null) {
-            byte[] bytes = new byte[0];
-            return ByteBuffer.wrap(bytes);
+            return ByteBuffer.allocateDirect(0);
         }
+        assert mWebContentsState.buffer().isDirect();
         return mWebContentsState.buffer();
     }
 
