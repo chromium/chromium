@@ -963,28 +963,29 @@ FindBarView::FindBarView(FindBarHost* host)
 
 |||---|||
 
-## Don't invoke Layout() directly
+## Don't invoke DeprecatedLayoutImmediately()
 
-**Avoid direct calls to `Layout()`.**
+**Avoid calls to `DeprecatedLayoutImmediately()`.**
 These are typically used for three purposes:
 
-1.  *Calling `Layout()` on `this`, when something that affects layout has
-changed.* This forces a synchronous layout, which can lead to needless
-work (e.g. if several sequential changes each trigger layout). Use
+1.  *Calling `DeprecatedLayoutImmediately()` on `this`, when something that
+affects layout has changed.* This forces a synchronous layout, which can lead to
+needless work (e.g. if several sequential changes each trigger layout). Use
 asynchronous layout\* instead. In many cases (such as
 [the preferred size changing][] or
 [a child needing layout][],
 a `View` will automatically mark itself as needing layout; when necessary, call
 [`InvalidateLayout()`][] to mark it manually.
 
-1.  *Calling `Layout()` or `InvalidateLayout()` on some `View` to notify it
-that something affecting its layout has changed.* Instead, ensure that
-`View` is notified of the underlying change (via specific method overrides or
-plumbing from a model object), and then invalidates its own layout when needed.
+1.  *Calling `DeprecatedLayoutImmediately()` or `InvalidateLayout()` on some
+`View` to notify it that something affecting its layout has changed.* Instead,
+ensure that `View` is notified of the underlying change (via specific method
+overrides or plumbing from a model object), and then invalidates its own layout
+when needed.
 
-1.  *Calling `Layout()` on some `View` to "ensure it's up to date" before
-reading some layout-related property off it.* Instead, plumb any relevant
-events to the current object, then handle them directly (e.g. override
+1.  *Calling `DeprecatedLayoutImmediately()` on some `View` to "ensure it's up
+to date" before reading some layout-related property off it.* Instead, plumb any
+relevant events to the current object, then handle them directly (e.g. override
 [`ChildPreferredSizeChanged()`][] or use a [`ViewObserver`][]
 to monitor the target `View`; then update local state as necessary and trigger
 handler methods).
@@ -1015,9 +1016,9 @@ calls to (possibly many) tests, and this is not a sign that the change is wrong.
 
 **Avoid**
 
-[Current code][5] makes a direct and unnecessary call to Layout()
+[Current code][5] makes an unnecessary call to DeprecatedLayoutImmediately()
 
-[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=349;drc=18ca2de542bfa53802639dc5c85762b5e7b5bef6
+[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=283;drc=7db01ff4534c04419f3fa10d75e0b97b0a5a4f99
 
 #####
 
@@ -1035,7 +1036,7 @@ A better approach would be to call InvalidateLayout() and update the necessary t
 void CastDialogView::PopulateScrollView(
     const std::vector<UIMediaSink>& sinks) {
   ...
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 TEST_F(CastDialogViewTest, PopulateDialog) {
@@ -1223,7 +1224,7 @@ void TimeView::UpdateClockLayout(
     layout->AddPaddingRow(
         0, kVerticalClockMinutesTopOffset);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 ```
 
