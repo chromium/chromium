@@ -831,7 +831,7 @@ GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
     TemplateURL* template_url,
     const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
   if (!template_url) {
-    return GURL::EmptyGURL();
+    return GURL();
   }
   return GURL(template_url->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service_->search_terms_data()));

@@ -312,7 +312,7 @@ FingerprintDataLoader::FingerprintDataLoader(
   content::GetDeviceService().BindGeolocationContext(
       geolocation_context_.BindNewPipeAndPassReceiver());
   geolocation_context_->BindGeolocation(
-      geolocation_.BindNewPipeAndPassReceiver(), GURL::EmptyGURL());
+      geolocation_.BindNewPipeAndPassReceiver(), GURL());
   geolocation_->SetHighAccuracy(false);
   geolocation_->QueryNextPosition(
       base::BindOnce(&FingerprintDataLoader::OnGotGeoposition,

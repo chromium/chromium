@@ -495,7 +495,7 @@ void ShoppingServiceHandler::GetParentBookmarkFolderNameForCurrentUrl(
   const GURL current_url = delegate_->GetCurrentTabUrl().value();
   std::move(callback).Run(
       commerce::GetBookmarkParentName(bookmark_model_, current_url)
-          .value_or(base::EmptyString16()));
+          .value_or(std::u16string()));
 }
 
 void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {

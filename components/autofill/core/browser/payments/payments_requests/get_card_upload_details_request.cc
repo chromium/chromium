@@ -134,7 +134,7 @@ void GetCardUploadDetailsRequest::ParseResponse(
       response.FindString("supported_card_bin_ranges_string");
   supported_card_bin_ranges_ = ParseSupportedCardBinRangesString(
       supported_card_bin_ranges_string ? *supported_card_bin_ranges_string
-                                       : base::EmptyString());
+                                       : std::string());
 }
 
 bool GetCardUploadDetailsRequest::IsResponseComplete() {

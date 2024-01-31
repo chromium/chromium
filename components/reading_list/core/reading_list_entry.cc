@@ -275,7 +275,7 @@ void ReadingListEntry::SetDistilledState(DistillationState distilled_state) {
 
   distilled_state_ = distilled_state;
   distilled_path_ = base::FilePath();
-  distilled_url_ = GURL::EmptyGURL();
+  distilled_url_ = GURL();
   distillation_size_ = 0;
   distillation_time_us_ = 0;
 }

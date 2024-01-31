@@ -285,9 +285,8 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
   // referrer sanitizing and origin referrers. Note that this could potentially
   // be inaccurate if the opener has since navigated.
   content::RenderFrameHost* opener = web_contents()->GetOpener();
-  const GURL& opener_url = !has_navigated_ && opener
-                               ? opener->GetLastCommittedURL()
-                               : GURL::EmptyGURL();
+  const GURL& opener_url =
+      !has_navigated_ && opener ? opener->GetLastCommittedURL() : GURL();
   const GURL& currently_committed_url =
       primary_page_ ? primary_page_->url() : opener_url;
 

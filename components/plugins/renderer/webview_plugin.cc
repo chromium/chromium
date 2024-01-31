@@ -277,7 +277,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       *agent_group_scheduler_,
-      /*session_storage_namespace_id=*/base::EmptyString(),
+      /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt,
       blink::BrowsingContextGroupInfo::CreateUnique());
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
