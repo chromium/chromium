@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 
 namespace blink {
@@ -30,6 +32,34 @@ bool AccessibilityMediaControl::InternalSetAccessibilityFocusAction() {
 
 bool AccessibilityMediaControl::InternalClearAccessibilityFocusAction() {
   MediaControlElementsHelper::NotifyMediaControlAccessibleBlur(GetElement());
+  return true;
+}
+
+bool AccessibilityMediaControl::OnNativeSetValueAction(const String& value) {
+  // We should only execute this action on a kInputRange.
+  auto* input = DynamicTo<HTMLInputElement>(GetNode());
+  if (!input ||
+      input->FormControlType() != mojom::FormControlType::kInputRange) {
+    return AXNodeObject::OnNativeSetValueAction(value);
+  }
+
+  if (input->Value() == value) {
+    return false;
+  }
+
+  input->SetValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+
+  // Fire change event manually, as SliderThumbElement::StopDragging does.
+  input->DispatchFormControlChangeEvent();
+
+  // Dispatching an event could result in changes to the document, like
+  // this AXObject becoming detached.
+  if (IsDetached()) {
+    return false;
+  }
+
+  AXObjectCache().HandleValueChanged(GetNode());
+
   return true;
 }
 
