@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -15,7 +18,6 @@ import androidx.test.internal.runner.listener.InstrumentationResultPrinter;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -67,7 +69,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Custom  {@link ActivityTestRule} for test using  {@link ChromeActivity}.
+ * Custom {@link BaseActivityTestRule} for test using {@link ChromeActivity}.
  *
  * @param <T> The {@link Activity} class under test.
  */
@@ -215,10 +217,10 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        Assert.assertTrue(waitForDeferredStartup());
+        assertTrue(waitForDeferredStartup());
 
-        Assert.assertNotNull(tab);
-        Assert.assertNotNull(tab.getView());
+        assertNotNull(tab);
+        assertNotNull(tab.getView());
     }
 
     public boolean waitForDeferredStartup() {
@@ -236,7 +238,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public void launchActivity(Intent startIntent) {
         // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
         // startIntent launch behavior.
-        Assert.assertNotNull(startIntent);
+        assertNotNull(startIntent);
         Features.getInstance().ensureCommandLineIsUpToDate();
         super.launchActivity(startIntent);
     }
@@ -306,7 +308,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      *                       DEFAULT_PAGE_LOAD.
      */
     public int loadUrlInTab(String url, int pageTransition, Tab tab, long secondsToWait) {
-        Assert.assertNotNull("Cannot load the URL in a null tab", tab);
+        assertNotNull("Cannot load the URL in a null tab", tab);
         final AtomicInteger result = new AtomicInteger();
 
         ChromeTabUtils.waitForTabPageLoaded(
@@ -365,7 +367,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public Tab loadUrlInNewTab(
             final String url, final boolean incognito, final @TabLaunchType int launchType) {
-        Tab tab = null;
+        Tab tab;
         try {
             tab =
                     TestThreadUtils.runOnUiThreadBlocking(
@@ -434,8 +436,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                     @Override
                     public List<InfoBar> call() {
                         Tab currentTab = getActivity().getActivityTab();
-                        Assert.assertNotNull(currentTab);
-                        Assert.assertNotNull(InfoBarContainer.get(currentTab));
+                        assertNotNull(currentTab);
+                        assertNotNull(InfoBarContainer.get(currentTab));
                         return InfoBarContainer.get(currentTab).getInfoBarsForTesting();
                     }
                 });
