@@ -576,7 +576,7 @@ def VerifyZStdSupport():
     print('OK')
 
 
-def DownloadDebianSysroot(platform_name):
+def DownloadDebianSysroot(platform_name, skip_download):
   # Download sysroots. This uses basically Chromium's sysroots, but with
   # minor changes:
   # - glibc version bumped to 2.18 to make __cxa_thread_atexit_impl
@@ -602,7 +602,8 @@ def DownloadDebianSysroot(platform_name):
   output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
   U = toolchain_bucket + hashes[platform_name] + '/' + toolchain_name + \
       '.tar.xz'
-  DownloadAndUnpack(U, output)
+  if not skip_download:
+    DownloadAndUnpack(U, output)
 
   return output
 
@@ -877,7 +878,8 @@ def main():
     cc = args.host_cc
     cxx = args.host_cxx
   else:
-    DownloadPinnedClang()
+    if not args.skip_checkout:
+      DownloadPinnedClang()
     if sys.platform == 'win32':
       cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
@@ -895,10 +897,10 @@ def main():
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform.startswith('linux'):
-    sysroot_amd64 = DownloadDebianSysroot('amd64')
-    sysroot_i386 = DownloadDebianSysroot('i386')
-    sysroot_arm = DownloadDebianSysroot('arm')
-    sysroot_arm64 = DownloadDebianSysroot('arm64')
+    sysroot_amd64 = DownloadDebianSysroot('amd64', args.skip_checkout)
+    sysroot_i386 = DownloadDebianSysroot('i386', args.skip_checkout)
+    sysroot_arm = DownloadDebianSysroot('arm', args.skip_checkout)
+    sysroot_arm64 = DownloadDebianSysroot('arm64', args.skip_checkout)
 
     # Add the sysroot to base_cmake_args.
     if platform.machine() == 'aarch64':
