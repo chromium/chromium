@@ -17545,6 +17545,7 @@ from previous Chrome versions.
   <int value="-1408800976" label="LaunchWindowsNativeHostsDirectly:enabled"/>
   <int value="-1408696172" label="CompositeBGColorAnimation:enabled"/>
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
+  <int value="-1408292942" label="WebAppEnableAppTitle:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
@@ -19619,6 +19620,7 @@ from previous Chrome versions.
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-444758854" label="CellularCarrierLock:disabled"/>
+  <int value="-444307785" label="WebAppEnableAppTitle:disabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
   <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>

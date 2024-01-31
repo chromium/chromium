@@ -584,6 +584,9 @@ extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 extern const char kDesktopPWAsAdditionalWindowingControlsName[];
 extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
 
+extern const char kDesktopPWAsAppTitleName[];
+extern const char kDesktopPWAsAppTitleDescription[];
+
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 
