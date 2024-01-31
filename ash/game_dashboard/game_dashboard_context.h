@@ -55,9 +55,7 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
     return toolbar_snap_location_;
   }
 
-  const std::u16string& recording_duration() const {
-    return recording_duration_;
-  }
+  const std::u16string& GetRecordingDuration() const;
 
   // Reassigns the new `toolbar_snap_location_` and performs an animation as the
   // toolbar moves to its new location.

@@ -41,7 +41,7 @@ const base::RepeatingTimer& GameDashboardContextTestApi::GetRecordingTimer()
 
 const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
     const {
-  return context_->recording_duration_;
+  return context_->GetRecordingDuration();
 }
 
 GameDashboardWidget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()

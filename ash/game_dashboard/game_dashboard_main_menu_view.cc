@@ -708,7 +708,7 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
           ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_RECORDING_TITLE
           : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE));
   if (is_recording_game_window) {
-    record_game_tile_->SetSubLabel(context_->recording_duration());
+    record_game_tile_->SetSubLabel(context_->GetRecordingDuration());
   }
   record_game_tile_->SetSubLabelVisibility(is_recording_game_window);
   record_game_tile_->SetToggled(is_recording_game_window);
