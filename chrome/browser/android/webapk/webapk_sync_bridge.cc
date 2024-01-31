@@ -439,11 +439,19 @@ std::optional<syncer::ModelError> WebApkSyncBridge::ApplyIncrementalSyncChanges(
 
 void WebApkSyncBridge::OnWebApkUsed(
     std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
   AddOrModifyAppInSync(
       WebApkProtoFromSpecifics(app_specifics.get(), true /* installed */));
 }
 
 void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
   webapps::AppId app_id = ManifestIdStrToAppId(manifest_id);
   WebApkProto* app = GetAppByIdMutable(registry_, app_id);
 
