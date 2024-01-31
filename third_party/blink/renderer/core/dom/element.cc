@@ -665,15 +665,16 @@ Node* Element::Clone(Document& factory,
                      NodeCloningData& data,
                      ContainerNode* append_to,
                      ExceptionState& append_exception_state) const {
+  Element* copy;
   if (!data.Has(CloneOption::kIncludeDescendants)) {
-    Element* copy = &CloneWithoutChildren(data, &factory);
+    copy = &CloneWithoutChildren(data, &factory);
     if (append_to) {
       append_to->AppendChild(copy, append_exception_state);
     }
-    return copy;
+  } else {
+    copy =
+        &CloneWithChildren(data, &factory, append_to, append_exception_state);
   }
-  Element* copy =
-      &CloneWithChildren(data, &factory, append_to, append_exception_state);
   // 7. If node is a shadow host whose shadow root’s clonable is true:
   auto* shadow_root = GetShadowRoot();
   if (!shadow_root) {
@@ -685,9 +686,9 @@ Node* Element::Clone(Document& factory,
        data.Has(CloneOption::kIncludeAllShadowRoots))) {
     if (shadow_root->GetType() == ShadowRootType::kOpen ||
         shadow_root->GetType() == ShadowRootType::kClosed) {
-      // 7.1 Run attach a shadow root with shadow host equal to copy, mode equal
-      // to node’s shadow root’s mode, and delegates focus equal to node’s
-      // shadow root’s delegates focus.
+      // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
+      // true, node’s shadow root’s delegates focus, and node’s shadow root’s
+      // slot assignment.
       // TODO(crbug.com/1521128): it seems like the `registry` parameter should
       // not always be nullptr.
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
@@ -698,22 +699,23 @@ Node* Element::Clone(Document& factory,
           shadow_root->serializable(),
           /*clonable*/ true);
 
-      // 7.2 If node’s shadow root’s "is declarative shadow root" is true, then
-      // set copy’s shadow root’s "is declarative shadow root" property to true.
+      // 7.2 Set copy’s shadow root’s declarative to node’s shadow root’s
+      // declarative.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
           shadow_root->IsDeclarativeShadowRoot());
 
-      // 7.NEW If node’s shadow root’s "is available to element internals" is
-      // true, then set copy’s shadow root’s "is available to element internals"
-      // property to true.
+      // This step is not currently spec'd.
       cloned_shadow_root.SetAvailableToElementInternals(
           shadow_root->IsAvailableToElementInternals());
 
-      // 7.3 If the clone children flag is set, clone all the children of node’s
-      // shadow root and append them to copy’s shadow root, with document as
-      // specified, the clone children flag being set, and the clone shadows
-      // flag being set.
-      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, data);
+      // 7.3 If the clone children flag is set, then for each child child of
+      // node’s shadow root, in tree order: append the result of cloning child
+      // with document and the clone children flag set, to copy’s shadow root.
+      NodeCloningData shadow_data{CloneOption::kIncludeDescendants};
+      if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+        shadow_data.Put(CloneOption::kIncludeAllShadowRoots);
+      }
+      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, shadow_data);
     }
   }
   return copy;
