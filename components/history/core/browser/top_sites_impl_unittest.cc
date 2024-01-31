@@ -436,13 +436,11 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
 
     ASSERT_EQ(1, querier.number_of_callbacks());
 
-    // 2 top sites + 2 prepopulated URLs.
-    // Note that even with the repeatable queries feature disabled, up to 1
-    // search results page URL may be shown in the top sites.
-    ASSERT_EQ(2u + GetPrepopulatedPages().size(), querier.urls().size());
-    ASSERT_NO_FATAL_FAILURE(ContainsPrepopulatePages(querier, 2));
-    EXPECT_EQ(srp_2, querier.urls()[0].url);
-    EXPECT_EQ(news, querier.urls()[1].url);
+    // 1 top site + 2 prepopulated URLs.
+    // Note that search results page URLs are filtered out from the top sites.
+    ASSERT_EQ(1u + GetPrepopulatedPages().size(), querier.urls().size());
+    ASSERT_NO_FATAL_FAILURE(ContainsPrepopulatePages(querier, 1));
+    EXPECT_EQ(news, querier.urls()[0].url);
 
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);

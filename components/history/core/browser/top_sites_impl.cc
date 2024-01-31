@@ -506,23 +506,23 @@ void TopSitesImpl::SetTopSitesFromHistory(
     }
   }
 
-  auto most_visited_sites = std::move(*request->sites);
+  // Generate the final list of the most visited sites arranged in descending
+  // order of their scores. Exclude any site that is the search results page.
+  MostVisitedURLList most_visited_sites = std::move(*request->sites);
+  base::EraseIf(most_visited_sites, [&](const auto& site) {
+    return (template_url_service_ &&
+            template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
+                site.url)) ||
+           IsBlocked(site.url);
+  });
+  if (most_visited_sites.size() > kTopSitesNumber) {
+    most_visited_sites.resize(kTopSitesNumber);
+  }
 
   // If there are no more queries left, there is nothing left to do.
   if (most_repeated_queries.empty()) {
     SetTopSites(std::move(most_visited_sites), CALL_LOCATION_FROM_OTHER_PLACES);
     return;
-  }
-
-  // Generate the final list of the most visited sites arranged in descending
-  // order of their scores. Exclude any site that is the search results page.
-  base::EraseIf(most_visited_sites, [&](const auto& site) {
-    return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
-               site.url) ||
-           IsBlocked(site.url);
-  });
-  if (most_visited_sites.size() > kTopSitesNumber) {
-    most_visited_sites.resize(kTopSitesNumber);
   }
 
   // If there are no more sites left, there is nothing left to do.
