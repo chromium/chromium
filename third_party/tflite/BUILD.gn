@@ -615,6 +615,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/optional_debug_tools.cc",
     "src/tensorflow/lite/profiling/memory_info.cc",
     "src/tensorflow/lite/profiling/memory_info.h",
+    "src/tensorflow/lite/profiling/memory_usage_monitor.cc",
+    "src/tensorflow/lite/profiling/memory_usage_monitor.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
     "src/tensorflow/lite/profiling/root_profiler.cc",
