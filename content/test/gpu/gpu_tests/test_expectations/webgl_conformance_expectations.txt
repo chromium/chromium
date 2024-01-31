@@ -626,9 +626,8 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-crbug.com/1445548 [ android-pixel-6 android-t arm passthrough ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
-
-crbug.com/1522968 [ android-pixel-6 android-u ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
+crbug.com/1495573 [ android-pixel-6 arm passthrough ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
+crbug.com/1495573 [ android-pixel-6 arm passthrough ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
 
 ## Misc failures ##
 
