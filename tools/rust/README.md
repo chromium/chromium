@@ -112,6 +112,8 @@ To fix the error:
   more sources to the GN rules than is necessary in this case. It's best to
   point to the directory of the module root (where the `lib.rs` or `mod.rs`
   is located).
+* Download the roll CL (on Gerrit, click on the 3 dots in the upper right
+  corner and click on "Download patch").
 * Find the failing build target crate's rules in
   `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
   is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
@@ -122,6 +124,12 @@ To fix the error:
   * For `inputs`, add the path to a `extra_input_roots` list in the crate's
     rules. For the above example, we could add
     `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
+* With the roll CL checked out, run `gclient sync`.
+*** note
+NOTE: `gclient sync` will download the version of the rust toolchain from the
+roll CL. In order for this to work, the upload_rust bots should've completed and
+`copy_staging_to_prod_and_goma.sh should've been run.
+***
 * Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
   using the updated config.
 
