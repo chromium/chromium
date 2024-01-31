@@ -130,6 +130,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
 GPU_EXPORT BASE_DECLARE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid);
 #endif
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();

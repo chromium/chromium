@@ -487,6 +487,12 @@ BASE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// On platforms with delegated compositing, try to release overlays later, when
+// no new frames are swapped.
+BASE_FEATURE(kDeferredOverlaysRelease,
+             "DeferredOverlayRelease",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
   // GLES3 is not supported on emulators with passthrough. crbug.com/1423712

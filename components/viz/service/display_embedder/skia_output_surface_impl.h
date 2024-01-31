@@ -226,6 +226,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
                               const gfx::Size& pixel_size,
                               gfx::GpuFenceHandle release_fence);
+  void ReleaseOverlays(const std::vector<gpu::Mailbox> released_overlays);
   void BufferPresented(const gfx::PresentationFeedback& feedback);
   void AddChildWindowToBrowser(gpu::SurfaceHandle child_window);
 

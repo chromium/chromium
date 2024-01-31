@@ -182,26 +182,6 @@ class TestMetalSkiaGraphiteImageRepresentation
 
 }  // namespace
 
-class TestOverlayImageRepresentation : public OverlayImageRepresentation {
- public:
-  TestOverlayImageRepresentation(SharedImageManager* manager,
-                                 SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker)
-      : OverlayImageRepresentation(manager, backing, tracker) {}
-
-  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
-    return true;
-  }
-  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBufferFenceSync() override {
-    return nullptr;
-  }
-#endif
-};
-
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                                    viz::SharedImageFormat format,
                                    const gfx::Size& size,
@@ -368,5 +348,26 @@ std::unique_ptr<OverlayImageRepresentation> TestImageBacking::ProduceOverlay(
   return std::make_unique<TestOverlayImageRepresentation>(manager, this,
                                                           tracker);
 }
+
+bool TestOverlayImageRepresentation::BeginReadAccess(
+    gfx::GpuFenceHandle& acquire_fence) {
+  return true;
+}
+
+void TestOverlayImageRepresentation::EndReadAccess(
+    gfx::GpuFenceHandle release_fence) {}
+
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+TestOverlayImageRepresentation::GetAHardwareBufferFenceSync() {
+  return nullptr;
+}
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+bool TestOverlayImageRepresentation::IsInUseByWindowServer() const {
+  return static_cast<TestImageBacking*>(backing())->in_use_by_window_server();
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace gpu

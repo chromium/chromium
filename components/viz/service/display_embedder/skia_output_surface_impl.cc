@@ -1185,6 +1185,8 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       &SkiaOutputSurfaceImpl::ScheduleOrRetainGpuTask, weak_ptr_);
   auto add_child_window_to_browser_callback = base::BindRepeating(
       &SkiaOutputSurfaceImpl::AddChildWindowToBrowser, weak_ptr_);
+  auto release_overlays_callback =
+      base::BindRepeating(&SkiaOutputSurfaceImpl::ReleaseOverlays, weak_ptr_);
 
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
       dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
@@ -1192,7 +1194,8 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
       std::move(schedule_gpu_task), std::move(vsync_callback_runner),
-      std::move(add_child_window_to_browser_callback));
+      std::move(add_child_window_to_browser_callback),
+      std::move(release_overlays_callback));
   if (!impl_on_gpu_) {
     *result = false;
     return;
@@ -1363,6 +1366,14 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     client_->DidReceiveReleasedOverlays(params.released_overlays);
   if (needs_swap_size_notifications_)
     client_->DidSwapWithSize(pixel_size);
+}
+
+void SkiaOutputSurfaceImpl::ReleaseOverlays(
+    std::vector<gpu::Mailbox> released_overlays) {
+  if (!released_overlays.empty()) {
+    DCHECK(!client_);
+    client_->DidReceiveReleasedOverlays(released_overlays);
+  }
 }
 
 void SkiaOutputSurfaceImpl::BufferPresented(

@@ -147,11 +147,13 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageRepresentationFactory* representation_factory,
     gpu::MemoryTracker* memory_tracker,
-    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback)
+    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
+    const ReleaseOverlaysCallback& release_overlays_callback)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
                        deps->GetSharedContextState()->graphite_context(),
                        memory_tracker,
-                       did_swap_buffer_complete_callback),
+                       did_swap_buffer_complete_callback,
+                       release_overlays_callback),
       presenter_(std::move(presenter)),
       workarounds_(deps->GetGpuDriverBugWorkarounds()),
       context_state_(deps->GetSharedContextState()),
@@ -395,6 +397,7 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
 void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   DCHECK(pending_overlay_mailboxes_.empty());
+  has_overlays_scheduled_but_swap_not_finished_ = true;
 
   // The fence that will be created for current ScheduleOverlays. This fence is
   // required and passed with overlay data iff DelegatedCompositing is enabled
@@ -525,6 +528,9 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     const base::WeakPtr<OutputPresenter::Image>& image,
     std::vector<gpu::Mailbox> overlay_mailboxes,
     gfx::SwapCompletionResult result) {
+  last_swap_time_ = swap_time_clock_->NowTicks();
+  has_overlays_scheduled_but_swap_not_finished_ = false;
+
   // |overlay_mailboxes| are for overlays used by previous frame, they should
   // have been replaced.
   for (const auto& mailbox : overlay_mailboxes) {
@@ -565,15 +571,18 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     }
   }
 
+  bool has_in_use_overlays = false;
   [[maybe_unused]] std::vector<gpu::Mailbox> released_overlays;
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
-  base::EraseIf(overlays_, [&result, &released_overlays](auto& overlay) {
+  base::EraseIf(overlays_, [&result, &has_in_use_overlays,
+                            &released_overlays](auto& overlay) {
     if (!overlay.unique()) {
       return false;
     }
 
     if (overlay.IsInUseByWindowServer()) {
+      has_in_use_overlays = true;
       return false;
     }
 
@@ -612,6 +621,68 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   if (should_reallocate)
     RecreateImages();
+
+  if (has_in_use_overlays) {
+    // Try again later, even if no further swaps happen.
+    PostReleaseOverlays();
+  }
+}
+
+void SkiaOutputDeviceBufferQueue::PostReleaseOverlays() {
+  if (!base::FeatureList::IsEnabled(::features::kDeferredOverlaysRelease) ||
+      reclaim_overlays_timer_.IsRunning() ||
+      !base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    return;
+  }
+
+  // Unretained: `reclaim_overlays_timer_` is a member of `this`, so the task
+  // won't run if it has been destructed.
+  reclaim_overlays_timer_.Start(
+      FROM_HERE, kDelayForOverlaysReclaim,
+      base::BindOnce(&SkiaOutputDeviceBufferQueue::ReleaseOverlays,
+                     base::Unretained(this)));
+}
+
+void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
+  // Reschedule if:
+  // - The output device is not idle
+  // - There is a slight chance that this could run too early, for instance if
+  //   the last frame was just produced, and the window server is not done yet.
+  // - We are currently between ScheduleOverlayPlanes() and
+  //   DoFinishSwapBuffers(), so we should not touch the overlays.
+
+  if (swap_time_clock_->NowTicks() - last_swap_time_ <
+          kDelayForOverlaysReclaim ||
+      has_overlays_scheduled_but_swap_not_finished_) {
+    PostReleaseOverlays();
+    return;
+  }
+
+  std::vector<gpu::Mailbox> released_overlays;
+
+  base::EraseIf(overlays_, [&released_overlays](auto& overlay) {
+    if (!overlay.unique() || overlay.IsInUseByWindowServer() ||
+        overlay.IsRootRenderPass()) {
+      return false;
+    }
+
+    // Right now, only macOS and LaCros needs to return maliboxes of released
+    // overlays, so SkiaRenderer can unlock resources for them.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+    // The root render pass buffers are managed by SkiaRenderer so we don't need
+    // to explicitly return them via callback.
+    released_overlays.push_back(overlay.mailbox());
+#else
+    (void)released_overlays;
+#endif
+
+    overlay.Unref();
+    return true;
+  });
+
+  if (!released_overlays.empty()) {
+    release_overlays_callback_.Run(released_overlays);
+  }
 }
 
 gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {

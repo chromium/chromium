@@ -16,6 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -27,6 +29,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_utils.h"
@@ -324,7 +327,26 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   virtual DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback() {
-    return base::DoNothing();
+    return base::BindRepeating(
+        &SkiaOutputDeviceBufferQueueTest::DidSwapBuffersComplete,
+        base::Unretained(this));
+  }
+
+  virtual SkiaOutputDevice::ReleaseOverlaysCallback
+  GetReleaseOverlaysCallback() {
+    return base::BindRepeating(
+        &SkiaOutputDeviceBufferQueueTest::ReleaseOverlays,
+        base::Unretained(this));
+  }
+
+  void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
+                              const gfx::Size& pixel_size,
+                              gfx::GpuFenceHandle release_fence) {
+    params_.push_back(params);
+  }
+
+  void ReleaseOverlays(std::vector<gpu::Mailbox> overlays) {
+    released_overlays_params_.push_back(overlays);
   }
 
   void SetUpOnGpu() override {
@@ -344,13 +366,14 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
             dependency_->GetSharedImageManager(), memory_tracker_.get());
 
     auto present_callback = GetDidSwapBuffersCompleteCallback();
+    auto release_callback = GetReleaseOverlaysCallback();
 
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
             presenter_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback);
+        memory_tracker_.get(), present_callback, release_callback);
   }
 
   void TearDownOnGpu() override {
@@ -471,7 +494,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
                             gfx::OVERLAY_TRANSFORM_NONE);
   }
 
-  gpu::Mailbox MakeOverlayMailbox() {
+  std::unique_ptr<gpu::OverlayImageRepresentation> MakeOverlay() {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     bool success = shared_image_factory_->CreateSharedImage(
         mailbox, SinglePlaneFormat::kRGBA_8888, gfx::Size(1000, 1000),
@@ -481,9 +504,13 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         gpu::SHARED_IMAGE_USAGE_SCANOUT, "TestLabel");
     CHECK(success);
 
-    shared_image_representation_factory_->ProduceOverlay(mailbox)->SetCleared();
-    return mailbox;
+    auto overlay =
+        shared_image_representation_factory_->ProduceOverlay(mailbox);
+    overlay->SetCleared();
+    return overlay;
   }
+
+  gpu::Mailbox MakeOverlayMailbox() { return MakeOverlay()->mailbox(); }
 
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
@@ -494,6 +521,11 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   std::unique_ptr<SkiaOutputDeviceBufferQueue> output_device_;
+  std::vector<gpu::SwapBuffersCompleteParams> params_;
+  std::vector<std::vector<gpu::Mailbox>> released_overlays_params_;
+  base::test::ScopedFeatureList feature_list{
+      ::features::kDeferredOverlaysRelease};
+  base::SimpleTestTickClock test_tick_clock_;
 };
 
 namespace {
@@ -925,6 +957,128 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysNoPrimaryPlane) {
     PageFlipComplete();
   }
 }
+
+#if BUILDFLAG(IS_APPLE)
+TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysStillInUse) {
+  FirstReshape();
+
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_1 = MakeOverlay();
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_2 = MakeOverlay();
+
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+
+  EXPECT_EQ(current_image(), nullptr);
+  EXPECT_EQ(displayed_image(), nullptr);
+  EXPECT_THAT(pending_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  Present();
+  EXPECT_EQ(current_image(), nullptr);
+  EXPECT_EQ(displayed_image(), nullptr);
+  EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
+  EXPECT_THAT(committed_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  PageFlipComplete();
+  EXPECT_EQ(1u, params_.size());
+  EXPECT_EQ(0u, params_[0].released_overlays.size());
+
+  auto* overlay2 =
+      static_cast<gpu::TestOverlayImageRepresentation*>(overlay_2.get());
+  overlay2->MarkBackingInUse(true);
+
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_2->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_EQ(2u, params_.size());
+  EXPECT_THAT(params_[1].released_overlays,
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  // The overlay is still in use, cannot release it.
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_EQ(3u, params_.size());
+  EXPECT_TRUE(params_[2].released_overlays.empty());
+
+  // Now that the overlay is no longer in use, the next frame will release it.
+  overlay2->MarkBackingInUse(false);
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_EQ(4u, params_.size());
+  EXPECT_THAT(params_[3].released_overlays,
+              testing::ElementsAre(overlay_2->mailbox()));
+}
+
+TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, InUseOverlaysAreCollected) {
+  output_device_->SetSwapTimeClockForTesting(&test_tick_clock_);
+  FirstReshape();
+
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_1 = MakeOverlay();
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_2 = MakeOverlay();
+
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+
+  EXPECT_EQ(current_image(), nullptr);
+  EXPECT_EQ(displayed_image(), nullptr);
+  EXPECT_THAT(pending_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  Present();
+  EXPECT_EQ(current_image(), nullptr);
+  EXPECT_EQ(displayed_image(), nullptr);
+  EXPECT_THAT(pending_overlay_mailboxes(), testing::IsEmpty());
+  EXPECT_THAT(committed_overlay_mailboxes(),
+              testing::ElementsAre(overlay_1->mailbox()));
+
+  PageFlipComplete();
+  EXPECT_EQ(1u, params_.size());
+  EXPECT_EQ(0u, params_[0].released_overlays.size());
+
+  auto* overlay2 =
+      static_cast<gpu::TestOverlayImageRepresentation*>(overlay_2.get());
+  overlay2->MarkBackingInUse(true);
+
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_2->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_EQ(2u, params_.size());
+  EXPECT_THAT(params_[1].released_overlays,
+              testing::ElementsAre(overlay_1->mailbox()));
+  EXPECT_FALSE(output_device_->OverlaysReclaimTimerForTesting().IsRunning());
+
+  // The overlay is still in use, cannot release it.
+  ScheduleNoPrimaryPlane();
+  output_device_->ScheduleOverlays(MakeOverlayList({overlay_1->mailbox()}));
+  Present();
+  PageFlipComplete();
+  EXPECT_EQ(3u, params_.size());
+  EXPECT_TRUE(params_[2].released_overlays.empty());
+  EXPECT_TRUE(output_device_->OverlaysReclaimTimerForTesting().IsRunning());
+
+  overlay2->MarkBackingInUse(false);
+
+  // Not enough time since last commit, reschedule.
+  test_tick_clock_.Advance(base::Milliseconds(1));
+  output_device_->OverlaysReclaimTimerForTesting().FireNow();
+  EXPECT_TRUE(output_device_->OverlaysReclaimTimerForTesting().IsRunning());
+
+  // Now we can release it.
+  test_tick_clock_.Advance(base::Seconds(1));
+  output_device_->OverlaysReclaimTimerForTesting().FireNow();
+  EXPECT_FALSE(output_device_->OverlaysReclaimTimerForTesting().IsRunning());
+  EXPECT_EQ(1u, released_overlays_params_.size());
+  EXPECT_THAT(released_overlays_params_[0],
+              testing::ElementsAre(overlay_2->mailbox()));
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ToggleNoPrimaryPlane) {
   test_backing_factory_.enable_purge_mocks_ = true;
