@@ -483,8 +483,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Ensure various locales are handled such as
     // "en-US" vs. "en-UK." This should be fixed by using page language instead
     // of browser language.
-    const voices = this.getVoices().filter(
-        voice => voice.lang.startsWith(languageCode));
+    const voices =
+        this.getVoices().filter(voice => voice.lang.startsWith(languageCode));
 
     if (!voices || (voices.length === 0)) {
       // If no voices in the given language are found, use the default voice.

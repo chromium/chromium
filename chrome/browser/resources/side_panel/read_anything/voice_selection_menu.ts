@@ -49,7 +49,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       previewVoicePlaying: Object,
       voiceSelectionOptions_: {
         type: Object,
-        computed: 'computeVoiceDropdown_(selectedVoice, availableVoices, previewVoicePlaying)',
+        computed:
+            'computeVoiceDropdown_(selectedVoice, availableVoices, previewVoicePlaying)',
       },
     };
   }
@@ -59,12 +60,12 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       availableVoices: SpeechSynthesisVoice[],
       previewVoicePlaying: SpeechSynthesisVoice|null): VoiceDropdown[] {
     return availableVoices.map(
-      voice => ({
-        title: voice.name,
-        voice,
-        selected: voicesAreEqual(selectedVoice, voice),
-        previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
-      }));
+        voice => ({
+          title: voice.name,
+          voice,
+          selected: voicesAreEqual(selectedVoice, voice),
+          previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
+        }));
   }
 
   private onVoiceSelectionMenuClick_(event: MouseEvent) {
