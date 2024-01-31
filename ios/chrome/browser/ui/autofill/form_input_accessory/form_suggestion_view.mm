@@ -192,7 +192,7 @@ constexpr CGFloat kScrollHintDuration = 0.5;
 // Performs the scroll hint. This is triggered when the keyboard accessory
 // initially receives suggestions.
 - (void)scrollHint:(void (^)(BOOL finished))completion {
-  if (!base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade) ||
+  if (!IsKeyboardAccessoryUpgradeEnabled() ||
       !self.stackView.arrangedSubviews.count) {
     if (completion) {
       completion(NO);
