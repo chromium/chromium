@@ -11266,6 +11266,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8ElementInternals_AriaOwnsElements_AttributeGetter"/>
   <int value="4825"
       label="V8ElementInternals_AriaOwnsElements_AttributeSetter"/>
+  <int value="4826" label="IdentityDigitalCredentials"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

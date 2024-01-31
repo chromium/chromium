@@ -1577,6 +1577,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         // TODO(https://crbug.com/1416939): make sure the Digital Credentials
         //  API works well with the Multiple IdP API.
         if (provider->hasHolder()) {
+          UseCounter::Count(resolver->GetExecutionContext(),
+                            WebFeature::kIdentityDigitalCredentials);
+
           auto identity_provider =
               blink::mojom::blink::IdentityProvider::From(*provider);
           identity_provider_ptrs.push_back(std::move(identity_provider));
