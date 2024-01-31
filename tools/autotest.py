@@ -65,12 +65,7 @@ _TEST_TARGET_ALLOWLIST = [
 _TEST_TARGET_REGEX = re.compile(
     r'(_browsertests|_perftests|_wpr_tests|_unittests)$')
 
-_PREF_MAPPING_FILE_PATTERN = re.escape(
-    str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
-    r'/') + r'.*\.json'
-
-TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)' +
-                                  r'|(' + _PREF_MAPPING_FILE_PATTERN + r')')
+TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include
@@ -415,9 +410,8 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
   return (test_targets, used_cache)
 
 
-def RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter,
-                   extra_args, dry_run, no_try_android_wrappers,
-                   no_fast_local_dev):
+def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
+                   no_try_android_wrappers, no_fast_local_dev):
 
   for target in targets:
     target_binary = target.split(':')[1]
@@ -432,11 +426,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter,
       # Usually want this flag when developing locally.
       extra_args = extra_args + ['--fast-local-dev']
 
-    cmd = [path, f'--gtest_filter={gtest_filter}']
-    if pref_mapping_filter:
-      cmd.append(f'--test_policy_to_pref_mappings_filter={pref_mapping_filter}')
-    cmd.extend(extra_args)
-
+    cmd = [path, f'--gtest_filter={gtest_filter}'] + extra_args
     print('Running test: ' + shlex.join(cmd))
     if not dry_run:
       StreamCommandOrExit(cmd)
@@ -459,12 +449,6 @@ def BuildJavaTestFilter(filenames):
                   for f in filenames)
 
 
-_PREF_MAPPING_GTEST_FILTER = '*PolicyPrefsTest.PolicyToPrefsMapping*'
-
-SPECIAL_TEST_FILTERS = [(re.compile(_PREF_MAPPING_FILE_PATTERN),
-                         _PREF_MAPPING_GTEST_FILTER)]
-
-
 def BuildTestFilter(filenames, line):
   java_files = [f for f in filenames if f.endswith('.java')]
   cc_files = [f for f in filenames if f.endswith('.cc')]
@@ -473,16 +457,8 @@ def BuildTestFilter(filenames, line):
     filters.append(BuildJavaTestFilter(java_files))
   if cc_files:
     filters.append(BuildCppTestFilter(cc_files, line))
-  for regex, gtest_filter in SPECIAL_TEST_FILTERS:
-    if any(True for f in filenames if regex.match(f)):
-      filters.append(gtest_filter)
-      break
+
   return ':'.join(filters)
-
-
-def BuildPrefMappingTestFilter(filenames):
-  names_without_extension = [Path(f).stem for f in filenames]
-  return ':'.join(names_without_extension)
 
 
 def main():
@@ -508,10 +484,6 @@ def main():
                       '-f',
                       metavar='FILTER',
                       help='test filter')
-  parser.add_argument('--test_policy_to_pref_mappings_filter',
-                      '--test-policy-to-pref-mappings-filter',
-                      metavar='PREF_MAPPINGS_FILTER',
-                      help='policy pref mappings test filter')
   parser.add_argument(
       '--dry-run',
       '--dry_run',
@@ -556,10 +528,6 @@ def main():
   if not gtest_filter:
     ExitWithMessage('Failed to derive a gtest filter')
 
-  pref_mapping_filter = args.test_policy_to_pref_mappings_filter
-  if not pref_mapping_filter:
-    pref_mapping_filter = BuildPrefMappingTestFilter(filenames)
-
   assert targets
   build_ok = BuildTestTargets(out_dir, targets, args.dry_run)
 
@@ -579,9 +547,8 @@ def main():
 
   if not build_ok: sys.exit(1)
 
-  RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter, _extras,
-                 args.dry_run, args.no_try_android_wrappers,
-                 args.no_fast_local_dev)
+  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run,
+                 args.no_try_android_wrappers, args.no_fast_local_dev)
 
 
 if __name__ == '__main__':
