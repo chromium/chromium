@@ -69,9 +69,13 @@
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentToSelf
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithEmptySchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithNoSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromUserGesture
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndLostActivation
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndLostActivationLongTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromLinkUserGesture
@@ -104,6 +108,7 @@
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveUpMenuItem
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testPartnerFolderDraggability
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testShowInFolder_NoScroll
 
 # crbug.com/1511804
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_BookmarkActionSingleTab
@@ -197,6 +202,7 @@
 # crbug.com/1513571
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareApk
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareDex
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareLarge
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareLongText
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareMany
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
@@ -230,3 +236,10 @@
 
 # crbug.com/1517438
 -org.chromium.chrome.browser.webapps.AddToHomescreenCurrentPageVerifierTest.testInScope
+
+# crbug.com/1523754
+-org.chromium.chrome.browser.quick_delete.QuickDeleteControllerTest.testQuickDeleteHistogram_WhenClickingDelete
+
+# crbug.com/1523756
+-org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragmentTest.testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores
+-org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragmentTest.testNullStateDisplayedCorrectlySyncOnUsingSplitStores
