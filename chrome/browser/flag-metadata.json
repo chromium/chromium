@@ -7088,7 +7088,7 @@
       "zoraiznaeem@chromium.org",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 123
+    "expiry_milestone": 127
   },
   {
     "name": "rounded-windows",
@@ -7096,7 +7096,7 @@
       "zoraiznaeem@chromium.org",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 123
+    "expiry_milestone": 127
   },
   {
     "name": "run-video-capture-service-in-browser",
