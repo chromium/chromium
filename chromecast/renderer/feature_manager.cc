@@ -35,7 +35,7 @@ FeatureManager::FeatureManager(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       configured_(false),
       can_install_bindings_(false),
-      dev_origin_(GURL::EmptyGURL()),
+      dev_origin_(GURL()),
       secure_origin_set_(false) {
   registry_.AddInterface(base::BindRepeating(
       &FeatureManager::OnFeatureManagerRequest, base::Unretained(this)));
