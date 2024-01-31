@@ -51,8 +51,7 @@ BookmarkStorage::BookmarkStorage(BookmarkModel* model,
       last_scheduled_save_(base::TimeTicks::Now()) {}
 
 BookmarkStorage::~BookmarkStorage() {
-  if (writer_.HasPendingWrite())
-    writer_.DoScheduledWrite();
+  SaveNowIfScheduled();
 }
 
 void BookmarkStorage::ScheduleSave() {
@@ -70,17 +69,6 @@ void BookmarkStorage::ScheduleSave() {
       base::TimeTicks::Now() - last_scheduled_save_;
   metrics::RecordTimeSinceLastScheduledSave(schedule_delta);
   last_scheduled_save_ = base::TimeTicks::Now();
-}
-
-void BookmarkStorage::BookmarkModelDeleted() {
-  // We need to save now as otherwise by the time SerializeData() is invoked
-  // the model is gone.
-  if (writer_.HasPendingWrite()) {
-    writer_.DoScheduledWrite();
-    DCHECK(!writer_.HasPendingWrite());
-  }
-
-  model_ = nullptr;
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback
@@ -107,6 +95,10 @@ bool BookmarkStorage::HasScheduledSaveForTesting() const {
 }
 
 void BookmarkStorage::SaveNowIfScheduledForTesting() {
+  SaveNowIfScheduled();
+}
+
+void BookmarkStorage::SaveNowIfScheduled() {
   if (writer_.HasPendingWrite()) {
     writer_.DoScheduledWrite();
   }

@@ -35,23 +35,23 @@ class BookmarkStorage
   // How often the file is saved at most.
   static constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
-  // Creates a BookmarkStorage for the specified model. The data will saved to a
-  // file using the specified |file_path|. A backup file may be generated using
-  // a name derived from |file_path| (appending suffix kBackupExtension). All
-  // disk writes will be executed as a task in a backend task runner.
+  // Creates a BookmarkStorage for the specified model. `model` must not be null
+  // and must outlive this object.
+  //
+  // The data will saved to a file using the specified |file_path|. A backup
+  // file may be generated using a name derived from |file_path| (appending
+  // suffix kBackupExtension). All disk writes will be executed as a task in a
+  // backend task runner.
   BookmarkStorage(BookmarkModel* model, const base::FilePath& file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;
 
+  // Upon destruction, if there is a pending save, it is saved immediately.
   ~BookmarkStorage() override;
 
   // Schedules saving the bookmark bar model to disk.
   void ScheduleSave();
-
-  // Notification the bookmark bar model is going to be deleted. If there is
-  // a pending save, it is saved immediately.
-  void BookmarkModelDeleted();
 
   // ImportantFileWriter::BackgroundDataSerializer implementation.
   base::ImportantFileWriter::BackgroundDataProducerCallback
@@ -77,11 +77,13 @@ class BookmarkStorage
     BACKUP_ATTEMPTED
   };
 
-  // The model. The model is NULL once BookmarkModelDeleted has been invoked.
-  raw_ptr<BookmarkModel> model_;
+  // If there is a pending write, it performs it immediately.
+  void SaveNowIfScheduled();
+
+  const raw_ptr<BookmarkModel> model_;
 
   // Sequenced task runner where disk writes will be performed at.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Helper to write bookmark data safely.
   base::ImportantFileWriter writer_;

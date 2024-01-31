@@ -145,11 +145,9 @@ BookmarkModel::~BookmarkModel() {
     observer.BookmarkModelBeingDeleted(this);
   }
 
-  if (store_) {
-    // The store maintains a reference back to us. We need to tell it we're gone
-    // so that it doesn't try and invoke a method back on us again.
-    store_->BookmarkModelDeleted();
-  }
+  // The store maintains a reference back to us. We need to tell it we're gone
+  // so that it doesn't try and invoke a method back on us again.
+  store_.reset();
 
   // `TitledUrlIndex` owns  a `TypedCountSorter` that keeps a raw_ptr to the
   // client. So titled_url_index_ must be reset first.
