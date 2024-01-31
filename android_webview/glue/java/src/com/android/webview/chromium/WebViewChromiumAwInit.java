@@ -177,26 +177,36 @@ public class WebViewChromiumAwInit {
 
             // NOTE: Finished writing Java resources. From this point on, it's safe to use them.
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && mIsPostedFromBackgroundThread) {
-                // Try to work around the problem we're seeing with resources on Android 12. When
-                // WebView is being initialized from a background thread, it's possible that the
-                // asset path updated by WebViewFactory is no longer present by the time we get
-                // here due to something on the UI thread having caused a resource update in the
-                // app in the meantime, because WebViewFactory does not add the path persistently.
-                // So, we can try to add them again using the "better" method in WebViewDelegate.
-
-                // However, we only want to try this if the resources are actually missing, because
-                // in the past we've seen this cause apps that were working to *start* crashing.
-                // The first resource that gets accessed in startup happens during the
-                // AwBrowserProcess.start() call when trying to determine if the device is a tablet,
-                // and that's the most common place for us to crash. So, try calling that same
-                // method and see if it throws - if so then we're unlikely to make the situation
-                // any worse by trying to fix the path.
-                try {
-                    DeviceFormFactor.isTablet();
-                } catch (Resources.NotFoundException e) {
-                    mFactory.addWebViewAssetPath(context);
-                }
+            // Try to work around the resources problem.
+            //
+            // WebViewFactory adds WebView's asset path to the host app before any of the code in
+            // the APK starts running, but it adds it using an old mechanism that doesn't persist if
+            // the app's resource configuration changes for any other reason.
+            //
+            // By the time we get here, it's possible it's gone missing due to something on the UI
+            // thread having triggered a resource update. This can happen either because WebView
+            // initialization was triggered by a background thread (and thus this code is running
+            // inside a posted task on the UI thread which may have taken any amount of time to
+            // actually run), or because the app used CookieManager first, which triggers the code
+            // being loaded and WebViewFactory doing the initial resources add, but does not call
+            // startChromiumLocked until the app uses some other API, an arbitrary amount of time
+            // later. So, we can try to add them again using the "better" method in WebViewDelegate.
+            //
+            // However, we only want to try this if the resources are actually missing, because
+            // in the past we've seen this cause apps that were working to *start* crashing.
+            // The first resource that gets accessed in startup happens during the
+            // AwBrowserProcess.start() call when trying to determine if the device is a tablet,
+            // and that's the most common place for us to crash. So, try calling that same
+            // method and see if it throws - if so then we're unlikely to make the situation
+            // any worse by trying to fix the path.
+            //
+            // This cannot fix the problem in all cases - if the app is using a weird ContextWrapper
+            // or doing other unusual things with resources/assets then even adding it with this
+            // mechanism might not help.
+            try {
+                DeviceFormFactor.isTablet();
+            } catch (Resources.NotFoundException e) {
+                mFactory.addWebViewAssetPath(context);
             }
 
             AwBrowserProcess.configureChildProcessLauncher();
