@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -52,6 +53,7 @@ class PerformanceObserverTest : public testing::Test {
   int NumPerformanceEntries() { return observer_->performance_entries_.size(); }
   void Deliver() { observer_->Deliver(absl::nullopt); }
 
+  test::TaskEnvironment task_environment_;
   Persistent<MockPerformance> base_;
   Persistent<V8PerformanceObserverCallback> cb_;
   Persistent<PerformanceObserver> observer_;

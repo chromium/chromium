@@ -4,6 +4,7 @@
 
 #include "base/test/trace_event_analyzer.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
@@ -23,6 +24,7 @@ class WorkerPerformanceTest : public testing::Test {
 
     worker_thread_->WaitForShutdownForTesting();
   }
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<WorkerThreadForTest> worker_thread_;
   scoped_refptr<const SecurityOrigin> security_origin_;
   std::unique_ptr<MockWorkerReportingProxy> reporting_proxy_;

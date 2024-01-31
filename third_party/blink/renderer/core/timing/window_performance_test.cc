@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -181,6 +182,7 @@ class WindowPerformanceTest : public testing::Test {
     performance_->last_visibility_change_timestamp_ = timestamp;
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<WindowPerformance> performance_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -229,6 +231,7 @@ TEST_F(WindowPerformanceTest, NavigateAway) {
 // This happens when a page opens a new window and it navigates to a same-origin
 // document.
 TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
+  test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   // Emulate a new window inheriting the origin for its initial empty document
   // from its opener. This is necessary to ensure window reuse below, as that

@@ -1530,6 +1530,7 @@ source_set("unit_tests_v2") {
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
   sources += rebase_path(blink_core_tests_streams, "", "streams")
+  sources += rebase_path(blink_core_tests_timing, "", "timing")
   sources += rebase_path(blink_core_tests_trustedtypes, "", "trustedtypes")
   sources += rebase_path(blink_core_tests_style, "", "style")
   sources += rebase_path(blink_core_tests_svg, "", "svg")
