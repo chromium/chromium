@@ -142,13 +142,6 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
                               gpu::kNullSurfaceHandle, nullptr);
 }
 
-std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
-    ShellSurfaceBase* shell_surface,
-    gfx::BufferFormat format) {
-  return std::make_unique<Buffer>(CreateGpuMemoryBuffer(
-      shell_surface->GetWidget()->GetWindowBoundsInScreen().size(), format));
-}
-
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(
     Surface* surface,
     InputMethodSurfaceManager* surface_manager,
