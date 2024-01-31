@@ -45,28 +45,74 @@ std::optional<base::Value::Dict> LoadFileToDict(
   return std::make_optional(std::move(*root).TakeDict());
 }
 
-// Loads the bookmarks from a file determined by `file_path`. This is intended
-// to be called on the background thread. Returns the loaded
-// BookmarkLoadDetails.
-std::unique_ptr<BookmarkLoadDetails> LoadBookmarksFromFile(
-    const base::FilePath& file_path) {
+std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
+    const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& account_file_path) {
   auto details = std::make_unique<BookmarkLoadDetails>();
 
-  std::optional<base::Value::Dict> root_dict = LoadFileToDict(file_path);
-  if (!root_dict.has_value()) {
-    return details;
+  std::set<int64_t> ids_assigned_to_account_nodes;
+
+  // Decode local-or-syncable bookmarks.
+  {
+    std::string sync_metadata_str;
+    int64_t max_node_id = 0;
+    std::optional<base::Value::Dict> root_dict =
+        LoadFileToDict(local_or_syncable_file_path);
+    BookmarkCodec codec;
+    if (root_dict.has_value() &&
+        codec.Decode(*root_dict, /*already_assigned_ids=*/{},
+                     details->bb_node(), details->other_folder_node(),
+                     details->mobile_folder_node(), &max_node_id,
+                     &sync_metadata_str)) {
+      ids_assigned_to_account_nodes = codec.release_assigned_ids();
+
+      details->set_local_or_syncable_sync_metadata_str(
+          std::move(sync_metadata_str));
+      details->set_max_id(std::max(max_node_id, details->max_id()));
+      details->set_ids_reassigned(details->ids_reassigned() ||
+                                  codec.ids_reassigned());
+      details->set_required_recovery(details->required_recovery() ||
+                                     codec.required_recovery());
+    }
   }
 
-  int64_t max_node_id = 0;
-  std::string sync_metadata_str;
-  BookmarkCodec codec;
-  codec.Decode(*root_dict, details->bb_node(), details->other_folder_node(),
-               details->mobile_folder_node(), &max_node_id, &sync_metadata_str);
-  details->set_local_or_syncable_sync_metadata_str(
-      std::move(sync_metadata_str));
-  details->set_max_id(std::max(max_node_id, details->max_id()));
-  details->set_ids_reassigned(codec.ids_reassigned());
-  details->set_required_recovery(codec.required_recovery());
+  // Decode account bookmarks (if any).
+  if (!account_file_path.empty()) {
+    std::string sync_metadata_str;
+    int64_t max_node_id = 0;
+
+    std::unique_ptr<BookmarkPermanentNode> account_bb_node =
+        BookmarkPermanentNode::CreateBookmarkBar(0);
+    std::unique_ptr<BookmarkPermanentNode> account_other_folder_node =
+        BookmarkPermanentNode::CreateOtherBookmarks(0);
+    std::unique_ptr<BookmarkPermanentNode> account_mobile_folder_node =
+        BookmarkPermanentNode::CreateMobileBookmarks(0);
+
+    std::optional<base::Value::Dict> root_dict =
+        LoadFileToDict(account_file_path);
+    BookmarkCodec codec;
+    if (root_dict.has_value() &&
+        codec.Decode(*root_dict, std::move(ids_assigned_to_account_nodes),
+                     account_bb_node.get(), account_other_folder_node.get(),
+                     account_mobile_folder_node.get(), &max_node_id,
+                     &sync_metadata_str)) {
+      // A successful decoding must have set proper IDs.
+      CHECK_NE(0, account_bb_node->id());
+      CHECK_NE(0, account_other_folder_node->id());
+      CHECK_NE(0, account_mobile_folder_node->id());
+
+      details->AddAccountPermanentNodes(std::move(account_bb_node),
+                                        std::move(account_other_folder_node),
+                                        std::move(account_mobile_folder_node));
+
+      details->set_account_sync_metadata_str(std::move(sync_metadata_str));
+      details->set_max_id(std::max(max_node_id, details->max_id()));
+      details->set_ids_reassigned(details->ids_reassigned() ||
+                                  codec.ids_reassigned());
+      details->set_required_recovery(details->required_recovery() ||
+                                     codec.required_recovery());
+    }
+  }
 
   return details;
 }
@@ -86,18 +132,40 @@ void LoadManagedNode(LoadManagedNodeCallback load_managed_node_callback,
   }
 }
 
+uint64_t GetFileSizeOrZero(const base::FilePath& file_path) {
+  int64_t file_size_bytes = 0;
+  if (base::GetFileSize(file_path, &file_size_bytes)) {
+    return file_size_bytes;
+  }
+  return 0;
+}
+
 void RecordLoadMetrics(const BookmarkLoadDetails& details,
-                       const base::FilePath& file_path) {
+                       const base::FilePath& local_or_syncable_file_path,
+                       const base::FilePath& account_file_path) {
   UrlLoadStats stats = details.url_index()->ComputeStats();
   metrics::RecordUrlLoadStatsOnProfileLoad(stats);
 
-  int64_t file_size_bytes;
-  if (base::GetFileSize(file_path, &file_size_bytes)) {
-    metrics::RecordFileSizeAtStartup(file_size_bytes);
+  const uint64_t local_or_syncable_file_size =
+      GetFileSizeOrZero(local_or_syncable_file_path);
+  const uint64_t account_file_size =
+      account_file_path.empty() ? 0U : GetFileSizeOrZero(account_file_path);
+
+  if (local_or_syncable_file_size != 0) {
+    metrics::RecordFileSizeAtStartup(local_or_syncable_file_size);
+  }
+
+  if (account_file_size != 0) {
+    metrics::RecordFileSizeAtStartup(account_file_size);
+  }
+
+  const uint64_t sum_file_size =
+      local_or_syncable_file_size + account_file_size;
+  if (sum_file_size > 0) {
     metrics::RecordAverageNodeSizeAtStartup(
         stats.total_url_bookmark_count == 0
             ? 0
-            : file_size_bytes / stats.total_url_bookmark_count);
+            : sum_file_size / stats.total_url_bookmark_count);
   }
 }
 
@@ -105,9 +173,11 @@ void RecordLoadMetrics(const BookmarkLoadDetails& details,
 
 // static
 scoped_refptr<ModelLoader> ModelLoader::Create(
-    const base::FilePath& file_path,
+    const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& account_file_path,
     LoadManagedNodeCallback load_managed_node_callback,
     LoadCallback callback) {
+  CHECK(!local_or_syncable_file_path.empty());
   // Note: base::MakeRefCounted is not available here, as ModelLoader's
   // constructor is private.
   auto model_loader = base::WrapRefCounted(new ModelLoader());
@@ -119,7 +189,8 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ModelLoader::DoLoadOnBackgroundThread, model_loader,
-                     file_path, std::move(load_managed_node_callback)),
+                     local_or_syncable_file_path, account_file_path,
+                     std::move(load_managed_node_callback)),
       std::move(callback));
   return model_loader;
 }
@@ -135,10 +206,11 @@ ModelLoader::ModelLoader()
 ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
-    const base::FilePath& file_path,
+    const base::FilePath& local_or_syncable_file_path,
+    const base::FilePath& account_file_path,
     LoadManagedNodeCallback load_managed_node_callback) {
   std::unique_ptr<BookmarkLoadDetails> details =
-      LoadBookmarksFromFile(file_path);
+      LoadBookmarks(local_or_syncable_file_path, account_file_path);
   CHECK(details);
 
   LoadManagedNode(std::move(load_managed_node_callback), *details);
@@ -147,7 +219,7 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
   // thread.
   details->CreateIndices();
 
-  RecordLoadMetrics(*details, file_path);
+  RecordLoadMetrics(*details, local_or_syncable_file_path, account_file_path);
 
   history_bookmark_model_ = details->url_index();
   loaded_signal_.Signal();

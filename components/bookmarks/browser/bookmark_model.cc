@@ -173,12 +173,36 @@ void BookmarkModel::Load(const base::FilePath& profile_path,
   // only be invoked once.
   DCHECK(!store_);
 
-  const base::FilePath file_path =
-      GetStorageFilePath(profile_path, storage_type);
-  store_ = std::make_unique<BookmarkStorage>(this, file_path);
+  base::FilePath local_or_syncable_file_path;
+  base::FilePath account_file_path;
+
+  if (AreFoldersForAccountStorageAllowed()) {
+    // TODO(crbug.com/1520418): `storage_type` doesn't fit well in this case and
+    // it is ignored. Consider alternatives such as adding another Load()
+    // overload or adding a third value to StorageType (which would likely
+    // require forking the enum to
+    // ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h.
+    local_or_syncable_file_path =
+        GetStorageFilePath(profile_path, StorageType::kLocalOrSyncable);
+    account_file_path = GetStorageFilePath(profile_path, StorageType::kAccount);
+
+    CHECK(!local_or_syncable_file_path.empty());
+    CHECK(!account_file_path.empty());
+  } else {
+    local_or_syncable_file_path =
+        GetStorageFilePath(profile_path, storage_type);
+
+    CHECK(!local_or_syncable_file_path.empty());
+    CHECK(account_file_path.empty());
+  }
+
+  // TODO(crbug.com/1520418): Write account bookmarks to file too.
+  store_ = std::make_unique<BookmarkStorage>(this, local_or_syncable_file_path);
+
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
-      file_path, client_->GetLoadManagedNodeCallback(),
+      local_or_syncable_file_path, account_file_path,
+      client_->GetLoadManagedNodeCallback(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 

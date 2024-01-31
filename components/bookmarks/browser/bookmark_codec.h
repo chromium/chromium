@@ -49,11 +49,18 @@ class BookmarkCodec {
       std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
-  // setting |max_node_id| to the greatest node id. Returns true on success,
+  // setting `max_node_id` to the greatest node id. Returns true on success,
   // false otherwise. If there is an error (such as unexpected version) all
   // children are removed from the bookmark bar and other folder nodes. On exit
-  // |max_node_id| is set to the max id of the nodes.
+  // `max_node_id` is set to the max id of the nodes.
+  //
+  // `already_assigned_ids` can be used to consider certain node ids as
+  // reserved, and ensure that decoding won't produce nodes that collide with
+  // these ids. If such collisions exist, ids will be reassigned as if the file
+  // itself contained id collisions, noticeable via `ids_reassigned()` returning
+  // true.
   bool Decode(const base::Value::Dict& value,
+              std::set<int64_t> already_assigned_ids,
               BookmarkNode* bb_node,
               BookmarkNode* other_folder_node,
               BookmarkNode* mobile_folder_node,
@@ -74,6 +81,8 @@ class BookmarkCodec {
     return computed_checksum_;
   }
   const std::string& StoredChecksumForTest() const { return stored_checksum_; }
+
+  std::set<int64_t> release_assigned_ids() { return std::move(ids_); }
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
@@ -115,8 +124,7 @@ class BookmarkCodec {
                     const base::Value::Dict& value,
                     std::string* sync_metadata_str);
 
-  // Decodes the children of the specified node. |child_value_list| needs to be
-  // a list value. Returns true on success.
+  // Decodes the children of the specified node. Returns true on success.
   bool DecodeChildren(const base::Value::List& child_value_list,
                       BookmarkNode* parent);
 

@@ -34,8 +34,11 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Creates the ModelLoader, and schedules loading on a backend task runner.
   // `callback` is run once loading completes (on the main thread).
+  // `local_or_syncable_file_path` must be non-empty and represents the
+  // main (non-account) bookmarks, whereas `account_file_path` may be empty.
   static scoped_refptr<ModelLoader> Create(
-      const base::FilePath& file_path,
+      const base::FilePath& local_or_syncable_file_path,
+      const base::FilePath& account_file_path,
       LoadManagedNodeCallback load_managed_node_callback,
       LoadCallback callback);
 
@@ -65,7 +68,8 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Performs the load on a background thread.
   std::unique_ptr<BookmarkLoadDetails> DoLoadOnBackgroundThread(
-      const base::FilePath& file_path,
+      const base::FilePath& local_or_syncable_file_path,
+      const base::FilePath& account_file_path,
       LoadManagedNodeCallback load_managed_node_callback);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

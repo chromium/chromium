@@ -73,6 +73,9 @@ class BookmarkClient {
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
 
   // Returns the current storage state to be added as suffix to metrics.
+  // TODO(crbug.com/1520418): Revisit this function as the notion of storage
+  // type is no longer an attribute of BookmarkModel or BookmarkClient and may
+  // need to be BookmarkNode-specific.
   virtual metrics::StorageStateForUma GetStorageStateForUma() = 0;
 
   // Returns true if the |permanent_node| can have its title updated.

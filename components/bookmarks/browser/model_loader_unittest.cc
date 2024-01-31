@@ -45,7 +45,8 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
 
   base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
-      test_file,
+      /*local_or_syncable_file_path=*/test_file,
+      /*account_file_path=*/base::FilePath(),
       /*load_managed_node_callback=*/LoadManagedNodeCallback(),
       details_future.GetCallback());
 
@@ -75,6 +76,256 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
   ASSERT_NE(nullptr, folder_b1);
   EXPECT_EQ(u"Folder B1", folder_b1->GetTitle());
   EXPECT_EQ(4, folder_b1->id());
+}
+
+TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file1 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  const base::FilePath test_file2 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  ASSERT_TRUE(base::PathExists(test_file1));
+  ASSERT_TRUE(base::PathExists(test_file2));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file1,
+      /*account_file_path=*/test_file2,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+  ASSERT_NE(nullptr, details->account_bb_node());
+  ASSERT_NE(nullptr, details->account_other_folder_node());
+  ASSERT_NE(nullptr, details->account_mobile_folder_node());
+
+  EXPECT_FALSE(details->required_recovery());
+  EXPECT_FALSE(details->ids_reassigned());
+
+  EXPECT_EQ(24, details->max_id());
+
+  EXPECT_EQ(1u, details->bb_node()->children().size());
+  EXPECT_EQ(1u, details->other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->mobile_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_bb_node()->children().size());
+  EXPECT_EQ(1u, details->account_other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_mobile_folder_node()->children().size());
+
+  EXPECT_EQ("dummy-sync-metadata-1",
+            details->local_or_syncable_sync_metadata_str());
+  EXPECT_EQ("dummy-sync-metadata-2", details->account_sync_metadata_str());
+
+  const UuidIndex local_or_syncable_uuid_index =
+      details->owned_local_or_syncable_uuid_index();
+  const UuidIndex account_uuid_index = details->owned_account_uuid_index();
+
+  // Sanity-check the presence of one node. The UUID should not have changed.
+  const BookmarkNode* local_or_syncable_folder_b1 = FindNodeByUuid(
+      local_or_syncable_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, local_or_syncable_folder_b1);
+  EXPECT_EQ(u"Folder B1", local_or_syncable_folder_b1->GetTitle());
+  EXPECT_EQ(4, local_or_syncable_folder_b1->id());
+
+  const BookmarkNode* account_folder_b1 = FindNodeByUuid(
+      account_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, account_folder_b1);
+  EXPECT_EQ(u"Folder B1", account_folder_b1->GetTitle());
+  EXPECT_EQ(23, account_folder_b1->id());
+}
+
+TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file,
+      /*account_file_path=*/test_file,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+  ASSERT_NE(nullptr, details->account_bb_node());
+  ASSERT_NE(nullptr, details->account_other_folder_node());
+  ASSERT_NE(nullptr, details->account_mobile_folder_node());
+
+  // ID collisions should have triggered recovery and reassignment of IDs.
+  EXPECT_TRUE(details->required_recovery());
+  EXPECT_TRUE(details->ids_reassigned());
+
+  EXPECT_EQ(20, details->max_id());
+
+  EXPECT_EQ(1u, details->bb_node()->children().size());
+  EXPECT_EQ(1u, details->other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->mobile_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_bb_node()->children().size());
+  EXPECT_EQ(1u, details->account_other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_mobile_folder_node()->children().size());
+
+  EXPECT_EQ("dummy-sync-metadata-1",
+            details->local_or_syncable_sync_metadata_str());
+  EXPECT_EQ("dummy-sync-metadata-1", details->account_sync_metadata_str());
+
+  const UuidIndex local_or_syncable_uuid_index =
+      details->owned_local_or_syncable_uuid_index();
+  const UuidIndex account_uuid_index = details->owned_account_uuid_index();
+
+  // Sanity-check the presence of one node. The UUID should not have changed.
+  const BookmarkNode* local_or_syncable_folder_b1 = FindNodeByUuid(
+      local_or_syncable_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, local_or_syncable_folder_b1);
+  EXPECT_EQ(u"Folder B1", local_or_syncable_folder_b1->GetTitle());
+  EXPECT_EQ(4, local_or_syncable_folder_b1->id());
+
+  const BookmarkNode* account_folder_b1 = FindNodeByUuid(
+      account_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, account_folder_b1);
+  EXPECT_EQ(u"Folder B1", account_folder_b1->GetTitle());
+  // The account node ID gets reassigned. The precise value isn't important, but
+  // it is added here as overly-strict requirement to document the behavior.
+  EXPECT_EQ(15, account_folder_b1->id());
+}
+
+TEST(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file1 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json");
+  const base::FilePath test_file2 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  ASSERT_TRUE(base::PathExists(test_file1));
+  ASSERT_TRUE(base::PathExists(test_file2));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file1,
+      /*account_file_path=*/test_file2,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+  ASSERT_NE(nullptr, details->account_bb_node());
+  ASSERT_NE(nullptr, details->account_other_folder_node());
+  ASSERT_NE(nullptr, details->account_mobile_folder_node());
+
+  // ID collisions should have triggered recovery and reassignment of IDs.
+  EXPECT_TRUE(details->required_recovery());
+  EXPECT_TRUE(details->ids_reassigned());
+
+  EXPECT_EQ(19, details->max_id());
+
+  EXPECT_EQ(1u, details->bb_node()->children().size());
+  EXPECT_EQ(1u, details->other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->mobile_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_bb_node()->children().size());
+  EXPECT_EQ(1u, details->account_other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_mobile_folder_node()->children().size());
+
+  EXPECT_EQ("dummy-sync-metadata-1",
+            details->local_or_syncable_sync_metadata_str());
+  EXPECT_EQ("dummy-sync-metadata-2", details->account_sync_metadata_str());
+
+  const UuidIndex local_or_syncable_uuid_index =
+      details->owned_local_or_syncable_uuid_index();
+  const UuidIndex account_uuid_index = details->owned_account_uuid_index();
+
+  // Sanity-check the presence of one node. The UUID should not have changed.
+  const BookmarkNode* local_or_syncable_folder_b1 = FindNodeByUuid(
+      local_or_syncable_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, local_or_syncable_folder_b1);
+  EXPECT_EQ(u"Folder B1", local_or_syncable_folder_b1->GetTitle());
+  // The node ID gets reassigned. The precise value isn't important, but it is
+  // added here as overly-strict requirement to document the behavior.
+  EXPECT_EQ(5, local_or_syncable_folder_b1->id());
+
+  const BookmarkNode* account_folder_b1 = FindNodeByUuid(
+      account_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, account_folder_b1);
+  EXPECT_EQ(u"Folder B1", account_folder_b1->GetTitle());
+  // The node ID gets reassigned. The precise value isn't important, but it is
+  // added here as overly-strict requirement to document the behavior.
+  EXPECT_EQ(14, account_folder_b1->id());
+}
+
+TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file1 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json");
+  const base::FilePath test_file2 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json");
+  ASSERT_TRUE(base::PathExists(test_file1));
+  ASSERT_TRUE(base::PathExists(test_file2));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file1,
+      /*account_file_path=*/test_file2,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+  ASSERT_NE(nullptr, details->account_bb_node());
+  ASSERT_NE(nullptr, details->account_other_folder_node());
+  ASSERT_NE(nullptr, details->account_mobile_folder_node());
+
+  // ID collisions should have triggered recovery and reassignment of IDs.
+  EXPECT_TRUE(details->required_recovery());
+  EXPECT_TRUE(details->ids_reassigned());
+
+  EXPECT_EQ(19, details->max_id());
+
+  EXPECT_EQ(1u, details->bb_node()->children().size());
+  EXPECT_EQ(1u, details->other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->mobile_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_bb_node()->children().size());
+  EXPECT_EQ(1u, details->account_other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_mobile_folder_node()->children().size());
+
+  EXPECT_EQ("dummy-sync-metadata-1",
+            details->local_or_syncable_sync_metadata_str());
+  EXPECT_EQ("dummy-sync-metadata-1", details->account_sync_metadata_str());
+
+  const UuidIndex local_or_syncable_uuid_index =
+      details->owned_local_or_syncable_uuid_index();
+  const UuidIndex account_uuid_index = details->owned_account_uuid_index();
+
+  // Sanity-check the presence of one node. The UUID should not have changed.
+  const BookmarkNode* local_or_syncable_folder_b1 = FindNodeByUuid(
+      local_or_syncable_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, local_or_syncable_folder_b1);
+  EXPECT_EQ(u"Folder B1", local_or_syncable_folder_b1->GetTitle());
+  // The node ID gets reassigned. The precise value isn't important, but it is
+  // added here as overly-strict requirement to document the behavior.
+  EXPECT_EQ(5, local_or_syncable_folder_b1->id());
+
+  const BookmarkNode* account_folder_b1 = FindNodeByUuid(
+      account_uuid_index, "da47f36f-050f-4ac9-aa35-ab0d93d39f95");
+  ASSERT_NE(nullptr, account_folder_b1);
+  EXPECT_EQ(u"Folder B1", account_folder_b1->GetTitle());
+  // The node ID gets reassigned. The precise value isn't important, but it is
+  // added here as overly-strict requirement to document the behavior.
+  EXPECT_EQ(14, account_folder_b1->id());
 }
 
 }  // namespace

@@ -65,12 +65,11 @@ void AssertNodesEqual(const BookmarkNode* expected,
   EXPECT_EQ(expected->uuid(), actual->uuid());
   EXPECT_EQ(expected->GetTitle(), actual->GetTitle());
   EXPECT_EQ(expected->type(), actual->type());
-  EXPECT_TRUE(expected->date_added() == actual->date_added());
+  EXPECT_EQ(expected->date_added(), actual->date_added());
   if (expected->is_url()) {
     EXPECT_EQ(expected->url(), actual->url());
   } else {
-    EXPECT_TRUE(expected->date_folder_modified() ==
-                actual->date_folder_modified());
+    EXPECT_EQ(expected->date_folder_modified(), actual->date_folder_modified());
     ASSERT_EQ(expected->children().size(), actual->children().size());
     for (size_t i = 0; i < expected->children().size(); ++i) {
       AssertNodesEqual(expected->children()[i].get(),
@@ -161,13 +160,14 @@ class BookmarkCodecTest : public testing::Test {
 
   bool Decode(BookmarkCodec* codec,
               const base::Value::Dict& value,
+              std::set<int64_t> already_assigned_ids,
               BookmarkModel* model,
               std::string* sync_metadata_str) {
     int64_t max_id;
-    bool result = codec->Decode(value, AsMutable(model->bookmark_bar_node()),
-                                AsMutable(model->other_node()),
-                                AsMutable(model->mobile_node()), &max_id,
-                                sync_metadata_str);
+    bool result = codec->Decode(
+        value, already_assigned_ids, AsMutable(model->bookmark_bar_node()),
+        AsMutable(model->other_node()), AsMutable(model->mobile_node()),
+        &max_id, sync_metadata_str);
     model->set_next_node_id(max_id);
 
     return result;
@@ -185,7 +185,8 @@ class BookmarkCodecTest : public testing::Test {
     EXPECT_EQ("", decoder.StoredChecksumForTest());
 
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-    EXPECT_TRUE(Decode(&decoder, value, model.get(),
+    EXPECT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                       model.get(),
                        /*sync_metadata_str=*/sync_metadata_str));
 
     *computed_checksum = decoder.ComputedChecksumForTest();
@@ -350,7 +351,8 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, model_value, decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, model_value, /*already_assigned_ids=*/{},
+                     decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
   ASSERT_NO_FATAL_FAILURE(
       AssertModelsEqual(model_to_encode.get(), decoded_model.get()));
@@ -371,10 +373,109 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, model_value2, decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, model_value2, /*already_assigned_ids=*/{},
+                     decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
   ASSERT_NO_FATAL_FAILURE(
       AssertModelsEqual(decoded_model.get(), decoded_model2.get()));
+}
+
+TEST_F(BookmarkCodecTest, DecodeModel) {
+  base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  JSONFileValueDeserializer deserializer(test_file);
+  std::unique_ptr<base::Value> root =
+      deserializer.Deserialize(nullptr, nullptr);
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  std::string sync_metadata_str;
+  EXPECT_TRUE(Decode(&decoder, *(root->GetIfDict()),
+                     /*already_assigned_ids=*/{}, decoded_model.get(),
+                     &sync_metadata_str));
+
+  EXPECT_EQ("dummy-sync-metadata-1", sync_metadata_str);
+  EXPECT_FALSE(decoder.ids_reassigned());
+  EXPECT_FALSE(decoder.required_recovery());
+  EXPECT_EQ(decoder.release_assigned_ids(),
+            std::set<int64_t>({1, 2, 3, 4, 5, 6, 7, 9, 10}));
+  EXPECT_EQ(11, decoded_model->next_node_id());
+
+  // Compare with the content of model_with_sync_metadata_1.json.
+  ASSERT_EQ(1u, decoded_model->bookmark_bar_node()->children().size());
+  ASSERT_EQ(1u, decoded_model->other_node()->children().size());
+  ASSERT_EQ(1u, decoded_model->mobile_node()->children().size());
+
+  {
+    const BookmarkNode* actual_folder_a1 =
+        decoded_model->bookmark_bar_node()->children()[0].get();
+    ASSERT_EQ(1u, actual_folder_a1->children().size());
+
+    EXPECT_EQ(3, actual_folder_a1->id());
+    EXPECT_TRUE(actual_folder_a1->is_folder());
+    EXPECT_EQ(u"Folder A1", actual_folder_a1->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("cc30491d-e0bd-4112-9d09-52bf3b948ab2"),
+        actual_folder_a1->uuid());
+
+    EXPECT_EQ(5, actual_folder_a1->children()[0]->id());
+    EXPECT_FALSE(actual_folder_a1->children()[0]->is_folder());
+    EXPECT_EQ(
+        GURL("chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html#3"),
+        actual_folder_a1->children()[0]->url());
+    EXPECT_EQ(u"Bookmark Manager", actual_folder_a1->children()[0]->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("8976663c-4b6e-4abc-ae57-0d136b88c2f5"),
+        actual_folder_a1->children()[0]->uuid());
+  }
+
+  {
+    const BookmarkNode* actual_folder_b1 =
+        decoded_model->other_node()->children()[0].get();
+    ASSERT_EQ(1u, actual_folder_b1->children().size());
+
+    EXPECT_EQ(4, actual_folder_b1->id());
+    EXPECT_TRUE(actual_folder_b1->is_folder());
+    EXPECT_EQ(u"Folder B1", actual_folder_b1->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("da47f36f-050f-4ac9-aa35-ab0d93d39f95"),
+        actual_folder_b1->uuid());
+
+    EXPECT_EQ(6, actual_folder_b1->children()[0]->id());
+    EXPECT_FALSE(actual_folder_b1->children()[0]->is_folder());
+    EXPECT_EQ(GURL("http://tools.google.com/chrome/intl/en/welcome.html"),
+              actual_folder_b1->children()[0]->url());
+    EXPECT_EQ(u"Get started with Google Chrome",
+              actual_folder_b1->children()[0]->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("b180b384-16cf-4149-9c43-be70d2adb56e"),
+        actual_folder_b1->children()[0]->uuid());
+  }
+
+  {
+    const BookmarkNode* actual_folder_c1 =
+        decoded_model->mobile_node()->children()[0].get();
+    ASSERT_EQ(1u, actual_folder_c1->children().size());
+
+    EXPECT_EQ(7, actual_folder_c1->id());
+    EXPECT_TRUE(actual_folder_c1->is_folder());
+    EXPECT_EQ(u"Folder C1", actual_folder_c1->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("00ae74aa-1149-4abd-bac3-bad9f61d608e"),
+        actual_folder_c1->uuid());
+
+    EXPECT_EQ(9, actual_folder_c1->children()[0]->id());
+    EXPECT_FALSE(actual_folder_c1->children()[0]->is_folder());
+    EXPECT_EQ(GURL("chrome://settings/"),
+              actual_folder_c1->children()[0]->url());
+    EXPECT_EQ(u"Settings", actual_folder_c1->children()[0]->GetTitle());
+    EXPECT_EQ(
+        base::Uuid::ParseLowercase("acd44d5d-2f17-4c6f-b443-fa2721178e52"),
+        actual_folder_c1->children()[0]->uuid());
+  }
 }
 
 TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
@@ -389,8 +490,81 @@ TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  EXPECT_FALSE(Decode(&decoder, *(root->GetIfDict()), decoded_model.get(),
+  EXPECT_FALSE(Decode(&decoder, *(root->GetIfDict()),
+                      /*already_assigned_ids=*/{}, decoded_model.get(),
                       /*sync_metadata_str=*/nullptr));
+}
+
+TEST_F(BookmarkCodecTest, DecodeWithDuplicateIds) {
+  base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  JSONFileValueDeserializer deserializer(test_file);
+  std::unique_ptr<base::Value> root =
+      deserializer.Deserialize(nullptr, nullptr);
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  EXPECT_TRUE(Decode(&decoder, *(root->GetIfDict()),
+                     /*already_assigned_ids=*/{}, decoded_model.get(),
+                     /*sync_metadata_str=*/nullptr));
+
+  EXPECT_TRUE(decoder.ids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
+
+  EXPECT_EQ(decoder.release_assigned_ids(),
+            std::set<int64_t>({1, 2, 3, 4, 5, 6, 7, 8, 9}));
+  EXPECT_EQ(10, decoded_model->next_node_id());
+}
+
+TEST_F(BookmarkCodecTest, DecodeWithAlreadyAssignedIds) {
+  base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  JSONFileValueDeserializer deserializer(test_file);
+  std::unique_ptr<base::Value> root =
+      deserializer.Deserialize(nullptr, nullptr);
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  EXPECT_TRUE(Decode(&decoder, *(root->GetIfDict()),
+                     /*already_assigned_ids=*/{1, 2, 3}, decoded_model.get(),
+                     /*sync_metadata_str=*/nullptr));
+
+  EXPECT_TRUE(decoder.ids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
+
+  EXPECT_EQ(decoder.release_assigned_ids(),
+            std::set<int64_t>({4, 5, 6, 7, 8, 9, 10, 11, 12}));
+  EXPECT_EQ(13, decoded_model->next_node_id());
+}
+
+TEST_F(BookmarkCodecTest, DecodeWithDuplicateIdsAndAlreadyAssignedIds) {
+  base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_duplicate_ids.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  JSONFileValueDeserializer deserializer(test_file);
+  std::unique_ptr<base::Value> root =
+      deserializer.Deserialize(nullptr, nullptr);
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  EXPECT_TRUE(Decode(&decoder, *(root->GetIfDict()),
+                     /*already_assigned_ids=*/{1, 2, 3}, decoded_model.get(),
+                     /*sync_metadata_str=*/nullptr));
+
+  EXPECT_TRUE(decoder.ids_reassigned());
+  EXPECT_TRUE(decoder.required_recovery());
+
+  EXPECT_EQ(decoder.release_assigned_ids(),
+            std::set<int64_t>({4, 5, 6, 7, 8, 9, 10, 11, 12}));
+  EXPECT_EQ(13, decoded_model->next_node_id());
 }
 
 TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {
@@ -428,7 +602,8 @@ TEST_F(BookmarkCodecTest, CanDecodeMetaInfoAsString) {
 
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *(root->GetIfDict()), model.get(),
+  ASSERT_TRUE(Decode(&decoder, *(root->GetIfDict()),
+                     /*already_assigned_ids=*/{}, model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   const BookmarkNode* bbn = model->bookmark_bar_node();
@@ -493,7 +668,8 @@ TEST_F(BookmarkCodecTest, ReassignEmptyUuid) {
   std::unique_ptr<BookmarkModel> decoded_model1(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder1;
-  ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
+  ASSERT_TRUE(Decode(&decoder1, value, /*already_assigned_ids=*/{},
+                     decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_FALSE(decoder1.required_recovery());
@@ -510,7 +686,8 @@ TEST_F(BookmarkCodecTest, ReassignEmptyUuid) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, /*already_assigned_ids=*/{},
+                     decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   const base::Uuid uuid = base::Uuid::ParseCaseInsensitive(original_uuid_str);
@@ -530,7 +707,8 @@ TEST_F(BookmarkCodecTest, ReassignMissingUuid) {
   std::unique_ptr<BookmarkModel> decoded_model1(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder1;
-  ASSERT_TRUE(Decode(&decoder1, value, decoded_model1.get(),
+  ASSERT_TRUE(Decode(&decoder1, value, /*already_assigned_ids=*/{},
+                     decoded_model1.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_FALSE(decoder1.required_recovery());
@@ -547,7 +725,8 @@ TEST_F(BookmarkCodecTest, ReassignMissingUuid) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, /*already_assigned_ids=*/{},
+                     decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   const base::Uuid uuid = base::Uuid::ParseCaseInsensitive(original_uuid_str);
@@ -580,7 +759,8 @@ TEST_F(BookmarkCodecTest, ReassignInvalidUuid) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                     decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(decoder.required_recovery());
@@ -615,7 +795,8 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateUuid) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                     decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(decoder.required_recovery());
@@ -642,7 +823,8 @@ TEST_F(BookmarkCodecTest, ReassignBannedUuid) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                     decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(decoder.required_recovery());
@@ -672,7 +854,8 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateUuid) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
+  ASSERT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
+                     decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(decoder.required_recovery());
@@ -698,7 +881,8 @@ TEST_F(BookmarkCodecTest, CanonicalizeUuid) {
   std::unique_ptr<BookmarkModel> decoded_model2(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder2;
-  ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
+  ASSERT_TRUE(Decode(&decoder2, value, /*already_assigned_ids=*/{},
+                     decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_EQ(kGuid, decoded_model2->bookmark_bar_node()->children()[0]->uuid());
