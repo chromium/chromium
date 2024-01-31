@@ -143,12 +143,12 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     NSString* certificateDetails = BuildCertificateDetailString(status, URL);
 
     if (IsRevampPageInfoIosEnabled()) {
-      dataHolder.message = dataHolder.message = BuildMessage(@[
+      dataHolder.message = BuildMessage(@[
         l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_DETAILS),
         certificateDetails
       ]);
     } else {
-      dataHolder.message = dataHolder.message = BuildMessage(@[
+      dataHolder.message = BuildMessage(@[
         [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
                                    l10n_util::GetNSString(
                                        IDS_PAGE_INFO_NOT_SECURE_DETAILS),
@@ -183,14 +183,18 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     if (IsRevampPageInfoIosEnabled()) {
-      dataHolder.message =
-          l10n_util::GetNSString(IDS_PAGE_INFO_MIXED_CONTENT_DETAILS);
+      dataHolder.message = BuildMessage(@[
+        l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_DETAILS),
+        certificateDetails
+      ]);
     } else {
-      dataHolder.message =
-          [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                                     l10n_util::GetNSString(
-                                         IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
-                                     l10n_util::GetNSString(IDS_LEARN_MORE)];
+      dataHolder.message = BuildMessage(@[
+        [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
+                                   l10n_util::GetNSString(
+                                       IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
+                                   l10n_util::GetNSString(IDS_LEARN_MORE)],
+        certificateDetails
+      ]);
     }
 
     return dataHolder;
