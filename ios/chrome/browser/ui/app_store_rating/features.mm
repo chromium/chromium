@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
 
 BASE_FEATURE(kAppStoreRating,
              "AppStoreRating",

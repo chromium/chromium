@@ -85,7 +85,7 @@ source_set("commands") {
     "//components/plus_addresses",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
     "//ios/chrome/browser/discover_feed/model:constants",
-    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager/model:constants",
   ]
 }
 

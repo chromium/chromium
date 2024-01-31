@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/promos_manager/constants.h"
+#include "ios/chrome/browser/promos_manager/model/constants.h"
 
 #include <optional>
 

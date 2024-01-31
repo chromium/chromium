@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_impl.h"
 
 #import <Foundation/Foundation.h>
 
@@ -22,10 +22,10 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 using promos_manager::Promo;

@@ -72,7 +72,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/promos_manager:factory",
+    "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",

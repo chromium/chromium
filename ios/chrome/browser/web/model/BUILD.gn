@@ -283,7 +283,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/search_engines/model",

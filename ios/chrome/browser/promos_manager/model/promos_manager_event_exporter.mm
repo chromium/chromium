@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
 
 #import "base/values.h"
 #import "components/feature_engagement/public/configuration.h"
 #import "components/feature_engagement/public/feature_configurations.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 PromosManagerEventExporter::PromosManagerEventExporter(PrefService* local_state)

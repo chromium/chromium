@@ -13,7 +13,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/passwords/model",
-  "+ios/chrome/browser/promos_manager",
+  "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/sessions",

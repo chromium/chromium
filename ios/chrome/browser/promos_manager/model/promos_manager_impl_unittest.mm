@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_impl.h"
 
 #import <Foundation/Foundation.h>
 
@@ -18,12 +18,12 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/promo.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/model/promo.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"

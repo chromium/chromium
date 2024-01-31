@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_IMPL_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_IMPL_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_IMPL_H_
 
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
 #import <Foundation/Foundation.h>
 
@@ -19,9 +19,9 @@
 #import "base/time/clock.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -111,4 +111,4 @@ class PromosManagerImpl : public PromosManager {
   base::WeakPtrFactory<PromosManagerImpl> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_IMPL_H_

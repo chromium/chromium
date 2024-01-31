@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
 
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

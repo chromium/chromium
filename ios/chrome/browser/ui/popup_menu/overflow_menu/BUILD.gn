@@ -194,7 +194,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:test_support",
-    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

@@ -8,7 +8,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory_util.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

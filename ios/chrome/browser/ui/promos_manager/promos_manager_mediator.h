@@ -11,7 +11,7 @@
 #import <optional>
 
 #import "base/containers/small_map.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
 // Data used and cached to know what promo to show.
 struct PromoDisplayData {

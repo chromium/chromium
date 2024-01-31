@@ -9,9 +9,9 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {

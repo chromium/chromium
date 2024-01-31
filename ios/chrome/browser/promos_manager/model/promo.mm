@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promo.h"
+#import "ios/chrome/browser/promos_manager/model/promo.h"
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
 
 @implementation Promo
 

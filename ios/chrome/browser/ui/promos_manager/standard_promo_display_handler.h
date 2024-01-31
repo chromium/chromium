@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/ui/promos_manager/promo_protocol.h"
 
 // StandardPromoDisplayHandler enables feature teams to completely handle

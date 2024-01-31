@@ -103,7 +103,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/strings",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

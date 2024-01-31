@@ -8,7 +8,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 

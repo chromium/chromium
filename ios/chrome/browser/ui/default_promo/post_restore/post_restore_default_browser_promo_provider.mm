@@ -8,7 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/metrics.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"

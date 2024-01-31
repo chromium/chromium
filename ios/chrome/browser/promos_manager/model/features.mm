@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
 
 #import "base/feature_list.h"
 
