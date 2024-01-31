@@ -56,7 +56,7 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.check_status = FormFieldData::CheckStatus::kChecked;
   f.role = FormFieldData::RoleAttribute::kOther;
   f.is_focusable = true;
-  f.unique_renderer_id = FieldRendererId(renderer_id++);
+  f.renderer_id = FieldRendererId(renderer_id++);
   return f;
 }
 
@@ -178,7 +178,7 @@ TEST_F(FormDataAndroidTest, SimilarFormAs) {
 
   // If their global ids differ, they are not similar.
   f = af.form();
-  f.unique_renderer_id = FormRendererId(f.unique_renderer_id.value() + 1);
+  f.renderer_id = FormRendererId(f.renderer_id.value() + 1);
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
@@ -223,7 +223,7 @@ TEST_F(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
             FormDataAndroid::kFormsAreSimilar);
 
   f = af.form();
-  f.unique_renderer_id = FormRendererId(f.unique_renderer_id.value() + 1);
+  f.renderer_id = FormRendererId(f.renderer_id.value() + 1);
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kGlobalId));
 

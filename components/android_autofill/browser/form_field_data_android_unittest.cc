@@ -169,7 +169,7 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs) {
 
   // If global ids differ, they are not similar.
   f2 = f1;
-  f2.unique_renderer_id = FieldRendererId(f1.unique_renderer_id.value() + 1);
+  f2.renderer_id = FieldRendererId(f1.renderer_id.value() + 1);
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 

@@ -87,7 +87,7 @@ void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   auto SimilarityTuple = [](const FormFieldData& f) {
     return std::tuple_cat(
-        std::tie(f.host_frame, f.unique_renderer_id, f.name, f.name_attribute,
+        std::tie(f.host_frame, f.renderer_id, f.name, f.name_attribute,
                  f.id_attribute, f.form_control_type),
         std::make_tuple(IsCheckable(f.check_status)));
   };

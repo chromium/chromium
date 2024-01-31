@@ -108,7 +108,7 @@ auto SaveSessionId(SessionId* session_id) {
 
 FormData CreateTestLoginForm() {
   FormData form;
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"login_form";
   form.url = GURL("https://foo.com/form.html");
   form.action = GURL("https://foo.com/submit.html");
