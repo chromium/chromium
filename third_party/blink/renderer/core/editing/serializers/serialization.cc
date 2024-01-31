@@ -933,7 +933,7 @@ constexpr unsigned kMaxSanitizationIterations = 16;
 
 }  // namespace
 
-String CreateSanitizedMarkupWithContext(
+String CreateStrictlyProcessedMarkupWithContext(
     Document& document,
     const String& raw_markup,
     unsigned fragment_start,
@@ -1007,13 +1007,13 @@ String CreateSanitizedMarkupWithContext(
   return final_markup;
 }
 
-DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
+DocumentFragment* CreateStrictlyProcessedFragmentFromMarkupWithContext(
     Document& document,
     const String& raw_markup,
     unsigned fragment_start,
     unsigned fragment_end,
     const String& base_url) {
-  String sanitized_markup = CreateSanitizedMarkupWithContext(
+  String sanitized_markup = CreateStrictlyProcessedMarkupWithContext(
       document, raw_markup, fragment_start, fragment_end, KURL());
   if (sanitized_markup.IsNull())
     return nullptr;

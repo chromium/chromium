@@ -159,11 +159,11 @@ class ClipboardHtmlReader final : public ClipboardReader {
       return;
     }
 
-    // Sanitize the HTML string if needed.
-    // `CreateSanitizedMarkupWithContext` must be called on the main thread
-    // because HTML DOM nodes can only be used on the main thread.
+    // Process the HTML string and strip out certain security sensitive tags if
+    // needed. `CreateStrictlyProcessedMarkupWithContext` must be called on the
+    // main thread because HTML DOM nodes can only be used on the main thread.
     String final_html =
-        sanitize_html_ ? CreateSanitizedMarkupWithContext(
+        sanitize_html_ ? CreateStrictlyProcessedMarkupWithContext(
                              *frame->GetDocument(), html_string, fragment_start,
                              fragment_end, url, kIncludeNode, kResolveAllURLs)
                        : html_string;
@@ -236,22 +236,23 @@ class ClipboardSvgReader final : public ClipboardReader {
       return;
     }
 
-    // Now sanitize the SVG string.
+    // Now process the SVG string and strip out certain security sensitive tags.
     KURL url;
     unsigned fragment_start = 0;
-    String sanitized_svg = CreateSanitizedMarkupWithContext(
+    String strictly_processed_svg = CreateStrictlyProcessedMarkupWithContext(
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
         url, kIncludeNode, kResolveAllURLs);
 
-    if (sanitized_svg.empty()) {
+    if (strictly_processed_svg.empty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardSvgReader::EncodeOnBackgroundThread,
-                       std::move(sanitized_svg), MakeCrossThreadHandle(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardSvgReader::EncodeOnBackgroundThread,
+                            std::move(strictly_processed_svg),
+                            MakeCrossThreadHandle(this),
+                            std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
