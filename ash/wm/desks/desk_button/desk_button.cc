@@ -41,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -296,7 +297,10 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
       if (auto* summary =
               desk_profiles_delegate->GetProfilesSnapshotByProfileId(
                   active_desk->lacros_profile_id())) {
-        desk_avatar_image_ = summary->icon;
+        desk_avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+            summary->icon, skia::ImageOperations::RESIZE_BEST,
+            kDeskButtonAvatarSize);
+
         desk_avatar_view_->SetImage(desk_avatar_image_);
         desk_avatar_view_->SetImageSize(kDeskButtonAvatarSize);
         desk_avatar_view_->SetVisible(true);
