@@ -1001,6 +1001,10 @@ extern const char kFileSystemAccessLockingSchemeDescription[];
 extern const char kFileSystemAccessPersistentPermissionName[];
 extern const char kFileSystemAccessPersistentPermissionDescription[];
 
+extern const char kFileSystemAccessPersistentPermissionUpdatedPageInfoName[];
+extern const char
+    kFileSystemAccessPersistentPermissionUpdatedPageInfoDescription[];
+
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 

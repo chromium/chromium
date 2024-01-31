@@ -23901,6 +23901,8 @@ from previous Chrome versions.
   <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
+  <int value="1528633042"
+      label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:disabled"/>
   <int value="1529285725"
       label="VirtualKeyboardGlobalEmojiPreferences:disabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
@@ -24545,6 +24547,8 @@ from previous Chrome versions.
   <int value="1819256299" label="disable-webrtc-hw-decoding"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
+  <int value="1820359113"
+      label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:enabled"/>
   <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>

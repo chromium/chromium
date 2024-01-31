@@ -7479,6 +7479,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFileSystemAccessPersistentPermissions)},
 
+    {"file-system-access-persistent-permission-updated-page-info",
+     flag_descriptions::
+         kFileSystemAccessPersistentPermissionUpdatedPageInfoName,
+     flag_descriptions::
+         kFileSystemAccessPersistentPermissionUpdatedPageInfoDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo)},
+
     {"file-system-observer", flag_descriptions::kFileSystemObserverName,
      flag_descriptions::kFileSystemObserverDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemObserver)},

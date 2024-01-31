@@ -1782,6 +1782,13 @@ const char kFileSystemAccessPersistentPermissionDescription[] =
     "Allows users to opt in to keep the file system permission persistent "
     "across visits and to restore recently granted file permissions.";
 
+const char kFileSystemAccessPersistentPermissionUpdatedPageInfoName[] =
+    "Updated Page Info UI for the File System Access API Persistent "
+    "Permissions";
+const char kFileSystemAccessPersistentPermissionUpdatedPageInfoDescription[] =
+    "Allows users to opt in to the updated Page Info UI component for the "
+    "File System Access persistent permissions feature.";
+
 const char kFileSystemObserverName[] = "FileSystemObserver";
 const char kFileSystemObserverDescription[] =
     "Enables the FileSystemObserver interface, which allows websites to be "
