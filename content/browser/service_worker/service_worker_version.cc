@@ -3090,6 +3090,28 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
   return true;
 }
 
+bool ServiceWorkerVersion::NeedRouterEvaluate() const {
+  // If there's no router, return false.
+  if (!router_evaluator_) {
+    return false;
+  }
+  // If the router has non fetch-event source e.g. cache, we can't skip the
+  // router evaluate.
+  if (router_evaluator_->has_non_fetch_event_source()) {
+    return true;
+  }
+  // In this case, there are router rules, but all sources are "fetch-event".
+  switch (fetch_handler_type()) {
+    case FetchHandlerType::kNoHandler:
+      // If there's no fetch handler, we can skip the router evaluate because
+      // the router evaluation will be no-op.
+      return false;
+    case FetchHandlerType::kEmptyFetchHandler:
+    case FetchHandlerType::kNotSkippable:
+      return true;
+  }
+}
+
 bool ServiceWorkerVersion::IsStaticRouterEnabled() {
   if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter)) {
     return true;
@@ -3099,13 +3121,6 @@ bool ServiceWorkerVersion::IsStaticRouterEnabled() {
     return true;
   }
   return false;
-}
-
-bool ServiceWorkerVersion::HasRouterWithNonFetchEventSource() const {
-  if (!router_evaluator_) {
-    return false;
-  }
-  return router_evaluator_->has_non_fetch_event_source();
 }
 
 void ServiceWorkerVersion::GetAssociatedInterface(

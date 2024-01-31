@@ -525,12 +525,15 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     container_host_->AddServiceWorkerToUpdate(active_version);
   }
 
+  // If the router evaluation is needed, always forward to the service worker.
+  // Because the router evaluation is done in ServiceWorkerMainResourceLoader.
+  if (active_version->NeedRouterEvaluate()) {
+    CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+    return;
+  }
+
   switch (active_version->EffectiveFetchHandlerType()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
-      // When we have non-fetch router rules, we cannot skip service worker.
-      if (active_version->HasRouterWithNonFetchEventSource()) {
-        break;
-      }
       RecordSkipReason(FetchHandlerSkipReason::kNoFetchHandler);
       TRACE_EVENT_WITH_FLOW1(
           "ServiceWorker",
@@ -542,10 +545,6 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler: {
-      // When we have non-fetch router rules, we cannot skip service worker.
-      if (active_version->HasRouterWithNonFetchEventSource()) {
-        break;
-      }
       RecordSkipReason(FetchHandlerSkipReason::kSkippedForEmptyFetchHandler);
       TRACE_EVENT_WITH_FLOW2(
           "ServiceWorker",
@@ -656,11 +655,15 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
 
   // Finally, we want to forward to the service worker! Make a
   // ServiceWorkerMainResourceLoader which does that work.
+  CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+}
+
+void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
+    base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_,
           std::move(find_registration_start_time)));
-
   std::move(loader_callback_)
       .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
