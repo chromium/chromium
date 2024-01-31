@@ -4035,7 +4035,7 @@
           Press unlock on the device to continue the update process.
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update." translateable="false">
-          Do not turn off your computer or remove the AC adaptor while the update is in progress.
+          Do not turn off your computer or remove the AC adapter while the update is in progress.
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
           Unplug and replug the device, then install the firmware.
