@@ -5650,11 +5650,6 @@ const char kAudioAPNoiseCancellationName[] = "Audio noise cancellation on AP";
 const char kAudioAPNoiseCancellationDescription[] =
     "Enable noise cancellation on AP";
 
-const char kAudioFlexibleLoopbackName[] =
-    "ChromeOS flexible loopback API support";
-const char kAudioFlexibleLoopbackDescription[] =
-    "Enable flexible loopback API support in ChromeOS.";
-
 const char kAudioHFPMicSRName[] =
     "Audio super-resolution Bluetooth HFP microphone";
 const char kAudioHFPMicSRDescription[] =

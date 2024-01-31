@@ -475,11 +475,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "audio-flexible-loopback",
-    "owners": ["aaronyu@chromium.org", "htcheong@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "audio-flexible-loopback-for-system-loopback",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 130
