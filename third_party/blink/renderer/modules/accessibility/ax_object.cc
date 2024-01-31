@@ -6118,23 +6118,22 @@ bool AXObject::IsScrollableContainer() const {
 }
 
 bool AXObject::IsUserScrollable() const {
-  Node* node = GetNode();
-  if (!node) {
-    return false;
+  // TODO(accessibility) Actually expose correct info on whether a doc is
+  // is scrollable or not. Unfortunately IsScrollableContainer() always returns
+  // true anyway. For now, just expose as scrollable unless overflow is hidden.
+  if (IsWebArea()) {
+    if (!GetScrollableAreaIfScrollable() || !GetLayoutObject())
+      return false;
+
+    const ComputedStyle* style = GetLayoutObject()->Style();
+    if (!style)
+      return false;
+
+    return style->ScrollsOverflowY() || style->ScrollsOverflowX();
   }
 
-  // The element that scrolls the document is not the document itself.
-  if (node->IsDocumentNode()) {
-    Document& document = node->GetDocument();
-    return document.GetLayoutView()->IsUserScrollable();
-  }
-
-  LayoutBox* layout_box = DynamicTo<LayoutBox>(node->GetLayoutObject());
-  if (!layout_box) {
-    return false;
-  }
-
-  return layout_box->IsUserScrollable();
+  return GetLayoutObject() && GetLayoutObject()->IsBox() &&
+         To<LayoutBox>(GetLayoutObject())->IsUserScrollable();
 }
 
 gfx::Point AXObject::GetScrollOffset() const {

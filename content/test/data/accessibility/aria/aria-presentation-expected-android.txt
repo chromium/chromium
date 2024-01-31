@@ -1,2 +1,2 @@
-android.webkit.WebView focusable focused
+android.webkit.WebView focusable focused scrollable
 ++android.widget.TextView name='aria-role presentation'

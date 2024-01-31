@@ -1,4 +1,4 @@
-[document web] name='Action verbs' actions=(doDefault, showContextMenu)
+[document web] name='Action verbs' actions=(doDefault, showContextMenu, scrollBackward, scrollDown, scrollForward, scrollLeft, scrollRight, scrollUp)
 ++[section] actions=(doDefault, showContextMenu)
 ++++[static] name='Generic div' actions=(doDefault, showContextMenu)
 ++[heading] name='Heading' actions=(doDefault, showContextMenu)
