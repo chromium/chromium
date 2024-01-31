@@ -41,6 +41,7 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
                             label,
                             gfx::Insets::VH(10, 12)),
       icon_(icon) {
+  SetTooltipText(label);
   SetPreferredSize(gfx::Size(kButtonWidth, kActionTypeButtonHeight));
   SetVisible(true);
   SetBackground(views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
@@ -64,6 +65,29 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
 }
 
 ActionTypeButton::~ActionTypeButton() = default;
+
+void ActionTypeButton::RefreshColors() {
+  const bool is_selected = selected();
+  auto active_color_id = is_selected ? cros_tokens::kCrosSysPrimary
+                                     : cros_tokens::kCrosSysOnSurface;
+  auto disabled_color_id = is_selected
+                               ? ash::kColorAshIconPrimaryDisabledColor
+                               : ash::kColorAshIconSecondaryDisabledColor;
+  SetEnabledTextColorIds(active_color_id);
+  SetTextColorId(ButtonState::STATE_DISABLED, disabled_color_id);
+  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
+                                  cros_tokens::kCrosSysHighlightShape,
+                                  /*radius=*/kCornerRadius)
+                            : views::CreateRoundedRectBackground(
+                                  SK_ColorTRANSPARENT,
+                                  /*radius=*/kCornerRadius));
+  SetBorder(is_selected
+                ? views::CreateEmptyBorder(/*thickness=*/kBorderThickness)
+                : views::CreateThemedRoundedRectBorder(
+                      /*thickness=*/kBorderThickness,
+                      /*radius=*/kCornerRadius,
+                      cros_tokens::kCrosSysHoverOnSubtle));
+}
 
 void ActionTypeButton::Layout() {
   SizeToPreferredSize();
@@ -113,27 +137,12 @@ void ActionTypeButton::OnThemeChanged() {
   RefreshColors();
 }
 
-void ActionTypeButton::RefreshColors() {
-  const bool is_selected = selected();
-  auto active_color_id = is_selected ? cros_tokens::kCrosSysPrimary
-                                     : cros_tokens::kCrosSysOnSurface;
-  auto disabled_color_id = is_selected
-                               ? ash::kColorAshIconPrimaryDisabledColor
-                               : ash::kColorAshIconSecondaryDisabledColor;
-  SetEnabledTextColorIds(active_color_id);
-  SetTextColorId(ButtonState::STATE_DISABLED, disabled_color_id);
-  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
-                                  cros_tokens::kCrosSysHighlightShape,
-                                  /*radius=*/kCornerRadius)
-                            : views::CreateRoundedRectBackground(
-                                  SK_ColorTRANSPARENT,
-                                  /*radius=*/kCornerRadius));
-  SetBorder(is_selected
-                ? views::CreateEmptyBorder(/*thickness=*/kBorderThickness)
-                : views::CreateThemedRoundedRectBorder(
-                      /*thickness=*/kBorderThickness,
-                      /*radius=*/kCornerRadius,
-                      cros_tokens::kCrosSysHoverOnSubtle));
+void ActionTypeButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  ash::OptionButtonBase::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kRadioButton;
+  node_data->SetName(label()->GetText());
+  node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
+                                        : ax::mojom::CheckedState::kFalse);
 }
 
 BEGIN_METADATA(ActionTypeButton)

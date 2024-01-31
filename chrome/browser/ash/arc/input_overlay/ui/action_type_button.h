@@ -42,6 +42,8 @@ class ActionTypeButton : public ash::OptionButtonBase {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  // Assigns a11y name/label and a11y role as a radio button.
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   const raw_ref<const gfx::VectorIcon> icon_;
 };
