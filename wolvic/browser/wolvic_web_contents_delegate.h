@@ -33,6 +33,10 @@ class WolvicWebContentsDelegate
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) final;
 
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
+      content::WebContents* web_contents,
+      SkColor color,
+      const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) override;
 
  private:
   std::unique_ptr<content::WebContents> new_contents_;
