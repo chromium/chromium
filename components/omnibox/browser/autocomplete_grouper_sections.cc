@@ -17,7 +17,7 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 namespace {
-constexpr size_t kAndroidMostVisitedTilesLimit = 10;
+constexpr size_t kMobileMostVisitedTilesLimit = 10;
 }
 
 Section::Section(size_t limit,
@@ -145,34 +145,17 @@ AndroidSRPZpsSection::AndroidSRPZpsSection(
 
 AndroidWebZpsSection::AndroidWebZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(15,  // Excludes MV tile count (calculated at runtime).
-                 {
-                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {kAndroidMostVisitedTilesLimit,
-                      omnibox::GROUP_MOBILE_MOST_VISITED},
-                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
-                     {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
-
-void AndroidWebZpsSection::InitFromMatches(ACMatches& matches) {
-  size_t tile_count = std::count_if(
-      matches.begin(), matches.end(), [](const AutocompleteMatch& m) {
-        return m.suggestion_group_id.value_or(omnibox::GROUP_INVALID) ==
-               omnibox::GROUP_MOBILE_MOST_VISITED;
-      });
-  // In the event we find more MV tiles than we can accommodate, trim the limit.
-  limit_ += std::min(tile_count, kAndroidMostVisitedTilesLimit);
-  // Note that the horizontal render group takes a single slot in vertical list:
-  // we therefore count it as an individual item, meaning this list:
-  //     [ URL_WHAT_YOU_TYPED    ]
-  //     [ [MV] [MV] [MV] [MV]   ]
-  //     [ SEARCH_SUGGEST        ]
-  // has 3 elements built from 6 AutocompleteMatch objects.
-  limit_ -= (tile_count ? 1 : 0);
-  ZpsSection::InitFromMatches(matches);
-}
+    : ZpsSectionWithMVTiles(
+          15,  // Excludes MV tile count (calculated at runtime).
+          {
+              {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+              {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+              {kMobileMostVisitedTilesLimit,
+               omnibox::GROUP_MOBILE_MOST_VISITED},
+              {8, omnibox::GROUP_VISITED_DOC_RELATED},
+              {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+          },
+          group_configs) {}
 
 DesktopNTPZpsSection::DesktopNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
@@ -262,6 +245,30 @@ void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
   }
 }
 
+ZpsSectionWithMVTiles::ZpsSectionWithMVTiles(
+    size_t limit,
+    Groups groups,
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(limit, groups, group_configs) {}
+
+void ZpsSectionWithMVTiles::InitFromMatches(ACMatches& matches) {
+  size_t tile_count = std::count_if(
+      matches.begin(), matches.end(), [](const AutocompleteMatch& m) {
+        return m.suggestion_group_id.value_or(omnibox::GROUP_INVALID) ==
+               omnibox::GROUP_MOBILE_MOST_VISITED;
+      });
+  // In the event we find more MV tiles than we can accommodate, trim the limit.
+  limit_ += std::min(tile_count, kMobileMostVisitedTilesLimit);
+  // Note that the horizontal render group takes a single slot in vertical list:
+  // we therefore count it as an individual item, meaning this list:
+  //     [ URL_WHAT_YOU_TYPED    ]
+  //     [ [MV] [MV] [MV] [MV]   ]
+  //     [ SEARCH_SUGGEST        ]
+  // has 3 elements built from 6 AutocompleteMatch objects.
+  limit_ -= (tile_count ? 1 : 0);
+  ZpsSection::InitFromMatches(matches);
+}
+
 IOSNTPZpsSection::IOSNTPZpsSection(size_t max_trending_queries,
                                    size_t max_psuggest_queries,
                                    omnibox::GroupConfigMap& group_configs)
@@ -275,28 +282,30 @@ IOSNTPZpsSection::IOSNTPZpsSection(size_t max_trending_queries,
           group_configs) {}
 
 IOSSRPZpsSection::IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(20,
-                 {
-                     // Verbatim match:
-                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    : ZpsSectionWithMVTiles(20,
+                            {
+                                // Verbatim match:
+                                {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                                {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                                {kMobileMostVisitedTilesLimit,
+                                 omnibox::GROUP_MOBILE_MOST_VISITED},
+                                {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                                {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                            },
+                            group_configs) {}
 
 IOSWebZpsSection::IOSWebZpsSection(omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(20,
-                 {
-                     // Verbatim match:
-                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
-                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    : ZpsSectionWithMVTiles(20,
+                            {
+                                // Verbatim match:
+                                {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                                {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                                {kMobileMostVisitedTilesLimit,
+                                 omnibox::GROUP_MOBILE_MOST_VISITED},
+                                {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                                {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                            },
+                            group_configs) {}
 
 IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
@@ -309,26 +318,28 @@ IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
 
 IOSIpadSRPZpsSection::IOSIpadSRPZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(10,
-                 {
-                     // Verbatim match:
-                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    : ZpsSectionWithMVTiles(10,
+                            {
+                                // Verbatim match:
+                                {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                                {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                                {kMobileMostVisitedTilesLimit,
+                                 omnibox::GROUP_MOBILE_MOST_VISITED},
+                                {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                                {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                            },
+                            group_configs) {}
 
 IOSIpadWebZpsSection::IOSIpadWebZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(10,
-                 {
-                     // Verbatim match:
-                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
-                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    : ZpsSectionWithMVTiles(10,
+                            {
+                                // Verbatim match:
+                                {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                                {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                                {kMobileMostVisitedTilesLimit,
+                                 omnibox::GROUP_MOBILE_MOST_VISITED},
+                                {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                                {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                            },
+                            group_configs) {}

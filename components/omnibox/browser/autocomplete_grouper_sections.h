@@ -61,6 +61,17 @@ class ZpsSection : public Section {
   void InitFromMatches(ACMatches& matches) override;
 };
 
+// A ZpsSection that automatically counts all MV Tiles as one suggestion when
+// applying the total limit.
+class ZpsSectionWithMVTiles : public ZpsSection {
+ public:
+  explicit ZpsSectionWithMVTiles(size_t limit,
+                                 Groups groups,
+                                 omnibox::GroupConfigMap& group_configs);
+  // Section:
+  void InitFromMatches(ACMatches& matches) override;
+};
+
 // Section expressing the Android ZPS limits and grouping for the NTP.
 // - up to 15 + `max_related_queries` + `max_trending_queries` suggestions
 //   total.
@@ -91,10 +102,9 @@ class AndroidSRPZpsSection : public ZpsSection {
 //  - up to 1 most visited carousel.
 //  - up to 8 page related suggestions.
 //  - up to 15 personalized suggestions.
-class AndroidWebZpsSection : public ZpsSection {
+class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
  public:
   explicit AndroidWebZpsSection(omnibox::GroupConfigMap& group_configs);
-  void InitFromMatches(ACMatches& matches) override;
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the NTP.
@@ -162,25 +172,25 @@ class IOSNTPZpsSection : public ZpsSection {
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the SRP.
-// - up to 20 suggestions total.
+// - up to 20 suggestions total (where all MV Tiles are counted for 1).
 //  - up to 1 verbatim suggestion.
 //  - up to 1 clipboard suggestion.
-//  - up to 1 most visited carousel.
+//  - up to 10 most visited in a carousel.
 //  - up to 8 previous search related suggestions.
 //  - up to 20 personalized suggestions.
-class IOSSRPZpsSection : public ZpsSection {
+class IOSSRPZpsSection : public ZpsSectionWithMVTiles {
  public:
   explicit IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the Web.
-// - up to 20 suggestions total.
+// - up to 20 suggestions total (but all MV Tiles are counted for 1).
 //  - up to 1 verbatim suggestion.
 //  - up to 1 clipboard suggestion.
-//  - up to 1 most visited carousel.
+//  - up to 10 most visited in a carousel.
 //  - up to 8 page related suggestions.
 //  - up to 20 personalized suggestions.
-class IOSWebZpsSection : public ZpsSection {
+class IOSWebZpsSection : public ZpsSectionWithMVTiles {
  public:
   explicit IOSWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };
@@ -195,25 +205,25 @@ class IOSIpadNTPZpsSection : public ZpsSection {
 };
 
 // Section expressing the iPad ZPS limits and grouping for the SRP.
-// - up to 10 suggestions total.
+// - up to 10 suggestions total (but all MV Tiles are counted for 1).
 //  - up to 1 verbatim suggestion.
 //  - up to 1 clipboard suggestion.
-//  - up to 1 most visited carousel.
+//  - up to 10 most visited in a carousel.
 //  - up to 8 previous search related suggestions.
 //  - up to 10 personalized suggestions.
-class IOSIpadSRPZpsSection : public ZpsSection {
+class IOSIpadSRPZpsSection : public ZpsSectionWithMVTiles {
  public:
   explicit IOSIpadSRPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the Web.
-// - up to 10 suggestions total.
+// - up to 10 suggestions total (but all MV Tiles are counted for 1).
 //  - up to 1 verbatim suggestion.
 //  - up to 1 clipboard suggestion.
-//  - up to 1 most visited carousel.
+//  - up to 10 most visited in a carousel.
 //  - up to 8 page related suggestions.
 //  - up to 10 personalized suggestions.
-class IOSIpadWebZpsSection : public ZpsSection {
+class IOSIpadWebZpsSection : public ZpsSectionWithMVTiles {
  public:
   explicit IOSIpadWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };

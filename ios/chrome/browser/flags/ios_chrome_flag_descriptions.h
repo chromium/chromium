@@ -543,6 +543,10 @@ extern const char kMixedContentAutoupgradeDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
+// Title and description for the flag to make MVTiles a horizontal render group.
+extern const char kMostVisitedTilesHorizontalRenderGroupName[];
+extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
+
 // Title and description of the flag to enable the native Find in Page API
 // for iOS 16 and later.
 extern const char kNativeFindInPageName[];
