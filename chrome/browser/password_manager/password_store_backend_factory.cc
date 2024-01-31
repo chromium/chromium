@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -103,8 +104,7 @@ CreateAccountPasswordStoreBackend(
   // syncs it. As such, it expects local data to be cleared every time when
   // sync is permanently disabled and thus uses
   // WipeModelUponSyncDisabledBehavior::kAlways.
-  return std::make_unique<
-      password_manager::PasswordStoreBackendMigrationDecorator>(
+  return std::make_unique<password_manager::PasswordStoreProxyBackend>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways),
