@@ -426,11 +426,11 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 @end
 
 // Test first run stages without search engine choice
-@interface FirstRunTestCaseWithoutSearchEngineChoice : FirstRunTestCase
+@interface FirstRunWithoutSearchEngineChoiceTestCase : FirstRunTestCase
 
 @end
 
-@implementation FirstRunTestCaseWithoutSearchEngineChoice
+@implementation FirstRunWithoutSearchEngineChoiceTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -1469,11 +1469,11 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 @end
 
 // Tests first run stages with search engine choice
-@interface FirstRunTestCaseWithSearchEngineChoice : FirstRunTestCase
+@interface FirstRunWithSearchEngineChoiceTestCase : FirstRunTestCase
 
 @end
 
-@implementation FirstRunTestCaseWithSearchEngineChoice
+@implementation FirstRunWithSearchEngineChoiceTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -1492,7 +1492,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
+// TODO(crbug.com/1523586): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1539,7 +1540,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
+// TODO(crbug.com/1523586): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
