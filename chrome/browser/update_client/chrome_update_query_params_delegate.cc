@@ -6,9 +6,14 @@
 
 #include "base/lazy_instance.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/updater/extension_updater_switches.h"
+#endif
 
 namespace {
 
@@ -30,10 +35,15 @@ ChromeUpdateQueryParamsDelegate::GetInstance() {
 }
 
 std::string ChromeUpdateQueryParamsDelegate::GetExtraParams() {
-  return base::StrCat({"&prodchannel=",
-                       chrome::GetChannelName(chrome::WithExtendedStable(true)),
-                       "&prodversion=", version_info::GetVersionNumber(),
-                       "&lang=", GetLang()});
+  std::string channel_name;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  channel_name = extensions::GetChannelForExtensionUpdates();
+#else
+  channel_name = chrome::GetChannelName(chrome::WithExtendedStable(true));
+#endif
+
+  return base::StrCat({"&prodchannel=", channel_name, "&prodversion=",
+                       version_info::GetVersionNumber(), "&lang=", GetLang()});
 }
 
 // static
