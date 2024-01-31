@@ -541,5 +541,103 @@ TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
       gfx::Rect(0, 300, 400, 300).Contains(widget->GetWindowBoundsInScreen()));
 }
 
+class WaylandAuraOutputServerTest : public test::WaylandServerTest {
+ public:
+  struct AuraOutputObserver {
+    void Reset() { is_active = false; }
+    bool is_active = false;
+  };
+
+  WaylandAuraOutputServerTest() = default;
+  WaylandAuraOutputServerTest(const WaylandAuraOutputServerTest&) = delete;
+  WaylandAuraOutputServerTest& operator=(const WaylandAuraOutputServerTest&) =
+      delete;
+  ~WaylandAuraOutputServerTest() override = default;
+
+  std::unique_ptr<AuraOutputObserver> SetupAuraOutput(wl_output* output) {
+    static constexpr zaura_output_listener kAuraOutputListener = {
+        [](void*, struct zaura_output*, uint32_t, uint32_t) {},
+        [](void*, struct zaura_output*, uint32_t) {},
+        [](void*, struct zaura_output*, uint32_t) {},
+        [](void*, struct zaura_output*, int32_t, int32_t, int32_t, int32_t) {},
+        [](void*, struct zaura_output*, int32_t) {},
+        [](void*, struct zaura_output*, uint32_t, uint32_t) {},
+        [](void* data, struct zaura_output* zaura_output) {
+          auto* observer = static_cast<AuraOutputObserver*>(data);
+          observer->is_active = true;
+        }};
+    auto observer = std::make_unique<AuraOutputObserver>();
+    PostToClientAndWait([&](test::TestClient* client) {
+      std::unique_ptr<zaura_output> aura_output(
+          zaura_shell_get_aura_output(client->aura_shell(), output));
+      zaura_output_add_listener(aura_output.get(), &kAuraOutputListener,
+                                observer.get());
+      client->globals().aura_outputs.emplace_back(std::move(aura_output));
+    });
+    return observer;
+  }
+};
+
+TEST_F(WaylandAuraOutputServerTest, ActiveDisplay) {
+  UpdateDisplay("800x600,800x600");
+  const auto* screen = display::Screen::GetScreen();
+  ASSERT_EQ(2u, screen->GetAllDisplays().size());
+  const int64_t primary_id = screen->GetAllDisplays()[0].id();
+  const int64_t secondary_id = screen->GetAllDisplays()[1].id();
+
+  wl_output* primary_output = nullptr;
+  wl_output* secondary_output = nullptr;
+  PostToClientAndWait([&](test::TestClient* client) {
+    primary_output = client->globals().outputs[0].get();
+    secondary_output = client->globals().outputs[1].get();
+  });
+
+  // Create two widgets, one on the primary and the other on the secondary
+  // display.
+  auto* primary_widget = ash::TestWidgetBuilder()
+                             .SetBounds({{100, 100}, {200, 200}})
+                             .BuildOwnedByNativeWidget();
+  auto* secondary_widget = ash::TestWidgetBuilder()
+                               .SetBounds({{900, 100}, {200, 200}})
+                               .BuildOwnedByNativeWidget();
+  ASSERT_EQ(
+      screen->GetDisplayNearestWindow(primary_widget->GetNativeWindow()).id(),
+      primary_id);
+  ASSERT_EQ(
+      screen->GetDisplayNearestWindow(secondary_widget->GetNativeWindow()).id(),
+      secondary_id);
+
+  // Initialize the aura output extensions and register observers.
+  auto primary_observer = SetupAuraOutput(primary_output);
+  auto secondary_observer = SetupAuraOutput(secondary_output);
+  EXPECT_FALSE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
+
+  // Activate the widget on the primary display.
+  primary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_TRUE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
+
+  primary_observer->Reset();
+  secondary_observer->Reset();
+
+  // Activate the widget on the secondary display.
+  secondary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_FALSE(primary_observer->is_active);
+  EXPECT_TRUE(secondary_observer->is_active);
+
+  primary_observer->Reset();
+  secondary_observer->Reset();
+
+  // Ensure activating the widget on the primary display again correctly
+  // re-emits the activate event for the primary output.
+  primary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_TRUE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
+}
+
 }  // namespace
 }  // namespace exo::wayland

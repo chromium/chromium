@@ -9,7 +9,6 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 
-#include "ash/shell.h"
 #include "components/exo/wayland/output_metrics.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -32,7 +31,6 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
     : output_(output), output_resource_(output_resource) {}
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
-  ash::Shell::Get()->RemoveShellObserver(this);
   for (auto& obs : observers_) {
     obs.OnOutputDestroyed();
   }
@@ -46,7 +44,6 @@ void WaylandDisplayHandler::Initialize() {
   // Adding itself as an observer will send the initial display metrics.
   AddObserver(this);
   output_->RegisterOutput(output_resource_);
-  ash::Shell::Get()->AddShellObserver(this);
 }
 
 void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
@@ -107,12 +104,7 @@ void WaylandDisplayHandler::SendDisplayMetricsChanges(
   }
 }
 
-void WaylandDisplayHandler::OnDisplayForNewWindowsChanged() {
-  DCHECK(output_resource_);
-  if (id() != display::Screen::GetScreen()->GetDisplayForNewWindows().id()) {
-    return;
-  }
-
+void WaylandDisplayHandler::SendDisplayActivated() {
   for (auto& observer : observers_) {
     observer.SendActiveDisplay();
   }
