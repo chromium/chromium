@@ -53,26 +53,31 @@ class EarlyFeatureAccessTracker {
   }
 
   // Invoked when `feature` is accessed before FeatureList registration.
-  void AccessedFeature(const Feature& feature) {
+  void AccessedFeature(const Feature& feature,
+                       bool with_feature_allow_list = false) {
     AutoLock lock(lock_);
-    if (fail_instantly_)
-      Fail(&feature);
-    else if (!feature_)
+    if (fail_instantly_) {
+      Fail(&feature, with_feature_allow_list);
+    } else if (!feature_) {
       feature_ = &feature;
+      feature_had_feature_allow_list_ = with_feature_allow_list;
+    }
   }
 
   // Asserts that no feature was accessed before FeatureList registration.
   void AssertNoAccess() {
     AutoLock lock(lock_);
-    if (feature_)
-      Fail(feature_);
+    if (feature_) {
+      Fail(feature_, feature_had_feature_allow_list_);
+    }
   }
 
   // Makes calls to AccessedFeature() fail instantly.
   void FailOnFeatureAccessWithoutFeatureList() {
     AutoLock lock(lock_);
-    if (feature_)
-      Fail(feature_);
+    if (feature_) {
+      Fail(feature_, feature_had_feature_allow_list_);
+    }
     fail_instantly_ = true;
   }
 
@@ -89,7 +94,7 @@ class EarlyFeatureAccessTracker {
   }
 
  private:
-  void Fail(const Feature* feature) {
+  void Fail(const Feature* feature, bool with_feature_allow_list) {
     // TODO(crbug.com/1358639): Enable this check on all platforms.
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_NACL)
@@ -97,9 +102,14 @@ class EarlyFeatureAccessTracker {
     // facilitate crash triage.
     SCOPED_CRASH_KEY_STRING256("FeatureList", "feature-accessed-too-early",
                                feature->name);
+    SCOPED_CRASH_KEY_BOOL("FeatureList", "early-access-allow-list",
+                          with_feature_allow_list);
 #endif  // !BUILDFLAG(IS_NACL)
     CHECK(!feature) << "Accessed feature " << feature->name
-                    << " before FeatureList registration.";
+                    << (with_feature_allow_list
+                            ? " which is not on the allow list passed to "
+                              "SetEarlyAccessInstance()."
+                            : " before FeatureList registration.");
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS)
   }
@@ -113,6 +123,7 @@ class EarlyFeatureAccessTracker {
 
   // First feature to be accessed before FeatureList registration.
   raw_ptr<const Feature> feature_ GUARDED_BY(lock_) = nullptr;
+  bool feature_had_feature_allow_list_ GUARDED_BY(lock_) = false;
 
   // Whether AccessedFeature() should fail instantly.
   bool fail_instantly_ GUARDED_BY(lock_) = false;
@@ -445,7 +456,9 @@ void FeatureList::GetCommandLineFeatureOverrides(
 bool FeatureList::IsEnabled(const Feature& feature) {
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
   return g_feature_list_instance->IsFeatureEnabled(feature);
@@ -460,7 +473,9 @@ bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
 absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     // If there is no feature list, there can be no overrides.
     return absl::nullopt;
   }
@@ -471,7 +486,9 @@ absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     return nullptr;
   }
   return g_feature_list_instance->GetAssociatedFieldTrial(feature);
