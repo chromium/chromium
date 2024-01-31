@@ -89,6 +89,8 @@ void WebStateContentDownloadTask::CancelInternal() {
 void WebStateContentDownloadTask::DownloadWasCreated(
     id<CRWWebViewDownload> download) {
   download_ = download;
+  // Task startup is complete, trigger observers.
+  OnDownloadUpdated();
 }
 
 void WebStateContentDownloadTask::DownloadDidFinish(NSError* error) {

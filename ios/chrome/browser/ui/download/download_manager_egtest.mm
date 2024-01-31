@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -105,6 +106,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/download-example",
       base::BindRepeating(&testing::HandleDownload)));
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("ios/testing/data/http_server_files/"));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
@@ -501,6 +506,36 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSuccessfulPDFDownload {
   [_helper testSuccessfulPDFDownload];
+}
+
+// Tests that a pdf that is displayed in the web view can be downloaded.
+// Only valid with "Save to drive" enabled.
+- (void)testDownloadDisplayedPDF {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForPageLoadTimeout,
+                 ^{
+                   NSError* error = nil;
+                   [[EarlGrey selectElementWithMatcher:DownloadButton()]
+                       assertWithMatcher:grey_interactable()
+                                   error:&error];
+                   return (error != nil);
+                 }),
+             @"Download bar did not hide on scroll");
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
