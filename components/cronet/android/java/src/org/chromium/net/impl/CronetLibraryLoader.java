@@ -76,6 +76,9 @@ public class CronetLibraryLoader {
                 } else {
                     System.loadLibrary(LIBRARY_NAME);
                 }
+            }
+            CronetLibraryLoaderJni.get().nativeInit();
+            if (!sLibraryLoaded) {
                 String implVersion = ImplVersion.getCronetVersion();
                 if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
                     throw new RuntimeException(
@@ -244,6 +247,8 @@ public class CronetLibraryLoader {
     @NativeMethods
     interface Natives {
         // Native methods are implemented in cronet_library_loader.cc.
+        void nativeInit();
+
         void cronetInitOnInitThread();
 
         String getCronetVersion();
