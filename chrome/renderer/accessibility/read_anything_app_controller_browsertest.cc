@@ -245,6 +245,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetNextText(160);
   }
 
+  std::vector<ui::AXNodeID> GetNextText(int max_text_length) {
+    return controller_->GetNextText(max_text_length);
+  }
+
   std::vector<ui::AXNodeID> GetPreviousText() {
     return controller_->GetPreviousText();
   }
@@ -2839,6 +2843,52 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence3.length());
 
   // Nodes are empty at the end of the new tree.
+  next_node_ids = GetNextText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextText_CombinedSentenceAttempted_ButTextTooLong) {
+  // Test edge case where a sentence is almost at the maximum length and
+  // adding one character from the next node would reach the maximum length
+  // to ensure there are no crashes.
+  std::u16string sentence1 = u"This is a segment that's almost too long";
+  std::u16string sentence2 = u", hello. ";
+  int max_text_length = sentence1.length() + 1;
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  update.nodes = {static_text1, static_text2};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetNextText(max_text_length);
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = GetNextText(max_text_length);
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Attempt to move to another node.
   next_node_ids = GetNextText();
   EXPECT_EQ((int)next_node_ids.size(), 0);
 }

@@ -1228,7 +1228,7 @@ ReadAnythingAppModel::GetNextNodes(int max_text_length) {
       //    The current text length is 6, and the next sentence index of
       //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
       //    be added to the current sentence.
-      if ((int)current_text.length() != combined_sentence_index) {
+      if ((int)current_text.length() < combined_sentence_index) {
         anchor_node = GetNodeFromCurrentPosition();
         // Calculate the new sentence index.
         int index_in_new_node = combined_sentence_index - current_text.length();
