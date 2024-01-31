@@ -228,6 +228,8 @@ CreateSuggestionGroupsMap(
     suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
     suggestion_group->side_type =
         static_cast<omnibox::mojom::SideType>(pair.second.side_type());
+    suggestion_group->render_type =
+        static_cast<omnibox::mojom::RenderType>(pair.second.render_type());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(

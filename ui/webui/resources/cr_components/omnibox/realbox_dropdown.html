@@ -101,6 +101,10 @@
   }
 
   .secondary-side .matches {
+    display: block;
+  }
+
+  .secondary-side .matches.horizontal {
     display: flex;
     gap: 4px;
   }
@@ -108,9 +112,9 @@
 <div id="content">
   <template is="dom-repeat"
       items="[[sideTypes_(showSecondarySide_)]]"
-      as="side">
-    <div class$="[[classForSide_(side)]]">
-      <template is="dom-repeat" items="[[groupIdsForSide_(side, result.matches.*)]]"
+      as="sideType">
+    <div class$="[[classForSideType_(sideType)]]">
+      <template is="dom-repeat" items="[[groupIdsForSideType_(sideType, result.matches.*)]]"
           as="groupId">
         <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
           <!-- Header cannot be tabbed into but gets focus when clicked. This stops
@@ -125,12 +129,13 @@
             </cr-icon-button>
           </h3>
         </template>
-        <div class="matches">
+        <div class$="matches [[classForGroupRenderType_(groupId)]]">
           <template is="dom-repeat"
               items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
               as="match" on-dom-change="onResultRepaint_">
             <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-                match-index="[[matchIndex_(match)]]" side-type="[[side]]"
+                match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
+                render-type="[[classForGroupRenderType_(groupId)]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]">
             </cr-realbox-match>
           </template>

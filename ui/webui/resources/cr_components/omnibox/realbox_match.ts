@@ -146,6 +146,11 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      renderType: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
       showCrNonInlinedHoverFill: {
         type: Boolean,
         computed: 'computeShowCrNonInlinedHoverFill_(hasAction)',

@@ -85,11 +85,20 @@ enum SideType {
   kSecondary = 1,
 };
 
+// Indicates whether a suggestion group should be rendered vertically or
+// horizontally. See //third_party/omnibox_proto/groups.proto.
+enum RenderType {
+    kDefaultVertical = 0,
+    kHorizontal = 1,
+    kGrid = 2,
+};
+
 struct SuggestionGroup {
   mojo_base.mojom.String16 header;  // Header for suggestion group.
   mojo_base.mojom.String16 hide_group_a11y_label;
   mojo_base.mojom.String16 show_group_a11y_label;
   bool hidden;  // Whether suggestion group should be initially hidden.
+  RenderType render_type = RenderType.kDefaultVertical;
   SideType side_type = SideType.kDefaultPrimary;
 };
 

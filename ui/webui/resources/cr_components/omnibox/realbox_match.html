@@ -115,9 +115,8 @@
     width: 7px;
   }
 
-  /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
-  :host(:is(:focus-visible, [selected]:not(:focus-within)):not(
-      [side-type-class_='secondary-side'])) #focus-indicator:not(.selected-within) {
+  /* Focus indicator only shown for vertically rendered matches. */
+  :host([render-type="vertical"]:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
     display: block;
   }
 
@@ -203,11 +202,8 @@
     margin-inline-end: 1px;
   }
 
-  .container:hover #remove {
-    display: inline-flex;
-  }
-
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) #remove {
+  :host([side-type-class_='primary-side']) .container:hover #remove,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host([side-type-class_='primary-side']) #remove {
     display: inline-flex;
   }
 
@@ -276,12 +272,6 @@
       #description {
     font-size: 12px;
     line-height: 16px;
-  }
-
-
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
-      #remove {
-    display: none;
   }
 
   /* TODO(niharm): Clean up all the following rules once
