@@ -8,6 +8,7 @@ import("//testing/test.gni")
 
 source_set("headless") {
   sources = [
+    "headless_mode_switches.h",
     "headless_mode_util.cc",
     "headless_mode_util.h",
   ]
