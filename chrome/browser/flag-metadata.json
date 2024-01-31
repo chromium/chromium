@@ -6497,11 +6497,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "preloading-on-performance-page",
-    "owners": [ "charlesmeng@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "price-change-module",
     "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 125
