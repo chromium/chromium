@@ -107,6 +107,7 @@ build_webui("build") {
       "mwb_shared_style.css",
       "mwb_shared_vars.css",
       "search_highlight_style.css",
+      "cr_action_menu/cr_action_menu.css",
       "cr_input/cr_input_style.css",
     ]
 
@@ -121,7 +122,10 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [ "../js:build_ts" ]
   if (include_polymer) {
-    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+    ts_deps += [
+      "//third_party/lit/v3_0:build_ts",
+      "//third_party/polymer/v3_0:library",
+    ]
   }
   ts_definitions = [
     "//tools/typescript/definitions/pending.d.ts",
