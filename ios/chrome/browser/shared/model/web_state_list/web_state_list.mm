@@ -72,7 +72,9 @@ class WebStateList::DetachParams {
   bool is_closing() const { return is_closing_; }
   bool is_user_action() const { return is_user_action_; }
 
-  web::WebState* SelectOldActiveWebState(
+  // Returns what is considered the previous active web state during a Detach
+  // event.
+  web::WebState* DetermineOldActiveWebState(
       bool is_active_web_state_detached,
       web::WebState* detached_web_state,
       web::WebState* current_active_web_state) const;
@@ -121,7 +123,7 @@ WebStateList::DetachParams::ClosingWithUpdateActiveWebState(
                                     old_active_web_state);
 }
 
-web::WebState* WebStateList::DetachParams::SelectOldActiveWebState(
+web::WebState* WebStateList::DetachParams::DetermineOldActiveWebState(
     bool is_active_web_state_detached,
     web::WebState* detached_web_state,
     web::WebState* current_active_web_state) const {
@@ -577,12 +579,12 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   const WebStateListChangeDetach detach_change(web_state, params.is_closing(),
                                                params.is_user_action());
   {
-    // A new active WebState is null because WebStateList is not updated at this
+    // new_active_web_state is null because WebStateList is not updated at this
     // point and the new active WebState is not determined yet.
     const WebStateListStatus status = {
         .index = index,
         .pinned_state_change = false,
-        .old_active_web_state = params.SelectOldActiveWebState(
+        .old_active_web_state = params.DetermineOldActiveWebState(
             is_active_web_state_detached, web_state, nullptr),
         .new_active_web_state = nullptr};
     for (auto& observer : observers_) {
@@ -616,7 +618,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   const WebStateListStatus status = {
       .index = index,
       .pinned_state_change = false,
-      .old_active_web_state = params.SelectOldActiveWebState(
+      .old_active_web_state = params.DetermineOldActiveWebState(
           is_active_web_state_detached, web_state, GetActiveWebState()),
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
