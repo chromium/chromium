@@ -80,6 +80,7 @@
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -2951,12 +2952,13 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     bool is_video_frame,
     float resource_offset,
     float resource_multiplier) {
-  // Use the current SDR slider white level for HDR videos on
+  // Use the current SDR slider white level for PQ HDR videos on
   // Windows, so that they look similar when rendered by the
   // compositor and when rendered as an overlay (HDR10 MPO).
   // https://crbug.com/1492817
   auto hdr_metadata = src_hdr_metadata;
-  if (is_video_frame && src.IsToneMappedByDefault() &&
+  if (is_video_frame &&
+      src.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
       base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
     hdr_metadata =
         gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
