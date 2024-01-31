@@ -487,6 +487,12 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments Autofill UI.";
 
+const char kAutofillGranularFillingAvailableName[] =
+    "Enable autofill address granular filling";
+const char kAutofillGranularFillingAvailableDescription[] =
+    "When enabled, autofill address suggestions contain child suggestions for "
+    "group and granular field filling.";
+
 const char kAutofillEnableIbanAndroidBottomSheetName[] =
     "Enable Autofill save IBAN bottom sheet";
 const char kAutofillEnableIbanAndroidBottomSheetDescription[] =

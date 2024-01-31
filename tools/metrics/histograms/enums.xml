@@ -19136,6 +19136,7 @@ from previous Chrome versions.
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
+  <int value="-706106753" label="AutofillGranularFillingAvailable:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
   <int value="-705464246" label="ChromeCartDomBasedHeuristics:enabled"/>
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
@@ -24590,6 +24591,7 @@ from previous Chrome versions.
   <int value="1825369164" label="EnableNewBadgeOnMenuItems:disabled"/>
   <int value="1825605721" label="CrOSLateBootAudioHFPMicSR:disabled"/>
   <int value="1825812252" label="EnableNeuralPalmAdaptiveHold:disabled"/>
+  <int value="1825854118" label="AutofillGranularFillingAvailable:enabled"/>
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>

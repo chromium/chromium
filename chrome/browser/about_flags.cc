@@ -8087,6 +8087,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
 
+    {"autofill-granular-filling-available",
+     flag_descriptions::kAutofillGranularFillingAvailableName,
+     flag_descriptions::kAutofillGranularFillingAvailableDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillGranularFillingAvailable)},
+
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,

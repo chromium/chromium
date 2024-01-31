@@ -293,6 +293,9 @@ extern const char kAutofillEnableCardBenefitsDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
+extern const char kAutofillGranularFillingAvailableName[];
+extern const char kAutofillGranularFillingAvailableDescription[];
+
 extern const char kAutofillEnableIbanAndroidBottomSheetName[];
 extern const char kAutofillEnableIbanAndroidBottomSheetDescription[];
 
