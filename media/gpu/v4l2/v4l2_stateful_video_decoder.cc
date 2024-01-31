@@ -369,17 +369,18 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOGF_IF(1, is_mtk8173_) << "This is an MTK8173 device (Hana, Oak)";
   }
 
-  // If we've been Initialize()d before, destroy state members.
   if (IsInitialized()) {
-    // Invalidate pointers from and cancel all hypothetical in-flight requests
-    // to the WaitOnceForEvents() routine.
-    weak_ptr_factory_for_events_.InvalidateWeakPtrs();
-    weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
-    cancelable_task_tracker_.TryCancelAll();
-
-    // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
-    OUTPUT_queue_.reset();
-    CAPTURE_queue_.reset();
+    // Almost always we'll be here when the MSE feeding the HTML <video> changes
+    // tracks; this is implemented via a flush (a Decode() call with an
+    // end_of_stream() DecoderBuffer) and then this very Initialize() call.
+    // Technically, a V4L2 Memory-to-Memory stateful decoder can start decoding
+    // after a flush ("Drain" in the V4L2 documentation) via either a START
+    // command or sending a VIDIOC_STREAMOFF - VIDIOC_STREAMON to either queue
+    // [1]. The START command is what we issue when seeing the LAST dequeued
+    // CAPTURE buffer, but this is not enough for Hana MTK8173, so we do a full
+    // Reset() (see crbug.com/270039 for historical context). [1]
+    // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#drain
+    Reset(base::DoNothing());
   }
 
   framerate_control_ = std::make_unique<V4L2FrameRateControl>(
@@ -551,6 +552,7 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   // Invalidate pointers from and cancel all hypothetical in-flight requests
   // to the WaitOnceForEvents() routine.
   weak_ptr_factory_for_events_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
 
   if (h264_frame_reassembler_) {
@@ -944,6 +946,7 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       if (flush_cb_) {
         std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
       }
+      return;
     } else if (!dequeued_buffer->IsError()) {
       // IsError() doesn't flag a fatal error, but more a discard-this-buffer
       // marker. This is seen -seldom- from venus driver (QC) when entering a
