@@ -216,7 +216,11 @@ public class TabDragSource implements View.OnDragListener {
                     () -> {
                         TabDragShadowBuilder builder =
                                 (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
-                        showDragShadow(builder.mShowDragShadow);
+                        // We register callbacks (e.g. to update the thumbnail) that may attempt to
+                        // update the shadow after the drop has already ended. No-op in that case.
+                        if (builder != null) {
+                            showDragShadow(builder.mShowDragShadow);
+                        }
                     });
         }
         mShadowView.setTab(tabBeingDragged);
