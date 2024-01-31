@@ -6684,6 +6684,8 @@ crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure P
 crbug.com/1519178 [ Mac12 ] virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/automatic-beacon.https.js [ Failure Pass ]
 crbug.com/1521090 [ Mac12 ] virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/receive-router-rules-on-update.js [ Failure Pass ]
 
+crbug.com/1522196 http/tests/devtools/resource-har-conversion.js [ Failure Pass ]
+
 ### sheriff 2023-01-24
 crbug.com/1521311 http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
 
