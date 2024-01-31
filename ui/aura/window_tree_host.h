@@ -404,36 +404,16 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   virtual gfx::Rect CalculateRootWindowBounds() const;
 
  private:
-  class HideHelper;
-
-  friend class HideHelper;
   friend class test::WindowTreeHostTestApi;
 
   void DecrementVideoCaptureCount();
   void MaybeUpdateComposibleVisibilityForVideoLockCountChange();
   bool CalculateCompositorVisibilityFromOcclusionState() const;
 
-  // See `kApplyNativeOcclusionToCompositorTypeRelease` for details.
-  bool ShouldReleaseResourcesWhenHidden() const;
-
   // See `kApplyNativeOcclusionToCompositorTypeThrottle` for details.
   bool ShouldThrottleWhenOccluded() const;
 
-  // Starts the steps necessary to release viz resources and hide.
-  void StartReleasingResourcesForHide();
-
-  // Restores temporary state set in StartReleasingResourcesForHide().
-  void RestoreHideTransitionState();
-
-  // Completes a hide initiated to release resources.
-  void FinishHideTransition();
-
   static const base::flat_set<WindowTreeHost*>& GetThrottledHostsForTesting();
-
-  // Returns true if in the process of releasing resources before hiding.
-  bool is_transitioning_to_hidden() const {
-    return hide_helper_.get() != nullptr;
-  }
 
   // Moves the cursor to the specified location. This method is internally used
   // by MoveCursorToLocationInDIP() and MoveCursorToLocationInPixels().
@@ -503,10 +483,6 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
   // Number of VideoCaptureLocks that have been created and not destroyed.
   int video_capture_count_ = 0;
-
-  // Used to set up and restore state necessary to release resources when
-  // hiding. Non-null while waiting for state to be released (transitioning).
-  std::unique_ptr<HideHelper> hide_helper_;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 };
