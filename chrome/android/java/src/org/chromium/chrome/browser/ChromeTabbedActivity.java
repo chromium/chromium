@@ -1359,7 +1359,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TraceEvent.begin("ChromeTabbedActivity.onNewIntentWithNative");
 
             super.onNewIntentWithNative(intent);
-            if (!IntentHandler.shouldIgnoreIntent(intent, /* isCustomTab= */ false)) {
+            if (!IntentHandler.shouldIgnoreIntent(intent, this, /* isCustomTab= */ false)) {
                 maybeHandleUrlIntent(intent);
             }
 
@@ -2304,7 +2304,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // We call this only once to give a consistent view of whether the intent should be
             // ignored during startup as this function depends on transient state like whether the
             // screen is on.
-            mShouldIgnoreIntent = IntentHandler.shouldIgnoreIntent(getIntent());
+            mShouldIgnoreIntent = IntentHandler.shouldIgnoreIntent(getIntent(), this);
         }
         return mShouldIgnoreIntent;
     }
