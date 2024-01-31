@@ -53,7 +53,6 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetGeometry(const gfx::Rect& geometry);
   ShellSurfaceBuilder& SetInputRegion(const cc::Region& region);
   ShellSurfaceBuilder& SetFrame(SurfaceFrameType type);
-  ShellSurfaceBuilder& SetFrameColors(SkColor active, SkColor inactive);
   ShellSurfaceBuilder& SetApplicationId(const std::string& application_id);
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
@@ -104,8 +103,6 @@ class ShellSurfaceBuilder {
   std::optional<gfx::Rect> geometry_;
   std::optional<cc::Region> input_region_;
   std::optional<SurfaceFrameType> type_;
-  std::optional<SkColor> active_frame_color_;
-  std::optional<SkColor> inactive_frame_color_;
   raw_ptr<SecurityDelegate> security_delegate_ = nullptr;
   ash::AppType app_type_ = ash::AppType::NON_APP;
   std::string application_id_;
