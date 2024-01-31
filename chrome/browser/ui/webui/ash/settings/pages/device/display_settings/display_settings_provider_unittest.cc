@@ -161,6 +161,9 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         type == mojom::DisplaySettingsType::kUnifiedMode ||
         type == mojom::DisplaySettingsType::kPrimaryDisplay) {
       auto value = mojom::DisplaySettingsValue::New();
+      if (type == mojom::DisplaySettingsType::kMirrorMode) {
+        value->mirror_mode_status = true;
+      }
       provider_->RecordChangingDisplaySettings(type, std::move(value));
       histogram_tester_.ExpectBucketCount(
           DisplaySettingsProvider::kDisplaySettingsHistogramName, type, 1);
@@ -262,6 +265,21 @@ TEST_F(DisplaySettingsProviderTest, ToggleDisplayNightLightScheduleHistogram) {
       histogram_tester_.ExpectBucketCount(histogram_name, night_light_schedule,
                                           1);
     }
+  }
+}
+
+// Test histogram is recorded when users toggle display mirror mode status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayMirrorModeStatusHistogram) {
+  for (bool mirror_mode_status : {true, false}) {
+    auto value = mojom::DisplaySettingsValue::New();
+    value->mirror_mode_status = mirror_mode_status;
+    provider_->RecordChangingDisplaySettings(
+        mojom::DisplaySettingsType::kMirrorMode, std::move(value));
+
+    std::string histogram_name(
+        DisplaySettingsProvider::kDisplaySettingsHistogramName);
+    histogram_name.append(".MirrorModeStatus");
+    histogram_tester_.ExpectBucketCount(histogram_name, mirror_mode_status, 1);
   }
 }
 

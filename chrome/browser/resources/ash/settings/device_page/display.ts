@@ -1284,7 +1284,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       }
     });
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kMirrorMode, /*value=*/ {});
+        DisplaySettingsType.kMirrorMode, /*value=*/ {
+          mirrorModeStatus: mirrorModeInfo.mode === MirrorMode.NORMAL,
+        });
   }
 
   private onUnifiedDesktopClick_(): void {

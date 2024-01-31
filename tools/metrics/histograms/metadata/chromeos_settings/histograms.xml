@@ -187,6 +187,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
+    enum="DisplaySettingsBoolean" expires_after="2024-06-28">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user toggles the display mirror mode setting via the
+    ChromeOS Settings app.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
     enum="DisplayType" expires_after="2024-06-28">
   <owner>zhangwenyu@google.com</owner>

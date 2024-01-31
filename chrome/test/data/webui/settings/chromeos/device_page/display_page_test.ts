@@ -430,6 +430,10 @@ suite('<settings-display>', () => {
           1,
           displayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ true));
     });
 
     test('unified mode', () => {

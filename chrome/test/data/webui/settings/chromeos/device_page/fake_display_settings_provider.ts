@@ -44,6 +44,8 @@ export class FakeDisplaySettingsProvider implements
   // night light schedule. The value indicates the histogram count.
   private displayNightLightScheduleHistogram =
       new Map<boolean, Map<DisplaySettingsNightLightScheduleOption, number>>();
+  // The key is the mirror mode status. The value indicates the histogram count.
+  private displayMirrorModeStatusHistogram = new Map<boolean, number>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -125,6 +127,15 @@ export class FakeDisplaySettingsProvider implements
           (nightLightScheduleHistogram.get(value.nightLightSchedule) || 0) + 1);
       this.displayNightLightScheduleHistogram.set(
           value.isInternalDisplay, nightLightScheduleHistogram);
+    } else if (
+        type === displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode &&
+        value.isInternalDisplay === undefined &&
+        value.mirrorModeStatus !== undefined) {
+      this.displayMirrorModeStatusHistogram.set(
+          value.mirrorModeStatus,
+          (this.displayMirrorModeStatusHistogram.get(value.mirrorModeStatus) ||
+           0) +
+              1);
     }
   }
 
@@ -156,5 +167,9 @@ export class FakeDisplaySettingsProvider implements
       Map<DisplaySettingsNightLightScheduleOption, number> {
     return this.displayNightLightScheduleHistogram.get(isInternalDisplay) ||
         new Map<DisplaySettingsNightLightScheduleOption, number>();
+  }
+
+  getDisplayMirrorModeStatusHistogram(): Map<boolean, number> {
+    return this.displayMirrorModeStatusHistogram;
   }
 }

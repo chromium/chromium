@@ -157,6 +157,12 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
     histogram_name.append(".NightLightSchedule");
     base::UmaHistogramEnumeration(histogram_name,
                                   value->night_light_schedule.value());
+  } else if (type == mojom::DisplaySettingsType::kMirrorMode) {
+    CHECK(value->mirror_mode_status.has_value());
+    CHECK(!value->is_internal_display.has_value());
+    histogram_name.append(".MirrorModeStatus");
+    base::UmaHistogramBoolean(histogram_name,
+                              value->mirror_mode_status.value());
   }
 
   // Record default display settings performance metrics.
