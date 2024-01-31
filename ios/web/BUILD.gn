@@ -166,6 +166,7 @@ test("ios_web_unittests") {
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
     "//ios/web/js_features/context_menu:unittests",
+    "//ios/web/js_features/fullscreen:unittests",
     "//ios/web/js_features/window_error:unittests",
     "//ios/web/js_messaging:unittests",
     "//ios/web/public/session/proto:unittests",
