@@ -305,14 +305,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kForceGpuMainThreadToNormalPriorityDrDcName[] =
-    "Force GPU main thread priority to normal for DrDc.";
-const char kForceGpuMainThreadToNormalPriorityDrDcDescription[] =
-    "When enabled, force GPU main thread priority to be normal for DrDc mode. "
-    "In that case DrDc thread continues to use DISPLAY thread priority and "
-    "hence have higher thread priority than GPU main. Note that this flag will "
-    "be a no-op when DrDc is disabled.";
-
 const char kUseClientGmbInterfaceName[] =
     "Use ClientGmb interface to create GpuMemoryBuffers.";
 const char kUseClientGmbInterfaceDescription[] =

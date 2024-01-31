@@ -16718,8 +16718,6 @@ from previous Chrome versions.
   <int value="-1830709105" label="OmniboxPedalsBatch3NonEnglish:disabled"/>
   <int value="-1830472348" label="CryptAuthV2DeviceSync:enabled"/>
   <int value="-1830199297" label="force-empty-corb-allowlist"/>
-  <int value="-1829204930"
-      label="ForceGpuMainThreadToNormalPriorityDrDc:disabled"/>
   <int value="-1829053093" label="PrivateStateTokens:enabled"/>
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
@@ -19313,8 +19311,6 @@ from previous Chrome versions.
   <int value="-619665653" label="DisableKeepaliveFetch:disabled"/>
   <int value="-619582383" label="LacrosLaunchAtLoginScreen:disabled"/>
   <int value="-619178844" label="NewOverviewLayout:disabled"/>
-  <int value="-617851128"
-      label="ForceGpuMainThreadToNormalPriorityDrDc:enabled"/>
   <int value="-617452890" label="media-router"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>

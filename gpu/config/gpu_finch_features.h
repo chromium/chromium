@@ -97,8 +97,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kForceRestartGpuKillSwitch);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
@@ -135,7 +133,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
-GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);

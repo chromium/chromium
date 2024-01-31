@@ -282,10 +282,6 @@ BASE_FEATURE(kEnableDrDc,
 #endif
 );
 
-BASE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc,
-             "ForceGpuMainThreadToNormalPriorityDrDc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
@@ -606,14 +602,6 @@ bool IsDrDcEnabled() {
 #else
   return false;
 #endif
-}
-
-bool IsGpuMainThreadForcedToNormalPriorityDrDc() {
-  // GPU main thread priority is forced to NORMAL only when DrDc is enabled. In
-  // that case DrDc thread continues to use DISPLAY thread priority and hence
-  // have higher thread priority than GPU main.
-  return IsDrDcEnabled() &&
-         base::FeatureList::IsEnabled(kForceGpuMainThreadToNormalPriorityDrDc);
 }
 
 bool IsUsingThreadSafeMediaForWebView() {

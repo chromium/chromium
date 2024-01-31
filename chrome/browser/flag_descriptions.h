@@ -214,9 +214,6 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kForceGpuMainThreadToNormalPriorityDrDcName[];
-extern const char kForceGpuMainThreadToNormalPriorityDrDcDescription[];
-
 extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 

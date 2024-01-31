@@ -9223,12 +9223,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
 
-    {"force-gpu-main-thread-to-normal-priority-drdc",
-     flag_descriptions::kForceGpuMainThreadToNormalPriorityDrDcName,
-     flag_descriptions::kForceGpuMainThreadToNormalPriorityDrDcDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kForceGpuMainThreadToNormalPriorityDrDc)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
      flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,

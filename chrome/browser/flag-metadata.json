@@ -4399,11 +4399,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "force-gpu-main-thread-to-normal-priority-drdc",
-    "owners": [ "vikassoni@chromium.org", "lehoangquyen@chromium.org" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir@chromium.org" ],
     "expiry_milestone": 124
