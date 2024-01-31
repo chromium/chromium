@@ -362,7 +362,6 @@ public class HubLayout extends Layout implements HubLayoutController {
 
     @Override
     public void doneHiding() {
-        super.doneHiding();
         HubContainerView containerView = mHubController.getContainerView();
         containerView.setVisibility(View.INVISIBLE);
         mRootView.removeView(containerView);
@@ -373,6 +372,9 @@ public class HubLayout extends Layout implements HubLayoutController {
         mCurrentSceneLayer = mEmptySceneLayer;
         // Don't clear the visible ids because the next layout might have already updated them.
         resetLayoutTabs(/* clearVisibleIds= */ false);
+
+        // Do this last so the Hub is ready to show again.
+        super.doneHiding();
     }
 
     @Override
