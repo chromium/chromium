@@ -826,6 +826,10 @@ test("components_unittests") {
     deps += [ "//components/cast_receiver:unit_tests" ]
   }
 
+  if (is_mac) {
+    deps += [ "//components/remote_cocoa/common:unit_tests" ]
+  }
+
   # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.
   # On other platforms, no components should depend on Chrome.
   # Since //chrome depends on //extensions, we also only assert_no_deps on

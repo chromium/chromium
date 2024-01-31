@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+// Equivalent to gfx::PlatformFontMac::SystemFontType.
+enum SystemFont {
+    kGeneral,
+    kMenu,
+    kToolTip,
+};
+
+enum FontWeight {
+    kThin = 100,
+    kExtraLight = 200,
+    kLight = 300,
+    kNormal = 400,
+    kMedium = 500,
+    kSemibold = 600,
+    kBold = 700,
+    kExtraBold = 800,
+    kBlack = 900,
+};
+
+// PlatformFontMac requires system fonts to be specified as enum rather than
+// font name, as such the name of a font is either a system font identifier or a
+// string.
+union FontName {
+    SystemFont system_font;
+    string regular_font;
+};
+
+// Allows passing a gfx::Font over mojo, to let remote_cocoa code render text
+// using fonts determined by the TypographyProvider in the browser process.
+// These fonts should come from trustworthy sources.
+struct Font {
+    FontName name;
+    uint32 size;
+    uint32 style;
+    FontWeight weight;
+};

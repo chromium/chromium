@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 
 namespace ui {
-class ColorProvider;
 class MenuModel;
 }
 
@@ -19,8 +18,7 @@ COMPONENT_EXPORT(UI_BASE)
 // Called as each item is created during menu or submenu creation.
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(size_t)index
-            withColorProvider:(const ui::ColorProvider*)colorProvider;
+                      atIndex:(size_t)index;
 // Called after all menu items in a menu or submenu are created.
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model;
 @end
@@ -50,19 +48,7 @@ COMPONENT_EXPORT(UI_BASE)
 // slightly different form (0th item is empty).
 - (instancetype)initWithModel:(ui::MenuModel*)model
                      delegate:(id<MenuControllerCocoaDelegate>)delegate
-                colorProvider:(const ui::ColorProvider*)colorProvider
        useWithPopUpButtonCell:(BOOL)useWithCell;
-
-// Initializes the MenuControllerCocoa instance with the given parameters. This
-// does not create create a menu, clients must call
-// |-maybeBuildWithColorProvider:| or |-menu| first.
-- (instancetype)initWithModel:(ui::MenuModel*)model
-                     delegate:(id<MenuControllerCocoaDelegate>)delegate
-       useWithPopUpButtonCell:(BOOL)useWithCell;
-
-// Builds a NSMenu with the supplied ColorProvider. Will no-op if the NSMenu
-// already exists or the model has not been set.
-- (void)maybeBuildWithColorProvider:(const ui::ColorProvider*)colorProvider;
 
 // Programmatically close the constructed menu.
 - (void)cancel;

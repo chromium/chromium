@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #import "base/message_loop/message_pump_apple.h"
 #include "base/numerics/safe_conversions.h"
+#import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/interaction/element_tracker_mac.h"
@@ -25,7 +26,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_config.h"
-#import "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
+#include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/views_features.h"
@@ -83,12 +84,8 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 MenuRunnerImplCocoa::MenuRunnerImplCocoa(
     ui::MenuModel* menu_model,
     base::RepeatingClosure on_menu_closed_callback)
-    : on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
-  menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc] init];
-  menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu_model
-                                                       delegate:menu_delegate_
-                                         useWithPopUpButtonCell:NO];
-}
+    : menu_model_(menu_model),
+      on_menu_closed_callback_(std::move(on_menu_closed_callback)) {}
 
 bool MenuRunnerImplCocoa::IsRunning() const {
   return running_;
@@ -107,6 +104,7 @@ void MenuRunnerImplCocoa::Release() {
     // MenuRunnerImpl::empty_delegate_ to handle this case.
     [menu_controller_ cancel];
     menu_controller_ = nil;
+    menu_model_ = nullptr;
   } else {
     delete this;
   }
@@ -124,24 +122,11 @@ void MenuRunnerImplCocoa::RunMenuAt(
   DCHECK(!IsRunning());
   DCHECK(parent);
 
-  // If you call this method to present a menu and in your model's
-  // MenuWillShow() method you Cancel the menu, the cancel executes
-  // before the menu appears. If you immediately call RunMenuAt() again,
-  // -popUpContextMenu:withEvent:forView: will hang waiting for a menu
-  // tracking event. This occurs as of macOS 14, and this particular sequence
-  // occurs in the Views unittest "MenuRunnerCocoaTest.ComboboxAnchoring".
-  // Creating a fresh menu controller (with its fresh NSMenu) avoids the
-  // problem, and is the most natural fix for the test (vs. creating a
-  // MenuRunnerImplCocoa::CancelWithoutAnimation method that would be called
-  // in the test but never in production). Rebuilding the controller is
-  // harmless, and even though you would never cancel a menu before it appears
-  // in production code, the rebuild ensures there won't be any weirdness if
-  // the MenuRunner is reused.
-  BOOL useWithPopUpButtonCell = menu_controller_.useWithPopUpButtonCell;
-  menu_controller_ =
-      [[MenuControllerCocoa alloc] initWithModel:[menu_controller_ model]
-                                        delegate:menu_delegate_
-                          useWithPopUpButtonCell:useWithPopUpButtonCell];
+  menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]
+      initWithParams:MenuControllerParamsForWidget(parent)];
+  menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu_model_
+                                                       delegate:menu_delegate_
+                                         useWithPopUpButtonCell:NO];
 
   closing_event_time_ = base::TimeTicks();
   running_ = true;
@@ -151,7 +136,6 @@ void MenuRunnerImplCocoa::RunMenuAt(
 
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
-  [menu_controller_ maybeBuildWithColorProvider:parent->GetColorProvider()];
   NSMenu* const menu = [menu_controller_ menu];
   CHECK(run_types & MenuRunner::CONTEXT_MENU);
   ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(

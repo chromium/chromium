@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
+#import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -14,40 +14,27 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/badge_painter.h"
-#include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
 constexpr CGFloat kIPHDotSize = 6;
 
-NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
+NSImage* NewTagImage(const remote_cocoa::mojom::MenuControllerParams& params) {
   // 1. Make the attributed string.
 
   NSString* badge_text = l10n_util::GetNSString(features::IsChromeRefresh2023()
                                                     ? IDS_NEW_BADGE_UPPERCASE
                                                     : IDS_NEW_BADGE);
 
-  // The preferred font is slightly smaller and slightly more bold than the
-  // menu font. The size change is required to make it look correct in the
-  // badge; we add a small degree of bold to prevent color smearing/blurring
-  // due to font smoothing. This ensures readability on all platforms and in
-  // both light and dark modes.
-  gfx::Font badge_font =
-      views::BadgePainter::GetBadgeFont(views::MenuConfig::instance().font_list)
-          .GetPrimaryFont();
-
-  DCHECK(color_provider);
-  NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-      color_provider->GetColor(ui::kColorBadgeInCocoaMenuForeground));
+  NSColor* badge_text_color =
+      skia::SkColorToSRGBNSColor(params.badge_text_color);
 
   NSDictionary* badge_attrs = @{
-    NSFontAttributeName : base::apple::CFToNSPtrCast(badge_font.GetCTFont()),
+    NSFontAttributeName :
+        base::apple::CFToNSPtrCast(params.badge_font.GetCTFont()),
     NSForegroundColorAttributeName : badge_text_color,
   };
 
@@ -58,10 +45,10 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
   // 2. Calculate the size required.
 
   NSSize text_size = [badge_attr_string size];
-  NSSize canvas_size = NSMakeSize(
-      trunc(text_size.width) + 2 * views::BadgePainter::kBadgeInternalPadding +
-          2 * views::BadgePainter::kBadgeHorizontalMargin,
-      fmax(trunc(text_size.height), views::BadgePainter::kBadgeMinHeightCocoa));
+  NSSize canvas_size =
+      NSMakeSize(trunc(text_size.width) + 2 * params.badge_internal_padding +
+                     2 * params.badge_horizontal_margin,
+                 fmax(trunc(text_size.height), params.badge_min_height));
 
   // 3. Craft the image.
 
@@ -69,18 +56,13 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
        imageWithSize:canvas_size
              flipped:NO
       drawingHandler:^(NSRect dest_rect) {
-        NSRect badge_frame = NSInsetRect(
-            dest_rect, views::BadgePainter::kBadgeHorizontalMargin, 0);
-        const int badge_radius =
-            views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::ShapeContextTokens::kBadgeRadius);
+        NSRect badge_frame =
+            NSInsetRect(dest_rect, params.badge_horizontal_margin, 0);
         NSBezierPath* rounded_badge_rect =
             [NSBezierPath bezierPathWithRoundedRect:badge_frame
-                                            xRadius:badge_radius
-                                            yRadius:badge_radius];
-        DCHECK(color_provider);
-        NSColor* badge_color = skia::SkColorToSRGBNSColor(
-            color_provider->GetColor(ui::kColorBadgeInCocoaMenuBackground));
+                                            xRadius:params.badge_radius
+                                            yRadius:params.badge_radius];
+        NSColor* badge_color = skia::SkColorToSRGBNSColor(params.badge_color);
 
         [badge_color set];
         [rounded_badge_rect fill];
@@ -97,7 +79,7 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
       }];
 }
 
-NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
+NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
   // Embed horizontal centering space as NSMenuItem will otherwise left-align
   // it.
   return [NSImage
@@ -107,8 +89,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
         NSBezierPath* dot_path = [NSBezierPath
             bezierPathWithOvalInRect:NSMakeRect(kIPHDotSize / 2, 0, kIPHDotSize,
                                                 kIPHDotSize)];
-        NSColor* dot_color = skia::SkColorToSRGBNSColor(
-            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
+        NSColor* dot_color = skia::SkColorToSRGBNSColor(params.iph_dot_color);
         [dot_color set];
         [dot_path fill];
 
@@ -147,11 +128,14 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 @implementation MenuControllerCocoaDelegateImpl {
   NSMutableArray* __strong _menuObservers;
+  remote_cocoa::mojom::MenuControllerParamsPtr _params;
 }
 
-- (instancetype)init {
+- (instancetype)initWithParams:
+    (remote_cocoa::mojom::MenuControllerParamsPtr)params {
   if (self = [super init]) {
     _menuObservers = [[NSMutableArray alloc] init];
+    _params = std::move(params);
   }
   return self;
 }
@@ -164,12 +148,11 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(size_t)index
-            withColorProvider:(const ui::ColorProvider*)colorProvider {
+                      atIndex:(size_t)index {
   if (model->IsNewFeatureAt(index)) {
     NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithData:nil
                                                                    ofType:nil];
-    attachment.image = NewTagImage(colorProvider);
+    attachment.image = NewTagImage(*_params);
     NSSize newTagSize = attachment.image.size;
 
     // The baseline offset of the badge image to the menu text baseline.
@@ -187,7 +170,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
   }
 
   if (model->IsAlertedAt(index)) {
-    NSImage* iphDotImage = IPHDotImage(colorProvider);
+    NSImage* iphDotImage = IPHDotImage(*_params);
     menuItem.onStateImage = iphDotImage;
     menuItem.offStateImage = iphDotImage;
     menuItem.mixedStateImage = iphDotImage;

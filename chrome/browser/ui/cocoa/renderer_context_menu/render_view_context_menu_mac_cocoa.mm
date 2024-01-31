@@ -14,11 +14,12 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/color/color_provider.h"
-#include "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
+#include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
@@ -106,13 +107,11 @@ void RenderViewContextMenuMacCocoa::Show() {
     return;
   }
 
-  const ui::ColorProvider* color_provider = widget->GetColorProvider();
-
-  menu_controller_delegate_ = [[MenuControllerCocoaDelegateImpl alloc] init];
+  menu_controller_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]
+      initWithParams:MenuControllerParamsForWidget(widget)];
   menu_controller_ =
       [[MenuControllerCocoa alloc] initWithModel:&menu_model_
                                         delegate:menu_controller_delegate_
-                                   colorProvider:color_provider
                           useWithPopUpButtonCell:NO];
 
   // Synthesize an event for the click, as there is no certainty that
