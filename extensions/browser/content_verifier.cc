@@ -650,8 +650,8 @@ ContentHash::FetchKey ContentVerifier::GetFetchKey(
   if (data->source_type ==
       ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES) {
     return ContentHash::FetchKey(extension_id, extension_root,
-                                 extension_version, mojo::NullRemote(),
-                                 GURL::EmptyGURL(), ContentVerifierKey());
+                                 extension_version, mojo::NullRemote(), GURL(),
+                                 ContentVerifierKey());
   }
 
   // Create a new mojo pipe. It's safe to pass this around and use immediately,

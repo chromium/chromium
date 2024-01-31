@@ -231,7 +231,7 @@ scoped_refptr<const WebRequestAction> CreateRemoveResponseHeaderAction(
     return scoped_refptr<const WebRequestAction>(nullptr);
   }
 
-  const std::string& value_string = value ? *value : base::EmptyString();
+  const std::string& value_string = value ? *value : std::string();
   return base::MakeRefCounted<WebRequestRemoveResponseHeaderAction>(
       *name, value_string, value != nullptr);
 }

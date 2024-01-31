@@ -439,8 +439,7 @@ void ScriptInjectionManager::HandleExecuteCode(
     case mojom::HostID::HostType::kExtensions:
       injection_host = ExtensionInjectionHost::Create(params->host_id->id);
       if (!injection_host) {
-        std::move(callback).Run(base::EmptyString(), GURL::EmptyGURL(),
-                                std::nullopt);
+        std::move(callback).Run(std::string(), GURL(), std::nullopt);
         return;
       }
       break;
