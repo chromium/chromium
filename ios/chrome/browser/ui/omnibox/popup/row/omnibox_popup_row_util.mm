@@ -26,3 +26,8 @@ BOOL ShouldApplyOmniboxLayoutGuide(UITraitCollection* traitCollection) {
     return !base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements);
   }
 }
+
+BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection) {
+  return IsIpadPopoutOmniboxEnabled() &&
+         IsRegularXRegularSizeClass(traitCollection);
+}

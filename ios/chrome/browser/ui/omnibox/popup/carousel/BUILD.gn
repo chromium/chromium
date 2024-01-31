@@ -19,6 +19,7 @@ source_set("carousel") {
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/ui/omnibox/popup/resources",
+    "//ios/chrome/browser/ui/omnibox/popup/row",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",

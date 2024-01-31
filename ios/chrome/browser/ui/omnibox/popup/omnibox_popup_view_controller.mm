@@ -361,7 +361,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
   CGRect omniboxFrame = self.omniboxGuide.layoutFrame;
   CGFloat leftMargin =
-      IsRegularXRegularSizeClass(self) ? omniboxFrame.origin.x : 0;
+      (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
+          ? omniboxFrame.origin.x
+          : 0;
   CGFloat rightMargin =
       (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
           ? self.view.bounds.size.width - omniboxFrame.origin.x -
