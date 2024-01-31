@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 35
+// Next MinVersion: 36
 
 module arc.mojom;
 
@@ -209,6 +209,9 @@ struct ArcNotificationData {
   int32 reply_button_index;
   [MinVersion=34]
   array<ArcNotificationData>? children_data;
+  // Array of extra messages for messaging style notifications.
+  [MinVersion=35]
+  array<ArcNotificationMessage>? messages;
 };
 
 struct ArcDoNotDisturbStatus {
@@ -248,6 +251,16 @@ enum MessageCenterVisibility {
   VISIBILITY_TRANSIENT = 0,
   // When the message center view is being displayed.
   VISIBILITY_MESSAGE_CENTER = 1,
+};
+
+struct ArcNotificationMessage {
+  // Message that was sent in the notification.
+  string? message;
+  // Name of the message sender that should be displayed above message.
+  string? sender_name;
+  // Profile icon of the message sender that needs to be displayed on the left
+  // of message.
+  ArcBitmap? sender_icon;
 };
 
 // Next Method ID: 12
