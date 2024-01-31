@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.8](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.7...chromium-bidi-v0.5.8) (2024-01-31)
+
+
+### Features
+
+* add temp `context` into worker realm for Puppeteer ([#1801](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1801)) ([3703549](https://github.com/GoogleChromeLabs/chromium-bidi/commit/37035497367dd151f5d88e9b97b30d7065350c0f))
+
 ## [0.5.7](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.6...chromium-bidi-v0.5.7) (2024-01-30)
 
 
