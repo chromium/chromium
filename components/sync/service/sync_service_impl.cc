@@ -835,13 +835,9 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
     return TransportState::START_DEFERRED;
   }
 
-  if (!engine_->IsInitialized()) {
+  if (!engine_->IsInitialized() || !data_type_manager_) {
     return TransportState::INITIALIZING;
   }
-
-  DCHECK(engine_);
-  // The DataTypeManager gets created once the engine is initialized.
-  DCHECK(data_type_manager_);
 
   // At this point we should usually be able to configure our data types (so the
   // DataTypeManager should not be STOPPED anymore), unless setup is in

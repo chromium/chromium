@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -35,6 +36,10 @@ class SyncPrefObserver {
   virtual void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) = 0;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when any of the prefs related to the user's selected data types has
+  // changed. `payments_integration_enabled_changed` indicates whether the
+  // setting for "Payments" *may* have changed, but this may contain false
+  // positives!
   virtual void OnSelectedTypesPrefChange(
       bool payments_integration_enabled_changed) = 0;
 
@@ -280,6 +285,8 @@ class SyncPrefs {
 
   void OnSyncManagedPrefChanged();
 
+  void OnSelectedTypesPrefChanged(const std::string& pref_name);
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFirstSetupCompletePrefChange();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -292,6 +299,10 @@ class SyncPrefs {
   // The preference that controls whether sync is under control by
   // configuration management (aka policy).
   BooleanPrefMember pref_sync_managed_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+
+  bool batch_updating_selected_types_ = false;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   BooleanPrefMember pref_initial_sync_feature_setup_complete_;

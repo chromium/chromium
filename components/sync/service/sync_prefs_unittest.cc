@@ -27,6 +27,8 @@ namespace syncer {
 
 namespace {
 
+using ::testing::_;
+using ::testing::AtMost;
 using ::testing::InSequence;
 using ::testing::StrictMock;
 
@@ -197,19 +199,39 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
   EXPECT_EQ(UserSelectableTypeSet::All(),
             sync_prefs_->GetSelectedTypesForSyncingUser());
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+    sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+    // SetSelectedTypesForSyncingUser() should result in at most one observer
+    // notification: Never more than one, and in this case, since nothing
+    // actually changes, zero calls would also be okay.
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_))
+        .Times(AtMost(1));
+
     sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
     EXPECT_EQ(UserSelectableTypeSet::All(),
               sync_prefs_->GetSelectedTypesForSyncingUser());
+
+    sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
+
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Setting a managed pref value should trigger an
+  // OnSelectedTypesPrefChange() notification.
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
   pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
                                base::Value(false));
+
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 
   UserSelectableTypeSet expected_type_set = UserSelectableTypeSet::All();
   expected_type_set.Remove(UserSelectableType::kPreferences);
@@ -225,12 +247,22 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
   ASSERT_NE(UserSelectableTypeSet::All(),
             sync_prefs_->GetSelectedTypesForSyncingUser());
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+    sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+    // SetSelectedTypesForSyncingUser() should result in exactly one call to
+    // OnSelectedTypesPrefChange(), even when multiple data types change
+    // state (here, usually one gets enabled and one gets disabled).
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
+
     sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
     EXPECT_EQ(UserSelectableTypeSet({type}),
               sync_prefs_->GetSelectedTypesForSyncingUser());
+
+    sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
 }
 
@@ -423,9 +455,18 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
   ASSERT_TRUE(default_selected_types.Has(UserSelectableType::kPayments));
 
-  // Change one of the default values for example kPayments.
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Change one of the default values, for example kPayments. This should
+  // result in an observer notification.
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnSelectedTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/true));
   sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPayments, false,
                                          gaia_id_hash_);
+
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 
   // kPayments should be disabled, other default values should be unaffected.
   EXPECT_EQ(
@@ -439,15 +480,19 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kEnablePasswordsAccountStorage},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      password_manager::features::kEnablePasswordsAccountStorage);
 
-  // Passwords is disabled by policy.
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  // Passwords gets disabled by policy. This should result in an observer
+  // notification.
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
   pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
                                base::Value(false));
+
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 
   // kPasswords should be disabled.
   UserSelectableTypeSet selected_types =

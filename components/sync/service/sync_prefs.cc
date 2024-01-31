@@ -80,6 +80,44 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
       base::BindRepeating(&SyncPrefs::OnSyncManagedPrefChanged,
                           base::Unretained(this)));
 
+  // Observe changes to all of the prefs that may influence the selected types.
+  pref_change_registrar_.Init(pref_service_);
+  // The individual data type prefs are used for syncing users, as well as for
+  // enterprise policy.
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    pref_change_registrar_.Add(
+        GetPrefNameForType(type),
+        base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                            base::Unretained(this)));
+  }
+  // The "sync everything" pref is used for syncing users.
+  pref_change_registrar_.Add(
+      prefs::internal::kSyncKeepEverythingSynced,
+      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                          base::Unretained(this)));
+  // The per-account data types dictionary pref is used for signed-in
+  // non-syncing users.
+  pref_change_registrar_.Add(
+      prefs::internal::kSelectedTypesPerAccount,
+      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                          base::Unretained(this)));
+#if BUILDFLAG(IS_IOS)
+  // On iOS, in some situations, there is a dedicated opt-in for bookmarks and
+  // reading list.
+  pref_change_registrar_.Add(
+      prefs::internal::kBookmarksAndReadingListAccountStorageOptIn,
+      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                          base::Unretained(this)));
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On ChromeOS-Lacros, syncing of apps is determined by a special
+  // Ash-controlled pref.
+  pref_change_registrar_.Add(
+      prefs::internal::kSyncAppsEnabledByOs,
+      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                          base::Unretained(this)));
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   pref_initial_sync_feature_setup_complete_.Init(
       prefs::internal::kSyncInitialSyncFeatureSetupComplete, pref_service_,
@@ -330,12 +368,18 @@ void SyncPrefs::SetSelectedTypesForSyncingUser(
     UserSelectableTypeSet selected_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  pref_service_->SetBoolean(prefs::internal::kSyncKeepEverythingSynced,
-                            keep_everything_synced);
+  {
+    // Prevent OnSelectedTypesPrefChanged() from notifying observers about each
+    // of the type changes individually.
+    base::AutoReset<bool> batch_update(&batch_updating_selected_types_, true);
 
-  for (UserSelectableType type : registered_types) {
-    const char* pref_name = GetPrefNameForType(type);
-    pref_service_->SetBoolean(pref_name, selected_types.Has(type));
+    pref_service_->SetBoolean(prefs::internal::kSyncKeepEverythingSynced,
+                              keep_everything_synced);
+
+    for (UserSelectableType type : registered_types) {
+      const char* pref_name = GetPrefNameForType(type);
+      pref_service_->SetBoolean(pref_name, selected_types.Has(type));
+    }
   }
 
   // Payments integration might have changed, so report as true.
@@ -351,19 +395,11 @@ void SyncPrefs::SetSelectedTypeForAccount(
     const signin::GaiaIdHash& gaia_id_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  {
-    ScopedDictPrefUpdate update_selected_types_dict(
-        pref_service_, prefs::internal::kSelectedTypesPerAccount);
-    base::Value::Dict* account_settings =
-        update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
-    account_settings->Set(GetPrefNameForType(type), is_type_on);
-  }
-
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/
-        type == UserSelectableType::kPayments);
-  }
+  ScopedDictPrefUpdate update_selected_types_dict(
+      pref_service_, prefs::internal::kSelectedTypesPerAccount);
+  base::Value::Dict* account_settings =
+      update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
+  account_settings->Set(GetPrefNameForType(type), is_type_on);
 }
 
 void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
@@ -393,11 +429,6 @@ void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetBoolean(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, value);
-
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
-  }
 }
 
 bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorageForTesting() {
@@ -460,14 +491,21 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
                                    UserSelectableOsTypeSet registered_types,
                                    UserSelectableOsTypeSet selected_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::internal::kSyncAllOsTypes,
-                            sync_all_os_types);
-  for (UserSelectableOsType type : registered_types) {
-    const char* pref_name = GetPrefNameForOsType(type);
-    DCHECK(pref_name);
-    pref_service_->SetBoolean(pref_name, selected_types.Has(type));
+  {
+    // Prevent OnSelectedTypesPrefChanged() from notifying about each of the
+    // type changes individually.
+    base::AutoReset<bool> batch_update(&batch_updating_selected_types_, true);
+
+    pref_service_->SetBoolean(prefs::internal::kSyncAllOsTypes,
+                              sync_all_os_types);
+    for (UserSelectableOsType type : registered_types) {
+      const char* pref_name = GetPrefNameForOsType(type);
+      DCHECK(pref_name);
+      pref_service_->SetBoolean(pref_name, selected_types.Has(type));
+    }
   }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
+    // Payments is a browser type (not an OS type) so can't have changed here.
     observer.OnSelectedTypesPrefChange(
         /*payments_integration_enabled_changed=*/false);
   }
@@ -512,10 +550,6 @@ void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetBoolean(prefs::internal::kSyncAppsEnabledByOs,
                             apps_sync_enabled);
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
-  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -686,6 +720,25 @@ void SyncPrefs::OnSyncManagedPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnSyncManagedPrefChange(*pref_sync_managed_);
+  }
+}
+
+void SyncPrefs::OnSelectedTypesPrefChanged(const std::string& pref_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If there is a batch update of selected-types prefs ongoing, don't notify
+  // observers - the call site will take care of it.
+  if (batch_updating_selected_types_) {
+    return;
+  }
+
+  // Note: If `kSelectedTypesPerAccount` gets changed, this potentially
+  // over-notifies that "payments integration enabled" may have changed.
+  bool payments_integration_enabled_changed =
+      pref_name == GetPrefNameForType(UserSelectableType::kPayments) ||
+      pref_name == prefs::internal::kSelectedTypesPerAccount;
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnSelectedTypesPrefChange(payments_integration_enabled_changed);
   }
 }
 
