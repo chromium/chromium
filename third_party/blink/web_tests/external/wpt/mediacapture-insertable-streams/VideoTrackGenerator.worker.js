@@ -2,6 +2,29 @@
 
 importScripts("/resources/testharness.js");
 
+function make_audio_data(timestamp, channels, sampleRate, frames) {
+  let data = new Float32Array(frames*channels);
+
+  // This generates samples in a planar format.
+  for (var channel = 0; channel < channels; channel++) {
+    let hz = 100 + channel * 50; // sound frequency
+    let base_index = channel * frames;
+    for (var i = 0; i < frames; i++) {
+      let t = (i / sampleRate) * hz * (Math.PI * 2);
+      data[base_index + i] = Math.sin(t);
+    }
+  }
+
+  return new AudioData({
+    timestamp: timestamp,
+    data: data,
+    numberOfChannels: channels,
+    numberOfFrames: frames,
+    sampleRate: sampleRate,
+    format: "f32-planar",
+  });
+}
+
 const pixelColour = [50, 100, 150, 255];
 const height = 240;
 const width = 320;
@@ -64,17 +87,107 @@ promise_test(async t => {
   await writer.write(frame);
 
   assert_throws_dom("InvalidStateError", () => frame.clone(), "VideoFrame wasn't destroyed on write.");
-}, "Tests that VideoFrames are destroyed on write.");
+}, "Tests that VideoFrames are destroyed on write");
 
 promise_test(async t => {
   const generator = new VideoTrackGenerator();
   t.add_cleanup(() => generator.track.stop());
 
   const writer = generator.writable.getWriter();
-  const frame = makeVideoFrame(1);
-  t.add_cleanup(() => frame.close());
-  assert_throws_js(TypeError, writer.write(frame));
-}, "Mismatched frame and generator kind throws on write.");
+
+  if (!self.AudioData)
+    return;
+
+  const defaultInit = {
+      timestamp: 1234,
+      channels: 2,
+      sampleRate: 8000,
+      frames: 100,
+  };
+  const audioData = make_audio_data(defaultInit.timestamp, defaultInit.channels, defaultInit.sampleRate,
+      defaultInit.frames);
+
+  await promise_rejects_js(t, TypeError, writer.write("test"));
+}, "Generator writer rejects on mismatched media input");
+
+promise_test(async t => {
+  const generator = new VideoTrackGenerator();
+  t.add_cleanup(() => generator.track.stop());
+
+  const writer = generator.writable.getWriter();
+  await promise_rejects_js(t, TypeError, writer.write("potatoe"));
+}, "Generator writer rejects on non media input");
+
+promise_test(async t => {
+  const generator = new VideoTrackGenerator();
+
+  const writer = generator.writable.getWriter();
+  const frame1 = makeVideoFrame(1);
+  t.add_cleanup(() => frame1.close());
+  await writer.write(frame1);
+  assert_equals(frame1.codedWidth, 0);
+
+  generator.track.stop();
+
+  await writer.closed;
+
+  const frame2 = makeVideoFrame(1);
+  t.add_cleanup(() => frame2.close());
+  await promise_rejects_js(t, TypeError, writer.write(frame2));
+
+  assert_equals(frame2.codedWidth, 320);
+}, "A writer rejects when generator's track is stopped");
+
+promise_test(async t => {
+  const generator = new VideoTrackGenerator();
+  generator.muted = true;
+
+  const writer = generator.writable.getWriter();
+  const frame1 = makeVideoFrame(1);
+  t.add_cleanup(() => frame1.close());
+  await writer.write(frame1);
+  assert_equals(frame1.codedWidth, 0);
+
+  generator.track.stop();
+
+  await writer.closed;
+
+  const frame2 = makeVideoFrame(1);
+  t.add_cleanup(() => frame2.close());
+  await promise_rejects_js(t, TypeError, writer.write(frame2));
+
+  assert_equals(frame2.codedWidth, 320);
+}, "A muted writer rejects when generator's track is stopped");
+
+promise_test(async t => {
+  const generator = new VideoTrackGenerator();
+
+  const writer = generator.writable.getWriter();
+  const frame1 = makeVideoFrame(1);
+  t.add_cleanup(() => frame1.close());
+  await writer.write(frame1);
+  assert_equals(frame1.codedWidth, 0);
+
+  const clonedTrack = generator.track.clone();
+  generator.track.stop();
+
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+
+  const frame2 = makeVideoFrame(1);
+  t.add_cleanup(() => frame2.close());
+  await writer.write(frame2);
+  assert_equals(frame2.codedWidth, 0);
+
+  clonedTrack.stop();
+
+  await writer.closed;
+
+  const frame3 = makeVideoFrame(1);
+  t.add_cleanup(() => frame3.close());
+  await promise_rejects_js(t, TypeError, writer.write(frame3));
+
+  assert_equals(frame3.codedWidth, 320);
+}, "A writer rejects when generator's track and clones are stopped");
 
 promise_test(async t => {
   const generator = new VideoTrackGenerator();

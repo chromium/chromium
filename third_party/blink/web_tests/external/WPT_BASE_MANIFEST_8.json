@@ -308878,10 +308878,6 @@
       "67766274e59aced21539d94499d3a324d11b8478",
       []
      ],
-     "light-dark-basic-expected.txt": [
-      "f51719c68ec4027778042c42e770434530008805",
-      []
-     ],
      "mossgreensquare-ref.html": [
       "06f866c02dd04724a35cf5032b1d40e6783c3389",
       []
@@ -309963,6 +309959,10 @@
       ],
       "content-visibility-with-popover-top-layer-and-auto-descendant-ref.html": [
        "211bb89a33eadb6f0f8b8b5703c39a7b1d6dc67f",
+       []
+      ],
+      "content-visibility-with-top-layer-008-expected.txt": [
+       "72c85f000043bdac14bd57608c7980a11b578775",
        []
       ],
       "content-visibility-with-top-layer-and-auto-descendant-ref.html": [
@@ -349935,7 +349935,7 @@
       []
      ],
      "formatblock.js": [
-      "bd559b3003686d79358b14e3d8389b18d3034d06",
+      "5cc040b1f13b10d56bd488b67ccb5745171e8c3e",
       []
      ],
      "forwarddelete.js": [
@@ -349975,7 +349975,7 @@
       []
      ],
      "insertparagraph.js": [
-      "7a5fe7158b2c6db56da0b97bf759dba33680bfe6",
+      "0dace0105c3963cb93f9a83b03581dff117af39a",
       []
      ],
      "inserttext.js": [
@@ -350644,8 +350644,16 @@
       "9b9affa9f24a84c7d709a92fa126ee51a28e1b89",
       []
      ],
+     "formatblock_4001-5000-expected.txt": [
+      "d307bdf6235e2d0267873f703d99f5552bfc56ac",
+      []
+     ],
      "formatblock_4001-last-expected.txt": [
       "68802bc433e918a6a13811f6bb0a7b86fb876b36",
+      []
+     ],
+     "formatblock_5001-last-expected.txt": [
+      "6eb89d482e9612e63c80bdd0f16ddb316539b64b",
       []
      ],
      "forwarddelete_1-1000-expected.txt": [
@@ -350738,6 +350746,10 @@
      ],
      "insertparagraph_5001-6000-expected.txt": [
       "29a4a18e203a355bf3d141494a8607acee4d5c31",
+      []
+     ],
+     "insertparagraph_6001-7000-expected.txt": [
+      "02026a2061aa2cda3d6d00caae2a2d28dcc29129",
       []
      ],
      "insertparagraph_6001-last-expected.txt": [
@@ -371035,7 +371047,7 @@
         []
        ],
        "selectlist-option-arbitrary-content-displayed-ref.tentative.html": [
-        "61b1c1a7108b93296022d24ca12348dd6d80384e",
+        "126bbc5dd76ef260b8003fa568ca78d16d97d0b9",
         []
        ],
        "selectlist-option-arbitrary-content-not-displayed-ref.tentative.html": [
@@ -380454,7 +380466,7 @@
      []
     ],
     "VideoTrackGenerator.worker-expected.txt": [
-     "c1a26e7092f017db6710fba4bec4f95034acefc6",
+     "3732b78258ad3d53777bba6cbda078df731507a6",
      []
     ],
     "idlharness.any.worker-expected.txt": [
@@ -389514,7 +389526,7 @@
          ]
         },
         "router-rules.js": [
-         "5ca8361567f2cb0dfa2be1c62448a2d890c9dbd2",
+         "ceae91f5b849bf26cfbcd24a907beb227a6d0672",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -389588,10 +389600,6 @@
      []
     ],
     "declarative": {
-     "clonable.window-expected.txt": [
-      "1bc695efb2f0e4a34cabc11a721e98965b8296f1",
-      []
-     ],
      "declarative-shadow-dom-opt-in-expected.txt": [
       "ecc6e22c726730522778ee1a168b2547619ffa90",
       []
@@ -396622,7 +396630,11 @@
        },
        "traverse_history": {
         "__init__.py": [
-         "1227831549182075b71ed81d80161ff639b54f49",
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ],
+        "conftest.py": [
+         "fcd7cdf1142fad3fee5e9866e3603ac666929959",
          []
         ]
        },
@@ -397398,7 +397410,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "e47d7850a533c6249a989b9ef2e887acebda42f5",
+       "177bdda160e3dba97cfa9ccf165d673dd8cb220e",
        []
       ],
       "fixtures_http.py": [
@@ -397498,7 +397510,7 @@
        []
       ],
       "sync.py": [
-       "015ebd37a0966860a452a6f69420ba6787b4877e",
+       "4e92bcdf23e044de9d6ec00c2f90d39f9672e7e3",
        []
       ]
      }
@@ -444469,6 +444481,13 @@
        {}
       ]
      ],
+     "light-dark-currentcolor-in-color.html": [
+      "7a95ea0b8ffc00c93f3776e57145ffa67aad3f3c",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-color-mix-with-currentcolor.html": [
       "2f24d62b547fb24200fa659d27a9e55777303aa5",
       [
@@ -446232,6 +446251,13 @@
       ],
       "content-visibility-with-top-layer-007.html": [
        "028f818133b89cadd67b6098188fe6a8de0d00da",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-008.html": [
+       "2911ef778391373a45619bdbb896ced4509d4f4c",
        [
         null,
         {}
@@ -462967,6 +462993,13 @@
      ],
      "percent-width-ignored-003.tentative.html": [
       "c2282f3c57e93a077cbabcf061dc571ccbdf52c7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "table-cell-scroll-height.html": [
+      "6ebaf7ad6a321eb43314fe328de3b82c9f465196",
       [
        null,
        {}
@@ -486915,7 +486948,7 @@
       ]
      ],
      "formatblock.html": [
-      "f15f2c03dacd22e4aa999db055736bdab728fa06",
+      "03b5a6512737b5dafc944aa837386e05bac5e03d",
       [
        "editing/run/formatblock.html?1-1000",
        {
@@ -486941,7 +486974,13 @@
        }
       ],
       [
-       "editing/run/formatblock.html?4001-last",
+       "editing/run/formatblock.html?4001-5000",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/formatblock.html?5001-last",
        {
         "timeout": "long"
        }
@@ -487077,7 +487116,7 @@
       ]
      ],
      "insertparagraph.html": [
-      "56b5335ea7eb53715b0840286681c2687bb0dd76",
+      "ef67bcfe8ba046f34e577199e7aa678a37610014",
       [
        "editing/run/insertparagraph.html?1-1000",
        {
@@ -487115,7 +487154,13 @@
        }
       ],
       [
-       "editing/run/insertparagraph.html?6001-last",
+       "editing/run/insertparagraph.html?6001-7000",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/insertparagraph.html?7001-last",
        {
         "timeout": "long"
        }
@@ -502488,7 +502533,7 @@
      ]
     ],
     "deprecated-config-apis.https.html": [
-     "11cd247f23dc79a35025c21d96f000d216f93d1a",
+     "e746336f472b02a91cc144da18fe7f6f8b76083f",
      [
       null,
       {}
@@ -594241,7 +594286,7 @@
      ]
     ],
     "VideoTrackGenerator.worker.js": [
-     "576d4ef0843245bb080c00228415fd2d311fbf06",
+     "37caf1a37f254a6d0a0f0f10c6884ebc044e0fb4",
      [
       "mediacapture-insertable-streams/VideoTrackGenerator.worker.html",
       {
@@ -628635,6 +628680,13 @@
      ],
      "tentative": {
       "static-router": {
+       "static-router-fetch-event.https.html": [
+        "167e3af00909ec26d41ac89eac989e7ffbd824ee",
+        [
+         null,
+         {}
+        ]
+       ],
        "static-router-invalid-rules.https.html": [
         "4ed4ad4b3c0698a0375b2dfb7843bc18a421e932",
         [
@@ -629816,7 +629868,7 @@
      ]
     ],
     "shadow-root-clonable.html": [
-     "fa6a9d8df96b68e4bdb63236b12dce28aea08436",
+     "6272d11403fe856575a6f94b59933d860d27d8bf",
      [
       null,
       {}
@@ -709011,21 +709063,21 @@
        },
        "traverse_history": {
         "context.py": [
-         "7635c0e9ddd8a4413cc5aeb8af4ff4bbe5ae574a",
+         "2635dcfa287218dc1afabeea5c8186d3a1ee4109",
          [
           null,
           {}
          ]
         ],
         "delta.py": [
-         "05f4d99544fc850d8a9a325fe2e0eed49dbdf768",
+         "3bd0087250c14bd08bd22227046ac7ceb0a2a77f",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "abb0d69c937d0a052f95431a674a3cfc45914a29",
+         "c6a90601e70da8af00723daa2924914969c5cea5",
          [
           null,
           {}
