@@ -13,7 +13,11 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -27,10 +31,12 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "ui/accessibility/ax_mode.h"
@@ -327,6 +333,172 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+}
+
+// Checks `CreateImageBitmap` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreateImageBitmap) {
+  V8TestingScope scope;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  auto* image = MakeGarbageCollected<V8ImageBitmapSource>(&CanvasElement());
+  auto* options = ImageBitmapOptions::Create();
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  ImageBitmapFactories::CreateImageBitmap(GetScriptState(), image, options,
+                                          exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  ImageBitmapFactories::CreateImageBitmap(GetScriptState(), image, options,
+                                          no_exception);
+}
+
+// Checks `createPattern` throws an exception the source has unclosed layers.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreatePattern) {
+  V8TestingScope scope;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  Context2D()->createPattern(image, "repeat", exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  Context2D()->createPattern(image, "repeat", no_exception);
+}
+
+// Checks `drawImage` throws an exception the source has unclosed layers.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawImage) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  Context2D()->drawImage(image, /*x=*/0, /*y=*/0, exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  Context2D()->drawImage(image, /*x=*/0, /*y=*/0, no_exception);
+}
+
+// Checks `getImageData` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerGetImageData) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState no_exception;
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  Context2D()->getImageData(/*sx=*/0, /*sy=*/0, /*sw=*/1, /*sh=*/1,
+                            exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  Context2D()->getImageData(/*sx=*/0, /*sy=*/0, /*sw=*/1, /*sh=*/1,
+                            no_exception);
+}
+
+// Checks `putImageData` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerPutImageData) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  ImageData* image_data = ImageData::Create(
+      Context2D()->Width(), Context2D()->Height(), no_exception);
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  Context2D()->putImageData(image_data, /*dx=*/0, /*dy=*/0, exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  Context2D()->putImageData(image_data, /*dx=*/0, /*dy=*/0, no_exception);
+}
+
+// Checks `toBlob` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToBlob) {
+  V8TestingScope scope;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  auto* callback = V8BlobCallback::Create(scope.GetContext()->Global());
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  CanvasElement().toBlob(callback, /*mime_type=*/"image/png", exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  CanvasElement().toBlob(callback, /*mime_type=*/"image/png", no_exception);
+}
+
+// Checks `toDataURL` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToDataUrl) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState no_exception;
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  CanvasElement().toDataURL(/*mime_type=*/"image/png", exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  CanvasElement().toDataURL(/*mime_type=*/"image/png", no_exception);
 }
 
 void ResetCanvasForAccessibilityRectTest(Document& document) {
