@@ -11063,6 +11063,9 @@ if (!is_android && !is_chromeos_device) {
       }
       if (is_chromeos_ash) {
         sources += [
+          "../browser/ash/child_accounts/child_user_flags_page_interactive_uitest.cc",
+          "../browser/ash/child_accounts/child_user_interactive_base_test.cc",
+          "../browser/ash/child_accounts/child_user_interactive_base_test.h",
           "../browser/ash/child_accounts/child_user_shelf_interactive_uitest.cc",
           "../browser/ash/file_manager/file_manager_interactive_uitest.cc",
           "../browser/ash/os_feedback/os_feedback_interactive_uitest.cc",
