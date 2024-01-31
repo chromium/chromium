@@ -133,7 +133,8 @@ TEST(BrowsingDataPoliciesUtils, AllSyncTypesChecked) {
       syncer::UserSelectableType::kThemes,
       syncer::UserSelectableType::kExtensions,
       syncer::UserSelectableType::kApps,
-      syncer::UserSelectableType::kReadingList};
+      syncer::UserSelectableType::kReadingList,
+      syncer::UserSelectableType::kSharedTabGroupData};
 
   syncer::UserSelectableTypeSet sync_types =
       browsing_data::GetSyncTypesForClearBrowsingData(

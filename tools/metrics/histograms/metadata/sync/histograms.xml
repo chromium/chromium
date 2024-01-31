@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SEGMENTATION" summary="SEGMENTATION"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
   <variant name=".SESSION" summary="SESSION"/>
+  <variant name=".SHARED_TAB_GROUP_DATA" summary="SHARED_TAB_GROUP_DATA"/>
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>
   <variant name=".THEME" summary="THEME"/>
   <variant name=".TYPED_URL" summary="TYPED_URL"/>

@@ -46,6 +46,7 @@
 #include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -585,7 +586,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(48 == GetNumModelTypes(),
+  static_assert(49 == GetNumModelTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -626,6 +627,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(segmentation);
   VISIT(send_tab_to_self);
   VISIT(session);
+  VISIT(shared_tab_group_data);
   VISIT(sharing_message);
   VISIT(theme);
   VISIT(typed_url);
@@ -1227,6 +1229,10 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {
   VISIT(selected_tab_index);
   VISIT_REP(tab);
   VISIT_ENUM(browser_type);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDataSpecifics& proto) {
+  VISIT(guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics& proto) {

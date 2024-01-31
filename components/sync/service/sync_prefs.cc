@@ -219,8 +219,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
       if (pref_value.has_value()) {
         type_enabled = *pref_value;
       } else if (type == UserSelectableType::kHistory ||
-                 type == UserSelectableType::kTabs) {
-        // History and Tabs are disabled by default.
+                 type == UserSelectableType::kTabs ||
+                 type == UserSelectableType::kSharedTabGroupData) {
+        // History, Tabs, and Shared Tab Group Data are disabled by default.
         type_enabled = false;
       } else if (type == UserSelectableType::kPasswords) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -607,6 +608,8 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncTabs;
     case UserSelectableType::kSavedTabGroups:
       return prefs::internal::kSyncSavedTabGroups;
+    case UserSelectableType::kSharedTabGroupData:
+      return prefs::internal::kSyncSharedTabGroupData;
     case UserSelectableType::kPayments:
       return prefs::internal::kSyncPayments;
   }
@@ -667,6 +670,9 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kHistory:
     case UserSelectableType::kTabs:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+    case syncer::UserSelectableType::kSharedTabGroupData:
+      return base::FeatureList::IsEnabled(
+          kSyncSharedTabGroupDataInTransportMode);
     case UserSelectableType::kApps:
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:

@@ -100,6 +100,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case USER_CONSENTS:
     case SEND_TAB_TO_SELF:
     case SECURITY_EVENTS:
+    case SHARED_TAB_GROUP_DATA:
     case WIFI_CONFIGURATIONS:
     case WEB_APPS:
     case WEB_APKS:
@@ -172,6 +173,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case WEBAUTHN_CREDENTIAL:
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
+    case SHARED_TAB_GROUP_DATA:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

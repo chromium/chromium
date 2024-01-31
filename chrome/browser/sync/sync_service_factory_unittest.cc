@@ -17,6 +17,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
@@ -85,7 +86,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(48 == syncer::GetNumModelTypes(),
+    static_assert(49 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -181,6 +182,10 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kPasswordManagerEnableSenderService)) {
       datatypes.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+    }
+    if (base::FeatureList::IsEnabled(
+            data_sharing::features::kDataSharingFeature)) {
+      datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
     return datatypes;
   }

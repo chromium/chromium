@@ -153,7 +153,10 @@ enum ModelType {
   INCOMING_PASSWORD_SHARING_INVITATION,
   OUTGOING_PASSWORD_SHARING_INVITATION,
 
-  LAST_USER_MODEL_TYPE = OUTGOING_PASSWORD_SHARING_INVITATION,
+  // Data related to tab group sharing.
+  SHARED_TAB_GROUP_DATA,
+
+  LAST_USER_MODEL_TYPE = SHARED_TAB_GROUP_DATA,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -244,7 +247,8 @@ enum class ModelTypeForHistograms {
   kOutgoingPasswordSharingInvitations = 60,
   kAutofillWalletCredential = 61,
   kWebApks = 62,
-  kMaxValue = kWebApks,
+  kSharedTabGroupData = 63,
+  kMaxValue = kSharedTabGroupData,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.

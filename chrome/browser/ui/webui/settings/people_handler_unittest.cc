@@ -111,6 +111,8 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
              types.Has(syncer::UserSelectableType::kReadingList));
   result.Set("savedTabGroupsSynced",
              types.Has(syncer::UserSelectableType::kSavedTabGroups));
+  result.Set("sharedTabGroupDataSynced",
+             types.Has(syncer::UserSelectableType::kSharedTabGroupData));
   result.Set("tabsSynced", types.Has(syncer::UserSelectableType::kTabs));
   result.Set("themesSynced", types.Has(syncer::UserSelectableType::kThemes));
   result.Set("typedUrlsSynced",

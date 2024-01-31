@@ -187,6 +187,9 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kApps,    UserSelectableType::kExtensions,
       UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
+  if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
+    expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On Desktop, kPasswords is disabled by default.

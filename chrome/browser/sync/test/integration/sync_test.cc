@@ -1121,7 +1121,7 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 }
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
@@ -1158,6 +1158,11 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
     allowed_types.Put(syncer::READING_LIST);
   }
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncSharedTabGroupDataInTransportMode)) {
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, Apps-related types may run in transport mode.
   allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
