@@ -131,6 +131,20 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetInnerTextRangeBoundsRect(
   }
 }
 
+gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
+    const gfx::Point& screen_point) const {
+  // On Windows, we can't directly divide the point in screen coordinates by the
+  // display's scale factor to get the point in DIPs like we can on other
+  // platforms. We need to go through the ScreenWin::ScreenToDIPPoint helper
+  // function to perform the right set of offset transformations needed.
+  //
+  // This is because Chromium transforms the screen physical coordinates it
+  // receives from Windows into an internal representation of screen physical
+  // coordinates adjusted for multiple displays of different resolutions.
+  return ToRoundedPoint(
+      display::win::ScreenWin::ScreenToDIPPoint(gfx::PointF(screen_point)));
+}
+
 void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
   DCHECK(needs_ax_tree_manager());
   if (atomic_view_ax_tree_manager_) {

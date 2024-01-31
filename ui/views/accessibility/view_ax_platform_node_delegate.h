@@ -137,6 +137,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting()
       const override;
 
+  virtual gfx::Point ScreenToDIPPoint(const gfx::Point& screen_point) const;
+
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
 

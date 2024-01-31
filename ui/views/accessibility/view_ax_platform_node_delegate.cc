@@ -692,25 +692,17 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   if (IsLeaf())
     return GetNativeViewAccessible();
 
-  gfx::NativeView native_view = view()->GetWidget()->GetNativeView();
-  float scale_factor = 1.0;
-  if (native_view) {
-    scale_factor = ui::GetScaleFactorForNativeView(native_view);
-    scale_factor = scale_factor <= 0 ? 1.0 : scale_factor;
-  }
-  int screen_dips_x = screen_physical_pixel_x / scale_factor;
-  int screen_dips_y = screen_physical_pixel_y / scale_factor;
+  gfx::Point point = ScreenToDIPPoint(
+      gfx::Point(screen_physical_pixel_x, screen_physical_pixel_y));
 
   // Search child widgets first, since they're on top in the z-order.
   for (Widget* child_widget : GetChildWidgets().child_widgets) {
     View* child_root_view = child_widget->GetRootView();
-    gfx::Point point(screen_dips_x, screen_dips_y);
     View::ConvertPointFromScreen(child_root_view, &point);
     if (child_root_view->HitTestPoint(point))
       return child_root_view->GetNativeViewAccessible();
   }
 
-  gfx::Point point(screen_dips_x, screen_dips_y);
   View::ConvertPointFromScreen(view(), &point);
   if (!view()->HitTestPoint(point))
     return nullptr;
@@ -852,6 +844,23 @@ const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
 AtomicViewAXTreeManager*
 ViewAXPlatformNodeDelegate::GetAtomicViewAXTreeManagerForTesting() const {
   return atomic_view_ax_tree_manager_.get();
+}
+
+gfx::Point ViewAXPlatformNodeDelegate::ScreenToDIPPoint(
+    const gfx::Point& screen_point) const {
+  if (!view() || !view()->GetWidget()) {
+    return screen_point;
+  }
+
+  gfx::NativeView native_view = view()->GetWidget()->GetNativeView();
+  float scale_factor = 1.0;
+  if (native_view) {
+    scale_factor = ui::GetScaleFactorForNativeView(native_view);
+    scale_factor = scale_factor <= 0 ? 1.0 : scale_factor;
+  }
+
+  return gfx::Point(screen_point.x() / scale_factor,
+                    screen_point.y() / scale_factor);
 }
 
 std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds() const {
