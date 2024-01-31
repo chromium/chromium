@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -456,5 +457,30 @@ public class HomeModulesMediatorUnitTest {
         HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(
                 mHostSurface, mModuleTypeList[2], duration);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testTimeOutCalledAfterHide() {
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[2], mModuleTypeList[1], mModuleTypeList[0]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 3; i++) {
+            doReturn(true)
+                    .when(mModuleRegistry)
+                    .build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any());
+        }
+        assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
+
+        // Calls buildModulesAndShow() to initialize ranking index map.
+        SystemClock.setCurrentTimeMillis(0);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+        assertNotNull(mMediator.getModuleFetchResultsIndicatorForTesting());
+
+        mMediator.hide();
+        assertNull(mMediator.getModuleFetchResultsIndicatorForTesting());
+
+        // After calling onModuleFetchTimeOut(), the mediator shouldn't throw any exception.
+        mMediator.onModuleFetchTimeOut();
     }
 }
