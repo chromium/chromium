@@ -11,6 +11,7 @@ import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -18,6 +19,7 @@ import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
+import {clearBody} from './utils.js';
 
 suite('AboutPageTest', function() {
   let page = null;
@@ -84,7 +86,7 @@ suite('AboutPageTest', function() {
   function initNewPage() {
     aboutBrowserProxy.reset();
     lifetimeBrowserProxy.reset();
-    PolymerTest.clearBody();
+    clearBody();
     page = document.createElement('os-about-page');
     Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
@@ -984,7 +986,7 @@ suite('DetailedBuildInfoTest', function() {
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
-    PolymerTest.clearBody();
+    clearBody();
   });
 
   teardown(function() {
@@ -1294,7 +1296,7 @@ suite('EditHostnameDialogTest', function() {
   setup(function() {
     deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
     DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
-    PolymerTest.clearBody();
+    clearBody();
   });
 
   teardown(function() {
@@ -1495,7 +1497,7 @@ suite('ChannelSwitcherDialogTest', function() {
     browserProxy = new TestAboutPageBrowserProxy();
     browserProxy.setChannels(currentChannel, currentChannel);
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
+    clearBody();
     dialog = document.createElement('settings-channel-switcher-dialog');
     document.body.appendChild(dialog);
 
@@ -1585,7 +1587,7 @@ suite('Consumer auto update dialog popup', function() {
     events = [];
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
+    clearBody();
     dialog =
         document.createElement('settings-consumer-auto-update-toggle-dialog');
     document.body.appendChild(dialog);
@@ -1630,7 +1632,7 @@ suite('AboutPageTest_OfficialBuild', function() {
   setup(function() {
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
+    clearBody();
     page = document.createElement('os-about-page');
     document.body.appendChild(page);
   });
