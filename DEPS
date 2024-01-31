@@ -5001,7 +5001,7 @@ hooks = [
   {
     'name': 'Fetch WPR archive files',
     'pattern': '.',
-    'condition': 'checkout_android and (checkout_wpr_archives or checkout_src_internal)',
+    'condition': 'checkout_android and checkout_wpr_archives',
     'action': [ 'python3',
                 'src/chrome/test/data/android/manage_wpr_archives.py',
                 'download',
