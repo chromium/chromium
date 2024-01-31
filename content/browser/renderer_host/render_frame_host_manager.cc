@@ -2773,7 +2773,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   // 3) When we're swapping BrowsingInstances due to a COOP mismatch, and we
   // have an existing process that's suitable for the new SiteInstance. This
-  // has two cases:
+  // has three cases:
   //
   //   - If there's a candidate SiteInstance that differs from the target
   //     SiteInstance, try to reuse the candidate SiteInstance's
@@ -2785,7 +2785,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   //     from the old speculative RenderFrameHost if its SiteInstance is
   //     compatible with the new one.
   //
-  //   - Otherwise, if the navigation is same-site, we can try to reuse the
+  //   - If the navigation is same-site, we can try to reuse the
   //     current SiteInstance's process, but only if there is just one
   //     WebContents in the current BrowsingInstance.  In this case, we can be
   //     reasonably sure that the old page will be replaced by the new page in
@@ -2793,6 +2793,19 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   //     Having more than one WebContents indicates that a page may be opening
   //     a COOP popup, which should use a fresh process to get a clean slate
   //     similarly to noopener popups.
+  //
+  //   - If the navigation is prerender initial navigation, we can also try to
+  //     reuse the current SiteInstance's process. This is due to the fact that,
+  //     at the time of the creation of PrerenderHost to start prerender initial
+  //     navigation, a new FrameTree is initialized with new BrowsingInstance /
+  //     SiteInstance, and a new unused process will be assigned to it
+  //     accordingly.
+  //     TODO(crbug.com/1519131): Note that it is a short term-fix. Ideally we
+  //     could try to stay in the unassigned SiteInstance / BrowsingInstance in
+  //     this scenario, rather than swapping to a new BrowsingInstance and
+  //     reusing the process. Additionally, it could cover other navigations
+  //     similar to prerender, which are started from unassigned SiteInstance
+  //     and unlocked processes.
   //
   // TODO(alexmos): Study if this kind of reuse might be useful in other cases
   // beyond COOP.
@@ -2804,6 +2817,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       process_to_reuse = candidate_instance->GetProcess();
     } else if (is_same_site.Get(*render_frame_host_, dest_url_info) &&
                current_instance->GetRelatedActiveContentsCount() == 1) {
+      process_to_reuse = current_instance->GetProcess();
+    } else if (base::FeatureList::IsEnabled(
+                   features::kProcessReuseOnPrerenderCOOPSwap) &&
+               frame_tree_node_->frame_tree().is_prerendering()) {
       process_to_reuse = current_instance->GetProcess();
     }
   }
