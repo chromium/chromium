@@ -1386,6 +1386,30 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
+TEST(BaseRenderingContextLayersCallOrderTests, NestedLayers) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState no_exception;
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      no_exception);
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      no_exception);
+  EXPECT_EQ(context->StateStackDepth(), 2);
+  EXPECT_EQ(context->OpenedLayerCount(), 2);
+  context->endLayer(no_exception);
+  context->endLayer(no_exception);
+  EXPECT_EQ(context->StateStackDepth(), 0);
+  EXPECT_EQ(context->OpenedLayerCount(), 0);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<SaveLayerAlphaOp>(1.0f),  //
+                             PaintOpEq<SaveLayerAlphaOp>(1.0f),  //
+                             PaintOpEq<RestoreOp>(),             //
+                             PaintOpEq<RestoreOp>()));
+}
+
 TEST(BaseRenderingContextLayersCSSTests,
      FilterOperationsWithStyleResolutionHost) {
   test::TaskEnvironment task_environment;
