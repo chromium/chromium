@@ -142,9 +142,9 @@ namespace autofill::internal {
 // 1. UpdateTreeOfRendererForm() and GetRendererFormsOfBrowserForm() must only
 //    be called for forms which have the following attributes set:
 //    - FormData::host_frame
-//    - FormData::unique_renderer_id
+//    - FormData::renderer_id
 //    - FormFieldData::host_frame
-//    - FormFieldData::unique_renderer_id
+//    - FormFieldData::renderer_id
 //    - FormFieldData::host_form_id
 // 2. GetBrowserForm() must only be called for known renderer forms. A renderer
 //    form is *known* after a corresponding UpdateTreeOfRendererForm() call

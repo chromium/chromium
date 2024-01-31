@@ -111,11 +111,9 @@ bool FormData::SameFormAs(const FormData& form) const {
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,
   // because we expect most inequalities to be due to them.
-  if (a.unique_renderer_id != b.unique_renderer_id ||
-      a.child_frames != b.child_frames ||
-      !base::ranges::equal(a.fields, b.fields, {},
-                           &FormFieldData::unique_renderer_id,
-                           &FormFieldData::unique_renderer_id)) {
+  if (a.renderer_id != b.renderer_id || a.child_frames != b.child_frames ||
+      !base::ranges::equal(a.fields, b.fields, {}, &FormFieldData::renderer_id,
+                           &FormFieldData::renderer_id)) {
     return false;
   }
 
@@ -133,7 +131,7 @@ FormData::FillData::FillData() = default;
 FormData::FillData::~FillData() = default;
 
 FormData::FillData::FillData(const FormData& form)
-    : unique_renderer_id(form.unique_renderer_id) {
+    : renderer_id(form.renderer_id) {
   fields.reserve(form.fields.size());
   for (const FormFieldData& field : form.fields) {
     fields.emplace_back(field);

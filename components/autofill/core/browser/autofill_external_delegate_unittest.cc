@@ -317,11 +317,11 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     queried_form_ = test::GetFormData({
         .fields = {{.role = NAME_FIRST,
                     .host_frame = queried_form_triggering_field_id_.frame_token,
-                    .unique_renderer_id =
+                    .renderer_id =
                         queried_form_triggering_field_id_.renderer_id,
                     .autocomplete_attribute = "given-name"}},
         .host_frame = form_id.frame_token,
-        .unique_renderer_id = form_id.renderer_id,
+        .renderer_id = form_id.renderer_id,
     });
     manager().OnFormsSeen({queried_form_}, {});
     external_delegate().OnQuery(queried_form_, queried_form_.fields[0],

@@ -43,7 +43,7 @@ struct FieldDescription {
   // the role.
   std::optional<FieldType> heuristic_type;
   std::optional<LocalFrameToken> host_frame;
-  std::optional<FieldRendererId> unique_renderer_id;
+  std::optional<FieldRendererId> renderer_id;
   bool is_focusable = true;
   bool is_visible = true;
   std::optional<std::u16string> label;
@@ -66,7 +66,7 @@ struct FormDescription {
   const std::string description_for_logging;
   std::vector<FieldDescription<>> fields;
   std::optional<LocalFrameToken> host_frame;
-  std::optional<FormRendererId> unique_renderer_id;
+  std::optional<FormRendererId> renderer_id;
   const std::u16string name = u"TestForm";
   const std::string url = kFormUrl;
   const std::string action = kFormActionUrl;

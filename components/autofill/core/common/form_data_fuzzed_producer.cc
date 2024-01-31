@@ -71,7 +71,7 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     result.fields[i].name = ConsumeU16String(provider);
     result.fields[i].name_attribute = result.fields[i].name;
     result.fields[i].id_attribute = ConsumeU16String(provider);
-    result.fields[i].unique_renderer_id =
+    result.fields[i].renderer_id =
         FieldRendererId(provider.ConsumeIntegralInRange(-32, 31));
 
     if (same_value_field) {

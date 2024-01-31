@@ -285,7 +285,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Stores information about form field structure.
   struct FormFieldInfo {
-    FieldRendererId unique_renderer_id;
+    FieldRendererId renderer_id;
     autofill::FormControlType form_control_type;
     std::string autocomplete_attribute;
     bool is_focusable = false;
@@ -300,7 +300,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     FormStructureInfo& operator=(FormStructureInfo&& other);
     ~FormStructureInfo();
 
-    FormRendererId unique_renderer_id;
+    FormRendererId renderer_id;
     std::vector<FormFieldInfo> fields;
   };
 

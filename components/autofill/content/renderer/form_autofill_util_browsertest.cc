@@ -187,7 +187,7 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
 
 bool HaveSameFormControlId(const WebFormControlElement& element,
                            const FormFieldData& field) {
-  return GetFieldRendererId(element) == field.unique_renderer_id;
+  return GetFieldRendererId(element) == field.renderer_id;
 }
 
 class FormAutofillUtilsTest : public content::RenderViewTest {
@@ -1948,9 +1948,9 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields.size(), 1u);
   const FormFieldData& field = form->fields[0];
-  EXPECT_TRUE(form->unique_renderer_id);
-  EXPECT_EQ(*form->unique_renderer_id, *field.unique_renderer_id);
-  EXPECT_EQ(form->unique_renderer_id, field.host_form_id);
+  EXPECT_TRUE(form->renderer_id);
+  EXPECT_EQ(*form->renderer_id, *field.renderer_id);
+  EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name, u"my-id");
   EXPECT_EQ(field.id_attribute, u"my-id");
@@ -1975,9 +1975,9 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
   ASSERT_EQ(form->fields.size(), 1u);
   const FormFieldData& field = form->fields[0];
-  EXPECT_TRUE(form->unique_renderer_id);
-  EXPECT_EQ(*form->unique_renderer_id, *field.unique_renderer_id);
-  EXPECT_EQ(form->unique_renderer_id, field.host_form_id);
+  EXPECT_TRUE(form->renderer_id);
+  EXPECT_EQ(*form->renderer_id, *field.renderer_id);
+  EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name, u"my-id");
   EXPECT_EQ(field.id_attribute, u"my-id");

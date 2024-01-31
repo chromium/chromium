@@ -216,7 +216,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
       {AutofillProfile::ValidityState::kUnvalidated});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
@@ -224,7 +224,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST},
       {AutofillProfile::ValidityState::kUnvalidated});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
@@ -233,7 +233,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
       {AutofillProfile::ValidityState::kInvalid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
@@ -242,7 +242,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
@@ -251,7 +251,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Add checkable field.
@@ -263,7 +263,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -323,7 +323,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     field.label = u"Address";
     field.name = u"address";
     field.form_control_type = FormControlType::kInputText;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
@@ -378,7 +378,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
       {AutofillProfile::ValidityState::kUnvalidated});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
@@ -386,7 +386,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST},
       {AutofillProfile::ValidityState::kUnvalidated});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
@@ -395,7 +395,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
       {AutofillProfile::ValidityState::kInvalid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
@@ -404,7 +404,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {PHONE_HOME_WHOLE_NUMBER}, {AutofillProfile::ValidityState::kEmpty});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
@@ -413,7 +413,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Add checkable field.
@@ -425,7 +425,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities,
       {ADDRESS_HOME_COUNTRY}, {AutofillProfile::ValidityState::kValid});
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -493,7 +493,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       possible_field_types, possible_field_types_validities, {NAME_FIRST},
       {AutofillProfile::ValidityState::kUnvalidated,
        AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
@@ -502,7 +502,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       possible_field_types, possible_field_types_validities, {NAME_LAST},
       {AutofillProfile::ValidityState::kUnvalidated,
        AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
@@ -512,7 +512,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS},
       {AutofillProfile::ValidityState::kInvalid,
        AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
@@ -523,7 +523,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {PHONE_HOME_WHOLE_NUMBER},
       {AutofillProfile::ValidityState::kEmpty,
        AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
@@ -534,7 +534,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {ADDRESS_HOME_COUNTRY},
       {AutofillProfile::ValidityState::kValid,
        AutofillProfile::ValidityState::kValid});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Add checkable field.
@@ -548,7 +548,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {ADDRESS_HOME_COUNTRY},
       {AutofillProfile::ValidityState::kValid,
        AutofillProfile::ValidityState::kValid});
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -612,14 +612,14 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   field.name = u"firstname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"lastname";
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
@@ -627,7 +627,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   field.form_control_type = FormControlType::kInputEmail;
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Phone";
@@ -636,7 +636,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
                                              {PHONE_HOME_WHOLE_NUMBER});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Country";
@@ -645,7 +645,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
                                              {ADDRESS_HOME_COUNTRY});
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Add checkable field.
@@ -657,7 +657,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
                                              {ADDRESS_HOME_COUNTRY});
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -711,7 +711,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
     field.label = u"Address";
     field.name = u"address";
     field.form_control_type = FormControlType::kInputText;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
@@ -756,7 +756,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
     field.label = u"Address";
     field.name = u"address";
     field.form_control_type = FormControlType::kInputText;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
@@ -984,7 +984,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.label = u"First Name";
   field.name = u"firstname";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
@@ -992,7 +992,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.label = u"Last Name";
   field.name = u"lastname";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
@@ -1001,7 +1001,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.name = u"email";
   field.name_attribute = field.name;
   field.form_control_type = FormControlType::kInputEmail;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
@@ -1060,19 +1060,19 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   field.form_control_type = FormControlType::kInputText;
 
   // No label for the first field.
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
   field.label = u"Last Name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
   field.label = u"Email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
@@ -1139,7 +1139,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                              possible_field_types_validities,
                                              {CREDIT_CARD_NAME_FULL});
   field.host_frame = form.host_frame;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(123);
   form.fields.push_back(field);
 
@@ -1149,7 +1149,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                              possible_field_types_validities,
                                              {CREDIT_CARD_NUMBER});
   field.host_frame = test::MakeLocalFrameToken();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(456);
   form.fields.push_back(field);
 
@@ -1159,7 +1159,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
       possible_field_types, possible_field_types_validities,
       {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR});
   field.host_frame = form.host_frame;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(123);
   form.fields.push_back(field);
 
@@ -1169,7 +1169,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                              possible_field_types_validities,
                                              {CREDIT_CARD_VERIFICATION_CODE});
   field.host_frame = test::MakeLocalFrameToken();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(456);
   form.fields.push_back(field);
 
@@ -1267,19 +1267,19 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   field.label = u"First Name";
   field.name = u"first";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Last Name";
   field.name = u"last";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Email";
   field.name = u"email";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1521,7 +1521,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   field.label = u"email";
   field.name = u"email";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
@@ -1529,7 +1529,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   field.label = u"First Name";
   field.name = u"first";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
@@ -1537,7 +1537,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   field.label = u"Last Name";
   field.name = u"last";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
@@ -1545,7 +1545,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   field.label = u"Address";
   field.name = u"address";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
@@ -1640,17 +1640,17 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
   FormFieldData field;
   field.name = u"email";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.name = u"first";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.name = u"last";
   field.name_attribute = field.name;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1672,7 +1672,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_IsFormTag) {
     form.url = GURL("http://www.foo.com/");
     FormFieldData field;
     field.name = u"email";
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
 
     form.is_form_tag = is_form_tag;
@@ -1728,7 +1728,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.css_classes = ASCIIToUTF16(f.css_classes);
     field.autocomplete_attribute = f.autocomplete;
     field.parsed_autocomplete = ParseAutocompleteAttribute(f.autocomplete);
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
   }
   RandomizedEncoder encoder("seed for testing",
@@ -1876,7 +1876,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
     field.form_control_type = FormControlType::kInputText;
     field.label = u"email";
     field.name = u"email";
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
 
     TestingPrefServiceSimple prefs;
@@ -1905,7 +1905,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   form.url = GURL("http://www.foo.com/");
   FormFieldData field;
   field.name = u"text field";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1933,7 +1933,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   form.url = GURL("http://www.foo.com/");
   FormFieldData field_data;
   field_data.name = u"text field";
-  field_data.unique_renderer_id = test::MakeFieldRendererId();
+  field_data.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field_data);
 
   FormStructure form_structure(form);
@@ -2101,31 +2101,31 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = form_signature;
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"billing_address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
   field.label = u"Card Number";
   field.name = u"card_number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(67890UL);
   form.fields.push_back(field);
 
   field.label = u"Expiration Date";
   field.name = u"expiration_month";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
   field.label = u"Expiration Year";
   field.name = u"expiration_year";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
@@ -2135,7 +2135,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
       FormFieldData::CheckStatus::kCheckableButUnchecked;
   checkable_field.label = u"Checkable1";
   checkable_field.name = u"Checkable1";
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   checkable_field.host_form_signature = form_signature;
   form.fields.push_back(checkable_field);
 
@@ -2204,7 +2204,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   for (size_t i = 0; i < 5; ++i) {
     field.label = u"Address";
     field.name = u"address";
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     field.host_form_signature = form_signature3;
     form.fields.push_back(field);
   }
@@ -2255,7 +2255,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   for (size_t i = 0; i < 300; ++i) {
     field.label = u"Address";
     field.name = u"address";
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     malformed_form.fields.push_back(field);
   }
 
@@ -2287,21 +2287,21 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
   field.label = u"username";
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"select";
   field.name = u"select";
   field.form_control_type = FormControlType::kInputCheckbox;
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"email";
   field.form_control_type = FormControlType::kInputText;
   field.check_status = FormFieldData::CheckStatus::kNotCheckable;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -2339,19 +2339,19 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // No label on the first field.
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Enter your Email address";
   field.name = u"email";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Enter your Password";
   field.name = u"password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
@@ -2387,7 +2387,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // No label on the first field.
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // This label will be truncated in the XML request.
@@ -2398,13 +2398,13 @@ TEST_F(AutofillCrowdsourcingEncoding,
       u"Of Exceeding A Certain Number Of Characters...";
   field.name = u"email";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Enter your Password";
   field.name = u"password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -2441,7 +2441,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.label = u"username";
   field.name = u"username";
   field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
@@ -2449,7 +2449,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.name = u"";
   field.form_control_type = FormControlType::kInputText;
   field.check_status = FormFieldData::CheckStatus::kNotCheckable;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -2487,7 +2487,7 @@ TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
   for (size_t i = 0; i < 250; ++i) {
     field.form_control_type = FormControlType::kInputText;
     field.name = u"text" + base::NumberToString16(i);
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
   }
 
@@ -2568,21 +2568,21 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // First name field.
   field.label = u"Nombre";
   field.name = u"Nombre";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // First last name field.
   // Should be identified by local heuristics.
   field.label = u"Apellido Paterno";
   field.name = u"apellido_paterno";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Second last name field.
   // Should be identified by local heuristics.
   field.label = u"Apellido Materno";
   field.name = u"apellido materno";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -2629,25 +2629,25 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Field for the name.
   field.label = u"Name";
   field.name = u"Name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the street name.
   field.label = u"Street Name";
   field.name = u"street_name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the house number.
   field.label = u"House Number";
   field.name = u"house_number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   // Field for the postal code.
   field.label = u"ZIP";
   field.name = u"ZIP";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -2842,7 +2842,7 @@ TEST_F(
     FormFieldData field;
     field.form_control_type = FormControlType::kInputText;
     field.name = u"name";
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     field.host_form_signature = FormSignature(host_form_signature);
     fields.push_back(field);
 
@@ -2891,7 +2891,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormFieldData field;
   field.form_control_type = FormControlType::kInputText;
   field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345);
   form_data.fields = {field};
 
@@ -2940,43 +2940,43 @@ TEST_F(AutofillCrowdsourcingEncoding,
   field.form_control_type = FormControlType::kInputText;
 
   field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_NAME_FIRST);
 
   field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_NAME_LAST);
 
   field.name = u"number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(12345);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_NUMBER);
 
   field.name = u"exp_month";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(67890);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_EXP_MONTH);
 
   field.name = u"exp_year";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(67890);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
   field.name = u"cvc";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(67890);
   fields.push_back(field);
   expected_types.push_back(CREDIT_CARD_VERIFICATION_CODE);
 
   field.name = u"";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(67890);
   fields.push_back(field);
   expected_types.push_back(NO_SERVER_DATA);
@@ -3056,12 +3056,12 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
 
   field.label = u"fullname";
   field.name = u"fullname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"address";
   field.name = u"address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Checkable fields should be ignored in parsing
@@ -3070,7 +3070,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   checkable_field.form_control_type = FormControlType::kInputRadio;
   checkable_field.check_status =
       FormFieldData::CheckStatus::kCheckableButUnchecked;
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
+  checkable_field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(checkable_field);
 
   FormStructure form_structure(form);
@@ -3081,13 +3081,13 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   FormData form2;
   field.label = u"email";
   field.name = u"email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form2.fields.push_back(field);
 
   field.label = u"password";
   field.name = u"password";
   field.form_control_type = FormControlType::kInputPassword;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form2.fields.push_back(field);
 
   FormStructure form_structure2(form2);
@@ -3711,26 +3711,26 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Autocomplete Off, with server data.
   field.label = u"First Name";
   field.name = u"firstName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Autocomplete Off, without server data.
   field.label = u"Last Name";
   field.name = u"lastName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Autocomplete On, with server data.
   field.should_autocomplete = true;
   field.label = u"Address";
   field.name = u"address";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Autocomplete On, without server data.
   field.label = u"Country";
   field.name = u"country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   AutofillQueryResponse response;
@@ -3779,22 +3779,22 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   // All fields with autocomplete off and no server data.
   field.label = u"Cardholder Name";
   field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Credit Card Number";
   field.name = u"cc-number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration Date";
   field.name = u"exp-date";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"CVC";
   field.name = u"cvc";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   AutofillQueryResponse response;
@@ -3847,22 +3847,22 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   // All fields with autocomplete off and no server data.
   field.label = u"Cardholder Name";
   field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Credit Card Number";
   field.name = u"cc-number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Expiration Date";
   field.name = u"exp-date";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"CVC";
   field.name = u"cvc";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   AutofillQueryResponse response;
@@ -3997,7 +3997,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     FormFieldData field;
     field.form_control_type = FormControlType::kInputText;
     field.label = field.name = base::NumberToString16(i);
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form_data.fields.push_back(field);
   }
 

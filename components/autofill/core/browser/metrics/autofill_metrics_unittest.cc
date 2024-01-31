@@ -150,7 +150,7 @@ FieldSignature Collapse(FieldSignature sig) {
 
 void CreateSimpleForm(const GURL& origin, FormData& form) {
   form.host_frame = test::MakeLocalFrameToken();
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
@@ -228,7 +228,7 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
                   .value = u"2345678901",
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
+      .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
           url::Origin::Create(autofill_client_->form_origin())};
 
@@ -286,7 +286,7 @@ TEST_F(AutofillMetricsTest,
                   .value = u"2345678901",
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
+      .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
           url::Origin::Create(autofill_client_->form_origin())};
   FormData form = GetAndAddSeenForm(form_description);
@@ -432,7 +432,7 @@ TEST_P(AutofillPerfectFillingMetricsTest,
   FormData form =
       test::GetFormData({.description_for_logging = test_case.description,
                          .fields = GetFields(test_case.fields),
-                         .unique_renderer_id = test::MakeFormRendererId(),
+                         .renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
                              autofill_client_->form_origin())});
 
@@ -1110,7 +1110,7 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
                   .value = u"buddy@gmail.com",
                   .is_autofilled = true},
                  {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
+      .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
           url::Origin::Create(autofill_client_->form_origin())};
 
@@ -2179,7 +2179,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
   {
     // Simulate having seen this insecure form on page load.
     form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
+    form.renderer_id = test::MakeFormRendererId();
     form.url = GURL("http://example.com/form.html");
     form.action = GURL("http://example.com/submit.html");
     // In order to test that the QueriedCreditCardFormIsSecure is logged as
@@ -2207,7 +2207,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
   {
     autofill_manager().Reset();
     form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
+    form.renderer_id = test::MakeFormRendererId();
     form.url = GURL("https://example.com/form.html");
     form.action = GURL("https://example.com/submit.html");
     form.main_frame_origin =
@@ -6318,7 +6318,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   // Fill additional form.
   FormData second_form = empty_form;
   second_form.host_frame = test::MakeLocalFrameToken();
-  second_form.unique_renderer_id = test::MakeFormRendererId();
+  second_form.renderer_id = test::MakeFormRendererId();
   second_form.fields.push_back(CreateTestFormField(
       "Second Phone", "second_phone", "", FormControlType::kInputText));
 
@@ -6722,7 +6722,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
   void SetUp() override {
     FormData form;
     form.host_frame = test::MakeLocalFrameToken();
-    form.unique_renderer_id = test::MakeFormRendererId();
+    form.renderer_id = test::MakeFormRendererId();
     form.url = GURL("http://foo.com");
     form.main_frame_origin = url::Origin::Create(GURL("http://foo_root.com"));
     FormFieldData field;
@@ -7933,7 +7933,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                   .is_autofilled = false,
                   .origin = other_origin},
              },
-         .unique_renderer_id = test::MakeFormRendererId(),
+         .renderer_id = test::MakeFormRendererId(),
          .main_frame_origin = main_origin});
 
     ASSERT_EQ(form_.main_frame_origin, form_.fields[0].origin);

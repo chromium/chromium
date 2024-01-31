@@ -1145,17 +1145,17 @@ struct CompareByRendererId {
   bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
                   const std::pair<FormFieldData*, ShadowFieldData>& g) const {
     DCHECK(f.first && g.first);
-    return f.first->unique_renderer_id < g.first->unique_renderer_id;
+    return f.first->renderer_id < g.first->renderer_id;
   }
   bool operator()(const FieldRendererId f,
                   const std::pair<FormFieldData*, ShadowFieldData>& g) const {
     DCHECK(g.first);
-    return f < g.first->unique_renderer_id;
+    return f < g.first->renderer_id;
   }
   bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
                   FieldRendererId g) const {
     DCHECK(f.first);
-    return f.first->unique_renderer_id < g;
+    return f.first->renderer_id < g;
   }
 };
 
@@ -1356,7 +1356,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   FormData form = [&form_element]() {
     FormData form;
     if (form_element.IsNull()) {
-      DCHECK(form.unique_renderer_id.is_null());
+      DCHECK(form.renderer_id.is_null());
       DCHECK(form.main_frame_origin.opaque());
       form.is_form_tag = false;
       form.is_action_empty = true;
@@ -1365,7 +1365,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     form.name = GetFormIdentifier(form_element);
     form.id_attribute = form_element.GetIdAttribute().Utf16();
     form.name_attribute = GetAttribute<kName>(form_element).Utf16();
-    form.unique_renderer_id = GetFormRendererId(form_element);
+    form.renderer_id = GetFormRendererId(form_element);
     form.action = GetCanonicalActionForForm(form_element);
     if (!form.action.is_valid()) {
       form.action = blink::WebStringToGURL(form_element.Action());
@@ -1901,7 +1901,7 @@ void WebFormControlElementToFormField(
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = GetAttribute<kName>(element).Utf16();
-  field->unique_renderer_id = renderer_id;
+  field->renderer_id = renderer_id;
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type =
@@ -2101,7 +2101,7 @@ FindFormAndFieldForFormControlElement(
       document, form_element, field_data_manager, extract_options);
   if (form) {
     if (auto it = base::ranges::find(form->fields, GetFieldRendererId(element),
-                                     &FormFieldData::unique_renderer_id);
+                                     &FormFieldData::renderer_id);
         it != form->fields.end()) {
       return std::pair<FormData, FormFieldData>(std::move(*form), *it);
     }
@@ -2120,7 +2120,7 @@ std::optional<FormData> FindFormForContentEditable(
   }
 
   FormData form;
-  form.unique_renderer_id = GetFormRendererId(content_editable);
+  form.renderer_id = GetFormRendererId(content_editable);
   form.id_attribute = content_editable.GetIdAttribute().Utf16();
   form.name_attribute = GetAttribute<kName>(content_editable).Utf16();
   form.name =
@@ -2135,7 +2135,7 @@ std::optional<FormData> FindFormForContentEditable(
   field.name_attribute = GetAttribute<kName>(content_editable).Utf16();
   field.name =
       !field.id_attribute.empty() ? field.id_attribute : field.name_attribute;
-  field.unique_renderer_id = GetFieldRendererId(content_editable);
+  field.renderer_id = GetFieldRendererId(content_editable);
   field.host_form_id = GetFormRendererId(content_editable);
   field.form_control_type = FormControlType::kContentEditable;
   field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);
@@ -2222,7 +2222,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // * Send the focus event for the initially focused element.
   for (const FormFieldData::FillData& field : fields) {
     WebFormControlElement element =
-        GetFormControlByRendererId(field.unique_renderer_id);
+        GetFormControlByRendererId(field.renderer_id);
     if (element.IsNull()) {
       continue;
     }
@@ -2276,7 +2276,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
   // Autofill the non-initiating elements.
   for (const FormFieldData::FillData* field_data : autofillable_fields) {
     WebFormControlElement element =
-        GetFormControlByRendererId(field_data->unique_renderer_id);
+        GetFormControlByRendererId(field_data->renderer_id);
     if (!element.IsNull()) {
       filled_fields.emplace_back(element, element.GetAutofillState());
       fill_or_preview(*field_data, false, element, field_data_manager);
@@ -2716,7 +2716,7 @@ std::optional<FormData> WebFormElementToFormDataForTesting(  // IN-TEST
   if (!form_control_element.IsNull()) {
     auto it = base::ranges::find(form->fields,
                                  GetFieldRendererId(form_control_element),
-                                 &FormFieldData::unique_renderer_id);
+                                 &FormFieldData::renderer_id);
     if (it == form->fields.end()) {
       return std::nullopt;
     }

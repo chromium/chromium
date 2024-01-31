@@ -356,8 +356,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.role = FormFieldData::RoleAttribute::kOther;
   field.origin = form_data.main_frame_origin;
   field.host_frame = form_data.host_frame;
-  field.host_form_id = form_data.unique_renderer_id;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.host_form_id = form_data.renderer_id;
+  field.renderer_id = test::MakeFieldRendererId();
   if (const base::Value::List* options =
           field_dict.FindList("select_options")) {
     for (const base::Value& option : *options) {
@@ -377,7 +377,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   form_data.url = GURL(site_url);
   form_data.main_frame_origin = url::Origin::Create(form_data.url);
   form_data.host_frame = test::MakeLocalFrameToken();
-  form_data.unique_renderer_id = test::MakeFormRendererId();
+  form_data.renderer_id = test::MakeFormRendererId();
 
   const base::Value::List* fields = form_dict.FindList("fields");
   if (!fields) {

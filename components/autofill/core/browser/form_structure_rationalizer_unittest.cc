@@ -88,7 +88,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   form.url = GURL("http://foo.com");
   form.main_frame_origin = url::Origin::Create(form.url);
   form.host_frame = test::MakeLocalFrameToken();
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
 
   // Build the fields for the form.
   for (const auto& field_template : fields) {
@@ -110,7 +110,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
         field_template.host_form.value_or(form.global_id()).frame_token;
     field.host_form_id =
         field_template.host_form.value_or(form.global_id()).renderer_id;
-    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(std::move(field));
   }
 

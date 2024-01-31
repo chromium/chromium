@@ -489,7 +489,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          SubmissionSource source) {
   // We don't want to fire duplicate submission event.
-  if (!submitted_forms_.insert(form_data.unique_renderer_id).second) {
+  if (!submitted_forms_.insert(form_data.renderer_id).second) {
     return;
   }
   base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
@@ -656,10 +656,10 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   if (!form.fields.empty() &&
       (last_queried_element.IsNull() || !last_queried_element.Focused() ||
        form_util::GetFormRendererId(form_util::GetOwningForm(
-           last_queried_element)) != form.unique_renderer_id)) {
+           last_queried_element)) != form.renderer_id)) {
     for (const FormFieldData::FillData& field : form.fields) {
       last_queried_element =
-          form_util::GetFormControlByRendererId(field.unique_renderer_id);
+          form_util::GetFormControlByRendererId(field.renderer_id);
       if (!last_queried_element.IsNull()) {
         last_queried_element_ = FieldRef(last_queried_element);
         break;
@@ -703,7 +703,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
 
     if (auto* render_frame = unsafe_render_frame()) {
       WebFormElement updated_form_element =
-          form_util::GetFormByRendererId(form.unique_renderer_id);
+          form_util::GetFormByRendererId(form.renderer_id);
       std::optional<FormData> updated_form_data = form_util::ExtractFormData(
           render_frame->GetWebFrame()->GetDocument(), updated_form_element,
           field_data_manager());

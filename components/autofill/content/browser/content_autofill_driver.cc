@@ -676,7 +676,7 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
 
   auto SetFieldMetaData = [&](FormFieldData& f) {
     f.host_frame = form.host_frame;
-    f.host_form_id = form.unique_renderer_id;
+    f.host_form_id = form.renderer_id;
     f.origin = render_frame_host_->GetLastCommittedOrigin();
     f.host_form_signature = form_signature;
     f.bounds = TransformBoundingBoxToViewportCoordinates(f.bounds);

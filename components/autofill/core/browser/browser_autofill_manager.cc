@@ -3174,7 +3174,7 @@ void BrowserAutofillManager::TriggerRefill(
             field->global_id() == filling_context->filled_field_id,
             field->GetFieldSignature() ==
                 filling_context->filled_field_signature,
-            field->unique_renderer_id);
+            field->renderer_id);
       };
   auto it =
       base::ranges::max_element(*form_structure, {}, comparison_attributes);

@@ -359,7 +359,7 @@ class FormStructure {
     current_page_language_ = std::move(language);
   }
 
-  FormGlobalId global_id() const { return {host_frame_, unique_renderer_id_}; }
+  FormGlobalId global_id() const { return {host_frame_, renderer_id_}; }
 
   FormVersion version() const { return version_; }
 
@@ -548,7 +548,7 @@ class FormStructure {
 
   // An identifier of the form that is unique among the forms from the same
   // frame.
-  FormRendererId unique_renderer_id_;
+  FormRendererId renderer_id_;
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;

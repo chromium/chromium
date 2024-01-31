@@ -51,7 +51,7 @@ struct PasswordFormFillData {
   // Contains the unique renderer form id.
   // If there is no form tag then |form_renderer_id|.is_null().
   // Username and Password elements renderer ids are in
-  // |username_field.unique_renderer_id| and |password_field.unique_renderer_id|
+  // |username_field.renderer_id| and |password_field.renderer_id|
   // correspondingly.
   FormRendererId form_renderer_id;
 

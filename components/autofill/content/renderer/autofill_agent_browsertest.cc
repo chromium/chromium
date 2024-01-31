@@ -69,9 +69,9 @@ auto IsFormId(absl::variant<FormRendererId, size_t> expectation) {
   return Eq(id);
 }
 
-// Matches a FormData with a specific FormData::unique_renderer_id.
+// Matches a FormData with a specific FormData::renderer_id.
 auto HasFormId(absl::variant<FormRendererId, size_t> expectation) {
-  return Field(&FormData::unique_renderer_id, IsFormId(expectation));
+  return Field(&FormData::renderer_id, IsFormId(expectation));
 }
 
 // Matches a FormData with |num| FormData::fields.
@@ -239,13 +239,12 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForForm) {
   const auto is_text_input = HasType(FormControlType::kInputText);
   LoadHTML("<body><form id=f><input><input></form>");
   Callback callback;
-  EXPECT_CALL(
-      callback,
-      Run(Optional(AllOf(
-          Field(&FormData::unique_renderer_id, GetFormRendererIdById("f")),
-          Field(&FormData::name, u"f"),
-          Field(&FormData::fields,
-                ElementsAre(is_text_input, is_text_input))))));
+  EXPECT_CALL(callback,
+              Run(Optional(AllOf(
+                  Field(&FormData::renderer_id, GetFormRendererIdById("f")),
+                  Field(&FormData::name, u"f"),
+                  Field(&FormData::fields,
+                        ElementsAre(is_text_input, is_text_input))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
 }
 
@@ -265,9 +264,9 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForContentEditable) {
       callback;
   EXPECT_CALL(
       callback,
-      Run(Optional(AllOf(
-          Field(&FormData::unique_renderer_id, GetFormRendererIdById("ce")),
-          Field(&FormData::fields, ElementsAre(is_content_editable))))));
+      Run(Optional(
+          AllOf(Field(&FormData::renderer_id, GetFormRendererIdById("ce")),
+                Field(&FormData::fields, ElementsAre(is_content_editable))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("ce"), callback.Get());
 }
 

@@ -1308,7 +1308,7 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   FormData form = CreateTestAddressFormData();
   FormData form2;
   form2.host_frame = test::MakeLocalFrameToken();
-  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
@@ -1323,13 +1323,11 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   EXPECT_CALL(
       *crowdsourcing_manager(),
       StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form.unique_renderer_id)), _,
-          _));
+          ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
   EXPECT_CALL(
       *crowdsourcing_manager(),
       StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form2.unique_renderer_id)), _,
-          _));
+          ElementsAre(FormStructureHasRendererId(form2.renderer_id)), _, _));
 
   base::HistogramTester histogram_tester;
   FormsSeen({form});
@@ -1379,7 +1377,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up a non-queryable form.
   FormData form2;
   form2.host_frame = test::MakeLocalFrameToken();
-  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.renderer_id = test::MakeFormRendererId();
   form2.name = u"NonQueryable";
   form2.url = form1.url;
   form2.action = GURL("https://myform.com/submit.html");
@@ -3454,8 +3452,7 @@ TEST_F(BrowserAutofillManagerTest,
     EXPECT_CALL(
         *crowdsourcing_manager(),
         StartQueryRequest(
-            ElementsAre(FormStructureHasRendererId(form.unique_renderer_id)), _,
-            _));
+            ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
     FormsSeen({form});
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         0 /* FORMS_LOADED */, 1);
@@ -4088,7 +4085,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
     FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "",
                                               FormControlType::kInputText);
     field.host_frame = form.host_frame;
-    field.host_form_id = form.unique_renderer_id;
+    field.host_form_id = form.renderer_id;
     field.max_length = i < 19 ? 1 : std::numeric_limits<int>::max();
     form.fields.push_back(std::move(field));
   }
@@ -4962,15 +4959,14 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   // In one form, rely on the max length attribute to imply US phone number
   // parts. In the other form, rely on the autocomplete type attribute.
   FormData form_with_us_number_max_length;
-  form_with_us_number_max_length.unique_renderer_id =
-      test::MakeFormRendererId();
+  form_with_us_number_max_length.renderer_id = test::MakeFormRendererId();
   form_with_us_number_max_length.name = u"MyMaxlengthPhoneForm";
   form_with_us_number_max_length.url =
       GURL("https://myform.com/phone_form.html");
   form_with_us_number_max_length.action =
       GURL("https://myform.com/phone_submit.html");
   FormData form_with_autocompletetype = form_with_us_number_max_length;
-  form_with_autocompletetype.unique_renderer_id = test::MakeFormRendererId();
+  form_with_autocompletetype.renderer_id = test::MakeFormRendererId();
   form_with_autocompletetype.name = u"MyAutocompletetypePhoneForm";
 
   struct {
@@ -5064,7 +5060,7 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
-  form_with_multiple_componentized_phone_fields.unique_renderer_id =
+  form_with_multiple_componentized_phone_fields.renderer_id =
       test::MakeFormRendererId();
   form_with_multiple_componentized_phone_fields.url =
       GURL("https://www.foo.com/");
@@ -5116,7 +5112,7 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   std::string guid = work_profile->guid();
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.unique_renderer_id =
+  form_with_multiple_whole_number_fields.renderer_id =
       test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
@@ -5156,7 +5152,7 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
-  form_with_multiple_componentized_phone_fields.unique_renderer_id =
+  form_with_multiple_componentized_phone_fields.renderer_id =
       test::MakeFormRendererId();
   form_with_multiple_componentized_phone_fields.url =
       GURL("https://www.foo.com/");
@@ -5213,8 +5209,7 @@ TEST_F(BrowserAutofillManagerTest,
   std::string guid = work_profile->guid();
 
   FormData form_with_misclassified_extension;
-  form_with_misclassified_extension.unique_renderer_id =
-      test::MakeFormRendererId();
+  form_with_misclassified_extension.renderer_id = test::MakeFormRendererId();
   form_with_misclassified_extension.url = GURL("https://www.foo.com/");
 
   // Default is zero, have to set to a number autofill can process.
@@ -5261,7 +5256,7 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEffortFilling) {
   std::string guid = work_profile->guid();
 
   FormData form_with_no_complete_number;
-  form_with_no_complete_number.unique_renderer_id = test::MakeFormRendererId();
+  form_with_no_complete_number.renderer_id = test::MakeFormRendererId();
   form_with_no_complete_number.url = GURL("https://www.foo.com/");
 
   // Default is zero, have to set to a number autofill can process.
@@ -5304,7 +5299,7 @@ TEST_F(BrowserAutofillManagerTest,
   std::string guid = work_profile->guid();
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.unique_renderer_id =
+  form_with_multiple_whole_number_fields.renderer_id =
       test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
@@ -5346,7 +5341,7 @@ TEST_F(BrowserAutofillManagerTest,
   std::string guid = work_profile->guid();
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.unique_renderer_id =
+  form_with_multiple_whole_number_fields.renderer_id =
       test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
@@ -5384,7 +5379,7 @@ TEST_F(BrowserAutofillManagerTest,
 // fields.
 TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   FormData form;
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -5449,7 +5444,7 @@ TEST_F(BrowserAutofillManagerTest,
   std::string guid = work_profile->guid();
 
   FormData form_with_multiple_sections;
-  form_with_multiple_sections.unique_renderer_id = test::MakeFormRendererId();
+  form_with_multiple_sections.renderer_id = test::MakeFormRendererId();
   form_with_multiple_sections.url = GURL("https://www.foo.com/");
 
   // Default is zero, have to set to a number autofill can process.
@@ -5566,7 +5561,7 @@ TEST_F(BrowserAutofillManagerTest, FormChangesAddField) {
 TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.url = GURL("https://www.foo.com/");
 
   // Default is zero, have to set to a number autofill can process.
@@ -6426,7 +6421,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Set up our form data.
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -6538,7 +6533,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Set up our form data.
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -6852,7 +6847,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
-  form.unique_renderer_id = test::MakeFormRendererId();
+  form.renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -6876,7 +6871,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // Second form on the page.
   FormData form2;
   form2.host_frame = test::MakeLocalFrameToken();
-  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm2";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");

@@ -112,7 +112,7 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
     form_data_ =
         GetAndAddSeenForm({.description_for_logging = "FieldFillingStats",
                            .fields = fields,
-                           .unique_renderer_id = test::MakeFormRendererId(),
+                           .renderer_id = test::MakeFormRendererId(),
                            .main_frame_origin = url::Origin::Create(
                                autofill_client_->form_origin())});
     return form_data_;

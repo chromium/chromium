@@ -226,9 +226,8 @@ Section Section::FromFieldIdentifier(
   size_t generated_frame_id =
       frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
           .first->second;
-  section.value_ =
-      FieldIdentifier(base::UTF16ToUTF8(field.name), generated_frame_id,
-                      field.unique_renderer_id);
+  section.value_ = FieldIdentifier(base::UTF16ToUTF8(field.name),
+                                   generated_frame_id, field.renderer_id);
   return section;
 }
 
@@ -347,8 +346,7 @@ bool FormFieldData::WasPasswordAutofilled() const {
 
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
-  return a.unique_renderer_id == b.unique_renderer_id &&
-         IdentityTuple(a) == IdentityTuple(b);
+  return a.renderer_id == b.renderer_id && IdentityTuple(a) == IdentityTuple(b);
 }
 
 FormFieldData::FillData::FillData() = default;
@@ -357,7 +355,7 @@ FormFieldData::FillData::~FillData() = default;
 
 FormFieldData::FillData::FillData(const FormFieldData& field)
     : value(field.value),
-      unique_renderer_id(field.unique_renderer_id),
+      renderer_id(field.renderer_id),
       section(field.section),
       is_autofilled(field.is_autofilled),
       force_override(field.force_override) {}
@@ -611,14 +609,13 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tag{"table"};
   buffer << Tr{} << "Name:" << field.name;
-  buffer << Tr{} << "Identifiers:"
-         << base::StrCat(
-                {"renderer id: ",
-                 base::NumberToString(field.unique_renderer_id.value()),
-                 ", host frame: ",
-                 field.renderer_form_id().frame_token.ToString(), " (",
-                 field.origin.Serialize(), "), host form renderer id: ",
-                 base::NumberToString(field.host_form_id.value())});
+  buffer
+      << Tr{} << "Identifiers:"
+      << base::StrCat(
+             {"renderer id: ", base::NumberToString(field.renderer_id.value()),
+              ", host frame: ", field.renderer_form_id().frame_token.ToString(),
+              " (", field.origin.Serialize(), "), host form renderer id: ",
+              base::NumberToString(field.host_form_id.value())});
   buffer << Tr{} << "Origin:" << field.origin.Serialize();
   buffer << Tr{} << "Name attribute:" << field.name_attribute;
   buffer << Tr{} << "Id attribute:" << field.id_attribute;

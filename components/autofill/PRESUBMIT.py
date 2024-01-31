@@ -156,11 +156,11 @@ def _CheckNoUsageOfUniqueRendererId(
                      if autofill_files_pattern.search(f.LocalPath())]
 
   warning_files = []
-  unique_renderer_id_call = re.compile(
+  renderer_id_call = re.compile(
       r'\.UniqueRendererForm(Control)?Id', re.MULTILINE)
   for autofill_file, file_content in concerned_files:
     allowed_matches = 2 if special_file.search(autofill_file.LocalPath()) else 0
-    matches = re.finditer(unique_renderer_id_call, file_content)
+    matches = re.finditer(renderer_id_call, file_content)
     if (len(list(matches)) > allowed_matches):
       warning_files.append(autofill_file)
 

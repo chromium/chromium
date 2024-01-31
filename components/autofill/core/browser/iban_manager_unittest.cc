@@ -556,7 +556,7 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
-  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  test_field.renderer_id = test::MakeFieldRendererId();
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
   // Simulate request for suggestions.
   // TODO: handle return value.
@@ -624,7 +624,7 @@ TEST_F(IbanManagerTest, Metrics_SuggestionsShown) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   AutofillField test_field;
-  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  test_field.renderer_id = test::MakeFieldRendererId();
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Simulate request for suggestions.
@@ -654,7 +654,7 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   SetUpLocalIban(test::kIbanValue_2, "");
 
   AutofillField test_field;
-  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  test_field.renderer_id = test::MakeFieldRendererId();
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Simulate request for suggestions and select one suggested IBAN.

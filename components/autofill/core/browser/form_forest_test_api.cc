@@ -79,9 +79,9 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
                                            const FormData& form,
                                            int level) {
   std::string prefix(2 * level, ' ');
-  os << prefix << "Form " << *form.unique_renderer_id << " at "
-     << form.host_frame << " at " << form.full_url.DeprecatedGetOriginAsURL()
-     << " with " << form.fields.size() << " fields" << std::endl;
+  os << prefix << "Form " << *form.renderer_id << " at " << form.host_frame
+     << " at " << form.full_url.DeprecatedGetOriginAsURL() << " with "
+     << form.fields.size() << " fields" << std::endl;
   os << prefix << "Origin " << form.main_frame_origin.Serialize() << std::endl;
   if (!form.name.empty()) {
     os << prefix << "Name " << form.name << std::endl;
@@ -99,7 +99,7 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
   i = 0;
   for (const FormFieldData& field : form.fields) {
     os << prefix << std::setfill(' ') << std::setw(2) << ++i << ". Field "
-       << *field.unique_renderer_id << " at " << field.host_frame << " at "
+       << *field.renderer_id << " at " << field.host_frame << " at "
        << field.origin.Serialize() << std::endl;
     if (!field.id_attribute.empty()) {
       os << prefix << "    ID " << field.id_attribute << std::endl;

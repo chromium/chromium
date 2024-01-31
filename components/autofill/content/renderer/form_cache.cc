@@ -123,7 +123,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   initial_select_values_.clear();
   initial_selectlist_values_.clear();
 
-  std::set<FieldRendererId> observed_unique_renderer_ids;
+  std::set<FieldRendererId> observed_renderer_ids;
 
   // |extracted_forms_| is re-populated below in ProcessForm().
   std::map<FormRendererId, FormData> old_extracted_forms =
@@ -144,7 +144,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // exceeds |kMaxExtractableChildFrames|.
   auto ProcessForm = [&](FormData form) {
     for (const auto& field : form.fields) {
-      observed_unique_renderer_ids.insert(field.unique_renderer_id);
+      observed_renderer_ids.insert(field.renderer_id);
     }
 
     num_fields_seen += form.fields.size();
@@ -164,7 +164,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
     // Store only forms that contain iframes or fields.
     if (IsFormInteresting(form)) {
-      FormRendererId form_id = form.unique_renderer_id;
+      FormRendererId form_id = form.renderer_id;
       DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
       auto it = old_extracted_forms.find(form_id);
       if (it == old_extracted_forms.end() ||
@@ -189,7 +189,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     if (std::optional<FormData> form = ExtractFormData(
             document, form_element, field_data_manager, extract_options)) {
       if (!ProcessForm(std::move(*form))) {
-        PruneInitialValueCaches(observed_unique_renderer_ids);
+        PruneInitialValueCaches(observed_renderer_ids);
         return r;
       }
     }
@@ -200,14 +200,14 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   std::optional<FormData> synthetic_form = ExtractFormData(
       document, WebFormElement(), field_data_manager, extract_options);
   if (!synthetic_form) {
-    PruneInitialValueCaches(observed_unique_renderer_ids);
+    PruneInitialValueCaches(observed_renderer_ids);
     return r;
   }
   if (!ProcessForm(std::move(*synthetic_form))) {
-    PruneInitialValueCaches(observed_unique_renderer_ids);
+    PruneInitialValueCaches(observed_renderer_ids);
     return r;
   }
-  PruneInitialValueCaches(observed_unique_renderer_ids);
+  PruneInitialValueCaches(observed_renderer_ids);
   return r;
 }
 
@@ -326,7 +326,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
   WebDocument document = frame_->GetDocument();
   WebFormElement form_element =
-      form_util::GetFormByRendererId(form.data.unique_renderer_id);
+      form_util::GetFormByRendererId(form.data.renderer_id);
   std::vector<WebFormControlElement> control_elements =
       form_util::GetAutofillableFormControlElements(document, form_element);
   if (control_elements.size() != form.fields.size()) {
@@ -340,8 +340,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
     WebFormControlElement& element = control_elements[i];
 
     const FormFieldData& field_data = form.data.fields[i];
-    if (form_util::GetFieldRendererId(element) !=
-        field_data.unique_renderer_id) {
+    if (form_util::GetFieldRendererId(element) != field_data.renderer_id) {
       continue;
     }
     const FormFieldDataPredictions& field = form.fields[i];
@@ -360,10 +359,9 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       // line wraps which are normalized here.
       base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);
 
-      std::string form_id =
-          base::NumberToString(form.data.unique_renderer_id.value());
+      std::string form_id = base::NumberToString(form.data.renderer_id.value());
       std::string field_id_str =
-          base::NumberToString(field_data.unique_renderer_id.value());
+          base::NumberToString(field_data.renderer_id.value());
 
       blink::LocalFrameToken frame_token;
       if (auto* frame = element.GetDocument().GetFrame())
@@ -447,13 +445,12 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 void FormCache::SaveInitialValues(base::span<const FormFieldData> fields) {
   for (const FormFieldData& field : fields) {
     if (field.form_control_type == FormControlType::kSelectOne) {
-      initial_select_values_.insert({field.unique_renderer_id, field.value});
+      initial_select_values_.insert({field.renderer_id, field.value});
     } else if (field.form_control_type == FormControlType::kSelectList) {
-      initial_selectlist_values_.insert(
-          {field.unique_renderer_id, field.value});
+      initial_selectlist_values_.insert({field.renderer_id, field.value});
     } else if (form_util::IsCheckable(field.form_control_type)) {
       initial_checked_state_.insert(
-          {field.unique_renderer_id,
+          {field.renderer_id,
            field.check_status == FormFieldData::CheckStatus::kChecked});
     }
   }
