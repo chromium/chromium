@@ -218,13 +218,15 @@ class ReadAnythingAppController
   // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
   // return the starting text and ending text indices for specific text that
   // should be referenced within the node.
-  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+  std::vector<ui::AXNodeID> GetNextText();
 
   // Returns a list of triples representing the previous nodes that should be
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
   // the AXNodeID, the starting text index, and the ending text index. This
   // list of triples is represented as a double array.
   std::vector<ui::AXNodeID> GetPreviousText();
+
+  int GetAccessibleBoundary(const std::u16string& text, int max_text_length);
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular

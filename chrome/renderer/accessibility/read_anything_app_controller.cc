@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -761,7 +762,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetNextTextEndIndex)
       .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
       .SetMethod("getPreviousText", &ReadAnythingAppController::GetPreviousText)
-      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI);
+      .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI)
+      .SetMethod("getAccessibleBoundary",
+                 &ReadAnythingAppController::GetAccessibleBoundary);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1261,9 +1264,8 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   model_.InitAXPositionWithNode(starting_node_id);
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
-    int max_text_length) {
-  return model_.GetNextText(max_text_length);
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText() {
+  return model_.GetNextText();
 }
 
 // TODO(crbug.com/1474951): Random access to processed nodes might not always
@@ -1346,4 +1348,34 @@ content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
 
 void ReadAnythingAppController::ShouldShowUI() {
   page_handler_factory_->ShouldShowUI();
+}
+
+int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
+                                                     int max_text_length) {
+  std::vector<int> offsets;
+  const std::u16string shorter_string = text.substr(0, max_text_length);
+  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
+      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+
+  // Compare the index result for the sentence of maximum text length and of
+  // the longer text string. If the two values are the same, the index is
+  // correct. If they are different, the maximum text length may have
+  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
+  // "this is a" or "this is a sentence"), so if this is the case, we'll want
+  // to use the last word boundary instead.
+  if (sentence_ends_short == sentence_ends_long) {
+    return sentence_ends_short;
+  }
+
+  size_t word_ends = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
+      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  return word_ends;
 }

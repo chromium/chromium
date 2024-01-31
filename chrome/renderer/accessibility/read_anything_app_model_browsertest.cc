@@ -263,11 +263,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   }
 
   ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes() {
-    return model_->GetNextNodes(160);
+    return model_->GetNextNodes();
   }
 
-  size_t GetNextSentence(const std::u16string& text, size_t max_text_length) {
-    return model_->GetNextSentence(text, max_text_length);
+  size_t GetNextSentence(const std::u16string& text) {
+    return model_->GetNextSentence(text);
   }
 
   int GetNextTextStartIndex(ui::AXNodeID id) {
@@ -1560,29 +1560,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextSentence_ReturnsCorrectIndex) {
   const std::u16string second_sentence = u"This is a second sentence.";
 
   const std::u16string sentence = first_sentence + second_sentence;
-  size_t index = GetNextSentence(sentence, 175);
-  EXPECT_EQ(index, first_sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), first_sentence);
-}
-
-TEST_F(ReadAnythingAppModelTest,
-       GetNextSentence_MaxLengthCutsOffSentence_ReturnsCorrectIndex) {
-  const std::u16string first_sentence = u"This is a normal sentence. ";
-  const std::u16string second_sentence = u"This is a second sentence.";
-
-  const std::u16string sentence = first_sentence + second_sentence;
-  size_t index = GetNextSentence(sentence, first_sentence.length() - 3);
-  EXPECT_TRUE(index < first_sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), u"This is a normal ");
-}
-TEST_F(ReadAnythingAppModelTest,
-       GetNextSentence_TextLongerThanMaxLength_ReturnsCorrectIndex) {
-  const std::u16string first_sentence = u"This is a normal sentence. ";
-  const std::u16string second_sentence = u"This is a second sentence.";
-
-  const std::u16string sentence = first_sentence + second_sentence;
-  size_t index = GetNextSentence(
-      sentence, first_sentence.length() + second_sentence.length() - 5);
+  size_t index = GetNextSentence(sentence);
   EXPECT_EQ(index, first_sentence.length());
   EXPECT_EQ(sentence.substr(0, index), first_sentence);
 }
@@ -1591,19 +1569,9 @@ TEST_F(ReadAnythingAppModelTest,
        GetNextSentence_OnlyOneSentence_ReturnsCorrectIndex) {
   const std::u16string sentence = u"Hello, this is a normal sentence.";
 
-  size_t index = GetNextSentence(sentence, 175);
+  size_t index = GetNextSentence(sentence);
   EXPECT_EQ(index, sentence.length());
   EXPECT_EQ(sentence.substr(0, index), sentence);
-}
-
-TEST_F(
-    ReadAnythingAppModelTest,
-    GetNextSentence_MaxLengthCutsOffSentence_OnlyOneSentence_ReturnsCorrectIndex) {
-  const std::u16string sentence = u"Hello, this is a normal sentence.";
-
-  size_t index = GetNextSentence(sentence, 12);
-  EXPECT_TRUE(index < sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
 }
 
 TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {

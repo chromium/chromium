@@ -225,10 +225,7 @@ class ReadAnythingAppModel {
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
-  // If the sentence exceeds the maximum text length, the sentence will be
-  // cropped to the nearest word boundary that doesn't exceed the maximum
-  // text length.
-  int GetNextSentence(const std::u16string& text, int max_text_length);
+  int GetNextSentence(const std::u16string& text);
 
   // PDF handling.
   void SetIsPdf(const GURL& url);
@@ -270,10 +267,10 @@ class ReadAnythingAppModel {
   // GetNextTextEndIndex called with an AXNodeID return by GetNextText will
   // return the starting text and ending text indices for specific text that
   // should be referenced within the node.
-  std::vector<ui::AXNodeID> GetNextText(int max_text_length);
+  std::vector<ui::AXNodeID> GetNextText();
 
   // Helper method for GetNextText.
-  ReadAloudCurrentGranularity GetNextNodes(int max_text_length);
+  ReadAloudCurrentGranularity GetNextNodes();
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular

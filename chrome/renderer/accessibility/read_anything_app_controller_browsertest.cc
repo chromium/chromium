@@ -241,13 +241,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->InitAXPositionWithNode(id);
   }
 
-  std::vector<ui::AXNodeID> GetNextText() {
-    return controller_->GetNextText(160);
-  }
-
-  std::vector<ui::AXNodeID> GetNextText(int max_text_length) {
-    return controller_->GetNextText(max_text_length);
-  }
+  std::vector<ui::AXNodeID> GetNextText() { return controller_->GetNextText(); }
 
   std::vector<ui::AXNodeID> GetPreviousText() {
     return controller_->GetPreviousText();
@@ -377,6 +371,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
   void SetLanguageCode(std::string code) {
     controller_->SetLanguageForTesting(code);
+  }
+
+  size_t GetAccessibleBoundary(const std::u16string& text,
+                               int max_text_length) {
+    return controller_->GetAccessibleBoundary(text, max_text_length);
   }
 
   ui::AXTreeID tree_id_;
@@ -2848,47 +2847,34 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       GetNextText_CombinedSentenceAttempted_ButTextTooLong) {
-  // Test edge case where a sentence is almost at the maximum length and
-  // adding one character from the next node would reach the maximum length
-  // to ensure there are no crashes.
-  std::u16string sentence1 = u"This is a segment that's almost too long";
-  std::u16string sentence2 = u", hello. ";
-  int max_text_length = sentence1.length() + 1;
-  ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+       GetAccessibleBoundary_MaxLengthCutsOffSentence_ReturnsCorrectIndex) {
+  const std::u16string first_sentence = u"This is a normal sentence. ";
+  const std::u16string second_sentence = u"This is a second sentence.";
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  const std::u16string sentence = first_sentence + second_sentence;
+  size_t index = GetAccessibleBoundary(sentence, first_sentence.length() - 3);
+  EXPECT_TRUE(index < first_sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), u"This is a normal ");
+}
 
-  update.nodes = {static_text1, static_text2};
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({static_text1.id, static_text2.id});
-  InitAXPosition(update.nodes[0].id);
+TEST_F(ReadAnythingAppControllerTest,
+       GetAccessibleBoundary_TextLongerThanMaxLength_ReturnsCorrectIndex) {
+  const std::u16string first_sentence = u"This is a normal sentence. ";
+  const std::u16string second_sentence = u"This is a second sentence.";
 
-  std::vector<ui::AXNodeID> next_node_ids = GetNextText(max_text_length);
-  EXPECT_EQ((int)next_node_ids.size(), 1);
-  // The returned id should be the next node id, 2
-  EXPECT_EQ(next_node_ids[0], static_text1.id);
-  // The returned int should be the beginning of the node's text.
-  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
-  // The returned int should be equivalent to the text in the node.
-  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+  const std::u16string sentence = first_sentence + second_sentence;
+  size_t index = GetAccessibleBoundary(
+      sentence, first_sentence.length() + second_sentence.length() - 5);
+  EXPECT_EQ(index, first_sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), first_sentence);
+}
 
-  // Move to the next node
-  next_node_ids = GetNextText(max_text_length);
-  EXPECT_EQ((int)next_node_ids.size(), 1);
-  EXPECT_EQ(next_node_ids[0], static_text2.id);
-  EXPECT_EQ(GetNextTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(GetNextTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+TEST_F(
+    ReadAnythingAppControllerTest,
+    GetAccessibleBoundary_MaxLengthCutsOffSentence_OnlyOneSentence_ReturnsCorrectIndex) {
+  const std::u16string sentence = u"Hello, this is a normal sentence.";
 
-  // Attempt to move to another node.
-  next_node_ids = GetNextText();
-  EXPECT_EQ((int)next_node_ids.size(), 0);
+  size_t index = GetAccessibleBoundary(sentence, 12);
+  EXPECT_TRUE(index < sentence.length());
+  EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
 }

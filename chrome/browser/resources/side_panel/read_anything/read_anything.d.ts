@@ -262,7 +262,7 @@ declare namespace chrome {
     // Gets the nodes of the  next text that should be spoken and highlighted.
     // Use getNextTextStartIndex and getNextTextEndIndex to get the bounds
     // for text associated with these nodes.
-    function getNextText(maxTextLength: number): number[];
+    function getNextText(): number[];
 
     // Gets the nodes for the previous text that should be spoken and
     // highlighted. Use getNextTextStartIndex and getNextTextEndIndex to get
@@ -272,5 +272,9 @@ declare namespace chrome {
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.
     function updateFonts(): void;
+
+    // Gets the accessible text boundary for the given string
+    function getAccessibleBoundary(text: string, maxSpeechLength: number):
+        number;
   }
 }
