@@ -47,7 +47,7 @@ export interface AboutPageUpdateInfo {
  * Information related to device end of life. These values will always be
  * populated by the C++ handler.
  */
-interface EndOfLifeInfo {
+export interface EndOfLifeInfo {
   hasEndOfLife: boolean;
   aboutPageEndOfLifeMessage: string;
   shouldShowEndOfLifeIncentive: boolean;

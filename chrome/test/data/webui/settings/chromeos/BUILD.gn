@@ -43,7 +43,7 @@ build_webui_tests("build") {
     "onc_mojo_test.ts",
     "os_about_page_tests.js",
     "os_page_availability_test.ts",
-    "test_about_page_browser_proxy_chromeos.js",
+    "test_about_page_browser_proxy.ts",
     "test_api.ts",
     "test_device_name_browser_proxy.ts",
     "test_extension_control_browser_proxy.ts",

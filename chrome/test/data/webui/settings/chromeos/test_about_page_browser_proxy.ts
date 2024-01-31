@@ -2,14 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserChannel, UpdateStatus} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {AboutPageBrowserProxy, BrowserChannel, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, VersionInfo} from 'chrome://os-settings/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {AboutPageBrowserProxy} */
-export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
+export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
+    AboutPageBrowserProxy {
+  private updateStatus_: UpdateStatus = UpdateStatus.UPDATED;
+  private sendUpdateStatus_ = true;
+  private versionInfo_: VersionInfo = {
+    arcVersion: '',
+    osFirmware: '',
+    osVersion: '',
+  };
+  private channelInfo_: ChannelInfo = {
+    currentChannel: BrowserChannel.BETA,
+    targetChannel: BrowserChannel.BETA,
+    isLts: false,
+  };
+  private canChangeChannel_ = true;
+  private regulatoryInfo_: RegulatoryInfo|null = null;
+  private tpmFirmwareUpdateStatus_: TpmFirmwareUpdateStatusChangedEvent = {
+    updateAvailable: false,
+  };
+  private endOfLifeInfo_: EndOfLifeInfo = {
+    hasEndOfLife: false,
+    aboutPageEndOfLifeMessage: '',
+    shouldShowEndOfLifeIncentive: false,
+    shouldShowOfferText: false,
+  };
+  private hasInternetConnection_ = true;
+  private managedAutoUpdateEnabled_ = true;
+  private consumerAutoUpdateEnabled_ = true;
+  private firmwareUpdateCount_ = 0;
+
   constructor() {
     super([
+      'applyDeferredUpdate',
       'pageReady',
       'refreshUpdateStatus',
       'openHelpPage',
@@ -22,10 +51,12 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'getEndOfLifeInfo',
       'endOfLifeIncentiveButtonClicked',
       'launchReleaseNotes',
-      'openOsHelpPage',
       'openDiagnostics',
+      'openOsHelpPage',
+      'openProductLicenseOther',
       'refreshTpmFirmwareUpdateStatus',
       'requestUpdate',
+      'requestUpdateOverCellular',
       'setChannel',
       'getFirmwareUpdateCount',
       'openFirmwareUpdatesPage',
@@ -33,63 +64,17 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'isConsumerAutoUpdateEnabled',
       'setConsumerAutoUpdate',
     ]);
-
-    /** @private {!UpdateStatus} */
-    this.updateStatus_ = UpdateStatus.UPDATED;
-
-    /** @private {!boolean} */
-    this.sendUpdateStatus_ = true;
-
-    /** @private {!VersionInfo} */
-    this.versionInfo_ = {
-      arcVersion: '',
-      osFirmware: '',
-      osVersion: '',
-    };
-
-    /** @private {!ChannelInfo} */
-    this.channelInfo_ = {
-      currentChannel: BrowserChannel.BETA,
-      targetChannel: BrowserChannel.BETA,
-    };
-
-    /** @private {!boolean} */
-    this.canChangeChannel_ = true;
-
-    /** @private {?RegulatoryInfo} */
-    this.regulatoryInfo_ = null;
-
-    /** @private {!TPMFirmwareUpdateStatus} */
-    this.tpmFirmwareUpdateStatus_ = {
-      updateAvailable: false,
-    };
-
-    this.endOfLifeInfo_ = {
-      hasEndOfLife: false,
-      aboutPageEndOfLifeMessage: '',
-      shouldShowEndOfLifeIncentive: false,
-    };
-
-    /** @private {!boolean} */
-    this.managedAutoUpdateEnabled_ = true;
-
-    /** @private {!boolean} */
-    this.consumerAutoUpdateEnabled_ = true;
-
-    /** @private {number} */
-    this.firmwareUpdateCount_ = 0;
   }
 
-  /** @param {!UpdateStatus} updateStatus */
-  setUpdateStatus(updateStatus) {
+  setUpdateStatus(updateStatus: UpdateStatus): void {
     this.updateStatus_ = updateStatus;
   }
 
-  blockRefreshUpdateStatus() {
+  blockRefreshUpdateStatus(): void {
     this.sendUpdateStatus_ = false;
   }
 
-  sendStatusNoInternet() {
+  sendStatusNoInternet(): void {
     webUIListenerCallback('update-status-changed', {
       progress: 0,
       status: UpdateStatus.FAILED,
@@ -98,23 +83,19 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
     });
   }
 
-  /** @param {boolean} enabled */
-  setManagedAutoUpdate(enabled) {
+  setManagedAutoUpdate(enabled: boolean): void {
     this.managedAutoUpdateEnabled_ = enabled;
   }
 
-  /** @param {boolean} enabled */
-  resetConsumerAutoUpdate(enabled) {
+  resetConsumerAutoUpdate(enabled: boolean): void {
     this.consumerAutoUpdateEnabled_ = enabled;
   }
 
-  /** @override */
-  pageReady() {
+  pageReady(): void {
     this.methodCalled('pageReady');
   }
 
-  /** @override */
-  refreshUpdateStatus() {
+  refreshUpdateStatus(): void {
     if (this.sendUpdateStatus_) {
       webUIListenerCallback('update-status-changed', {
         progress: 1,
@@ -124,160 +105,143 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
     this.methodCalled('refreshUpdateStatus');
   }
 
-  /** @override */
-  openFeedbackDialog() {
+  openFeedbackDialog(): void {
     this.methodCalled('openFeedbackDialog');
   }
 
-  /** @override */
-  openHelpPage() {
+  openHelpPage(): void {
     this.methodCalled('openHelpPage');
   }
 
-  /** @param {!VersionInfo} */
-  setVersionInfo(versionInfo) {
+  setVersionInfo(versionInfo: VersionInfo): void {
     this.versionInfo_ = versionInfo;
   }
 
-  /** @param {boolean} canChangeChannel */
-  setCanChangeChannel(canChangeChannel) {
+  setCanChangeChannel(canChangeChannel: boolean): void {
     this.canChangeChannel_ = canChangeChannel;
   }
 
-  /**
-   * @param {!BrowserChannel} current
-   * @param {!BrowserChannel} target
-   */
-  setChannels(current, target) {
+  setChannels(current: BrowserChannel, target: BrowserChannel): void {
     this.channelInfo_.currentChannel = current;
     this.channelInfo_.targetChannel = target;
   }
 
-  /** @param {?RegulatoryInfo} regulatoryInfo */
-  setRegulatoryInfo(regulatoryInfo) {
+  setRegulatoryInfo(regulatoryInfo: RegulatoryInfo|null): void {
     this.regulatoryInfo_ = regulatoryInfo;
   }
 
-  /** @param {!EndOfLifeInfo} endOfLifeInfo */
-  setEndOfLifeInfo(endOfLifeInfo) {
+  setEndOfLifeInfo(endOfLifeInfo: EndOfLifeInfo): void {
     this.endOfLifeInfo_ = endOfLifeInfo;
   }
 
-  /** @param {boolean|Promise} hasInternetConnection */
-  setInternetConnection(hasInternetConnection) {
+  setInternetConnection(hasInternetConnection: boolean): void {
     this.hasInternetConnection_ = hasInternetConnection;
   }
 
-  /** @override */
-  getVersionInfo() {
+  getVersionInfo(): Promise<VersionInfo> {
     this.methodCalled('getVersionInfo');
     return Promise.resolve(this.versionInfo_);
   }
 
-  /** @override */
-  getChannelInfo() {
+  getChannelInfo(): Promise<ChannelInfo> {
     this.methodCalled('getChannelInfo');
     return Promise.resolve(this.channelInfo_);
   }
 
-  /** @override */
-  canChangeChannel() {
+  canChangeChannel(): Promise<boolean> {
     this.methodCalled('canChangeChannel');
     return Promise.resolve(this.canChangeChannel_);
   }
 
-  /** @override */
-  checkInternetConnection() {
+  checkInternetConnection(): Promise<boolean> {
     this.methodCalled('checkInternetConnection');
     return Promise.resolve(this.hasInternetConnection_);
   }
 
-  /** @override */
-  getRegulatoryInfo() {
+  getRegulatoryInfo(): Promise<RegulatoryInfo|null> {
     this.methodCalled('getRegulatoryInfo');
     return Promise.resolve(this.regulatoryInfo_);
   }
 
-  /** @override */
-  getEndOfLifeInfo() {
+  getEndOfLifeInfo(): Promise<EndOfLifeInfo> {
     this.methodCalled('getEndOfLifeInfo');
     return Promise.resolve(this.endOfLifeInfo_);
   }
 
-  endOfLifeIncentiveButtonClicked() {
+  endOfLifeIncentiveButtonClicked(): void {
     this.methodCalled('endOfLifeIncentiveButtonClicked');
   }
 
-  /** @override */
-  setChannel(channel, isPowerwashAllowed) {
+  setChannel(channel: BrowserChannel, isPowerwashAllowed: boolean): void {
     this.methodCalled('setChannel', [channel, isPowerwashAllowed]);
   }
 
-  /** @param {!TPMFirmwareUpdateStatus} status */
-  setTPMFirmwareUpdateStatus(status) {
+  setTpmFirmwareUpdateStatus(status: TpmFirmwareUpdateStatusChangedEvent):
+      void {
     this.tpmFirmwareUpdateStatus_ = status;
   }
 
-  /** @override */
-  refreshTpmFirmwareUpdateStatus() {
+  refreshTpmFirmwareUpdateStatus(): void {
     this.methodCalled('refreshTpmFirmwareUpdateStatus');
     webUIListenerCallback(
         'tpm-firmware-update-status-changed', this.tpmFirmwareUpdateStatus_);
   }
 
-  /** @override */
-  requestUpdate() {
+  requestUpdate(): void {
     this.setUpdateStatus(UpdateStatus.UPDATING);
     this.refreshUpdateStatus();
     this.methodCalled('requestUpdate');
   }
 
-  /** @override */
-  openOsHelpPage() {
+  openOsHelpPage(): void {
     this.methodCalled('openOsHelpPage');
   }
 
-  /** @override */
-  openDiagnostics() {
+  openDiagnostics(): void {
     this.methodCalled('openDiagnostics');
   }
 
-  /** @override */
-  launchReleaseNotes() {
+  launchReleaseNotes(): void {
     this.methodCalled('launchReleaseNotes');
   }
 
-  /** @override */
-  openFirmwareUpdatesPage() {
+  openFirmwareUpdatesPage(): void {
     this.methodCalled('openFirmwareUpdatesPage');
   }
 
-  /** @override */
-  getFirmwareUpdateCount() {
+  getFirmwareUpdateCount(): Promise<number> {
     this.methodCalled('getFirmwareUpdateCount');
     return Promise.resolve(this.firmwareUpdateCount_);
   }
 
-  /** @param {number} firmwareUpdatesCount */
-  setFirmwareUpdatesCount(firmwareUpdatesCount) {
+  setFirmwareUpdatesCount(firmwareUpdatesCount: number): void {
     this.firmwareUpdateCount_ = firmwareUpdatesCount;
   }
 
-  /** @override */
-  isManagedAutoUpdateEnabled() {
+  isManagedAutoUpdateEnabled(): Promise<boolean> {
     this.methodCalled('isManagedAutoUpdateEnabled');
     return Promise.resolve(this.managedAutoUpdateEnabled_);
   }
 
-  /** @override */
-  isConsumerAutoUpdateEnabled() {
+  isConsumerAutoUpdateEnabled(): Promise<boolean> {
     this.methodCalled('isConsumerAutoUpdateEnabled');
     return Promise.resolve(this.consumerAutoUpdateEnabled_);
   }
 
-  /** @override */
-  setConsumerAutoUpdate(enable) {
+  setConsumerAutoUpdate(enable: boolean): void {
     this.consumerAutoUpdateEnabled_ = enable;
     this.methodCalled('setConsumerAutoUpdate');
+  }
+
+  applyDeferredUpdate(): void {
+    this.methodCalled('applyDeferredUpdate');
+  }
+
+  openProductLicenseOther(): void {
+    this.methodCalled('openProductLicenseOther');
+  }
+
+  requestUpdateOverCellular(targetVersion: string, targetSize: string): void {
+    this.methodCalled('requestUpdateOverCellular', [targetVersion, targetSize]);
   }
 }
