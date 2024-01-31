@@ -94,6 +94,14 @@ bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
                                        std::string* gaia_id);
 
+// Creates a base64url encoded value representing a bound OAuth token that can
+// be used in an Authorization header with the "BoundOAuthToken" type.
+// Returns an empty string if the token creation fails.
+COMPONENT_EXPORT(GOOGLE_APIS)
+std::string CreateBoundOAuthToken(const std::string& gaia_id,
+                                  const std::string& refresh_token,
+                                  const std::string& binding_key_assertion);
+
 }  // namespace gaia
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_AUTH_UTIL_H_

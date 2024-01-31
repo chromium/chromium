@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
+#include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
 #include "url/gurl.h"
@@ -221,6 +222,26 @@ bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
   *approved = parsed_result.approved();
   *gaia_id = parsed_result.obfuscated_id();
   return true;
+}
+
+std::string CreateBoundOAuthToken(const std::string& gaia_id,
+                                  const std::string& refresh_token,
+                                  const std::string& binding_key_assertion) {
+  BoundOAuthToken bound_oauth_token;
+  bound_oauth_token.set_gaia_id(gaia_id);
+  bound_oauth_token.set_token(refresh_token);
+  bound_oauth_token.set_token_binding_assertion(binding_key_assertion);
+
+  std::string serialized = bound_oauth_token.SerializeAsString();
+  if (serialized.empty()) {
+    VLOG(1) << "Failed to serialize bound OAuth token to protobuf message";
+    return std::string();
+  }
+
+  std::string base64_encoded;
+  base::Base64UrlEncode(serialized, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encoded);
+  return base64_encoded;
 }
 
 }  // namespace gaia

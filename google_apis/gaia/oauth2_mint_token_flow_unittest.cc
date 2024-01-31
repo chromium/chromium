@@ -154,9 +154,13 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
   MOCK_METHOD0(CreateAccessTokenFetcher,
                std::unique_ptr<OAuth2AccessTokenFetcher>());
 
-  // Moves the method to the public section to make it available for tests.
+  // Moves methods to the public section to make them available for tests.
   std::string CreateApiCallBody() override {
     return OAuth2MintTokenFlow::CreateApiCallBody();
+  }
+  std::string CreateAuthorizationHeaderValue(
+      const std::string& access_token) override {
+    return OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(access_token);
   }
 };
 
@@ -210,11 +214,12 @@ class OAuth2MintTokenFlowTest : public testing::Test {
             kVersion, kChannel, device_id, selected_user_id, consent_result));
   }
 
-  void CreateClientFlow() {
+  void CreateClientFlow(const std::string& bound_oauth_token) {
     const std::string_view kDeviceId = "test_device_id";
     flow_ = std::make_unique<MockMintTokenFlow>(
         &delegate_, OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
-                        kClientId, kScopes, kVersion, kChannel, kDeviceId));
+                        kClientId, kScopes, kVersion, kChannel, kDeviceId,
+                        bound_oauth_token));
   }
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
@@ -359,7 +364,7 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithConsentResult) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyClientAccessTokenFlow) {
-  CreateClientFlow();
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
   std::string body = flow_->CreateApiCallBody();
   std::string expected_body(
       "force=false"
@@ -372,6 +377,37 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyClientAccessTokenFlow) {
       "&device_id=test_device_id"
       "&device_type=chrome");
   EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  std::string header =
+      flow_->CreateAuthorizationHeaderValue("test_access_token");
+  EXPECT_EQ(header, "Bearer test_access_token");
+}
+
+TEST_F(OAuth2MintTokenFlowTest,
+       CreateApiCallBodyClientAccessTokenFlowWithBoundOAuthToken) {
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=token"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&device_id=test_device_id"
+      "&device_type=chrome");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValueBoundOAuthToken) {
+  CreateClientFlow("test_bound_oauth_token");
+  std::string header =
+      flow_->CreateAuthorizationHeaderValue("test_access_token");
+  EXPECT_EQ(header, "BoundOAuthToken test_bound_oauth_token");
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {

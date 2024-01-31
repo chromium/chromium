@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -27,6 +28,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -184,7 +186,8 @@ OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
     base::span<const std::string_view> scopes,
     std::string_view version,
     std::string_view channel,
-    std::string_view device_id) {
+    std::string_view device_id,
+    std::string_view bound_oauth_token) {
   Parameters parameters;
   parameters.client_id = client_id;
   parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
@@ -192,6 +195,7 @@ OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
   parameters.version = version;
   parameters.channel = channel;
   parameters.device_id = device_id;
+  parameters.bound_oauth_token = bound_oauth_token;
   return parameters;
 }
 
@@ -288,6 +292,17 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
         base::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
   }
   return body;
+}
+
+std::string OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(
+    const std::string& access_token) {
+  if (!parameters_.bound_oauth_token.empty()) {
+    // Replace a regular token with the one containing binding assertion.
+    return base::StrCat({"BoundOAuthToken ", parameters_.bound_oauth_token});
+  }
+
+  // Call the base class method to get a regular authorization value.
+  return OAuth2ApiCallFlow::CreateAuthorizationHeaderValue(access_token);
 }
 
 void OAuth2MintTokenFlow::ProcessApiCallSuccess(

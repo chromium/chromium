@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -19,12 +20,14 @@
 OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& user_gaia_id,
     const std::string& refresh_token,
     const std::string& device_id,
     const std::string& client_version,
     const std::string& client_channel)
     : OAuth2AccessTokenFetcher(consumer),
       url_loader_factory_(std::move(url_loader_factory)),
+      user_gaia_id_(user_gaia_id),
       refresh_token_(refresh_token),
       device_id_(device_id),
       client_version_(client_version),
@@ -37,10 +40,14 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
-  // TODO(b/263253212): add `binding_key_assertion_` to `params` if not empty.
+  std::string bound_oauth_token;
+  if (!binding_key_assertion_.empty()) {
+    bound_oauth_token = gaia::CreateBoundOAuthToken(
+        user_gaia_id_, refresh_token_, binding_key_assertion_);
+  }
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
-      client_version_, client_channel_, device_id_);
+      client_version_, client_channel_, device_id_, bound_oauth_token);
   if (mint_token_flow_factory_for_testing_) {
     mint_token_flow_ =
         mint_token_flow_factory_for_testing_.Run(this, std::move(params));

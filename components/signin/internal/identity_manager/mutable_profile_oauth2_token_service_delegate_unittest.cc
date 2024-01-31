@@ -1332,7 +1332,12 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeBoundToken) {
   delegate->Shutdown();
 }
 
-TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
+class MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest
+    : public MutableProfileOAuth2TokenServiceDelegateTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
+       FetchWithBoundToken) {
   ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service;
   auto token_binding_helper =
@@ -1340,7 +1345,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate =
       CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled,
                                   std::move(token_binding_helper));
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+
+  const CoreAccountId account_id =
+      account_tracker_service_.SeedAccountInfo("account_id", "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
   delegate->UpdateCredentials(account_id, "refresh_token",
@@ -1351,14 +1358,21 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
-      delegate->CreateAccessTokenFetcher(account_id,
-                                         delegate->GetURLLoaderFactory(), this,
-                                         kNoBindingChallenge);
+      delegate->CreateAccessTokenFetcher(
+          account_id, delegate->GetURLLoaderFactory(), this, GetParam());
   fetcher->Start("foo", "bar", {"scope"});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
+    testing::Values(kNoBindingChallenge, "test_challenge"),
+    [](const auto& info) {
+      return info.param.empty() ? "NoChallenge" : "HasChallenge";
+    });
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
