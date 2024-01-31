@@ -55,8 +55,6 @@ class PredictionModelStoreTest : public testing::Test {
         {features::kRemoteOptimizationGuideFetching,
          features::kOptimizationGuideModelDownloading},
         {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDebugLoggingEnabled);
   }
 
   void SetUp() override {
