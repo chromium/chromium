@@ -5,17 +5,16 @@ permissions: read-all
 
 on:
   pull_request:
-    types: [labeled]
 
 concurrency:
   group: puppeteer-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  run-puppeteer-test:
+  puppeteer-test:
     name: Run Puppeteer tests
     runs-on: ubuntu-latest
-    if: contains(github.event.label.name, 'puppeteer')
+    if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
     steps:
       - name: Checkout Chromium-BiDi
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -25,7 +24,6 @@ jobs:
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           node-version-file: './bidi/.nvmrc'
-          cache: npm
       - name: Install Chromium-BiDi dependencies
         working-directory: bidi
         run: npm ci
