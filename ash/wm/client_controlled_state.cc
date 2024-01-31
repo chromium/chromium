@@ -337,6 +337,14 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
           event_type == WM_EVENT_RESTORE;
       CHECK(is_restoring || event->IsSnapEvent());
 
+      // If the window is being unminimized to any snapped state and it's still
+      // transitioning, no need to handle the extra snap event.
+      if (window_state->IsMinimized() && is_restoring &&
+          SplitViewController::Get(window)->IsWindowInTransitionalState(
+              window)) {
+        return;
+      }
+
       const WindowSnapActionSource snap_action_source =
           is_restoring ? WindowSnapActionSource::kSnapByWindowStateRestore
                        : event->AsSnapEvent()->snap_action_source();
