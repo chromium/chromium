@@ -2369,7 +2369,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_DEFAULT,
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
