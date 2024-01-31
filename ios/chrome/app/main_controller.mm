@@ -1487,12 +1487,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           [handler hideActivityOverlay];
         }
       }
-      WebUsageEnablerBrowserAgent::FromBrowser(
-          browserProviderInterface.mainBrowserProvider.browser)
-          ->SetWebUsageEnabled(true);
-      WebUsageEnablerBrowserAgent::FromBrowser(
-          browserProviderInterface.incognitoBrowserProvider.browser)
-          ->SetWebUsageEnabled(true);
+      if (browserProviderInterface.mainBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.mainBrowserProvider.browser)
+            ->SetWebUsageEnabled(true);
+      }
+      if (browserProviderInterface.incognitoBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(
+            browserProviderInterface.incognitoBrowserProvider.browser)
+            ->SetWebUsageEnabled(true);
+      }
       [browserProviderInterface.currentBrowserProvider setPrimary:YES];
     }
     // `completionBlock` is run once, not once per scene.
