@@ -117,6 +117,7 @@ UkmDatabaseBackend::UkmDatabaseBackend(
       metrics_table_(&db_),
       url_table_(&db_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  db_.set_histogram_tag("UKMMetrics");
   db_.set_error_callback(base::BindRepeating(&ErrorCallback));
 }
 
