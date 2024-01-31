@@ -67,6 +67,7 @@
         ],
         'mixins': [
           'chromeos-betty',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
