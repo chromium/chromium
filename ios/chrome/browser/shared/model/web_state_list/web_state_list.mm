@@ -410,22 +410,23 @@ int WebStateList::InsertWebStateImpl(int index,
     opener = WebStateOpener(GetActiveWebState());
   }
 
-  const OrderController::ItemGroup group =
-      pinned ? OrderController::ItemGroup::kPinned
-             : OrderController::ItemGroup::kRegular;
+  const OrderController::Range range{
+      .begin = pinned ? 0 : pinned_tabs_count_,
+      .end = pinned ? pinned_tabs_count_ : count(),
+  };
 
   const OrderControllerSourceFromWebStateList source(*this);
   const OrderController order_controller(source);
   if (forced && index != WebStateList::kInvalidIndex) {
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::ForceIndex(index, group));
+        OrderController::InsertionParams::ForceIndex(index, range));
   } else if (opener.opener) {
     const int opener_index = GetIndexOfWebState(opener.opener);
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::WithOpener(opener_index, group));
+        OrderController::InsertionParams::WithOpener(opener_index, range));
   } else {
     index = order_controller.DetermineInsertionIndex(
-        OrderController::InsertionParams::Automatic(group));
+        OrderController::InsertionParams::Automatic(range));
   }
 
   DCHECK(ContainsIndex(index) || index == count());

@@ -27,6 +27,22 @@ class FakeOrderControllerSource final : public OrderControllerSource {
     DCHECK_LE(pinned_items_count_, static_cast<int>(items_.size()));
   }
 
+  // Returns a range corresponding to all pinned tabs.
+  OrderController::Range PinnedTabsRange() const {
+    return OrderController::Range{
+        .begin = 0,
+        .end = GetPinnedCount(),
+    };
+  }
+
+  // Returns a range corresponding to all regular tabs.
+  OrderController::Range RegularTabsRange() const {
+    return OrderController::Range{
+        .begin = GetPinnedCount(),
+        .end = GetCount(),
+    };
+  }
+
   // OrderControllerSource implementation.
   int GetCount() const final { return static_cast<int>(items_.size()); }
 
@@ -85,13 +101,13 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_Automatic) {
   // at the end of the selected group (regular).
   EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::Automatic(
-                       OrderController::ItemGroup::kRegular)));
+                       source.RegularTabsRange())));
 
   // Verify that inserting an item with "automatic" policy put the item
   // at the end of the selected group (pinned).
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::Automatic(
-                       OrderController::ItemGroup::kPinned)));
+                       source.PinnedTabsRange())));
 }
 
 // Tests that DetermineInsertionIndex respects the desired index when
@@ -112,45 +128,45 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_ForceIndex) {
   // the requested position.
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       2, OrderController::ItemGroup::kRegular)));
+                       2, source.RegularTabsRange())));
 
   EXPECT_EQ(3, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       3, OrderController::ItemGroup::kRegular)));
+                       3, source.RegularTabsRange())));
 
   EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       4, OrderController::ItemGroup::kRegular)));
+                       4, source.RegularTabsRange())));
 
   EXPECT_EQ(0, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       0, OrderController::ItemGroup::kPinned)));
+                       0, source.PinnedTabsRange())));
 
   EXPECT_EQ(1, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       1, OrderController::ItemGroup::kPinned)));
+                       1, source.PinnedTabsRange())));
 
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       2, OrderController::ItemGroup::kPinned)));
+                       2, source.PinnedTabsRange())));
 
   // Verify that inserting an item with "forced" policy puts the item at
   // the end of the group if the requested position is not in group.
   EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       0, OrderController::ItemGroup::kRegular)));
+                       0, source.RegularTabsRange())));
 
   EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       1, OrderController::ItemGroup::kRegular)));
+                       1, source.RegularTabsRange())));
 
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       3, OrderController::ItemGroup::kPinned)));
+                       3, source.PinnedTabsRange())));
 
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::ForceIndex(
-                       4, OrderController::ItemGroup::kPinned)));
+                       4, source.PinnedTabsRange())));
 }
 
 // Tests that DetermineInsertionIndex correctly position an item with an
@@ -203,43 +219,43 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_WithOpener) {
   // the last sibling if there is at least one sibling.
   EXPECT_EQ(10, order_controller.DetermineInsertionIndex(
                     OrderController::InsertionParams::WithOpener(
-                        7, OrderController::ItemGroup::kRegular)));
+                        7, source.RegularTabsRange())));
 
   EXPECT_EQ(4, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       1, OrderController::ItemGroup::kPinned)));
+                       1, source.PinnedTabsRange())));
 
   // Verify that inserting an item with an opener will position it after
   // the last sibling if there is at least one sibling, even if the last
   // sibling is "before" the opener.
   EXPECT_EQ(8, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       11, OrderController::ItemGroup::kRegular)));
+                       11, source.RegularTabsRange())));
 
   EXPECT_EQ(2, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       5, OrderController::ItemGroup::kPinned)));
+                       5, source.PinnedTabsRange())));
 
   // Verify that inserting an item with an opener will position it after
   // the parent if there is no sibling.
   EXPECT_EQ(9, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       8, OrderController::ItemGroup::kRegular)));
+                       8, source.RegularTabsRange())));
 
   EXPECT_EQ(3, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       2, OrderController::ItemGroup::kPinned)));
+                       2, source.PinnedTabsRange())));
 
   // Verify that inserting an item with an opener will force the index
   // in the correct group if the automatically determined position is
   // outside of the group.
   EXPECT_EQ(12, order_controller.DetermineInsertionIndex(
                     OrderController::InsertionParams::WithOpener(
-                        0, OrderController::ItemGroup::kRegular)));
+                        0, source.RegularTabsRange())));
 
   EXPECT_EQ(6, order_controller.DetermineInsertionIndex(
                    OrderController::InsertionParams::WithOpener(
-                       6, OrderController::ItemGroup::kPinned)));
+                       6, source.PinnedTabsRange())));
 }
 
 // Tests that the selection of the next active element when closing tabs
