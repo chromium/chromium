@@ -4,5 +4,6 @@ include_rules = [
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
   "+third_party/fp16/src/include/fp16.h",
   "+ui/gl/gl_angle_util_win.h",
-  "+ui/gl/init/gl_factory.h"
+  "+ui/gl/init/gl_factory.h",
+  "+third_party/coremltools/mlmodel/format"
 ]

@@ -15,6 +15,10 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace webnn {
 
 class WebNNContextProviderImplTest : public testing::Test {
@@ -45,6 +49,13 @@ class WebNNContextProviderImplTest : public testing::Test {
 #if !BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSVersion() >= 13'00'00) {
+    GTEST_SKIP() << "Skipping test because WebNN is supported on Mac OS "
+                 << base::mac::MacOSVersion();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
   WebNNContextProviderImpl::Create(

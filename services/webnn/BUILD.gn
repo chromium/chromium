@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 component("webnn_service") {
   sources = [
@@ -48,6 +49,23 @@ component("webnn_service") {
     "//services/webnn/public/mojom",
   ]
 
+  if (is_mac) {
+    sources += [
+      "coreml/context_impl.h",
+      "coreml/context_impl.mm",
+      "coreml/graph_builder.cc",
+      "coreml/graph_builder.h",
+      "coreml/graph_impl.h",
+      "coreml/graph_impl.mm",
+    ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "CoreML.framework",
+      "Foundation.framework",
+    ]
+    deps += [ "//third_party/coremltools:modelformat_proto" ]
+  }
+
   if (is_win) {
     deps += [
       "//third_party/fp16",
@@ -82,6 +100,10 @@ source_set("tests") {
       "dml/test_base.cc",
       "dml/test_base.h",
     ]
+  }
+
+  if (is_mac) {
+    sources += [ "coreml/graph_impl_test.cc" ]
   }
 
   deps = [
