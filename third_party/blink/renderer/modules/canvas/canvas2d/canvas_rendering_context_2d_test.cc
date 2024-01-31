@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -83,6 +84,7 @@ using ::cc::DrawRectOp;
 using ::cc::PaintOpEq;
 using ::cc::PaintOpIs;
 using ::cc::RestoreOp;
+using ::cc::SaveLayerAlphaOp;
 using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
 using ::cc::SetMatrixOp;
@@ -501,6 +503,70 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_PartialCoverage) {
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 9, 9),
                                 ClearRectFlags()))));
+  EXPECT_THAT(histogram_tester, OverdrawOpAre());
+}
+
+TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideLayer) {
+  // Overdraw is not currently implemented when layers are opened.
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  base::HistogramTester histogram_tester;
+  CreateContext(kNonOpaque);
+  CanvasElement().SetSize(gfx::Size(10, 10));
+
+  NonThrowableExceptionState no_exception;
+  Context2D()->fillRect(1, 1, 1, 1);
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+  Context2D()->fillRect(2, 2, 2, 2);
+  Context2D()->clearRect(0, 0, 10, 10);
+  Context2D()->fillRect(3, 3, 3, 3);
+  Context2D()->endLayer(no_exception);
+
+  EXPECT_THAT(
+      Context2D()->FlushCanvas(FlushReason::kTesting),
+      Optional(RecordedOpsAre(
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
+          PaintOpEq<SaveLayerAlphaOp>(1.0f),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                ClearRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), DrawRectFlags()),
+          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(histogram_tester, OverdrawOpAre());
+}
+
+TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideNestedLayer) {
+  // Overdraw is not currently implemented when layers are opened.
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  base::HistogramTester histogram_tester;
+  CreateContext(kNonOpaque);
+  CanvasElement().SetSize(gfx::Size(10, 10));
+
+  NonThrowableExceptionState no_exception;
+  Context2D()->fillRect(1, 1, 1, 1);
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+  Context2D()->fillRect(2, 2, 2, 2);
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+  Context2D()->fillRect(3, 3, 3, 3);
+  Context2D()->clearRect(0, 0, 10, 10);
+  Context2D()->fillRect(4, 4, 4, 4);
+  Context2D()->endLayer(no_exception);
+  Context2D()->endLayer(no_exception);
+
+  EXPECT_THAT(
+      Context2D()->FlushCanvas(FlushReason::kTesting),
+      Optional(RecordedOpsAre(
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
+          PaintOpEq<SaveLayerAlphaOp>(1.0f),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), DrawRectFlags()),
+          PaintOpEq<SaveLayerAlphaOp>(1.0f),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                ClearRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4), DrawRectFlags()),
+          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 

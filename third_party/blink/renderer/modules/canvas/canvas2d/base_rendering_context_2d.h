@@ -863,6 +863,12 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   if (UNLIKELY(!c))
     return;
 
+  // Overdraw in layers is not currently supported. We would need to be able to
+  // drop draw ops in the current layer only, which is not currently possible.
+  if (layer_count_ != 0) {
+    return;
+  }
+
   if (overdraw_op == OverdrawOp::kDrawImage) {  // static branch
     if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||
         UNLIKELY(flags->getLooper()) || UNLIKELY(flags->getImageFilter()) ||
