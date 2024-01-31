@@ -171,7 +171,9 @@ class TestSharedWorkerService : public content::SharedWorkerService {
   void EnumerateSharedWorkers(Observer* observer) override;
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
-                       const blink::StorageKey& storage_key) override;
+                       const blink::StorageKey& storage_key,
+                       const blink::mojom::SharedWorkerSameSiteCookies
+                           same_site_cookies) override;
   void Shutdown() override;
 
   // Creates a new shared worker and returns its token.
@@ -218,7 +220,8 @@ void TestSharedWorkerService::EnumerateSharedWorkers(Observer* observer) {
 bool TestSharedWorkerService::TerminateWorker(
     const GURL& url,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   // Not implemented.
   ADD_FAILURE();
   return false;

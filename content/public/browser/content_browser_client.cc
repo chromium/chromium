@@ -426,6 +426,7 @@ bool ContentBrowserClient::AllowSharedWorker(
     const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     BrowserContext* context,
     int render_process_id,
     int render_frame_id) {

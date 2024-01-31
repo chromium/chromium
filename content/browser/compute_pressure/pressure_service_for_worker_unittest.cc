@@ -233,7 +233,10 @@ class PressureServiceForSharedWorkerTest
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
         rfh->GetStorageKey(),
-        blink::mojom::SharedWorkerCreationContextType::kSecure);
+        blink::mojom::SharedWorkerCreationContextType::kSecure,
+        rfh->GetStorageKey().IsFirstPartyContext()
+            ? blink::mojom::SharedWorkerSameSiteCookies::kAll
+            : blink::mojom::SharedWorkerSameSiteCookies::kNone);
     worker_service_ = std::make_unique<SharedWorkerServiceImpl>(
         rfh->GetStoragePartition(), nullptr /* service_worker_context */);
     worker_host_ = std::make_unique<SharedWorkerHost>(

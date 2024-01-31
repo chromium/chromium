@@ -304,7 +304,8 @@ void SharedWorkerHost::Start(
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
       instance_.url(), std::move(options),
       mojo::Clone(content_security_policies_),
-      std::move(outside_fetch_client_settings_object)));
+      std::move(outside_fetch_client_settings_object),
+      instance_.same_site_cookies()));
 
   auto renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(

@@ -37,10 +37,11 @@ void SharedWorkerHelper::StartFetching(FetchCallback callback) {
 void SharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  storage_partition_->GetSharedWorkerService()->TerminateWorker(worker, name,
-                                                                storage_key);
+  storage_partition_->GetSharedWorkerService()->TerminateWorker(
+      worker, name, storage_key, same_site_cookies);
 }
 
 CannedSharedWorkerHelper::CannedSharedWorkerHelper(
@@ -52,12 +53,13 @@ CannedSharedWorkerHelper::~CannedSharedWorkerHelper() = default;
 void CannedSharedWorkerHelper::AddSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   if (!HasWebScheme(worker))
     return;  // Non-websafe state is not considered browsing data.
 
-  pending_shared_worker_info_.insert(
-      browsing_data::SharedWorkerInfo(worker, name, storage_key));
+  pending_shared_worker_info_.insert(browsing_data::SharedWorkerInfo(
+      worker, name, storage_key, same_site_cookies));
 }
 
 void CannedSharedWorkerHelper::Reset() {
@@ -90,13 +92,15 @@ void CannedSharedWorkerHelper::StartFetching(FetchCallback callback) {
 void CannedSharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   for (auto it = pending_shared_worker_info_.begin();
        it != pending_shared_worker_info_.end();) {
     if (it->worker == worker && it->name == name &&
-        it->storage_key == storage_key) {
-      SharedWorkerHelper::DeleteSharedWorker(it->worker, it->name,
-                                             it->storage_key);
+        it->storage_key == storage_key &&
+        it->same_site_cookies == same_site_cookies) {
+      SharedWorkerHelper::DeleteSharedWorker(
+          it->worker, it->name, it->storage_key, it->same_site_cookies);
       it = pending_shared_worker_info_.erase(it);
     } else {
       ++it;

@@ -75,6 +75,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-forward.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -800,6 +801,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::optional<url::Origin>& top_frame_origin,
       const std::string& name,
       const blink::StorageKey& storage_key,
+      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
       BrowserContext* context,
       int render_process_id,
       int render_frame_id);

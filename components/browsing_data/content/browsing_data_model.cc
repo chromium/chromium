@@ -294,7 +294,7 @@ void StorageRemoverHelper::Visitor::operator()<browsing_data::SharedWorkerInfo>(
   if (types.Has(BrowsingDataModel::StorageType::kSharedWorker)) {
     helper->storage_partition_->GetSharedWorkerService()->TerminateWorker(
         shared_worker_info.worker, shared_worker_info.name,
-        shared_worker_info.storage_key);
+        shared_worker_info.storage_key, shared_worker_info.same_site_cookies);
   }
 }
 

@@ -1255,7 +1255,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   replacements.SetPathStr("browsing_data/shared_worker.js");
   GURL worker = testOrigin.GetURL().ReplaceComponents(replacements);
   browsing_data::SharedWorkerInfo data_key(
-      worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin));
+      worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll);
   ValidateBrowsingDataEntries(
       allowed_browsing_data_model,
       {{kTestHost,

@@ -2936,6 +2936,7 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
     const std::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     content::BrowserContext* context,
     int render_process_id,
     int render_frame_id) {
@@ -2947,7 +2948,8 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
           Profile::FromBrowserContext(context));
   return embedder_support::AllowSharedWorker(
       worker_url, site_for_cookies, top_frame_origin, name, storage_key,
-      render_process_id, render_frame_id, cookie_settings.get());
+      same_site_cookies, render_process_id, render_frame_id,
+      cookie_settings.get());
 }
 
 bool ChromeContentBrowserClient::DoesSchemeAllowCrossOriginSharedWorker(

@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -44,9 +45,11 @@ class SharedWorkerHelper
   virtual void StartFetching(FetchCallback callback);
 
   // Requests the given Shared Worker to be deleted.
-  virtual void DeleteSharedWorker(const GURL& worker,
-                                  const std::string& name,
-                                  const blink::StorageKey& storage_key);
+  virtual void DeleteSharedWorker(
+      const GURL& worker,
+      const std::string& name,
+      const blink::StorageKey& storage_key,
+      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies);
 
  protected:
   virtual ~SharedWorkerHelper();
@@ -70,9 +73,11 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
 
   // Adds Shared Worker to the set of canned Shared Workers that is returned by
   // this helper.
-  void AddSharedWorker(const GURL& worker,
-                       const std::string& name,
-                       const blink::StorageKey& storage_key);
+  void AddSharedWorker(
+      const GURL& worker,
+      const std::string& name,
+      const blink::StorageKey& storage_key,
+      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies);
 
   // Clears the list of canned Shared Workers.
   void Reset();
@@ -90,7 +95,9 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const blink::StorageKey& storage_key) override;
+                          const blink::StorageKey& storage_key,
+                          const blink::mojom::SharedWorkerSameSiteCookies
+                              same_site_cookies) override;
 
  private:
   ~CannedSharedWorkerHelper() override;

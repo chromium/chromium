@@ -89,11 +89,12 @@ void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
 bool SharedWorkerServiceImpl::TerminateWorker(
     const GURL& url,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SharedWorkerHost* worker_host =
-      FindMatchingSharedWorkerHost(url, name, storage_key);
+      FindMatchingSharedWorkerHost(url, name, storage_key, same_site_cookies);
   if (worker_host) {
     DestroyHost(worker_host);
     return true;
@@ -131,6 +132,16 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
 
+  // TODO(crbug.com/1484966): This option should allow a first-party context to
+  // use kAll or kNone but restrict a third-party context to kNone.
+  if (info->same_site_cookies !=
+      (render_frame_host->GetStorageKey().IsFirstPartyContext()
+           ? blink::mojom::SharedWorkerSameSiteCookies::kAll
+           : blink::mojom::SharedWorkerSameSiteCookies::kNone)) {
+    ScriptLoadFailed(std::move(client), /*error_message=*/"");
+    return;
+  }
+
   // Enforce same-origin policy.
   // data: URLs are not considered a different origin.
   const blink::StorageKey& storage_key = render_frame_host->GetStorageKey();
@@ -147,15 +158,16 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   if (!GetContentClient()->browser()->AllowSharedWorker(
           info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
-          storage_key, render_frame_host->GetBrowserContext(),
+          storage_key, info->same_site_cookies,
+          render_frame_host->GetBrowserContext(),
           client_render_frame_host_id.child_id,
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }
 
-  SharedWorkerHost* host =
-      FindMatchingSharedWorkerHost(info->url, info->options->name, storage_key);
+  SharedWorkerHost* host = FindMatchingSharedWorkerHost(
+      info->url, info->options->name, storage_key, info->same_site_cookies);
   if (host) {
     // Non-secure contexts cannot connect to secure workers, and secure contexts
     // cannot connect to non-secure workers:
@@ -193,7 +205,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
   SharedWorkerInstance instance(info->url, info->options->type,
                                 info->options->credentials, info->options->name,
-                                storage_key, creation_context_type);
+                                storage_key, creation_context_type,
+                                info->same_site_cookies);
+  // TODO(crbug.com/1484966): `info->same_site_cookies` should control which
+  // cookies are available to the shared worker.
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -448,10 +463,12 @@ void SharedWorkerServiceImpl::StartWorker(
 SharedWorkerHost* SharedWorkerServiceImpl::FindMatchingSharedWorkerHost(
     const GURL& url,
     const std::string& name,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
   for (auto& host : worker_hosts_) {
-    if (host->instance().Matches(url, name, storage_key))
+    if (host->instance().Matches(url, name, storage_key, same_site_cookies)) {
       return host.get();
+    }
   }
   return nullptr;
 }

@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -287,14 +288,16 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldTryToUpdateServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context) override;
-  bool AllowSharedWorker(const GURL& worker_url,
-                         const net::SiteForCookies& site_for_cookies,
-                         const std::optional<url::Origin>& top_frame_origin,
-                         const std::string& name,
-                         const blink::StorageKey& storage_key,
-                         content::BrowserContext* context,
-                         int render_process_id,
-                         int render_frame_id) override;
+  bool AllowSharedWorker(
+      const GURL& worker_url,
+      const net::SiteForCookies& site_for_cookies,
+      const std::optional<url::Origin>& top_frame_origin,
+      const std::string& name,
+      const blink::StorageKey& storage_key,
+      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
+      content::BrowserContext* context,
+      int render_process_id,
+      int render_frame_id) override;
   bool DoesSchemeAllowCrossOriginSharedWorker(
       const std::string& scheme) override;
   bool AllowSignedExchange(content::BrowserContext* browser_context) override;

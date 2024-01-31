@@ -498,7 +498,7 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
-      blocked_by_policy);
+      blink::mojom::SharedWorkerSameSiteCookies::kAll, blocked_by_policy);
 
   const auto& objects = content_settings->allowed_local_shared_objects();
   EXPECT_EQ(7u, objects.GetObjectCount());
@@ -852,7 +852,7 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
-      blocked_by_policy);
+      blink::mojom::SharedWorkerSameSiteCookies::kAll, blocked_by_policy);
 
   const auto& objects = content_settings->allowed_local_shared_objects();
   EXPECT_EQ(10u, objects.GetObjectCount());
