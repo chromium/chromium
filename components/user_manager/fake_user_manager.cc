@@ -251,17 +251,17 @@ const User* FakeUserManager::FindUser(const AccountId& account_id) const {
   if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
     return active_user_;
 
-  const UserList& users = GetUsers();
-  for (UserList::const_iterator it = users.begin(); it != users.end(); ++it) {
-    if ((*it)->GetAccountId() == account_id)
-      return *it;
+  for (const User* user : users_) {
+    if (user->GetAccountId() == account_id) {
+      return user;
+    }
   }
 
   return nullptr;
 }
 
 User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
-  return nullptr;
+  return const_cast<User*>(FindUser(account_id));
 }
 
 std::u16string FakeUserManager::GetUserDisplayName(

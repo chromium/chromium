@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -143,6 +144,25 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+    AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
+    auto* user = user_manager()->FindUserAndModify(
+        AccountId::FromUserEmail(profile_name));
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+    return profile;
+  }
+
  protected:
   int64_t task_id = 1;
   std::unique_ptr<exo::Surface> shell_root_surface_;
@@ -211,7 +231,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {

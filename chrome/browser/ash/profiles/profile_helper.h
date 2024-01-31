@@ -176,17 +176,17 @@ class ProfileHelper {
   virtual void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                                  Profile* profile) = 0;
 
+  // Enables/disables testing code path in GetUserByProfile() like
+  // always return primary user (when always_return_primary_user_for_testing is
+  // set).
+  static void SetProfileToUserForTestingEnabled(bool enabled);
+
  protected:
   // TODO(nkostylev): Create a test API class that will be the only one allowed
   // to access private test methods.
   friend class FakeChromeUserManager;
   friend class ProfileHelperTest;
   friend class ::IndependentOTRProfileManagerTest;
-
-  // Enables/disables testing code path in GetUserByProfile() like
-  // always return primary user (when always_return_primary_user_for_testing is
-  // set).
-  static void SetProfileToUserForTestingEnabled(bool enabled);
 
   // If true testing code path is used in GetUserByProfile() even if
   // user_list_for_testing_ list is empty. In that case primary user will always

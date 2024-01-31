@@ -187,6 +187,12 @@ class BrowserWithTestWindowTest : public testing::Test {
   // value.
   virtual TestingProfile* CreateProfile(const std::string& profile_name);
 
+  // Deletes the specified profile.
+  // If `profile_name` is the one returned from GetDefaultProfileName(),
+  // because this instance creates Browser for the profile in SetUp() and keeps
+  // it in a member, the Browser instance will also be destroyed to avoid leak.
+  virtual void DeleteProfile(const std::string& profile_name);
+
   // Returns a vector of testing factories to be used when creating the profile.
   // This is only used by CreateProfile(), and will be irrelevant if that
   // method is overridden.

@@ -124,8 +124,9 @@ void BrowserWithTestWindowTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 
   // Close the browser tabs and destroy the browser and window instances.
-  if (browser_)
+  if (browser_) {
     browser_->tab_strip_model()->CloseAllTabs();
+  }
   browser_.reset();
   window_.reset();
 
@@ -221,9 +222,20 @@ std::string BrowserWithTestWindowTest::GetDefaultProfileName() {
 }
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile(
-    const std::string& email) {
+    const std::string& profile_name) {
   return profile_manager_->CreateTestingProfile(
-      email, nullptr, std::u16string(), 0, GetTestingFactories());
+      profile_name, nullptr, std::u16string(), 0, GetTestingFactories());
+}
+
+void BrowserWithTestWindowTest::DeleteProfile(const std::string& profile_name) {
+  if (profile_name == GetDefaultProfileName()) {
+    if (browser_) {
+      browser_->tab_strip_model()->CloseAllTabs();
+    }
+    browser_.reset();
+    profile_ = nullptr;
+  }
+  profile_manager_->DeleteTestingProfile(profile_name);
 }
 
 TestingProfile::TestingFactories

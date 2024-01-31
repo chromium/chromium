@@ -190,6 +190,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   ~NoteTakingHelperTest() override = default;
 
   void SetUp() override {
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_arc_available(true);
 
@@ -216,6 +217,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     extensions::ExtensionSystem::Get(profile())->Shutdown();
     BrowserWithTestWindowTest::TearDown();
     SessionManagerClient::Shutdown();
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
  protected:
@@ -390,14 +392,28 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // BrowserWithTestWindowTest:
   std::string GetDefaultProfileName() override { return kTestProfileName; }
 
+  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
+  void LogIn(const std::string& email) override {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
-    return profile_manager()->CreateTestingProfile(
+    auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
         TestingProfile::TestingFactories());
+    user_manager()->OnUserProfileCreated(AccountId::FromUserEmail(profile_name),
+                                         nullptr /*TODO*/);
+    return profile;
   }
 
   TestingProfile* CreateAndInitSecondaryProfile() {
@@ -405,13 +421,12 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     const AccountId account_id(AccountId::FromUserEmail(kSecondProfileName));
-    ash::FakeChromeUserManager* fake_user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
-    fake_user_manager->AddUser(account_id);
+    user_manager()->AddUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
+    user_manager()->OnUserProfileCreated(
+        AccountId::FromUserEmail(kSecondProfileName), nullptr /*TODO*/);
 
     InitExtensionService(profile);
     InitWebAppProvider(profile);
@@ -487,7 +502,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Has Init() been called?
   bool initialized_ = false;
 
-  ArcAppTest arc_test_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   base::test::ScopedFeatureList feature_list_;
 };
