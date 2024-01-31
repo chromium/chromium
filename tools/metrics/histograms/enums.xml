@@ -11190,6 +11190,56 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_cookies"/>
   <int value="4792" label="VisualViewportScrollEndFired"/>
   <int value="4793" label="AttributionReportingCrossAppWebSupportHeader"/>
+  <int value="4794"
+      label="V8Element_AriaActiveDescendantElement_AttributeGetter"/>
+  <int value="4795"
+      label="V8Element_AriaActiveDescendantElement_AttributeSetter"/>
+  <int value="4796" label="V8Element_AriaControlsElements_AttributeGetter"/>
+  <int value="4797" label="V8Element_AriaControlsElements_AttributeSetter"/>
+  <int value="4798" label="V8Element_AriaDescribedByElements_AttributeGetter"/>
+  <int value="4799" label="V8Element_AriaDescribedByElements_AttributeSetter"/>
+  <int value="4800" label="V8Element_AriaDetailsElements_AttributeGetter"/>
+  <int value="4801" label="V8Element_AriaDetailsElements_AttributeSetter"/>
+  <int value="4802" label="V8Element_AriaErrorMessageElements_AttributeGetter"/>
+  <int value="4803" label="V8Element_AriaErrorMessageElements_AttributeSetter"/>
+  <int value="4804" label="V8Element_AriaFlowToElements_AttributeGetter"/>
+  <int value="4805" label="V8Element_AriaFlowToElements_AttributeSetter"/>
+  <int value="4806" label="V8Element_AriaLabelledByElements_AttributeGetter"/>
+  <int value="4807" label="V8Element_AriaLabelledByElements_AttributeSetter"/>
+  <int value="4808" label="V8Element_AriaOwnsElements_AttributeGetter"/>
+  <int value="4809" label="V8Element_AriaOwnsElements_AttributeSetter"/>
+  <int value="4810"
+      label="V8ElementInternals_AriaActiveDescendantElement_AttributeGetter"/>
+  <int value="4811"
+      label="V8ElementInternals_AriaActiveDescendantElement_AttributeSetter"/>
+  <int value="4812"
+      label="V8ElementInternals_AriaControlsElements_AttributeGetter"/>
+  <int value="4813"
+      label="V8ElementInternals_AriaControlsElements_AttributeSetter"/>
+  <int value="4814"
+      label="V8ElementInternals_AriaDescribedByElements_AttributeGetter"/>
+  <int value="4815"
+      label="V8ElementInternals_AriaDescribedByElements_AttributeSetter"/>
+  <int value="4816"
+      label="V8ElementInternals_AriaDetailsElements_AttributeGetter"/>
+  <int value="4817"
+      label="V8ElementInternals_AriaDetailsElements_AttributeSetter"/>
+  <int value="4818"
+      label="V8ElementInternals_AriaErrorMessageElements_AttributeGetter"/>
+  <int value="4819"
+      label="V8ElementInternals_AriaErrorMessageElements_AttributeSetter"/>
+  <int value="4820"
+      label="V8ElementInternals_AriaFlowToElements_AttributeGetter"/>
+  <int value="4821"
+      label="V8ElementInternals_AriaFlowToElements_AttributeSetter"/>
+  <int value="4822"
+      label="V8ElementInternals_AriaLabelledByElements_AttributeGetter"/>
+  <int value="4823"
+      label="V8ElementInternals_AriaLabelledByElements_AttributeSetter"/>
+  <int value="4824"
+      label="V8ElementInternals_AriaOwnsElements_AttributeGetter"/>
+  <int value="4825"
+      label="V8ElementInternals_AriaOwnsElements_AttributeSetter"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
