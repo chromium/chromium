@@ -206,6 +206,7 @@ public class ToolbarManager
     private SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
     private final ToolbarControlContainer mControlContainer;
+    private final View mToolbarHairline;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final FullscreenManager.Observer mFullscreenObserver;
     private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
@@ -606,6 +607,7 @@ public class ToolbarManager
                             }
                         });
         mControlContainer = controlContainer;
+        mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
         assert mControlContainer != null;
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
@@ -2154,8 +2156,7 @@ public class ToolbarManager
 
     /** Sets the visibility of the Toolbar shadow. */
     public void setToolbarShadowVisibility(int visibility) {
-        View toolbarShadow = mControlContainer.findViewById(R.id.toolbar_hairline);
-        if (toolbarShadow != null) toolbarShadow.setVisibility(visibility);
+        if (mToolbarHairline != null) mToolbarHairline.setVisibility(visibility);
     }
 
     /**
@@ -2165,8 +2166,7 @@ public class ToolbarManager
      * @return The extra Y offset for the toolbar in pixels.
      */
     private int getToolbarExtraYOffset() {
-        int toolbarHairlineHeight =
-                mControlContainer.findViewById(R.id.toolbar_hairline).getHeight();
+        int toolbarHairlineHeight = mToolbarHairline.getHeight();
         int extraYOffset =
                 mBrowserControlsSizer.getTopControlsHeight()
                         - (mControlContainer.getHeight() - toolbarHairlineHeight);
