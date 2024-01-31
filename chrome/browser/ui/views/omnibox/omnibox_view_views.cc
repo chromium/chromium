@@ -1359,7 +1359,7 @@ void OmniboxViewViews::OnFocus() {
 
   // Focus changes can affect the visibility of any keyword hint.
   if (location_bar_view_ && model()->is_keyword_hint())
-    location_bar_view_->Layout();
+    location_bar_view_->DeprecatedLayoutImmediately();
 
   if (location_bar_view_)
     location_bar_view_->OnOmniboxFocused();
@@ -1434,7 +1434,7 @@ void OmniboxViewViews::OnBlur() {
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
     if (model()->is_keyword_hint())
-      location_bar_view_->Layout();
+      location_bar_view_->DeprecatedLayoutImmediately();
 
     location_bar_view_->OnOmniboxBlurred();
 

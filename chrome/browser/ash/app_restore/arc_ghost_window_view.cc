@@ -189,7 +189,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
     }
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void ArcGhostWindowView::OnThemeChanged() {

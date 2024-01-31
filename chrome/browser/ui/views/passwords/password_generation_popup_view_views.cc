@@ -555,7 +555,7 @@ void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
   if (password_view_) {
     password_view_->UpdateGeneratedPassword(controller_->password());
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {

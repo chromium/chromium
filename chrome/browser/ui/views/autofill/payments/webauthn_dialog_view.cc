@@ -130,7 +130,7 @@ void WebauthnDialogView::RefreshContent() {
                  : ui::DIALOG_BUTTON_CANCEL);
 
   DialogModelChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // Update the dialog's size.
   if (GetWidget() && controller_->GetWebContents()) {

@@ -162,7 +162,7 @@ RichHoverButton::RichHoverButton(
   SetTooltipText(tooltip_text);
   UpdateAccessibleName();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {

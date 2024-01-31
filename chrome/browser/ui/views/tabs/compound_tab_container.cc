@@ -594,7 +594,7 @@ void CompoundTabContainer::CompleteAnimationAndLayout() {
   bounds_animator_.Complete();
   pinned_tab_container_->CompleteAnimationAndLayout();
   unpinned_tab_container_->CompleteAnimationAndLayout();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 int CompoundTabContainer::GetAvailableWidthForTabContainer() const {

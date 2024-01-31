@@ -873,7 +873,7 @@ void BookmarkBarView::ViewHierarchyChanged(
       // We only layout while parented. When we become parented, if our bounds
       // haven't changed, OnBoundsChanged() won't get invoked and we won't
       // layout. Therefore we always force a layout when added.
-      Layout();
+      DeprecatedLayoutImmediately();
     }
   }
 }

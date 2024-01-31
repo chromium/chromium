@@ -430,7 +430,7 @@ void IconLabelBubbleView::Layout() {
                              separator_height);
 
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
     views::FocusRing::Get(this)->SchedulePaint();
   }
 }

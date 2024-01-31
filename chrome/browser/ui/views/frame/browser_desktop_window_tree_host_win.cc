@@ -451,7 +451,7 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
       WINDOWPOS* window_pos = reinterpret_cast<WINDOWPOS*>(l_param);
       views::NonClientView* non_client_view = GetWidget()->non_client_view();
       if (window_pos->flags & SWP_SHOWWINDOW && non_client_view) {
-        non_client_view->Layout();
+        non_client_view->DeprecatedLayoutImmediately();
         non_client_view->SchedulePaint();
       }
       break;

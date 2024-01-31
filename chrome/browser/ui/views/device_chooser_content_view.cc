@@ -226,7 +226,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
   ShowReScanButton(enabled);
 
   if (GetWidget() && GetWidget()->GetRootView())
-    GetWidget()->GetRootView()->Layout();
+    GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
@@ -253,7 +253,7 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     ShowReScanButton(/*enable=*/true);
 
   if (GetWidget() && GetWidget()->GetRootView())
-    GetWidget()->GetRootView()->Layout();
+    GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 std::u16string DeviceChooserContentView::GetWindowTitle() const {

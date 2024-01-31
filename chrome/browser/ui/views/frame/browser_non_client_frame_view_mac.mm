@@ -139,8 +139,8 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
         browser_view()->IsFullscreen());
     UpdateFullscreenTopUI();
 
-    // browser_view()->Layout() is not needed since top chrome is in another
-    // widget.
+    // browser_view()->DeprecatedLayoutImmediately() is not needed since top
+    // chrome is in another widget.
     return;
   }
 
@@ -154,7 +154,7 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
     UpdateFullscreenTopUI();
     [fullscreen_toolbar_controller_ exitFullscreenMode];
   }
-  browser_view()->Layout();
+  browser_view()->DeprecatedLayoutImmediately();
 }
 
 bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
@@ -312,7 +312,7 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
 
   // Re-layout if toolbar style changes in fullscreen mode.
   if (frame()->IsFullscreen()) {
-    browser_view()->Layout();
+    browser_view()->DeprecatedLayoutImmediately();
   }
 }
 

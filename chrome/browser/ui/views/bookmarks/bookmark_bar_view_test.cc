@@ -405,7 +405,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     do {
       size.set_width(size.width() - 25);
       bb_view_->SetBounds(0, 0, size.width(), size.height());
-      bb_view_->Layout();
+      bb_view_->DeprecatedLayoutImmediately();
     } while (bb_view_->bookmark_buttons_[6]->GetVisible());
     return size;
   }
@@ -1807,7 +1807,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     test_view_ =
         container_view->AddChildView(std::make_unique<TestViewForMenuExit>());
     test_view_->SetPreferredSize(gfx::Size(20, 0));
-    parent->Layout();
+    parent->DeprecatedLayoutImmediately();
 
     EXPECT_EQ(0, test_view_->press_count());
 

@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
   // testing.
   BrowserView::GetBrowserViewForBrowser(browser())
       ->GetLocationBarView()
-      ->Layout();
+      ->DeprecatedLayoutImmediately();
 
   // Test with confirmation chip.
   // Verify chip is still visible and has the confirmation text
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
   // testing.
   BrowserView::GetBrowserViewForBrowser(browser())
       ->GetLocationBarView()
-      ->Layout();
+      ->DeprecatedLayoutImmediately();
 
   // With any feature flag configuration, we have to ensure that the location
   // bar icon is visible after the chip collapsed.

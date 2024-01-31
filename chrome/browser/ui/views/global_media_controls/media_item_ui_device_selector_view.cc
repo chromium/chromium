@@ -179,7 +179,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // This view will become visible when devices are discovered.
   SetVisible(false);
@@ -212,7 +212,7 @@ void MediaItemUIDeviceSelectorView::UpdateCurrentAudioDevice(
   current_audio_device_entry_view_->SetHighlighted(true);
   device_entry_views_container_->ReorderChildView(
       current_audio_device_entry_view_, 0);
-  current_audio_device_entry_view_->Layout();
+  current_audio_device_entry_view_->DeprecatedLayoutImmediately();
 }
 
 MediaItemUIDeviceSelectorView::~MediaItemUIDeviceSelectorView() {
@@ -500,7 +500,7 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
       entry->OnColorsChanged(foreground_color_, background_color_);
     }
   }
-  device_entry_views_container_->Layout();
+  device_entry_views_container_->DeprecatedLayoutImmediately();
 
   UpdateVisibility();
   for (auto& observer : observers_) {

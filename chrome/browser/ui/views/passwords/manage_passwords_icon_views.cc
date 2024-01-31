@@ -58,7 +58,7 @@ void ManagePasswordsIconViews::UpdateUiForState() {
   // We may be about to automatically pop up a passwords bubble.
   // Force layout of the icon's parent now; the bubble will be incorrectly
   // positioned otherwise, as the icon won't have been drawn into position.
-  parent()->Layout();
+  parent()->DeprecatedLayoutImmediately();
 }
 
 views::BubbleDialogDelegate* ManagePasswordsIconViews::GetBubble() const {

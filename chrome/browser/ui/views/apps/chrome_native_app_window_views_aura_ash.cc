@@ -632,7 +632,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {
   tablet_mode_enabled_ = enabled;
   UpdateImmersiveMode();
-  widget()->non_client_view()->Layout();
+  widget()->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed() {

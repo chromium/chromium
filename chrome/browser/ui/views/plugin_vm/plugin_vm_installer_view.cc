@@ -558,7 +558,7 @@ void PluginVmInstallerView::OnStateUpdated() {
       download_progress_message_label_visible);
 
   DialogModelChanged();
-  GetWidget()->GetRootView()->Layout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 
   if (state_ == State::kCreated || state_ == State::kImported ||
       state_ == State::kError) {

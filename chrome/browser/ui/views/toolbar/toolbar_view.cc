@@ -1231,7 +1231,7 @@ void ToolbarView::LoadImages() {
 
 void ToolbarView::OnShowHomeButtonChanged() {
   home_->SetVisible(show_home_button_.GetValue());
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

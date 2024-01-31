@@ -181,7 +181,7 @@ void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
   widget->non_client_view()->frame_view()->ResetWindowControls();
   widget->non_client_view()->frame_view()->InvalidateLayout();
   browser_view_->InvalidateLayout();
-  widget->GetRootView()->Layout();
+  widget->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
@@ -224,7 +224,7 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
   }
   visible_fraction_ = visible_fraction;
   browser_view_->top_container()->OnImmersiveRevealUpdated();
-  browser_view_->Layout();
+  browser_view_->DeprecatedLayoutImmediately();
 }
 
 std::vector<gfx::Rect>

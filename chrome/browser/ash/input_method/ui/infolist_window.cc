@@ -249,7 +249,7 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
     entry_views_.resize(entries.size());
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
   SizeToContents();
 }
 

@@ -63,7 +63,7 @@ class ExtensionsMenuTestUtil::Wrapper {
         std::make_unique<ExtensionsToolbarCoordinator>(browser,
                                                        extensions_container_);
     container_parent_.SetSize(gfx::Size(1000, 1000));
-    container_parent_.Layout();
+    container_parent_.DeprecatedLayoutImmediately();
     container_parent_.AddChildView(extensions_container_.get());
   }
   ~Wrapper() = default;

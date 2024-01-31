@@ -914,7 +914,7 @@ void LocationBarView::OnThemeChanged() {
 }
 
 void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -1264,7 +1264,7 @@ void LocationBarView::FocusSearch() {
 
 void LocationBarView::UpdateContentSettingsIcons() {
   if (RefreshContentSettingViews()) {
-    Layout();
+    DeprecatedLayoutImmediately();
     SchedulePaint();
   }
 }
@@ -1439,7 +1439,7 @@ void LocationBarView::OnChanged() {
       omnibox_view_ && omnibox_view_->model()->user_input_in_progress() &&
       !omnibox_view_->GetText().empty() &&
       IsVirtualKeyboardVisible(GetWidget()));
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
   UpdateSendTabToSelfIcon();
   UpdateQRCodeGeneratorIcon();

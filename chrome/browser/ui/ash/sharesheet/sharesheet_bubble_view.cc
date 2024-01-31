@@ -633,7 +633,7 @@ void SharesheetBubbleView::InitBubble() {
 void SharesheetBubbleView::SetUpAndShowBubble() {
   main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
-  GetWidget()->GetRootView()->Layout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
   RecordMimeTypeMetric(intent_);
   ShowWidgetWithAnimateFadeIn();
 

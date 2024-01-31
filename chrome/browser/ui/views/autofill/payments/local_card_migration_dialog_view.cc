@@ -460,7 +460,7 @@ void LocalCardMigrationDialogView::OnCardCheckboxToggled() {
 
 // TODO(crbug.com/913571): Figure out a way to avoid two consecutive layouts.
 void LocalCardMigrationDialogView::UpdateLayout() {
-  Layout();
+  DeprecatedLayoutImmediately();
   // Since the dialog does not have anchor view or arrow, cannot use
   // SizeToContents() for now. TODO(crbug.com/867194): Try to fix the
   // BubbleDialogDelegateView::GetBubbleBounds() when there is no anchor

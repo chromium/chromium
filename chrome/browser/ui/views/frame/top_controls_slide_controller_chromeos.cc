@@ -827,7 +827,7 @@ void TopControlsSlideControllerChromeOS::OnEndSliding() {
     // This can happen when setting the shown ratio directly from one terminal
     // value to the opposite. The height of the root view doesn't change, but
     // the browser view must be re-laid out.
-    browser_view_->Layout();
+    browser_view_->DeprecatedLayoutImmediately();
   }
 
   // If the top controls are fully hidden, then the top container is laid out

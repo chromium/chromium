@@ -475,7 +475,7 @@ void PartialTranslateBubbleView::UpdateChildVisibilities() {
 
   // BoxLayout only considers visible children, so ensure any newly visible
   // child views are positioned correctly.
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateEmptyPane() {
@@ -1093,7 +1093,7 @@ void PartialTranslateBubbleView::UpdateAdvancedView() {
         changed ? IDS_TRANSLATE_BUBBLE_ACCEPT : IDS_DONE));
     advanced_reset_button_target_->SetEnabled(changed);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void PartialTranslateBubbleView::UpdateInsets(

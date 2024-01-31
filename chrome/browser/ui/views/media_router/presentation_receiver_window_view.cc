@@ -423,7 +423,7 @@ void PresentationReceiverWindowView::OnFullscreenChanged() {
     exclusive_access_bubble_.reset();
   location_bar_view_->SetVisible(!fullscreen);
   if (fullscreen == (location_bar_view_->height() > 0))
-    Layout();
+    DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(PresentationReceiverWindowView)

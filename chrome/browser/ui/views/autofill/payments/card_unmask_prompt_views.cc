@@ -84,7 +84,7 @@ void CardUnmaskPromptViews::DisableAndWaitForVerification() {
   progress_throbber_->Start();
   UpdateButtons();
   DialogModelChanged();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void CardUnmaskPromptViews::GotVerificationResult(
@@ -146,7 +146,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       error_label->SetMultiLine(true);
 
       // Re-layout to correctly format the views on the overlay.
-      overlay_->Layout();
+      overlay_->DeprecatedLayoutImmediately();
 
       // If it is a virtual card retrieval failure, we will need to update the
       // window title.
@@ -159,7 +159,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
   // Since we may have affected the layout of the button row, we retrigger a
   // layout of the whole dialog (contents and button row).
   InvalidateLayout();
-  parent()->Layout();
+  parent()->DeprecatedLayoutImmediately();
 }
 
 void CardUnmaskPromptViews::SetRetriableErrorMessage(
@@ -177,7 +177,7 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
                          ->GetWebContentsModalDialogHost());
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void CardUnmaskPromptViews::SetInputsEnabled(bool enabled) {

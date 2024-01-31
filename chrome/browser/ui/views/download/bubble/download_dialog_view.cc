@@ -114,7 +114,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
     table_layout->SetChildViewIgnoredByLayout(label(), true);
     table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
 
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 };
 

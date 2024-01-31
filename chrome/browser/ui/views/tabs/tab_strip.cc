@@ -1929,7 +1929,7 @@ void TabStrip::Layout() {
     // visibility). See https://crbug.com/1370459.
     // TODO(crbug.com/1371301): TabContainer should observe available width
     // changes and invalidate its layout when needed.
-    tab_container_->Layout();
+    tab_container_->DeprecatedLayoutImmediately();
   }
   drag_context_->SetBoundsRect(GetLocalBounds());
 }

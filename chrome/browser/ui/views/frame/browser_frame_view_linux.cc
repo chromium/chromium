@@ -70,7 +70,7 @@ void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
     // a relayout of the tabstrip.  Do a full relayout to handle the
     // frame buttons as well as open tabs.
     views::View* root_view = widget->GetRootView();
-    root_view->Layout();
+    root_view->DeprecatedLayoutImmediately();
     root_view->SchedulePaint();
   }
 }

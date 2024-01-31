@@ -79,7 +79,7 @@ void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
             gfx::ImageSkia::CreateFromBitmap(icon, device_scale_factor)));
     button_->SizeToPreferredSize();
     if (button_->parent())
-      button_->parent()->Layout();
+      button_->parent()->DeprecatedLayoutImmediately();
     if (!callback.is_null())
       std::move(callback).Run();
   }

@@ -193,7 +193,7 @@ void MediaGalleriesDialogViews::InitChildViews() {
 
 void MediaGalleriesDialogViews::UpdateGalleries() {
   InitChildViews();
-  contents_->Layout();
+  contents_->DeprecatedLayoutImmediately();
 
   if (ControllerHasWebContents())
     DialogModelChanged();

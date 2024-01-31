@@ -281,7 +281,7 @@ void WebUILoginView::Layout() {
 }
 
 void WebUILoginView::ChildPreferredSizeChanged(View* child) {
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 

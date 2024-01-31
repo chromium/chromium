@@ -554,7 +554,7 @@ void BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged(
     views::View* child) {
   if (browser_view()->initialized()) {
     InvalidateLayout();
-    frame()->GetRootView()->Layout();
+    frame()->GetRootView()->DeprecatedLayoutImmediately();
   }
 }
 
@@ -682,7 +682,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   if (frame()->client_view())
     frame()->client_view()->InvalidateLayout();
   if (frame()->GetRootView())
-    frame()->GetRootView()->Layout();
+    frame()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
@@ -798,7 +798,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   auto* container = browser_view()->top_container();
   container->AddChildViewAt(caption_button_container_.get(), 0);
 
-  container->Layout();
+  container->DeprecatedLayoutImmediately();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In Lacros, when entering in immersive fullscreen, it is possible
@@ -816,7 +816,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
   ResetWindowControls();
   AddChildViewAt(caption_button_container_.get(), 0);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveFullscreenExited() {
@@ -1024,12 +1024,12 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     if (needs_layout && root_view) {
       // Adding a child does not invalidate the layout.
       InvalidateLayout();
-      root_view->Layout();
+      root_view->DeprecatedLayoutImmediately();
     }
   } else if (profile_indicator_icon_) {
     RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
     if (root_view)
-      root_view->Layout();
+      root_view->DeprecatedLayoutImmediately();
   }
 #endif
 }
