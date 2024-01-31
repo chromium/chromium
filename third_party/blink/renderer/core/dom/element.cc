@@ -233,7 +233,7 @@
 
 namespace blink {
 
-enum class ClassStringContent { kWhiteSpaceOnly, kHasClasses };
+enum class ClassStringContent { kEmpty, kWhiteSpaceOnly, kHasClasses };
 
 namespace {
 
@@ -2615,7 +2615,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         params.reason != AttributeModificationReason::kByMoveToNewDocument) {
       return;
     }
-    ClassAttributeChanged(params.new_value, params.reason);
+    ClassAttributeChanged(params.new_value);
     UpdateClassList(params.old_value, params.new_value);
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
@@ -2701,68 +2701,55 @@ static inline ClassStringContent ClassStringHasClassName(
     const CharacterType* characters,
     unsigned length) {
   DCHECK_GT(length, 0u);
-  for (unsigned i = 0; i < length; ++i) {
+
+  unsigned i = 0;
+  do {
     if (IsNotHTMLSpace<CharacterType>(characters[i])) {
-      return ClassStringContent::kHasClasses;
+      break;
     }
+    ++i;
+  } while (i < length);
+
+  if (i == length && length >= 1) {
+    return ClassStringContent::kWhiteSpaceOnly;
   }
-  return ClassStringContent::kWhiteSpaceOnly;
+
+  return ClassStringContent::kHasClasses;
 }
 
 static inline ClassStringContent ClassStringHasClassName(
     const AtomicString& new_class_string) {
   unsigned length = new_class_string.length();
-  DCHECK(length);
+
+  if (!length) {
+    return ClassStringContent::kEmpty;
+  }
+
   if (new_class_string.Is8Bit()) {
     return ClassStringHasClassName(new_class_string.Characters8(), length);
   }
   return ClassStringHasClassName(new_class_string.Characters16(), length);
 }
 
-void Element::ClassAttributeChanged(const AtomicString& new_class_string,
-                                    AttributeModificationReason reason) {
+void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   DCHECK(HasElementData());
+  ClassStringContent class_string_content_type =
+      ClassStringHasClassName(new_class_string);
   const bool should_fold_case = GetDocument().InQuirksMode();
-
-  if (reason == AttributeModificationReason::kByParser &&
-      GetElementData()->ClassNames().MatchesSingleString(
-          should_fold_case ? new_class_string.LowerASCII()
-                           : new_class_string) &&
-      !InActiveDocument()) {
-    // The parser changed the value and ElementData is already up to date,
-    // in this case there is nothing to do. When parsing, the same ElementData
-    // may be shared between Elements, which is why it may already be up to
-    // date.
-    return;
-  }
-  const SpaceSplitString old_classes = GetElementData()->ClassNames();
-  if (UNLIKELY(new_class_string.empty())) {
-    GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
-    GetElementData()->ClearClass();
-    return;
-  }
-  // See if the value is cached. If it is, we don't need to determine the
-  // ClassStringContent.
-  if (GetElementData()->SetClassFromCachedString(
-          should_fold_case ? new_class_string.LowerASCII()
-                           : new_class_string)) {
+  if (class_string_content_type == ClassStringContent::kHasClasses) {
+    const SpaceSplitString old_classes = GetElementData()->ClassNames();
+    GetElementData()->SetClass(new_class_string, should_fold_case);
     const SpaceSplitString& new_classes = GetElementData()->ClassNames();
     GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
                                                           new_classes, *this);
-    return;
-  }
-  switch (ClassStringHasClassName(new_class_string)) {
-    case ClassStringContent::kHasClasses: {
+  } else {
+    const SpaceSplitString& old_classes = GetElementData()->ClassNames();
+    GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
+    if (class_string_content_type == ClassStringContent::kWhiteSpaceOnly) {
       GetElementData()->SetClass(new_class_string, should_fold_case);
-      const SpaceSplitString& new_classes = GetElementData()->ClassNames();
-      GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
-                                                            new_classes, *this);
-      break;
+    } else {
+      GetElementData()->ClearClass();
     }
-    case ClassStringContent::kWhiteSpaceOnly:
-      GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
-      GetElementData()->SetClass(new_class_string, should_fold_case);
-      break;
   }
 }
 

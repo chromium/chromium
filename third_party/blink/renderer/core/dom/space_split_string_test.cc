@@ -55,32 +55,4 @@ TEST(SpaceSplitStringTest, SerializeToString) {
   tokens.Add(AtomicString("foo"));
   EXPECT_EQ("bar foo", tokens.SerializeToString());
 }
-
-TEST(SpaceSplitStringTest, MatchesSingleString) {
-  test::TaskEnvironment task_environment;
-  SpaceSplitString value;
-  EXPECT_FALSE(value.MatchesSingleString(AtomicString("ab")));
-
-  value.Set(AtomicString("ab"));
-  EXPECT_TRUE(value.MatchesSingleString(AtomicString("ab")));
-  EXPECT_FALSE(value.MatchesSingleString(AtomicString("cd")));
-
-  value.Set(AtomicString("ab cd"));
-  EXPECT_FALSE(value.MatchesSingleString(AtomicString("ab")));
-  EXPECT_FALSE(value.MatchesSingleString(AtomicString("cd")));
-}
-
-TEST(SpaceSplitStringTest, SetFromCachedString) {
-  test::TaskEnvironment task_environment;
-  SpaceSplitString value;
-  EXPECT_FALSE(value.SetFromCachedString(AtomicString("ab")));
-  value.Set(AtomicString("ab"));
-  SpaceSplitString value2;
-  EXPECT_TRUE(value2.SetFromCachedString(AtomicString("ab")));
-  EXPECT_TRUE(value2.MatchesSingleString(AtomicString("ab")));
-
-  value.Clear();
-  value2.Clear();
-  EXPECT_FALSE(value.SetFromCachedString(AtomicString("ab")));
-}
 }

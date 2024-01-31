@@ -1420,8 +1420,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ParseAttribute (called via setAttribute()) and SvgAttributeChanged (called
   // when element.className.baseVal is set or when the 'class' attribute is
   // animated by SMIL).
-  void ClassAttributeChanged(const AtomicString& new_class_string,
-                             AttributeModificationReason reason);
+  void ClassAttributeChanged(const AtomicString& new_class_string);
   void UpdateClassList(const AtomicString& old_class_string,
                        const AtomicString& new_class_string);
 

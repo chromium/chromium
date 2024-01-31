@@ -36,20 +36,12 @@ class CORE_EXPORT SpaceSplitString {
   SpaceSplitString() = default;
   explicit SpaceSplitString(const AtomicString& string) { Set(string); }
 
-  static bool IsCached(const AtomicString& string);
-
   bool operator!=(const SpaceSplitString& other) const {
     return data_ != other.data_;
   }
 
   void Set(const AtomicString&);
   void Clear() { data_ = nullptr; }
-
-  // Attempts to set the value based on cached values. Returns true if the
-  // value was cached and the SpaceSplitString was changed. Returns false if
-  // the value was not cached. If the value is not found in the cache, then
-  // the SpaceSplitString is unchanged.
-  bool SetFromCachedString(const AtomicString&);
 
   bool Contains(const AtomicString& string) const {
     return data_ && data_->Contains(string);
@@ -61,10 +53,6 @@ class CORE_EXPORT SpaceSplitString {
   bool Remove(const AtomicString&);
   void Remove(wtf_size_t index);
   void ReplaceAt(wtf_size_t index, const AtomicString&);
-
-  // Returns true if this SpaceSplitString contains a single string whose value
-  // is `value`.
-  bool MatchesSingleString(const AtomicString& value) const;
 
   // https://dom.spec.whatwg.org/#concept-ordered-set-serializer
   // The ordered set serializer takes a set and returns the concatenation of the
@@ -99,8 +87,6 @@ class CORE_EXPORT SpaceSplitString {
     wtf_size_t size() const { return vector_.size(); }
     const AtomicString& operator[](wtf_size_t i) const { return vector_[i]; }
     AtomicString& operator[](wtf_size_t i) { return vector_[i]; }
-
-    const AtomicString& key_string() const { return key_string_; }
 
    private:
     explicit Data(const AtomicString&);
