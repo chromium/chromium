@@ -214,6 +214,54 @@ TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {
   EXPECT_FALSE(search_engine_choice_dialog_service);
 }
 
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       SearchEngineChoicePropagatesFromParentProfileToIncognito) {
+  SearchEngineChoiceDialogService* parent_profile_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(parent_profile_choice_service);
+
+  int prepopulate_id =
+      parent_profile_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+  parent_profile_choice_service->NotifyChoiceMade(
+      prepopulate_id, SearchEngineChoiceDialogService::EntryPoint::kDialog);
+
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(profile())
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(incognito_profile)
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       SearchEngineChoicePropagatesFromIncognitoToParentProfile) {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  SearchEngineChoiceDialogService* incognito_profile_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(incognito_profile);
+  ASSERT_TRUE(incognito_profile_choice_service);
+
+  int prepopulate_id = incognito_profile_choice_service->GetSearchEngines()
+                           .at(0)
+                           ->prepopulate_id();
+  incognito_profile_choice_service->NotifyChoiceMade(
+      prepopulate_id, SearchEngineChoiceDialogService::EntryPoint::kDialog);
+
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(incognito_profile)
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(profile())
+                ->GetDefaultSearchProvider()
+                ->prepopulate_id(),
+            prepopulate_id);
+}
+
 #else
 TEST_F(SearchEngineChoiceDialogServiceTest,
        ServiceNotInitializedInChromeForTesting) {

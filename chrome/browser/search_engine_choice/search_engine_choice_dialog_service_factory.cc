@@ -89,7 +89,7 @@ SearchEngineChoiceDialogServiceFactory::SearchEngineChoiceDialogServiceFactory()
     : ProfileKeyedServiceFactory(
           "SearchEngineChoiceDialogServiceFactory",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithAshInternals(ProfileSelection::kNone)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
