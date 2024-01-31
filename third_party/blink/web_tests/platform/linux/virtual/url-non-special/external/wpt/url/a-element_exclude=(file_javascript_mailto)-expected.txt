@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> against <about:blank>
@@ -36,12 +36,6 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <notspecial://host/?'> against <about:blank>
   assert_equals: href expected "notspecial://host/?'" but got "notspecial://host/?%27"
-[FAIL] Parsing: <../i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: </i> against <sc:///pa/pa>
-  assert_equals: href expected "sc:///i" but got "sc:///pa/i"
-[FAIL] Parsing: <x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1/x" but got "x"
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
   assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"
 [FAIL] Parsing: <http://a b/> against <about:blank>
@@ -50,10 +44,6 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
-[FAIL] Parsing: <#x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1#x" but got "#x"
-[FAIL] Parsing: <?x> against <sc://ñ>
-  assert_equals: href expected "sc://%C3%B1?x" but got "?x"
 [FAIL] Parsing: <///> against <sc://x/>
   assert_equals: href expected "sc:///" but got "///"
 [FAIL] Parsing: <////> against <sc://x/>
@@ -81,15 +71,9 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <a/..//path> against <non-spec:/p>
   assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
 [FAIL] Parsing: <> against <non-spec:/..//p>
-  assert_equals: href expected "non-spec:/.//p" but got ""
+  assert_equals: href expected "non-spec:/.//p" but got "non-spec://p"
 [FAIL] Parsing: <path> against <non-spec:/..//p>
-  assert_equals: href expected "non-spec:/.//path" but got "path"
-[FAIL] Parsing: <../path> against <non-spec:/.//p>
-  assert_equals: href expected "non-spec:/path" but got "../path"
-[FAIL] Parsing: <test-a-colon-slash-slash.html> against <a://>
-  assert_equals: href expected "a:///test-a-colon-slash-slash.html" but got "test-a-colon-slash-slash.html"
-[FAIL] Parsing: <test-a-colon-slash-slash-b.html> against <a://b>
-  assert_equals: href expected "a://b/test-a-colon-slash-slash-b.html" but got "test-a-colon-slash-slash-b.html"
+  assert_equals: href expected "non-spec:/.//path" but got "non-spec://path"
 [FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
