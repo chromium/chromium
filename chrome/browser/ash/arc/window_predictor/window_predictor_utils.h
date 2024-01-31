@@ -43,6 +43,11 @@ enum class WindowPredictorUseCase {
 bool CanLaunchGhostWindowByRestoreData(
     const app_restore::AppRestoreData& restore_data);
 
+// Is the google series package name. Just cover some common cases, not fully
+// covered.
+// TODO(b/320684570): Remove this workaround.
+bool IsGoogleSeriesPackage(const std::string& package_name);
+
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_WINDOW_PREDICTOR_UTILS_H_
