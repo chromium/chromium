@@ -188,7 +188,8 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public void loadUrl(LoadUrlParams params) {
+    public NavigationHandle loadUrl(LoadUrlParams params) {
+        NavigationHandle navigationHandle = null;
         if (mNativeNavigationControllerAndroid != 0) {
             String headers =
                     params.getExtraHeaders() == null
@@ -201,7 +202,7 @@ import org.chromium.url.Origin;
             RecordHistogram.recordTimesHistogram(
                     "Android.Omnibox.InputToNavigationControllerStart",
                     SystemClock.uptimeMillis() - inputStart);
-            NavigationHandle navigationHandle =
+            navigationHandle =
                     NavigationControllerImplJni.get()
                             .loadUrl(
                                     mNativeNavigationControllerAndroid,
@@ -237,6 +238,7 @@ import org.chromium.url.Origin;
                 navigationHandle.setUserDataHost(params.takeNavigationHandleUserData());
             }
         }
+        return navigationHandle;
     }
 
     @Override
