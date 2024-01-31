@@ -1071,28 +1071,6 @@ TEST_P(MLGraphTest, Conv2dTest) {
         .Test(*this, scope, builder, options);
   }
   {
-    // Test conv2d operator for explicit padding are not same as the calculated
-    // padding with kSameUpper, input, filter size, stride and dilation that
-    // are used by CalculateConv2dPadding function.
-    auto* options = MLConv2dOptions::Create();
-    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
-    // The paddings are {1, 1, 1, 1} with calculating by CalculateConv2dPadding
-    // function.
-    options->setPadding({2, 2, 1, 1});
-    options->setStrides({2, 2});
-    Conv2dTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 7, 5, 1},
-                  .values = Vector<float>(35, 1.0)},
-        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = Vector<float>(9, 1.0)},
-        .expected = {2.0, 3.0, 2.0, 6.0, 9.0, 6.0, 6.0, 9.0, 6.0, 6.0, 9.0, 6.0,
-                     2.0, 3.0, 2.0}}
-        .Test(*this, scope, builder, options);
-  }
-  {
     // Test fused conv2d operator for nhwc input layout and ohwi filter
     // layout, fusing with bias operand and relu activation.
     auto* options = MLConv2dOptions::Create();
@@ -1609,29 +1587,6 @@ TEST_P(MLGraphTest, Pool2dTest) {
         .expected = {11.0, 12.0, 15.0, 16.0}}
         .Test(*this, scope, options);
   }
-  {
-    // Test maxPool2d operator for explicit padding are not same as the
-    // calculated padding with kSameUpper, input size, window dimensions, stride
-    // and dilation that are used by CalculateConv2dPadding function.
-    auto* options = MLPool2dOptions::Create();
-    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    // The paddings are {1, 1, 1, 1} with calculating by CalculateConv2dPadding
-    // function.
-    options->setPadding({2, 2, 1, 1});
-    options->setWindowDimensions({3, 3});
-    options->setStrides({2, 2});
-    Pool2dTester<float>{
-        .kind = Pool2dKind::kMax,
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 7, 5, 1},
-                  .values = {2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0, 2.0, 6.0,
-                             9.0, 2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0, 2.0,
-                             6.0, 9.0, 2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0,
-                             2.0, 6.0, 9.0, 2.0, 3.0, 2.0, 6.0, 9.0}},
-        .expected = {3.0, 6.0, 9.0, 3.0, 6.0, 9.0, 3.0, 6.0, 9.0, 3.0, 6.0, 9.0,
-                     3.0, 6.0, 9.0}}
-        .Test(*this, scope, options);
-  }
 }
 
 // Because reshape Node runs copy operator, ReshapeTester just checks the
@@ -2119,7 +2074,8 @@ struct PadTester {
 };
 
 TEST_P(MLGraphTest, PadTest) {
-  MLGraphV8TestingScope scope;
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -2148,34 +2104,6 @@ TEST_P(MLGraphTest, PadTest) {
         .ending_padding = {1, 2},
         .expected = {8., 8., 8., 8., 8., 8., 8., 8., 8., 1., 2., 3., 8., 8.,
                      8., 8., 4., 5., 6., 8., 8., 8., 8., 8., 8., 8., 8., 8.}}
-        .Test(*this, scope, builder, options);
-  }
-  // Reflection and Symmetric padding mode are not implemented on XNNPACK.
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kXnnpack);
-  {
-    // Test pad with mode = "reflection".
-    auto* options = MLPadOptions::Create();
-    options->setMode("reflection");
-    PadTester<float>{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                               .dimensions = {1, 1, 2, 3},
-                               .values = {0, 1, 2, 3, 4, 5}},
-                     .beginning_padding = {0, 0, 1, 2},
-                     .ending_padding = {0, 0, 1, 2},
-                     .expected = {5, 4, 3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 1, 0,
-                                  5, 4, 3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 1, 0}}
-        .Test(*this, scope, builder, options);
-  }
-  {
-    // Test pad with mode = "symmetric".
-    auto* options = MLPadOptions::Create();
-    options->setMode("symmetric");
-    PadTester<float>{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                               .dimensions = {1, 2, 3, 1},
-                               .values = {0, 1, 2, 3, 4, 5}},
-                     .beginning_padding = {0, 1, 2, 0},
-                     .ending_padding = {0, 1, 2, 0},
-                     .expected = {1, 0, 0, 1, 2, 2, 1, 1, 0, 0, 1, 2, 2, 1,
-                                  4, 3, 3, 4, 5, 5, 4, 4, 3, 3, 4, 5, 5, 4}}
         .Test(*this, scope, builder, options);
   }
 }

@@ -128,23 +128,12 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_MINIMUM(),
                /* min_version = */ 1,
                /* max_version = */ 4);
-    AddBuiltin(tflite::BuiltinOperator_MIRROR_PAD,
-               tflite::ops::builtin::Register_MIRROR_PAD(),
-               /* min_version = */ 1,
-               /* max_version = */ 2);
     AddBuiltin(tflite::BuiltinOperator_MUL,
                tflite::ops::builtin::Register_MUL(),
                /* min_version = */ 1,
                /* max_version = */ 4);
     AddBuiltin(tflite::BuiltinOperator_NEG,
                tflite::ops::builtin::Register_NEG());
-    AddBuiltin(tflite::BuiltinOperator_PAD,
-               tflite::ops::builtin::Register_PAD(),
-               /* min_version = */ 1,
-               /* max_version = */ 2);
-    AddBuiltin(tflite::BuiltinOperator_PADV2,
-               tflite::ops::builtin::Register_PADV2(), /* min_version = */ 1,
-               /* max_version = */ 2);
     AddBuiltin(tflite::BuiltinOperator_POW,
                tflite::ops::builtin::Register_POW());
     AddBuiltin(tflite::BuiltinOperator_RELU,
@@ -528,56 +517,6 @@ TEST_P(MLGraphTestTfLite, EluTest) {
         .error_message =
             "Setting a custom alpha is not supported in tflite schema."}
         .Test(*this, scope, options);
-  }
-}
-
-template <typename T>
-struct Conv2dTester {
-  OperandInfo<T> input;
-  OperandInfo<T> filter;
-  String error_message;
-
-  void Test(MLGraphTestTfLite& helper,
-            V8TestingScope& scope,
-            MLGraphBuilder* builder,
-            MLConv2dOptions* options = MLConv2dOptions::Create()) {
-    // Build the graph.
-    auto* input_operand =
-        BuildInput(builder, "input", input.dimensions, input.data_type,
-                   scope.GetExceptionState());
-    auto* filter_operand =
-        BuildConstant(builder, filter.dimensions, filter.data_type,
-                      filter.values, scope.GetExceptionState());
-    auto* output_operand =
-        BuildConv2d(scope, builder, input_operand, filter_operand, options);
-    auto [graph, build_exception] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::IsNull());
-    EXPECT_EQ(build_exception->message(), error_message);
-  }
-};
-
-TEST_P(MLGraphTestTfLite, Conv2dTest) {
-  MLGraphV8TestingScope scope;
-  auto* builder =
-      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
-                           scope.GetExceptionState());
-  {
-    // Test conv2d operator for overflow padding.
-    auto* options = MLConv2dOptions::Create();
-    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
-    options->setPadding({1294967295, 1294967295, 1, 1});
-    options->setStrides({2, 2});
-    Conv2dTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 7, 5, 1},
-                  .values = Vector<float>(35, 1.0)},
-        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = Vector<float>(9, 1.0)},
-        .error_message = "The input dimension or padding is too large."}
-        .Test(*this, scope, builder, options);
   }
 }
 
