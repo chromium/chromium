@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -59,7 +60,21 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private boolean onToggleChange(Preference preference, Object newValue) {
         var topicPreference = (TopicSwitchPreference) (preference);
         PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), (boolean) newValue);
+        // When a topic is unblocked, display the snackbar if it's not in active topics.
+        if ((boolean) newValue) maybeDisplaySnackbar(topicPreference.getTopic());
         return true;
+    }
+
+    private void maybeDisplaySnackbar(Topic topic) {
+        var currentTopics = new HashSet<Topic>(PrivacySandboxBridge.getCurrentTopTopics());
+        if (currentTopics.contains(topic)) return;
+        showSnackbar(
+                R.string.settings_unblock_topic_toast_body,
+                null,
+                Snackbar.TYPE_ACTION,
+                Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST,
+                R.string.settings_unblock_topic_toast_button_text,
+                /* multiLine= */ true);
     }
 
     private void onLearnMoreClicked(View view) {

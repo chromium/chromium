@@ -116,8 +116,22 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
             SnackbarManager.SnackbarController controller,
             int type,
             int identifier) {
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(getResources().getString(stringResId), controller, type, identifier));
+        showSnackbar(stringResId, controller, type, identifier, 0, false);
+    }
+
+    protected void showSnackbar(
+            int stringResId,
+            SnackbarManager.SnackbarController controller,
+            int type,
+            int identifier,
+            int actionStringResId,
+            boolean multiLine) {
+        var snackbar =
+                Snackbar.make(getResources().getString(stringResId), controller, type, identifier);
+        if (actionStringResId != 0)
+            snackbar.setAction(getResources().getString(actionStringResId), null);
+        if (multiLine) snackbar.setSingleLine(false);
+        mSnackbarManager.showSnackbar(snackbar);
     }
 
     protected void parseAndRecordReferrer() {
