@@ -40,17 +40,9 @@ MetadataMap GetHeatmapModelMetadata() {
 }
 }  // namespace
 
-HeatmapPalmDetector::HeatmapPalmDetector()
-    : ml_agent_(std::make_unique<HeatmapMlAgent>()), client_(this) {}
+HeatmapPalmDetector::HeatmapPalmDetector() : client_(this) {}
 
 HeatmapPalmDetector::~HeatmapPalmDetector() = default;
-
-void HeatmapPalmDetector::DetectPalm(const std::vector<double>& data,
-                                     DetectionDoneCallback callback) {
-  ml_agent_->Execute(
-      data, base::BindOnce(&HeatmapPalmDetector::OnExecuteDone,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
-}
 
 void HeatmapPalmDetector::Start(DeviceId device, std::string_view path) {
   const MetadataMap model_metadata = GetHeatmapModelMetadata();
@@ -92,12 +84,6 @@ void HeatmapPalmDetector::OnLoadHeatmapPalmRejection(
   if (result == LoadHeatmapPalmRejectionResult::OK) {
     is_ready_ = true;
   }
-}
-
-void HeatmapPalmDetector::OnExecuteDone(DetectionDoneCallback callback,
-                                        std::optional<double> result) {
-  std::move(callback).Run(result.value_or(0) > 0 ? DetectionResult::kPalm
-                                                 : DetectionResult::kNoPalm);
 }
 
 void HeatmapPalmDetector::OnHeatmapProcessedEvent(

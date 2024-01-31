@@ -14,11 +14,6 @@
 namespace ash {
 namespace {
 
-using DetectionResult = ui::PalmDetector::DetectionResult;
-
-constexpr double kExpectedResult = 0.968;
-constexpr int kExpectedDataLength = 3648;
-
 class HeatmapPalmDetectorTest : public testing::Test {
  public:
   void SetUp() override {
@@ -26,8 +21,6 @@ class HeatmapPalmDetectorTest : public testing::Test {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
-    fake_service_connection_.SetOutputValue(
-        std::vector<int64_t>{1L, 1L}, std::vector<double>{kExpectedResult});
   }
 
   void TearDown() override { chromeos::MachineLearningClient::Shutdown(); }
@@ -37,40 +30,6 @@ class HeatmapPalmDetectorTest : public testing::Test {
       fake_service_connection_;
   content::BrowserTaskEnvironment task_environment_;
 };
-
-TEST_F(HeatmapPalmDetectorTest, DetectsPalm) {
-  HeatmapPalmDetector detector;
-  std::vector<double> data(kExpectedDataLength, 0);
-
-  bool callback_done = false;
-  detector.DetectPalm(data,
-                      base::BindOnce(
-                          [](bool* callback_done, DetectionResult result) {
-                            EXPECT_EQ(result, DetectionResult::kPalm);
-                            *callback_done = true;
-                          },
-                          &callback_done));
-
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_done);
-}
-
-TEST_F(HeatmapPalmDetectorTest, ReturnsNoPalmOnInvalidData) {
-  HeatmapPalmDetector detector;
-  std::vector<double> data;
-
-  bool callback_done = false;
-  detector.DetectPalm(data,
-                      base::BindOnce(
-                          [](bool* callback_done, DetectionResult result) {
-                            EXPECT_EQ(result, DetectionResult::kNoPalm);
-                            *callback_done = true;
-                          },
-                          &callback_done));
-
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_done);
-}
 
 TEST_F(HeatmapPalmDetectorTest, StartsService) {
   HeatmapPalmDetector detector;

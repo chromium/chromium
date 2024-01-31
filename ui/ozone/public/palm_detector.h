@@ -27,11 +27,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PalmDetector {
   PalmDetector& operator=(const PalmDetector&) = delete;
   virtual ~PalmDetector();
 
-  // Detects if a frame of heatmap data, provided by `data`, contains a palm.
-  // The `callback` will be supplied with the detection result asynchronously.
-  virtual void DetectPalm(const std::vector<double>& data,
-                          DetectionDoneCallback callback) = 0;
-
   // Starts the palm detection service based on the device id and path.
   virtual void Start(DeviceId device, std::string_view path) = 0;
 
