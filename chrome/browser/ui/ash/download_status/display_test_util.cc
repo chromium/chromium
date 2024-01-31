@@ -50,7 +50,7 @@ void MarkDownloadStatusCompleted(crosapi::mojom::DownloadStatus& status) {
   CHECK(progress_ptr);
 
   progress_ptr->received_bytes = progress_ptr->total_bytes = base::ranges::max(
-      {progress_ptr->received_bytes, progress_ptr->total_bytes, 0L});
+      {progress_ptr->received_bytes, progress_ptr->total_bytes, int64_t{0}});
   progress_ptr->visible = false;
 
   status.state = crosapi::mojom::DownloadState::kComplete;
