@@ -227,7 +227,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->audio_device = blink::MediaStreamDevice(
-          request.audio_type, request.requested_audio_device_id,
+          request.audio_type,
+          request.requested_audio_device_ids.empty()
+              ? ""
+              : request.requested_audio_device_ids.front(),
           /*name=*/"");
     }
     result_pos++;
@@ -237,7 +240,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->video_device = blink::MediaStreamDevice(
-          request.video_type, request.requested_video_device_id,
+          request.video_type,
+          request.requested_video_device_ids.empty()
+              ? ""
+              : request.requested_video_device_ids.front(),
           /*name=*/"");
     }
   }

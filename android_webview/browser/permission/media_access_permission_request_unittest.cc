@@ -66,7 +66,7 @@ class MediaAccessPermissionRequestTest : public testing::Test {
     GURL origin("https://www.google.com");
     content::MediaStreamRequest request(
         0, 0, 0, url::Origin::Create(origin), false,
-        blink::MEDIA_GENERATE_STREAM, audio_id, video_id,
+        blink::MEDIA_GENERATE_STREAM, {audio_id}, {video_id},
         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
         false /* disable_local_echo */,

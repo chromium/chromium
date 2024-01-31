@@ -75,8 +75,9 @@ struct BLINK_COMMON_EXPORT
     return controls.stream_type;
   }
 
-  static const std::string& device_id(const blink::TrackControls& controls) {
-    return controls.device_id;
+  static const std::vector<std::string>& device_ids(
+      const blink::TrackControls& controls) {
+    return controls.device_ids;
   }
 
   static bool Read(blink::mojom::TrackControlsDataView input,

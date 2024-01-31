@@ -698,7 +698,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithDepthVideo) {
   // video stream using GenerateStreamAndWaitForResult, we use
   // controls.video.source_id to specify that the stream is depth video.
   // See also MediaStreamManager::GenerateStream and other tests here.
-  controls.video.device_id = source_id;
+  controls.video.device_ids = {source_id};
 
   blink::mojom::StreamDevicesSet expectation;
   expectation.stream_devices.emplace_back(blink::mojom::StreamDevices::New(
@@ -976,7 +976,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
         GetHMACForRawMediaDeviceID(salt_and_origin_, audio_it->unique_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
-    controls.audio.device_id = source_id;
+    controls.audio.device_ids = {source_id};
 
     SetupFakeUI(true);
     GenerateStreamAndWaitForResult(kPageRequestId, controls, expectation);
@@ -988,7 +988,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
         GetHMACForRawMediaDeviceID(salt_and_origin_, device_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
-    controls.video.device_id = source_id;
+    controls.video.device_ids = {source_id};
 
     GenerateStreamAndWaitForResult(kPageRequestId, controls, expectation);
     EXPECT_EQ(video_device(/*stream_index=*/0u).value().id, source_id);
@@ -998,7 +998,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
 // Test that generating a stream with an invalid video source id fail.
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithInvalidVideoSourceId) {
   blink::StreamControls controls(true, true);
-  controls.video.device_id = "invalid source id";
+  controls.video.device_ids = {"invalid source id"};
 
   GenerateStreamAndWaitForFailure(
       kPageRequestId, controls,
@@ -1008,7 +1008,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithInvalidVideoSourceId) {
 // Test that generating a stream with an invalid audio source id fail.
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithInvalidAudioSourceId) {
   blink::StreamControls controls(true, true);
-  controls.audio.device_id = "invalid source id";
+  controls.audio.device_ids = {"invalid source id"};
 
   GenerateStreamAndWaitForFailure(
       kPageRequestId, controls,

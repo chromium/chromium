@@ -26,17 +26,26 @@ namespace extensions {
 
 namespace {
 
+// Return the first device from `requested_device_ids` that's found in the id
+// list. If none of the ids are found then return the first device.
 const MediaStreamDevice* GetRequestedDeviceOrDefault(
     const MediaStreamDevices& devices,
-    const std::string& requested_device_id) {
-  if (!requested_device_id.empty()) {
+    const std::vector<std::string>& requested_device_ids) {
+  for (const auto& requested_device_id : requested_device_ids) {
+    if (requested_device_id.empty()) {
+      continue;
+    }
+
     auto it = base::ranges::find(devices, requested_device_id,
                                  &MediaStreamDevice::id);
-    return it != devices.end() ? &(*it) : nullptr;
+    if (it != devices.end()) {
+      return &(*it);
+    }
   }
 
-  if (!devices.empty())
+  if (!devices.empty()) {
     return &devices[0];
+  }
 
   return nullptr;
 }
@@ -67,7 +76,7 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     VerifyMediaAccessPermission(request.audio_type, extension);
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices(),
-        request.requested_audio_device_id);
+        request.requested_audio_device_ids);
     if (device)
       devices.audio_device = *device;
   }
@@ -77,7 +86,7 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     VerifyMediaAccessPermission(request.video_type, extension);
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices(),
-        request.requested_video_device_id);
+        request.requested_video_device_ids);
     if (device)
       devices.video_device = *device;
   }

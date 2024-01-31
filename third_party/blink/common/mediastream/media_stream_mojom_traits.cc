@@ -49,8 +49,9 @@ bool StructTraits<blink::mojom::TrackControlsDataView, blink::TrackControls>::
     Read(blink::mojom::TrackControlsDataView input, blink::TrackControls* out) {
   if (!input.ReadStreamType(&out->stream_type))
     return false;
-  if (!input.ReadDeviceId(&out->device_id))
+  if (!input.ReadDeviceIds(&out->device_ids)) {
     return false;
+  }
   return true;
 }
 

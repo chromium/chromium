@@ -155,7 +155,8 @@ void DisplayMediaAccessHandler::HandleRequest(
 #endif  // BUILDFLAG(IS_MAC)
 
   if (request.request_type == blink::MEDIA_DEVICE_UPDATE) {
-    DCHECK(!request.requested_video_device_id.empty());
+    CHECK(!request.requested_video_device_ids.empty());
+    CHECK(!request.requested_video_device_ids.front().empty());
     ProcessChangeSourceRequest(web_contents, request, std::move(callback));
     return;
   }
@@ -368,11 +369,11 @@ void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
     const content::MediaStreamRequest& request,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  DCHECK(!request.requested_video_device_id.empty());
+  DCHECK(!request.requested_video_device_ids.empty());
 
   content::WebContentsMediaCaptureId web_contents_id;
   if (!content::WebContentsMediaCaptureId::Parse(
-          request.requested_video_device_id, &web_contents_id)) {
+          request.requested_video_device_ids.front(), &web_contents_id)) {
     RejectRequest(web_contents,
                   blink::mojom::MediaStreamRequestResult::INVALID_STATE);
     return;

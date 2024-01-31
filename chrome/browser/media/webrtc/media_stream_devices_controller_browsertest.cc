@@ -178,8 +178,9 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
         GetWebContents()->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
-        url::Origin::Create(example_url()), false, request_type, audio_id,
-        video_id, audio_type, video_type,
+        url::Origin::Create(example_url()), false, request_type,
+        /*requested_audio_device_ids=*/{audio_id},
+        /*requested_video_device_ids=*/{video_id}, audio_type, video_type,
         /*disable_local_echo=*/false, request_pan_tilt_zoom_permission);
   }
 

@@ -34,7 +34,8 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
        strategy == blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM)) {
     stream_devices_.audio_device = MediaStreamDevice(
         controls.audio.stream_type,
-        controls.audio.device_id + session_id_.ToString(), "microphone");
+        controls.audio.device_ids.front() + session_id_.ToString(),
+        "microphone");
     stream_devices_.audio_device.value().set_session_id(session_id_);
     stream_devices_.audio_device.value().matched_output_device_id =
         "associated_output_device_id" + session_id_.ToString();
@@ -43,7 +44,8 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
   if (controls.video.requested()) {
     stream_devices_.video_device = MediaStreamDevice(
         controls.video.stream_type,
-        controls.video.device_id + session_id_.ToString(), "usb video camera");
+        controls.video.device_ids.front() + session_id_.ToString(),
+        "usb video camera");
     stream_devices_.video_device.value().video_facing =
         media::MEDIA_VIDEO_FACING_USER;
     stream_devices_.video_device.value().set_session_id(session_id_);

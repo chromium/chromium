@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
@@ -731,8 +732,8 @@ void UserMediaProcessor::SelectAudioSettings(
   }
   if (current_request_info_->stream_controls()->audio.stream_type !=
       MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
-    current_request_info_->stream_controls()->audio.device_id =
-        settings.device_id();
+    current_request_info_->stream_controls()->audio.device_ids = {
+        settings.device_id()};
     current_request_info_->stream_controls()->disable_local_echo =
         settings.disable_local_echo();
   }
@@ -904,8 +905,8 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
     GetUserMediaRequestFailed(result, failed_constraint_name);
     return;
   }
-  current_request_info_->stream_controls()->video.device_id =
-      settings.device_id();
+  current_request_info_->stream_controls()->video.device_ids = {
+      settings.device_id()};
   current_request_info_->SetVideoCaptureSettings(
       settings, false /* is_content_capture */);
 
@@ -948,8 +949,8 @@ void UserMediaProcessor::SelectVideoContentSettings() {
   if (stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
       stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB &&
       stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
-    current_request_info_->stream_controls()->video.device_id =
-        settings.device_id();
+    current_request_info_->stream_controls()->video.device_ids = {
+        settings.device_id()};
   }
 
   current_request_info_->SetVideoCaptureSettings(settings,
@@ -964,10 +965,14 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
   DCHECK(current_request_info_);
   SendLogMessage(base::StringPrintf(
       "GenerateStreamForCurrentRequestInfo({request_id=%d}, "
-      "{audio.device_id=%s}, {video.device_id=%s})",
+      "{audio.device_ids=%s}, {video.device_ids=%s})",
       current_request_info_->request_id(),
-      current_request_info_->stream_controls()->audio.device_id.c_str(),
-      current_request_info_->stream_controls()->video.device_id.c_str()));
+      base::JoinString(
+          current_request_info_->stream_controls()->audio.device_ids, ",")
+          .c_str(),
+      base::JoinString(
+          current_request_info_->stream_controls()->video.device_ids, ",")
+          .c_str()));
   current_request_info_->set_state(RequestInfo::State::kSentForGeneration);
 
   // If SessionId is set, this request is for a transferred MediaStreamTrack and
