@@ -37,6 +37,7 @@ using ::blink_testing::RecordedOpsAre;
 using ::blink_testing::RecordedOpsView;
 using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
+using ::cc::DrawRectOp;
 using ::cc::PaintOpEq;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
@@ -1195,21 +1196,34 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
 
+  EXPECT_EQ(context->StateStackDepth(), 1);
+  EXPECT_EQ(context->OpenedLayerCount(), 1);
+
   // Discard the rendering states:
   context->reset();
-  // Discard the recording:
-  EXPECT_THAT(RecordedOpsView(context->FlushRecorder()), Not(IsEmpty()));
+
+  EXPECT_EQ(context->StateStackDepth(), 0);
+  EXPECT_EQ(context->OpenedLayerCount(), 0);
+
+  // `reset` discards all paint ops and reset the canvas content.
+  cc::PaintFlags reset_rect_flags;
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<DrawRectOp>(
+                  SkRect::MakeXYWH(0, 0, context->Width(), context->Height()),
+                  reset_rect_flags)));
+
   // The recording should now be empty:
   ASSERT_THAT(RecordedOpsView(context->FlushRecorder()), IsEmpty());
 
   // Do some operation and check that the rendering state was reset:
-  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
-                      exception_state);
+  context->fillRect(1, 2, 3, 4);
+
+  cc::PaintFlags fill_rect_flags;
+  fill_rect_flags.setAntiAlias(true);
+  fill_rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(PaintOpEq<SaveLayerAlphaOp>(1.0f),
-                             PaintOpEq<RestoreOp>()));
-  EXPECT_EQ(context->StateStackDepth(), 1);
-  EXPECT_EQ(context->OpenedLayerCount(), 1);
+              RecordedOpsAre(PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4),
+                                                   fill_rect_flags)));
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
