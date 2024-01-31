@@ -89,8 +89,11 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // GarbageCollected override.
   void Trace(Visitor*) const override;
 
+  // If `is_error_message_from_software_codec` is true, `error_message` will be
+  // updated to include `status.message()` if non-empty.
   void ReportError(const char* error_message,
-                   const media::EncoderStatus& status);
+                   const media::EncoderStatus& status,
+                   bool is_error_message_from_software_codec);
 
   std::unique_ptr<media::VideoEncoderMetricsProvider> encoder_metrics_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);

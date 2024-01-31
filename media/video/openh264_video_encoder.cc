@@ -176,6 +176,15 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (options.subsampling.value_or(VideoChromaSampling::k420) !=
+          VideoChromaSampling::k420 ||
+      options.bit_depth.value_or(8) != 8) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                      "Unsupported subsampling or bit depth"));
+    return;
+  }
+
   if (ToOpenH264Profile(profile) == PRO_UNKNOWN) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,

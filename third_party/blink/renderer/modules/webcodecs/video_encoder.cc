@@ -350,15 +350,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return result;
   }
 
-  if (parse_result->subsampling.value_or(media::VideoChromaSampling::k420) !=
-          media::VideoChromaSampling::k420 &&
-      parse_result->codec != media::VideoCodec::kAV1 &&
-      parse_result->codec != media::VideoCodec::kVP9) {
-    result->not_supported_error_message =
-        "4:4:4 subsampling is currently only supported with AV1 and VP9.";
-    return result;
-  }
-
   // Some codec strings provide color space info, but for WebCodecs this is
   // ignored. Instead, the VideoFrames given to encode() are the source of truth
   // for input color space. Note also that the output color space is up to the
@@ -374,39 +365,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   // shared by many paths and enforcing profile and subsampling broke several
   // sites. The error messages below are more helpful anyways.
   switch (result->codec) {
-    case media::VideoCodec::kAV1:
-      if (parse_result->subsampling.value_or(
-              media::VideoChromaSampling::k420) ==
-          media::VideoChromaSampling::k420) {
-        break;
-      }
-      if (result->options.subsampling == media::VideoChromaSampling::k444 &&
-          result->profile == media::AV1PROFILE_PROFILE_HIGH) {
-        break;
-      }
-      result->not_supported_error_message =
-          "Unsupported AV1 subsampling; 4:2:0 subsampling is supported with "
-          "all profiles while 4:4:4 subsampling is only supported with high "
-          "profile. Professional profile is not supported.";
-      return result;
-
-    case media::VideoCodec::kVP9:
-      if (parse_result->subsampling.value_or(
-              media::VideoChromaSampling::k420) ==
-          media::VideoChromaSampling::k420) {
-        break;
-      }
-      if (result->options.subsampling == media::VideoChromaSampling::k444 &&
-          (result->profile == media::VP9PROFILE_PROFILE1 ||
-           result->profile == media::VP9PROFILE_PROFILE3)) {
-        break;
-      }
-      result->not_supported_error_message =
-          "Unsupported VP9 subsampling; 4:2:0 subsampling is supported with "
-          "profile 0 and 2, while 4:4:4 subsampling is supported with "
-          "profile 1 and 3.";
-      return result;
-
     case media::VideoCodec::kH264: {
       if (config->hasAvc()) {
         std::string avc_format =
@@ -781,7 +739,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
                 media::EncoderStatus(
                     media::EncoderStatus::Codes::kEncoderInitializationError,
                     "Unable to create encoder (most likely unsupported "
-                    "codec/acceleration requirement combination)"));
+                    "codec/acceleration requirement combination)"),
+                /*is_error_message_from_software_codec=*/!is_platform_encoder);
     request->EndTracing();
     return;
   }
@@ -799,6 +758,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::VideoCodec codec,
+                          const bool is_platform_encoder,
                           media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
@@ -821,7 +781,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
           break;
       }
 
-      self->ReportError(error_message.c_str(), std::move(status));
+      self->ReportError(
+          error_message.c_str(), std::move(status),
+          /*is_error_message_from_software_codec=*/!is_platform_encoder);
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.VideoEncoder.Codec",
                                     codec);
@@ -844,7 +806,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
-          MakeUnwrappingCrossThreadHandle(request), active_config_->codec)));
+          MakeUnwrappingCrossThreadHandle(request), active_config_->codec,
+          is_platform_encoder)));
 }
 
 std::unique_ptr<media::VideoEncoderMetricsProvider>
@@ -891,9 +854,11 @@ void VideoEncoder::Trace(Visitor* visitor) const {
 }
 
 void VideoEncoder::ReportError(const char* error_message,
-                               const media::EncoderStatus& status) {
+                               const media::EncoderStatus& status,
+                               bool is_error_message_from_software_codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!status.is_ok());
+
   // ReportError() can be called before |encoder_metrics_provider_| is created
   // in media::VideoEncoder::Initialize() (e.g. there is no available
   // media::VideoEncoder). Since the case is about webrtc::VideoEncoder failure,
@@ -901,7 +866,13 @@ void VideoEncoder::ReportError(const char* error_message,
   if (encoder_metrics_provider_) {
     encoder_metrics_provider_->SetError(status);
   }
-  HandleError(logger_->MakeOperationError(error_message, status));
+
+  // We don't use `is_platform_encoder_` here since it may not match where the
+  // error is coming from in the case of a pending configuration change.
+  HandleError(
+      is_error_message_from_software_codec
+          ? logger_->MakeSoftwareCodecOperationError(error_message, status)
+          : logger_->MakeOperationError(error_message, status));
 }
 
 bool VideoEncoder::ReadyToProcessNextRequest() {
@@ -1176,7 +1147,8 @@ void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
 
   active_encodes_--;
   if (!status.is_ok()) {
-    ReportError("Encoding error.", std::move(status));
+    ReportError("Encoding error.", std::move(status),
+                /*is_error_message_from_software_codec=*/!is_platform_encoder_);
   }
   request->EndTracing();
   ProcessRequests();
@@ -1261,7 +1233,9 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->ReportError("Encoder initialization error.", std::move(status));
+      self->ReportError(
+          "Encoder initialization error.", std::move(status),
+          /*is_error_message_from_software_codec=*/!is_platform_encoder);
       self->blocking_request_in_progress_ = nullptr;
       req->EndTracing();
       return;
