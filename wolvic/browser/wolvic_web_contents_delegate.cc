@@ -10,6 +10,7 @@
 #include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
 #include "url/android/gurl_android.h"
+#include "wolvic/browser/dialogs/color_chooser_manager.h"
 #include "wolvic/browser/dialogs/wolvic_javascript_dialog_manager.h"
 
 namespace wolvic {
@@ -66,6 +67,13 @@ void WolvicWebContentsDelegate::LoadingStateChanged(
 content::JavaScriptDialogManager* WolvicWebContentsDelegate::GetJavaScriptDialogManager(
     content::WebContents* source) {
   return javascript_dialog_manager_.get();
+}
+
+std::unique_ptr<content::ColorChooser> WolvicWebContentsDelegate::OpenColorChooser(
+    content::WebContents* web_contents,
+    SkColor color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return std::make_unique<ColorChooserManager>(web_contents, color, suggestions);
 }
 
 } // namespace wolvic

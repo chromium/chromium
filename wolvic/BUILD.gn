@@ -33,6 +33,8 @@ shared_library("libcontent_native") {
     "browser/downloads/wolvic_download_manager_delegate.h",
     "browser/media/wolvic_media_drm_bridge_client.cc",
     "browser/media/wolvic_media_drm_bridge_client.h",
+    "browser/dialogs/color_chooser_manager.cc",
+    "browser/dialogs/color_chooser_manager.h",
     "browser/dialogs/wolvic_javascript_dialog_manager.cc",
     "browser/dialogs/wolvic_javascript_dialog_manager.h",
     "browser/dialogs/user_dialog_manager_bridge.cc",
@@ -215,6 +217,7 @@ jinja_template("content_manifest") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/org/chromium/wolvic/ColorChooserManager.java",
     "java/org/chromium/wolvic/DownloadManagerBridge.java",
     "java/org/chromium/wolvic/PermissionManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
@@ -228,6 +231,7 @@ generate_jni("jni_headers") {
 
 android_library("wolvic_java") {
   sources = [
+    "java/org/chromium/wolvic/ColorChooserManager.java",
     "java/org/chromium/wolvic/DownloadManagerBridge.java",
     "java/org/chromium/wolvic/PermissionManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
