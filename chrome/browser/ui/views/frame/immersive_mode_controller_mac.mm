@@ -141,10 +141,12 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
         ->set_immersive_mode_reveal_client(this);
 
     // Move the appropriate children from the browser widget to the overlay
-    // widget. Make sure to call `Show()` on the overlay widget before enabling
-    // immersive fullscreen. The call to `Show()` actually performs the
-    // underlying window reparenting.
-    MoveChildren(browser_view_->GetWidget(), browser_view_->overlay_widget());
+    // widget, unless we are entering content fullscreen. Make sure to call
+    // `Show()` on the overlay widget before enabling immersive fullscreen. The
+    // call to `Show()` actually performs the underlying window reparenting.
+    if (!fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
+      MoveChildren(browser_view_->GetWidget(), browser_view_->overlay_widget());
+    }
 
     // `Show()` is needed because the overlay widget's compositor is still being
     // used, even though its content view has been moved to the AppKit
@@ -287,6 +289,26 @@ int ImmersiveModeControllerMac::GetExtraInfobarOffset() const {
     return reveal_amount_ * menu_bar_height_;
   }
   return reveal_amount_ * (menu_bar_height_ + overlay_height_);
+}
+
+void ImmersiveModeControllerMac::OnContentFullscreenChanged(
+    bool is_content_fullscreen) {
+  // Ignore this call if we are not in browser fullscreen.
+  if (!IsEnabled()) {
+    return;
+  }
+
+  if (is_content_fullscreen) {
+    // When in content fullscreen the overlay widget is not displayed. Move all
+    // the child widgets from the overlay widget to the browser widget. This is
+    // particularly important for sticky children like the find bar or
+    // permission dialogs.
+    MoveChildren(browser_view_->overlay_widget(), browser_view_->GetWidget());
+  } else {
+    // Put the children back when transitioning from content fullscreen back to
+    // browser fullscreen.
+    MoveChildren(browser_view_->GetWidget(), browser_view_->overlay_widget());
+  }
 }
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,

@@ -27,6 +27,7 @@ class ImmersiveModeControllerStub : public ImmersiveModeController {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   int GetMinimumContentOffset() const override;
   int GetExtraInfobarOffset() const override;
+  void OnContentFullscreenChanged(bool is_content_fullscreen) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_STUB_H_

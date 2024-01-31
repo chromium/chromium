@@ -175,6 +175,9 @@ int ImmersiveModeControllerChromeos::GetExtraInfobarOffset() const {
   return 0;
 }
 
+void ImmersiveModeControllerChromeos::OnContentFullscreenChanged(
+    bool is_content_fullscreen) {}
+
 void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
   views::Widget* widget = browser_view_->frame();
   // Update the window caption buttons.
