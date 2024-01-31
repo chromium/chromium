@@ -11,11 +11,26 @@
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
+
+namespace {
+class FontsHolder : public GarbageCollected<FontsHolder> {
+ public:
+  void Trace(Visitor* visitor) const {
+    for (const Font& font : fonts) {
+      font.Trace(visitor);
+    }
+  }
+
+  Font fonts[3];
+};
+}  // namespace
 
 class ShapeResultTest : public FontTestBase {
  public:
@@ -28,19 +43,20 @@ class ShapeResultTest : public FontTestBase {
  protected:
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
-    fonts[0] = blink::test::CreateTestFont(
+    fonts_holder = MakeGarbageCollected<FontsHolder>();
+    fonts_holder->fonts[0] = blink::test::CreateTestFont(
         AtomicString("Roboto"),
         blink::test::PlatformTestDataPath(
             "third_party/Roboto/roboto-regular.woff2"),
         12.0, &ligatures);
 
-    fonts[1] = blink::test::CreateTestFont(
+    fonts_holder->fonts[1] = blink::test::CreateTestFont(
         AtomicString("Noto"),
         blink::test::PlatformTestDataPath(
             "third_party/Noto/NotoNaskhArabic-regular.woff2"),
         12.0, &ligatures);
 
-    fonts[2] = blink::test::CreateTestFont(
+    fonts_holder->fonts[2] = blink::test::CreateTestFont(
         AtomicString("M PLUS 1p"),
         blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"),
         12.0, &ligatures);
@@ -67,12 +83,12 @@ class ShapeResultTest : public FontTestBase {
   }
 
   const Font* GetFont(FontType type) const {
-    return fonts + static_cast<size_t>(type);
+    return fonts_holder->fonts + static_cast<size_t>(type);
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font fonts[3];
+  Persistent<FontsHolder> fonts_holder;
 };
 
 void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
