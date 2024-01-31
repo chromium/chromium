@@ -273,14 +273,24 @@ class CustomClientView : public views::ClientView {
   // ClientView:
   void UpdateWindowRoundedCorners(int corner_radius) override {
     DCHECK(GetWidget());
-    const bool frame_enabled = static_cast<CustomFrameView*>(
-                                   GetWidget()->non_client_view()->frame_view())
-                                   ->GetFrameEnabled();
+    const CustomFrameView* custom_frame_view = static_cast<CustomFrameView*>(
+        GetWidget()->non_client_view()->frame_view());
+
+    // In the typical scenario with frame enabled, we round:
+    //   * Upper corners of the frame.
+    //   * Lower corners of the client view.
+    // But when the frame is overlapped with the client view, for upper corners,
+    // both the top (frame) and the bottom (client view) views need to be
+    // rounded.
+    const bool should_round_client_view_upper_corner =
+        !custom_frame_view->GetFrameEnabled() ||
+        custom_frame_view->GetFrameOverlapped();
 
     const float corner_radius_f = corner_radius;
     const gfx::RoundedCornersF root_surface_radii = {
-        frame_enabled ? 0 : corner_radius_f,
-        frame_enabled ? 0 : corner_radius_f, corner_radius_f, corner_radius_f};
+        should_round_client_view_upper_corner ? corner_radius_f : 0,
+        should_round_client_view_upper_corner ? corner_radius_f : 0,
+        corner_radius_f, corner_radius_f};
 
     const Surface* root_surface = shell_surface_->root_surface();
 
