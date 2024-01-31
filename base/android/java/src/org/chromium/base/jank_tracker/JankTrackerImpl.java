@@ -24,7 +24,7 @@ public class JankTrackerImpl implements JankTracker {
     private static final boolean IS_TRACKING_ENABLED =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
 
-    private boolean mIsInitalized;
+    private boolean mIsInitialized;
     private JankTrackerStateController mController;
     private JankReportingScheduler mReportingScheduler;
     private boolean mDestroyed;
@@ -60,7 +60,6 @@ public class JankTrackerImpl implements JankTracker {
                                         innerActivity,
                                         new FrameMetricsListener(metricsStore),
                                         mReportingScheduler));
-                        mIsInitalized = true;
                     }
                 };
         if (constructionDelayMs <= 0) {
@@ -92,11 +91,12 @@ public class JankTrackerImpl implements JankTracker {
     private void constructInternalFinal(JankTrackerStateController controller) {
         mController = controller;
         mController.initialize();
+        mIsInitialized = true;
     }
 
     @Override
     public void startTrackingScenario(JankScenario scenario) {
-        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
+        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
 
         mReportingScheduler.startTrackingScenario(scenario);
     }
@@ -108,7 +108,7 @@ public class JankTrackerImpl implements JankTracker {
 
     @Override
     public void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
-        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
+        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
 
         mReportingScheduler.finishTrackingScenario(scenario, endScenarioTimeNs);
     }
@@ -117,7 +117,7 @@ public class JankTrackerImpl implements JankTracker {
     @Override
     public void destroy() {
         mDestroyed = true;
-        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
+        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
         mController.destroy();
     }
 }
