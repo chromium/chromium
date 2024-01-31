@@ -21,7 +21,7 @@ namespace blink {
 struct ShapeResultView::RunInfoPart {
  public:
   RunInfoPart(scoped_refptr<const ShapeResult::RunInfo> run,
-              ShapeResult::RunInfo::GlyphDataRange range,
+              GlyphDataRange range,
               unsigned start_index,
               unsigned offset,
               unsigned num_characters,
@@ -47,10 +47,9 @@ struct ShapeResultView::RunInfoPart {
     return *(range_.begin + index);
   }
   template <bool has_non_zero_glyph_offsets>
-  ShapeResult::RunInfo::GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>
-  GetGlyphOffsets() const {
-    return ShapeResult::RunInfo::GlyphOffsetArray::iterator<
-        has_non_zero_glyph_offsets>(range_);
+  GlyphOffsetArray::iterator<has_non_zero_glyph_offsets> GetGlyphOffsets()
+      const {
+    return GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>(range_);
   }
   bool HasGlyphOffsets() const { return range_.offsets; }
   // The end character index of |this| without considering offsets in
@@ -72,12 +71,9 @@ struct ShapeResultView::RunInfoPart {
 
   // Common signatures with RunInfo, to templatize algorithms.
   const ShapeResult::RunInfo* GetRunInfo() const { return run_.get(); }
-  const ShapeResult::RunInfo::GlyphDataRange& GetGlyphDataRange() const {
-    return range_;
-  }
-  ShapeResult::RunInfo::GlyphDataRange FindGlyphDataRange(
-      unsigned start_character_index,
-      unsigned end_character_index) const {
+  const GlyphDataRange& GetGlyphDataRange() const { return range_; }
+  GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
+                                    unsigned end_character_index) const {
     return GetGlyphDataRange().FindGlyphDataRange(
         IsRtl(), start_character_index, end_character_index);
   }
@@ -129,7 +125,7 @@ struct ShapeResultView::RunInfoPart {
   }
 
   scoped_refptr<const ShapeResult::RunInfo> run_;
-  ShapeResult::RunInfo::GlyphDataRange range_;
+  GlyphDataRange range_;
 
   // Start index for partial run, adjusted to ensure that runs are continuous.
   unsigned start_index_;
@@ -354,7 +350,7 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
     const unsigned part_characters = range_end - range_start;
 
     // Avoid O(log n) find operation if the entire run is in range.
-    ShapeResult::RunInfo::GlyphDataRange range;
+    GlyphDataRange range;
     float part_width;
     if (part_start >= segment.start_index && part_end <= segment.end_index) {
       range = run->GetGlyphDataRange();

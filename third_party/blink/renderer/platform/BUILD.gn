@@ -719,6 +719,7 @@ component("platform") {
     "fonts/shaping/font_features.cc",
     "fonts/shaping/font_features.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
+    "fonts/shaping/glyph_data.h",
     "fonts/shaping/han_kerning.cc",
     "fonts/shaping/han_kerning.h",
     "fonts/shaping/harfbuzz_face.cc",

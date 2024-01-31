@@ -405,7 +405,6 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   String ToString() const;
   void ToString(StringBuilder*) const;
 
-  using GlyphOffset = gfx::Vector2dF;
   struct RunInfo;
   RunInfo* InsertRunForTesting(unsigned start_index,
                                unsigned num_characters,
