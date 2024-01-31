@@ -367,7 +367,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // These three methods correspond to the points in time when a document starts
   // loading for the first time (initiates outgoing requests), when incoming
-  // data subsequently starts arriving, and when it finishes loading.
+  // data subsequently starts arriving, and when it finishes loading. Note:
+  // There is no guarantee that calls to DidStartLoading/DidStopLoading are
+  // interleaved (e.g. there can be 2 calls to DidStartLoading in a row).
   virtual void DidStartLoading() {}
   virtual void DidStopLoading() {}
 
