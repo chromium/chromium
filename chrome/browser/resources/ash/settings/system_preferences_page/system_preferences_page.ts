@@ -25,7 +25,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowMultitasking, shouldShowQuickAnswersSettings, shouldShowStartup} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, isRevampWayfindingEnabled, shouldShowMultitasking, shouldShowStartup} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
@@ -98,10 +98,10 @@ export class SettingsSystemPreferencesPageElement extends
         },
       },
 
-      shouldShowQuickAnswersSettings_: {
+      isQuickAnswersSupported_: {
         type: Boolean,
         value: () => {
-          return shouldShowQuickAnswersSettings();
+          return isQuickAnswersSupported();
         },
       },
 
@@ -169,7 +169,7 @@ export class SettingsSystemPreferencesPageElement extends
   private shouldShowResetSettingsCard_: boolean;
 
   // Search and Assistant subsection
-  private shouldShowQuickAnswersSettings_: boolean;
+  private isQuickAnswersSupported_: boolean;
   private isAssistantAllowed_: boolean;
 
   // Startup subsection

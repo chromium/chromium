@@ -13,7 +13,7 @@ import './search_and_assistant_settings_card.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isQuickAnswersSupported} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
@@ -41,10 +41,10 @@ export class OsSettingsSearchPageElement extends PolymerElement {
         readOnly: true,
       },
 
-      shouldShowQuickAnswersSettings_: {
+      isQuickAnswersSupported_: {
         type: Boolean,
         value: () => {
-          return shouldShowQuickAnswersSettings();
+          return isQuickAnswersSupported();
         },
       },
 
@@ -61,7 +61,7 @@ export class OsSettingsSearchPageElement extends PolymerElement {
   prefs: PrefsState;
   private isAssistantAllowed_: boolean;
   private section_: Section;
-  private shouldShowQuickAnswersSettings_: boolean;
+  private isQuickAnswersSupported_: boolean;
 }
 
 declare global {

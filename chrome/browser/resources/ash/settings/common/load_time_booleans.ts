@@ -83,8 +83,8 @@ export function isAssistantAllowed(): boolean {
   return loadTimeData.getBoolean('isAssistantAllowed');
 }
 
-export function shouldShowQuickAnswersSettings(): boolean {
-  return loadTimeData.getBoolean('shouldShowQuickAnswersSettings');
+export function isQuickAnswersSupported(): boolean {
+  return loadTimeData.getBoolean('isQuickAnswersSupported');
 }
 
 // System preferences page

@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isQuickAnswersSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -46,10 +46,10 @@ export class SearchAndAssistantSettingsCardElement extends
         notify: true,
       },
 
-      shouldShowQuickAnswersSettings_: {
+      isQuickAnswersSupported_: {
         type: Boolean,
         value: () => {
-          return shouldShowQuickAnswersSettings();
+          return isQuickAnswersSupported();
         },
       },
 
@@ -102,7 +102,7 @@ export class SearchAndAssistantSettingsCardElement extends
   private isAssistantAllowed_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
   private rowIcons_: Record<string, string>;
-  private shouldShowQuickAnswersSettings_: boolean;
+  private isQuickAnswersSupported_: boolean;
 
   constructor() {
     super();
@@ -131,7 +131,7 @@ export class SearchAndAssistantSettingsCardElement extends
   }
 
   private onSearchClick_(): void {
-    assert(this.shouldShowQuickAnswersSettings_);
+    assert(this.isQuickAnswersSupported_);
     Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE);
   }
 
