@@ -46,6 +46,9 @@ export class FakeDisplaySettingsProvider implements
       new Map<boolean, Map<DisplaySettingsNightLightScheduleOption, number>>();
   // The key is the mirror mode status. The value indicates the histogram count.
   private displayMirrorModeStatusHistogram = new Map<boolean, number>();
+  // The key is the unified mode status. The value indicates the histogram
+  // count.
+  private displayUnifiedModeStatusHistogram = new Map<boolean, number>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -136,6 +139,17 @@ export class FakeDisplaySettingsProvider implements
           (this.displayMirrorModeStatusHistogram.get(value.mirrorModeStatus) ||
            0) +
               1);
+    } else if (
+        type ===
+            displaySettingsProviderMojom.DisplaySettingsType.kUnifiedMode &&
+        value.isInternalDisplay === undefined &&
+        value.unifiedModeStatus !== undefined) {
+      this.displayUnifiedModeStatusHistogram.set(
+          value.unifiedModeStatus,
+          (this.displayUnifiedModeStatusHistogram.get(
+               value.unifiedModeStatus) ||
+           0) +
+              1);
     }
   }
 
@@ -171,5 +185,9 @@ export class FakeDisplaySettingsProvider implements
 
   getDisplayMirrorModeStatusHistogram(): Map<boolean, number> {
     return this.displayMirrorModeStatusHistogram;
+  }
+
+  getDisplayUnifiedModeStatusHistogram(): Map<boolean, number> {
+    return this.displayUnifiedModeStatusHistogram;
   }
 }

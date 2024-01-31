@@ -163,6 +163,8 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
       auto value = mojom::DisplaySettingsValue::New();
       if (type == mojom::DisplaySettingsType::kMirrorMode) {
         value->mirror_mode_status = true;
+      } else if (type == mojom::DisplaySettingsType::kUnifiedMode) {
+        value->unified_mode_status = true;
       }
       provider_->RecordChangingDisplaySettings(type, std::move(value));
       histogram_tester_.ExpectBucketCount(
@@ -280,6 +282,21 @@ TEST_F(DisplaySettingsProviderTest, ToggleDisplayMirrorModeStatusHistogram) {
         DisplaySettingsProvider::kDisplaySettingsHistogramName);
     histogram_name.append(".MirrorModeStatus");
     histogram_tester_.ExpectBucketCount(histogram_name, mirror_mode_status, 1);
+  }
+}
+
+// Test histogram is recorded when users toggle display unified mode status.
+TEST_F(DisplaySettingsProviderTest, ToggleDisplayUnifiedModeStatusHistogram) {
+  for (bool unified_mode_status : {true, false}) {
+    auto value = mojom::DisplaySettingsValue::New();
+    value->unified_mode_status = unified_mode_status;
+    provider_->RecordChangingDisplaySettings(
+        mojom::DisplaySettingsType::kUnifiedMode, std::move(value));
+
+    std::string histogram_name(
+        DisplaySettingsProvider::kDisplaySettingsHistogramName);
+    histogram_name.append(".UnifiedModeStatus");
+    histogram_tester_.ExpectBucketCount(histogram_name, unified_mode_status, 1);
   }
 }
 

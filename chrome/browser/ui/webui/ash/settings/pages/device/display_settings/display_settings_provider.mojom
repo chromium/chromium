@@ -72,6 +72,10 @@ struct DisplaySettingsValue {
   // The mirror mode status of the display. This is available only when
   // display mirror mode status is changed.
   bool? mirror_mode_status;
+
+  // The unified mode status of the display. This is available only when
+  // display unified mode status is changed.
+  bool? unified_mode_status;
 };
 
 // Implemented by clients that wish to be notified when the tablet mode is
