@@ -559,7 +559,17 @@ ContentSettingsPattern ContentSettingsPattern::ToHostOnlyPattern(
 bool ContentSettingsPattern::CompareDomains::operator()(
     const std::string_view& domain_a,
     const std::string_view& domain_b) const {
-  return CompareDomainNames(domain_a, domain_b) > 0;
+  if (domain_a == domain_b) {
+    return false;
+  }
+
+  if (net::IsSubdomainOf(domain_a, domain_b)) {
+    return true;
+  }
+  if (net::IsSubdomainOf(domain_b, domain_a)) {
+    return false;
+  }
+  return CompareDomainNames(domain_a, domain_b) < 0;
 }
 
 ContentSettingsPattern::ContentSettingsPattern() : is_valid_(false) {}
