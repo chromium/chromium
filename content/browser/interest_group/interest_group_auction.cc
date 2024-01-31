@@ -4936,9 +4936,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
       [](const GURL& url) { return blink::AdDescriptor(url); });
   std::unique_ptr<Bid> bid =
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
-          Bid::BidRole::kUnenforcedKAnon,  // TODO(behamilton): Fix this.
-          saved_response_->bid.value(), saved_response_->bid_currency,
-          saved_response_->ad_metadata,
+          Bid::BidRole::kUnenforcedKAnon, saved_response_->bid.value(),
+          saved_response_->bid_currency, saved_response_->ad_metadata,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components));
@@ -4974,12 +4973,25 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
     component_auction_modified_bid_params->ad = bid->ad_metadata;
   }
 
+  // TODO(behamilton): Refactor this once B&A supports k-anonymity. For now we
+  // treat all bids from B&A as k-anonymous.
+  bid->bid_role = Bid::BidRole::kBothKAnonModes;
+  auto bid_copy = std::make_unique<Bid>(*bid);
+  auto modified_bid_params_copy =
+      component_auction_modified_bid_params
+          ? component_auction_modified_bid_params->Clone()
+          : auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr();
   UpdateAuctionLeaders(std::move(bid), saved_response_->score.value_or(0.00001),
                        std::move(component_auction_modified_bid_params),
                        /*bid_in_seller_currency=*/std::nullopt,
                        /*scoring_signals_data_version=*/std::nullopt,
-                       // TODO(behamilton): Properly support k-anonymity here
                        non_kanon_enforced_auction_leader_);
+  UpdateAuctionLeaders(std::move(bid_copy),
+                       saved_response_->score.value_or(0.00001),
+                       std::move(modified_bid_params_copy),
+                       /*bid_in_seller_currency=*/std::nullopt,
+                       /*scoring_signals_data_version=*/std::nullopt,
+                       kanon_enforced_auction_leader_);
 }
 
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
