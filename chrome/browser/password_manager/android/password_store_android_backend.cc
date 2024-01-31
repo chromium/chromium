@@ -765,8 +765,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
           RecoverOnErrorAndReturnResult(api_error_code);
       reported_error.type = APIErrorCodeToErrorType(
           api_error_code, bridge_helper_->CanRemoveUnenrollment());
-      LOG(ERROR) << static_cast<int>(reported_error.recovery_type);
-      LOG(ERROR) << static_cast<int>(reported_error.type);
     }
   }
 
