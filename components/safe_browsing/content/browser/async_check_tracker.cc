@@ -189,6 +189,9 @@ void AsyncCheckTracker::MaybeDisplayBlockingPage(
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   resource.render_process_id = primary_main_frame->GetGlobalId().child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  // Reports were already sent when BaseUIManager attempted to trigger post
+  // commit error page, so don't send it again.
+  resource.should_send_reports = false;
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.
   resource.callback = base::DoNothing();

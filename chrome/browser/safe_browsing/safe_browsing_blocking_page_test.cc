@@ -4051,8 +4051,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTimingTest,
       static_cast<FakeSafeBrowsingUIManager*>(
           factory_.test_safe_browsing_service()->ui_manager().get())
           ->hit_report_count();
-  // TODO(crbug.com/1501194): Fix this. We should only send one report.
-  EXPECT_EQ(report_count, 2);
+  EXPECT_EQ(report_count, 1);
 
   histogram_tester_.ExpectUniqueSample(
       "interstitial.phishing.decision.after_page_shown",

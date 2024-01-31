@@ -116,6 +116,9 @@ struct UnsafeResource {
   // If true, this UnsafeResource is created because of the Delayed Warnings
   // experiment.
   bool is_delayed_warning;
+
+  // If false, skip sending Safe Browsing telemetry reports. Default to true.
+  bool should_send_reports;
 };
 
 }  // namespace security_interstitials
