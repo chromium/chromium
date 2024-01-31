@@ -776,7 +776,7 @@ void LogPasswordReuse(int saved_passwords,
                       PasswordType reused_password_type);
 
 // Log the type of the password dropdown when it's shown.
-void LogPasswordDropdownShown(PasswordDropdownState state, bool off_the_record);
+void LogPasswordDropdownShown(PasswordDropdownState state);
 
 // Log the type of the password dropdown suggestion when chosen.
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,

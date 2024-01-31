@@ -103,7 +103,6 @@ using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManager;
 using password_manager::PasswordManagerClient;
-using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
 using safe_browsing::PasswordReuseDetectionManagerClient;
 using web::WebState;

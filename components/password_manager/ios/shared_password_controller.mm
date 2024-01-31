@@ -566,7 +566,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   }
 
   if (suggestionState) {
-    LogPasswordDropdownShown(*suggestionState, [self IsOffTheRecord]);
+    LogPasswordDropdownShown(*suggestionState);
   }
 
   if (suggestions.count == 0 || ![_delegate shouldShowAccountStorageNotice]) {

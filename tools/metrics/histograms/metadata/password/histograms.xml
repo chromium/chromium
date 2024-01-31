@@ -1287,16 +1287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.DropdownShown.OffTheRecord" units="units"
-    expires_after="2024-02-11">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-privacy-core@google.com</owner>
-  <summary>
-    Records availability of password manager suggestions in regular and
-    off-the-record modes.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.DynamicFormChanges" units="units"
     expires_after="2024-05-26">
   <owner>kazinova@google.com</owner>

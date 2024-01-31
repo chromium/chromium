@@ -797,8 +797,7 @@ void PasswordAutofillManager::LogMetricsForSuggestions(
         break;
     }
   }
-  metrics_util::LogPasswordDropdownShown(dropdown_state,
-                                         password_client_->IsOffTheRecord());
+  metrics_util::LogPasswordDropdownShown(dropdown_state);
 }
 
 bool PasswordAutofillManager::ShowPopup(
