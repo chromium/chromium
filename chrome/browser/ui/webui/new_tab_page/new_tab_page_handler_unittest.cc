@@ -646,6 +646,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchImage) {
   CustomBackground custom_background;
   custom_background.is_uploaded_image = true;
   custom_background.local_background_id = base::Token::CreateRandom();
+  custom_background.is_inspiration_image = false;
   custom_background.daily_refresh_enabled = false;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::make_optional(custom_background)));
@@ -658,6 +659,33 @@ TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchImage) {
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ(new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch,
+            theme->background_image->image_source);
+}
+
+TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchInspirationImage) {
+  new_tab_page::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      }));
+  CustomBackground custom_background;
+  custom_background.is_uploaded_image = true;
+  custom_background.local_background_id = base::Token::CreateRandom();
+  custom_background.is_inspiration_image = true;
+  custom_background.daily_refresh_enabled = false;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(testing::Return(std::make_optional(custom_background)));
+  ON_CALL(mock_theme_service_, UsingDefaultTheme())
+      .WillByDefault(testing::Return(false));
+
+  ntp_custom_background_service_observer_->OnCustomBackgroundImageUpdated();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_EQ(new_tab_page::mojom::NtpBackgroundImageSource::
+                kWallpaperSearchInspiration,
             theme->background_image->image_source);
 }
 

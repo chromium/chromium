@@ -4326,6 +4326,7 @@ static_library("browser") {
       "search/background/ntp_custom_background_service_observer.h",
       "search/background/wallpaper_search/wallpaper_search_background_manager.cc",
       "search/background/wallpaper_search/wallpaper_search_background_manager.h",
+      "search/background/wallpaper_search/wallpaper_search_background_manager_observer.h",
       "search/background/wallpaper_search/wallpaper_search_data.cc",
       "search/background/wallpaper_search/wallpaper_search_data.h",
       "search/background/wallpaper_search/wallpaper_search_service.cc",

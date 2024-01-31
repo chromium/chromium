@@ -150,6 +150,11 @@ WallpaperSearchBackgroundManager::WallpaperSearchBackgroundManager(
       profile_(profile),
       pref_service_(profile_->GetPrefs()) {
   CHECK(ntp_custom_background_service_);
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpWallpaperSearchHistory,
+      base::BindRepeating(&WallpaperSearchBackgroundManager::NotifyAboutHistory,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 WallpaperSearchBackgroundManager::~WallpaperSearchBackgroundManager() = default;
@@ -176,7 +181,8 @@ void WallpaperSearchBackgroundManager::SelectHistoryImage(
     return;
   }
 
-  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
+  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(
+      id, /*is_inspiration_image=*/false);
   ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
 
   UmaHistogramMediumTimes(
@@ -187,6 +193,7 @@ void WallpaperSearchBackgroundManager::SelectHistoryImage(
 void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
     const base::Token& id,
     const SkBitmap& bitmap,
+    bool is_inspiration_image,
     base::ElapsedTimer timer) {
   if (ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy()) {
     return;
@@ -214,7 +221,7 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
           base::BindOnce(&WallpaperSearchBackgroundManager::
                              SetBackgroundToLocalResourceWithId,
                          weak_ptr_factory_.GetWeakPtr(), id, std::move(timer),
-                         bitmap));
+                         bitmap, is_inspiration_image));
     } else {
       ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
           gfx::Image::CreateFrom1xBitmap(bitmap));
@@ -259,14 +266,34 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
   return absl::nullopt;
 }
 
+void WallpaperSearchBackgroundManager::AddObserver(
+    WallpaperSearchBackgroundManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WallpaperSearchBackgroundManager::RemoveObserver(
+    WallpaperSearchBackgroundManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
     base::ElapsedTimer timer,
-    const SkBitmap& bitmap) {
-  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
+    const SkBitmap& bitmap,
+    bool is_inspiration_image) {
+  ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(
+      id, is_inspiration_image);
   ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
       gfx::Image::CreateFrom1xBitmap(bitmap));
   UmaHistogramMediumTimes(
-      "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
+      is_inspiration_image
+          ? "NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
+          : "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
       timer.Elapsed());
+}
+
+void WallpaperSearchBackgroundManager::NotifyAboutHistory() {
+  for (auto& observer : observers_) {
+    observer.OnHistoryUpdated();
+  }
 }

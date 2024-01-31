@@ -45,6 +45,7 @@ struct CollectionImage {
   kThirdPartyTheme,
   kUploadedImage,
   kWallpaperSearch,
+  kWallpaperSearchInspiration,
 };
 
 // Enum representing the in product help promo to trigger.

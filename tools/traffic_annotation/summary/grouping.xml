@@ -291,7 +291,6 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
-      <annotation id="customize_chrome_page_handler"/>
       <annotation id="customize_chrome_page_handler_image"/>
       <annotation id="almanac_icon_cache"/>
       <annotation id="blink_fetch_later_manager"/>
@@ -307,6 +306,14 @@ after discussions on the right group.
       <annotation id="wallpaper_create_themes_model_execution"/>
       <annotation id="tab_organizer_model_execution"/>
       <annotation id="help_me_write_model_execution"/>
+      <annotation id="launcher_manatee"/>
+      <annotation id="chromeos_picker_gif_fetcher"/>
+      <annotation id="prewarm_http_disk_cache"/>
+      <annotation id="admin_specified_ppd_fetch"/>
+      <annotation id="shopping_list_ui_image_fetcher"/>
+      <annotation id="wallpaper_search_handler_descriptors_fetcher"/>
+      <annotation id="wallpaper_search_handler_inspirations_fetcher"/>
+      <annotation id="wallpaper_search_handler_inspiration_image_downloader"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

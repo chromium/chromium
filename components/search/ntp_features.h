@@ -194,6 +194,8 @@ extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
+extern const char kWallpaperSearchHatsDelayParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

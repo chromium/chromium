@@ -26,6 +26,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -94,9 +98,10 @@ class MockWallpaperSearchBackgroundManager
                void(const base::Token&,
                     const gfx::Image&,
                     base::ElapsedTimer timer));
-  MOCK_METHOD3(SelectLocalBackgroundImage,
+  MOCK_METHOD4(SelectLocalBackgroundImage,
                void(const base::Token&,
                     const SkBitmap&,
+                    bool is_inspiration_image,
                     base::ElapsedTimer timer));
   MOCK_METHOD1(SaveCurrentBackgroundToHistory,
                absl::optional<base::Token>(const HistoryEntry& history_entry));
@@ -114,6 +119,8 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
         return std::make_unique<
             testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
       }));
+  profile_builder.AddTestingFactory(HatsServiceFactory::GetInstance(),
+                                    base::BindRepeating(&BuildMockHatsService));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
   return profile;
@@ -138,7 +145,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
                     profile_.get()))),
         mock_wallpaper_search_background_manager_(
-            MockWallpaperSearchBackgroundManager(profile_.get())) {}
+            MockWallpaperSearchBackgroundManager(profile_.get())),
+        mock_hats_service_(static_cast<MockHatsService*>(
+            HatsServiceFactory::GetForProfile(profile_.get(),
+                                              /*create_if_necessary=*/true))) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -168,7 +178,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   const std::string kInspirationsLoadURL =
-      base::StrCat({kGstaticBaseURL, "inspirations.json"});
+      base::StrCat({kGstaticBaseURL, "inspirations_en-US.json"});
   void SetUpInspirationsResponseWithData(const std::string& response) {
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {}));
@@ -205,6 +215,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
     return mock_image_decoder_;
   }
   TestingProfile& profile() { return *profile_.get(); }
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
+  MockHatsService& mock_hats_service() { return *mock_hats_service_; }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -222,6 +236,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(WallpaperSearchHandlerTest, GetHistory) {
@@ -1283,12 +1298,13 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   SkBitmap bitmap;
   base::Token token;
   base::ElapsedTimer timer;
+  bool is_inspiration_image;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectLocalBackgroundImage(An<const base::Token&>(),
-                                         An<const SkBitmap&>(),
+                                         An<const SkBitmap&>(), An<bool>(),
                                          An<base::ElapsedTimer>()))
-      .WillOnce(
-          DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap), MoveArg<2>(&timer)));
+      .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap),
+                      SaveArg<2>(&is_inspiration_image), MoveArg<3>(&timer)));
 
   auto descriptors =
       side_panel::customize_chrome::mojom::ResultDescriptors::New();
@@ -1307,6 +1323,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
 
   // Check that the processing timer is being passed.
   EXPECT_EQ(timer.Elapsed().InMilliseconds(), 123);
+
+  // Should not be marked as an inspiration image.
+  EXPECT_FALSE(is_inspiration_image);
 
   // Simulate current background is saved to history.
   HistoryEntry history_entry_arg;
@@ -1466,85 +1485,321 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
             qualities[1]->user_feedback());
 }
 
+TEST_F(WallpaperSearchHandlerTest, DISABLED_LaunchHatsSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {features::kHappinessTrackingSurveysForWallpaperSearch,
+           {{ntp_features::kWallpaperSearchHatsDelayParam, "5m"}}},
+      },
+      {});
+  EXPECT_CALL(mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerWallpaperSearch, _, _, _, _))
+      .Times(1);
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->LaunchHatsSurvey();
+  task_environment().FastForwardBy(base::Minutes(5));
+}
+
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
-  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      inspiration_groups;
   base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
   EXPECT_CALL(callback, Run(_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
-                              inspirations_ptr_arg) {
-            inspirations = std::move(inspirations_ptr_arg);
+          [&inspiration_groups](
+              std::optional<std::vector<
+                  side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+                  inspiration_groups_ptr_arg) {
+            inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
           }));
   SetUpInspirationsResponseWithData(
       R"()]}'
-        {"inspiration_a":[
-          {"background_image":"foo_1.png","thumbnail_image":"foo_2.png"},
-          {"background_image":"bar_1.png","thumbnail_image":"bar_2.png"}
-      ]})");
-  ASSERT_FALSE(inspirations);
+        [{
+            "descriptor_a": "foobar",
+            "images": [
+                {
+                    "id": "00000000000000000000000000000000",
+                    "description": "Description foo",
+                    "background_image": "foo_1.png",
+                    "thumbnail_image": "foo_2.png"
+                },
+                {
+                    "id": "10000000000000000000000000000000",
+                    "description": "Description bar",
+                    "background_image": "bar_1.png",
+                    "thumbnail_image": "bar_2.png"
+                }
+            ]
+        },
+        {
+            "descriptor_a": "baz",
+            "images": [
+                {
+                    "id": "20000000000000000000000000000000",
+                    "description": "Description baz",
+                    "background_image": "baz_1.png",
+                    "thumbnail_image": "baz_2.png"
+                }
+            ]
+        }]
+      )");
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
   task_environment().RunUntilIdle();
 
-  EXPECT_TRUE(inspirations);
-  const auto& inspiration_a = inspirations->inspiration_a;
+  EXPECT_EQ(2u, inspiration_groups.size());
+  const auto& inspiration_group_a = inspiration_groups[0];
+  EXPECT_EQ("foobar", inspiration_group_a->descriptors->subject);
+  const auto& inspiration_a = inspiration_group_a->inspirations;
   EXPECT_EQ(2u, inspiration_a.size());
   const auto& foo_inspiration = inspiration_a[0];
   EXPECT_EQ(foo_inspiration->background_url,
             base::StrCat({kGstaticBaseURL, "foo_1.png"}));
   EXPECT_EQ(foo_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "foo_2.png"}));
+  EXPECT_EQ(foo_inspiration->description, "Description foo");
+  EXPECT_EQ(
+      foo_inspiration->id,
+      base::Token::FromString("00000000000000000000000000000000").value());
   const auto& bar_inspiration = inspiration_a[1];
   EXPECT_EQ(bar_inspiration->background_url,
             base::StrCat({kGstaticBaseURL, "bar_1.png"}));
   EXPECT_EQ(bar_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "bar_2.png"}));
+  EXPECT_EQ(bar_inspiration->description, "Description bar");
+  EXPECT_EQ(
+      bar_inspiration->id,
+      base::Token::FromString("10000000000000000000000000000000").value());
+  const auto& inspiration_group_b = inspiration_groups[1];
+  EXPECT_EQ("baz", inspiration_group_b->descriptors->subject);
+  const auto& inspiration_b = inspiration_group_b->inspirations;
+  EXPECT_EQ(1u, inspiration_b.size());
+  const auto& baz_inspiration = inspiration_b[0];
+  EXPECT_EQ(baz_inspiration->background_url,
+            base::StrCat({kGstaticBaseURL, "baz_1.png"}));
+  EXPECT_EQ(baz_inspiration->thumbnail_url,
+            base::StrCat({kGstaticBaseURL, "baz_2.png"}));
+  EXPECT_EQ(baz_inspiration->description, "Description baz");
+  EXPECT_EQ(
+      baz_inspiration->id,
+      base::Token::FromString("20000000000000000000000000000000").value());
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      inspiration_groups;
+  base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&inspiration_groups](
+              std::optional<std::vector<
+                  side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+                  inspiration_groups_ptr_arg) {
+            inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
+          }));
+  SetUpInspirationsResponseWithData(
+      R"()]}'[
+        {
+            "descriptor_a": "foo",
+            "descriptor_b": "bar",
+            "descriptor_c": "baz",
+            "descriptor_d": {
+                "hex": "#f9cc18",
+                "name": "Yellow"
+            },
+            "images": [
+                {
+                    "id": "00000000000000000000000000000000",
+                    "description": "test inspiration",
+                    "background_image": "foo_1.png",
+                    "thumbnail_image": "foo_2.png"
+                }
+            ]
+        }
+      ])");
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetInspirations(callback.Get());
+  task_environment().RunUntilIdle();
+
+  EXPECT_EQ(1u, inspiration_groups.size());
+  const auto& inspiration_descriptors = inspiration_groups[0]->descriptors;
+  EXPECT_EQ("foo", inspiration_descriptors->subject);
+  EXPECT_EQ("bar", inspiration_descriptors->style);
+  EXPECT_EQ("baz", inspiration_descriptors->mood);
+  EXPECT_EQ(side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
+                side_panel::customize_chrome::mojom::DescriptorDName::kYellow),
+            inspiration_descriptors->color);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
-       GetInspirations_Failure_InspirationsFormatIncorrect) {
-  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+       GetInspirations_InspirationsFormatIncorrect) {
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      inspiration_groups;
   base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
   EXPECT_CALL(callback, Run(_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
-                              inspirations_ptr_arg) {
-            inspirations = std::move(inspirations_ptr_arg);
+          [&inspiration_groups](
+              std::optional<std::vector<
+                  side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+                  inspiration_groups_ptr_arg) {
+            inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
           }));
+  // First group has one valid inspiration. Second group has no "descriptor_a".
+  // Third group has no images.
   SetUpInspirationsResponseWithData(
-      R"()]}'
-        {"inspiration_a":[
-          {"background_image":"foo_1.png"},
-          {"thumbnail_image":"bar_2.png"}
-      ]})");
-  ASSERT_FALSE(inspirations);
+      R"()]}'[
+        {
+            "descriptor_a": "foo",
+            "images": [
+            {
+                "id": "00000000000000000000000000000000",
+                "description": "test inspiration 1",
+                "background_image": "foo_1.png",
+                "thumbnail_image": "foo_2.png"
+            },
+            {
+                "description": "test inspiration 2",
+                "background_image": "bar_1.png",
+                "thumbnail_image": "bar_2.png"
+            },
+            {
+                "id": "20000000000000000000000000000000",
+                "background_image": "baz_1.png",
+                "thumbnail_image": "baz_2.png"
+            },
+            {
+                "id": "30000000000000000000000000000000",
+                "description": "test inspiration 4",
+                "thumbnail_image": "qux_2.png"
+            },
+            {
+                "id": "40000000000000000000000000000000",
+                "description": "test inspiration 5",
+                "background_image": "qux_1.png"
+            }
+            ]
+        },
+        {
+            "id": "00000000000000000000000000000000",
+            "descriptor_b": "bar",
+            "descriptor_c": "baz",
+            "descriptor_d": {
+            "hex": "#f9cc18",
+            "name": "Yellow"
+            },
+            "images": [
+            {
+                "description": "test inspiration 6",
+                "background_image": "foo_1.png",
+                "thumbnail_image": "foo_2.png"
+            }
+            ]
+        },
+        {
+            "descriptor_a": "qux"
+        }
+    ])");
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
   task_environment().RunUntilIdle();
 
-  EXPECT_FALSE(inspirations);
+  // There should only be one inspiration.
+  EXPECT_EQ(1u, inspiration_groups.size());
+  const auto& inspiration_group_a = inspiration_groups[0];
+  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject);
+  const auto& inspiration_a = inspiration_group_a->inspirations;
+  EXPECT_EQ(1u, inspiration_a.size());
+  EXPECT_EQ(inspiration_a[0]->description, "test inspiration 1");
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Failure_DataUnreachable) {
-  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+  std::optional<
+      std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+      inspiration_groups;
   base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
   EXPECT_CALL(callback, Run(_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
-                              inspirations_ptr_arg) {
-            inspirations = std::move(inspirations_ptr_arg);
+          [&inspiration_groups](
+              std::optional<std::vector<
+                  side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+                  inspiration_groups_ptr_arg) {
+            inspiration_groups = std::move(inspiration_groups_ptr_arg);
           }));
   SetUpInspirationsResponseWithNetworkError();
-  ASSERT_FALSE(inspirations);
+  ASSERT_FALSE(inspiration_groups.has_value());
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
   task_environment().RunUntilIdle();
 
-  EXPECT_FALSE(inspirations);
+  EXPECT_FALSE(inspiration_groups.has_value());
+}
+
+TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback;
+  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
+      .WillOnce(Invoke(
+          [&decoder_callback](const std::string& image_data,
+                              const gfx::Size& desired_image_frame_size,
+                              data_decoder::DataDecoder* data_decoder,
+                              image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback = std::move(callback);
+          }));
+  base::Token token_arg;
+  SkBitmap bitmap_arg;
+  base::ElapsedTimer timer_arg;
+  bool is_inspiration_image_arg;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SelectLocalBackgroundImage(An<const base::Token&>(),
+                                         An<const SkBitmap&>(), An<bool>(),
+                                         An<base::ElapsedTimer>()))
+      .WillOnce(DoAll(SaveArg<0>(&token_arg), SaveArg<1>(&bitmap_arg),
+                      SaveArg<2>(&is_inspiration_image_arg),
+                      MoveArg<3>(&timer_arg)));
+  // Ensure that the set theme is *not* saved to history on destruction.
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SaveCurrentBackgroundToHistory(_))
+      .Times(0);
+
+  // Create test bitmap.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  std::vector<unsigned char> encoded;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &encoded);
+  // Respond with encoded image string when image is downloaded.
+  test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& request) {}));
+  std::string image_url("https://example.com/image.png");
+  test_url_loader_factory().AddResponse(
+      image_url, std::string(encoded.begin(), encoded.end()));
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  base::Token token = base::Token::CreateRandom();
+  handler->SetBackgroundToInspirationImage(token, GURL(image_url));
+  task_environment().AdvanceClock(base::Milliseconds(123));
+  task_environment().RunUntilIdle();
+  std::move(decoder_callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_EQ(token_arg, token);
+  EXPECT_EQ(bitmap_arg.getColor(0, 0), bitmap.getColor(0, 0));
+  EXPECT_EQ(bitmap_arg.width(), bitmap.width());
+  EXPECT_EQ(bitmap_arg.height(), bitmap.height());
+  EXPECT_EQ(timer_arg.Elapsed().InMilliseconds(), 123);
+  EXPECT_TRUE(is_inspiration_image_arg);
+
+  // Ensure that after resetting a handler, no call is made to
+  // |mock_wallpaper_search_background_manager|'s,
+  // |SaveCurrentBackgroundToHistory|. The expectation is declared earlier in
+  // this test.
+  handler.reset();
 }

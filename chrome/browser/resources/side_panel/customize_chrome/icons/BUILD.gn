@@ -10,10 +10,12 @@ generate_grd("build_grdp") {
   grd_prefix = "side_panel_customize_chrome"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
+    "collapse_carets.svg",
     "chrome_web_store.svg",
     "corner_new_tab_page.svg",
     "coupons.svg",
     "delete.svg",
+    "expand_carets.svg",
     "generated_image.svg",
     "gm3_corner_new_tab_page.svg",
     "gm3_mini_new_tab_page.svg",

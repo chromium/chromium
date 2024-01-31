@@ -162,6 +162,7 @@ void NtpCustomBackgroundService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
                                 false);
   registry->RegisterStringPref(prefs::kNtpCustomBackgroundLocalToDeviceId, "");
+  registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundInspiration, false);
   // Register wallpaper search profile prefs.
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
@@ -178,6 +179,7 @@ void NtpCustomBackgroundService::ResetNtpTheme(Profile* profile) {
   pref_service->ClearPref(prefs::kNtpCustomBackgroundDict);
   pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
   pref_service->ClearPref(prefs::kNtpCustomBackgroundLocalToDeviceId);
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundInspiration, false);
 }
 
 // static
@@ -449,6 +451,8 @@ NtpCustomBackgroundService::GetCustomBackground() {
     custom_background->is_uploaded_image = true;
     custom_background->local_background_id =
         base::Token::FromString(local_background_id);
+    custom_background->is_inspiration_image =
+        pref_service_->GetBoolean(prefs::kNtpCustomBackgroundInspiration);
     custom_background->custom_background_snapshot_url = GURL();
     custom_background->custom_background_attribution_line_1 = std::string();
     custom_background->custom_background_attribution_line_2 = std::string();
@@ -630,7 +634,8 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
 }
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
-    const base::Token& id) {
+    const base::Token& id,
+    bool is_inspiration_image) {
   background_updated_timestamp_ = base::TimeTicks::Now();
   // Remove the last local background if it exists. This is
   // temporary until multiple local images is supported.
@@ -638,6 +643,8 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
                            id.ToString());
+  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundInspiration,
+                            is_inspiration_image);
   NotifyAboutBackgrounds();
 }
 

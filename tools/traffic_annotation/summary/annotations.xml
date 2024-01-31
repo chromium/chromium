@@ -345,7 +345,7 @@ Refer to README.md for content description and update process.
  <item id="favicon_fetcher_get_favicon" added_in_milestone="106" content_hash_code="0640ce11" os_list="android" file_path="chrome/browser/supervised_user/android/favicon_fetcher.cc" />
  <item id="k_anonymity_service_get_token" added_in_milestone="106" content_hash_code="02bc56b0" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.cc" />
  <item id="enhanced_network_tts" added_in_milestone="103" content_hash_code="03c12345" os_list="chromeos" file_path="chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc" />
- <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="0680ae03" os_list="windows,chromeos,linux" file_path="chrome/browser/ui/commerce/commerce_ui_tab_helper.cc" />
+ <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="0680ae03" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/commerce/commerce_ui_tab_helper.cc" />
  <item id="chrome_commerce_price_email_pref_fetcher" added_in_milestone="107" content_hash_code="03bbefb2" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="chrome_commerce_price_email_pref_sender" added_in_milestone="107" content_hash_code="02ff3431" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="receive_messages_express" added_in_milestone="108" content_hash_code="032122e0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc" />
@@ -434,7 +434,9 @@ Refer to README.md for content description and update process.
  <item id="report_check_in" added_in_milestone="119" content_hash_code="02080b2e" os_list="chromeos" file_path="chromeos/ash/components/report/device_metrics/use_case/use_case.cc" />
  <item id="plus_address_reservation" added_in_milestone="119" content_hash_code="07081e5f" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
  <item id="plus_address_confirmation" added_in_milestone="119" content_hash_code="0578a939" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
- <item id="customize_chrome_page_handler" added_in_milestone="120" content_hash_code="003c50db" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
+ <item id="wallpaper_search_handler_descriptors_fetcher" added_in_milestone="120" content_hash_code="008c98f3" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
+ <item id="wallpaper_search_handler_inspirations_fetcher" added_in_milestone="121" content_hash_code="023b86de" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
+ <item id="wallpaper_search_handler_inspiration_image_downloader" added_in_milestone="121" content_hash_code="081d433b" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
  <item id="almanac_icon_cache" added_in_milestone="120" content_hash_code="04ca8028" os_list="chromeos" file_path="chrome/browser/apps/almanac_api_client/almanac_icon_cache.cc" />
  <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="0347f2e2" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
  <item id="blink_fetch_later_manager" added_in_milestone="120" content_hash_code="00cb800a" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/core/fetch/fetch_manager.cc" />
@@ -447,9 +449,13 @@ Refer to README.md for content description and update process.
  <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/aida_client.cc" />
  <item id="tasks_integration" added_in_milestone="121" content_hash_code="0189cea5" os_list="chromeos" file_path="chrome/browser/ui/ash/api/tasks/chrome_tasks_delegate.cc" />
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />
- <item id="customize_chrome_page_handler_image" added_in_milestone="122" content_hash_code="00acf0a5" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
+ <item id="customize_chrome_page_handler_image" added_in_milestone="122" content_hash_code="00acf0a5" os_list="chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.cc" />
  <item id="model_quality_logging" added_in_milestone="121" content_hash_code="0282aed0" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.cc" />
  <item id="wallpaper_create_themes_model_execution" added_in_milestone="121" content_hash_code="01b58bbb" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="tab_organizer_model_execution" added_in_milestone="121" content_hash_code="06b6c6d3" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="help_me_write_model_execution" added_in_milestone="121" content_hash_code="069a7ee5" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="launcher_manatee" added_in_milestone="122" content_hash_code="044566df" os_list="chromeos" file_path="chrome/browser/ash/app_list/search/manatee/manatee_cache.cc" />
+ <item id="chromeos_picker_gif_fetcher" added_in_milestone="122" content_hash_code="0071e5db" os_list="chromeos" file_path="chrome/browser/ui/ash/picker/picker_client_impl.cc" />
+ <item id="prewarm_http_disk_cache" added_in_milestone="122" content_hash_code="0797a094" os_list="chromeos" file_path="chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.cc" />
+ <item id="admin_specified_ppd_fetch" added_in_milestone="122" content_hash_code="009beea1" os_list="chromeos" file_path="chromeos/printing/remote_ppd_fetcher.cc" />
 </annotations>

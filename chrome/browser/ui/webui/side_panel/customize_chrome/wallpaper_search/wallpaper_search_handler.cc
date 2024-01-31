@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -30,7 +31,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -126,11 +130,8 @@ WallpaperSearchHandler::WallpaperSearchHandler(
       session_id_(session_id),
       client_(std::move(pending_client)),
       receiver_(this, std::move(pending_handler)) {
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kNtpWallpaperSearchHistory,
-      base::BindRepeating(&WallpaperSearchHandler::UpdateHistory,
-                          weak_ptr_factory_.GetWeakPtr()));
+  wallpaper_search_background_manager_observation_.Observe(
+      wallpaper_search_background_manager);
 }
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
@@ -176,17 +177,18 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_descriptors_fetcher", R"(
         semantics {
           sender: "Customize Chrome"
           description:
-            "This service downloads different configurations "
-            "for Customize Chrome."
+            "This service downloads different descriptors "
+            "for Customize Chrome's Wallpaper Search."
           trigger:
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "None."
+          data: "Sends the URL to where the descriptor's JSON is located."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -194,7 +196,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
             }
           }
           user_data {
-            type: NONE
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2023-10-10"
         }
@@ -226,12 +228,13 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
 }
 
 void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
-  callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         absl::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler_image",
-                                          R"(
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_inspirations_fetcher",
+          R"(
         semantics {
           sender: "Customize Chrome"
           description:
@@ -241,7 +244,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "None."
+          data: "Sends the URL to where the example images' JSON is located."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -249,7 +252,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
             }
           }
           user_data {
-            type: NONE
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2024-01-10"
         }
@@ -268,7 +271,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      GURL(base::StrCat({kGstaticBaseURL, "inspirations.json"}));
+      GURL(base::StrCat({kGstaticBaseURL, "inspirations_en-US.json"}));
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
 
@@ -376,7 +379,68 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     history_entry_->mood = descriptors->mood;
   }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
-      result_id, bitmap, base::ElapsedTimer());
+      result_id, bitmap, /*is_inspiration_image=*/false, base::ElapsedTimer());
+}
+
+void WallpaperSearchHandler::SetBackgroundToInspirationImage(
+    const base::Token& id,
+    const GURL& background_url) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_inspiration_image_downloader", R"(
+        semantics {
+          sender: "Customize Chrome"
+          description:
+            "Downloads an image to customize Chrome's appearance "
+            "i.e. change NTP background image and extract colors from the "
+            "image to change Chrome's color."
+          trigger:
+            "Pressing an image under the category titled 'Inspiration' "
+            "in Customize Chrome on the Desktop NTP, "
+            "if Google is the default search provider "
+            "and the user is signed in."
+          data: "Sends the URL for the image that the user selected."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2024-01-12"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by signing out or "
+            "selecting a non-Google default search engine in Chrome "
+            "settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(background_url);
+  resource_request->request_initiator =
+      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+
+  image_download_simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  image_download_simple_url_loader_->SetRetryOptions(
+      /*max_retries=*/3,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+  image_download_simple_url_loader_->DownloadToString(
+      profile_->GetURLLoaderFactory().get(),
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationImageDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), id, base::ElapsedTimer()),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void WallpaperSearchHandler::UpdateHistory() {
@@ -437,6 +501,16 @@ void WallpaperSearchHandler::OpenHelpArticle() {
   Navigate(&navigate_params);
 }
 
+void WallpaperSearchHandler::LaunchHatsSurvey() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WallpaperSearchHandler::LaunchDelayedHatsSurvey,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::GetFieldTrialParamByFeatureAsTimeDelta(
+          features::kHappinessTrackingSurveysForWallpaperSearch,
+          ntp_features::kWallpaperSearchHatsDelayParam, base::TimeDelta()));
+}
+
 void WallpaperSearchHandler::ShowFeedbackPage() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (skip_show_feedback_page_for_testing_) {
@@ -470,6 +544,10 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
       /*category_tag=*/"wallpaper_search",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
+void WallpaperSearchHandler::OnHistoryUpdated() {
+  WallpaperSearchHandler::UpdateHistory();
 }
 
 // This function is a wrapper around image_fetcher::ImageDecoder::DecodeImage()
@@ -624,6 +702,30 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   client_->SetHistory(std::move(thumbnails));
 }
 
+void WallpaperSearchHandler::OnInspirationImageDownloaded(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    std::unique_ptr<std::string> response_body) {
+  if (!response_body) {
+    // Network errors (i.e. the server did not provide a response).
+    DVLOG(1) << "Request failed with error: "
+             << image_download_simple_url_loader_->NetError();
+    return;
+  }
+  image_decoder_->DecodeImage(
+      *response_body, gfx::Size(), nullptr,
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), id, std::move(timer)));
+}
+
+void WallpaperSearchHandler::OnInspirationImageDecoded(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    const gfx::Image& image) {
+  wallpaper_search_background_manager_->SelectLocalBackgroundImage(
+      id, image.AsBitmap(), /*is_inspiration_image=*/true, std::move(timer));
+}
+
 void WallpaperSearchHandler::OnInspirationsRetrieved(
     GetInspirationsCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -631,7 +733,7 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
              << inspirations_simple_url_loader_->NetError();
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -652,46 +754,86 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
 void WallpaperSearchHandler::OnInspirationsJsonParsed(
     GetInspirationsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
+  if (!result.has_value() || !result->is_list()) {
     DVLOG(1) << "Parsing JSON failed: " << result.error();
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
-
-  const base::Value::List* inspiration_a =
-      result->GetDict().FindList("inspiration_a");
-  if (!inspiration_a) {
-    DVLOG(1) << "Parsing JSON failed: no valid inspirations.";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
-      mojo_inspiration_a_list;
-  if (inspiration_a) {
-    for (const auto& inspiration : *inspiration_a) {
-      const base::Value::Dict& inspiration_a_dict = inspiration.GetDict();
-      auto* background_image =
-          inspiration_a_dict.FindString("background_image");
-      auto* thumbnail_image = inspiration_a_dict.FindString("thumbnail_image");
-      if (!background_image || !thumbnail_image) {
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      mojo_inspiration_groups;
+  for (const auto& inspiration : result->GetList()) {
+    if (!inspiration.is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& inspiration_dict = inspiration.GetDict();
+    const base::Value::List* images = inspiration_dict.FindList("images");
+    const std::string* descriptor_a =
+        inspiration_dict.FindString("descriptor_a");
+    if (!images || !descriptor_a) {
+      continue;
+    }
+    auto mojo_inspiration_group =
+        side_panel::customize_chrome::mojom::InspirationGroup::New();
+    mojo_inspiration_group->descriptors =
+        side_panel::customize_chrome::mojom::ResultDescriptors::New();
+    mojo_inspiration_group->descriptors->subject = *descriptor_a;
+    if (const std::string* descriptor_b =
+            inspiration_dict.FindString("descriptor_b")) {
+      mojo_inspiration_group->descriptors->style = *descriptor_b;
+    }
+    if (const std::string* descriptor_c =
+            inspiration_dict.FindString("descriptor_c")) {
+      mojo_inspiration_group->descriptors->mood = *descriptor_c;
+    }
+    if (const base::Value::Dict* descriptor_d_dict =
+            inspiration_dict.FindDict("descriptor_d")) {
+      if (const std::string* descriptor_d_name =
+              descriptor_d_dict->FindString("name")) {
+        if (descriptor_d_name->compare("Yellow") == 0) {
+          mojo_inspiration_group->descriptors->color =
+              side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
+                  side_panel::customize_chrome::mojom::DescriptorDName::
+                      kYellow);
+        }
+      }
+    }
+    std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
+        mojo_inspiration_list;
+    for (const auto& image : *images) {
+      const base::Value::Dict& image_dict = image.GetDict();
+      const std::string* background_image =
+          image_dict.FindString("background_image");
+      const std::string* thumbnail_image =
+          image_dict.FindString("thumbnail_image");
+      const std::string* description = image_dict.FindString("description");
+      const std::string* id_string = image_dict.FindString("id");
+      if (!background_image || !thumbnail_image || !description || !id_string) {
         continue;
       }
-      auto mojo_inspiration_a =
+      const absl::optional<base::Token> id_token =
+          base::Token::FromString(*id_string);
+      if (!id_token.has_value()) {
+        continue;
+      }
+      auto mojo_inspiration =
           side_panel::customize_chrome::mojom::Inspiration::New();
-      mojo_inspiration_a->background_url =
+      mojo_inspiration->id = id_token.value();
+      mojo_inspiration->background_url =
           GURL(base::StrCat({kGstaticBaseURL, *background_image}));
-      mojo_inspiration_a->thumbnail_url =
+      mojo_inspiration->thumbnail_url =
           GURL(base::StrCat({kGstaticBaseURL, *thumbnail_image}));
-      mojo_inspiration_a_list.push_back(std::move(mojo_inspiration_a));
+      mojo_inspiration->description = *description;
+      mojo_inspiration_list.push_back(std::move(mojo_inspiration));
+    }
+    if (mojo_inspiration_list.size() > 0) {
+      mojo_inspiration_group->inspirations = std::move(mojo_inspiration_list);
+      mojo_inspiration_groups.push_back(std::move(mojo_inspiration_group));
     }
   }
-
-  if (!mojo_inspiration_a_list.empty()) {
-    auto mojo_inspirations =
-        side_panel::customize_chrome::mojom::Inspirations::New();
-    mojo_inspirations->inspiration_a = std::move(mojo_inspiration_a_list);
-    std::move(callback).Run(std::move(mojo_inspirations));
+  if (mojo_inspiration_groups.size() > 0) {
+    std::move(callback).Run(std::move(mojo_inspiration_groups));
+  } else {
+    std::move(callback).Run(absl::nullopt);
   }
 }
 
@@ -862,4 +1004,11 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
   std::move(callback).Run(
       side_panel::customize_chrome::mojom::WallpaperSearchStatus::kOk,
       std::move(thumbnails));
+}
+
+void WallpaperSearchHandler::LaunchDelayedHatsSurvey() {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchSurvey(kHatsSurveyTriggerWallpaperSearch);
 }

@@ -138,6 +138,10 @@ struct CustomBackground {
   // local background, rather than from wallpaper search.
   absl::optional<base::Token> local_background_id;
 
+  // Whether the image is an inspiration image. This information is only
+  // used if local_background_id is set.
+  bool is_inspiration_image;
+
   // First attribution string for custom background.
   std::string custom_background_attribution_line_1;
 

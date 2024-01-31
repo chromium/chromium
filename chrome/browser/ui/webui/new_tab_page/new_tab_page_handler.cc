@@ -256,8 +256,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       image_source = new_tab_page::mojom::NtpBackgroundImageSource::
           kFirstPartyThemeWithDailyRefresh;
     } else if (custom_background->local_background_id.has_value()) {
-      image_source =
-          new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch;
+      if (custom_background->is_inspiration_image) {
+        image_source = new_tab_page::mojom::NtpBackgroundImageSource::
+            kWallpaperSearchInspiration;
+      } else {
+        image_source =
+            new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch;
+      }
     } else if (custom_background->is_uploaded_image) {
       image_source =
           new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage;
