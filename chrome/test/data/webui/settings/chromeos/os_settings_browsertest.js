@@ -32,8 +32,7 @@ var OSSettingsBrowserTest = class extends PolymerTest {
 
 [['AboutPage', 'os_about_page_tests.js'],
  [
-   'ApnSubpage', 'apn_subpage_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
+   'ApnSubpage', 'apn_subpage_test.js', {enabled: ['ash::features::kApnRevamp']}
  ],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],

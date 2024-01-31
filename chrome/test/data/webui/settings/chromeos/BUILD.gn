@@ -19,8 +19,8 @@ mojom("test_api_mojom") {
 
 build_webui_tests("build") {
   files = [
-    "apn_subpage_tests.js",
     "apn_detail_dialog_test.ts",
+    "apn_subpage_test.ts",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
     "esim_remove_profile_dialog_test.js",

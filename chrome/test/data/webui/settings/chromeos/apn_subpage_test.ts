@@ -5,28 +5,53 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
+import {ApnSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {DeviceStateProperties, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('ApnSubpageTest', function() {
-  /** @type {ApnSubpageElement} */
-  let apnSubpage = null;
+import {clearBody} from './utils.js';
 
-  /** @type {?CrosNetworkConfigRemote} */
-  let mojoApi_ = null;
+suite('ApnSubpageTest', () => {
+  let apnSubpage: ApnSubpageElement;
+  let mojoApi_: FakeNetworkConfig;
 
-  setup(async function() {
-    PolymerTest.clearBody();
+  function getDefaultDeviceStateProps(): DeviceStateProperties {
+    return {
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: undefined,
+      macAddress: undefined,
+      scanning: false,
+      simLockStatus: undefined,
+      simInfos: undefined,
+      inhibitReason: InhibitReason.kNotInhibited,
+      simAbsent: false,
+      deviceState: DeviceStateType.kUninitialized,
+      type: NetworkType.kCellular,
+      managedNetworkAvailable: false,
+      serial: undefined,
+      isCarrierLocked: false,
+    };
+  }
+
+  function getApnList(): ApnList|null {
+    return apnSubpage.shadowRoot!.querySelector('apn-list');
+  }
+
+  setup(async () => {
+    clearBody();
     mojoApi_ = new FakeNetworkConfig();
     mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
     mojoApi_.setManagedPropertiesForTest(OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular'));
-    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi_);
 
     // Start at BASIC route so that if the APN subpage navigates backwards, it
     // goes back to BASIC and not the previous tests' last page (crbug/1497312).
@@ -42,45 +67,45 @@ suite('ApnSubpageTest', function() {
     return flushTasks();
   });
 
-  teardown(function() {
+  teardown(() => {
     return flushTasks().then(() => {
       apnSubpage.remove();
-      apnSubpage = null;
       Router.getInstance().resetRouteForTesting();
     });
   });
 
-  test('Check if APN list exists', async function() {
+  test('Check if APN list exists', async () => {
     assertTrue(!!apnSubpage);
-    assertTrue(!!apnSubpage.shadowRoot.querySelector('apn-list'));
+    assertTrue(!!getApnList());
   });
 
-  test('Page closed while device is updating', async function() {
+  test('Page closed while device is updating', async () => {
     const oldClose = apnSubpage.close;
     let counter = 0;
     apnSubpage.close = () => {
       counter++;
-      oldClose.apply(apnSubpage, arguments);
+      oldClose.apply(apnSubpage);
     };
     mojoApi_.beforeGetDeviceStateList = () => {
       apnSubpage.close();
     };
     mojoApi_.setDeviceStateForTest({
+      ...getDefaultDeviceStateProps(),
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       scanning: true,
     });
     await flushTasks();
     assertEquals(1, counter);
-    assertFalse(!!apnSubpage.managedProperties_);
+    assertEquals(undefined, apnSubpage.get('managedProperties_'));
   });
 
-  test('Page closed while network is updating', async function() {
+  test('Page closed while network is updating', async () => {
     const oldClose = apnSubpage.close;
     let counter = 0;
     apnSubpage.close = () => {
       counter++;
-      oldClose.apply(apnSubpage, arguments);
+      oldClose.apply(apnSubpage);
     };
     mojoApi_.beforeGetManagedProperties = () => {
       apnSubpage.close();
@@ -89,19 +114,20 @@ suite('ApnSubpageTest', function() {
         NetworkType.kCellular, 'cellular_guid', 'cellular'));
     await flushTasks();
     assertEquals(1, counter);
-    assertFalse(!!apnSubpage.managedProperties_);
+    assertEquals(undefined, apnSubpage.get('managedProperties_'));
   });
 
   test(
       'Only updating with different device state should call networkDetails',
-      async function() {
+      async () => {
         let counter = 0;
-        const oldGetNetworkDetails = apnSubpage.getNetworkDetails_;
-        apnSubpage.getNetworkDetails_ = () => {
+        const oldGetNetworkDetails = apnSubpage.get('getNetworkDetails_');
+        apnSubpage.set('getNetworkDetails_', () => {
           counter++;
-          oldGetNetworkDetails.apply(apnSubpage, arguments);
-        };
+          oldGetNetworkDetails.apply(apnSubpage);
+        });
         mojoApi_.setDeviceStateForTest({
+          ...getDefaultDeviceStateProps(),
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           macAddress: 'n1',
@@ -111,6 +137,7 @@ suite('ApnSubpageTest', function() {
         // full match - we won't call getNetworkDetails.
         assertEquals(0, counter);
         mojoApi_.setDeviceStateForTest({
+          ...getDefaultDeviceStateProps(),
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           macAddress: 'n1',
@@ -122,6 +149,7 @@ suite('ApnSubpageTest', function() {
         // represented at network level in ONC.
         assertEquals(1, counter);
         mojoApi_.setDeviceStateForTest({
+          ...getDefaultDeviceStateProps(),
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kDisabled,
           macAddress: 'n2',
@@ -131,6 +159,7 @@ suite('ApnSubpageTest', function() {
         // getNetworkDetails, because the deviceState has changed.
         assertEquals(2, counter);
         mojoApi_.setDeviceStateForTest({
+          ...getDefaultDeviceStateProps(),
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           macAddress: 'n2',
@@ -140,6 +169,7 @@ suite('ApnSubpageTest', function() {
         // getNetworkDetails, because the deviceState has changed.
         assertEquals(3, counter);
         mojoApi_.setDeviceStateForTest({
+          ...getDefaultDeviceStateProps(),
           type: NetworkType.kCellular,
           deviceState: DeviceStateType.kEnabled,
           macAddress: 'n2',
@@ -150,23 +180,25 @@ suite('ApnSubpageTest', function() {
         assertEquals(4, counter);
       });
 
-  test('Error state is propagated to <apn-list>', async function() {
-    let props = OncMojo.getDefaultManagedProperties(
+  test('Error state is propagated to <apn-list>', async () => {
+    let props: ManagedProperties = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular');
     mojoApi_.setManagedPropertiesForTest(props);
     await flushTasks();
-    const getApnList = () => apnSubpage.shadowRoot.querySelector('apn-list');
-    assertFalse(!!getApnList().errorState);
+    assertEquals(undefined, getApnList()!.errorState);
 
-    props = Object.assign({}, props);
     const error = 'connect-failed';
-    props.errorState = error;
+    props = {
+      ...props,
+      errorState: error,
+    };
+
     mojoApi_.setManagedPropertiesForTest(props);
     await flushTasks();
-    assertEquals(error, getApnList().errorState);
+    assertEquals(error, getApnList()!.errorState);
   });
 
-  test('Close is called more than once.', async function() {
+  test('Close is called more than once.', async () => {
     let counter = 0;
     const navigateToPreviousRoute =
         Router.getInstance().navigateToPreviousRoute;
@@ -183,7 +215,7 @@ suite('ApnSubpageTest', function() {
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
 
-  test('Network removed while on subpage', async function() {
+  test('Network removed while on subpage', async () => {
     let counter = 0;
     const navigateToPreviousRoute =
         Router.getInstance().navigateToPreviousRoute;
@@ -201,7 +233,7 @@ suite('ApnSubpageTest', function() {
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
 
-  test('Network removed while not on subpage', async function() {
+  test('Network removed while not on subpage', async () => {
     // Navigate to a different page.
     const params = new URLSearchParams();
     params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
@@ -226,18 +258,19 @@ suite('ApnSubpageTest', function() {
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
 
-  test('Portal state is propagated to <apn-list>', async function() {
-    let props = OncMojo.getDefaultManagedProperties(
+  test('Portal state is propagated to <apn-list>', async () => {
+    let props: ManagedProperties = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular');
     mojoApi_.setManagedPropertiesForTest(props);
     await flushTasks();
-    const getApnList = () => apnSubpage.shadowRoot.querySelector('apn-list');
-    assertFalse(!!getApnList().portalState);
+    assertEquals(PortalState.kUnknown, getApnList()!.portalState);
 
-    props = Object.assign({}, props);
-    props.portalState = PortalState.kNoInternet;
+    props = {
+      ...props,
+      portalState: PortalState.kNoInternet,
+    };
     mojoApi_.setManagedPropertiesForTest(props);
     await flushTasks();
-    assertEquals(PortalState.kNoInternet, getApnList().portalState);
+    assertEquals(PortalState.kNoInternet, getApnList()!.portalState);
   });
 });

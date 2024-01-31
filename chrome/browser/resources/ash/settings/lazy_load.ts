@@ -187,6 +187,7 @@ export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrows
 export {ContainerSelectElement} from './guest_os/guest_os_container_select.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
+export {ApnSubpageElement} from './internet_page/apn_subpage.js';
 export {CellularNetworksListElement} from './internet_page/cellular_networks_list.js';
 export {CellularRoamingToggleButtonElement} from './internet_page/cellular_roaming_toggle_button.js';
 export {EsimInstallErrorDialogElement} from './internet_page/esim_install_error_dialog.js';
