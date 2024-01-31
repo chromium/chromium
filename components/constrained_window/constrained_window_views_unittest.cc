@@ -273,8 +273,8 @@ TEST_F(ConstrainedWindowViewsTest, ClampDialogHostWindowToNearestDisplay) {
     // The host window should be completely within the work area of the display.
     EXPECT_TRUE(extents.Contains(repositioned_host_bounds));
 
-    // The dialog should be completely within the host's client area.
-    EXPECT_TRUE(repositioned_host_bounds.Contains(dialog_bounds));
+    // The dialog should be visible in the host's client area.
+    EXPECT_TRUE(repositioned_host_bounds.Intersects(dialog_bounds));
   } else {
     // The dialog with bounds set using relative positioning should fit within
     // the bounds of the host.

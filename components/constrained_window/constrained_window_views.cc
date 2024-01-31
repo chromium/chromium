@@ -136,20 +136,14 @@ void UpdateModalDialogPosition(views::Widget* widget,
     // outside the bounds of the transient parent.
     DCHECK(initial_dialog_bounds.Intersects(initial_host_bounds));
 
-    // We should not show a window-modal dialog for a window that exists outside
-    // the bounds of the screen. This risks the modal window becoming
-    // effectively deadlocked as controls to dismiss the dialog may become
-    // inaccessible.
-    // It is also insufficient to reposition only the dialog but not the host
-    // window as many systems will clip child dialogs to their transient
-    // parents. Further, if the window-constrained dialog is visually
-    // disassociated with its parent window it may be difficult to discern which
-    // window the dialog is modal to.
+    // Move the host so that it becomes fully visible on screen, otherwise
+    // it risks the modal window becoming effectively deadlocked as controls to
+    // dismiss the dialog may become inaccessible.
     host_widget->SetBoundsConstrained(initial_host_bounds);
+
     const gfx::Rect adjusted_host_bounds =
         host_widget->GetClientAreaBoundsInScreen();
     dialog_bounds += adjusted_host_bounds.OffsetFromOrigin();
-    dialog_bounds.AdjustToFit(adjusted_host_bounds);
   }
 
   widget->SetBounds(dialog_bounds);
