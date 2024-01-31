@@ -397,6 +397,10 @@ bool AddAutofillProfileToTable(sql::Database* db,
         type == ADDRESS_HOME_ADMIN_LEVEL2) {
       continue;
     }
+    if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
+        type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
+      continue;
+    }
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
