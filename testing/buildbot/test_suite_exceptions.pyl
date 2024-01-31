@@ -1677,10 +1677,6 @@
   },
   'chrome_wpt_tests': {
     'modifications': {
-      # make this experimental for now and reenable it once we switch to the new headless mode
-      'Linux Tests': {
-        'experiment_percentage': 100,
-      },
       'linux-wpt-chromium-rel': {
         'args': [
           '--additional-driver-flag=--headless=new'

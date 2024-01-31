@@ -6033,7 +6033,6 @@
       'chromedriver_py_tests_isolated_scripts',
       'chromium_web_tests_brfetch_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
-      'chromium_wpt_tests_isolated_scripts',
       'desktop_chromium_isolated_scripts',
       'desktop_once_isolated_scripts',
       'linux_specific_chromium_isolated_scripts',
