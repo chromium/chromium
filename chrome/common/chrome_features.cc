@@ -1243,6 +1243,13 @@ BASE_FEATURE(kSitePerProcess,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables the SkyVault (cloud-first) changes, some of which are also controlled
+// by policies: removing local storage, saving downloads and screen captures to
+// the cloud, and related UX changes, primarily in the Files App.
+BASE_FEATURE(kSkyVault, "SkyVault", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables SmartDim on Chrome OS.
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);
