@@ -11,8 +11,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -20,6 +23,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -207,6 +213,39 @@ bool IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return trigger_source ==
          AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+}
+
+void DumpWithoutCrashingForDuplicateIds(const FormData& form) {
+  SCOPED_CRASH_KEY_STRING64("AFCrash", "URL", form.url.possibly_invalid_spec());
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "IDs",
+                          base::MakeFlatSet<FieldGlobalId>(
+                              form.fields, {}, &FormFieldData::global_id)
+                              .size());
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "FIELDs", form.fields.size());
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "FRAMEs",
+                          base::MakeFlatSet<LocalFrameToken>(
+                              form.fields, {}, &FormFieldData::host_frame)
+                              .size());
+
+  std::map<FieldGlobalId, std::vector<LocalFrameToken>> id_to_fields;
+  for (const FormFieldData& field : form.fields) {
+    id_to_fields[field.global_id()].push_back(field.host_frame);
+  }
+  size_t same_frame = 0;
+  size_t diff_frame = 0;
+  for (auto& [field_id, duplicate_fields] : id_to_fields) {
+    if (duplicate_fields.size() > 1) {
+      ++(base::ranges::all_of(duplicate_fields,
+                              [&duplicate_fields](LocalFrameToken token) {
+                                return token == duplicate_fields.front();
+                              })
+             ? same_frame
+             : diff_frame);
+    }
+  }
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "SameFrameDuplicateIDs", same_frame);
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "DiffFrameDuplicateIDs", diff_frame);
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace autofill

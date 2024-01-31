@@ -25,6 +25,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2040,6 +2041,13 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
   // This is used to limit the maximum number of fills per value.
   base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
+
+  if (base::flat_set<FieldGlobalId> field_ids =
+          base::MakeFlatSet<FieldGlobalId>(form_structure, {},
+                                           &FormFieldData::global_id);
+      field_ids.size() != form_structure.field_count()) {
+    DumpWithoutCrashingForDuplicateIds(form_structure.ToFormData());
+  }
 
   CHECK_EQ(form.fields.size(), form_structure.field_count());
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =

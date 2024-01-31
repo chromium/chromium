@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
@@ -215,8 +216,9 @@ bool IsElementInControlElementSet(
 // Returns true if |node| is an element and it is a container type that
 // InferLabelForElement() can traverse.
 bool IsTraversableContainerElement(const WebNode& node) {
-  if (!node.IsElementNode())
+  if (!node.IsElementNode()) {
     return false;
+  }
 
   const WebElement element = node.To<WebElement>();
   return HasTagName<kDefinitionDescriptionTag>(element) ||
@@ -1493,6 +1495,12 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
                        form.fields.size() < kMaxExtractableFields;
   if (!success) {
     return std::nullopt;
+  }
+  if (base::flat_set<FieldRendererId> field_ids =
+          base::MakeFlatSet<FieldRendererId>(
+              form.fields, {}, &FormFieldData::unique_renderer_id);
+      field_ids.size() != form.fields.size()) {
+    DumpWithoutCrashingForDuplicateIds(form);
   }
   return form;
 }
