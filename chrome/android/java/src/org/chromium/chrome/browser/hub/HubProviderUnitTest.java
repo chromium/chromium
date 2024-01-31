@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -19,7 +20,6 @@ import android.app.Activity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,6 +58,7 @@ public class HubProviderUnitTest {
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
 
+    @Mock private Callback<HubManager> mHubManagerCallback;
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Pane mMockTabSwitcherPane;
@@ -101,11 +103,6 @@ public class HubProviderUnitTest {
                         () -> mMenuButtonCoordinator);
     }
 
-    @After
-    public void tearDown() {
-        mHubProvider.destroy();
-    }
-
     @Test
     @SmallTest
     public void testHubProvider() {
@@ -114,6 +111,7 @@ public class HubProviderUnitTest {
         var hubManagerSupplier = mHubProvider.getHubManagerSupplier();
         assertNotNull(hubManagerSupplier);
         assertFalse(hubManagerSupplier.hasValue());
+        hubManagerSupplier.onAvailable(mHubManagerCallback);
 
         builder.registerPane(
                 PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockTabSwitcherPane));
@@ -159,5 +157,67 @@ public class HubProviderUnitTest {
         assertEquals(mMockTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
         verify(mTabModelSelector, times(2)).commitAllTabClosures();
         verify(mTabModelSelector).selectModel(false);
+
+        verify(mHubManagerCallback).bind(any());
+
+        mHubProvider.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testHubProviderDestroyBeforeOnAvailable() {
+        PaneListBuilder builder = mHubProvider.getPaneListBuilder();
+
+        var hubManagerSupplier = mHubProvider.getHubManagerSupplier();
+        assertNotNull(hubManagerSupplier);
+        assertFalse(hubManagerSupplier.hasValue());
+
+        builder.registerPane(
+                PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockTabSwitcherPane));
+        builder.registerPane(
+                PaneId.INCOGNITO_TAB_SWITCHER,
+                LazyOneshotSupplier.fromValue(mMockIncognitoTabSwitcherPane));
+        builder.registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mMockBookmarksPane));
+        assertFalse(builder.isBuilt());
+
+        HubManager hubManager = hubManagerSupplier.get();
+        assertNotNull(hubManager);
+        assertTrue(hubManagerSupplier.hasValue());
+        assertTrue(builder.isBuilt());
+
+        PaneManager paneManager = hubManager.getPaneManager();
+        assertNotNull(paneManager);
+
+        // This shouldn't crash.
+        mHubProvider.destroy();
+
+        ShadowLooper.runUiThreadTasks();
+    }
+
+    @Test
+    @SmallTest
+    public void testHubProviderDestroyBeforeCreation() {
+        PaneListBuilder builder = mHubProvider.getPaneListBuilder();
+
+        var hubManagerSupplier = mHubProvider.getHubManagerSupplier();
+        assertNotNull(hubManagerSupplier);
+        assertFalse(hubManagerSupplier.hasValue());
+        hubManagerSupplier.onAvailable(mHubManagerCallback);
+
+        builder.registerPane(
+                PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockTabSwitcherPane));
+        builder.registerPane(
+                PaneId.INCOGNITO_TAB_SWITCHER,
+                LazyOneshotSupplier.fromValue(mMockIncognitoTabSwitcherPane));
+        builder.registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mMockBookmarksPane));
+        assertFalse(builder.isBuilt());
+
+        assertFalse(hubManagerSupplier.hasValue());
+        mHubProvider.destroy();
+        ShadowLooper.runUiThreadTasks();
+
+        assertFalse(hubManagerSupplier.hasValue());
+        verify(mHubManagerCallback, never()).onResult(any());
+        verify(mHubManagerCallback, never()).bind(any());
     }
 }

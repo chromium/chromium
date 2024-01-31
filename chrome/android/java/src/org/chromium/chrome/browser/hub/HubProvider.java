@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -32,6 +33,7 @@ public class HubProvider {
     private final @NonNull Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final @NonNull Callback<Pane> mOnPaneFocused;
 
+    private @Nullable CallbackController mCallbackController = new CallbackController();
     private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
 
     /**
@@ -91,18 +93,27 @@ public class HubProvider {
                                 tabCount == null ? true : tabCount.intValue() == 0);
                     }
                 };
-        mHubManagerSupplier.onAvailable(this::onHubManagerAvailable);
+        mHubManagerSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::onHubManagerAvailable));
     }
 
     /** Destroys the {@link HubManager} it cannot be used again. */
     public void destroy() {
-        HubManager hubManager = mHubManagerSupplier.get();
-        if (hubManager == null) return;
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
 
-        hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
-        hubManager.destroy();
+        if (mHubTabSwitcherMetricsRecorder != null) {
+            mHubTabSwitcherMetricsRecorder.destroy();
+            mHubTabSwitcherMetricsRecorder = null;
+        }
 
-        mHubTabSwitcherMetricsRecorder.destroy();
+        if (mHubManagerSupplier.hasValue()) {
+            HubManager hubManager = mHubManagerSupplier.get();
+            hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
+            hubManager.destroy();
+        }
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */
