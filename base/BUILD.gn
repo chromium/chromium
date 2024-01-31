@@ -4585,6 +4585,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
+      "android/javatests/src/org/chromium/base/CommandLineInitUtilTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
       "android/javatests/src/org/chromium/base/IntentUtilsTest.java",
