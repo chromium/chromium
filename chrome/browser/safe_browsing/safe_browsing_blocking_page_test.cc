@@ -4409,7 +4409,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
 }
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        TriggerHitReportAndClientSafeBrowsingReportRequest) {
-  LOG(INFO) << "Starting test case";
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());
@@ -4421,9 +4420,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   // Verify correct CSBRR is sent.
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
-  LOG(INFO) << "Starting ClickAndWaitForDetach call";
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
-  LOG(INFO) << "Completed ClickAndWaitForDetach call";
   ASSERT_FALSE(IsShowingInterstitial());
   threat_report_sent_runner->Run();
   std::string serialized_report = GetReportSent();
@@ -4434,7 +4431,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   EXPECT_EQ(
       report.client_properties().url_api_type(),
       ClientSafeBrowsingReportRequest_SafeBrowsingUrlApiType_PVER5_NATIVE_REAL_TIME);
-  LOG(INFO) << "Completed test case";
 }
 
 class SafeBrowsingPrerenderBrowserTest
