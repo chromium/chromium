@@ -31,7 +31,7 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 [{
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": "0.007824"
+  "sampling_likelihood": "0.007925"
 }, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "OmniboxDirectURLInput",
@@ -39,11 +39,11 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": "0.000190"
+  "sampling_likelihood": "0.000182"
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": "0.023205"
+  "sampling_likelihood": "0.022167"
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxMousePredictor",
@@ -54,35 +54,51 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": "1.000000"
 }, {
   "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxTouchDownPredirector",
+  "sampling_likelihood": "0.294382"
+}, {
+  "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": "0.004185"
+  "sampling_likelihood": "0.002463"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": "1.000000"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": "0.010113"
+  "sampling_likelihood": "0.011186"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": "0.340065"
+  "sampling_likelihood": "0.364847"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": "0.057099"
+  "sampling_likelihood": "0.024857"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": "0.111760"
+  "sampling_likelihood": "0.117264"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOnBookmarkBar",
-  "sampling_likelihood": "0.306493"
+  "sampling_likelihood": "0.018748"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseHoverOnNewTabPage",
+  "sampling_likelihood": "0.823005"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": "0.010774"
+  "sampling_likelihood": "0.009997"
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "PointerDownOnBookmarkBar",
+  "sampling_likelihood": "0.058779"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "PointerDownOnNewTabPage",
   "sampling_likelihood": "1.000000"
 }, {
   "preloading_type": "Prerender",
