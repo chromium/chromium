@@ -4321,6 +4321,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.Feedback" enum="BooleanThumbsUp"
+    expires_after="2025-02-01">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the type of feedback that a user has for the Mahi feature. Emitted
+    when users click the thumbs up or thumbs down button in the panel.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Media.CameraPrivacySwitch.Event"
     enum="CameraPrivacySwitchEvent" expires_after="2023-09-03">
   <owner>tbarzic@chromium.org</owner>

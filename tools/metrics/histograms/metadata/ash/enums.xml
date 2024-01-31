@@ -281,6 +281,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Opened"/>
 </enum>
 
+<enum name="BooleanThumbsUp">
+  <int value="0" label="Thumbs down"/>
+  <int value="1" label="Thumbs up"/>
+</enum>
+
 <enum name="BrowserDataBackMigratorFinalStatus">
   <int value="0" label="Succeeded"/>
   <int value="1" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
