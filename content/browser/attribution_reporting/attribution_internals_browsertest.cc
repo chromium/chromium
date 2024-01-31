@@ -1000,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#reportTable')
      .shadowRoot.querySelector('input[type="checkbox"]').click();
-    document.getElementById('send-reports').click();
+    document.querySelector('#event-level-report-controls button').click();
   )"));
 
   // The real manager would do this itself, but the test manager requires manual
@@ -1312,9 +1312,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#aggregatableReportTable')
       .shadowRoot.querySelectorAll('input[type="checkbox"]')[1].click();
+    document.querySelector('#aggregatable-report-controls button').click();
   )"));
-  ASSERT_TRUE(ExecJsInWebUI(
-      "document.getElementById('send-aggregatable-reports').click();"));
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
@@ -1352,7 +1351,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 2 &&
             table.children[0].children[5]?.innerText === '1' &&
@@ -1381,7 +1380,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Toggle checkbox.
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#show-debug-event-reports input').click();)"));
+    document.querySelector('#event-level-report-controls input').click();)"));
 
   manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
                                             SourceBuilder(now).BuildStored())
@@ -1398,7 +1397,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[5]?.innerText === '2' &&
@@ -1426,7 +1425,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Toggle checkbox.
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#show-debug-event-reports input').click();)"));
+    document.querySelector('#event-level-report-controls input').click();)"));
 
   // The debug reports should be visible again and the hidden label should be
   // cleared.
@@ -1434,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#reportTable').shadowRoot
           .querySelector('tbody');
-      const label = document.querySelector('#show-debug-event-reports span');
+      const label = document.querySelector('#event-level-report-controls span');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 3 &&
             table.children[0].children[5]?.innerText === '1' &&

@@ -580,16 +580,17 @@ class AggregatableAttributionReport extends Report {
 }
 
 class ReportTableModel<T extends Report> extends TableModel<T> {
+  private readonly sendReportsButton: HTMLButtonElement;
   private readonly showDebugReportsCheckbox: HTMLInputElement;
   private readonly hiddenDebugReportsSpan: HTMLSpanElement;
+
   private sentOrDroppedReports: T[] = [];
   private storedReports: T[] = [];
   private debugReports: T[] = [];
 
   constructor(
-      cols: Array<Column<T>>, showDebugReportsContainer: HTMLElement,
-      private readonly sendReportsButton: HTMLButtonElement,
-      private readonly handler: HandlerInterface) {
+      container: HTMLElement, private readonly handler: HandlerInterface,
+      cols: Array<Column<T>>) {
     super(
         [
           stringOrBoolColumn('Status', (e) => e.status),
@@ -608,12 +609,12 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     const selectionColumn = new SelectionColumn<T>(this);
     this.cols.unshift(selectionColumn);
 
-    this.showDebugReportsCheckbox =
-        showDebugReportsContainer.querySelector<HTMLInputElement>(
-            'input[type="checkbox"]')!;
+    this.sendReportsButton = container.querySelector('button')!;
 
-    this.hiddenDebugReportsSpan =
-        showDebugReportsContainer.querySelector('span')!;
+    this.showDebugReportsCheckbox =
+        container.querySelector('input[type="checkbox"]')!;
+
+    this.hiddenDebugReportsSpan = container.querySelector('span')!;
 
     this.showDebugReportsCheckbox.addEventListener(
         'input', () => this.notifyRowsChanged());
@@ -708,43 +709,6 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.handler.sendReports(ids).then(() => {
       this.sendReportsButton.innerText = previousText;
     });
-  }
-}
-
-class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
-  constructor(
-      showDebugReportsContainer: HTMLElement,
-      sendReportsButton: HTMLButtonElement, remote: HandlerInterface) {
-    super(
-        [
-          numberColumn('Report Priority', (e) => e.reportPriority),
-          stringOrBoolColumn(
-              'Randomized Report', (e) => !e.attributedTruthfully),
-        ],
-        showDebugReportsContainer,
-        sendReportsButton,
-        remote,
-    );
-  }
-}
-
-class AggregatableAttributionReportTableModel extends
-    ReportTableModel<AggregatableAttributionReport> {
-  constructor(
-      showDebugReportsContainer: HTMLElement,
-      sendReportsButton: HTMLButtonElement, remote: HandlerInterface) {
-    super(
-        [
-          new CodeColumn<AggregatableAttributionReport>(
-              'Histograms', (e) => e.contributions),
-          stringOrBoolColumn('Verification Token', (e) => e.verificationToken),
-          urlColumn('Aggregation Coordinator', (e) => e.aggregationCoordinator),
-          stringOrBoolColumn('Null Report', (e) => e.isNullReport),
-        ],
-        showDebugReportsContainer,
-        sendReportsButton,
-        remote,
-    );
   }
 }
 
@@ -986,23 +950,28 @@ class AttributionInternals implements ObserverInterface {
   private readonly triggers = new TriggerTableModel();
   private readonly debugReports = new DebugReportTableModel();
   private readonly osRegistrations = new OsRegistrationTableModel();
-  private readonly eventLevelReports: EventLevelReportTableModel;
-  private readonly aggregatableReports: AggregatableAttributionReportTableModel;
+  private readonly eventLevelReports: ReportTableModel<EventLevelReport>;
+  private readonly aggregatableReports:
+      ReportTableModel<AggregatableAttributionReport>;
 
   private readonly handler = new HandlerRemote();
 
   constructor() {
-    this.eventLevelReports = new EventLevelReportTableModel(
-        document.querySelector<HTMLButtonElement>('#show-debug-event-reports')!,
-        document.querySelector<HTMLButtonElement>('#send-reports')!,
-        this.handler);
+    this.eventLevelReports = new ReportTableModel(
+        document.querySelector('#event-level-report-controls')!, this.handler, [
+          numberColumn('Report Priority', (e) => e.reportPriority),
+          stringOrBoolColumn(
+              'Randomized Report', (e) => !e.attributedTruthfully),
+        ]);
 
-    this.aggregatableReports = new AggregatableAttributionReportTableModel(
-        document.querySelector<HTMLButtonElement>(
-            '#show-debug-aggregatable-reports')!,
-        document.querySelector<HTMLButtonElement>('#send-aggregatable-reports')!
-        ,
-        this.handler);
+    this.aggregatableReports = new ReportTableModel(
+        document.querySelector('#aggregatable-report-controls')!, this.handler,
+        [
+          new CodeColumn('Histograms', (e) => e.contributions),
+          stringOrBoolColumn('Verification Token', (e) => e.verificationToken),
+          urlColumn('Aggregation Coordinator', (e) => e.aggregationCoordinator),
+          stringOrBoolColumn('Null Report', (e) => e.isNullReport),
+        ]);
 
     installUnreadIndicator(
         this.sources, document.querySelector<HTMLElement>('#sources-tab')!);
