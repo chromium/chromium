@@ -6456,6 +6456,21 @@
             ]
         }
     ],
+    "DynamicTopChrome": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DynamicTopChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "EarlyInitializeStartupMetrics": [
         {
             "platforms": [
