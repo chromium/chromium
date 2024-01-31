@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
@@ -136,8 +137,7 @@ class CampaignsManagerTest : public testing::Test {
   }
 
  protected:
-  void LoadComponentAndVerifyLoadComplete(
-      const base::StringPiece& file_content) {
+  void LoadComponentAndVerifyLoadComplete(std::string_view file_content) {
     TestCampaignsManagerObserver observer;
     campaigns_manager_->AddObserver(&observer);
 
@@ -162,9 +162,9 @@ class CampaignsManagerTest : public testing::Test {
   void MockDemoMode(bool in_demo_mode,
                     bool cloud_gaming_device,
                     bool feature_aware_device,
-                    const base::StringPiece& store_id,
-                    const base::StringPiece& retailer_id,
-                    const base::StringPiece& country) {
+                    std::string_view store_id,
+                    std::string_view retailer_id,
+                    std::string_view country) {
     EXPECT_CALL(mock_client_, IsDeviceInDemoMode)
         .WillRepeatedly(testing::Return(in_demo_mode));
     EXPECT_CALL(mock_client_, IsCloudGamingDevice)
@@ -179,9 +179,9 @@ class CampaignsManagerTest : public testing::Test {
   void MockDemoMode(bool in_demo_mode,
                     bool cloud_gaming_device,
                     bool feature_aware_device,
-                    const base::StringPiece& store_id,
-                    const base::StringPiece& retailer_id,
-                    const base::StringPiece& country,
+                    std::string_view store_id,
+                    std::string_view retailer_id,
+                    std::string_view country,
                     const base::Version& app_version) {
     MockDemoMode(in_demo_mode, cloud_gaming_device, feature_aware_device,
                  store_id, retailer_id, country);
