@@ -21,7 +21,6 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
@@ -1152,7 +1151,6 @@ public class CompositorViewHolder extends FrameLayout
             float topViewsTranslation = mBrowserControlsManager.getTopVisibleContentOffset();
             float bottomMargin =
                     BrowserControlsUtils.getBottomContentOffset(mBrowserControlsManager);
-            applyTranslationToTopChildViews(view, topViewsTranslation);
             applyMarginToFullscreenChildViews(view, topViewsTranslation, bottomMargin);
             tryUpdateControlsAndWebContentsSizing();
         }
@@ -1175,20 +1173,6 @@ public class CompositorViewHolder extends FrameLayout
                 ViewUtils.requestLayout(
                         child, "CompositorViewHolder.applyMarginToFullscreenChildViews");
                 TraceEvent.instant("FullscreenManager:child.requestLayout()");
-            }
-        }
-    }
-
-    private static void applyTranslationToTopChildViews(ViewGroup contentView, float translation) {
-        for (int i = 0; i < contentView.getChildCount(); i++) {
-            View child = contentView.getChildAt(i);
-            if (!(child.getLayoutParams() instanceof FrameLayout.LayoutParams)) continue;
-
-            FrameLayout.LayoutParams layoutParams =
-                    (FrameLayout.LayoutParams) child.getLayoutParams();
-            if (Gravity.TOP == (layoutParams.gravity & Gravity.FILL_VERTICAL)) {
-                child.setTranslationY(translation);
-                TraceEvent.instant("FullscreenManager:child.setTranslationY()");
             }
         }
     }
