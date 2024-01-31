@@ -251,7 +251,6 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                           .action(@selector(capitalizeWord:)),
               }),
               Item(IDS_SPEECH_MAC)
-                  .tag(50158)
                   .submenu({
                       Item(IDS_SPEECH_START_SPEAKING_MAC)
                           .action(@selector(startSpeaking:)),
