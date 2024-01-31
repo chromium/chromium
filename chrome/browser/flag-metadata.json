@@ -6014,8 +6014,8 @@
   },
   {
     "name": "omnibox-on-clobber-focus-type-on-content",
-    "owners": [ "rongtan@chromium.org", "ender@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-on-device-head-suggestions",
